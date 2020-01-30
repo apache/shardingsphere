@@ -22,6 +22,12 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowColumnsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowDatabasesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
@@ -97,8 +103,14 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
@@ -130,6 +142,41 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         useStatement.setSchema(schema.getLiteral());
         return useStatement;
     }
+
+    @Override
+    public ASTNode visitDesc(final DescContext ctx) {
+        LiteralValue tablename = (LiteralValue) visit(ctx.tableName());
+        DescribeStatement describeStatement = new DescribeStatement();
+        describeStatement.setTableName(tablename.getLiteral());
+        return describeStatement;
+    }
+
+    @Override
+    public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
+        ShowDatabasesStatement showDatabasesStatement = new ShowDatabasesStatement();
+        ShowLikeContext showLikeContext = ctx.showLike();
+        if (null != showLikeContext) {
+            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
+            showDatabasesStatement.getAllSQLSegments().add(showLikeSegment);
+        }
+        return showDatabasesStatement;
+    }
+
+    @Override
+    public ASTNode visitShowTables(final ShowTablesContext ctx) {
+        ShowTablesStatement showTablesStatement = new ShowTablesStatement();
+        FromSchemaContext fromSchemaContext = ctx.fromSchema();
+        ShowLikeContext showLikeContext = ctx.showLike();
+        if (null != fromSchemaContext) {
+            FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
+            showTablesStatement.getAllSQLSegments().add(fromSchemaSegment);
+        }
+        if (null != showLikeContext) {
+            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
+            showTablesStatement.getAllSQLSegments().add(showLikeSegment);
+        }
+        return showTablesStatement;
+    }
     
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
@@ -146,7 +193,42 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return showTableStatusStatement;
     }
-    
+
+    @Override
+    public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
+        ShowColumnsStatement showColumnsStatement = new ShowColumnsStatement();
+        FromSchemaContext fromSchemaContext = ctx.fromSchema();
+        ShowLikeContext showLikeContext = ctx.showLike();
+        if (null != fromSchemaContext) {
+            FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
+            showColumnsStatement.getAllSQLSegments().add(fromSchemaSegment);
+        }
+        if (null != showLikeContext) {
+            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
+            showColumnsStatement.getAllSQLSegments().add(showLikeSegment);
+        }
+        return showColumnsStatement;
+    }
+
+    @Override
+    public ASTNode visitShowIndex(final ShowIndexContext ctx) {
+        ShowIndexStatement showIndexStatement = new ShowIndexStatement();
+        FromSchemaContext fromSchemaContext = ctx.fromSchema();
+        if (null != fromSchemaContext) {
+            FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
+            showIndexStatement.getAllSQLSegments().add(fromSchemaSegment);
+        }
+        return showIndexStatement;
+    }
+
+    @Override
+    public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
+        ShowCreateTableStatement showCreateTableStatement = new ShowCreateTableStatement();
+        LiteralValue tablename = (LiteralValue) visit(ctx.tableName());
+        showCreateTableStatement.setTableName(tablename.getLiteral());
+        return showCreateTableStatement;
+    }
+
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());

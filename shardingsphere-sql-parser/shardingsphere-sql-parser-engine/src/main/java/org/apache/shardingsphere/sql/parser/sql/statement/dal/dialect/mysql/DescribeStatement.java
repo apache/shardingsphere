@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
@@ -24,5 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
  *
  * @author zhangliang
  */
+@Getter
+@Setter
 public final class DescribeStatement extends DALStatement {
+
+    private String tableName;
 }
