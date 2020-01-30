@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.Alt
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.CreateIndexStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.CreateTableStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.DeleteStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.DropIndexStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.InsertStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.TCLStatementAssert;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTe
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
@@ -42,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -79,6 +82,8 @@ public final class SQLStatementAssert {
             AlterTableStatementAssert.assertIs(assertContext, (AlterTableStatement) actual, (AlterTableStatementTestCase) expected);
         } else if (actual instanceof CreateIndexStatement) {
             CreateIndexStatementAssert.assertIs(assertContext, (CreateIndexStatement) actual, (CreateIndexStatementTestCase) expected);
+        } else if (actual instanceof DropIndexStatement) {
+            DropIndexStatementAssert.assertIs(assertContext, (DropIndexStatement) actual, (DropIndexStatementTestCase) expected);
         } else if (actual instanceof TCLStatement) {
             TCLStatementAssert.assertIs((TCLStatement) actual, (TCLStatementTestCase) expected);
         }
