@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
@@ -38,7 +39,7 @@ public final class PostShardingConfigCenterEventListenerTest {
     
     @Test
     public void assertWatch() {
-        PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenter, "test") {
+        PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenter, Lists.newArrayList("test")) {
             
             @Override
             protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
