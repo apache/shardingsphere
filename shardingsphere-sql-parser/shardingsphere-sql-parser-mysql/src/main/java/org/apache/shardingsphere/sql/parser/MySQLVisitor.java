@@ -305,6 +305,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
         }
+        result.setParametersCount(currentParameterIndex);
         return result;
     }
     
@@ -383,7 +384,14 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         WhereSegment result = new WhereSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         result.setParameterMarkerStartIndex(currentParameterIndex);
-        result.getAndPredicates().addAll(((OrPredicateSegment) visit(ctx.expr())).getAndPredicates());
+        ASTNode segment = visit(ctx.expr());
+        if (segment instanceof OrPredicateSegment) {
+            result.getAndPredicates().addAll(((OrPredicateSegment) segment).getAndPredicates());
+        } else if (segment instanceof PredicateSegment) {
+            AndPredicate andPredicate = new AndPredicate();
+            andPredicate.getPredicates().add((PredicateSegment) segment);
+            result.getAndPredicates().add(andPredicate);
+        }
         result.setParametersCount(currentParameterIndex);
         return result;
     }
