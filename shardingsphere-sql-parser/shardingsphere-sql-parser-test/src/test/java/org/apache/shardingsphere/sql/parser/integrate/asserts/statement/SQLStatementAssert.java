@@ -21,34 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter.ParameterMarkerAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.AlterTableStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.CreateIndexStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.CreateTableStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.DeleteStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.DropIndexStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.InsertStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.SelectStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.TCLStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl.UpdateStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.DDLStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.DMLStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.TCLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateTableStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropIndexStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 
 /**
@@ -68,22 +48,10 @@ public final class SQLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         ParameterMarkerAssert.assertCount(assertContext, actual.getParametersCount(), expected.getParameters().size());
-        if (actual instanceof SelectStatement) {
-            SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, (SelectStatementTestCase) expected);
-        } else if (actual instanceof UpdateStatement) {
-            UpdateStatementAssert.assertIs(assertContext, (UpdateStatement) actual, (UpdateStatementTestCase) expected);
-        } else if (actual instanceof DeleteStatement) {
-            DeleteStatementAssert.assertIs(assertContext, (DeleteStatement) actual, (DeleteStatementTestCase) expected);
-        } else if (actual instanceof InsertStatement) {
-            InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, (InsertStatementTestCase) expected);
-        } else if (actual instanceof CreateTableStatement) {
-            CreateTableStatementAssert.assertIs(assertContext, (CreateTableStatement) actual, (CreateTableStatementTestCase) expected);
-        } else if (actual instanceof AlterTableStatement) {
-            AlterTableStatementAssert.assertIs(assertContext, (AlterTableStatement) actual, (AlterTableStatementTestCase) expected);
-        } else if (actual instanceof CreateIndexStatement) {
-            CreateIndexStatementAssert.assertIs(assertContext, (CreateIndexStatement) actual, (CreateIndexStatementTestCase) expected);
-        } else if (actual instanceof DropIndexStatement) {
-            DropIndexStatementAssert.assertIs(assertContext, (DropIndexStatement) actual, (DropIndexStatementTestCase) expected);
+        if (actual instanceof DMLStatement) {
+            DMLStatementAssert.assertIs(assertContext, (DMLStatement) actual, expected);
+        } else if (actual instanceof DDLStatement) {
+            DDLStatementAssert.assertIs(assertContext, (DDLStatement) actual, expected);
         } else if (actual instanceof TCLStatement) {
             TCLStatementAssert.assertIs((TCLStatement) actual, (TCLStatementTestCase) expected);
         }
