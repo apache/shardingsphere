@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
@@ -109,6 +110,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -170,8 +172,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     // DCLStatement.g4
+    @Override
+    public ASTNode visitGrant(final GrantContext ctx) {
+        return new DCLStatement();
+    }
     // DDLStatement.g4
     // DMLStatement.g4
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
@@ -354,7 +361,11 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != ctx.tableReferences()) {
             return visit(ctx.tableReferences());
         }
-        return visit(ctx.tableName());
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        if (null != ctx.alias()) {
+            table.setAlias(ctx.alias().getText());
+        }
+        return table;
     }
     
     @Override
@@ -429,6 +440,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             return visit(bool);
         } else if (null != ctx.logicalOperator()) {
             return mergePredicateSegment(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText());
+        } else if (!ctx.expr().isEmpty()) {
+            return visit(ctx.expr(0));
         }
         return createExpressionSegment(new LiteralValue(ctx.getText()), ctx);
     }
