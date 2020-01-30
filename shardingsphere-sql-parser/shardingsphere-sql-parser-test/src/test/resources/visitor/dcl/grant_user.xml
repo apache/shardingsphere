@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+
+    <common sql-case-id="grant_user_on_db" />
+
+    <common sql-case-id="grant_user_on_table">
+        <tables>
+            <table name="t_order" start-index="13" stop-index="19" />
+        </tables>
+    </common>
+
+    <common sql-case-id="grant_user_on_db_and_table">
+        <tables>
+            <!--  TODO should be 25, because table name should start from real table name, not start from schema name. Need change ID definition of g4 -->
+            <table name="t_order" start-index="13" stop-index="31">
+                <owner name="sharding_db" start-index="13" stop-index="23" />
+            </table>
+        </tables>
+    </common>
+
+    <common sql-case-id="grant_user_with_hostname">
+        <tables>
+            <table name="t_order" start-index="24" stop-index="30" />
+        </tables>
+    </common>
+
+    <common sql-case-id="grant_select" />
+
+    <common sql-case-id="grant_select_column">
+        <tables>
+            <table name="t_order" start-index="27" stop-index="38">
+                <owner name="ds_0" start-index="27" stop-index="30" />
+            </table>
+        </tables>
+    </common>
+
+    <common sql-case-id="grant_select_to_local_user" />
+    <common sql-case-id="grant_crud" />
+    <common sql-case-id="grant_all" />
+    <common sql-case-id="grant_all_on_schema" />
+
+    <common sql-case-id="grant_all_on_table">
+        <tables>
+            <table name="t_order" start-index="24" stop-index="35">
+                <owner name="ds_0" start-index="24" stop-index="27" />
+            </table>
+        </tables>
+    </common>
+
+    <common sql-case-id="grant_role_to_user" />
+    <common sql-case-id="grant_roles_to_users" />
+</sql-parser-test-cases>
