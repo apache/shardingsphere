@@ -19,8 +19,10 @@ package org.apache.shardingsphere.sql.parser.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
+import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
@@ -88,8 +90,10 @@ public final class VisitorParameterizedParsingTest {
         if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }
+        String databaseTypeName = "H2".equals(databaseType) ? "MySQL" : databaseType;
+        ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
         SQLCaseAssertContext assertContext = new SQLCaseAssertContext(sqlCaseId, sqlCaseType);
-        SQLStatement actual = SQLParseEngineFactory.getSQLParseEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
+        SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
         if (!expected.isLongSQL()) {
             SQLStatementAssert.assertIs(assertContext, actual, expected);
         }

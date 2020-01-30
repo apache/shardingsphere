@@ -16,15 +16,9 @@
   ~ limitations under the License.
   -->
 
-<sql-cases db-types="MySQL">
-    <sql-case id="setTransaction" value="SET TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL" />
-    <sql-case id="commit" value="COMMIT" db-types="MySQL" />
-    <sql-case id="rollback" value="ROLLBACK" db-types="MySQL" />
-    <sql-case id="rollbackToSavepoint" value="ROLLBACK TO savepoint1" db-types="MySQL" />
-    <sql-case id="savepoint" value="SAVEPOINT savepoint1" db-types="MySQL" />
-    <sql-case id="begin" value="BEGIN" db-types="MySQL" />
-    <sql-case id="setAutoCommitOn" value="SET AUTOCOMMIT = 1" db-types="MySQL" />
-    <sql-case id="setAutoCommitOnWithScope" value="SET @@SESSION.AUTOCOMMIT = ON" db-types="MySQL" />
-    <sql-case id="setAutoCommitOff" value="SET AUTOCOMMIT = 0" db-types="MySQL" />
-    <sql-case id="setAutoCommitOffWithScope" value="SET SESSION AUTOCOMMIT = OFF" db-types="MySQL" />
+<sql-cases db-types="MySQL" >
+    <sql-case id="delete_with_sharding_value" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=?" />
+    <sql-case id="delete_without_sharding_value" value="DELETE FROM t_order WHERE status=?" />
+    <sql-case id="delete_with_special_character_without_sharding_value" value="DELETE FROM `t_order` WHERE `status`='init'" />
+    <sql-case id="delete_with_alias" value="DELETE o FROM t_order AS o WHERE status=?" />
 </sql-cases>
