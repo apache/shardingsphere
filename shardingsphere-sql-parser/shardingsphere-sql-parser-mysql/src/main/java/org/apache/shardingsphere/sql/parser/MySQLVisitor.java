@@ -44,7 +44,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprCon
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
@@ -110,7 +109,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
@@ -172,10 +170,6 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     // DCLStatement.g4
-    @Override
-    public ASTNode visitGrant(final GrantContext ctx) {
-        return new DCLStatement();
-    }
     // DDLStatement.g4
     // DMLStatement.g4
     
