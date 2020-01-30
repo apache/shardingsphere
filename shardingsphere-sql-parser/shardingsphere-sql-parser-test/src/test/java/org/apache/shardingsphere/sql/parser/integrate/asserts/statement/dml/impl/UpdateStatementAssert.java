@@ -15,44 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Delete statement assert.
+ * Update statement assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DeleteStatementAssert {
+public final class UpdateStatementAssert {
     
     /**
-     * Assert delete statement is correct with expected parser result.
+     * Assert update statement is correct with expected parser result.
      * 
      * @param assertContext Assert context
-     * @param actual actual delete statement
-     * @param expected expected delete statement test case
+     * @param actual actual update statement
+     * @param expected expected parser result
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
+        assertSetClause(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
-    private static void assertWhereClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
+    private static void assertSetClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        SetClauseAssert.assertIs(assertContext, actual.getSetAssignment(), expected.getSetClause());
+    }
+    
+    private static void assertWhereClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         if (null != expected.getWhereClause()) {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
             WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());

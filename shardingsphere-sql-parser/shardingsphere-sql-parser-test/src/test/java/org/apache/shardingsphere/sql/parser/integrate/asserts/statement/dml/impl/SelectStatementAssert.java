@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl;
 
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
