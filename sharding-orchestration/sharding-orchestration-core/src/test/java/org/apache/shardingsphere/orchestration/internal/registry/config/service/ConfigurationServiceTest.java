@@ -374,7 +374,7 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertGetAllShardingSchemaNames() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Arrays.asList("sharding_db", "masterslave_db"));
+        when(regCenter.get("/test/config/schema")).thenReturn("sharding_db,masterslave_db");
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Collection<String> actual = configurationService.getAllShardingSchemaNames();
         assertThat(actual.size(), is(2));
