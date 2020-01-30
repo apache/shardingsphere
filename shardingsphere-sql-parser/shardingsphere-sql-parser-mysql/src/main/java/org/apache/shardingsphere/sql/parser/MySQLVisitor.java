@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
@@ -78,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseCont
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
@@ -168,7 +168,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     // DCLStatement.g4
     @Override
-    public ASTNode visitGrant(MySQLStatementParser.GrantContext ctx) {
+    public ASTNode visitGrant(final GrantContext ctx) {
         return new DCLStatement() ;
     }
 
