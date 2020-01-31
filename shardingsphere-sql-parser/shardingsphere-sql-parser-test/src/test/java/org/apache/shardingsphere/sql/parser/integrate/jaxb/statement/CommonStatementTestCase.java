@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Expected column position.
+ * Common statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
-@Setter
-public final class ExpectedColumnPosition extends AbstractExpectedSQLSegment {
+public final class CommonStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement
-    private ExpectedColumn column;
+    @XmlElementWrapper
+    @XmlElement(name = "table")
+    private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElement(name = "after-column")
-    private ExpectedColumn afterColumn;
+    @XmlElementWrapper
+    @XmlElement(name = "schema")
+    private final List<ExpectedTable> schemas = new LinkedList<>();
 }

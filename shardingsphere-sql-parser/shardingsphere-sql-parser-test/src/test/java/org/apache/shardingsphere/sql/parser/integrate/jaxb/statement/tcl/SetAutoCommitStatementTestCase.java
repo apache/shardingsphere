@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected column position.
+ * Set auto commit statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class ExpectedColumnPosition extends AbstractExpectedSQLSegment {
+public final class SetAutoCommitStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement
-    private ExpectedColumn column;
-    
-    @XmlElement(name = "after-column")
-    private ExpectedColumn afterColumn;
+    @XmlAttribute(name = "auto-commit")
+    private boolean autoCommit;
 }

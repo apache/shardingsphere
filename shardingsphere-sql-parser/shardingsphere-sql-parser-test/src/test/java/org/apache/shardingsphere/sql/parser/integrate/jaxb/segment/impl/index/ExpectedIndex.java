@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.index;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected column position.
+ * Expected index.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class ExpectedColumnPosition extends AbstractExpectedSQLSegment {
+public final class ExpectedIndex extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlElement
-    private ExpectedColumn column;
-    
-    @XmlElement(name = "after-column")
-    private ExpectedColumn afterColumn;
+    @XmlAttribute
+    private String name;
 }

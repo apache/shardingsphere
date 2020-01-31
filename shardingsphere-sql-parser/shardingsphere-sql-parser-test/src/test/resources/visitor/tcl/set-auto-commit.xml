@@ -17,7 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <tcl sql-case-id="rollback" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
-    <tcl sql-case-id="rollbackToSavepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
-    <tcl sql-case-id="savepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement" />
+    <set-auto-commit sql-case-id="setAutoCommitOn" auto-commit="true" />
+    <set-auto-commit sql-case-id="setAutoCommitOnWithScope" auto-commit="true" />
+    <set-auto-commit sql-case-id="setAutoCommitOff" auto-commit="false" />
+    <set-auto-commit sql-case-id="setAutoCommitOffWithScope" auto-commit="false" />
 </sql-parser-test-cases>

@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 /**
- * Expected column position.
+ * Commit statement test case.
  * 
  * @author zhangliang 
  */
-@Getter
-@Setter
-public final class ExpectedColumnPosition extends AbstractExpectedSQLSegment {
-    
-    @XmlElement
-    private ExpectedColumn column;
-    
-    @XmlElement(name = "after-column")
-    private ExpectedColumn afterColumn;
+public final class CommitStatementTestCase extends SQLParserTestCase {
 }

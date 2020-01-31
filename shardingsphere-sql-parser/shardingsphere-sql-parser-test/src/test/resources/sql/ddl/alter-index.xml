@@ -17,7 +17,25 @@
   -->
 
 <sql-parser-test-cases>
-    <tcl sql-case-id="rollback" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
-    <tcl sql-case-id="rollbackToSavepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
-    <tcl sql-case-id="savepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement" />
+    <common sql-case-id="alter_index" />
+    <common sql-case-id="alter_index_with_space" />
+    <common sql-case-id="alter_index_with_quota" />
+    
+    <!--<common sql-case-id="create_table_with_exist_index">-->
+        <!--<tables>-->
+            <!--<table name="t_order" start-index="12" stop-index="18" />-->
+        <!--</tables>-->
+    <!--</common>-->
+    
+    <common sql-case-id="alter_index_rebuild">
+        <tables>
+            <table name="t_order" start-index="27" stop-index="33" />
+        </tables>
+    </common>
+    
+    <common sql-case-id="alter_index_with_quota_bracket">
+        <tables>
+            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
+        </tables>
+    </common>
 </sql-parser-test-cases>

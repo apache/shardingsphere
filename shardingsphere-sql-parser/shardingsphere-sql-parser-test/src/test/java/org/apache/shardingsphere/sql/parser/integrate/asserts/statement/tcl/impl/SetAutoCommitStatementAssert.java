@@ -15,35 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * TCL statement assert.
+ * Set auto commit statement assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TCLStatementAssert {
+public final class SetAutoCommitStatementAssert {
     
     /**
-     * Assert TCL statement is correct with expected parser result.
+     * Assert set auto commit statement is correct with expected parser result.
      * 
-     * @param actual actual TCL statement
-     * @param expected expected TCL statement test case
+     * @param assertContext assert context
+     * @param actual actual set auto commit statement
+     * @param expected expected set auto commit statement test case
      */
-    public static void assertIs(final TCLStatement actual, final TCLStatementTestCase expected) {
-        assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
-        if (actual instanceof SetAutoCommitStatement) {
-            assertThat(((SetAutoCommitStatement) actual).isAutoCommit(), is(expected.isAutoCommit()));
-        }
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetAutoCommitStatement actual, final SetAutoCommitStatementTestCase expected) {
+        assertThat(assertContext.getText("Set auto commit assertion error: "), actual.isAutoCommit(), is(expected.isAutoCommit()));
     }
 }
