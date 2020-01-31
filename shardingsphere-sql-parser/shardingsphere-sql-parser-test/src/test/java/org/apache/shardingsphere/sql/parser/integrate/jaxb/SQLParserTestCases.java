@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectS
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.CommitStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.RollbackStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
@@ -93,6 +94,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "commit")
     private final List<CommitStatementTestCase> commitTestCases = new LinkedList<>();
     
+    @XmlElement(name = "rollback")
+    private final List<RollbackStatementTestCase> rollbackTestCases = new LinkedList<>();
+    
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
     
@@ -140,6 +144,9 @@ public final class SQLParserTestCases {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : commitTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : rollbackTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : tclTestCases) {

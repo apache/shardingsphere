@@ -17,10 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <set-transaction sql-case-id="setTransaction" />
-    <set-transaction sql-case-id="setGlobalTransaction" />
-    <set-transaction sql-case-id="setSessionTransaction" />
-    <set-transaction sql-case-id="setTransactionReadOnly" />
-    <set-transaction sql-case-id="setTransactionWithName" />
-    <set-transaction sql-case-id="setTransactionSnapshot" />
+    <rollback sql-case-id="rollback" />
+    <rollback sql-case-id="rollbackToSavepoint" />
 </sql-parser-test-cases>
