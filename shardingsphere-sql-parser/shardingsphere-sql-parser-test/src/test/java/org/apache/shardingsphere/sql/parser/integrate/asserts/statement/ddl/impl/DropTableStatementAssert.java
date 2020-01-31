@@ -21,41 +21,30 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropIndexStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 
 /**
- * Drop index statement assert.
+ * Drop table statement assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropIndexStatementAssert {
+public final class DropTableStatementAssert {
     
     /**
-     * Assert drop index statement is correct with expected parser result.
+     * Assert drop table statement is correct with expected parser result.
      * 
      * @param assertContext Assert context
-     * @param actual actual drop index statement
-     * @param expected expected drop index statement test case
+     * @param actual actual drop table statement
+     * @param expected expected drop table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropTableStatement actual, final DropTableStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
-        assertIndex(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final DropTableStatement actual, final DropTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
-    }
-    
-    private static void assertIndex(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
-        // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
-//        assertThat(assertContext.getText("Index size assertion error: "), actual.getIndexes().size(), is(expected.getIndexes().size()));
-//        int count = 0;
-//        for (IndexSegment each : actual.getIndexes()) {
-//            IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));
-//            count++;
-//        }
     }
 }

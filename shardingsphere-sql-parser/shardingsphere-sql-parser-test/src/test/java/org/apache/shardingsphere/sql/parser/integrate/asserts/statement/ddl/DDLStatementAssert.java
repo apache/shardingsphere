@@ -24,16 +24,19 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.impl
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.impl.CreateIndexStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.impl.CreateTableStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.impl.DropIndexStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.impl.DropTableStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropIndexStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 
 /**
  * DDL statement assert.
@@ -55,6 +58,8 @@ public final class DDLStatementAssert {
             CreateTableStatementAssert.assertIs(assertContext, (CreateTableStatement) actual, (CreateTableStatementTestCase) expected);
         } else if (actual instanceof AlterTableStatement) {
             AlterTableStatementAssert.assertIs(assertContext, (AlterTableStatement) actual, (AlterTableStatementTestCase) expected);
+        } else if (actual instanceof DropTableStatement) {
+            DropTableStatementAssert.assertIs(assertContext, (DropTableStatement) actual, (DropTableStatementTestCase) expected);
         } else if (actual instanceof CreateIndexStatement) {
             CreateIndexStatementAssert.assertIs(assertContext, (CreateIndexStatement) actual, (CreateIndexStatementTestCase) expected);
         } else if (actual instanceof DropIndexStatement) {
