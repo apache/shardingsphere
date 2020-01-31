@@ -20,10 +20,15 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.BeginTransactionStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.SetAutoCommitStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.SetTransactionStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
@@ -49,6 +54,8 @@ public final class TCLStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final TCLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof SetTransactionStatement) {
             SetTransactionStatementAssert.assertIs(assertContext, (SetTransactionStatement) actual, (SetTransactionStatementTestCase) expected);
+        } else if (actual instanceof BeginTransactionStatement) {
+            BeginTransactionStatementAssert.assertIs(assertContext, (BeginTransactionStatement) actual, (BeginTransactionStatementTestCase) expected);
         } else if (actual instanceof SetAutoCommitStatement) {
             SetAutoCommitStatementAssert.assertIs(assertContext, (SetAutoCommitStatement) actual, (SetAutoCommitStatementTestCase) expected);
         } else {
