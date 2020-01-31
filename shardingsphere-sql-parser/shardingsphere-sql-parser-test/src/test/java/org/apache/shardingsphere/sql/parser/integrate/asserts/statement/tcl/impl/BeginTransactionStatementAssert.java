@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.BeginTransactionStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 
 /**
- * Set transaction statement assert.
+ * Begin transaction statement assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SetTransactionStatementAssert {
+public final class BeginTransactionStatementAssert {
     
     /**
-     * Assert set transaction statement is correct with expected parser result.
+     * Assert begin transaction statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual set transaction statement
-     * @param expected expected set transaction statement test case
+     * @param actual actual begin transaction statement
+     * @param expected expected begin transaction statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SetTransactionStatement actual, final SetTransactionStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final BeginTransactionStatement actual, final BeginTransactionStatementTestCase expected) {
     }
 }

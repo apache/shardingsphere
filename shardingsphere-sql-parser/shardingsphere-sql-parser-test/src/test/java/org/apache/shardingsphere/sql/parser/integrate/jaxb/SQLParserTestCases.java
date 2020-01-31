@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
@@ -28,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteS
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.BeginTransactionStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
@@ -81,8 +84,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "set-transaction")
     private final List<SetTransactionStatementTestCase> setTransactionTestCases = new LinkedList<>();
     
+    @XmlElement(name = "begin-transaction")
+    private final List<BeginTransactionStatementTestCase> beginTransactionTestCases = new LinkedList<>();
+    
     @XmlElement(name = "set-auto-commit")
     private final List<SetAutoCommitStatementTestCase> setAutoCommitTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "commit")
+    private final List<CommitStatementTestCase> commitTestCases = new LinkedList<>();
     
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
@@ -124,7 +133,13 @@ public final class SQLParserTestCases {
         for (SQLParserTestCase each : setTransactionTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
+        for (SQLParserTestCase each : beginTransactionTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
         for (SQLParserTestCase each : setAutoCommitTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : commitTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : tclTestCases) {

@@ -17,7 +17,9 @@
   -->
 
 <sql-parser-test-cases>
-    <tcl sql-case-id="rollback" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
-    <tcl sql-case-id="rollbackToSavepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
-    <tcl sql-case-id="savepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement" />
+    <begin-transaction sql-case-id="begin" />
+    <begin-transaction sql-case-id="beginTransaction" />
+    <begin-transaction sql-case-id="beginWithName" />
+    <begin-transaction sql-case-id="beginReadCommitted" />
+    <begin-transaction sql-case-id="beginReadOnly" />
 </sql-parser-test-cases>

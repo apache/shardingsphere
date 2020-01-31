@@ -17,21 +17,11 @@
   -->
 
 <sql-parser-test-cases>
-    <tcl sql-case-id="commit" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
-    <tcl sql-case-id="commitWithName" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
-    <tcl sql-case-id="commitWithComment" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
-    <tcl sql-case-id="commitForce" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
     <tcl sql-case-id="rollback" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
     <tcl sql-case-id="rollbackWithName" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
     <tcl sql-case-id="rollbackToSavepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
     <tcl sql-case-id="rollbackForce" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
     <tcl sql-case-id="savepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement" />
-    <tcl sql-case-id="begin" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement" />
-    <tcl sql-case-id="beginTransaction" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement" />
-    <tcl sql-case-id="beginWithName" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement" />
     <tcl sql-case-id="rollbackToSavepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
-    <tcl sql-case-id="beginReadCommitted" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement" />
-    <tcl sql-case-id="beginReadOnly" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement" />
-    <tcl sql-case-id="commitPrepare" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
     <tcl sql-case-id="rollbackPrepare" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement" />
 </sql-parser-test-cases>
