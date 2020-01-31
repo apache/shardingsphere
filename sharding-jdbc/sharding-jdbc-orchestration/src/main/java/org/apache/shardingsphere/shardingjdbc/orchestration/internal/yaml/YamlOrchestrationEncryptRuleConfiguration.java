@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 
+import java.util.Map;
+import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 
 /**
  * Orchestration encrypt configuration for YAML.
@@ -33,7 +33,7 @@ import java.util.Properties;
 @Setter
 public final class YamlOrchestrationEncryptRuleConfiguration extends YamlRootEncryptRuleConfiguration {
     
-    private YamlOrchestrationConfiguration orchestration;
+    private Map<String, YamlInstanceConfiguration> orchestration;
     
     private Properties props = new Properties();
 }

@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
+import java.lang.reflect.Field;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,10 +34,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -52,15 +51,16 @@ public class OrchestrationSpringBootRegistryEncryptTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestRegistryCenter testRegistryCenter = new TestRegistryCenter();
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/datasource", "dataSource: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+        TestCenter testCenter = new TestCenter();
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource",
+            "dataSource: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
             + "    maxTotal: 100\n"
             + "    password: ''\n"
             + "    username: sa\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/rule", "encryptors:\n"
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "encryptors:\n"
             + "  order_encrypt:\n"
             + "    props:\n"
             + "      aes.key.value: '123456'\n"
@@ -71,8 +71,8 @@ public class OrchestrationSpringBootRegistryEncryptTest {
             + "       user_id:\n"
             + "         cipherColumn: user_id\n"
             + "         encryptor: order_encrypt\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/props", "sql.show: 'true'\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/state/datasources", "");
+        testCenter.persist("/demo_spring_boot_ds_center/config/props", "sql.show: 'true'\n");
+        testCenter.persist("/demo_spring_boot_ds_center/state/datasources", "");
     }
     
     @Test

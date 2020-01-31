@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.keygen;
 
-import org.apache.shardingsphere.orchestration.internal.keygen.fixture.FixedTimeService;
 import org.apache.shardingsphere.orchestration.internal.keygen.fixture.PreviousTimeService;
+import org.apache.shardingsphere.orchestration.internal.keygen.fixture.FixedTimeService;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198401L, 4198402L, 8392704L, 8392705L, 12587009L, 12587010L, 16781312L, 16781313L, 20975617L, 20975618L);
@@ -77,7 +77,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("digest", "name:123456");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4198401L, 4198402L, 8392704L, 8392705L, 12587009L, 12587010L, 16781312L, 16781313L, 20975617L, 20975618L);
@@ -94,7 +94,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(1));
         List<Comparable<?>> expected = Collections.<Comparable<?>>singletonList(4198401L);
@@ -109,7 +109,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "specialService");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "FifthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "FifthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new PreviousTimeService(15000));
         leafSnowflakeKeyGenerator.generateKey();
@@ -121,7 +121,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "specialService");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "FifthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "FifthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new PreviousTimeService(3000));
         leafSnowflakeKeyGenerator.generateKey();
@@ -135,13 +135,12 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
-
                 @Override
                 public Comparable<?> call() {
                     return leafSnowflakeKeyGenerator.generateKey();
@@ -158,13 +157,12 @@ public final class LeafSnowflakeKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "testService1");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
         int taskNumber = threadNumber << 2;
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
-
                 @Override
                 public Comparable<?> call() {
                     return leafSnowflakeKeyGenerator.generateKey();
@@ -179,7 +177,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -190,7 +188,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "");
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -200,7 +198,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -211,7 +209,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -222,7 +220,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "/testService1");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -233,7 +231,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("maxTimeDifference", "-5");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -244,7 +242,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("maxTimeDifference", "");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -254,7 +252,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "testService1");
-        properties.setProperty("registryCenterType", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }
@@ -265,7 +263,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("serverList", "127.0.0.1:2181");
         properties.setProperty("serviceId", "testService1");
         properties.setProperty("maxTimeDifference", "5000");
-        properties.setProperty("registryCenterType", "FakeTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "FakeTestRegistryCenter");
         leafSnowflakeKeyGenerator.setProperties(properties);
         leafSnowflakeKeyGenerator.generateKey();
     }

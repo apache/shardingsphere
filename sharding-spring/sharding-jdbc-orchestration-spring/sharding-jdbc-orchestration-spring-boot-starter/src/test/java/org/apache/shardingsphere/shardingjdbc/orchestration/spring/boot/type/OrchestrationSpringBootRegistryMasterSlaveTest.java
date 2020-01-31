@@ -17,20 +17,15 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import java.lang.reflect.Field;
-
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-
+import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +34,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import lombok.SneakyThrows;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = OrchestrationSpringBootRegistryMasterSlaveTest.class)
@@ -53,8 +50,9 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestRegistryCenter testRegistryCenter = new TestRegistryCenter();
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/datasource", "ds_master: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+        TestCenter testCenter = new TestCenter();
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource",
+            "ds_master: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
@@ -75,14 +73,14 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: root\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/rule", "loadBalanceAlgorithmType: ROUND_ROBIN\n"
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "loadBalanceAlgorithmType: ROUND_ROBIN\n"
             + "masterDataSourceName: ds_master\n"
             + "name: ds_ms\n"
             + "slaveDataSourceNames: !!set\n"
             + "  ds_slave_0: null\n"
             + "  ds_slave_1: null\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/props", "{}\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/state/datasources", "");
+        testCenter.persist("/demo_spring_boot_ds_center/config/props", "{}\n");
+        testCenter.persist("/demo_spring_boot_ds_center/state/datasources", "");
     }
     
     @Test

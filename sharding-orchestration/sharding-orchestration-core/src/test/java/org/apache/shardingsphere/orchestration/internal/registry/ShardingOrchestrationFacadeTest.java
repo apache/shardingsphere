@@ -21,12 +21,12 @@ import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.internal.registry.state.service.StateService;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -62,7 +63,17 @@ public final class ShardingOrchestrationFacadeTest {
     
     @Before
     public void setUp() {
-        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("test", new RegistryCenterConfiguration("SecondTestRegistryCenter"), true);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        InstanceConfiguration instanceConfiguration1 = new InstanceConfiguration("SecondTestRegistryCenter");
+        instanceConfiguration1.setOrchestrationType("registry_center");
+        instanceConfiguration1.setNamespace("namespace1");
+        instanceConfigurationMap.put("testname1", instanceConfiguration1);
+        InstanceConfiguration instanceConfiguration2 = new InstanceConfiguration("FirstTestConfigCenter");
+        instanceConfiguration2.setOrchestrationType("config_center");
+        instanceConfiguration2.setNamespace("namespace2");
+        instanceConfigurationMap.put("testname2", instanceConfiguration2);
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
+        orchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(shardingOrchestrationFacade, "regCenter", regCenter);
         FieldUtil.setField(shardingOrchestrationFacade, "configService", configService);
@@ -79,7 +90,7 @@ public final class ShardingOrchestrationFacadeTest {
         authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
         shardingOrchestrationFacade.init(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
-        verify(configService).persistConfiguration("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, props, true);
+        verify(configService).persistConfiguration("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, props, false);
         verify(stateService).persistInstanceOnline();
         verify(stateService).persistDataSourcesNode();
         verify(listenerManager).initListeners();

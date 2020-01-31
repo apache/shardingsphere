@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Properties;
+import javax.sql.DataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlInstanceConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationShardingRuleConfiguration;
-
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Orchestration sharding data source factory for YAML.
@@ -46,8 +46,6 @@ import java.util.Properties;
 public final class YamlOrchestrationShardingDataSourceFactory {
     
     private static final ShardingRuleConfigurationYamlSwapper SHARDING_RULE_SWAPPER = new ShardingRuleConfigurationYamlSwapper();
-    
-    private static final OrchestrationConfigurationYamlSwapper ORCHESTRATION_SWAPPER = new OrchestrationConfigurationYamlSwapper();
     
     /**
      * Create sharding data source.
@@ -104,13 +102,13 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlShardingRuleConfiguration yamlShardingRuleConfiguration, 
-                                               final Properties props, final YamlOrchestrationConfiguration yamlOrchestrationConfiguration) throws SQLException {
+                                               final Properties props, final Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap) throws SQLException {
         if (null == yamlShardingRuleConfiguration) {
-            return new OrchestrationShardingDataSource(ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
+            return new OrchestrationShardingDataSource(new OrchestrationConfiguration(YamlInstanceConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             ShardingDataSource shardingDataSource = new ShardingDataSource(
                     dataSourceMap, new ShardingRule(SHARDING_RULE_SWAPPER.swap(yamlShardingRuleConfiguration), dataSourceMap.keySet()), props);
-            return new OrchestrationShardingDataSource(shardingDataSource, ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
+            return new OrchestrationShardingDataSource(shardingDataSource, new OrchestrationConfiguration(YamlInstanceConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
     

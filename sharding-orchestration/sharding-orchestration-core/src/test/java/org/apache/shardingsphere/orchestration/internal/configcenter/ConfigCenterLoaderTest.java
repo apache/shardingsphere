@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.configcenter;
 
-import org.apache.shardingsphere.orchestration.config.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.config.api.ConfigCenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.internal.configcenter.fixture.FirstTestConfigCenter;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public final class ConfigCenterLoaderTest {
     
     @Test
     public void assertLoad() {
-        ConfigCenter configCenter = new ConfigCenterServiceLoader().load(new ConfigCenterConfiguration("FirstTestConfigCenter"));
+        ConfigCenter configCenter = new ConfigCenterServiceLoader().load(new InstanceConfiguration("FirstTestConfigCenter"));
         assertThat(configCenter, instanceOf(FirstTestConfigCenter.class));
     }
 }

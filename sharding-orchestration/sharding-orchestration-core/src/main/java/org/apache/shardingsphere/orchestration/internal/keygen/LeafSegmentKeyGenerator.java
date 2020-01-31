@@ -22,9 +22,8 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.internal.registry.RegistryCenterServiceLoader;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.api.DistributedLockManagement;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.Properties;
@@ -55,7 +54,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     
     private final SynchronousQueue<Long> cacheIdQueue;
     
-    private RegistryCenter leafRegistryCenter;
+    private DistributedLockManagement distributedLockManagement;
     
     private long id;
     
@@ -78,7 +77,7 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     @Override
     public synchronized Comparable<?> generateKey() {
         String leafKey = getLeafKey();
-        if (null == leafRegistryCenter) {
+        if (null == distributedLockManagement) {
             initLeafSegmentKeyGenerator(leafKey);
         } else {
             increaseIdWhenLeafKeyStoredInCenter(leafKey);
@@ -87,8 +86,8 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
     
     private void initLeafSegmentKeyGenerator(final String leafKey) {
-        RegistryCenterConfiguration leafConfiguration = getRegistryCenterConfiguration();
-        leafRegistryCenter = new RegistryCenterServiceLoader().load(leafConfiguration);
+        InstanceConfiguration leafConfiguration = getInstanceConfiguration();
+        distributedLockManagement = new DistributedLockManagementServiceLoader().load(leafConfiguration);
         step = getStep();
         id = initializeId(leafKey);
         initializeLeafKeyInCenter(leafKey, id, step);
@@ -104,20 +103,21 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     }
     
     private long initializeId(final String leafKey) {
-        if (leafRegistryCenter.isExisted(leafKey)) {
-            return Long.parseLong(leafRegistryCenter.getDirectly(leafKey)) + 1;
+        String value = distributedLockManagement.get(leafKey);
+        if (!Strings.isNullOrEmpty(value)) {
+            return Long.parseLong(value) + 1;
         } else {
             return getInitialValue();
         }
     }
     
     private void initializeLeafKeyInCenter(final String leafKey, final long id, final long step) {
-        leafRegistryCenter.initLock(leafKey);
-        while (!leafRegistryCenter.tryLock()) {
+        distributedLockManagement.initLock(leafKey);
+        while (!distributedLockManagement.tryLock()) {
             continue;
         }
-        leafRegistryCenter.persist(leafKey, String.valueOf(id + step - id % step));
-        leafRegistryCenter.tryRelease();
+        distributedLockManagement.persist(leafKey, String.valueOf(id + step - id % step));
+        distributedLockManagement.tryRelease();
     }
     
     private void initializeCacheIdAsynchronous(final long id, final long step) {
@@ -141,32 +141,31 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         });
     }
     
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration(getRegistryCenterType(), properties);
+    private InstanceConfiguration getInstanceConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration(getRegistryCenterType(), properties);
         result.setNamespace(DEFAULT_NAMESPACE);
         result.setServerLists(getServerList());
-        result.setDigest(getDigest());
         return result;
     }
     
     @SneakyThrows
     private long incrementCacheId(final String leafKey, final long step) {
-        while (!leafRegistryCenter.tryLock()) {
+        while (!distributedLockManagement.tryLock()) {
             continue;
         }
         long result = updateCacheIdInCenter(leafKey, step);
-        leafRegistryCenter.tryRelease();
+        distributedLockManagement.tryRelease();
         return result;
     }
     
     private long updateCacheIdInCenter(final String leafKey, final long step) {
-        String cacheIdInString = leafRegistryCenter.getDirectly(leafKey);
+        String cacheIdInString = distributedLockManagement.get(leafKey);
         if (Strings.isNullOrEmpty(cacheIdInString)) {
             return Long.MIN_VALUE;
         }
         long cacheId = Long.parseLong(cacheIdInString);
         long result = cacheId + step;
-        leafRegistryCenter.update(leafKey, String.valueOf(result));
+        distributedLockManagement.persist(leafKey, String.valueOf(result));
         return result;
     }
     
@@ -203,10 +202,6 @@ public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
         String result = properties.getProperty("serverList");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(result));
         return result;
-    }
-    
-    private String getDigest() {
-        return properties.getProperty("digest");
     }
     
     private String getRegistryCenterType() {

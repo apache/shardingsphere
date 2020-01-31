@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 
 /**
  * Sharding orchestration listener.
