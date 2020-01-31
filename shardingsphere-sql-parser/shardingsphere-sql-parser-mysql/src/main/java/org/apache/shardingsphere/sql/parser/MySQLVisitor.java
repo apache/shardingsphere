@@ -192,7 +192,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         useStatement.setSchema(schema.getLiteral());
         return useStatement;
     }
-    
+
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
         ShowTableStatusStatement showTableStatusStatement = new ShowTableStatusStatement();
@@ -213,7 +213,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
-    
+
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         LiteralValue literalValue = (LiteralValue) visit(ctx.stringLiterals());
@@ -620,7 +620,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
-
+    
     @Override
     public ASTNode visitTableNames(final TableNamesContext ctx) {
         ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
