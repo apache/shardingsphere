@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl;
 
 import com.google.common.base.Optional;
 import lombok.AccessLevel;
@@ -46,7 +46,7 @@ public final class SelectStatementAssert {
     /**
      * Assert select statement is correct with expected parser result.
      * 
-     * @param assertContext Assert context
+     * @param assertContext assert context
      * @param actual actual select statement
      * @param expected expected select statement test case
      */

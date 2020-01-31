@@ -20,12 +20,16 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropIndexStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.CommonStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -62,8 +66,23 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-table")
     private final List<AlterTableStatementTestCase> alterTableTestCases = new LinkedList<>();
     
+    @XmlElement(name = "drop-table")
+    private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-index")
+    private final List<CreateIndexStatementTestCase> createIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-index")
+    private final List<DropIndexStatementTestCase> dropIndexTestCases = new LinkedList<>();
+    
     @XmlElement(name = "tcl")
     private final List<TCLStatementTestCase> tclTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "set-transaction")
+    private final List<SetTransactionStatementTestCase> setTransactionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "set-auto-commit")
+    private final List<SetAutoCommitStatementTestCase> setAutoCommitTestCases = new LinkedList<>();
     
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
@@ -91,6 +110,21 @@ public final class SQLParserTestCases {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : alterTableTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : dropTableTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : createIndexTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : dropIndexTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : setTransactionTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : setAutoCommitTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : tclTestCases) {

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.index.Ex
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -42,6 +43,7 @@ public final class IndexAssert {
      * @param expected expected index
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final IndexSegment actual, final ExpectedIndex expected) {
+        assertNotNull(assertContext.getText("Index should exist."), expected);
         assertThat(assertContext.getText("Index name assertion error: "), actual.getName(), is(expected.getName()));
         assertThat(assertContext.getText("Index name start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertContext.getText("Index name end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));

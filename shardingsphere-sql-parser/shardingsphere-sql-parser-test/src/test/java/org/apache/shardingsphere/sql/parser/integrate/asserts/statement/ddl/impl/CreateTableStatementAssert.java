@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,7 +43,7 @@ public final class CreateTableStatementAssert {
     /**
      * Assert create table statement is correct with expected parser result.
      * 
-     * @param assertContext Assert context
+     * @param assertContext assert context
      * @param actual actual create table statement
      * @param expected expected create table statement test case
      */
