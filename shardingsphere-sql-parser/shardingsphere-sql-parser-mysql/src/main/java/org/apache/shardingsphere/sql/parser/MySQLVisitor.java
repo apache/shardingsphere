@@ -590,7 +590,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return result;
     }
-     
+    
     @Override
     public ASTNode visitIndexName(final IndexNameContext ctx) {
         LiteralValue indexName = (LiteralValue) visit(ctx.identifier());
