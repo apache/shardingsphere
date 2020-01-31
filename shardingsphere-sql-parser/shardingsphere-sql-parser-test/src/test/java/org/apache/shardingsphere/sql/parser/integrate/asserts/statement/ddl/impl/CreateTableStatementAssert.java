@@ -43,7 +43,7 @@ public final class CreateTableStatementAssert {
     /**
      * Assert create table statement is correct with expected parser result.
      * 
-     * @param assertContext Assert context
+     * @param assertContext assert context
      * @param actual actual create table statement
      * @param expected expected create table statement test case
      */

@@ -40,7 +40,7 @@ public final class UpdateStatementAssert {
     /**
      * Assert update statement is correct with expected parser result.
      * 
-     * @param assertContext Assert context
+     * @param assertContext assert context
      * @param actual actual update statement
      * @param expected expected parser result
      */
