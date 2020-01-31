@@ -17,13 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <set-auto-commit sql-case-id="setAutoCommitOn" auto-commit="true" />
-    <set-auto-commit sql-case-id="setAutoCommitOnWithScope" auto-commit="true" />
-    <set-auto-commit sql-case-id="setAutoCommitOff" auto-commit="false" />
-    <set-auto-commit sql-case-id="setAutoCommitOffWithScope" auto-commit="false" />
-    <set-auto-commit sql-case-id="setImplicitTransactionsOn" auto-commit="true" />
-    <set-auto-commit sql-case-id="setImplicitTransactionsOff" auto-commit="false" />
-    
     <tcl sql-case-id="setTransaction" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement" />
     <tcl sql-case-id="commit" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
     <tcl sql-case-id="commitWithName" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement" />
