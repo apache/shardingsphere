@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
