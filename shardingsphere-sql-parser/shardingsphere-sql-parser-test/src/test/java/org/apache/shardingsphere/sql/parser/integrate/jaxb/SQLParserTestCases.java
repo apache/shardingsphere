@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
