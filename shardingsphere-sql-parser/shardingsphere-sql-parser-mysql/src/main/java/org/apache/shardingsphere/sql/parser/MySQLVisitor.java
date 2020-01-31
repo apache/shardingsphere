@@ -208,7 +208,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return showTableStatusStatement;
     }
-    
+
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -219,7 +219,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         LiteralValue literalValue = (LiteralValue) visit(ctx.stringLiterals());
         return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getLiteral());
     }
-    
+
     // DCLStatement.g4
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
@@ -380,7 +380,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         result.setParametersCount(currentParameterIndex);
         return result;
     }
-    
+
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         InsertStatement result = new InsertStatement();
@@ -403,7 +403,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -421,7 +421,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         result.setParametersCount(currentParameterIndex);
         return result;
     }
-    
+
     @Override
     public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
         Collection<AssignmentSegment> assignments = new LinkedList<>();
@@ -430,7 +430,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return new SetAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
     }
-    
+
     @Override
     public ASTNode visitAssignmentValues(final AssignmentValuesContext ctx) {
         List<ExpressionSegment> segments = new LinkedList<>();
@@ -439,14 +439,14 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return new InsertValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segments);
     }
-    
+
     @Override
     public ASTNode visitAssignment(final AssignmentContext ctx) {
         ColumnSegment column = (ColumnSegment) visitColumnName(ctx.columnName());
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
         return new AssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), column, value);
     }
-    
+
     @Override
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
@@ -993,7 +993,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             statement.getAllSQLSegments().add(columnPositionSegment);
         }
     }
-
+    
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
         for (AssignmentValuesContext each : assignmentValuesContexts) {
@@ -1001,7 +1001,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return result;
     }
-    
+
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx) {
         AggregationType type = AggregationType.valueOf(ctx.aggregationFunctionName_().getText());
         int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
@@ -1012,7 +1012,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                 ctx.getText(), type, innerExpressionStartIndex);
     }
-    
+
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
         StringBuilder result = new StringBuilder();
         for (int i = 3; i < ctx.getChildCount() - 1; i++) {
@@ -1020,7 +1020,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return result.toString();
     }
-    
+
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
         ASTNode leftValue = visit(ctx.booleanPrimary());
         ASTNode rightValue = visit(ctx.predicate());
@@ -1058,14 +1058,14 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return mergeAndPredicateSegment(left, right);
     }
-    
+
     private OrPredicateSegment mergeOrPredicateSegment(final ASTNode left, final ASTNode right) {
         OrPredicateSegment result = new OrPredicateSegment();
         result.getAndPredicates().addAll(getAndPredicates(left));
         result.getAndPredicates().addAll(getAndPredicates(right));
         return result;
     }
-    
+
     private OrPredicateSegment mergeAndPredicateSegment(final ASTNode left, final ASTNode right) {
         OrPredicateSegment result = new OrPredicateSegment();
         for (AndPredicate eachLeft : getAndPredicates(left)) {
@@ -1075,14 +1075,14 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return result;
     }
-    
+
     private AndPredicate createAndPredicate(final AndPredicate left, final AndPredicate right) {
         AndPredicate result = new AndPredicate();
         result.getPredicates().addAll(left.getPredicates());
         result.getPredicates().addAll(right.getPredicates());
         return result;
     }
-    
+
     private Collection<AndPredicate> getAndPredicates(final ASTNode astNode) {
         if (astNode instanceof OrPredicateSegment) {
             return ((OrPredicateSegment) astNode).getAndPredicates();
@@ -1094,7 +1094,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         andPredicate.getPredicates().add((PredicateSegment) astNode);
         return Collections.singleton(andPredicate);
     }
-    
+
     // TODO :FIXME, sql case id: insert_with_str_to_date
     private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
         for (ExprContext each : exprContexts) {
