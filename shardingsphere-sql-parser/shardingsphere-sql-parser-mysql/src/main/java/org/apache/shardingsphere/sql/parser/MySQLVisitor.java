@@ -590,7 +590,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return result;
     }
-    
+     
     @Override
     public ASTNode visitIndexName(final IndexNameContext ctx) {
         LiteralValue indexName = (LiteralValue) visit(ctx.identifier());
@@ -869,7 +869,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         }
         return (ExpressionSegment) astNode;
     }
-
+    
     private ColumnDefinitionSegment createColumnDefinitionSegment(final ColumnDefinitionContext columnDefinition, final DDLStatement statement) {
         ColumnSegment column = (ColumnSegment) visit(columnDefinition.columnName());
         LiteralValue dataType = (LiteralValue) visit(columnDefinition.dataType().dataTypeName_());
