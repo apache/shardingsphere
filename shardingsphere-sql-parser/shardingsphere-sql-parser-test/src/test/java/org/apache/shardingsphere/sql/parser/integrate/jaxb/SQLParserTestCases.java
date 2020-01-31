@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertS
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -78,6 +79,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "tcl")
     private final List<TCLStatementTestCase> tclTestCases = new LinkedList<>();
     
+    @XmlElement(name = "set-transaction")
+    private final List<SetTransactionStatementTestCase> setTransactionTestCases = new LinkedList<>();
+    
     @XmlElement(name = "set-auto-commit")
     private final List<SetAutoCommitStatementTestCase> setAutoCommitTestCases = new LinkedList<>();
     
@@ -116,6 +120,9 @@ public final class SQLParserTestCases {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : dropIndexTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : setTransactionTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : setAutoCommitTestCases) {
