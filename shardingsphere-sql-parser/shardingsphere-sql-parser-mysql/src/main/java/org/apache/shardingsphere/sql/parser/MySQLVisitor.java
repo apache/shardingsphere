@@ -620,7 +620,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
-    
+
     @Override
     public ASTNode visitTableNames(final TableNamesContext ctx) {
         ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
