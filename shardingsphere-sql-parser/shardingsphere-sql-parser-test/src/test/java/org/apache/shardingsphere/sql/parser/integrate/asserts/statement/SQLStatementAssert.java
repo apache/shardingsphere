@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.DDLS
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.DMLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.TCLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
@@ -53,7 +52,7 @@ public final class SQLStatementAssert {
         } else if (actual instanceof DDLStatement) {
             DDLStatementAssert.assertIs(assertContext, (DDLStatement) actual, expected);
         } else if (actual instanceof TCLStatement) {
-            TCLStatementAssert.assertIs((TCLStatement) actual, (TCLStatementTestCase) expected);
+            TCLStatementAssert.assertIs(assertContext, (TCLStatement) actual, expected);
         }
     }
 }

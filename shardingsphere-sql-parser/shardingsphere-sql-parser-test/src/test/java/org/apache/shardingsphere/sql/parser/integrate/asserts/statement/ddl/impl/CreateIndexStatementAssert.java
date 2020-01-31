@@ -38,7 +38,7 @@ public final class CreateIndexStatementAssert {
     /**
      * Assert create index statement is correct with expected parser result.
      * 
-     * @param assertContext Assert context
+     * @param assertContext assert context
      * @param actual actual create index statement
      * @param expected expected create index statement test case
      */

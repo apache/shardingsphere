@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteS
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.CommonStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -77,6 +78,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "tcl")
     private final List<TCLStatementTestCase> tclTestCases = new LinkedList<>();
     
+    @XmlElement(name = "set-auto-commit")
+    private final List<SetAutoCommitStatementTestCase> setAutoCommitTestCases = new LinkedList<>();
+    
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
     
@@ -112,6 +116,9 @@ public final class SQLParserTestCases {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : dropIndexTestCases) {
+            result.put(each.getSqlCaseId(), each);
+        }
+        for (SQLParserTestCase each : setAutoCommitTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : tclTestCases) {

@@ -36,7 +36,7 @@ public final class DropTableStatementAssert {
     /**
      * Assert drop table statement is correct with expected parser result.
      * 
-     * @param assertContext Assert context
+     * @param assertContext assert context
      * @param actual actual drop table statement
      * @param expected expected drop table statement test case
      */
