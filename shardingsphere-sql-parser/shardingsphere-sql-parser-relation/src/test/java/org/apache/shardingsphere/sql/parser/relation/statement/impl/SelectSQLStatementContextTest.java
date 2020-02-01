@@ -98,7 +98,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertIsSameGroupByAndOrderByItems() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.setProjections(new ProjectionsSegment(0, 0, false));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
@@ -108,7 +108,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.setProjections(new ProjectionsSegment(0, 0, false));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
         assertFalse(selectSQLStatementContext.isSameGroupByAndOrderByItems());
     }
@@ -116,7 +116,7 @@ public final class SelectSQLStatementContextTest {
     @Test
     public void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.setProjections(new ProjectionsSegment(0, 0, false));
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
