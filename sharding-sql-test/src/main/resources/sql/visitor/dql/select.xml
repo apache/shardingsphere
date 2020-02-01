@@ -16,11 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <set-transaction sql-case-id="setTransaction" />
-    <set-transaction sql-case-id="setGlobalTransaction" />
-    <set-transaction sql-case-id="setSessionTransaction" />
-    <set-transaction sql-case-id="setTransactionReadOnly" />
-    <set-transaction sql-case-id="setTransactionWithName" />
-    <set-transaction sql-case-id="setTransactionSnapshot" />
-</sql-parser-test-cases>
+<sql-cases db-types="MySQL">
+    <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
+    <sql-case id="select_with_same_table_name_and_alias" value="SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?" />
+</sql-cases>

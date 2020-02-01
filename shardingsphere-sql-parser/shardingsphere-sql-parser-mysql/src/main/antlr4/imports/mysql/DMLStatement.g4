@@ -77,27 +77,27 @@ blobValue
     ;
 
 delete
-    : DELETE deleteSpecification_ (singleTableClause_ | multipleTablesClause_) whereClause?
+    : DELETE deleteSpecification_ (singleTableClause | multipleTablesClause) whereClause?
     ;
 
 deleteSpecification_
     : LOW_PRIORITY? QUICK? IGNORE?
     ;
 
-singleTableClause_
+singleTableClause
     : FROM tableName (AS? alias)? partitionNames_?
     ;
 
-multipleTablesClause_
-    : multipleTableNames_ FROM tableReferences | FROM multipleTableNames_ USING tableReferences
+multipleTablesClause
+    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
     ;
 
-multipleTableNames_
+multipleTableNames
     : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
 
 select 
-    : withClause_? unionClause_
+    : withClause_? unionClause
     ;
 
 callStatement
@@ -170,15 +170,15 @@ cteClause_
     : ignoredIdentifier_ columnNames? AS subquery
     ;
 
-unionClause_
+unionClause
     : selectClause (UNION (ALL | DISTINCT)? selectClause)*
     ;
 
 selectClause
-    : SELECT selectSpecification_* projections fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause?
+    : SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? windowClause_? orderByClause? limitClause? selectIntoExpression_? lockClause?
     ;
 
-selectSpecification_
+selectSpecification
     : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | (SQL_CACHE | SQL_NO_CACHE) | SQL_CALC_FOUND_ROWS
     ;
 
@@ -281,7 +281,7 @@ windowItem_
     ;
 
 subquery
-    : LP_ unionClause_ RP_ AS? alias?
+    : LP_ unionClause RP_ AS? alias?
     ;
 
 selectLinesInto_

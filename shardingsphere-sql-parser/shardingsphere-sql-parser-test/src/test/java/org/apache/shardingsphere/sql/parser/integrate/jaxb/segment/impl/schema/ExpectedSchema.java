@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.schema;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Drop table statement.
- *
- * @author zhangliang
+ * Expected schema.
+ * 
+ * @author zhangliang 
  */
 @Getter
 @Setter
-public final class DropTableStatement extends DDLStatement implements TableSegmentsAvailable {
+public final class ExpectedSchema extends AbstractExpectedDelimiterSQLSegment {
     
-    private final Collection<TableSegment> tables = new LinkedList<>();
+    @XmlAttribute
+    private String name;
 }

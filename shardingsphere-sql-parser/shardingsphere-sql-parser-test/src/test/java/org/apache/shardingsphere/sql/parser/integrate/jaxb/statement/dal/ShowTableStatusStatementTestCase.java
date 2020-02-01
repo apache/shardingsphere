@@ -15,24 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 /**
- * Drop table statement.
- *
- * @author zhangliang
+ * Show table status statement test case.
+ * 
+ * @author zhangliang 
  */
-@Getter
-@Setter
-public final class DropTableStatement extends DDLStatement implements TableSegmentsAvailable {
-    
-    private final Collection<TableSegment> tables = new LinkedList<>();
+public final class ShowTableStatusStatementTestCase extends SQLParserTestCase {
 }
