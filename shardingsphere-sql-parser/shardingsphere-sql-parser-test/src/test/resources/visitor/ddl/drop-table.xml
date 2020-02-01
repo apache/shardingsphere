@@ -17,58 +17,40 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="drop_table">
-        <tables>
-            <table name="t_log" start-index="11" stop-index="15" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_table">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
     
-    <common sql-case-id="drop_table_if_exists">
-        <tables>
-            <table name="t_log" start-index="21" stop-index="25" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_table_if_exists">
+        <table name="t_log" start-index="21" stop-index="25" />
+    </drop-table>
     
-    <common sql-case-id="drop_temporary_table_if_exists">
-        <tables>
-            <table name="t_temp_log" start-index="31" stop-index="40" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_temporary_table_if_exists">
+        <table name="t_temp_log" start-index="31" stop-index="40" />
+    </drop-table>
     
-    <common sql-case-id="drop_table_restrict">
-        <tables>
-            <table name="t_log" start-index="11" stop-index="15" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_table_restrict">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
     
-    <common sql-case-id="drop_table_cascade">
-        <tables>
-            <table name="t_log" start-index="11" stop-index="15" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_table_cascade">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
     
-    <common sql-case-id="drop_table_with_space">
-        <tables>
-            <table name="t_order" start-index="23" stop-index="29" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_table_with_space">
+        <table name="t_order" start-index="23" stop-index="29" />
+    </drop-table>
     
-    <common sql-case-id="drop_table_with_back_quota">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="11" stop-index="19" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_table_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="11" stop-index="19" />
+    </drop-table>
     
-    <common sql-case-id="drop_tables">
-        <tables>
-            <table name="t_order_item" start-index="11" stop-index="22" />
-            <table name="t_order" start-index="25" stop-index="31" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_tables">
+        <table name="t_order_item" start-index="11" stop-index="22" />
+        <table name="t_order" start-index="25" stop-index="31" />
+    </drop-table>
     
-    <common sql-case-id="drop_temporary_table">
-        <tables>
-            <table name="t_order" start-index="21" stop-index="27" />
-        </tables>
-    </common>
+    <drop-table sql-case-id="drop_temporary_table">
+        <table name="t_order" start-index="21" stop-index="27" />
+    </drop-table>
 </sql-parser-test-cases>

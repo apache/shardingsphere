@@ -58,16 +58,16 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateT
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeName_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FirstOrAfterColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ForeignKeyOption_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedDataType_Context;
@@ -81,11 +81,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertV
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNames_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClause_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OnDuplicateKeyClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
@@ -164,13 +162,13 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -340,9 +338,6 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
-        IndexSegment index = (IndexSegment) visit(ctx.indexName());
-        result.setIndex(index);
-        result.getAllSQLSegments().add(index);
         return result;
     }
 
@@ -352,9 +347,6 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
-        IndexSegment index = (IndexSegment) visit(ctx.indexName());
-        result.getIndexes().add(index);
-        result.getAllSQLSegments().add(index);
         return result;
     }
 

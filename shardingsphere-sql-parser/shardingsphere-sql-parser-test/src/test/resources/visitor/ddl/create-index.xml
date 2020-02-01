@@ -17,39 +17,27 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="create_index">
-        <tables>
-            <table name="t_log" start-index="28" stop-index="32" />
-        </tables>
-    </common>
+    <create-index sql-case-id="create_index">
+        <table name="t_log" start-index="28" stop-index="32" />
+    </create-index>
     
-    <common sql-case-id="create_unique_index">
-        <tables>
-            <table name="t_log" start-index="35" stop-index="39" />
-        </tables>
-    </common>
+    <create-index sql-case-id="create_unique_index">
+        <table name="t_log" start-index="35" stop-index="39" />
+    </create-index>
     
-    <common sql-case-id="create_index_with_space">
-        <tables>
-            <table name="t_order" start-index="52" stop-index="58" />
-        </tables>
-    </common>
+    <create-index sql-case-id="create_index_with_space">
+        <table name="t_order" start-index="52" stop-index="58" />
+    </create-index>
     
-    <common sql-case-id="create_index_with_back_quota">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="30" stop-index="38" />
-        </tables>
-    </common>
+    <create-index sql-case-id="create_index_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="30" stop-index="38" />
+    </create-index>
     
-    <common sql-case-id="create_composite_index">
-        <tables>
-            <table name="t_order" start-index="28" stop-index="34" />
-        </tables>
-    </common>
-    
-    <common sql-case-id="create_btree_index">
-        <tables>
-            <table name="t_order" start-index="40" stop-index="46" />
-        </tables>
-    </common>
+    <create-index sql-case-id="create_composite_index">
+        <table name="t_order" start-index="28" stop-index="34" />
+    </create-index>
+
+    <create-index sql-case-id="create_btree_index">
+        <table name="t_order" start-index="40" stop-index="46" />
+    </create-index>
 </sql-parser-test-cases>

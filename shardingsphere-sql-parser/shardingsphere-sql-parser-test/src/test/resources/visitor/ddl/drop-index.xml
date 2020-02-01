@@ -17,21 +17,15 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="drop_index">
-        <tables>
-            <table name="t_log" start-index="26" stop-index="30" />
-        </tables>
-    </common>
+    <drop-index sql-case-id="drop_index">
+        <table name="t_log" start-index="26" stop-index="30" />
+    </drop-index>
 
-    <common sql-case-id="drop_index_with_space">
-        <tables>
-            <table name="t_order" start-index="50" stop-index="56" />
-        </tables>
-    </common>
+    <drop-index sql-case-id="drop_index_with_space">
+        <table name="t_order" start-index="50" stop-index="56" />
+    </drop-index>
 
-    <common sql-case-id="drop_index_with_back_quota">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="36" />
-        </tables>
-    </common>
+    <drop-index sql-case-id="drop_index_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="36" />
+    </drop-index>
 </sql-parser-test-cases>
