@@ -81,30 +81,30 @@ assignmentValue
     ;
 
 delete
-    : DELETE deleteSpecification_? (singleTableClause_ | multipleTablesClause_) whereClause?
+    : DELETE deleteSpecification_? (singleTableClause | multipleTablesClause) whereClause?
     ;
 
 deleteSpecification_
     : ONLY
     ;
 
-singleTableClause_
+singleTableClause
     : FROM? LP_? tableName RP_? (AS? alias)?
     ;
 
-multipleTablesClause_
-    : multipleTableNames_ FROM tableReferences | FROM multipleTableNames_ USING tableReferences
+multipleTablesClause
+    : multipleTableNames FROM tableReferences | FROM multipleTableNames USING tableReferences
     ;
 
-multipleTableNames_
+multipleTableNames
     : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
 
 select 
-    : unionClause_
+    : unionClause
     ;
 
-unionClause_
+unionClause
     : selectClause (UNION (ALL | DISTINCT)? selectClause)*
     ;
 
@@ -174,5 +174,5 @@ havingClause
     ;
 
 subquery
-    : LP_ unionClause_ RP_ AS? alias?
+    : LP_ unionClause RP_ AS? alias?
     ;

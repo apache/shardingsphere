@@ -57,26 +57,26 @@ blobValue
     ;
 
 delete
-    : DELETE singleTableClause_ whereClause?
+    : DELETE singleTableClause whereClause?
     ;
 
-singleTableClause_
+singleTableClause
     : FROM tableName (AS? alias)?
     ;
 
 select
-    : unionClause_
+    : unionClause
     ;
 
-unionClause_
+unionClause
     : selectClause (UNION (ALL)? selectClause)*
     ;
 
 selectClause
-    : SELECT selectSpecification_* projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
+    : SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
     ;
 
-selectSpecification_
+selectSpecification
     : duplicateSpecification
     ;
 
@@ -159,5 +159,5 @@ limitOffset
     ;
 
 subquery
-    : LP_ unionClause_ RP_ AS? alias?
+    : LP_ unionClause RP_ AS? alias?
     ;
