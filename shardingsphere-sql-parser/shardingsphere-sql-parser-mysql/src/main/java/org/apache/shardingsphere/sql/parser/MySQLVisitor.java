@@ -58,8 +58,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertV
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNames_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OnDuplicateKeyClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
@@ -75,14 +75,14 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Savepoi
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecification_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
@@ -90,7 +90,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferencesContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
@@ -313,12 +313,12 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
-        if (null != ctx.multipleTablesClause_()) {
-            ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.multipleTablesClause_());
+        if (null != ctx.multipleTablesClause()) {
+            ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.multipleTablesClause());
             result.getTables().addAll(tables.getValues());
             result.getAllSQLSegments().addAll(tables.getValues());
         } else {
-            TableSegment table = (TableSegment) visit(ctx.singleTableClause_());
+            TableSegment table = (TableSegment) visit(ctx.singleTableClause());
             result.getTables().add(table);
             result.getAllSQLSegments().add(table);
         }
@@ -332,7 +332,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     @Override
-    public ASTNode visitSingleTableClause_(final SingleTableClause_Context ctx) {
+    public ASTNode visitSingleTableClause(final SingleTableClauseContext ctx) {
         TableSegment result = (TableSegment) visit(ctx.tableName());
         if (null != ctx.alias()) {
             result.setAlias(ctx.alias().getText());
@@ -341,15 +341,15 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     @Override
-    public ASTNode visitMultipleTablesClause_(final MultipleTablesClause_Context ctx) {
+    public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
         ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
-        result.combine((ListValue<TableSegment>) visit(ctx.multipleTableNames_()));
+        result.combine((ListValue<TableSegment>) visit(ctx.multipleTableNames()));
         result.combine((ListValue<TableSegment>) visit(ctx.tableReferences()));
         return result;
     }
     
     @Override
-    public ASTNode visitMultipleTableNames_(final MultipleTableNames_Context ctx) {
+    public ASTNode visitMultipleTableNames(final MultipleTableNamesContext ctx) {
         ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
         for (TableNameContext each : ctx.tableName()) {
             result.getValues().add((TableSegment) visit(each));
@@ -360,13 +360,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO : Unsupported for withClause.
-        SelectStatement result = (SelectStatement) visit(ctx.unionClause_());
+        SelectStatement result = (SelectStatement) visit(ctx.unionClause());
         result.setParametersCount(currentParameterIndex);
         return result;
     }
     
     @Override
-    public ASTNode visitUnionClause_(final UnionClause_Context ctx) {
+    public ASTNode visitUnionClause(final UnionClauseContext ctx) {
         // TODO : Unsupported for union SQL.
         return visit(ctx.selectClause(0));
     }
@@ -377,7 +377,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         result.setProjections(projections);
         result.getAllSQLSegments().add(projections);
-        if (null != ctx.selectSpecification_()) {
+        if (null != ctx.selectSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
         if (null != ctx.fromClause()) {
@@ -394,7 +394,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     @Override
-    public ASTNode visitSelectSpecification_(final SelectSpecification_Context ctx) {
+    public ASTNode visitSelectSpecification(final SelectSpecificationContext ctx) {
         if (null != ctx.duplicateSpecification()) {
             return visit(ctx.duplicateSpecification());
         }
@@ -973,7 +973,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     private boolean isDistinct(final SelectClauseContext ctx) {
-        for (SelectSpecification_Context each : ctx.selectSpecification_()) {
+        for (SelectSpecificationContext each : ctx.selectSpecification()) {
             boolean eachDistinct = ((BooleanValue) visit(each)).isCorrect();
             if (eachDistinct) {
                 return true;
