@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <show-table-status sql-case-id="show_table_status" />
+    <savepoint sql-case-id="savepoint" />
 </sql-parser-test-cases>

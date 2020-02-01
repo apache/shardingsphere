@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl;
+package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.RollbackStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
 
 /**
- * Set auto commit statement assert.
+ * Rollback statement assert.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SetAutoCommitStatementAssert {
+public final class RollbackStatementAssert {
     
     /**
-     * Assert set auto commit statement is correct with expected parser result.
+     * Assert rollback statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual set auto commit statement
-     * @param expected expected set auto commit statement test case
+     * @param actual actual rollback statement
+     * @param expected expected rollback statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SetAutoCommitStatement actual, final SetAutoCommitStatementTestCase expected) {
-        assertThat(assertContext.getText("Set auto commit assertion error: "), actual.isAutoCommit(), is(expected.isAutoCommit()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RollbackStatement actual, final RollbackStatementTestCase expected) {
     }
 }

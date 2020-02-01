@@ -17,5 +17,9 @@
   -->
 
 <sql-parser-test-cases>
-    <show-table-status sql-case-id="show_table_status" />
+    <commit sql-case-id="commit" />
+    <commit sql-case-id="commitWithName" />
+    <commit sql-case-id="commitWithComment" />
+    <commit sql-case-id="commitForce" />
+    <commit sql-case-id="commitPrepare" />
 </sql-parser-test-cases>

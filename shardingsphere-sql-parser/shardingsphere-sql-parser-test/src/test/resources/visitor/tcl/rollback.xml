@@ -17,5 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <show-table-status sql-case-id="show_table_status" />
+    <rollback sql-case-id="rollback" />
+    <rollback sql-case-id="rollbackToSavepoint" />
 </sql-parser-test-cases>
