@@ -105,7 +105,8 @@ public class SimpleJudgementEngineTest {
                 new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, "true")))));
         whereSegment.getAndPredicates().addAll(Collections.singletonList(andPredicate));
         selectStatement.setWhere(whereSegment);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0, true);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections()
                 .addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);

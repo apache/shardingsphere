@@ -52,7 +52,8 @@ public final class ProjectionsExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<ProjectionsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         ParserRuleContext projectionNode = ExtractorUtils.getFirstChildNode(findMainQueryNode(ancestorNode), RuleName.PROJECTIONS);
-        ProjectionsSegment result = new ProjectionsSegment(projectionNode.getStart().getStartIndex(), projectionNode.getStop().getStopIndex(), extractDistinct(ancestorNode));
+        ProjectionsSegment result = new ProjectionsSegment(projectionNode.getStart().getStartIndex(), projectionNode.getStop().getStopIndex());
+        result.setDistinctRow(extractDistinct(ancestorNode));
         Optional<ParserRuleContext> unqualifiedShorthandNode = ExtractorUtils.findFirstChildNode(projectionNode, RuleName.UNQUALIFIED_SHORTHAND);
         if (unqualifiedShorthandNode.isPresent()) {
             setUnqualifiedShorthandProjectionSegment(unqualifiedShorthandNode.get(), result, parameterMarkerIndexes);

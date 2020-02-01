@@ -25,6 +25,11 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.owner.Ex
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected table.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
 public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {

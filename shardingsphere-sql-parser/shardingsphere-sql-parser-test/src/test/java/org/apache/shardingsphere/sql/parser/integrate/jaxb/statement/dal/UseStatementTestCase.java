@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * projections segment.
+ * Use statement test case.
  * 
- * @author duhongjun
- * @author panjuan
+ * @author zhangliang 
  */
-@RequiredArgsConstructor
 @Getter
-public final class ProjectionsSegment implements SQLSegment {
+@Setter
+public final class UseStatementTestCase extends SQLParserTestCase {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    @Setter
-    private boolean distinctRow;
-    
-    private final Collection<ProjectionSegment> projections = new LinkedList<>();
+    @XmlElement
+    private ExpectedSchema schema;
 }
