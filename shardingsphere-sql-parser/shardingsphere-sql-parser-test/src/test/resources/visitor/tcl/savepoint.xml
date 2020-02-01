@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <tcl sql-case-id="savepoint" tcl-actual-statement-class-type="org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement" />
+    <savepoint sql-case-id="savepoint" />
 </sql-parser-test-cases>
