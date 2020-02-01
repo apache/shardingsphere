@@ -32,9 +32,9 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateS
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.RollbackStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -79,9 +79,6 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-index")
     private final List<DropIndexStatementTestCase> dropIndexTestCases = new LinkedList<>();
     
-    @XmlElement(name = "tcl")
-    private final List<TCLStatementTestCase> tclTestCases = new LinkedList<>();
-    
     @XmlElement(name = "set-transaction")
     private final List<SetTransactionStatementTestCase> setTransactionTestCases = new LinkedList<>();
     
@@ -96,6 +93,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "rollback")
     private final List<RollbackStatementTestCase> rollbackTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "savepoint")
+    private final List<SavepointStatementTestCase> savepointTestCases = new LinkedList<>();
     
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
@@ -149,7 +149,7 @@ public final class SQLParserTestCases {
         for (SQLParserTestCase each : rollbackTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
-        for (SQLParserTestCase each : tclTestCases) {
+        for (SQLParserTestCase each : savepointTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
         for (SQLParserTestCase each : commonTestCases) {
