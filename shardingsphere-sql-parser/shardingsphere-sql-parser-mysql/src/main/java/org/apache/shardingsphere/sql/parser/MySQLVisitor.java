@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnN
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
@@ -201,6 +202,11 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     // DCLStatement.g4
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
+        return new DCLStatement();
+    }
+
+    @Override
+    public ASTNode visitCreateRole(final CreateRoleContext ctx) {
         return new DCLStatement();
     }
 
