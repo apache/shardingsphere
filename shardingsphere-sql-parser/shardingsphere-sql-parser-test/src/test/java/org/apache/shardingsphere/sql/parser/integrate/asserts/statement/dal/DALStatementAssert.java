@@ -20,10 +20,13 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.DescribeStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowTableStatusStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.DescribeStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 
 /**
@@ -42,7 +45,9 @@ public final class DALStatementAssert {
      * @param expected expected DAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DALStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof ShowTableStatusStatement) {
+        if (actual instanceof DescribeStatement) {
+            DescribeStatementAssert.assertIs(assertContext, (DescribeStatement) actual, (DescribeStatementTestCase) expected);
+        } else if (actual instanceof ShowTableStatusStatement) {
             ShowTableStatusStatementAssert.assertIs(assertContext, (ShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
         }
     }
