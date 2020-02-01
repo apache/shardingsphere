@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -43,9 +44,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
@@ -63,10 +66,16 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerCo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecification_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
@@ -81,6 +90,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferencesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClause_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
@@ -104,7 +114,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
@@ -120,6 +134,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseS
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
@@ -340,6 +355,101 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             result.getValues().add((TableSegment) visit(each));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitSelect(final SelectContext ctx) {
+        // TODO : Unsupported for withClause.
+        SelectStatement result = (SelectStatement) visit(ctx.unionClause_());
+        result.setParametersCount(currentParameterIndex);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitUnionClause_(final UnionClause_Context ctx) {
+        // TODO : Unsupported for union SQL.
+        return visit(ctx.selectClause(0));
+    }
+    
+    @Override
+    public ASTNode visitSelectClause(final SelectClauseContext ctx) {
+        SelectStatement result = new SelectStatement();
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
+        result.setProjections(projections);
+        result.getAllSQLSegments().add(projections);
+        if (null != ctx.selectSpecification_()) {
+            result.getProjections().setDistinctRow(isDistinct(ctx));
+        }
+        if (null != ctx.fromClause()) {
+            ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.fromClause());
+            result.getTables().addAll(tables.getValues());
+            result.getAllSQLSegments().addAll(tables.getValues());
+        }
+        if (null != ctx.whereClause()) {
+            WhereSegment where = (WhereSegment) visit(ctx.whereClause());
+            result.setWhere(where);
+            result.getAllSQLSegments().add(where);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSelectSpecification_(final SelectSpecification_Context ctx) {
+        if (null != ctx.duplicateSpecification()) {
+            return visit(ctx.duplicateSpecification());
+        }
+        return new BooleanValue(false);
+    }
+    
+    @Override
+    public ASTNode visitDuplicateSpecification(final DuplicateSpecificationContext ctx) {
+        String text = ctx.getText();
+        if ("DISTINCT".equalsIgnoreCase(text) || "DISTINCTROW".equalsIgnoreCase(text)) {
+            return new BooleanValue(true);
+        }
+        return new BooleanValue(false);
+    }
+    
+    @Override
+    public ASTNode visitProjections(final ProjectionsContext ctx) {
+        Collection<ProjectionSegment> projections = new LinkedList<>();
+        if (null != ctx.unqualifiedShorthand()) {
+            projections.add(
+                    new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex(), ctx.unqualifiedShorthand().getText()));
+        }
+        for (ProjectionContext each : ctx.projection()) {
+            projections.add((ProjectionSegment) visit(each));
+        }
+        ProjectionsSegment result = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.getProjections().addAll(projections);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitProjection(final ProjectionContext ctx) {
+        if (null != ctx.qualifiedShorthand()) {
+            QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
+            ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex(), shorthand.getText());
+            result.setOwner(new TableSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), shorthand.identifier().getText()));
+            return result;
+        }
+        String alias = null == ctx.alias() ? "" : ctx.alias().getText();
+        if (null != ctx.columnName()) {
+            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+            ColumnProjectionSegment result = new ColumnProjectionSegment(ctx.columnName().getText(), column);
+            result.setAlias(alias);
+            return result;
+        }
+        LiteralExpressionSegment column = (LiteralExpressionSegment) visit(ctx.expr());
+        ExpressionProjectionSegment result = Strings.isNullOrEmpty(alias) ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals())) 
+                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()));
+        result.setAlias(alias);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitFromClause(final FromClauseContext ctx) {
+        return visit(ctx.tableReferences());
     }
     
     @Override
@@ -860,6 +970,16 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add((PredicateSegment) astNode);
         return Collections.singleton(andPredicate);
+    }
+    
+    private boolean isDistinct(final SelectClauseContext ctx) {
+        for (SelectSpecification_Context each : ctx.selectSpecification_()) {
+            boolean eachDistinct = ((BooleanValue) visit(each)).isCorrect();
+            if (eachDistinct) {
+                return true;
+            }
+        }
+        return false;
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
