@@ -36,16 +36,16 @@ public final class DropIndexStatementAssert {
     /**
      * Assert drop index statement is correct with expected parser result.
      * 
-     * @param assertContext Assert context
+     * @param assertContext assert context
      * @param actual actual drop index statement
      * @param expected expected drop index statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
-        assertTable(assertContext, actual, expected);
+        assertTables(assertContext, actual, expected);
         assertIndex(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
     }
     

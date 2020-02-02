@@ -15,30 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Common statement test case.
+ * Describe statement test case.
  * 
  * @author zhangliang 
  */
-@Getter
-public final class CommonStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElementWrapper
-    @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
-    
-    @XmlElementWrapper
-    @XmlElement(name = "schema")
-    private final List<ExpectedTable> schemas = new LinkedList<>();
+public final class DescribeStatementTestCase extends SQLParserTestCase {
 }

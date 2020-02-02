@@ -43,7 +43,7 @@ public final class AlterTableStatementAssert {
     /**
      * Assert alter table statement is correct with expected parser result.
      * 
-     * @param assertContext Assert context
+     * @param assertContext assert context
      * @param actual actual alter table statement
      * @param expected expected alter table statement test case
      */

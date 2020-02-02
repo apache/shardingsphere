@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
  * Order by item segment for expression.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @ToString(callSuper = true)
@@ -34,6 +35,11 @@ public final class ExpressionOrderByItemSegment extends TextOrderByItemSegment {
     
     public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(startIndex, stopIndex, orderDirection, nullOrderDirection);
+        this.expression = expression;
+    }
+    
+    public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection) {
+        super(startIndex, stopIndex, orderDirection, OrderDirection.ASC);
         this.expression = expression;
     }
     
