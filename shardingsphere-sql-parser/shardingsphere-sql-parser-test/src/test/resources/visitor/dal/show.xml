@@ -67,7 +67,4 @@
     </common>
 
     <common sql-case-id="show_table_status" />
-    <common sql-case-id="show_all" />
-    <common sql-case-id="show_server_version" />
-    <common sql-case-id="show_transaction_isolation_level" />
 </sql-parser-test-cases>

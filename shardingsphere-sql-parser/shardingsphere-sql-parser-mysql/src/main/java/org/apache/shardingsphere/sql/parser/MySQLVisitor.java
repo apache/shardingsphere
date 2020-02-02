@@ -145,9 +145,9 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
 
     @Override
     public ASTNode visitDesc(final DescContext ctx) {
-        LiteralValue tablename = (LiteralValue) visit(ctx.tableName());
+        TableSegment tablename = (TableSegment) visit(ctx.tableName());
         DescribeStatement describeStatement = new DescribeStatement();
-        describeStatement.setTableName(tablename.getLiteral());
+        describeStatement.setTableName(tablename);
         return describeStatement;
     }
 
@@ -224,8 +224,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
         ShowCreateTableStatement showCreateTableStatement = new ShowCreateTableStatement();
-        LiteralValue tablename = (LiteralValue) visit(ctx.tableName());
-        showCreateTableStatement.setTableName(tablename.getLiteral());
+        TableSegment tablename = (TableSegment) visit(ctx.tableName());
+        showCreateTableStatement.setTableName(tablename);
         return showCreateTableStatement;
     }
 
