@@ -60,9 +60,9 @@
         <!-- Size Violations -->
         <module name="AnonInnerLength"/>
         <module name="MethodLength"/>
-<!--         <module name="LineLength">
+        <module name="LineLength">
             <property name="max" value="200"/>
-        </module> -->
+        </module>
         <module name="OuterTypeNumber"/>
 
         <!-- Whitespace -->
@@ -227,7 +227,7 @@
         <module name="JavadocMethod">
             <property name="scope" value="public"/>
             <property name="allowedAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass, Parameterized, Parameters"/>
-            <!-- <property name="ignoreMethodNamesRegex" value="^assert.*$|^verify.*$"/> -->
+            <property name="ignoreMethodNamesRegex" value="^assert.*$|^verify.*$"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
         </module>
         
