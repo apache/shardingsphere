@@ -114,6 +114,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-tables")
     private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-columns")
+    private final List<ShowTablesStatementTestCase> showColumnsTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
     
@@ -146,6 +149,7 @@ public final class SQLParserTestCases {
         result.putAll(getSQLParserTestCases(describeTestCases));
         result.putAll(getSQLParserTestCases(showDatabasesTestCases));
         result.putAll(getSQLParserTestCases(showTablesTestCases));
+        result.putAll(getSQLParserTestCases(showColumnsTestCases));
         result.putAll(getSQLParserTestCases(showTableStatusTestCases));
         result.putAll(getSQLParserTestCases(commonTestCases));
         return result;
