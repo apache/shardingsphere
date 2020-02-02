@@ -16,7 +16,17 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="rename_user" value="RENAME USER 'user_dev'@'localhost' TO 'user_dev'@'127.0.0.1'" db-types="MySQL" />
-    <sql-case id="rename_users" value="RENAME USER user1_bak TO user1, user2_bak TO user2" db-types="MySQL" />
-</sql-cases>
+<sql-parser-test-cases>
+    <common sql-case-id="alter_user_identified_with_hostname" />
+    <common sql-case-id="alter_user" />
+    <common sql-case-id="alter_users" />
+    <common sql-case-id="alter_user_if_exists" />
+    <common sql-case-id="alter_local_user" />
+    <common sql-case-id="alter_user_with_password" />
+    <common sql-case-id="alter_user_with_resource_option" />
+    <common sql-case-id="alter_user_with_resource_options" />
+    <common sql-case-id="alter_user_with_password_option" />
+    <common sql-case-id="alter_user_with_password_options" />
+    <common sql-case-id="alter_user_with_lock_option" />
+    <common sql-case-id="alter_user_with_options" />
+</sql-parser-test-cases>

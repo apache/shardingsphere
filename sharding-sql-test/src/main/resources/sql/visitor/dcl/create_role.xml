@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="rename_user" value="RENAME USER 'user_dev'@'localhost' TO 'user_dev'@'127.0.0.1'" db-types="MySQL" />
-    <sql-case id="rename_users" value="RENAME USER user1_bak TO user1, user2_bak TO user2" db-types="MySQL" />
+    <sql-case id="create_role" value="CREATE ROLE role1" db-types="MySQL" />
+    <sql-case id="create_roles" value="CREATE ROLE role1, role2" db-types="MySQL" />
+    <sql-case id="create_role_if_not_exists" value="CREATE ROLE IF NOT EXISTS role1" db-types="MySQL" />
 </sql-cases>
