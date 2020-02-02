@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTe
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.DescribeStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowDatabasesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTableStatusStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.UseStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
@@ -110,6 +111,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-databases")
     private final List<ShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-tables")
+    private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
     
@@ -141,6 +145,7 @@ public final class SQLParserTestCases {
         result.putAll(getSQLParserTestCases(useTestCases));
         result.putAll(getSQLParserTestCases(describeTestCases));
         result.putAll(getSQLParserTestCases(showDatabasesTestCases));
+        result.putAll(getSQLParserTestCases(showTablesTestCases));
         result.putAll(getSQLParserTestCases(showTableStatusTestCases));
         result.putAll(getSQLParserTestCases(commonTestCases));
         return result;
