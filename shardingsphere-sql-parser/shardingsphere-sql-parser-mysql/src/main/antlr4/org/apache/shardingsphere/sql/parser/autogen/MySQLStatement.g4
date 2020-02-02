@@ -45,6 +45,7 @@ execute
     | renameUser
     | createRole
     | dropRole
+	| setDefaultRole
     | setRole
     | setPassword
     | use
