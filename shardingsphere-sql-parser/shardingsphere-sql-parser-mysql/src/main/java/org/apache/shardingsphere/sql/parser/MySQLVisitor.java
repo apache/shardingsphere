@@ -86,6 +86,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Multipl
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OnDuplicateKeyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunctionContext;
@@ -125,6 +127,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereCl
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.constant.LogicalOperator;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
@@ -150,6 +153,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProje
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
@@ -184,6 +192,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
 import org.apache.shardingsphere.sql.parser.sql.value.ParameterValue;
+import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -550,6 +559,11 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
         }
+        if (null != ctx.orderByClause()) {
+            OrderBySegment orderBy = (OrderBySegment) visit(ctx.orderByClause());
+            result.setOrderBy(orderBy);
+            result.getAllSQLSegments().add(orderBy);
+        }
         return result;
     }
     
@@ -593,7 +607,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             result.setOwner(new TableSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), shorthand.identifier().getText()));
             return result;
         }
-        String alias = null == ctx.alias() ? "" : ctx.alias().getText();
+        String alias = null == ctx.alias() ? null : ctx.alias().getText();
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
             ColumnProjectionSegment result = new ColumnProjectionSegment(ctx.columnName().getText(), column);
@@ -897,6 +911,29 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     public ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
+        Collection<OrderByItemSegment> items = new LinkedList<>();
+        for (OrderByItemContext each : ctx.orderByItem()) {
+            items.add((OrderByItemSegment) visit(each));
+        }
+        return new OrderBySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), items);
+    }
+    
+    @Override
+    public ASTNode visitOrderByItem(final OrderByItemContext ctx) {
+        OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
+        if (null != ctx.columnName()) {
+            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+            return new ColumnOrderByItemSegment(column, orderDirection);
+        }
+        if (null != ctx.numberLiterals()) {
+            return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
+                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
+        }
+        return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), ctx.expr().getText(), orderDirection);
     }
     
     @Override
