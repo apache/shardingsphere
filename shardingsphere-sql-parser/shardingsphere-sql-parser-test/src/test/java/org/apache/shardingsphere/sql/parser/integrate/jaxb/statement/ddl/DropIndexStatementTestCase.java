@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.owner.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.index.ExpectedIndex;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
+/**
+ * Drop index statement test case.
+ * 
+ * @author zhangliang 
+ */
 @Getter
-@Setter
-public final class ExpectedColumn extends AbstractExpectedDelimiterSQLSegment {
+public final class DropIndexStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute
-    private String name;
+    @XmlElement(name = "index")
+    private final List<ExpectedIndex> indexes = new LinkedList<>();
     
-    @XmlElement
-    private ExpectedTableOwner owner;
+    @XmlElement(name = "table")
+    private final List<ExpectedTable> tables = new LinkedList<>();
 }

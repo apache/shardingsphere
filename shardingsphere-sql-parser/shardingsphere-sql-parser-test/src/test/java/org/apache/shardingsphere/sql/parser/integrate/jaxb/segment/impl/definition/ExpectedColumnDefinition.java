@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definit
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -34,12 +34,12 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     
-    @XmlElement
-    private ExpectedColumn column;
-    
     @XmlAttribute
     private String type;
     
     @XmlAttribute(name = "primary-key")
     private boolean primaryKey;
+    
+    @XmlElement
+    private ExpectedColumn column;
 }

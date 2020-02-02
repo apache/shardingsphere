@@ -202,8 +202,6 @@
         <tables>
             <table name="t_order" start-index="12" stop-index="18" />
         </tables>
-        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
-        <columns start-index="20" stop-index="19" />
         <values>
             <value>
                 <assignment-value>
@@ -317,8 +315,6 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
-        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
-        <columns start-index="25" stop-index="24" />
         <values>
             <value>
                 <assignment-value>
@@ -347,8 +343,6 @@
         <tables>
             <table name="t_order_item" start-index="12" stop-index="23" />
         </tables>
-        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
-        <columns start-index="25" stop-index="24" />
         <values>
             <value>
                 <assignment-value>
@@ -508,8 +502,6 @@
         <tables>
             <table name="t_auto_increment_table" start-index="12" stop-index="33" />
         </tables>
-        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
-        <columns start-index="35" stop-index="34" />
         <values>
             <value />
         </values>
@@ -725,13 +717,6 @@
                 <column name="status" start-index="51" stop-index="56" />
                 <assignment-value>
                     <common-expression text="convert(to_base64(aes_encrypt(?,'key'))USINGutf8)" literal-text="convert(to_base64(aes_encrypt('init','key'))USINGutf8)" />
-                </assignment-value>
-            </assignment>
-            <!-- FIXME split generic SET assignment and ON DUPLICATE KEY UPDATE  -->
-            <assignment start-index="137" stop-index="159" literal-start-index="142" literal-stop-index="164">
-                <column name="status" start-index="137" stop-index="142" literal-start-index="142" literal-stop-index="147" />
-                <assignment-value>
-                    <common-expression text="VALUES(status)" />
                 </assignment-value>
             </assignment>
         </set>
