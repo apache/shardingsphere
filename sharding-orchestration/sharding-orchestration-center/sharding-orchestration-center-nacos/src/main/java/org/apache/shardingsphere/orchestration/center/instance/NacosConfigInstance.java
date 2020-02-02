@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.Executor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +30,10 @@ import org.apache.shardingsphere.orchestration.center.configuration.InstanceConf
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.Executor;
+
 /**
  * The nacos instance for ConfigCenter.
  *
@@ -39,7 +41,7 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventL
  * @author sunbufu
  */
 @Slf4j
-public class NacosInstance implements ConfigCenter {
+public class NacosConfigInstance implements ConfigCenter {
     
     private final String defaultGroup = "SHARDING_SPHERE_DEFAULT_GROUP";
     
@@ -58,11 +60,11 @@ public class NacosInstance implements ConfigCenter {
     public void init(final InstanceConfiguration config) {
         try {
             Properties properties = new Properties();
-            properties.put("serverAddr", config.getServerLists());
-            properties.put("namespace", null == config.getNamespace() ? "" : config.getNamespace());
+            properties.put(PropertyKeyConst.SERVER_ADDR, config.getServerLists());
+            properties.put(PropertyKeyConst.NAMESPACE, null == config.getNamespace() ? "" : config.getNamespace());
             configService = NacosFactory.createConfigService(properties);
         } catch (final NacosException ex) {
-            log.debug("exception for: {}", ex.toString());
+            log.error("Init nacos config center exception for: {}", ex.toString());
         }
     }
     
@@ -74,17 +76,13 @@ public class NacosInstance implements ConfigCenter {
      */
     @Override
     public String get(final String key) {
-        return getDirectly(key);
-    }
-    
-    private String getDirectly(final String key) {
         try {
             String dataId = key.replace("/", ".");
             String group = properties.getProperty("group", defaultGroup);
             long timeoutMs = Long.parseLong(properties.getProperty("timeout", "3000"));
             return configService.getConfig(dataId, group, timeoutMs);
         } catch (final NacosException ex) {
-            log.debug("exception for: {}", ex.toString());
+            log.debug("Nacos get config value exception for: {}", ex.toString());
             return null;
         }
     }
@@ -108,16 +106,12 @@ public class NacosInstance implements ConfigCenter {
      */
     @Override
     public void persist(final String key, final String value) {
-        update(key, value);
-    }
-    
-    private void update(final String key, final String value) {
         try {
             String dataId = key.replace("/", ".");
             String group = properties.getProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
             configService.publishConfig(dataId, group, value);
         } catch (final NacosException ex) {
-            log.debug("exception for: {}", ex.toString());
+            log.debug("Nacos persist config exception for: {}", ex.toString());
         }
     }
     
@@ -145,7 +139,7 @@ public class NacosInstance implements ConfigCenter {
                 }
             });
         } catch (final NacosException ex) {
-            log.debug("exception for: {}", ex.toString());
+            log.debug("Nacos watch key exception for: {}", ex.toString());
         }
     }
     

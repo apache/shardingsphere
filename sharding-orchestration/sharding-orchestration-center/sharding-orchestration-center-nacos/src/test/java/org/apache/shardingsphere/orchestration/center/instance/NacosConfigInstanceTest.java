@@ -41,9 +41,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class NacosInstanceTest {
+public class NacosConfigInstanceTest {
     
-    private static ConfigCenter nacosConfigCenter = new NacosInstance();
+    private static ConfigCenter nacosConfigCenter = new NacosConfigInstance();
     
     private ConfigService configService = mock(ConfigService.class);
     
@@ -62,7 +62,7 @@ public class NacosInstanceTest {
     
     @SneakyThrows
     private void setConfigService(final ConfigService configService) {
-        Field configServiceField = NacosInstance.class.getDeclaredField("configService");
+        Field configServiceField = NacosConfigInstance.class.getDeclaredField("configService");
         configServiceField.setAccessible(true);
         configServiceField.set(nacosConfigCenter, configService);
     }

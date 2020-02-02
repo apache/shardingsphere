@@ -42,13 +42,19 @@ public abstract class PostShardingConfigCenterEventListener implements ShardingO
     
     private final ConfigCenter configCenter;
     
-    private final String watchKey;
+    private final Collection<String> watchKeys;
     
     @Override
     public final void watch(final ChangedType... watchedChangedTypes) {
         final Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
+        for (String watchKey : watchKeys) {
+            watch(watchKey, watchedChangedTypeList);
+        }
+    }
+    
+    private void watch(final String watchKey, final Collection<ChangedType> watchedChangedTypeList) {
         configCenter.watch(watchKey, new DataChangedEventListener() {
-            
+        
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
