@@ -151,11 +151,11 @@ public final class SelectSQLStatementContextTest {
             case COLUMN_ORDER_BY_WITH_OWNER:
                 ColumnSegment columnSegment = new ColumnSegment(0, 0, "name");
                 columnSegment.setOwner(new TableSegment(0, 0, "table"));
-                return new ColumnOrderByItemSegment(0, 0, columnSegment, OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, OrderDirection.ASC);
             case COLUMN_ORDER_BY_WITH_ALIAS:
-                return new ColumnOrderByItemSegment(0, 0, new ColumnSegment(0, 0, "n"), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, "n"), OrderDirection.ASC, OrderDirection.ASC);
             default:
-                return new ColumnOrderByItemSegment(0, 0, new ColumnSegment(0, 0, "id"), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, "id"), OrderDirection.ASC, OrderDirection.ASC);
         }
     }
     
