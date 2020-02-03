@@ -22,20 +22,14 @@
     <common sql-case-id="alter_index_with_quota" />
     
     <!--<common sql-case-id="create_table_with_exist_index">-->
-        <!--<tables>-->
-            <!--<table name="t_order" start-index="12" stop-index="18" />-->
-        <!--</tables>-->
+        <!--<table name="t_order" start-index="12" stop-index="18" />-->
     <!--</common>-->
     
     <common sql-case-id="alter_index_rebuild">
-        <tables>
-            <table name="t_order" start-index="27" stop-index="33" />
-        </tables>
+        <table name="t_order" start-index="27" stop-index="33" />
     </common>
     
     <common sql-case-id="alter_index_with_quota_bracket">
-        <tables>
-            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
-        </tables>
+        <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
     </common>
 </sql-parser-test-cases>
