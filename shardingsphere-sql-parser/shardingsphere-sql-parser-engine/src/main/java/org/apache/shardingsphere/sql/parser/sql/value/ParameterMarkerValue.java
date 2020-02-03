@@ -22,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 /**
- * Parameter value.
+ * Parameter marker value.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class ParameterValue implements ASTNode {
+@Getter
+public final class ParameterMarkerValue implements ASTNode {
     
-    @Getter
     private final int parameterIndex;
 }

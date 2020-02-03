@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl;
+
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * AST node.
- *
- * @author panjuan
+ * Grant statement test case.
+ * 
+ * @author zhangliang 
  */
-public interface ASTNode {
+@Getter
+public final class GrantStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "table")
+    private final List<ExpectedTable> tables = new LinkedList<>();
 }

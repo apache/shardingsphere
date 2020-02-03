@@ -196,7 +196,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
 import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
-import org.apache.shardingsphere.sql.parser.sql.value.ParameterValue;
+import org.apache.shardingsphere.sql.parser.sql.value.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
@@ -858,7 +858,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             return createInSegment(ctx);
         }
         if (null != ctx.BETWEEN()) {
-            createBetweenSegment(ctx);
+            return createBetweenSegment(ctx);
         }
         BitExprContext bitExpr = ctx.bitExpr(0);
         if (null != bitExpr) {
@@ -901,7 +901,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterValue(currentParameterIndex++);
+        return new ParameterMarkerValue(currentParameterIndex++);
     }
     
     @Override
@@ -1112,8 +1112,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (astNode instanceof NumberValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
         }
-        if (astNode instanceof ParameterValue) {
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterValue) astNode).getParameterIndex());
+        if (astNode instanceof ParameterMarkerValue) {
+            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getParameterIndex());
         }
         return astNode;
     }
@@ -1192,7 +1192,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return result.toString();
     }
     
-    private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
+    private PredicateSegment createCompareSegment(final BooleanPrimaryContext ctx) {
         ASTNode leftValue = visit(ctx.booleanPrimary());
         ASTNode rightValue = visit(ctx.predicate());
         if (rightValue instanceof ColumnSegment) {
@@ -1202,7 +1202,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
                 (ColumnSegment) leftValue, new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue));
     }
     
-    private ASTNode createInSegment(final PredicateContext ctx) {
+    private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         Collection<ExpressionSegment> segments = Lists.transform(ctx.expr(), new Function<ExprContext, ExpressionSegment>() {
             
@@ -1214,11 +1214,11 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
     }
     
-    private void createBetweenSegment(final PredicateContext ctx) {
+    private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
     }
     
     private OrPredicateSegment mergePredicateSegment(final ASTNode left, final ASTNode right, final String operator) {
