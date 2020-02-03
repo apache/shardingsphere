@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.Tabl
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
-import java.util.Collections;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +53,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, Collections.singletonList(actual.getTable()), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
     }
     
     private static void assertInsertColumnsClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
