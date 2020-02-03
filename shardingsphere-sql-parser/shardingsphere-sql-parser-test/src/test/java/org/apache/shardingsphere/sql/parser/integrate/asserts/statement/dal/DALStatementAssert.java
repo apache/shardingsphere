@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowColumnsStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowCreateTableStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowDatabasesStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowIndexStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowTableStatusStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowTablesStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.UseStatementAssert;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.Describ
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowCreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowDatabasesStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.UseStatementTestCase;
@@ -40,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Desc
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
@@ -74,6 +77,8 @@ public final class DALStatementAssert {
             ShowCreateTableStatementAssert.assertIs(assertContext, (ShowCreateTableStatement) actual, (ShowCreateTableStatementTestCase) expected);
         } else if (actual instanceof ShowTableStatusStatement) {
             ShowTableStatusStatementAssert.assertIs(assertContext, (ShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
+        } else if (actual instanceof ShowIndexStatement) {
+            ShowIndexStatementAssert.assertIs(assertContext, (ShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
         }
     }
 }
