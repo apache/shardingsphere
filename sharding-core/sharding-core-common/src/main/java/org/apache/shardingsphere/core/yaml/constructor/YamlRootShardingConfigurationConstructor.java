@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.yaml.constructor.construct.YamlNoneShardin
 import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
 
 /**
- * Yaml root sharding configuration constructor.
+ * YAML root sharding configuration constructor.
  *
  * @author yangyi
  */

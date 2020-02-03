@@ -27,7 +27,7 @@ import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractType
  *
  * @author yangyi
  */
-public class YamlProxyRuleConfigurationConstructor extends AbstractTypeConstructor {
+public final class YamlProxyRuleConfigurationConstructor extends AbstractTypeConstructor {
     
     public YamlProxyRuleConfigurationConstructor() {
         super(YamlProxyRuleConfiguration.class);

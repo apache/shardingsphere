@@ -21,14 +21,11 @@ import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShar
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.nodes.Node;
 
-import lombok.NoArgsConstructor;
-
 /**
  * YAML none sharding strategy configuration construct.
  *
  * @author yangyi
  */
-@NoArgsConstructor
 public final class YamlNoneShardingStrategyConfigurationConstruct implements Construct {
     
     @Override

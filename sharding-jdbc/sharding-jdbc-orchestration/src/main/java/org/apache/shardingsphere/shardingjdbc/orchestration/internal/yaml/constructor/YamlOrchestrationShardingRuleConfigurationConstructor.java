@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOr
 import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
 
 /**
- * Yaml orchestration sharding rule configuration constructor.
+ * YAML orchestration sharding rule configuration constructor.
  *
  * @author yangyi
  */
