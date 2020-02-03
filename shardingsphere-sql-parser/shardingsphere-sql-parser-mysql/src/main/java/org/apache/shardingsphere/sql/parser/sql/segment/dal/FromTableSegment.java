@@ -15,20 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
+package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
-/**
- * Show columns statement.
- *
- * @author zhangliang
- */
 @Setter
 @Getter
-public final class ShowColumnsStatement extends DALStatement {
-    private TableSegment table;
+public class FromTableSegment implements SQLSegment, TableAvailable {
+
+    private int startIndex;
+
+    private int stopIndex;
+
+    private TableSegment pattern;
+
+    @Override
+    public String getTableName() {
+        return pattern.getTableName();
+    }
+
+    @Override
+    public QuoteCharacter getTableQuoteCharacter() {
+        return QuoteCharacter.NONE;
+    }
+
 }
