@@ -196,7 +196,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
 import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
-import org.apache.shardingsphere.sql.parser.sql.value.ParameterValue;
+import org.apache.shardingsphere.sql.parser.sql.value.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
@@ -901,7 +901,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterValue(currentParameterIndex++);
+        return new ParameterMarkerValue(currentParameterIndex++);
     }
     
     @Override
@@ -1112,8 +1112,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (astNode instanceof NumberValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
         }
-        if (astNode instanceof ParameterValue) {
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterValue) astNode).getParameterIndex());
+        if (astNode instanceof ParameterMarkerValue) {
+            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getParameterIndex());
         }
         return astNode;
     }
