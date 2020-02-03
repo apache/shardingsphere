@@ -52,6 +52,7 @@ public final class ShowIndexStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null != expected.getTable()) {
+            // TODO use table to instead of findSQLSegment
             assertTrue(assertContext.getText("Actual table segment should exist."), actual.findSQLSegment(TableSegment.class).isPresent());
             TableAssert.assertIs(assertContext, actual.findSQLSegment(TableSegment.class).get(), expected.getTable());
         } else {
