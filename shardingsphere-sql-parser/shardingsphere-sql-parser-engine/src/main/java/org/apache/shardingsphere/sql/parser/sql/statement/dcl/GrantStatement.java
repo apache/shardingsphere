@@ -17,12 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * DCL statement.
+ * Grant statement.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public class DCLStatement extends AbstractSQLStatement {
+@Getter
+public final class GrantStatement extends DCLStatement {
+    
+    private final Collection<TableSegment> tables = new LinkedList<>();
 }
