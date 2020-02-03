@@ -858,7 +858,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             return createInSegment(ctx);
         }
         if (null != ctx.BETWEEN()) {
-            createBetweenSegment(ctx);
+            return createBetweenSegment(ctx);
         }
         BitExprContext bitExpr = ctx.bitExpr(0);
         if (null != bitExpr) {
@@ -1214,11 +1214,11 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
     }
     
-    private void createBetweenSegment(final PredicateContext ctx) {
+    private ASTNode createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
     }
     
     private OrPredicateSegment mergePredicateSegment(final ASTNode left, final ASTNode right, final String operator) {
