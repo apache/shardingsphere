@@ -258,12 +258,12 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
     
     @Override
-    public ASTNode visitDropRole(DropRoleContext ctx) {
+    public ASTNode visitDropRole(final DropRoleContext ctx) {
         return new DCLStatement();
     }
     
     @Override
-    public ASTNode visitSetDefaultRole(SetDefaultRoleContext ctx) {
+    public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
         return new DCLStatement();
     }
     
