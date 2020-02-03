@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 public final class TableAssert {
     
     /**
-     * Assert actual table segment is correct with expected table.
+     * Assert actual table segments is correct with expected tables.
      * 
      * @param assertContext assert context
      * @param actual actual tables
@@ -52,12 +52,19 @@ public final class TableAssert {
         assertThat(assertContext.getText("Tables size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
         for (TableSegment each : actual) {
-            assertTable(assertContext, each, expected.get(count));
+            assertIs(assertContext, each, expected.get(count));
             count++;
         }
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final TableSegment actual, final ExpectedTable expected) {
+    /**
+     * Assert actual table segment is correct with expected table.
+     *
+     * @param assertContext assert context
+     * @param actual actual table
+     * @param expected expected table
+     */
+    public static void assertIs(final SQLCaseAssertContext assertContext, final TableSegment actual, final ExpectedTable expected) {
         assertThat(assertContext.getText("Table name assertion error: "), actual.getTableName(), is(expected.getName()));
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         if (null != expected.getOwner()) {
