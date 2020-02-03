@@ -26,7 +26,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTable_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowColumnsContext;
@@ -290,7 +290,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
         ShowColumnsStatement result = new ShowColumnsStatement();
-        FromTable_Context fromTableContext = ctx.fromTable_();
+        FromTableContext fromTableContext = ctx.fromTable();
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
         ShowLikeContext showLikeContext = ctx.showLike();
         if (null != fromTableContext) {
@@ -313,13 +313,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         ShowIndexStatement result = new ShowIndexStatement();
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
-        FromTable_Context fromTableContext = ctx.fromTable_();
+        FromTableContext fromTableContext = ctx.fromTable();
         if (null != fromSchemaContext) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
         }
         if (null != fromTableContext) {
-            FromTableSegment fromTableSegment = (FromTableSegment) visitFromTable_(fromTableContext);
+            FromTableSegment fromTableSegment = (FromTableSegment) visitFromTable(fromTableContext);
             TableSegment tableSegment = fromTableSegment.getPattern();
             result.setTable(tableSegment);
             result.getAllSQLSegments().add(fromTableSegment);
@@ -336,7 +336,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     }
 
     @Override
-    public ASTNode visitFromTable_(final FromTable_Context ctx) {
+    public ASTNode visitFromTable(final FromTableContext ctx) {
         FromTableSegment fromTableSegment = new FromTableSegment();
         TableSegment tableSegment = (TableSegment) visit(ctx.tableName());
         fromTableSegment.setPattern(tableSegment);
