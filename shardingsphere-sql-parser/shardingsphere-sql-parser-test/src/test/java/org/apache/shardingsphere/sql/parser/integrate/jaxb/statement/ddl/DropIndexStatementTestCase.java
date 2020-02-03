@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.index.ExpectedIndex;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
@@ -32,11 +33,12 @@ import java.util.List;
  * @author zhangliang 
  */
 @Getter
+@Setter
 public final class DropIndexStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "index")
     private final List<ExpectedIndex> indexes = new LinkedList<>();
     
-    @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
+    @XmlElement
+    private ExpectedTable table;
 }
