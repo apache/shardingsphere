@@ -21,10 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dcl.impl.GrantStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dcl.impl.RevokeStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.GrantStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.RevokeStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
 
 /**
  * DCL statement assert.
@@ -44,6 +47,8 @@ public final class DCLStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final DCLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof GrantStatement) {
             GrantStatementAssert.assertIs(assertContext, (GrantStatement) actual, (GrantStatementTestCase) expected);
+        } else if (actual instanceof RevokeStatement) {
+            RevokeStatementAssert.assertIs(assertContext, (RevokeStatement) actual, (RevokeStatementTestCase) expected);
         }
     }
 }
