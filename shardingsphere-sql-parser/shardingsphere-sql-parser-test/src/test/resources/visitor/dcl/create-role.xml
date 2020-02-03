@@ -17,19 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="truncate_table">
-        <table name="t_log" start-index="15" stop-index="19" />
-    </common>
-    
-    <common sql-case-id="truncate_table_with_space">
-        <table name="t_order" start-index="27" stop-index="33" />
-    </common>
-    
-    <common sql-case-id="truncate_table_with_back_quota">
-        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="23" />
-    </common>
-    
-    <common sql-case-id="truncate_table_simple">
-        <table name="t_order" start-index="9" stop-index="15" />
-    </common>
+    <common sql-case-id="create_role" />
+    <common sql-case-id="create_roles"  />
+    <common sql-case-id="create_role_if_not_exists" />
 </sql-parser-test-cases>

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.owner.OwnerAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.item.ExpectedOrderByItem;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.item.impl.ExpectedColumnOrderByItem;
@@ -94,7 +94,7 @@ public final class OrderByItemAssert {
         assertThat(assertContext.getText(String.format("%s item column name assertion error: ", type)), actual.getColumn().getName(), is(expected.getName()));
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
-            OwnerAssert.assertTable(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
+            TableAssert.assertOwner(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }

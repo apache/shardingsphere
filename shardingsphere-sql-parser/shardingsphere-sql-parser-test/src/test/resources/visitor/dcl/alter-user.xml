@@ -17,19 +17,16 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="truncate_table">
-        <table name="t_log" start-index="15" stop-index="19" />
-    </common>
-    
-    <common sql-case-id="truncate_table_with_space">
-        <table name="t_order" start-index="27" stop-index="33" />
-    </common>
-    
-    <common sql-case-id="truncate_table_with_back_quota">
-        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="23" />
-    </common>
-    
-    <common sql-case-id="truncate_table_simple">
-        <table name="t_order" start-index="9" stop-index="15" />
-    </common>
+    <common sql-case-id="alter_user_identified_with_hostname" />
+    <common sql-case-id="alter_user" />
+    <common sql-case-id="alter_users" />
+    <common sql-case-id="alter_user_if_exists" />
+    <common sql-case-id="alter_local_user" />
+    <common sql-case-id="alter_user_with_password" />
+    <common sql-case-id="alter_user_with_resource_option" />
+    <common sql-case-id="alter_user_with_resource_options" />
+    <common sql-case-id="alter_user_with_password_option" />
+    <common sql-case-id="alter_user_with_password_options" />
+    <common sql-case-id="alter_user_with_lock_option" />
+    <common sql-case-id="alter_user_with_options" />
 </sql-parser-test-cases>

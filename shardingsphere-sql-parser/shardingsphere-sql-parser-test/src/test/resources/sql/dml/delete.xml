@@ -18,9 +18,7 @@
 
 <sql-parser-test-cases>
     <delete sql-case-id="delete_with_sharding_value" parameters="1000, 1001, 'init'">
-        <tables>
-            <table name="t_order" start-index="12" stop-index="18" />
-        </tables>
+        <table name="t_order" start-index="12" stop-index="18" />
         <where parameters-count="3" start-index="20" stop-index="66" literal-stop-index="77">
             <and-predicate>
                 <predicate start-index="26" stop-index="37" literal-stop-index="40">
@@ -52,9 +50,7 @@
     </delete>
     
     <delete sql-case-id="delete_without_sharding_value" parameters="'init'">
-        <tables>
-            <table name="t_order" start-index="12" stop-index="18" />
-        </tables>
+        <table name="t_order" start-index="12" stop-index="18" />
         <where parameters-count="1" start-index="20" stop-index="33" literal-stop-index="38">
             <and-predicate>
                 <predicate start-index="26" stop-index="33" literal-stop-index="38">
@@ -70,9 +66,7 @@
     </delete>
     
     <delete sql-case-id="delete_with_special_character_without_sharding_value">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
-        </tables>
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         <where parameters-count="0" start-index="22" stop-index="42">
             <and-predicate>
                 <predicate start-index="28" stop-index="42">
@@ -87,9 +81,7 @@
     </delete>
     
     <delete sql-case-id="delete_with_special_comments_return_without_sharding_value">
-        <tables>
-            <table name="t_order" start-index="33" stop-index="39" />
-        </tables>
+        <table name="t_order" start-index="33" stop-index="39" />
         <where parameters-count="0" start-index="41" stop-index="54">
             <and-predicate>
                 <predicate start-index="47" stop-index="54">
@@ -104,9 +96,7 @@
     </delete>
     
     <delete sql-case-id="delete_with_special_comments_returning_without_sharding_value">
-        <tables>
-            <table name="t_order" start-index="34" stop-index="40" />
-        </tables>
+        <table name="t_order" start-index="34" stop-index="40" />
         <where parameters-count="0" start-index="43" stop-index="56">
             <and-predicate>
                 <predicate start-index="49" stop-index="56">
@@ -121,10 +111,8 @@
     </delete>
     
     <delete sql-case-id="delete_with_alias" parameters="'init'">
-        <tables>
-            <table name="o" start-index="7" stop-index="7" />
-            <table name="t_order" alias="o" start-index="14" stop-index="20" />
-        </tables>
+        <table name="o" start-index="7" stop-index="7" />
+        <table name="t_order" alias="o" start-index="14" stop-index="20" />
         <where parameters-count="1" start-index="27" stop-index="40" literal-stop-index="46">
             <and-predicate>
                 <predicate start-index="33" stop-index="40" literal-stop-index="45">

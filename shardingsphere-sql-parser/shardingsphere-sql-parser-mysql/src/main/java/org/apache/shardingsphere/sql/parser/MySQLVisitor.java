@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddCons
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecification_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
@@ -52,10 +53,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommonDataTypeOption_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintDefinition_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinition_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinition_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateLikeClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeName_Context;
@@ -63,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
@@ -98,6 +101,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Project
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
@@ -106,6 +110,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPasswordContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
@@ -262,6 +267,31 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return new DCLStatement();
     }
     
+    @Override
+    public ASTNode visitCreateRole(final CreateRoleContext ctx) {
+        return new DCLStatement();
+    }
+
+    @Override
+    public ASTNode visitDropUser(final DropUserContext ctx) {
+        return new DCLStatement();
+    }
+
+    @Override
+    public ASTNode visitAlterUser(final AlterUserContext ctx) {
+        return new DCLStatement();
+    }
+
+    @Override
+    public ASTNode visitRenameUser(final RenameUserContext ctx) {
+        return new DCLStatement();
+    }
+
+    @Override
+    public ASTNode visitSetPassword(final SetPasswordContext ctx) {
+        return new DCLStatement();
+    }
+
     // DDLStatement.g4
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.owner;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-public final class ExpectedTableOwner extends AbstractExpectedDelimiterSQLSegment {
-    
-    @XmlAttribute
-    private String name;
+/**
+ * Show tables statement test case.
+ * 
+ * @author zhangliang 
+ */
+public final class ShowTablesStatementTestCase extends SQLParserTestCase {
 }

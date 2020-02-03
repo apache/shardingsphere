@@ -21,8 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.DescribeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowCreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowDatabasesStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowIndexStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTableStatusStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.UseStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
@@ -110,8 +114,23 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-databases")
     private final List<ShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-tables")
+    private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-columns")
+    private final List<ShowTablesStatementTestCase> showColumnsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-create-table")
+    private final List<ShowCreateTableStatementTestCase> showCreateTableTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-index")
+    private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show")
+    private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();
     
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
@@ -141,7 +160,12 @@ public final class SQLParserTestCases {
         result.putAll(getSQLParserTestCases(useTestCases));
         result.putAll(getSQLParserTestCases(describeTestCases));
         result.putAll(getSQLParserTestCases(showDatabasesTestCases));
+        result.putAll(getSQLParserTestCases(showTablesTestCases));
+        result.putAll(getSQLParserTestCases(showColumnsTestCases));
+        result.putAll(getSQLParserTestCases(showCreateTableTestCases));
         result.putAll(getSQLParserTestCases(showTableStatusTestCases));
+        result.putAll(getSQLParserTestCases(showIndexTestCases));
+        result.putAll(getSQLParserTestCases(showTestCases));
         result.putAll(getSQLParserTestCases(commonTestCases));
         return result;
     }

@@ -19,14 +19,13 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.definition.ExpectedColumnPosition;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,7 +38,6 @@ import java.util.List;
 @Setter
 public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
-    @XmlElementWrapper
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     

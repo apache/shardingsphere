@@ -17,57 +17,42 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="show_index_with_index_with_table">
-        <tables>
-            <table name="t_order" start-index="16" stop-index="22" />
-        </tables>
-    </common>
+    <show-index sql-case-id="show_index_with_index_with_table">
+        <table name="t_order" start-index="16" stop-index="22" />
+    </show-index>
     
-    <common sql-case-id="show_index_with_indexes_with_table_and_database">
-        <tables>
-            <table name="t_order" start-index="18" stop-index="24" />
-        </tables>
-        <schemas>
-            <schema name="sharding_db" />
-        </schemas>
-    </common>
+    <show-index sql-case-id="show_index_with_indexes_with_table_and_database">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <!-- FIXME assert schema -->
+        <!--<schema name="sharding_db" />-->
+    </show-index>
     
-    <common sql-case-id="show_index_with_keys_with_database_and_table">
-        <tables>
-            <table name="t_order" start-index="15" stop-index="33">
-                <owner name="sharding_db" start-index="15" stop-index="25" />
-            </table>
-        </tables>
-    </common>
+    <show-index sql-case-id="show_index_with_keys_with_database_and_table">
+        <table name="t_order" start-index="15" stop-index="33">
+            <owner name="sharding_db" start-index="15" stop-index="25" />
+        </table>
+    </show-index>
     
-    <common sql-case-id="show_index_with_table_back_quotes">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26" />
-        </tables>
-        <schemas>
-            <schema name="sharding_db" />
-        </schemas>
-    </common>
+    <show-index sql-case-id="show_index_with_table_back_quotes">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26" />
+        <!-- FIXME assert schema -->
+        <!--<schema name="sharding_db" />-->
+    </show-index>
     
-    <common sql-case-id="show_index_with_database_back_quotes">
-        <tables>
-            <table name="t_order" start-index="18" stop-index="24" />
-        </tables>
-        <schemas>
-            <schema name="sharding_db" />
-        </schemas>
-    </common>
+    <show-index sql-case-id="show_index_with_database_back_quotes">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <!-- FIXME assert schema -->
+        <!--<schema name="sharding_db" />-->
+    </show-index>
     
-    <common sql-case-id="show_index_with_back_quotes">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="37">
-                <owner name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27" />
-            </table>
-        </tables>
-    </common>
-
+    <show-index sql-case-id="show_index_with_back_quotes">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="37">
+            <owner name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27" />
+        </table>
+    </show-index>
+    
     <show-table-status sql-case-id="show_table_status" />
-    <common sql-case-id="show_all" />
-    <common sql-case-id="show_server_version" />
-    <common sql-case-id="show_transaction_isolation_level" />
+    <show sql-case-id="show_all" />
+    <show sql-case-id="show_server_version" />
+    <show sql-case-id="show_transaction_isolation_level" />
 </sql-parser-test-cases>

@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * TCL statement test case.
+ * Show index statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class TCLStatementTestCase extends SQLParserTestCase {
+public final class ShowIndexStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "tcl-actual-statement-class-type")
-    private String tclActualStatementClassType;
+    @XmlElement
+    private ExpectedTable table;
     
-    @XmlAttribute(name = "auto-commit")
-    private boolean autoCommit;
+    @XmlElement
+    private ExpectedSchema schema;
 }

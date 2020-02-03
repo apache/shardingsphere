@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.owner;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +23,14 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpec
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Expected table owner.
+ * 
+ * @author zhangliang 
+ */
 @Getter
 @Setter
-public final class ExpectedSchemaOwner extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedTableOwner extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlAttribute
     private String name;
