@@ -121,6 +121,8 @@ public enum RuleName {
     
     BOOLEAN_LITERALS("BooleanLiterals"),
     
+    NULL_LITERALS("NullValueLiterals"),
+    
     EXPR("Expr"),
     
     SIMPLE_EXPR("SimpleExpr"),

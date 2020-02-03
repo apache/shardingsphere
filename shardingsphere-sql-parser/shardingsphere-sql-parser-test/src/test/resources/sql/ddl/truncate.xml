@@ -16,65 +16,45 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="truncate_table">
-        <tables>
-            <table name="t_log" start-index="15" stop-index="19" />
-        </tables>
-    </parser-result>
+<sql-parser-test-cases>
+    <common sql-case-id="truncate_table">
+        <table name="t_log" start-index="15" stop-index="19" />
+    </common>
     
-    <parser-result sql-case-id="truncate_table_only">
-        <tables>
-            <table name="t_log" start-index="20" stop-index="24" />
-        </tables>
-    </parser-result>
+    <common sql-case-id="truncate_table_only">
+        <table name="t_log" start-index="20" stop-index="24" />
+    </common>
     
-    <parser-result sql-case-id="truncate_table_with_space">
-        <tables>
-            <table name="t_order" start-index="27" stop-index="33" />
-        </tables>
-    </parser-result>
+    <common sql-case-id="truncate_table_with_space">
+        <table name="t_order" start-index="27" stop-index="33" />
+    </common>
     
-    <parser-result sql-case-id="truncate_table_with_back_quota">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="23" />
-        </tables>
-    </parser-result>
+    <common sql-case-id="truncate_table_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="23" />
+    </common>
     
-    <parser-result sql-case-id="truncate_table_simple">
-        <tables>
-            <table name="t_order" start-index="9" stop-index="15" />
-        </tables>
-    </parser-result>
+    <common sql-case-id="truncate_table_simple">
+        <table name="t_order" start-index="9" stop-index="15" />
+    </common>
     
-    <parser-result sql-case-id="truncate_table_with_quota">
-        <tables>
-            <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="15" stop-index="23" />
-        </tables>
-    </parser-result>
+    <common sql-case-id="truncate_table_with_quota">
+        <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="15" stop-index="23" />
+    </common>
     
-        <parser-result sql-case-id="truncate_table_with_double_quota">
-        <tables>
-            <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="15" stop-index="23" />
-        </tables>
-    </parser-result>
+    <common sql-case-id="truncate_table_with_double_quota">
+        <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="15" stop-index="23" />
+    </common>
+
+    <common sql-case-id="truncate_tables">
+        <table name="t_order_item" start-index="15" stop-index="26" />
+        <table name="t_order" start-index="29" stop-index="35" />
+    </common>
     
-   <parser-result sql-case-id="truncate_tables">
-        <tables>
-            <table name="t_order_item" start-index="15" stop-index="26" />
-            <table name="t_order" start-index="29" stop-index="35" />
-        </tables>
-    </parser-result>
+    <common sql-case-id="truncate_table_with_asterisk">
+        <table name="t_order" start-index="15" stop-index="21" />
+    </common>
     
-    <parser-result sql-case-id="truncate_table_with_asterisk">
-        <tables>
-            <table name="t_order" start-index="15" stop-index="21" />
-        </tables>
-    </parser-result>
-    
-    <parser-result sql-case-id="truncate_table_with_bracket">
-        <tables>
-            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="15" stop-index="23" />
-        </tables>
-    </parser-result>
-</parser-result-sets>
+    <common sql-case-id="truncate_table_with_bracket">
+        <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="15" stop-index="23" />
+    </common>
+</sql-parser-test-cases>

@@ -2,8 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-[![Build Status](https://api.travis-ci.org/sharding-sphere/shardingsphere-ui.png?branch=master)](https://travis-ci.org/sharding-sphere/shardingsphere-ui)
-
+[![Build Status](https://builds.apache.org/job/shardingsphere-ui-dev/badge/icon)](https://builds.apache.org/job/shardingsphere-ui-dev/)
 ## Overview
 
 ShardingSphere UI is a management background for [ShardingSphere](https://shardingsphere.apache.org/), including: dynamic configuration, Data orchestration, etc.
@@ -23,7 +22,7 @@ shardingsphere-ui-backend is a standard spring boot project.
 ```bash
 git clone https://github.com/apache/incubator-shardingsphere.git
 cd incubator-shardingsphere/shardingsphere-ui/
-mvn clean package
+mvn clean package -Prelease
 ```
 
-Get the package in `/dist`. (shardingsphere-ui.tar.gz)
+Get the package in `shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz`

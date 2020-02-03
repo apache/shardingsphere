@@ -21,8 +21,23 @@ package org.apache.shardingsphere.sql.parser.core.constant;
  * Aggregation function enum.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public enum AggregationType {
     
-    MAX, MIN, SUM, COUNT, AVG
+    MAX, MIN, SUM, COUNT, AVG;
+    
+    /**
+     * Is aggregation type.
+     * @param aggregationType aggregation type
+     * @return is aggregation type or not
+     */
+    public static boolean isAggregationType(final String aggregationType) {
+        for (AggregationType each : AggregationType.values()) {
+            if (aggregationType.equalsIgnoreCase(each.name())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

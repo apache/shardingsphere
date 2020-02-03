@@ -59,6 +59,8 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    private volatile boolean isErrorResponse;
+    
     private int currentSequenceId;
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
@@ -72,6 +74,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
+            isErrorResponse = true;
             return Collections.<DatabasePacket>singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
         }
         if (backendResponse instanceof UpdateResponse) {
@@ -121,6 +124,11 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
+    }
+    
+    @Override
+    public boolean isErrorResponse() {
+        return isErrorResponse;
     }
     
     @Override

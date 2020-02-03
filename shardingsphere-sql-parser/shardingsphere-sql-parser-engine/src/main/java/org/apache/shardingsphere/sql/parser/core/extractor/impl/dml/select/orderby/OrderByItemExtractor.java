@@ -67,7 +67,7 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
             }
             Optional<ColumnSegment> columnSegment = columnExtractor.extract(each, parameterMarkerIndexes);
             if (columnSegment.isPresent()) {
-                result.add(new ColumnOrderByItemSegment(columnSegment.get().getStartIndex(), columnSegment.get().getStopIndex(), columnSegment.get(), orderDirection, nullOrderDirection));
+                result.add(new ColumnOrderByItemSegment(columnSegment.get(), orderDirection, nullOrderDirection));
             }
         }
         return result;

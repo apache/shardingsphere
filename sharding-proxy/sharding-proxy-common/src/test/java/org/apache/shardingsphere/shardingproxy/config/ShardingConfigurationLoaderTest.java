@@ -39,7 +39,7 @@ public final class ShardingConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        ShardingConfiguration actual = new ShardingConfigurationLoader().load();
+        ShardingConfiguration actual = new ShardingConfigurationLoader().load("/conf/");
         assertOrchestrationConfiguration(actual.getServerConfiguration().getOrchestration());
         assertThat(actual.getRuleConfigurationMap().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));

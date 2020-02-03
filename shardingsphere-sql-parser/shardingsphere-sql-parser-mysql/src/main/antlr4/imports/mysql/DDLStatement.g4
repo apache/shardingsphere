@@ -514,10 +514,10 @@ ownerStatement
     ;
 
 scheduleExpression_
-    : AT_ timestampValue (PLUS_ intervalExpression_)*
-    | EVERY intervalExpression_
-      (STARTS timestampValue (PLUS_ intervalExpression_)*)?
-      ( ENDS timestampValue (PLUS_ intervalExpression_)*)?     
+    : AT_ timestampValue (PLUS_ intervalExpression)*
+    | EVERY intervalExpression
+      (STARTS timestampValue (PLUS_ intervalExpression)*)?
+      ( ENDS timestampValue (PLUS_ intervalExpression)*)?     
     ;
 
 timestampValue

@@ -28,9 +28,13 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 public final class BooleanValue implements ASTNode {
     
     @Getter
-    private final boolean bool;
+    private final boolean correct;
     
-    public BooleanValue(final String bool) {
-        this.bool = Boolean.parseBoolean(bool);
-    } 
+    public BooleanValue(final String correct) {
+        this.correct = Boolean.parseBoolean(correct);
+    }
+    
+    public BooleanValue(final boolean correct) {
+        this.correct = correct;
+    }
 }

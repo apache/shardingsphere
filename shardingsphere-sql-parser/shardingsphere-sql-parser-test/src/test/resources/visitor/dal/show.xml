@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="show_table_status" />
-</parser-result-sets>
+<sql-parser-test-cases>
+    <show-table-status sql-case-id="show_table_status" />
+</sql-parser-test-cases>

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.log;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
@@ -69,7 +70,7 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogShardingRuleConfiguration() {
-        String yaml = "tables:\n" + "  user:\n" + "    actualDataNodes: ds_${0}.user_${0..1}\n" + "    logicTable: user\n";
+        String yaml = "tables:\n  user:\n    actualDataNodes: ds_${0}.user_${0..1}\n    logicTable: user\n    tableStrategy:\n      none: ''\n";
         assertLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getShardingRuleConfiguration());
     }
@@ -77,6 +78,7 @@ public final class ConfigurationLoggerTest {
     private ShardingRuleConfiguration getShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration("user", "ds_${0}.user_${0..1}");
+        tableRuleConfiguration.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         result.getTableRuleConfigs().add(tableRuleConfiguration);
         return result;
     }
@@ -124,7 +126,7 @@ public final class ConfigurationLoggerTest {
     
     @Test
     public void assertLogRuleConfigurationWithShardingRuleConfiguration() {
-        String yaml = "tables:\n" + "  user:\n" + "    actualDataNodes: ds_${0}.user_${0..1}\n" + "    logicTable: user\n";
+        String yaml = "tables:\n  user:\n    actualDataNodes: ds_${0}.user_${0..1}\n    logicTable: user\n    tableStrategy:\n      none: ''\n";
         assertLogInfo(ShardingRuleConfiguration.class.getSimpleName(), yaml);
         ConfigurationLogger.log(getShardingRuleConfiguration());
     }

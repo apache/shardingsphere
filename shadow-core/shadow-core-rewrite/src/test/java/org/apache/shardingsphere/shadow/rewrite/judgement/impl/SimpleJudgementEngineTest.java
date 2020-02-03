@@ -98,14 +98,15 @@ public class SimpleJudgementEngineTest {
     @Test
     public void judgeForWhereSegment() {
         SelectStatement selectStatement = new SelectStatement();
-        WhereSegment whereSegment = new WhereSegment(0, 0, 0);
+        WhereSegment whereSegment = new WhereSegment(0, 0);
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().addAll(Collections.singletonList(new PredicateSegment(0, 0,
                 new ColumnSegment(0, 0, "shadow"),
                 new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, "true")))));
         whereSegment.getAndPredicates().addAll(Collections.singletonList(andPredicate));
         selectStatement.setWhere(whereSegment);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0, true);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections()
                 .addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);

@@ -75,7 +75,7 @@ public abstract class BaseShardingEngine {
         this.shardingRule = shardingRule;
         this.properties = properties;
         this.metaData = metaData;
-        shardingRouter = new ShardingRouter(shardingRule, metaData, sqlParseEngine);
+        shardingRouter = new ShardingRouter(shardingRule, properties, metaData, sqlParseEngine);
         routingHook = new SPIRoutingHook();
     }
     

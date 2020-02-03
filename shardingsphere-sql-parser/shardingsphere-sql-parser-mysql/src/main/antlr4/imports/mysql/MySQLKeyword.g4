@@ -1516,6 +1516,22 @@ UPPER
     : U P P E R
     ;
 
+ADDDATE
+    : A D D D A T E
+    ;
+
+ADDTIME
+    : A D D T I M E
+    ;
+
+DATE_ADD
+    : D A T E UL_ A D D
+    ;
+
+DATE_SUB
+    : D A T E UL_ S U B
+    ;
+
 DATEDIFF
     : D A T E D I F F
     ;
