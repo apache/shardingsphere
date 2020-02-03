@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets namespace="sqlserver.tcl.commit">
-    <parser-result sql-case-id="commit" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.CommitStatement" />
-    <parser-result sql-case-id="commit_with_name" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.CommitStatement" />
-</parser-result-sets>

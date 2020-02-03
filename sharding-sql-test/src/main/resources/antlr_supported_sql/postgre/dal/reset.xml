@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="PostgreSQL" namespace="postgre.dal.reset">
-    <sql-case id="reset_all" value="RESET ALL" />
-    <sql-case id="reset_timezone" value="RESET timezone" />
-</sql-cases>
