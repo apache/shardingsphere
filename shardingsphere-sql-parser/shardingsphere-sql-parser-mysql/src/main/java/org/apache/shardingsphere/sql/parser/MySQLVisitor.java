@@ -161,95 +161,95 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
-        UseStatement useStatement = new UseStatement();
-        useStatement.setSchema(schema.getLiteral());
-        return useStatement;
+        UseStatement result = new UseStatement();
+        result.setSchema(schema.getLiteral());
+        return result;
     }
 
     @Override
     public ASTNode visitDesc(final DescContext ctx) {
-        TableSegment tablename = (TableSegment) visit(ctx.tableName());
-        DescribeStatement describeStatement = new DescribeStatement();
-        describeStatement.setTableName(tablename);
-        return describeStatement;
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        DescribeStatement result = new DescribeStatement();
+        result.setTable(table);
+        return result;
     }
 
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        ShowDatabasesStatement showDatabasesStatement = new ShowDatabasesStatement();
+        ShowDatabasesStatement result = new ShowDatabasesStatement();
         ShowLikeContext showLikeContext = ctx.showLike();
         if (null != showLikeContext) {
             ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            showDatabasesStatement.getAllSQLSegments().add(showLikeSegment);
+            result.getAllSQLSegments().add(showLikeSegment);
         }
-        return showDatabasesStatement;
+        return result;
     }
 
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
-        ShowTablesStatement showTablesStatement = new ShowTablesStatement();
+        ShowTablesStatement result = new ShowTablesStatement();
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
         ShowLikeContext showLikeContext = ctx.showLike();
         if (null != fromSchemaContext) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
-            showTablesStatement.getAllSQLSegments().add(fromSchemaSegment);
+            result.getAllSQLSegments().add(fromSchemaSegment);
         }
         if (null != showLikeContext) {
             ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            showTablesStatement.getAllSQLSegments().add(showLikeSegment);
+            result.getAllSQLSegments().add(showLikeSegment);
         }
-        return showTablesStatement;
+        return result;
     }
     
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
-        ShowTableStatusStatement showTableStatusStatement = new ShowTableStatusStatement();
+        ShowTableStatusStatement result = new ShowTableStatusStatement();
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
         ShowLikeContext showLikeContext = ctx.showLike();
         if (null != fromSchemaContext) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
-            showTableStatusStatement.getAllSQLSegments().add(fromSchemaSegment);
+            result.getAllSQLSegments().add(fromSchemaSegment);
         }
         if (null != showLikeContext) {
             ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            showTableStatusStatement.getAllSQLSegments().add(showLikeSegment);
+            result.getAllSQLSegments().add(showLikeSegment);
         }
-        return showTableStatusStatement;
+        return result;
     }
 
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
-        ShowColumnsStatement showColumnsStatement = new ShowColumnsStatement();
+        ShowColumnsStatement result = new ShowColumnsStatement();
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
         ShowLikeContext showLikeContext = ctx.showLike();
         if (null != fromSchemaContext) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
-            showColumnsStatement.getAllSQLSegments().add(fromSchemaSegment);
+            result.getAllSQLSegments().add(fromSchemaSegment);
         }
         if (null != showLikeContext) {
             ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            showColumnsStatement.getAllSQLSegments().add(showLikeSegment);
+            result.getAllSQLSegments().add(showLikeSegment);
         }
-        return showColumnsStatement;
+        return result;
     }
 
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
-        ShowIndexStatement showIndexStatement = new ShowIndexStatement();
+        ShowIndexStatement result = new ShowIndexStatement();
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
         if (null != fromSchemaContext) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
-            showIndexStatement.getAllSQLSegments().add(fromSchemaSegment);
+            result.getAllSQLSegments().add(fromSchemaSegment);
         }
-        return showIndexStatement;
+        return result;
     }
 
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
-        ShowCreateTableStatement showCreateTableStatement = new ShowCreateTableStatement();
-        TableSegment tablename = (TableSegment) visit(ctx.tableName());
-        showCreateTableStatement.setTableName(tablename);
-        return showCreateTableStatement;
+        ShowCreateTableStatement result = new ShowCreateTableStatement();
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        result.setTable(table);
+        return result;
     }
 
     @Override

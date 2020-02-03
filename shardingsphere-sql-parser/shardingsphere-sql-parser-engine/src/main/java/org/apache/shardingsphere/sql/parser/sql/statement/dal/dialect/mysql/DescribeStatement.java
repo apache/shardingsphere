@@ -31,5 +31,5 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 @Setter
 public final class DescribeStatement extends DALStatement {
 
-    private TableSegment tableName;
+    private TableSegment table;
 }
