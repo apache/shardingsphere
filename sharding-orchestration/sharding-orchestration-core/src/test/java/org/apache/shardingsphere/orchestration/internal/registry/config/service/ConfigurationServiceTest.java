@@ -20,6 +20,7 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.service
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
@@ -267,7 +268,7 @@ public final class ConfigurationServiceTest {
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
-        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(SHARDING_RULE_YAML, YamlShardingRuleConfiguration.class));
+        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(SHARDING_RULE_YAML, YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
     }
     
     private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {

@@ -17,21 +17,24 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractTypeConstructor;
+import org.yaml.snakeyaml.constructor.Construct;
+import org.yaml.snakeyaml.nodes.Node;
 
-import java.util.Collection;
-import java.util.Map;
+public final class FixtureTypeConstructor extends AbstractTypeConstructor {
+    
+    public FixtureTypeConstructor() {
+        super(DefaultYamlRepresenterFixture.class);
+        registerConstruct(FixtureCustomClass.class, new Construct() {
 
-@Getter
-@Setter
-public final class DefaultYamlRepresenterFixture {
-    
-    private String value;
-    
-    private Collection<String> collection;
-    
-    private Map<String, String> map;
-    
-    private FixtureCustomClass customClass;
+            @Override
+            public Object construct(final Node node) {
+                return new FixtureCustomClass();
+            }
+
+            @Override
+            public void construct2ndStep(final Node node, final Object newInstance) {
+            }
+        });
+    }
 }

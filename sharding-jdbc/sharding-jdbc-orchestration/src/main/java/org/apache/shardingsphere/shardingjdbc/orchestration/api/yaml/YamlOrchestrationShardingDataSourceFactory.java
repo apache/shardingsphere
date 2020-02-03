@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.constructor.YamlOrchestrationShardingRuleConfigurationConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
@@ -115,10 +116,10 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
-        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationShardingRuleConfiguration.class);
+        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationShardingRuleConfiguration.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
-        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationShardingRuleConfiguration.class);
+        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationShardingRuleConfiguration.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
     }
 }
