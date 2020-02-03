@@ -17,196 +17,196 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="grant_user_without_hostname">
+    <grant sql-case-id="grant_user_without_hostname">
         <table name="t_order" start-index="40" stop-index="46" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_user_with_grant">
+    <grant sql-case-id="grant_user_with_grant">
         <table name="t_order" start-index="40" stop-index="46" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_role" />
-    <common sql-case-id="grant_user_with_admin" />
-    <common sql-case-id="grant_user_on_db" />
+    <grant sql-case-id="grant_role" />
+    <grant sql-case-id="grant_user_with_admin" />
+    <grant sql-case-id="grant_user_on_db" />
     
-    <common sql-case-id="grant_user_on_table">
+    <grant sql-case-id="grant_user_on_table">
         <table name="t_order" start-index="13" stop-index="19" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_user_on_db_and_table">
+    <grant sql-case-id="grant_user_on_db_and_table">
         <!--  TODO should be 25, because table name should start from real table name, not start from schema name. Need change ID definition of g4 -->
         <table name="t_order" start-index="13" stop-index="31">
             <owner name="sharding_db" start-index="13" stop-index="23" />
         </table>
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_user_with_hostname">
+    <grant sql-case-id="grant_user_with_hostname">
         <table name="t_order" start-index="24" stop-index="30" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_select" />
+    <grant sql-case-id="grant_select" />
     
-    <common sql-case-id="grant_select_column">
+    <grant sql-case-id="grant_select_column">
         <table name="t_order" start-index="27" stop-index="38">
             <owner name="ds_0" start-index="27" stop-index="30" />
         </table>
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_select_to_local_user" />
-    <common sql-case-id="grant_crud" />
-    <common sql-case-id="grant_all" />
-    <common sql-case-id="grant_all_on_schema" />
+    <grant sql-case-id="grant_select_to_local_user" />
+    <grant sql-case-id="grant_crud" />
+    <grant sql-case-id="grant_all" />
+    <grant sql-case-id="grant_all_on_schema" />
     
-    <common sql-case-id="grant_all_on_table">
+    <grant sql-case-id="grant_all_on_table">
         <table name="t_order" start-index="24" stop-index="35">
             <owner name="ds_0" start-index="24" stop-index="27" />
         </table>
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_role_to_user" />
-    <common sql-case-id="grant_roles_to_users" />
-    <common sql-case-id="grant_system_privilege" />
-    <common sql-case-id="grant_system_privileges" />
-    <common sql-case-id="grant_all_system_privileges" />
-    <common sql-case-id="grant_system_privilege_to_users" />
+    <grant sql-case-id="grant_role_to_user" />
+    <grant sql-case-id="grant_roles_to_users" />
+    <grant sql-case-id="grant_system_privilege" />
+    <grant sql-case-id="grant_system_privileges" />
+    <grant sql-case-id="grant_all_system_privileges" />
+    <grant sql-case-id="grant_system_privilege_to_users" />
     
-    <common sql-case-id="grant_object_privilege">
+    <grant sql-case-id="grant_object_privilege">
         <table name="t_order" start-index="16" stop-index="27">
             <owner name="ds_0" start-index="16" stop-index="19" />
         </table>
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_object_privileges">
+    <grant sql-case-id="grant_object_privileges">
         <table name="t_order" start-index="40" stop-index="51">
             <owner name="ds_0" start-index="40" stop-index="43" />
         </table>
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_all_object_privileges">
+    <grant sql-case-id="grant_all_object_privileges">
         <table name="t_order" start-index="24" stop-index="35">
             <owner name="ds_0" start-index="24" stop-index="27" />
         </table>
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_object_privilege_to_users">
+    <grant sql-case-id="grant_object_privilege_to_users">
         <table name="t_order" start-index="16" stop-index="27">
             <owner name="ds_0" start-index="16" stop-index="19" />
         </table>
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_object_privilege_column">
+    <grant sql-case-id="grant_object_privilege_column">
         <table name="t_order" start-index="27" stop-index="38">
             <owner name="ds_0" start-index="27" stop-index="30" />
         </table>
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_program" />
-    <common sql-case-id="grant_roles_to_programs" />
+    <grant sql-case-id="grant_program" />
+    <grant sql-case-id="grant_roles_to_programs" />
     
-    <common sql-case-id="grant_all_on_table_to_roles">
+    <grant sql-case-id="grant_all_on_table_to_roles">
         <table name="t_order" start-index="30" stop-index="36" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_all_on_table_to_current_user">
+    <grant sql-case-id="grant_all_on_table_to_current_user">
         <table name="t_order" start-index="30" stop-index="36" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_select_on_table">
+    <grant sql-case-id="grant_select_on_table">
         <table name="t_order" start-index="22" stop-index="28" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_select_on_tables">
+    <grant sql-case-id="grant_select_on_tables">
         <table name="t_order" start-index="22" stop-index="28" />
         <table name="t_order_item" start-index="31" stop-index="42" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_select_on_all_tables"/>
+    <grant sql-case-id="grant_select_on_all_tables"/>
     
-    <common sql-case-id="grant_all_column_on_table">
+    <grant sql-case-id="grant_all_column_on_table">
         <table name="t_order" start-index="41" stop-index="47" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_all_column_on_table_to_roles">
+    <grant sql-case-id="grant_all_column_on_table_to_roles">
         <table name="t_order" start-index="41" stop-index="47" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_all_column_on_table_to_current_user">
+    <grant sql-case-id="grant_all_column_on_table_to_current_user">
         <table name="t_order" start-index="41" stop-index="47" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_select_column_on_table">
+    <grant sql-case-id="grant_select_column_on_table">
         <table name="t_order" start-index="33" stop-index="39" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_select_column_on_tables">
+    <grant sql-case-id="grant_select_column_on_tables">
         <table name="t_order" start-index="33" stop-index="39" />
         <table name="t_order_item" start-index="42" stop-index="53" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_all_on_sequence" />
-    <common sql-case-id="grant_all_on_sequence_to_roles" />
-    <common sql-case-id="grant_all_on_sequence_to_current_user" />
-    <common sql-case-id="grant_select_on_sequence" />
-    <common sql-case-id="grant_select_on_sequences" />
-    <common sql-case-id="grant_select_on_all_sequences" />
-    <common sql-case-id="grant_all_on_database" />
-    <common sql-case-id="grant_all_on_database_to_roles" />
-    <common sql-case-id="grant_all_on_database_to_current_user" />
-    <common sql-case-id="grant_create_on_database" />
-    <common sql-case-id="grant_create_on_databases" />
-    <common sql-case-id="grant_all_on_domain" />
-    <common sql-case-id="grant_all_on_domain_to_roles" />
-    <common sql-case-id="grant_all_on_domain_to_current_user" />
-    <common sql-case-id="grant_usage_on_domain" />
-    <common sql-case-id="grant_usage_on_domains" />
-    <common sql-case-id="grant_all_on_foreign_data_wrapper" />
-    <common sql-case-id="grant_all_on_foreign_data_wrapper_to_roles" />
-    <common sql-case-id="grant_all_on_foreign_data_wrapper_to_current_user" />
-    <common sql-case-id="grant_usage_on_foreign_data_wrapper" />
-    <common sql-case-id="grant_usage_on_foreign_data_wrappers" />
-    <common sql-case-id="grant_all_on_foreign_server" />
-    <common sql-case-id="grant_all_on_foreign_server_to_roles" />
-    <common sql-case-id="grant_all_on_foreign_server_to_current_user" />
-    <common sql-case-id="grant_usage_on_foreign_server" />
-    <common sql-case-id="grant_usage_on_foreign_servers" />
-    <common sql-case-id="grant_all_on_function" />
-    <common sql-case-id="grant_all_on_function_to_roles" />
-    <common sql-case-id="grant_all_on_function_to_current_user" />
-    <common sql-case-id="grant_execute_on_function" />
-    <common sql-case-id="grant_execute_on_functions" />
-    <common sql-case-id="grant_execute_on_all_functions" />
-    <common sql-case-id="grant_all_on_language" />
-    <common sql-case-id="grant_all_on_language_to_roles" />
-    <common sql-case-id="grant_all_on_language_to_current_user" />
-    <common sql-case-id="grant_usage_on_language" />
-    <common sql-case-id="grant_usage_on_languages" />
-    <common sql-case-id="grant_all_on_large_object" />
-    <common sql-case-id="grant_all_on_large_object_to_roles" />
-    <common sql-case-id="grant_all_on_large_object_to_current_user" />
-    <common sql-case-id="grant_select_large_object" />
-    <common sql-case-id="grant_select_on_large_objects" />
-    <common sql-case-id="grant_all_on_schema" />
-    <common sql-case-id="grant_all_on_schema_to_roles" />
-    <common sql-case-id="grant_all_on_schema_to_current_user" />
-    <common sql-case-id="grant_create_on_schema" />
-    <common sql-case-id="grant_create_on_schemas" />
-    <common sql-case-id="grant_all_on_tablespace" />
-    <common sql-case-id="grant_all_on_tablespace_to_roles" />
-    <common sql-case-id="grant_all_on_tablespace_to_current_user" />
-    <common sql-case-id="grant_create_on_tablespace" />
-    <common sql-case-id="grant_create_on_tablespaces" />
-    <common sql-case-id="grant_all_on_type" />
-    <common sql-case-id="grant_all_on_type_to_roles" />
-    <common sql-case-id="grant_all_on_type_to_current_user" />
-    <common sql-case-id="grant_usage_on_type" />
-    <common sql-case-id="grant_usage_on_types" />
-    <common sql-case-id="grant_roles" />
+    <grant sql-case-id="grant_all_on_sequence" />
+    <grant sql-case-id="grant_all_on_sequence_to_roles" />
+    <grant sql-case-id="grant_all_on_sequence_to_current_user" />
+    <grant sql-case-id="grant_select_on_sequence" />
+    <grant sql-case-id="grant_select_on_sequences" />
+    <grant sql-case-id="grant_select_on_all_sequences" />
+    <grant sql-case-id="grant_all_on_database" />
+    <grant sql-case-id="grant_all_on_database_to_roles" />
+    <grant sql-case-id="grant_all_on_database_to_current_user" />
+    <grant sql-case-id="grant_create_on_database" />
+    <grant sql-case-id="grant_create_on_databases" />
+    <grant sql-case-id="grant_all_on_domain" />
+    <grant sql-case-id="grant_all_on_domain_to_roles" />
+    <grant sql-case-id="grant_all_on_domain_to_current_user" />
+    <grant sql-case-id="grant_usage_on_domain" />
+    <grant sql-case-id="grant_usage_on_domains" />
+    <grant sql-case-id="grant_all_on_foreign_data_wrapper" />
+    <grant sql-case-id="grant_all_on_foreign_data_wrapper_to_roles" />
+    <grant sql-case-id="grant_all_on_foreign_data_wrapper_to_current_user" />
+    <grant sql-case-id="grant_usage_on_foreign_data_wrapper" />
+    <grant sql-case-id="grant_usage_on_foreign_data_wrappers" />
+    <grant sql-case-id="grant_all_on_foreign_server" />
+    <grant sql-case-id="grant_all_on_foreign_server_to_roles" />
+    <grant sql-case-id="grant_all_on_foreign_server_to_current_user" />
+    <grant sql-case-id="grant_usage_on_foreign_server" />
+    <grant sql-case-id="grant_usage_on_foreign_servers" />
+    <grant sql-case-id="grant_all_on_function" />
+    <grant sql-case-id="grant_all_on_function_to_roles" />
+    <grant sql-case-id="grant_all_on_function_to_current_user" />
+    <grant sql-case-id="grant_execute_on_function" />
+    <grant sql-case-id="grant_execute_on_functions" />
+    <grant sql-case-id="grant_execute_on_all_functions" />
+    <grant sql-case-id="grant_all_on_language" />
+    <grant sql-case-id="grant_all_on_language_to_roles" />
+    <grant sql-case-id="grant_all_on_language_to_current_user" />
+    <grant sql-case-id="grant_usage_on_language" />
+    <grant sql-case-id="grant_usage_on_languages" />
+    <grant sql-case-id="grant_all_on_large_object" />
+    <grant sql-case-id="grant_all_on_large_object_to_roles" />
+    <grant sql-case-id="grant_all_on_large_object_to_current_user" />
+    <grant sql-case-id="grant_select_large_object" />
+    <grant sql-case-id="grant_select_on_large_objects" />
+    <grant sql-case-id="grant_all_on_schema" />
+    <grant sql-case-id="grant_all_on_schema_to_roles" />
+    <grant sql-case-id="grant_all_on_schema_to_current_user" />
+    <grant sql-case-id="grant_create_on_schema" />
+    <grant sql-case-id="grant_create_on_schemas" />
+    <grant sql-case-id="grant_all_on_tablespace" />
+    <grant sql-case-id="grant_all_on_tablespace_to_roles" />
+    <grant sql-case-id="grant_all_on_tablespace_to_current_user" />
+    <grant sql-case-id="grant_create_on_tablespace" />
+    <grant sql-case-id="grant_create_on_tablespaces" />
+    <grant sql-case-id="grant_all_on_type" />
+    <grant sql-case-id="grant_all_on_type_to_roles" />
+    <grant sql-case-id="grant_all_on_type_to_current_user" />
+    <grant sql-case-id="grant_usage_on_type" />
+    <grant sql-case-id="grant_usage_on_types" />
+    <grant sql-case-id="grant_roles" />
     
-    <common sql-case-id="grant_select_on_table">
+    <grant sql-case-id="grant_select_on_table">
         <table name="t_order" start-index="16" stop-index="22" />
-    </common>
+    </grant>
     
-    <common sql-case-id="grant_select_to_users">
+    <grant sql-case-id="grant_select_to_users">
         <table name="t_order" start-index="27" stop-index="33" />
-    </common>
+    </grant>
 </sql-parser-test-cases>

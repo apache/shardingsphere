@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowSta
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.UseStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.GrantStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateTableStatementTestCase;
@@ -105,6 +106,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "savepoint")
     private final List<SavepointStatementTestCase> savepointTestCases = new LinkedList<>();
     
+    @XmlElement(name = "grant")
+    private final List<GrantStatementTestCase> grantTestCases = new LinkedList<>(); 
+    
     @XmlElement(name = "use")
     private final List<UseStatementTestCase> useTestCases = new LinkedList<>();
     
@@ -157,6 +161,7 @@ public final class SQLParserTestCases {
         result.putAll(getSQLParserTestCases(commitTestCases));
         result.putAll(getSQLParserTestCases(rollbackTestCases));
         result.putAll(getSQLParserTestCases(savepointTestCases));
+        result.putAll(getSQLParserTestCases(grantTestCases));
         result.putAll(getSQLParserTestCases(useTestCases));
         result.putAll(getSQLParserTestCases(describeTestCases));
         result.putAll(getSQLParserTestCases(showDatabasesTestCases));
