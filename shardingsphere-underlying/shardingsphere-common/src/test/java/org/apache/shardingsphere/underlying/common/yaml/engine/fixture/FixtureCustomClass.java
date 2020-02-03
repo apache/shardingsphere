@@ -17,21 +17,5 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Collection;
-import java.util.Map;
-
-@Getter
-@Setter
-public final class DefaultYamlRepresenterFixture {
-    
-    private String value;
-    
-    private Collection<String> collection;
-    
-    private Map<String, String> map;
-    
-    private FixtureCustomClass customClass;
+public final class FixtureCustomClass {
 }

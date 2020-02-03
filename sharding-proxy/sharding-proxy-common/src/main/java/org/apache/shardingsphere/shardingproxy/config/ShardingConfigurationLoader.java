@@ -19,6 +19,8 @@ package org.apache.shardingsphere.shardingproxy.config;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
+import org.apache.shardingsphere.shardingproxy.config.yaml.constructor.YamlProxyRuleConfigurationConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
@@ -81,7 +83,7 @@ public final class ShardingConfigurationLoader {
     }
     
     private Optional<YamlProxyRuleConfiguration> loadRuleConfiguration(final File yamlFile, final YamlProxyServerConfiguration serverConfiguration) throws IOException {
-        YamlProxyRuleConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyRuleConfiguration.class);
+        YamlProxyRuleConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyRuleConfiguration.class, new YamlProxyRuleConfigurationConstructor());
         if (null == result) {
             return Optional.absent();
         }

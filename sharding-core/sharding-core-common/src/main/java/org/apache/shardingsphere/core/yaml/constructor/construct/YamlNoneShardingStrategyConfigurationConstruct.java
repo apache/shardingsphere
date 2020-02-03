@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.yaml.engine.fixture;
+package org.apache.shardingsphere.core.yaml.constructor.construct;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlNoneShardingStrategyConfiguration;
+import org.yaml.snakeyaml.constructor.Construct;
+import org.yaml.snakeyaml.nodes.Node;
 
-import java.util.Collection;
-import java.util.Map;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
-public final class DefaultYamlRepresenterFixture {
+/**
+ * YAML none sharding strategy configuration construct.
+ *
+ * @author yangyi
+ */
+@NoArgsConstructor
+public final class YamlNoneShardingStrategyConfigurationConstruct implements Construct {
     
-    private String value;
+    @Override
+    public Object construct(final Node node) {
+        return new YamlNoneShardingStrategyConfiguration();
+    }
     
-    private Collection<String> collection;
-    
-    private Map<String, String> map;
-    
-    private FixtureCustomClass customClass;
+    @Override
+    public void construct2ndStep(final Node node, final Object newInstance) {
+    }
 }

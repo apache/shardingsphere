@@ -72,6 +72,7 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getTables().get("t_order").getDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${user_id % 2}"));
         assertThat(actual.getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
+        assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
     }
     
     private void assertMasterSlaveRuleConfiguration(final YamlProxyRuleConfiguration actual) {
