@@ -18,17 +18,28 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.DescribeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowDatabasesStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTableStatusStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTablesStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.UseStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropIndexStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.UpdateStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.impl.CommonStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.BeginTransactionStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.CommitStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.RollbackStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SavepointStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -64,14 +75,50 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-table")
     private final List<AlterTableStatementTestCase> alterTableTestCases = new LinkedList<>();
     
+    @XmlElement(name = "drop-table")
+    private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-index")
     private final List<CreateIndexStatementTestCase> createIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-index")
     private final List<DropIndexStatementTestCase> dropIndexTestCases = new LinkedList<>();
     
-    @XmlElement(name = "tcl")
-    private final List<TCLStatementTestCase> tclTestCases = new LinkedList<>();
+    @XmlElement(name = "set-transaction")
+    private final List<SetTransactionStatementTestCase> setTransactionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "begin-transaction")
+    private final List<BeginTransactionStatementTestCase> beginTransactionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "set-auto-commit")
+    private final List<SetAutoCommitStatementTestCase> setAutoCommitTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "commit")
+    private final List<CommitStatementTestCase> commitTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "rollback")
+    private final List<RollbackStatementTestCase> rollbackTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "savepoint")
+    private final List<SavepointStatementTestCase> savepointTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "use")
+    private final List<UseStatementTestCase> useTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "describe")
+    private final List<DescribeStatementTestCase> describeTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-databases")
+    private final List<ShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-tables")
+    private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-columns")
+    private final List<ShowTablesStatementTestCase> showColumnsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-table-status")
+    private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
@@ -83,34 +130,34 @@ public final class SQLParserTestCases {
      */
     public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
         Map<String, SQLParserTestCase> result = new HashMap<>();
-        for (SQLParserTestCase each : selectTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : updateTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : deleteTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : insertTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : createTableTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : alterTableTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : createIndexTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : dropIndexTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : tclTestCases) {
-            result.put(each.getSqlCaseId(), each);
-        }
-        for (SQLParserTestCase each : commonTestCases) {
+        result.putAll(getSQLParserTestCases(selectTestCases));
+        result.putAll(getSQLParserTestCases(updateTestCases));
+        result.putAll(getSQLParserTestCases(deleteTestCases));
+        result.putAll(getSQLParserTestCases(insertTestCases));
+        result.putAll(getSQLParserTestCases(createTableTestCases));
+        result.putAll(getSQLParserTestCases(alterTableTestCases));
+        result.putAll(getSQLParserTestCases(dropTableTestCases));
+        result.putAll(getSQLParserTestCases(createIndexTestCases));
+        result.putAll(getSQLParserTestCases(dropIndexTestCases));
+        result.putAll(getSQLParserTestCases(setTransactionTestCases));
+        result.putAll(getSQLParserTestCases(beginTransactionTestCases));
+        result.putAll(getSQLParserTestCases(setAutoCommitTestCases));
+        result.putAll(getSQLParserTestCases(commitTestCases));
+        result.putAll(getSQLParserTestCases(rollbackTestCases));
+        result.putAll(getSQLParserTestCases(savepointTestCases));
+        result.putAll(getSQLParserTestCases(useTestCases));
+        result.putAll(getSQLParserTestCases(describeTestCases));
+        result.putAll(getSQLParserTestCases(showDatabasesTestCases));
+        result.putAll(getSQLParserTestCases(showTablesTestCases));
+        result.putAll(getSQLParserTestCases(showColumnsTestCases));
+        result.putAll(getSQLParserTestCases(showTableStatusTestCases));
+        result.putAll(getSQLParserTestCases(commonTestCases));
+        return result;
+    }
+    
+    private Map<String, SQLParserTestCase> getSQLParserTestCases(final List<? extends SQLParserTestCase> sqlParserTestCases) {
+        Map<String, SQLParserTestCase> result = new HashMap<>(sqlParserTestCases.size(), 1);
+        for (SQLParserTestCase each : sqlParserTestCases) {
             result.put(each.getSqlCaseId(), each);
         }
         return result;

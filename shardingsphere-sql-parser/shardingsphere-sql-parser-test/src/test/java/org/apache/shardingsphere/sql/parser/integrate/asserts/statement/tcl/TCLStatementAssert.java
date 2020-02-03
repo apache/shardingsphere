@@ -19,12 +19,27 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.TCLStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.BeginTransactionStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.CommitStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.RollbackStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.SavepointStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.SetAutoCommitStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.impl.SetTransactionStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.BeginTransactionStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.CommitStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.RollbackStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SavepointStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetAutoCommitStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl.SetTransactionStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * TCL statement assert.
@@ -37,13 +52,23 @@ public final class TCLStatementAssert {
     /**
      * Assert TCL statement is correct with expected parser result.
      * 
+     * @param assertContext assert context
      * @param actual actual TCL statement
      * @param expected expected TCL statement test case
      */
-    public static void assertIs(final TCLStatement actual, final TCLStatementTestCase expected) {
-        assertThat(actual.getClass().getName(), is(expected.getTclActualStatementClassType()));
-        if (actual instanceof SetAutoCommitStatement) {
-            assertThat(((SetAutoCommitStatement) actual).isAutoCommit(), is(expected.isAutoCommit()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final TCLStatement actual, final SQLParserTestCase expected) {
+        if (actual instanceof SetTransactionStatement) {
+            SetTransactionStatementAssert.assertIs(assertContext, (SetTransactionStatement) actual, (SetTransactionStatementTestCase) expected);
+        } else if (actual instanceof BeginTransactionStatement) {
+            BeginTransactionStatementAssert.assertIs(assertContext, (BeginTransactionStatement) actual, (BeginTransactionStatementTestCase) expected);
+        } else if (actual instanceof SetAutoCommitStatement) {
+            SetAutoCommitStatementAssert.assertIs(assertContext, (SetAutoCommitStatement) actual, (SetAutoCommitStatementTestCase) expected);
+        } else if (actual instanceof CommitStatement) {
+            CommitStatementAssert.assertIs(assertContext, (CommitStatement) actual, (CommitStatementTestCase) expected);
+        } else if (actual instanceof RollbackStatement) {
+            RollbackStatementAssert.assertIs(assertContext, (RollbackStatement) actual, (RollbackStatementTestCase) expected);
+        } else if (actual instanceof SavepointStatement) {
+            SavepointStatementAssert.assertIs(assertContext, (SavepointStatement) actual, (SavepointStatementTestCase) expected);
         }
     }
 }
