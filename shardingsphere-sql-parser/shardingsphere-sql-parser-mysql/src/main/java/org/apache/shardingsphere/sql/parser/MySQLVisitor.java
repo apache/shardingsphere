@@ -1192,7 +1192,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return result.toString();
     }
     
-    private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
+    private PredicateSegment createCompareSegment(final BooleanPrimaryContext ctx) {
         ASTNode leftValue = visit(ctx.booleanPrimary());
         ASTNode rightValue = visit(ctx.predicate());
         if (rightValue instanceof ColumnSegment) {
@@ -1202,7 +1202,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
                 (ColumnSegment) leftValue, new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue));
     }
     
-    private ASTNode createInSegment(final PredicateContext ctx) {
+    private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         Collection<ExpressionSegment> segments = Lists.transform(ctx.expr(), new Function<ExprContext, ExpressionSegment>() {
             
@@ -1214,7 +1214,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
     }
     
-    private ASTNode createBetweenSegment(final PredicateContext ctx) {
+    private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
