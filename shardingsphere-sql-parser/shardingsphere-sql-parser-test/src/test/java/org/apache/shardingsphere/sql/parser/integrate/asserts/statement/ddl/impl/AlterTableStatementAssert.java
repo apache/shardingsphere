@@ -55,6 +55,7 @@ public final class AlterTableStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        // TODO split old table and new table
         TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
     }
     

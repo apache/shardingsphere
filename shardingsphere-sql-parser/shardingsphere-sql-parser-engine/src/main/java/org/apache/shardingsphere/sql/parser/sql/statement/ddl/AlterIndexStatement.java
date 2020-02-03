@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl;
+package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.index.ExpectedIndex;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 /**
- * Drop index statement test case.
- * 
- * @author zhangliang 
+ * Alter index statement.
+ *
+ * @author panjuan
  */
 @Getter
 @Setter
-public final class DropIndexStatementTestCase extends SQLParserTestCase {
+public final class AlterIndexStatement extends DDLStatement implements TableSegmentAvailable, IndexSegmentAvailable {
     
-    @XmlElement(name = "index")
-    private final List<ExpectedIndex> indexes = new LinkedList<>();
+    private IndexSegment index;
     
-    @XmlElement
-    private ExpectedTable table;
+    private TableSegment table;
 }

@@ -24,20 +24,18 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.Ex
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Drop index statement test case.
+ * Alter index statement test case.
  * 
  * @author zhangliang 
  */
 @Getter
 @Setter
-public final class DropIndexStatementTestCase extends SQLParserTestCase {
+public final class AlterIndexStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "index")
-    private final List<ExpectedIndex> indexes = new LinkedList<>();
+    @XmlElement
+    private ExpectedIndex index;
     
     @XmlElement
     private ExpectedTable table;

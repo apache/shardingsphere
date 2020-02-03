@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTab
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.UseStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.GrantStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.RevokeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateTableStatementTestCase;
@@ -89,6 +90,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-index")
     private final List<CreateIndexStatementTestCase> createIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-index")
+    private final List<AlterIndexStatementTestCase> alterIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-index")
     private final List<DropIndexStatementTestCase> dropIndexTestCases = new LinkedList<>();
@@ -163,6 +167,7 @@ public final class SQLParserTestCases {
         result.putAll(getSQLParserTestCases(dropTableTestCases));
         result.putAll(getSQLParserTestCases(truncateTestCases));
         result.putAll(getSQLParserTestCases(createIndexTestCases));
+        result.putAll(getSQLParserTestCases(alterIndexTestCases));
         result.putAll(getSQLParserTestCases(dropIndexTestCases));
         result.putAll(getSQLParserTestCases(setTransactionTestCases));
         result.putAll(getSQLParserTestCases(beginTransactionTestCases));

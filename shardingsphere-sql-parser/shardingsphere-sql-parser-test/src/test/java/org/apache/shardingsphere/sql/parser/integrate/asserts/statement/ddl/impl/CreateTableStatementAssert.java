@@ -54,6 +54,7 @@ public final class CreateTableStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        // TODO split table and fk table
         TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
     }
     
