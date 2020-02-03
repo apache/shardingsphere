@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,11 +32,9 @@ import java.util.List;
 @Getter
 public final class CommonStatementTestCase extends SQLParserTestCase {
     
-    @XmlElementWrapper
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
-    @XmlElementWrapper
     @XmlElement(name = "schema")
     private final List<ExpectedTable> schemas = new LinkedList<>();
 }

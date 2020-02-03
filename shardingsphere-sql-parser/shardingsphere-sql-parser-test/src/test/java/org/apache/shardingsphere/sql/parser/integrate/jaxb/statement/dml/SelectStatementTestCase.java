@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.limit.ExpectedLimitClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTe
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +40,9 @@ import java.util.List;
 @Setter
 public final class SelectStatementTestCase extends SQLParserTestCase {
     
-    @XmlElementWrapper
+    @XmlAttribute(name = "lock-clause")
+    private boolean lockClause;
+    
     @XmlElement(name = "table")
     private final List<ExpectedTable> tables = new LinkedList<>();
     
@@ -59,7 +60,4 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "limit")
     private ExpectedLimitClause limitClause;
-    
-    @XmlAttribute(name = "lock-clause")
-    private boolean lockClause;
 }

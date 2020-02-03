@@ -18,38 +18,26 @@
 
 <sql-parser-test-cases>
     <common sql-case-id="deny_user">
-        <tables>
-            <table name="t_order" start-index="15" stop-index="21" />
-        </tables>
+        <table name="t_order" start-index="15" stop-index="21" />
     </common>
     
     <common sql-case-id="deny_select">
-        <tables>
-            <table name="t_order" start-index="15" stop-index="21" />
-        </tables>
+        <table name="t_order" start-index="15" stop-index="21" />
     </common>
     
     <common sql-case-id="deny_select_column">
-        <tables>
-            <table name="t_order" start-index="26" stop-index="32" />
-        </tables>
+        <table name="t_order" start-index="26" stop-index="32" />
     </common>
     
     <common sql-case-id="deny_select_to_users">
-        <tables>
-            <table name="t_order" start-index="26" stop-index="32" />
-        </tables>
+        <table name="t_order" start-index="26" stop-index="32" />
     </common>
     
     <common sql-case-id="deny_crud">
-        <tables>
-            <table name="t_order" start-index="39" stop-index="45" />
-        </tables>
+        <table name="t_order" start-index="39" stop-index="45" />
     </common>
     
     <common sql-case-id="deny_all">
-        <tables>
-            <table name="t_order" start-index="23" stop-index="29" />
-        </tables>
+        <table name="t_order" start-index="23" stop-index="29" />
     </common>
 </sql-parser-test-cases>

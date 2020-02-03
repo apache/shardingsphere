@@ -18,9 +18,7 @@
 
 <sql-parser-test-cases>
     <create-table sql-case-id="create_table">
-        <tables>
-            <table name="t_log" start-index="13" stop-index="17" />
-        </tables>
+        <table name="t_log" start-index="13" stop-index="17" />
         <column-definition type="int" primary-key="true">
             <column name="id" />
         </column-definition>
@@ -30,9 +28,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_if_not_exists">
-        <tables>
-            <table name="t_log" start-index="27" stop-index="31" />
-        </tables>
+        <table name="t_log" start-index="27" stop-index="31" />
         <column-definition type="int">
             <column name="id" />
         </column-definition>
@@ -42,9 +38,7 @@
     </create-table>
     
     <create-table sql-case-id="create_temporary_table_if_not_exists">
-        <tables>
-            <table name="t_temp_log" start-index="37" stop-index="46" />
-        </tables>
+        <table name="t_temp_log" start-index="37" stop-index="46" />
         <column-definition type="int">
             <column name="id" />
         </column-definition>
@@ -54,9 +48,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_space">
-        <tables>
-            <table name="t_order_item" start-index="17" stop-index="28" />
-        </tables>
+        <table name="t_order_item" start-index="17" stop-index="28" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -81,9 +73,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_back_quota">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="21" />
-        </tables>
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="21" />
         <column-definition type="INT">
             <column name="order_id" start-delimiter="`" end-delimiter="`" />
         </column-definition>
@@ -105,9 +95,7 @@
     </create-table>
     
     <create-table sql-case-id="create_temporary_table">
-        <tables>
-            <table name="t_order" start-index="23" stop-index="29" />
-        </tables>
+        <table name="t_order" start-index="23" stop-index="29" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -129,9 +117,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_column_not_null">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -153,9 +139,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_column_default">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -177,9 +161,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_column_increment">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -201,9 +183,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_column_generated">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -225,9 +205,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_column_comment">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -249,9 +227,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_inline_primary_key">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" primary-key="true">
             <column name="order_id" />
         </column-definition>
@@ -273,9 +249,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_inline_unique_key">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -297,10 +271,8 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_inline_foreign_key">
-        <tables>
-            <table name="t_order_item" start-index="13" stop-index="24" />
-            <table name="t_order" start-index="64" stop-index="70" />
-        </tables>
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <table name="t_order" start-index="64" stop-index="70" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -325,9 +297,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_inline_constraints">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" primary-key="trur">
             <column name="order_id" />
         </column-definition>
@@ -349,9 +319,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_primary_key">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -373,9 +341,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_primary_key">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <!-- FIXME cannot parse pk -->
         <column-definition type="INT">
             <column name="order_id" />
@@ -398,9 +364,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_unique_key">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -422,9 +386,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_unique_key">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -446,10 +408,8 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_foreign_key">
-        <tables>
-            <table name="t_order_item" start-index="13" stop-index="24" />
-            <table name="t_order" start-index="207" stop-index="213" />
-        </tables>
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <table name="t_order" start-index="207" stop-index="213" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -474,10 +434,8 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_foreign_key">
-        <tables>
-            <table name="t_order_item" start-index="13" stop-index="24" />
-            <table name="t_order" start-index="224" stop-index="230" />
-        </tables>
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <table name="t_order" start-index="224" stop-index="230" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -502,9 +460,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_check">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -526,10 +482,8 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_constraints">
-        <tables>
-            <table name="t_order_item" start-index="13" stop-index="24" />
-            <table name="t_order" start-index="225" stop-index="231" />
-        </tables>
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <table name="t_order" start-index="225" stop-index="231" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -554,9 +508,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_index">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -580,9 +532,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_index">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -606,9 +556,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_btree_index">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -632,9 +580,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_comment">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>
@@ -656,9 +602,7 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_partition">
-        <tables>
-            <table name="t_order" start-index="13" stop-index="19" />
-        </tables>
+        <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT">
             <column name="order_id" />
         </column-definition>

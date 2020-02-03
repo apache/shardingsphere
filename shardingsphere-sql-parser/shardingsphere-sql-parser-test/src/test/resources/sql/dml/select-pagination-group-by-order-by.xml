@@ -18,10 +18,8 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_pagination_with_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <table name="t_order" alias="o" start-index="22" stop-index="28" />
-            <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
-        </tables>
+        <table name="t_order" alias="o" start-index="22" stop-index="28" />
+        <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         <projections start-index="7" stop-index="15">
             <column-projection name="user_id" start-index="7" stop-index="15">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -70,10 +68,8 @@
     </select>
     
     <select sql-case-id="select_pagination_with_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <table name="t_order" alias="o" start-index="22" stop-index="28" />
-            <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
-        </tables>
+        <table name="t_order" alias="o" start-index="22" stop-index="28" />
+        <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         <projections start-index="7" stop-index="15">
             <column-projection name="user_id" start-index="7" stop-index="15">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -122,10 +118,8 @@
     </select>
     
     <select sql-case-id="select_pagination_with_top_and_group_by_and_order_by" parameters="3, 1, 2, 9, 10, 6">
-        <tables>
-            <table name="t_order" alias="o" start-index="165" stop-index="171" />
-            <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
-        </tables>
+        <table name="t_order" alias="o" start-index="165" stop-index="171" />
+        <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
         <projections start-index="22" stop-index="158">
             <top-projection alias="rownum_" start-index="22" stop-index="70">
                 <top-value value="3" parameter-index="0" start-index="26" stop-index="26" />
@@ -173,10 +167,8 @@
     </select>
     
     <select sql-case-id="select_pagination_with_top_and_group_by_and_order_by_and_parentheses" parameters="3, 1, 2, 9, 10, 6">
-        <tables>
-            <table name="t_order" alias="o" start-index="167" stop-index="173" />
-            <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
-        </tables>
+        <table name="t_order" alias="o" start-index="167" stop-index="173" />
+        <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         <projections start-index="22" stop-index="160">
             <top-projection alias="rownum_" start-index="22" stop-index="72">
                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
@@ -224,10 +216,8 @@
     </select>
     
     <select sql-case-id="select_pagination_with_top_and_diff_group_by_and_order_by" parameters="3, 1, 2, 9, 10, 6">
-        <tables>
-            <table name="t_order" alias="o" start-index="165" stop-index="171" />
-            <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
-        </tables>
+        <table name="t_order" alias="o" start-index="165" stop-index="171" />
+        <table name="t_order_item" alias="i" start-index="180" stop-index="191" />
         <projections start-index="22" stop-index="158">
             <top-projection alias="rownum_" start-index="22" stop-index="70">
                 <top-value value="3" parameter-index="0" start-index="26" stop-index="26" />
@@ -275,10 +265,8 @@
     </select>
     
     <select sql-case-id="select_pagination_with_top_and_diff_group_by_and_order_by_and_parentheses" parameters="3, 1, 2, 9, 10, 6">
-        <tables>
-            <table name="t_order" alias="o" start-index="167" stop-index="173" />
-            <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
-        </tables>
+        <table name="t_order" alias="o" start-index="167" stop-index="173" />
+        <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
         <projections start-index="22" stop-index="160">
             <top-projection alias="rownum_" start-index="22" stop-index="72">
                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
@@ -326,10 +314,8 @@
     </select>
     
     <select sql-case-id="select_pagination_with_row_number_and_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
-            <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
-        </tables>
+        <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
+        <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         <projections start-index="58" stop-index="139">
             <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
                 <owner name="order0_" start-index="58" stop-index="64" />
@@ -371,10 +357,8 @@
     </select>
     
     <select sql-case-id="select_pagination_with_row_number_and_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
-            <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
-        </tables>
+        <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
+        <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         <projections start-index="58" stop-index="139">
             <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
                 <owner name="order0_" start-index="58" stop-index="64" />

@@ -18,9 +18,7 @@
 
 <sql-parser-test-cases>
     <update sql-case-id="update_without_alias" parameters="'update', 1, 1">
-        <tables>
-            <table name="t_order" start-index="7" stop-index="13" />
-        </tables>
+        <table name="t_order" start-index="7" stop-index="13" />
         <set start-index="15" stop-index="28" literal-stop-index="35">
             <assignment start-index="19" stop-index="28" literal-stop-index="35">
                 <column name="status" start-index="19" stop-index="24" />
@@ -53,9 +51,7 @@
     </update>
     
     <update sql-case-id="update_with_alias" parameters="'update', 1, 1">
-        <tables>
-            <table name="t_order" alias="o" start-index="7" stop-index="13" />
-        </tables>
+        <table name="t_order" alias="o" start-index="7" stop-index="13" />
         <set start-index="20" stop-index="35" literal-stop-index="42">
             <assignment start-index="24" stop-index="35" literal-stop-index="42">
                 <column name="status" start-index="24" stop-index="31">
@@ -94,9 +90,7 @@
     </update>
     
     <update sql-case-id="update_equal_with_geography" parameters="'2017-06-07', 100, 200, '{&quot;rule2&quot;:&quot;null2&quot;}', 3, 5, 7, 200">
-        <tables>
-            <table name="t_order" start-index="7" stop-index="13" />
-        </tables>
+        <table name="t_order" start-index="7" stop-index="13" />
         <set start-index="15" stop-index="168" literal-stop-index="201">
             <assignment start-index="19" stop-index="32" literal-stop-index="43">
                 <column name="start_time" start-index="19" stop-index="28" />
@@ -162,9 +156,7 @@
     </update>
     
     <update sql-case-id="update_without_condition">
-        <tables>
-            <table name="t_order" alias="o" start-index="7" stop-index="13" />
-        </tables>
+        <table name="t_order" alias="o" start-index="7" stop-index="13" />
         <set start-index="17" stop-index="41">
             <assignment start-index="21" stop-index="41">
                 <column name="status" start-index="21" stop-index="28">
@@ -178,9 +170,7 @@
     </update>
     
     <update sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
-        <tables>
-            <table name="t_order" start-index="27" stop-index="33" />
-        </tables>
+        <table name="t_order" start-index="27" stop-index="33" />
         <set start-index="35" stop-index="48" literal-stop-index="55">
             <assignment start-index="39" stop-index="48" literal-start-index="39" literal-stop-index="55">
                 <column name="status" start-index="39" stop-index="44" />
@@ -213,9 +203,7 @@
     </update>
     
     <update sql-case-id="update_with_special_character" parameters="'update', 1, 1">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="15" />
-        </tables>
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="15" />
         <set start-index="17" stop-index="32" literal-stop-index="39">
             <assignment start-index="21" stop-index="32" literal-stop-index="39">
                 <column name="status" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="28" />
@@ -248,9 +236,7 @@
     </update>
     
     <update sql-case-id="update_with_special_comments" parameters="'update', 1, 1">
-        <tables>
-            <table name="t_order" start-index="33" stop-index="39" />
-        </tables>
+        <table name="t_order" start-index="33" stop-index="39" />
         <set start-index="41" stop-index="52" literal-stop-index="59">
             <assignment start-index="45" stop-index="52" literal-stop-index="59">
                 <column name="status" start-index="45" stop-index="50" />
@@ -283,9 +269,7 @@
     </update>
     
     <update sql-case-id="update_without_parameters">
-        <tables>
-            <table name="t_order" start-index="7" stop-index="13" />
-        </tables>
+        <table name="t_order" start-index="7" stop-index="13" />
         <set start-index="15" stop-index="35">
             <assignment start-index="19" stop-index="35">
                 <column name="status" start-index="19" stop-index="24" />
@@ -315,9 +299,7 @@
     </update>
     
     <update sql-case-id="update_with_or" parameters="1000, 0, 10">
-        <tables>
-            <table name="t_order" start-index="7" stop-index="13" />
-        </tables>
+        <table name="t_order" start-index="7" stop-index="13" />
         <set start-index="15" stop-index="35">
             <assignment start-index="19" stop-index="35">
                 <column name="status" start-index="19" stop-index="24" />
