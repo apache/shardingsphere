@@ -182,6 +182,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -362,12 +363,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         result.getAllSQLSegments().addAll(tables.getValues());
         return result;
     }
-
+    
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        DDLStatement result = new DDLStatement();
+        TruncateStatement result = new TruncateStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getAllSQLSegments().add(table);
+        result.getTables().add(table);
         return result;
     }
 
