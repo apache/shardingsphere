@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.TruncateStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 
 /**
@@ -45,6 +44,6 @@ public final class TruncateStatementAssert {
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final TruncateStatement actual, final TruncateStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }
