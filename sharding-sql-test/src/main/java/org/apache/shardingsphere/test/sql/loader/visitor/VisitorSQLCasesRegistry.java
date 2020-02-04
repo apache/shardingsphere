@@ -18,22 +18,22 @@
 package org.apache.shardingsphere.test.sql.loader.visitor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 
 /**
  * SQL cases registry for visitor.
  * 
  * @author panjuan 
  */
+// TODO use SQLCasesRegistry after all test cases can parse
 public final class VisitorSQLCasesRegistry {
     
     private static final VisitorSQLCasesRegistry INSTANCE = new VisitorSQLCasesRegistry();
     
     @Getter
-    private SQLCasesLoader sqlCasesLoader;
+    private VisitorSQLCasesLoader sqlCasesLoader;
     
     private VisitorSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql/visitor");
+        sqlCasesLoader = new VisitorSQLCasesLoader("sql/supported");
     }
     
     /**
