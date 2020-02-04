@@ -322,7 +322,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             FromTableSegment fromTableSegment = (FromTableSegment) visitFromTable(fromTableContext);
             TableSegment tableSegment = fromTableSegment.getPattern();
             result.setTable(tableSegment);
-            result.getAllSQLSegments().add(fromTableSegment);
+            result.getAllSQLSegments().add(tableSegment);
         }
         return result;
     }
