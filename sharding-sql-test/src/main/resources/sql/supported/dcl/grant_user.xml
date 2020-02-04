@@ -30,8 +30,8 @@
     <sql-case id="grant_select_to_local_user" value="GRANT SELECT ON *.* TO 'user1'@'localhost'" db-types="MySQL" />
     <sql-case id="grant_crud" value="GRANT INSERT, SELECT, UPDATE, DELETE ON *.* TO user1" db-types="MySQL" />
     <sql-case id="grant_all" value="GRANT ALL PRIVILEGES ON *.* TO user1" db-types="MySQL" />
-    <sql-case id="grant_all_on_schema" value="GRANT ALL PRIVILEGES ON ds_0.* TO user1" db-types="MySQL,PostgreSQL" />
     <sql-case id="grant_all_on_table" value="GRANT ALL PRIVILEGES ON ds_0.t_order TO user1" db-types="MySQL,PostgreSQL,SQLServer" />
+    <sql-case id="grant_all_on_table_with_owner" value="GRANT ALL PRIVILEGES ON ds_0.* TO user1" db-types="MySQL,PostgreSQL" />
     <sql-case id="grant_role_to_user" value="GRANT role1 TO user1" db-types="MySQL" />
     <sql-case id="grant_roles_to_users" value="GRANT role1, role2 TO user1, user2" db-types="MySQL,Oracle" />
     <sql-case id="grant_system_privilege" value="GRANT CREATE SESSION TO user1" db-types="Oracle" />

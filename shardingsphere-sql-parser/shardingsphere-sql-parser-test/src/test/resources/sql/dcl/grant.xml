@@ -55,14 +55,14 @@
     <grant sql-case-id="grant_select_to_local_user" />
     <grant sql-case-id="grant_crud" />
     <grant sql-case-id="grant_all" />
-    <grant sql-case-id="grant_all_on_schema" />
     
     <grant sql-case-id="grant_all_on_table">
         <table name="t_order" start-index="24" stop-index="35">
             <owner name="ds_0" start-index="24" stop-index="27" />
         </table>
     </grant>
-    
+
+    <grant sql-case-id="grant_all_on_table_with_owner" />
     <grant sql-case-id="grant_role_to_user" />
     <grant sql-case-id="grant_roles_to_users" />
     <grant sql-case-id="grant_system_privilege" />
