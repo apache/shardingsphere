@@ -17,20 +17,20 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="create_user_with_hostname" />
-    <common sql-case-id="create_user_identified_by_with_hostname" />
-    <common sql-case-id="create_user" />
-    <common sql-case-id="create_users"  />
-    <common sql-case-id="create_user_if_not_exists" />
-    <common sql-case-id="create_local_user" />
-    <common sql-case-id="create_user_with_roles" />
-    <common sql-case-id="create_user_with_password_default_role" />
-    <common sql-case-id="create_user_with_resource_option" />
-    <common sql-case-id="create_user_with_resource_options" />
-    <common sql-case-id="create_user_with_password_option" />
-    <common sql-case-id="create_user_with_password_options" />
-    <common sql-case-id="create_user_with_lock_option" />
-    <common sql-case-id="create_user_with_options" />
-    <common sql-case-id="create_user_with_password" />
-    <common sql-case-id="create_user_with_password_expire_lock" />
+    <create-user sql-case-id="create_user_with_hostname" />
+    <create-user sql-case-id="create_user_identified_by_with_hostname" />
+    <create-user sql-case-id="create_user" />
+    <create-user sql-case-id="create_users" />
+    <create-user sql-case-id="create_user_if_not_exists" />
+    <create-user sql-case-id="create_local_user" />
+    <create-user sql-case-id="create_user_with_roles" />
+    <create-user sql-case-id="create_user_with_password_default_role" />
+    <create-user sql-case-id="create_user_with_resource_option" />
+    <create-user sql-case-id="create_user_with_resource_options" />
+    <create-user sql-case-id="create_user_with_password_option" />
+    <create-user sql-case-id="create_user_with_password_options" />
+    <create-user sql-case-id="create_user_with_lock_option" />
+    <create-user sql-case-id="create_user_with_options" />
+    <create-user sql-case-id="create_user_with_password" />
+    <create-user sql-case-id="create_user_with_password_expire_lock" />
 </sql-parser-test-cases>

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 /**
- * DDL statement.
- *
- * @author zhangliang
+ * Create user statement test case.
+ * 
+ * @author zhangliang 
  */
-public abstract class DDLStatement extends AbstractSQLStatement {
+public final class CreateUserStatementTestCase extends SQLParserTestCase {
 }

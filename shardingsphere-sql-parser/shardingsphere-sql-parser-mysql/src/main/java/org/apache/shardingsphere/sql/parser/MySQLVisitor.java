@@ -177,6 +177,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
@@ -255,7 +256,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     // DCLStatement.g4
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new DCLStatement();
+        return new CreateUserStatement();
     }
     
     @Override

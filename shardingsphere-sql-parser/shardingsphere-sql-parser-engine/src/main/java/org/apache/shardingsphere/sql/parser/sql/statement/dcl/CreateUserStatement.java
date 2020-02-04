@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
-
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLStatement;
+package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
- * DDL statement.
+ * Create user statement.
  *
  * @author zhangliang
  */
-public abstract class DDLStatement extends AbstractSQLStatement {
+public final class CreateUserStatement extends DCLStatement {
 }

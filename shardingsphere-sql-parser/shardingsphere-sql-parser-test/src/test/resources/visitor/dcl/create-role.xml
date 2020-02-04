@@ -18,6 +18,6 @@
 
 <sql-parser-test-cases>
     <common sql-case-id="create_role" />
-    <common sql-case-id="create_roles"  />
+    <common sql-case-id="create_roles" />
     <common sql-case-id="create_role_if_not_exists" />
 </sql-parser-test-cases>

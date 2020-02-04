@@ -20,17 +20,17 @@ package org.apache.shardingsphere.core.shard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -57,7 +57,7 @@ public abstract class BaseShardingEngineTest {
     protected final ShardingRouteContext createSQLRouteContext() {
         RouteResult routeResult = new RouteResult();
         routeResult.getRouteUnits().add(new RouteUnit("ds"));
-        return new ShardingRouteContext(new CommonSQLStatementContext(new DALStatement()), routeResult, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        return new ShardingRouteContext(new CommonSQLStatementContext(new ShowStatement()), routeResult, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
     }
     
     protected final void assertExecutionContext(final ExecutionContext actual) {
