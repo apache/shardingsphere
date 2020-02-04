@@ -599,9 +599,6 @@
     <dcl-test-case sql-case-id="revoke_select_on_sequences">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="revoke_select_on_table">
-        <assertion />
-    </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_select_on_tables">
         <assertion />
     </dcl-test-case>
@@ -645,6 +642,12 @@
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_usage_on_types">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_table_for_postgresql">
+        <assertion />
+    </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_table_for_sqlserver">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="set_all_expect_role">
