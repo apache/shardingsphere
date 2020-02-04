@@ -43,7 +43,7 @@
     <dcl-test-case sql-case-id="create_role_identified_by">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="create_role_password">
+    <dcl-test-case sql-case-id="create_role_with_password">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_all_roles_reset_config">
@@ -281,7 +281,7 @@
     <dcl-test-case sql-case-id="create_no_identified_role">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="create_role_authorization">
+    <dcl-test-case sql-case-id="create_role_with_authorization">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_if_not_exists">

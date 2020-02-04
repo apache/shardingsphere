@@ -39,7 +39,6 @@
     <create-user sql-case-id="create_global_user" />
     <create-user sql-case-id="create_user_with_password" />
     <create-user sql-case-id="create_user_with_tablespace" />
-    <create-user sql-case-id="create_role_with_container" />
     <create-user sql-case-id="create_user_with_quota_option" />
     <create-user sql-case-id="create_user_with_password_expire_lock" />
     <create-user sql-case-id="create_user_only_with_name" />
