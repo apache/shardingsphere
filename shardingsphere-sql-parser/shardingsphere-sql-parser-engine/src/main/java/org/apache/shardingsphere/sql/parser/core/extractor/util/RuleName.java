@@ -163,7 +163,15 @@ public enum RuleName {
 
     LOCK_CLAUSE("LockClause"),
     
-    TOP("Top");
+    TOP("Top"),
+    
+    SELECT("Select"),
+    
+    INSERT("Insert"),
+    
+    UPDATE("Update"),
+    
+    DELETE("Delete");
     
     private final String name;
     

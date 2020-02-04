@@ -47,7 +47,7 @@ public final class SQL92ParserEntry implements SQLParserEntry {
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
+    public Class<? extends SQLVisitor> getVisitorClass(final String visitorName) {
         return SQL92Visitor.class;
     }
 }

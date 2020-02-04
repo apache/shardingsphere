@@ -47,7 +47,7 @@ public final class PostgreSQLParserEntry implements SQLParserEntry {
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
+    public Class<? extends SQLVisitor> getVisitorClass(final String visitorName) {
         return PostgreSQLVisitor.class;
     }
 }

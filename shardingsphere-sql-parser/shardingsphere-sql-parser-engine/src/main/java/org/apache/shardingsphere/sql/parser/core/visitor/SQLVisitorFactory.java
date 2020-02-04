@@ -17,12 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.core.visitor;
 
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * SQL visitor factory.
@@ -32,23 +39,41 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLVisitorFactory {
     
+    private static Map<String, Collection<String>> SQL_VISITOR_RULES = new LinkedHashMap<>();
+    
+    static {
+        SQL_VISITOR_RULES.put("DMLVisitor", 
+                Lists.newArrayList(RuleName.SELECT.getName(), RuleName.DELETE.getName(), RuleName.UPDATE.getName(), RuleName.INSERT.getName()));
+    }
+    
+    
     /** 
      * New instance of SQL visitor.
      * 
      * @param databaseTypeName name of database type
      * @return SQL visitor
      */
-    public static SQLVisitor newInstance(final String databaseTypeName) {
+    public static SQLVisitor newInstance(final String databaseTypeName, final String visitorRuleName) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             if (each.getDatabaseTypeName().equals(databaseTypeName)) {
-                return createSQLVisitor(each);
+                return createSQLVisitor(each, getVisitorName(visitorRuleName));
             }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
     }
     
+    private static String getVisitorName(final String visitorRuleName) {
+        for (Entry<String, Collection<String>> entry : SQL_VISITOR_RULES.entrySet()){
+            if (entry.getValue().contains(visitorRuleName)) {
+                return entry.getKey();
+            }
+        }
+        return "MySQLVisitor";
+//        throw new SQLParsingException("Could not find corresponding SQL visitor for %s.", visitorRuleName);
+    }
+    
     @SneakyThrows
-    private static SQLVisitor createSQLVisitor(final SQLParserEntry parserEntry) {
-        return parserEntry.getVisitorClass().getConstructor().newInstance();
+    private static SQLVisitor createSQLVisitor(final SQLParserEntry parserEntry, final String visitorName) {
+        return parserEntry.getVisitorClass(visitorName).getConstructor().newInstance();
     }
 }

@@ -47,7 +47,10 @@ public final class MySQLParserEntry implements SQLParserEntry {
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
+    public Class<? extends SQLVisitor> getVisitorClass(final String visitorName) {
+        if (MySQLDMLVisitor.class.getSimpleName().contains(visitorName)) {
+            return MySQLDMLVisitor.class;
+        }
         return MySQLVisitor.class;
     }
 }
