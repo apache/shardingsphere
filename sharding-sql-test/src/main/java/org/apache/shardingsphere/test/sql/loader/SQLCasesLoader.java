@@ -115,6 +115,7 @@ public final class SQLCasesLoader {
             if (null == each.getDatabaseTypes()) {
                 each.setDatabaseTypes(sqlCases.getDatabaseTypes());
             }
+            Preconditions.checkState(!sqlCaseMap.containsKey(each.getId()), "Find duplicated SQL Case ID: %s", each.getId());
             sqlCaseMap.put(each.getId(), each);
         }
     }
