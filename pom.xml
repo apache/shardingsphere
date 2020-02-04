@@ -132,7 +132,7 @@
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+        <argLine>-Xmx1024m -XX:MaxMetaspaceSize=256m</argLine>
     </properties>
     
     <dependencyManagement>
