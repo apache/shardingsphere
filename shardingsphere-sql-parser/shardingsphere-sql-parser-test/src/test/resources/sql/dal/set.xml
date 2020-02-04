@@ -29,5 +29,5 @@
     <common sql-case-id="set_timezone_default" />
     <common sql-case-id="set_timezone_local" />
     <common sql-case-id="set_timezone_session" />
-    <common sql-case-id="set_timezone_local" />
+    <common sql-case-id="set_timezone_local_double" />
 </sql-parser-test-cases>

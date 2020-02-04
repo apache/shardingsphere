@@ -29,5 +29,5 @@
     <sql-case id="set_timezone_default" value="SET TIME ZONE DEFAULT" db-types="PostgreSQL" />
     <sql-case id="set_timezone_local" value="SET TIME ZONE LOCAL" db-types="PostgreSQL" />
     <sql-case id="set_timezone_session" value="SET SESSION TIME ZONE 3.5" db-types="PostgreSQL" />
-    <sql-case id="set_timezone_local" value="SET LOCAL TIME ZONE 3.5" db-types="PostgreSQL" />
+    <sql-case id="set_timezone_local_double" value="SET LOCAL TIME ZONE 3.5" db-types="PostgreSQL" />
 </sql-cases>
