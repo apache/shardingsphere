@@ -75,6 +75,7 @@
         <curator.version>2.10.0</curator.version>
         <opentracing.version>0.30.0</opentracing.version>
         <apollo.client.version>1.5.0</apollo.client.version>
+        <nacos.client.verison>1.1.4</nacos.client.verison>
         
         <lombok.version>1.16.4</lombok.version>
         
@@ -147,6 +148,11 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             
