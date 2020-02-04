@@ -191,8 +191,14 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.segment.tcl.AutoCommitSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
@@ -366,37 +372,37 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DCLStatement();
+        return new DropRoleStatement();
     }
     
     @Override
     public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new DCLStatement();
+        return new SetRoleStatement();
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new DCLStatement();
+        return new CreateRoleStatement();
     }
 
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DCLStatement();
+        return new DropUserStatement();
     }
 
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new DCLStatement();
+        return new AlterUserStatement();
     }
 
     @Override
     public ASTNode visitRenameUser(final RenameUserContext ctx) {
-        return new DCLStatement();
+        return new RenameUserStatement();
     }
 
     @Override
     public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new DCLStatement();
+        return new SetPasswordStatement();
     }
 
     // DDLStatement.g4

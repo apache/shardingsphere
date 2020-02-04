@@ -257,9 +257,6 @@
     <dcl-test-case sql-case-id="create_global_user">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="create_login_set_expired_password">
-        <assertion />
-    </dcl-test-case>
     <dcl-test-case sql-case-id="create_login_to_credential">
         <assertion />
     </dcl-test-case>
