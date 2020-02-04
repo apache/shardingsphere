@@ -26,6 +26,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRoleContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefaultRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
@@ -255,7 +257,17 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
         return new DCLStatement();
     }
-
+    
+    @Override
+    public ASTNode visitDropRole(final DropRoleContext ctx) {
+        return new DCLStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
+        return new DCLStatement();
+    }
+    
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
         return new DCLStatement();
