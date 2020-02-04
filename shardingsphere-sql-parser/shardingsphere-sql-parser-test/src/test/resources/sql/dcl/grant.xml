@@ -61,8 +61,7 @@
             <owner name="ds_0" start-index="24" stop-index="27" />
         </table>
     </grant>
-
-    <grant sql-case-id="grant_all_on_table_with_owner" />
+    
     <grant sql-case-id="grant_role_to_user" />
     <grant sql-case-id="grant_roles_to_users" />
     <grant sql-case-id="grant_system_privilege" />
@@ -198,6 +197,10 @@
     <grant sql-case-id="grant_usage_on_types" />
     <grant sql-case-id="grant_roles" />
     
+    <grant sql-case-id="grant_select_to_users">
+        <table name="t_order" start-index="27" stop-index="33" />
+    </grant>
+    
     <grant sql-case-id="grant_select_on_table_for_postgresql">
         <table name="t_order" start-index="22" stop-index="28" />
     </grant>
@@ -206,7 +209,12 @@
         <table name="t_order" start-index="16" stop-index="22" />
     </grant>
     
-    <grant sql-case-id="grant_select_to_users">
-        <table name="t_order" start-index="27" stop-index="33" />
+    <grant sql-case-id="grant_all_on_table_with_owner_for_mysql">
+        <!-- FIXME should assert schema -->
+    </grant>
+    
+    <grant sql-case-id="grant_all_on_table_with_owner_for_postgresql">
+        <!-- FIXME ds_0 is not table, should be schema -->
+        <table name="ds_0" start-index="24" stop-index="27" />
     </grant>
 </sql-parser-test-cases>
