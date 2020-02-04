@@ -24,6 +24,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
@@ -45,7 +46,6 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfigu
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -262,6 +262,7 @@ public final class ConfigurationService {
      *
      * @return authentication
      */
+    @SneakyThrows
     public Authentication loadAuthentication() {
         return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(configCenter.get(configNode.getAuthenticationPath()), YamlAuthenticationConfiguration.class));
     }
@@ -282,9 +283,6 @@ public final class ConfigurationService {
      */
     public Collection<String> getAllShardingSchemaNames() {
         String shardingSchemaNames = configCenter.get(configNode.getSchemaPath());
-        if (Strings.isNullOrEmpty(shardingSchemaNames)) {
-            return Collections.emptyList();
-        }
-        return Splitter.on(",").splitToList(shardingSchemaNames);
+        return configNode.splitShardingSchemaName(shardingSchemaNames);
     }
 }

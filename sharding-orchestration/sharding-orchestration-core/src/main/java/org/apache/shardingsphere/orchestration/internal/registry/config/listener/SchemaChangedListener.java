@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
@@ -50,6 +51,7 @@ import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurat
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Schema changed listener.
@@ -74,6 +76,9 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
     
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+        if (configurationNode.getSchemaPath().equals(event.getKey())) {
+            return createSchemaNamesUpdatedEvent(event.getValue());
+        }
         String shardingSchemaName = configurationNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(shardingSchemaName) || !isValidNodeChangedEvent(shardingSchemaName, event.getKey())) {
             return new IgnoredShardingOrchestrationEvent();
@@ -83,6 +88,19 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
         }
         if (ChangedType.DELETED == event.getChangedType()) {
             return createDeletedEvent(shardingSchemaName);
+        }
+        return new IgnoredShardingOrchestrationEvent();
+    }
+    
+    private ShardingOrchestrationEvent createSchemaNamesUpdatedEvent(final String shardingSchemaNames) {
+        Collection<String> persistShardingSchemaNames = configurationNode.splitShardingSchemaName(shardingSchemaNames);
+        Set<String> addedSchemaNames = Sets.difference(Sets.newHashSet(persistShardingSchemaNames), Sets.newHashSet(existedSchemaNames));
+        if (addedSchemaNames != null && addedSchemaNames.size() > 0) {
+            return createUpdatedEventForNewSchema(addedSchemaNames.iterator().next());
+        }
+        Set<String> deletedSchemaNames = Sets.difference(Sets.newHashSet(existedSchemaNames), Sets.newHashSet(persistShardingSchemaNames));
+        if (deletedSchemaNames != null && deletedSchemaNames.size() > 0) {
+            return createDeletedEvent(deletedSchemaNames.iterator().next());
         }
         return new IgnoredShardingOrchestrationEvent();
     }

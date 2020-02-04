@@ -64,7 +64,9 @@ public final class ConfigurationNodeTest {
     @Test
     public void assertGetAllSchemaConfigPaths() {
         Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Lists.newArrayList(ShardingConstant.LOGIC_SCHEMA_NAME));
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(4));
+        assertThat(actual, hasItems("/test/config/schema"));
+        assertThat(actual, hasItems("/test/config/schema/logic_db"));
         assertThat(actual, hasItems("/test/config/schema/logic_db/rule"));
         assertThat(actual, hasItems("/test/config/schema/logic_db/datasource"));
     }
