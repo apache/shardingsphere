@@ -111,10 +111,6 @@
         <table name="t_order" start-index="30" stop-index="36" />
     </grant>
     
-    <grant sql-case-id="grant_select_on_table">
-        <table name="t_order" start-index="22" stop-index="28" />
-    </grant>
-    
     <grant sql-case-id="grant_select_on_tables">
         <table name="t_order" start-index="22" stop-index="28" />
         <table name="t_order_item" start-index="31" stop-index="42" />
@@ -202,7 +198,11 @@
     <grant sql-case-id="grant_usage_on_types" />
     <grant sql-case-id="grant_roles" />
     
-    <grant sql-case-id="grant_select_on_table">
+    <grant sql-case-id="grant_select_on_table_for_postgresql">
+        <table name="t_order" start-index="22" stop-index="28" />
+    </grant>
+    
+    <grant sql-case-id="grant_select_on_table_for_sqlserver">
         <table name="t_order" start-index="16" stop-index="22" />
     </grant>
     
