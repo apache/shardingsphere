@@ -50,7 +50,6 @@
     <alter-user sql-case-id="alter_current_user_with_password" />
     <alter-user sql-case-id="alter_user_with_option" />
     <alter-user sql-case-id="alter_user_with_options_postgresql" />
-    <alter-user sql-case-id="rename_user" />
     <alter-user sql-case-id="alter_user_set_config" />
     <alter-user sql-case-id="alter_all_users_set_config" />
     <alter-user sql-case-id="alter_user_set_config_in_database" />
