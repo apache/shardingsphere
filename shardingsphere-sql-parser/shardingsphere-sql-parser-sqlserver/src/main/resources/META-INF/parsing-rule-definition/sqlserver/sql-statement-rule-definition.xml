@@ -39,14 +39,14 @@
     
     <sql-statement-rule context="grant" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement" extractor-rule-refs="table" />
     <sql-statement-rule context="revoke" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement" extractor-rule-refs="table" />
-    <sql-statement-rule context="deny" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" extractor-rule-refs="table" />
     <sql-statement-rule context="createUser" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement" />
-    <sql-statement-rule context="alterUser" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" />
-    <sql-statement-rule context="dropUser" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" />
-    <sql-statement-rule context="createLogin" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" />
-    <sql-statement-rule context="alterLogin" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" />
-    <sql-statement-rule context="dropLogin" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" />
-    <sql-statement-rule context="createRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" />
-    <sql-statement-rule context="alterRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" />
-    <sql-statement-rule context="dropRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement" /> 
+    <sql-statement-rule context="alterUser" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement" />
+    <sql-statement-rule context="dropUser" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement" />
+    <sql-statement-rule context="deny" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DenyUserStatement" extractor-rule-refs="table" />
+    <sql-statement-rule context="createLogin" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateLoginStatement" />
+    <sql-statement-rule context="alterLogin" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterLoginStatement" />
+    <sql-statement-rule context="dropLogin" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropLoginStatement" />
+    <sql-statement-rule context="createRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement" />
+    <sql-statement-rule context="alterRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterRoleStatement" />
+    <sql-statement-rule context="dropRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement" />
 </sql-statement-rule-definition>

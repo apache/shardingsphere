@@ -17,8 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="drop_user_with_hostname" />
-    <common sql-case-id="drop_user" />
-    <common sql-case-id="drop_users" />
-    <common sql-case-id="drop_user_if_exists" />
+    <drop-user sql-case-id="drop_user_with_hostname" />
+    <drop-user sql-case-id="drop_user" />
+    <drop-user sql-case-id="drop_users" />
+    <drop-user sql-case-id="drop_user_if_exists" />
 </sql-parser-test-cases>

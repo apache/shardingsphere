@@ -17,11 +17,12 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="create_login_with_password"/>
-    <common sql-case-id="create_login_with_hashed_password"/>
-    <common sql-case-id="create_login_with_default_database"/>
-    <common sql-case-id="create_login_with_expired_password"/>
-    <common sql-case-id="create_login_to_credential"/>
-    <common sql-case-id="create_login_with_certificate"/>
-    <common sql-case-id="create_login_with_asym_key"/>
+    <create-login sql-case-id="create_login" />
+    <create-login sql-case-id="create_login_with_password"/>
+    <create-login sql-case-id="create_login_with_hashed_password"/>
+    <create-login sql-case-id="create_login_with_default_database"/>
+    <create-login sql-case-id="create_login_with_expired_password"/>
+    <create-login sql-case-id="create_login_to_credential"/>
+    <create-login sql-case-id="create_login_with_certificate"/>
+    <create-login sql-case-id="create_login_with_asym_key"/>
 </sql-parser-test-cases>
