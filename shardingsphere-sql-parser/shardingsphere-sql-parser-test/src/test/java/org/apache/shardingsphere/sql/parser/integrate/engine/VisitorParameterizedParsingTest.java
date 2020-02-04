@@ -31,8 +31,8 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTe
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.visitor.VisitorSQLCasesLoader;
-import org.apache.shardingsphere.test.sql.loader.visitor.VisitorSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +49,7 @@ import java.util.Properties;
 @Slf4j
 public final class VisitorParameterizedParsingTest {
     
-    private static final VisitorSQLCasesLoader SQL_CASES_LOADER = VisitorSQLCasesRegistry.getInstance().getSqlCasesLoader();
+    private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = VisitorSQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
