@@ -20,11 +20,14 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dcl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dcl.impl.CreateUserStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dcl.impl.GrantStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dcl.impl.RevokeStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.CreateUserStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.GrantStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.RevokeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
@@ -49,6 +52,8 @@ public final class DCLStatementAssert {
             GrantStatementAssert.assertIs(assertContext, (GrantStatement) actual, (GrantStatementTestCase) expected);
         } else if (actual instanceof RevokeStatement) {
             RevokeStatementAssert.assertIs(assertContext, (RevokeStatement) actual, (RevokeStatementTestCase) expected);
+        } else if (actual instanceof CreateUserStatement) {
+            CreateUserStatementAssert.assertIs(assertContext, (CreateUserStatement) actual, (CreateUserStatementTestCase) expected);
         }
     }
 }

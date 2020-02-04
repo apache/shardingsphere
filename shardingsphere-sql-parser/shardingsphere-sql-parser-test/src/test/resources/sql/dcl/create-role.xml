@@ -18,16 +18,16 @@
 
 <sql-parser-test-cases>
     <common sql-case-id="create_role" />
-    <common sql-case-id="create_roles"  />
+    <common sql-case-id="create_roles" />
     <common sql-case-id="create_role_if_not_exists" />
     <common sql-case-id="create_no_identified_role" />
-    <common sql-case-id="create_external_role"  />
+    <common sql-case-id="create_external_role" />
     <common sql-case-id="create_global_role" />
     <common sql-case-id="create_role_with_password" />
-    <common sql-case-id="create_role_with_container"  />
-    <common sql-case-id="create_role_with_role"  />
+    <common sql-case-id="create_role_with_container" />
+    <common sql-case-id="create_role_with_role" />
     <common sql-case-id="create_role_with_roles" />
     <common sql-case-id="create_role_with_option" />
-    <common sql-case-id="create_role_with_options"  />
-    <common sql-case-id="create_role_authorization"  />
+    <common sql-case-id="create_role_with_options" />
+    <common sql-case-id="create_role_authorization" />
 </sql-parser-test-cases>
