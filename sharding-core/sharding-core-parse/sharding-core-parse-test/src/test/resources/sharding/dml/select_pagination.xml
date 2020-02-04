@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<parser-result-sets>
+    <parser-result sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <offset value="5" parameter-index="4" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <row-count value="5" parameter-index="4" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
+            <table-token start-index="33" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <offset value="5" parameter-index="4" />
+        <row-count value="3" parameter-index="5" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_limit_and_offset_keyword" parameters="1, 2, 9, 10, 3, 5">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" left-delimiter="`" right-delimiter="`" length="9" />
+            <table-token start-index="33" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <row-count value="3" parameter-index="4" />
+        <offset value="5" parameter-index="5" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="167" table-name="t_order" length="7" />
+            <table-token start-index="182" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="1" literal="1" type="int" />
+                    <value index="2" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="3" literal="9" type="int" />
+                    <value index="4" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="22" stop-index="160">
+            <top-select-items>
+                <top-select-item start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)">
+                    <row-number-value-segment parameter-index="0" start-index="27" stop-index="27" />
+                </top-select-item>
+            </top-select-items>
+            <column-select-items>
+                <column-select-item start-index="86" stop-index="86" text="i.item_id" />
+                <column-select-item start-index="97" stop-index="97" text="o.order_id" />
+                <column-select-item start-index="121" stop-index="121" text="o.status" />
+                <column-select-item start-index="141" stop-index="141" text="o.user_id" />
+            </column-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <row-count value="3" parameter-index="0" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="16" table-name="t_order" length="7" />
+            <table-token start-index="31" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="7" stop-index="9">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="9" text="i.*">
+                    <table-segment start-index="7" stop-index="7" name="i" />
+                </shorthand-select-item>
+            </shorthand-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <offset value="5" parameter-index="4" />
+        <row-count value="3" parameter-index="5" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="167" table-name="t_order" length="7" />
+            <table-token start-index="182" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="1" literal="1" type="int" />
+                    <value index="2" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="3" literal="9" type="int" />
+                    <value index="4" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="22" stop-index="160">
+            <top-select-items>
+                <top-select-item start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)">
+                </top-select-item>
+            </top-select-items>
+            <column-select-items>
+                <column-select-item start-index="86" stop-index="86" text="i.item_id" />
+                <column-select-item start-index="97" stop-index="97" text="o.order_id" />
+                <column-select-item start-index="121" stop-index="121" text="o.status" />
+                <column-select-item start-index="141" stop-index="141" text="o.user_id" />
+            </column-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <offset value="6" parameter-index="5" />
+        <row-count value="3" parameter-index="0" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_top_for_greater_than_and_equal" parameters="3, 1, 2, 9, 10, 6">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="167" table-name="t_order" length="7" />
+            <table-token start-index="182" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="1" literal="1" type="int" />
+                    <value index="2" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="3" literal="9" type="int" />
+                    <value index="4" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="22" stop-index="160">
+            <top-select-items>
+                <top-select-item start-index="22" stop-index="72" row-number-alias="rownum_" text="TOP(3)row_number()OVER(ORDERBYi.item_idDESC)">
+                </top-select-item>
+            </top-select-items>
+            <column-select-items>
+                <column-select-item start-index="86" stop-index="86" text="i.item_id" />
+                <column-select-item start-index="97" stop-index="97" text="o.order_id" />
+                <column-select-item start-index="121" stop-index="121" text="o.status" />
+                <column-select-item start-index="141" stop-index="141" text="o.user_id" />
+            </column-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <offset value="6" parameter-index="5" />
+        <row-count value="3" parameter-index="0" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
+        <tables>
+            <table name="t_order" alias="order0_" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="146" table-name="t_order" length="7" />
+            <table-token start-index="167" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="58" stop-index="139">
+            <column-select-items>
+                <column-select-item text="order0_.order_id" start-index="58" stop-index="64">
+                    <table-segment start-index="58" stop-index="64" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.status" start-index="88" stop-index="94">
+                    <table-segment start-index="88" stop-index="94" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.user_id" start-index="114" stop-index="120">
+                    <table-segment start-index="114" stop-index="120" name="order0_" />
+                </column-select-item>
+            </column-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <row-count value="3" parameter-index="4" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 10, 5, 3">
+        <tables>
+            <table name="t_order" alias="order0_" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="146" table-name="t_order" length="7" />
+            <table-token start-index="167" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="58" stop-index="139">
+            <column-select-items>
+                <column-select-item text="order0_.order_id" start-index="58" stop-index="64">
+                    <table-segment start-index="58" stop-index="64" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.status" start-index="88" stop-index="94">
+                    <table-segment start-index="88" stop-index="94" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.user_id" start-index="114" stop-index="120">
+                    <table-segment start-index="114" stop-index="120" name="order0_" />
+                </column-select-item>
+            </column-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <offset value="3" parameter-index="5" />
+        <row-count value="5" parameter-index="4" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
+        <tables>
+            <table name="t_order" alias="order0_" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="146" table-name="t_order" length="7" />
+            <table-token start-index="167" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="58" stop-index="139">
+            <column-select-items>
+                <column-select-item text="order0_.order_id" start-index="58" stop-index="64">
+                    <table-segment start-index="58" stop-index="64" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.status" start-index="88" stop-index="94">
+                    <table-segment start-index="88" stop-index="94" name="order0_" />
+                </column-select-item>
+                <column-select-item text="order0_.user_id" start-index="114" stop-index="120">
+                    <table-segment start-index="114" stop-index="120" name="order0_" />
+                </column-select-item>
+            </column-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
+        </order-by-columns>
+        <offset value="3" parameter-index="5" />
+        <row-count value="5" parameter-index="4" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token start-index="14" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="7">
+            <shorthand-select-items>
+                <shorthand-select-item start-index="7" stop-index="7" text="*" />
+            </shorthand-select-items>
+        </select-items>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+        <row-count value="20" parameter-index="0" />
+    </parser-result>
+    
+</parser-result-sets>
