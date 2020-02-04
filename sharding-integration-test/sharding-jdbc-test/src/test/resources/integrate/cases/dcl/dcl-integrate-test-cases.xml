@@ -296,7 +296,7 @@
     <dcl-test-case sql-case-id="create_role_with_options">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="create_role_with_password">
+    <dcl-test-case sql-case-id="create_role_with_identified_by_password">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_with_role">
