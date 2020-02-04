@@ -21,16 +21,23 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.DescribeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowCreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowDatabasesStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowIndexStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.UseStatementTestCase;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowIndexStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.CreateUserStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.GrantStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dcl.RevokeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
@@ -79,8 +86,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
     
+    @XmlElement(name = "truncate")
+    private final List<TruncateStatementTestCase> truncateTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-index")
     private final List<CreateIndexStatementTestCase> createIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-index")
+    private final List<AlterIndexStatementTestCase> alterIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-index")
     private final List<DropIndexStatementTestCase> dropIndexTestCases = new LinkedList<>();
@@ -103,6 +116,15 @@ public final class SQLParserTestCases {
     @XmlElement(name = "savepoint")
     private final List<SavepointStatementTestCase> savepointTestCases = new LinkedList<>();
     
+    @XmlElement(name = "grant")
+    private final List<GrantStatementTestCase> grantTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "revoke")
+    private final List<RevokeStatementTestCase> revokeTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-user")
+    private final List<CreateUserStatementTestCase> createUserTestCases = new LinkedList<>();
+    
     @XmlElement(name = "use")
     private final List<UseStatementTestCase> useTestCases = new LinkedList<>();
     
@@ -118,11 +140,20 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-columns")
     private final List<ShowTablesStatementTestCase> showColumnsTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-create-table")
+    private final List<ShowCreateTableStatementTestCase> showCreateTableTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
 
     @XmlElement(name = "show-index")
     private final List<ShowIndexStatementTestCase> showIndexStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-index")
+    private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show")
+    private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();
     
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
@@ -141,7 +172,9 @@ public final class SQLParserTestCases {
         result.putAll(getSQLParserTestCases(createTableTestCases));
         result.putAll(getSQLParserTestCases(alterTableTestCases));
         result.putAll(getSQLParserTestCases(dropTableTestCases));
+        result.putAll(getSQLParserTestCases(truncateTestCases));
         result.putAll(getSQLParserTestCases(createIndexTestCases));
+        result.putAll(getSQLParserTestCases(alterIndexTestCases));
         result.putAll(getSQLParserTestCases(dropIndexTestCases));
         result.putAll(getSQLParserTestCases(setTransactionTestCases));
         result.putAll(getSQLParserTestCases(beginTransactionTestCases));
@@ -149,13 +182,18 @@ public final class SQLParserTestCases {
         result.putAll(getSQLParserTestCases(commitTestCases));
         result.putAll(getSQLParserTestCases(rollbackTestCases));
         result.putAll(getSQLParserTestCases(savepointTestCases));
+        result.putAll(getSQLParserTestCases(grantTestCases));
+        result.putAll(getSQLParserTestCases(revokeTestCases));
+        result.putAll(getSQLParserTestCases(createUserTestCases));
         result.putAll(getSQLParserTestCases(useTestCases));
         result.putAll(getSQLParserTestCases(describeTestCases));
         result.putAll(getSQLParserTestCases(showDatabasesTestCases));
         result.putAll(getSQLParserTestCases(showTablesTestCases));
         result.putAll(getSQLParserTestCases(showColumnsTestCases));
+        result.putAll(getSQLParserTestCases(showCreateTableTestCases));
         result.putAll(getSQLParserTestCases(showTableStatusTestCases));
-        result.putAll(getSQLParserTestCases(showIndexStatementTestCases));
+        result.putAll(getSQLParserTestCases(showIndexTestCases));
+        result.putAll(getSQLParserTestCases(showTestCases));
         result.putAll(getSQLParserTestCases(commonTestCases));
         return result;
     }

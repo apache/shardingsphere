@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 /**
- * TCL statement test case.
- * 
- * @author zhangliang 
+ * Alter index statement.
+ *
+ * @author panjuan
  */
 @Getter
 @Setter
-public final class TCLStatementTestCase extends SQLParserTestCase {
+public final class AlterIndexStatement extends DDLStatement implements TableSegmentAvailable, IndexSegmentAvailable {
     
-    @XmlAttribute(name = "tcl-actual-statement-class-type")
-    private String tclActualStatementClassType;
+    private IndexSegment index;
     
-    @XmlAttribute(name = "auto-commit")
-    private boolean autoCommit;
+    private TableSegment table;
 }

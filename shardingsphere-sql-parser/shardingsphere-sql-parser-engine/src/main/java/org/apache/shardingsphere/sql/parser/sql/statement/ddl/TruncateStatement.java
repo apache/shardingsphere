@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.owner;
+package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Collection;
+import java.util.LinkedList;
 
+/**
+ * Truncate table statement.
+ *
+ * @author zhangliang
+ */
 @Getter
-@Setter
-public final class ExpectedTableOwner extends AbstractExpectedDelimiterSQLSegment {
+public final class TruncateStatement extends DDLStatement implements TableSegmentsAvailable {
     
-    @XmlAttribute
-    private String name;
+    private final Collection<TableSegment> tables = new LinkedList<>();
 }

@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.owner;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
+/**
+ * Truncate statement test case.
+ * 
+ * @author zhangliang 
+ */
 @Getter
-@Setter
-public final class ExpectedSchemaOwner extends AbstractExpectedDelimiterSQLSegment {
+public final class TruncateStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute
-    private String name;
+    @XmlElement(name = "table")
+    private final List<ExpectedTable> tables = new LinkedList<>();
 }

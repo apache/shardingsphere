@@ -26,9 +26,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.Ex
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Insert statement test case.
@@ -39,9 +36,8 @@ import java.util.List;
 @Setter
 public final class InsertStatementTestCase extends SQLParserTestCase {
     
-    @XmlElementWrapper
-    @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
+    @XmlElement
+    private ExpectedTable table;
     
     @XmlElement(name = "columns")
     private ExpectedInsertColumnsClause insertColumnsClause;

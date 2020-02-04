@@ -17,27 +17,19 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="truncate_table">
-        <tables>
-            <table name="t_log" start-index="15" stop-index="19" />
-        </tables>
-    </common>
+    <truncate sql-case-id="truncate_table">
+        <table name="t_log" start-index="15" stop-index="19" />
+    </truncate>
     
-    <common sql-case-id="truncate_table_with_space">
-        <tables>
-            <table name="t_order" start-index="27" stop-index="33" />
-        </tables>
-    </common>
+    <truncate sql-case-id="truncate_table_with_space">
+        <table name="t_order" start-index="27" stop-index="33" />
+    </truncate>
     
-    <common sql-case-id="truncate_table_with_back_quota">
-        <tables>
-            <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="23" />
-        </tables>
-    </common>
+    <truncate sql-case-id="truncate_table_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="23" />
+    </truncate>
     
-    <common sql-case-id="truncate_table_simple">
-        <tables>
-            <table name="t_order" start-index="9" stop-index="15" />
-        </tables>
-    </common>
+    <truncate sql-case-id="truncate_table_simple">
+        <table name="t_order" start-index="9" stop-index="15" />
+    </truncate>
 </sql-parser-test-cases>

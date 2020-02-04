@@ -16,26 +16,21 @@
   ~ limitations under the License.
   -->
 
+<!-- FIXME assert index -->
 <sql-parser-test-cases>
-    <common sql-case-id="alter_index" />
-    <common sql-case-id="alter_index_with_space" />
-    <common sql-case-id="alter_index_with_quota" />
+    <alter-index sql-case-id="alter_index" />
+    <alter-index sql-case-id="alter_index_with_space" />
+    <alter-index sql-case-id="alter_index_with_quota" />
     
-    <!--<common sql-case-id="create_table_with_exist_index">-->
-        <!--<tables>-->
-            <!--<table name="t_order" start-index="12" stop-index="18" />-->
-        <!--</tables>-->
-    <!--</common>-->
+    <!--<alter-index sql-case-id="create_table_with_exist_index">-->
+        <!--<table name="t_order" start-index="12" stop-index="18" />-->
+    <!--</alter-index>-->
     
-    <common sql-case-id="alter_index_rebuild">
-        <tables>
-            <table name="t_order" start-index="27" stop-index="33" />
-        </tables>
-    </common>
+    <alter-index sql-case-id="alter_index_rebuild">
+        <table name="t_order" start-index="27" stop-index="33" />
+    </alter-index>
     
-    <common sql-case-id="alter_index_with_quota_bracket">
-        <tables>
-            <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
-        </tables>
-    </common>
+    <alter-index sql-case-id="alter_index_with_quota_bracket">
+        <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
+    </alter-index>
 </sql-parser-test-cases>

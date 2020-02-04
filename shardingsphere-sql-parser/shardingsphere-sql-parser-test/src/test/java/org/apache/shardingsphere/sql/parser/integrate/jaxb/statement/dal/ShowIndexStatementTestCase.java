@@ -19,27 +19,24 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.schema.ExpectedSchema;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- *  ShowIndex statement test case.
- * 
+ * Show index statement test case.
+ *
  * @author zhangliang 
  */
 @Getter
 @Setter
 public final class ShowIndexStatementTestCase extends SQLParserTestCase {
-    @XmlElementWrapper
-    @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
 
-    @XmlElementWrapper
-    @XmlElement(name = "schema")
-    private final List<ExpectedTable> schemas = new LinkedList<>();
+    @XmlElement
+    private ExpectedTable table;
+    
+    @XmlElement
+    private ExpectedSchema schema;
 }

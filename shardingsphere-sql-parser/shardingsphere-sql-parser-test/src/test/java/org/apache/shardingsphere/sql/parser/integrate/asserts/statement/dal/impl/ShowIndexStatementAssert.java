@@ -20,14 +20,18 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.imp
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowIndexStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Describe statement assert.
+ * Show index statement assert.
  *
  * @author zhangliang
  */
@@ -35,22 +39,33 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 public final class ShowIndexStatementAssert {
     
     /**
-     * Assert describe statement is correct with expected parser result.
+     * Assert show index statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual showIndex statement
-     * @param expected expected  showIndex statement test case
+     * @param actual actual show index statement
+     * @param expected expected show index statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
+        assertSchema(assertContext, actual, expected);
     }
-
+    
     private static void assertTable(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
-
-        TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
-
+        if (null != expected.getTable()) {
+            // TODO use table to instead of findSQLSegment
+            assertTrue(assertContext.getText("Actual table segment should exist."), actual.findSQLSegment(TableSegment.class).isPresent());
+            TableAssert.assertIs(assertContext, actual.findSQLSegment(TableSegment.class).get(), expected.getTable());
+        } else {
+            assertFalse(assertContext.getText("Actual table segment should not exist."), actual.findSQLSegment(TableSegment.class).isPresent());
+        }
     }
-
+    
     private static void assertSchema(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+        if (null != expected.getSchema()) {
+            assertTrue(assertContext.getText("Actual schema segment should exist."), actual.findSQLSegment(SchemaSegment.class).isPresent());
+            SchemaAssert.assertIs(assertContext, actual.findSQLSegment(SchemaSegment.class).get(), expected.getSchema());
+        } else {
+            assertFalse(assertContext.getText("Actual schema segment should not exist."), actual.findSQLSegment(SchemaSegment.class).isPresent());
+        }
     }
 }

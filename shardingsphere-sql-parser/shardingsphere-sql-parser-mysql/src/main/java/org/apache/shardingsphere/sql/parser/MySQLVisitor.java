@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
+<<<<<<< HEAD
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
@@ -33,6 +34,10 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCol
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
+=======
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRoleContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefaultRoleContext;
+>>>>>>> upstream/master
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
@@ -182,6 +187,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+<<<<<<< HEAD
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
@@ -189,6 +195,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.segment.tcl.AutoCommitSegment;
+=======
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
+>>>>>>> upstream/master
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
@@ -196,6 +205,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -210,7 +220,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
 import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
-import org.apache.shardingsphere.sql.parser.sql.value.ParameterValue;
+import org.apache.shardingsphere.sql.parser.sql.value.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
@@ -357,9 +367,19 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     // DCLStatement.g4
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
+        return new CreateUserStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropRole(final DropRoleContext ctx) {
         return new DCLStatement();
     }
-
+    
+    @Override
+    public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
+        return new DCLStatement();
+    }
+    
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
         return new DCLStatement();
@@ -467,12 +487,13 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         result.getAllSQLSegments().addAll(tables.getValues());
         return result;
     }
-
+    
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        DDLStatement result = new DDLStatement();
+        TruncateStatement result = new TruncateStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getAllSQLSegments().add(table);
+        result.getTables().add(table);
         return result;
     }
 
@@ -963,7 +984,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
             return createInSegment(ctx);
         }
         if (null != ctx.BETWEEN()) {
-            createBetweenSegment(ctx);
+            return createBetweenSegment(ctx);
         }
         BitExprContext bitExpr = ctx.bitExpr(0);
         if (null != bitExpr) {
@@ -1006,7 +1027,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
     
     @Override
     public ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterValue(currentParameterIndex++);
+        return new ParameterMarkerValue(currentParameterIndex++);
     }
     
     @Override
@@ -1217,8 +1238,8 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (astNode instanceof NumberValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
         }
-        if (astNode instanceof ParameterValue) {
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterValue) astNode).getParameterIndex());
+        if (astNode instanceof ParameterMarkerValue) {
+            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getParameterIndex());
         }
         return astNode;
     }
@@ -1297,7 +1318,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return result.toString();
     }
     
-    private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
+    private PredicateSegment createCompareSegment(final BooleanPrimaryContext ctx) {
         ASTNode leftValue = visit(ctx.booleanPrimary());
         ASTNode rightValue = visit(ctx.predicate());
         if (rightValue instanceof ColumnSegment) {
@@ -1307,7 +1328,7 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
                 (ColumnSegment) leftValue, new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue));
     }
     
-    private ASTNode createInSegment(final PredicateContext ctx) {
+    private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         Collection<ExpressionSegment> segments = Lists.transform(ctx.expr(), new Function<ExprContext, ExpressionSegment>() {
             
@@ -1319,11 +1340,11 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
     }
     
-    private void createBetweenSegment(final PredicateContext ctx) {
+    private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
         ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
     }
     
     private OrPredicateSegment mergePredicateSegment(final ASTNode left, final ASTNode right, final String operator) {

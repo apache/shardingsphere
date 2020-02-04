@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.column;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.owner.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.table.ExpectedTableOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

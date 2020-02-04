@@ -24,9 +24,7 @@
     </select>
     
     <select sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
-        <tables>
-            <table name="t_order" alias="t_order" start-index="22" stop-index="28" />
-        </tables>
+        <table name="t_order" alias="t_order" start-index="22" stop-index="28" />
         <projections start-index="7" stop-index="15">
             <shorthand-projection start-index="7" stop-index="15">
                 <owner name="t_order" start-index="7" stop-index="13" />
@@ -55,9 +53,7 @@
     </select>
     
     <select sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
-        <tables>
-            <table name="t_order" alias="t_order" start-index="52" stop-index="58" />
-        </tables>
+        <table name="t_order" alias="t_order" start-index="52" stop-index="58" />
         <projections start-index="7" stop-index="45">
             <column-projection name="order_id" start-index="7" stop-index="22">
                 <owner name="t_order" start-index="7" stop-index="13" />
@@ -92,9 +88,7 @@
     </select>
     
     <select sql-case-id="select_not_equal_with_single_table" parameters="1">
-        <tables>
-            <table name="t_order_item" start-index="14" stop-index="25" />
-        </tables>
+        <table name="t_order_item" start-index="14" stop-index="25" />
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql;
 
 /**
- * AST note.
+ * AST node.
  *
  * @author panjuan
  */
