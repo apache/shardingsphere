@@ -129,11 +129,15 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
+        Object o = currentRow.get(columnIndex - 1);
+        setWasNull(o == null);
+        return o;
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
+        Object o = currentRow.get(columnIndex - 1);
+        setWasNull(o == null);
+        return o;
     }
 }
