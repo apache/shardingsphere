@@ -26,7 +26,7 @@
     <alter-role sql-case-id="alter_current_user_with_password" />
     <alter-role sql-case-id="alter_role_with_option" />
     <alter-role sql-case-id="alter_role_with_options" />
-    <alter-role sql-case-id="rename_role" />
+    <alter-role sql-case-id="alter_role_with_rename" />
     <alter-role sql-case-id="alter_role_set_config" />
     <alter-role sql-case-id="alter_all_roles_set_config" />
     <alter-role sql-case-id="alter_role_set_config_in_database" />

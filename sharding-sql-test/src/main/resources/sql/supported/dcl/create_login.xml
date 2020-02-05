@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="create_login" value="CREATE LOGIN login_dev_new WITH PASSWORD = 'passwd_dev'" db-types="SQLServer" />
     <sql-case id="create_login_with_password" value="CREATE LOGIN login1 WITH PASSWORD = 'password'" db-types="SQLServer" />
     <sql-case id="create_login_with_hashed_password" value="CREATE LOGIN login1 WITH PASSWORD = 0x01000CF35567C60BFB41EBDE4CF700A985A13D773D6B45B90900 HASHED" db-types="SQLServer" />
     <sql-case id="create_login_with_default_database" value="CREATE LOGIN login1 WITH PASSWORD = 'password', DEFAULT_DATABASE = database" db-types="SQLServer" />

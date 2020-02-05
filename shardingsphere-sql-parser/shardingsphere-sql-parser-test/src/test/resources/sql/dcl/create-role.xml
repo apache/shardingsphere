@@ -23,13 +23,13 @@
     <create-role sql-case-id="create_no_identified_role" />
     <create-role sql-case-id="create_external_role" />
     <create-role sql-case-id="create_global_role" />
-    <create-role sql-case-id="create_role_with_password" />
+    <create-role sql-case-id="create_role_with_identified_by_password" />
     <create-role sql-case-id="create_role_with_container" />
     <create-role sql-case-id="create_role_with_role" />
     <create-role sql-case-id="create_role_with_roles" />
     <create-role sql-case-id="create_role_with_option" />
     <create-role sql-case-id="create_role_with_options" />
-    <create-role sql-case-id="create_role_authorization" />
+    <create-role sql-case-id="create_role_with_authorization" />
     <create-role sql-case-id="create_role_identified_by" />
-    <create-role sql-case-id="create_role_password" />
+    <create-role sql-case-id="create_role_with_password" />
 </sql-parser-test-cases>

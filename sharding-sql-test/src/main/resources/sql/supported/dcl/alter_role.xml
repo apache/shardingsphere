@@ -23,10 +23,9 @@
     <sql-case id="alter_role_with_password" value="ALTER ROLE role1 IDENTIFIED BY password"  db-types="Oracle" />
     <sql-case id="alter_role_with_container" value="ALTER ROLE role1 NOT IDENTIFIED CONTAINER = ALL"  db-types="Oracle" />
     <sql-case id="alter_role_with_password_postgresql" value="ALTER ROLE role1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
-    <sql-case id="alter_current_user_with_password" value="ALTER ROLE CURRENT_USER WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
     <sql-case id="alter_role_with_option" value="ALTER ROLE role1 WITH SUPERUSER" db-types="PostgreSQL" />
     <sql-case id="alter_role_with_options" value="ALTER ROLE role1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
-    <sql-case id="rename_role" value="ALTER ROLE role1_bak RENAME TO role1" db-types="PostgreSQL" />
+    <sql-case id="alter_role_with_rename" value="ALTER ROLE role1_bak RENAME TO role1" db-types="PostgreSQL" />
     <sql-case id="alter_role_set_config" value="ALTER ROLE role1 SET client_min_messages = DEBUG" db-types="PostgreSQL" />
     <sql-case id="alter_all_roles_set_config" value="ALTER ROLE ALL SET client_min_messages = DEBUG" db-types="PostgreSQL" />
     <sql-case id="alter_role_set_config_in_database" value="ALTER ROLE role1 IN DATABASE ds_0 SET client_min_messages = DEBUG" db-types="PostgreSQL" />

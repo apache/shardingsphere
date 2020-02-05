@@ -45,7 +45,6 @@
     <sql-case id="revoke_program" value="REVOKE role1 FROM FUNCTION ds_0.function1" db-types="Oracle" />
     <sql-case id="revoke_roles_from_programs" value="REVOKE role1, role2 FROM FUNCTION ds_0.function1, FUNCTION ds_0.function2" db-types="Oracle" />
     <sql-case id="revoke_all_on_table_from_roles" value="REVOKE ALL PRIVILEGES ON TABLE t_order FROM role1, role2" db-types="PostgreSQL" />
-    <sql-case id="revoke_select_on_table" value="REVOKE SELECT ON TABLE t_order FROM role1" db-types="PostgreSQL" />
     <sql-case id="revoke_select_on_tables" value="REVOKE SELECT ON TABLE t_order, t_order_item FROM role1" db-types="PostgreSQL" />
     <sql-case id="revoke_select_on_all_tables" value="REVOKE SELECT ON ALL TABLES IN SCHEMA schema1 FROM role1" db-types="PostgreSQL" />
     <sql-case id="revoke_all_column_on_table" value="REVOKE ALL PRIVILEGES (order_id) ON TABLE t_order FROM role1" db-types="PostgreSQL" />
@@ -99,7 +98,8 @@
     <sql-case id="revoke_usage_on_type" value="REVOKE USAGE ON TYPE type1 FROM role1" db-types="PostgreSQL" />
     <sql-case id="revoke_usage_on_types" value="REVOKE USAGE ON TYPE type1, type2 FROM role1" db-types="PostgreSQL" />
     <sql-case id="revoke_roles" value="REVOKE role1, role2 FROM role3, role4" db-types="PostgreSQL" />
-    <sql-case id="revoke_select_on_table" value="REVOKE SELECT ON t_order FROM user1" db-types="SQLServer" />
     <sql-case id="revoke_select_to_users" value="REVOKE SELECT (order_id) ON t_order FROM user1, user2" db-types="SQLServer" />
     <sql-case id="revoke_crud_on_table" value="REVOKE INSERT, SELECT, UPDATE, DELETE ON t_order FROM user1" db-types="SQLServer" />
+    <sql-case id="revoke_select_on_table_for_postgresql" value="REVOKE SELECT ON TABLE t_order FROM role1" db-types="PostgreSQL" />
+    <sql-case id="revoke_select_on_table_for_sqlserver" value="REVOKE SELECT ON t_order FROM user1" db-types="SQLServer" />
 </sql-cases>
