@@ -195,9 +195,6 @@ public final class SQLParserTestCases {
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
 
     @XmlElement(name = "show-index")
-    private final List<ShowIndexStatementTestCase> showIndexStatementTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "show-index")
     private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "show")

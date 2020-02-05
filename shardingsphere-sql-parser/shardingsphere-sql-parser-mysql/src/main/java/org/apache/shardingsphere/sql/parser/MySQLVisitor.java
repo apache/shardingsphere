@@ -325,8 +325,10 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
         FromTableContext fromTableContext = ctx.fromTable();
         if (null != fromSchemaContext) {
-            FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
-            result.getAllSQLSegments().add(fromSchemaSegment);
+            SchemaNameContext schemaNameContext = fromSchemaContext.schemaName();
+            LiteralValue schema = (LiteralValue) visit(schemaNameContext);
+            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), schema.getLiteral());
+            result.getAllSQLSegments().add(schemaSegment);
         }
         if (null != fromTableContext) {
             FromTableSegment fromTableSegment = (FromTableSegment) visitFromTable(fromTableContext);
