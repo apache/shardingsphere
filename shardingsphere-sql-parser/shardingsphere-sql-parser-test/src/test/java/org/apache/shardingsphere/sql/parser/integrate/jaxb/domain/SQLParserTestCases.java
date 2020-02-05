@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
@@ -63,7 +64,9 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.tcl.
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -210,54 +213,63 @@ public final class SQLParserTestCases {
      */
     public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
         Map<String, SQLParserTestCase> result = new HashMap<>();
-        result.putAll(getSQLParserTestCases(selectTestCases));
-        result.putAll(getSQLParserTestCases(updateTestCases));
-        result.putAll(getSQLParserTestCases(deleteTestCases));
-        result.putAll(getSQLParserTestCases(insertTestCases));
-        result.putAll(getSQLParserTestCases(createTableTestCases));
-        result.putAll(getSQLParserTestCases(alterTableTestCases));
-        result.putAll(getSQLParserTestCases(dropTableTestCases));
-        result.putAll(getSQLParserTestCases(truncateTestCases));
-        result.putAll(getSQLParserTestCases(createIndexTestCases));
-        result.putAll(getSQLParserTestCases(alterIndexTestCases));
-        result.putAll(getSQLParserTestCases(dropIndexTestCases));
-        result.putAll(getSQLParserTestCases(setTransactionTestCases));
-        result.putAll(getSQLParserTestCases(beginTransactionTestCases));
-        result.putAll(getSQLParserTestCases(setAutoCommitTestCases));
-        result.putAll(getSQLParserTestCases(commitTestCases));
-        result.putAll(getSQLParserTestCases(rollbackTestCases));
-        result.putAll(getSQLParserTestCases(savepointTestCases));
-        result.putAll(getSQLParserTestCases(grantTestCases));
-        result.putAll(getSQLParserTestCases(revokeTestCases));
-        result.putAll(getSQLParserTestCases(createUserTestCases));
-        result.putAll(getSQLParserTestCases(alterUserTestCases));
-        result.putAll(getSQLParserTestCases(dropUserTestCases));
-        result.putAll(getSQLParserTestCases(renameUserTestCases));
-        result.putAll(getSQLParserTestCases(denyUserTestCases));
-        result.putAll(getSQLParserTestCases(createLoginTestCases));
-        result.putAll(getSQLParserTestCases(alterLoginTestCases));
-        result.putAll(getSQLParserTestCases(dropLoginTestCases));
-        result.putAll(getSQLParserTestCases(createRoleTestCases));
-        result.putAll(getSQLParserTestCases(alterRoleTestCases));
-        result.putAll(getSQLParserTestCases(dropRoleTestCases));
-        result.putAll(getSQLParserTestCases(setRoleTestCases));
-        result.putAll(getSQLParserTestCases(setPasswordTestCases));
-        result.putAll(getSQLParserTestCases(useTestCases));
-        result.putAll(getSQLParserTestCases(describeTestCases));
-        result.putAll(getSQLParserTestCases(showDatabasesTestCases));
-        result.putAll(getSQLParserTestCases(showTablesTestCases));
-        result.putAll(getSQLParserTestCases(showColumnsTestCases));
-        result.putAll(getSQLParserTestCases(showCreateTableTestCases));
-        result.putAll(getSQLParserTestCases(showTableStatusTestCases));
-        result.putAll(getSQLParserTestCases(showIndexTestCases));
-        result.putAll(getSQLParserTestCases(showTestCases));
-        result.putAll(getSQLParserTestCases(commonTestCases));
+        putAll(selectTestCases, result);
+        putAll(updateTestCases, result);
+        putAll(deleteTestCases, result);
+        putAll(insertTestCases, result);
+        putAll(createTableTestCases, result);
+        putAll(alterTableTestCases, result);
+        putAll(dropTableTestCases, result);
+        putAll(truncateTestCases, result);
+        putAll(createIndexTestCases, result);
+        putAll(alterIndexTestCases, result);
+        putAll(dropIndexTestCases, result);
+        putAll(setTransactionTestCases, result);
+        putAll(beginTransactionTestCases, result);
+        putAll(setAutoCommitTestCases, result);
+        putAll(commitTestCases, result);
+        putAll(rollbackTestCases, result);
+        putAll(savepointTestCases, result);
+        putAll(grantTestCases, result);
+        putAll(revokeTestCases, result);
+        putAll(createUserTestCases, result);
+        putAll(alterUserTestCases, result);
+        putAll(dropUserTestCases, result);
+        putAll(renameUserTestCases, result);
+        putAll(denyUserTestCases, result);
+        putAll(createLoginTestCases, result);
+        putAll(alterLoginTestCases, result);
+        putAll(dropLoginTestCases, result);
+        putAll(createRoleTestCases, result);
+        putAll(alterRoleTestCases, result);
+        putAll(dropRoleTestCases, result);
+        putAll(setRoleTestCases, result);
+        putAll(setPasswordTestCases, result);
+        putAll(useTestCases, result);
+        putAll(describeTestCases, result);
+        putAll(showDatabasesTestCases, result);
+        putAll(showTablesTestCases, result);
+        putAll(showColumnsTestCases, result);
+        putAll(showCreateTableTestCases, result);
+        putAll(showTableStatusTestCases, result);
+        putAll(showIndexTestCases, result);
+        putAll(showTestCases, result);
+        putAll(commonTestCases, result);
         return result;
+    }
+    
+    private void putAll(final List<? extends SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
+        Map<String, SQLParserTestCase> sqlParserTestCaseMap = getSQLParserTestCases(sqlParserTestCases);
+        Collection<String> sqlParserTestCaseIds = new HashSet<>(sqlParserTestCaseMap.keySet());
+        sqlParserTestCaseIds.retainAll(target.keySet());
+        Preconditions.checkState(sqlParserTestCaseIds.isEmpty(), "Find duplicated SQL Case IDs: %s", sqlParserTestCaseIds);
+        target.putAll(sqlParserTestCaseMap);
     }
     
     private Map<String, SQLParserTestCase> getSQLParserTestCases(final List<? extends SQLParserTestCase> sqlParserTestCases) {
         Map<String, SQLParserTestCase> result = new HashMap<>(sqlParserTestCases.size(), 1);
         for (SQLParserTestCase each : sqlParserTestCases) {
+            Preconditions.checkState(!result.containsKey(each.getSqlCaseId()), "Find duplicated SQL Case ID: %s", each.getSqlCaseId());
             result.put(each.getSqlCaseId(), each);
         }
         return result;

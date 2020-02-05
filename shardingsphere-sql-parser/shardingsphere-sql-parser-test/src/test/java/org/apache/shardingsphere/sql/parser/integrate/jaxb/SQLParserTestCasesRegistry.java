@@ -27,6 +27,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -49,7 +50,7 @@ public final class SQLParserTestCasesRegistry {
         Preconditions.checkNotNull(files, "Can not find SQL parser test cases.");
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : files) {
-            result.putAll(load(each));
+            putAll(load(each), result);
         }
         return result;
     }
@@ -60,13 +61,20 @@ public final class SQLParserTestCasesRegistry {
             File[] files = file.listFiles();
             if (null != files) {
                 for (File each : files) {
-                    result.putAll(load(each));
+                    putAll(load(each), result);
                 }
             }
         } else {
-            result.putAll(getSQLParserTestCases(file));
+            putAll(getSQLParserTestCases(file), result);
         }
         return result;
+    }
+    
+    private void putAll(final Map<String, SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
+        Collection<String> sqlParserTestCaseIds = new HashSet<>(sqlParserTestCases.keySet());
+        sqlParserTestCaseIds.retainAll(target.keySet());
+        Preconditions.checkState(sqlParserTestCaseIds.isEmpty(), "Find duplicated SQL Case IDs: %s", sqlParserTestCaseIds);
+        target.putAll(sqlParserTestCases);
     }
     
     private Map<String, SQLParserTestCase> getSQLParserTestCases(final File file) {
