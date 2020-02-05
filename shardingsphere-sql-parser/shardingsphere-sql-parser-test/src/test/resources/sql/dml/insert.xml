@@ -500,14 +500,36 @@
         </set>
     </insert>
     
-    <!--<insert sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">-->
-            <!--<table name="t_order" start-index="12" stop-index="18" />-->
-            <!--<table name="t_order" start-index="21" stop-index="27" />-->
-            <!--<table name="t_order" start-index="39" stop-index="45" />-->
-            <!--<table name="t_order" start-index="56" stop-index="62" />-->
-            <!--<table name="t_order" start-index="113" stop-index="119" />-->
-            <!--<table name="t_order" start-index="137" stop-index="143" />-->
-    <!--</insert>-->
+    <insert sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="70">
+            <column name="order_id" start-index="21" stop-index="36">
+                <owner name="t_order" start-index="21" stop-index="27" />
+            </column>
+            <column name="user_id" start-index="39" stop-index="53">
+                <owner name="t_order" start-index="39" stop-index="45" />
+            </column>
+            <column name="status" start-index="56" stop-index="69">
+                <owner name="t_order" start-index="56" stop-index="62" />
+            </column>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="init" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
     
     <insert sql-case-id="insert_with_batch" parameters="1000, 10, 'init', 1100, 11, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
