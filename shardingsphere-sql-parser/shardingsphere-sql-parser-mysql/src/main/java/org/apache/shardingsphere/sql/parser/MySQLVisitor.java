@@ -202,17 +202,17 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
         if (null != ctx.subquery()) {
             return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
         }
-        if (null != ctx.IN()) {
+        if (null != ctx.IN() && null == ctx.NOT()) {
             return createInSegment(ctx);
         }
-        if (null != ctx.BETWEEN()) {
+        if (null != ctx.BETWEEN() && null == ctx.NOT()) {
             return createBetweenSegment(ctx);
         }
-        BitExprContext bitExpr = ctx.bitExpr(0);
-        if (null != bitExpr) {
+        if (1 == ctx.children.size()) {
+            BitExprContext bitExpr = ctx.bitExpr(0);
             return createExpressionSegment(visit(bitExpr), ctx);
         }
-        return createExpressionSegment(new LiteralValue(ctx.getText()), ctx);
+        return visitRemainPredicate(ctx);
     }
     
     @Override
@@ -554,9 +554,28 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
         if (astNode instanceof AndPredicate) {
             return Collections.singleton((AndPredicate) astNode);
         }
-        AndPredicate andPredicate = new AndPredicate();
-        andPredicate.getPredicates().add((PredicateSegment) astNode);
-        return Collections.singleton(andPredicate);
+        if (astNode instanceof PredicateSegment) {
+            AndPredicate andPredicate = new AndPredicate();
+            andPredicate.getPredicates().add((PredicateSegment) astNode);
+            return Collections.singleton(andPredicate);
+        }
+        return new LinkedList<>();
+    }
+    
+    private ASTNode visitRemainPredicate(final PredicateContext ctx) {
+        for (BitExprContext each : ctx.bitExpr()) {
+            visit(each);
+        }
+        for (ExprContext each : ctx.expr()) {
+            visit(each);
+        }
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            visit(each);
+        }
+        if (null != ctx.predicate()) {
+            visit(ctx.predicate());
+        }
+        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date

@@ -108,4 +108,47 @@
             <column-item name="item_id" />
         </order-by>
     </select>
+    
+    <select sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
+        <table name="t_order_item" start-index="14" stop-index="25" />
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where parameters-count="1" start-index="27" stop-index="44">
+            <and-predicate>
+                <predicate start-index="33" stop-index="44">
+                    <column-left-value name="item_id" start-index="33" stop-index="39" />
+                    <operator type="!=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
+        <table name="t_order_item" start-index="14" stop-index="25" />
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where parameters-count="2" start-index="27" stop-index="77" literal-stop-index="87">
+            <!-- FIXME cannot parse IS NOT NULL -->
+            <!--<and-predicate>-->
+            <!--<predicate start-index="33" stop-index="51">-->
+            <!--<column-left-value name="item_id" start-index="33" stop-index="39" />-->
+            <!--</predicate>-->
+            <!--<predicate start-index="57" stop-index="77" literal-stop-index="87">-->
+            <!--<column-left-value name="item_id" start-index="57" stop-index="63" />-->
+            <!--</predicate>-->
+            <!--</and-predicate>-->
+        </where>
+        <order-by>
+            <column-item name="item_id" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>
