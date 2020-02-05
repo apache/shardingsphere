@@ -500,14 +500,36 @@
         </set>
     </insert>
     
-    <!--<insert sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">-->
-            <!--<table name="t_order" start-index="12" stop-index="18" />-->
-            <!--<table name="t_order" start-index="21" stop-index="27" />-->
-            <!--<table name="t_order" start-index="39" stop-index="45" />-->
-            <!--<table name="t_order" start-index="56" stop-index="62" />-->
-            <!--<table name="t_order" start-index="113" stop-index="119" />-->
-            <!--<table name="t_order" start-index="137" stop-index="143" />-->
-    <!--</insert>-->
+    <insert sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="70">
+            <column name="order_id" start-index="21" stop-index="36">
+                <owner name="t_order" start-index="21" stop-index="27" />
+            </column>
+            <column name="user_id" start-index="39" stop-index="53">
+                <owner name="t_order" start-index="39" stop-index="45" />
+            </column>
+            <column name="status" start-index="56" stop-index="69">
+                <owner name="t_order" start-index="56" stop-index="62" />
+            </column>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="init" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
     
     <insert sql-case-id="insert_with_batch" parameters="1000, 10, 'init', 1100, 11, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
@@ -642,9 +664,49 @@
         </values>
     </insert>
     
-    <!--<insert sql-case-id="insert_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">-->
-            <!--<table name="t_order_item" start-index="12" stop-index="23" />-->
-    <!--</insert>-->
+    <insert sql-case-id="insert_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">
+        <table name="t_order_item" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="65">
+            <column name="order_id" start-index="25" stop-index="32" />
+            <column name="user_id" start-index="35" stop-index="41" />
+            <column name="status" start-index="44" stop-index="49" />
+            <column name="creation_date" start-index="52" stop-index="64" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1000" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="10" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2017-08-08" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="1001" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="3" />
+                    <literal-expression value="10" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2017-08-08" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
     
     <insert sql-case-id="insert_with_geography" parameters="7, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
         <table name="t_order" start-index="12" stop-index="18" />

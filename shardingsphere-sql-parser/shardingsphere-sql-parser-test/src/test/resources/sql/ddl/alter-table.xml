@@ -331,6 +331,10 @@
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_with_exist_index">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_with_bracket">
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="12" stop-index="20" />
     </alter-table>

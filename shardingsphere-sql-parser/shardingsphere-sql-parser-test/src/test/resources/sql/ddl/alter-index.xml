@@ -22,10 +22,6 @@
     <alter-index sql-case-id="alter_index_with_space" />
     <alter-index sql-case-id="alter_index_with_quota" />
     
-    <!--<alter-index sql-case-id="create_table_with_exist_index">-->
-        <!--<table name="t_order" start-index="12" stop-index="18" />-->
-    <!--</alter-index>-->
-    
     <alter-index sql-case-id="alter_index_rebuild">
         <table name="t_order" start-index="27" stop-index="33" />
     </alter-index>
