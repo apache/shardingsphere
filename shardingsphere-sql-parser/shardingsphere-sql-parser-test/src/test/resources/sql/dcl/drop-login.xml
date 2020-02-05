@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="drop_login" />
+    <drop-login sql-case-id="drop_login" />
 </sql-parser-test-cases>

@@ -106,7 +106,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
-        result.setParametersCount(currentParameterIndex);
+        result.setParametersCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -147,7 +147,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.setWhere(whereSegment);
             result.getAllSQLSegments().add(whereSegment);
         }
-        result.setParametersCount(currentParameterIndex);
+        result.setParametersCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -207,7 +207,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
         }
-        result.setParametersCount(currentParameterIndex);
+        result.setParametersCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -241,7 +241,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO : Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.unionClause());
-        result.setParametersCount(currentParameterIndex);
+        result.setParametersCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -385,7 +385,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         WhereSegment result = new WhereSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.setParameterMarkerStartIndex(currentParameterIndex);
+        result.setParameterMarkerStartIndex(getCurrentParameterIndex());
         ASTNode segment = visit(ctx.expr());
         if (segment instanceof OrPredicateSegment) {
             result.getAndPredicates().addAll(((OrPredicateSegment) segment).getAndPredicates());
@@ -394,7 +394,25 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             andPredicate.getPredicates().add((PredicateSegment) segment);
             result.getAndPredicates().add(andPredicate);
         }
-        result.setParametersCount(currentParameterIndex);
+        result.setParametersCount(getCurrentParameterIndex());
         return result;
+    }
+    
+    private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
+        Collection<InsertValuesSegment> result = new LinkedList<>();
+        for (AssignmentValuesContext each : assignmentValuesContexts) {
+            result.add((InsertValuesSegment) visit(each));
+        }
+        return result;
+    }
+    
+    private boolean isDistinct(final SelectClauseContext ctx) {
+        for (SelectSpecificationContext each : ctx.selectSpecification()) {
+            boolean eachDistinct = ((BooleanValue) visit(each)).isCorrect();
+            if (eachDistinct) {
+                return true;
+            }
+        }
+        return false;
     }
 }

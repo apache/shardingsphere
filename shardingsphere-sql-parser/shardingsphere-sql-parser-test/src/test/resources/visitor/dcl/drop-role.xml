@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="drop_role" />
-    <common sql-case-id="drop_roles"  />
-    <common sql-case-id="drop_role_if_exists" />
+    <drop-role sql-case-id="drop_role" />
+    <drop-role sql-case-id="drop_roles"  />
+    <drop-role sql-case-id="drop_role_if_exists" />
 </sql-parser-test-cases>

@@ -17,25 +17,25 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="alter_no_identified_role" />
-    <common sql-case-id="alter_external_role" />
-    <common sql-case-id="alter_global_role" />
-    <common sql-case-id="alter_role_with_password" />
-    <common sql-case-id="alter_role_with_container" />
-    <common sql-case-id="alter_role_with_password_postgresql" />
-    <common sql-case-id="alter_current_user_with_password" />
-    <common sql-case-id="alter_role_with_option" />
-    <common sql-case-id="alter_role_with_options" />
-    <common sql-case-id="rename_role" />
-    <common sql-case-id="alter_role_set_config" />
-    <common sql-case-id="alter_all_roles_set_config" />
-    <common sql-case-id="alter_role_set_config_in_database" />
-    <common sql-case-id="alter_role_set_config_from_current_user" />
-    <common sql-case-id="alter_role_reset_config" />
-    <common sql-case-id="alter_all_roles_reset_config" />
-    <common sql-case-id="alter_role_reset_config_in_database" />
-    <common sql-case-id="alter_role_reset_all_config" />
-    <common sql-case-id="alter_role_add_member" />
-    <common sql-case-id="alter_role_drop_member" />
-    <common sql-case-id="alter_role_rename" />
+    <alter-role sql-case-id="alter_no_identified_role" />
+    <alter-role sql-case-id="alter_external_role" />
+    <alter-role sql-case-id="alter_global_role" />
+    <alter-role sql-case-id="alter_role_with_password" />
+    <alter-role sql-case-id="alter_role_with_container" />
+    <alter-role sql-case-id="alter_role_with_password_postgresql" />
+    <alter-role sql-case-id="alter_current_user_with_password" />
+    <alter-role sql-case-id="alter_role_with_option" />
+    <alter-role sql-case-id="alter_role_with_options" />
+    <alter-role sql-case-id="alter_role_with_rename" />
+    <alter-role sql-case-id="alter_role_set_config" />
+    <alter-role sql-case-id="alter_all_roles_set_config" />
+    <alter-role sql-case-id="alter_role_set_config_in_database" />
+    <alter-role sql-case-id="alter_role_set_config_from_current_user" />
+    <alter-role sql-case-id="alter_role_reset_config" />
+    <alter-role sql-case-id="alter_all_roles_reset_config" />
+    <alter-role sql-case-id="alter_role_reset_config_in_database" />
+    <alter-role sql-case-id="alter_role_reset_all_config" />
+    <alter-role sql-case-id="alter_role_add_member" />
+    <alter-role sql-case-id="alter_role_drop_member" />
+    <alter-role sql-case-id="alter_role_rename" />
 </sql-parser-test-cases>

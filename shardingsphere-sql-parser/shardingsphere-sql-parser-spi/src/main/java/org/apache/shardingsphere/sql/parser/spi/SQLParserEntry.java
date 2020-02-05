@@ -56,5 +56,5 @@ public interface SQLParserEntry {
      * @param visitorName visitor name
      * @return SQL visitor class type
      */
-    Class<? extends SQLVisitor> getVisitorClass(final String visitorName);
+    Class<? extends SQLVisitor> getVisitorClass(String visitorName);
 }

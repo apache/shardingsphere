@@ -39,7 +39,7 @@ import java.util.Map.Entry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLVisitorFactory {
     
-    private static Map<String, Collection<String>> SQL_VISITOR_RULES = new LinkedHashMap<>();
+    private static final Map<String, Collection<String>> SQL_VISITOR_RULES = new LinkedHashMap<>();
     
     static {
         SQL_VISITOR_RULES.put("DMLVisitor", 
@@ -51,6 +51,7 @@ public final class SQLVisitorFactory {
      * New instance of SQL visitor.
      * 
      * @param databaseTypeName name of database type
+     * @param visitorRuleName visitor rule name
      * @return SQL visitor
      */
     public static SQLVisitor newInstance(final String databaseTypeName, final String visitorRuleName) {
@@ -63,7 +64,7 @@ public final class SQLVisitorFactory {
     }
     
     private static String getVisitorName(final String visitorRuleName) {
-        for (Entry<String, Collection<String>> entry : SQL_VISITOR_RULES.entrySet()){
+        for (Entry<String, Collection<String>> entry : SQL_VISITOR_RULES.entrySet()) {
             if (entry.getValue().contains(visitorRuleName)) {
                 return entry.getKey();
             }

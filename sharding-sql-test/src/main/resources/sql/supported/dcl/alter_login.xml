@@ -22,7 +22,6 @@
     <sql-case id="alter_login_set_hashed_password" value="ALTER LOGIN login1 WITH PASSWORD = 0x01000CF35567C60BFB41EBDE4CF700A985A13D773D6B45B90900 HASHED" db-types="SQLServer" />
     <sql-case id="alter_login_set_password_with_old_password" value="ALTER LOGIN login1 WITH PASSWORD = 'password' OLD_PASSWORD = 'password'" db-types="SQLServer" />
     <sql-case id="alter_login_set_default_database" value="ALTER LOGIN login1 WITH DEFAULT_DATABASE = database" db-types="SQLServer" />
-    <sql-case id="create_login_set_expired_password" value="CREATE LOGIN login1 WITH PASSWORD = 'password' MUST_CHANGE, CHECK_EXPIRATION = ON" db-types="SQLServer" />
     <sql-case id="alter_login_add_credential" value="ALTER LOGIN login1 ADD CREDENTIAL credential" db-types="SQLServer" />
     <sql-case id="alter_login_drop_credential" value="ALTER LOGIN login1 DROP CREDENTIAL credential" db-types="SQLServer" />
     <sql-case id="alter_login_unlock" value="ALTER LOGIN login1 WITH PASSWORD = 'password' UNLOCK" db-types="SQLServer" />

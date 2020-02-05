@@ -27,13 +27,13 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Show index statement test case.
- * 
+ *
  * @author zhangliang 
  */
 @Getter
 @Setter
 public final class ShowIndexStatementTestCase extends SQLParserTestCase {
-    
+
     @XmlElement
     private ExpectedTable table;
     

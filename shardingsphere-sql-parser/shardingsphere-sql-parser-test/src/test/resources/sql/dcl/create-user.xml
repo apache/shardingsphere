@@ -23,10 +23,6 @@
     <create-user sql-case-id="create_user_identified_by_without_hostname" />
     <create-user sql-case-id="create_user_identified_by_for" />
     <create-user sql-case-id="create_user_password" />
-    <create-user sql-case-id="create_login" />
-    <create-user sql-case-id="create_role" />
-    <create-user sql-case-id="create_role_identified_by" />
-    <create-user sql-case-id="create_role_password" />
     <create-user sql-case-id="create_user" />
     <create-user sql-case-id="create_users" />
     <create-user sql-case-id="create_user_if_not_exists" />
@@ -43,7 +39,6 @@
     <create-user sql-case-id="create_global_user" />
     <create-user sql-case-id="create_user_with_password" />
     <create-user sql-case-id="create_user_with_tablespace" />
-    <create-user sql-case-id="create_role_with_container" />
     <create-user sql-case-id="create_user_with_quota_option" />
     <create-user sql-case-id="create_user_with_password_expire_lock" />
     <create-user sql-case-id="create_user_only_with_name" />
