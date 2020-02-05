@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
@@ -24,5 +27,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
  *
  * @author zhangyonglun
  */
+@Getter
+@Setter
 public final class ShowIndexStatement extends DALStatement {
+
+    private TableSegment table;
 }

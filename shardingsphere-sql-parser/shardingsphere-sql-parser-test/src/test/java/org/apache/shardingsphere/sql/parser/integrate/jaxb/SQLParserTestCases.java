@@ -193,7 +193,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "show-index")
     private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
     

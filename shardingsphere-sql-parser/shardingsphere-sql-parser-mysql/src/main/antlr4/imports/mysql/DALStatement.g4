@@ -40,11 +40,11 @@ showTableStatus
     ;
 
 showColumns
-    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable_ fromSchema? (showLike | showWhereClause_)?
+    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? (showLike | showWhereClause_)?
     ;
 
 showIndex
-    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable_ fromSchema? showWhereClause_?
+    : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable fromSchema? showWhereClause_?
     ;
 
 showCreateTable
@@ -59,7 +59,7 @@ fromSchema
     : (FROM | IN) schemaName
     ;
 
-fromTable_
+fromTable
     : (FROM | IN) tableName
     ;
 

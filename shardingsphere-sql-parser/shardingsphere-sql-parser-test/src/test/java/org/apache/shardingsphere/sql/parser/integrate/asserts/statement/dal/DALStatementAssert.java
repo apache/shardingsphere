@@ -55,6 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql
  *
  * @author zhangliang
  */
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DALStatementAssert {
     
