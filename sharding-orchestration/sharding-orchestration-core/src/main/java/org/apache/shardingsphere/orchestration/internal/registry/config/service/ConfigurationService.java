@@ -27,6 +27,10 @@ import com.google.common.collect.Maps;
 
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.core.yaml.representer.processor.ShardingTupleProcessorFactory;
+import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
@@ -37,11 +41,6 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfi
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
@@ -52,6 +51,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Configuration service.
@@ -200,11 +200,11 @@ public final class ConfigurationService {
      * @return is sharding rule or not
      */
     public boolean isShardingRule(final String shardingSchemaName) {
-        if (configCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptRule:\n")) {
+        if (configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("encryptRule:\n")) {
             return true;
         }
-        if (configCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("tables:\n")
-            && !regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n")) {
+        if (configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("tables:\n")
+            && !configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n")) {
             return true;
         }
         return false;
@@ -216,8 +216,8 @@ public final class ConfigurationService {
      * @return is encrypt rule or not
      */
     public boolean isEncryptRule(final String shardingSchemaName) {
-        return !configCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptRule:\n")
-                && configCenter.getDirectly(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n");
+        return !configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("encryptRule:\n")
+                && configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n");
     }
     
     /**
@@ -247,7 +247,7 @@ public final class ConfigurationService {
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration(final String shardingSchemaName) {
         return new ShardingRuleConfigurationYamlSwapper().swap(
-            YamlEngine.unmarshal(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)), YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
+            YamlEngine.unmarshal(configCenter.get(configNode.getRulePath(shardingSchemaName)), YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
     }
     
     /**

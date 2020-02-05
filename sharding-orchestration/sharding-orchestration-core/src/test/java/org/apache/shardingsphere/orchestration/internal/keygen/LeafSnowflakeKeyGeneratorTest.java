@@ -77,7 +77,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("service.id", "testService1");
         properties.setProperty("registry.center.digest", "name:123456");
         properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
-        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         properties.setProperty("max.vibration.offset", String.valueOf(3));
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new FixedTimeService(6));
         leafSnowflakeKeyGenerator.setProperties(properties);
@@ -100,7 +100,7 @@ public final class LeafSnowflakeKeyGeneratorTest {
         properties.setProperty("service.id", "testService1");
         properties.setProperty("registry.center.digest", "name:123456");
         properties.setProperty("max.tolerate.time.difference.milliseconds", "5000");
-        properties.setProperty("registry.center.type", "ForthTestRegistryCenter");
+        properties.setProperty("distributedLockManagementType", "ForthDistributedLockManagement");
         properties.setProperty("max.vibration.offset", String.valueOf(3));
         FieldUtil.setStaticFinalField(leafSnowflakeKeyGenerator, "timeService", new TimeService());
         leafSnowflakeKeyGenerator.setProperties(properties);
