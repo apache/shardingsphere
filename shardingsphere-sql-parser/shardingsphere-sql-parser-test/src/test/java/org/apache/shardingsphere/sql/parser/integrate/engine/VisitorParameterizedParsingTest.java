@@ -42,7 +42,10 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Properties;
+
+import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -77,8 +80,16 @@ public final class VisitorParameterizedParsingTest {
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         // TODO resume me after all test cases passed
-        //        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(SQL_PARSER_TEST_CASES_REGISTRY.countAllSQLParserTestCases()));
+        //        checkTestCases();
         return SQL_CASES_LOADER.getSQLTestParameters();
+    }
+    
+    private static void checkTestCases() {
+        Collection<String> allSQLCaseIDs = new HashSet<>(SQL_CASES_LOADER.getAllSQLCaseIDs());
+        if (allSQLCaseIDs.size() != SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs().size()) {
+            allSQLCaseIDs.removeAll(SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs());
+            fail(String.format("The count of SQL cases and SQL parser cases are mismatched, missing cases are: %s", allSQLCaseIDs));
+        }
     }
     
     @Test

@@ -28,7 +28,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class SQLCasesLoaderTest {
     
@@ -67,6 +66,6 @@ public final class SQLCasesLoaderTest {
     
     @Test
     public void assertCountAllSQLCases() {
-        assertTrue(SQLCasesRegistry.getInstance().getSqlCasesLoader().countAllSQLCases() > 0);
+        assertFalse(SQLCasesRegistry.getInstance().getSqlCasesLoader().getAllSQLCaseIDs().isEmpty());
     }
 }

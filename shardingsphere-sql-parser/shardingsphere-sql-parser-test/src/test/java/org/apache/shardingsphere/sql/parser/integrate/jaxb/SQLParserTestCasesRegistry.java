@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,11 +88,11 @@ public final class SQLParserTestCasesRegistry {
     }
     
     /**
-     * Count all SQL parser test cases.
+     * Get all SQL case IDs.
      *
-     * @return count of all test cases
+     * @return all SQL case IDs
      */
-    public int countAllSQLParserTestCases() {
-        return sqlParserTestCases.size();
+    public Collection<String> getAllSQLCaseIDs() {
+        return sqlParserTestCases.keySet();
     }
 }

@@ -206,11 +206,11 @@ public final class SQLCasesLoader {
     }
     
     /**
-     * Count all supported SQL cases.
-     *
-     * @return count of all supported SQL cases
+     * Get all SQL case IDs.
+     * 
+     * @return all SQL case IDs
      */
-    public int countAllSQLCases() {
-        return sqlCases.size();
+    public Collection<String> getAllSQLCaseIDs() {
+        return sqlCases.keySet();
     }
 }
