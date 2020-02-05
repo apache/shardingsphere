@@ -57,7 +57,6 @@ public final class SQLVisitorFactory {
                 RuleName.SHOW_CREATE_TABLE.getName(), RuleName.SHOW_OTHER.getName(), RuleName.SET_VARIABLE.getName(), RuleName.CALL.getName()));
     }
     
-    
     /** 
      * New instance of SQL visitor.
      * 
