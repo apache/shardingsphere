@@ -47,11 +47,11 @@ import static org.junit.Assert.fail;
 @Slf4j
 public final class SQLParserParameterizedTest {
     
+    private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
+    
+    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    
     private static final Properties PROPS = new Properties();
-    
-    private static SQLCasesLoader sqlCasesLoader;
-    
-    private static SQLParserTestCasesRegistry sqlParserTestCasesRegistry;
     
     private final String sqlCaseId;
     
@@ -65,31 +65,25 @@ public final class SQLParserParameterizedTest {
         } catch (final IOException ex) {
             log.warn("Can not find file `runtime-config.properties`, use default properties configuration.", ex);
         }
-        try {
-            sqlCasesLoader = SQLCasesRegistry.getInstance().getSqlCasesLoader();
-            sqlParserTestCasesRegistry = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
-        } catch (ExceptionInInitializerError ex) {
-            ex.printStackTrace();
-        }
     }
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         checkTestCases();
-        return sqlCasesLoader.getSQLTestParameters();
+        return SQL_CASES_LOADER.getSQLTestParameters();
     }
     
     private static void checkTestCases() {
-        Collection<String> allSQLCaseIDs = new HashSet<>(sqlCasesLoader.getAllSQLCaseIDs());
-        if (allSQLCaseIDs.size() != sqlParserTestCasesRegistry.getAllSQLCaseIDs().size()) {
-            allSQLCaseIDs.removeAll(sqlParserTestCasesRegistry.getAllSQLCaseIDs());
+        Collection<String> allSQLCaseIDs = new HashSet<>(SQL_CASES_LOADER.getAllSQLCaseIDs());
+        if (allSQLCaseIDs.size() != SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs().size()) {
+            allSQLCaseIDs.removeAll(SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs());
             fail(String.format("The count of SQL cases and SQL parser cases are mismatched, missing cases are: %s", allSQLCaseIDs));
         }
     }
     
     @Test
     public void assertSupportedSQL() {
-        String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, sqlParserTestCasesRegistry.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLParserTestCase expected = SQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
