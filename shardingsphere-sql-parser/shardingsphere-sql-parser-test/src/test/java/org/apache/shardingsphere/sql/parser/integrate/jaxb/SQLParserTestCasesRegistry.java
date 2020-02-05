@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.SQLParserTestCases;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
