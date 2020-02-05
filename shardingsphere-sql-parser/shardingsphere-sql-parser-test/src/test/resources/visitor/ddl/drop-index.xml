@@ -20,11 +20,11 @@
     <drop-index sql-case-id="drop_index">
         <table name="t_log" start-index="26" stop-index="30" />
     </drop-index>
-
+    
     <drop-index sql-case-id="drop_index_with_space">
         <table name="t_order" start-index="50" stop-index="56" />
     </drop-index>
-
+    
     <drop-index sql-case-id="drop_index_with_back_quota">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="36" />
     </drop-index>
