@@ -99,10 +99,6 @@
         <table name="t_order" start-index="31" stop-index="37" />
     </revoke>
     
-    <revoke sql-case-id="revoke_select_on_table">
-        <table name="t_order" start-index="23" stop-index="29" />
-    </revoke>
-    
     <revoke sql-case-id="revoke_select_on_tables">
         <table name="t_order" start-index="23" stop-index="29" />
         <table name="t_order_item" start-index="32" stop-index="43" />
@@ -175,15 +171,19 @@
     <revoke sql-case-id="revoke_usage_on_types" />
     <revoke sql-case-id="revoke_roles" />
     
-    <revoke sql-case-id="revoke_select_on_table">
-        <table name="t_order" start-index="17" stop-index="23" />
-    </revoke>
-    
     <revoke sql-case-id="revoke_select_to_users">
         <table name="t_order" start-index="28" stop-index="34" />
     </revoke>
     
     <revoke sql-case-id="revoke_crud_on_table">
         <table name="t_order" start-index="41" stop-index="47" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_on_table_for_postgresql">
+        <table name="t_order" start-index="23" stop-index="29" />
+    </revoke>
+    
+    <revoke sql-case-id="revoke_select_on_table_for_sqlserver">
+        <table name="t_order" start-index="17" stop-index="23" />
     </revoke>
 </sql-parser-test-cases>

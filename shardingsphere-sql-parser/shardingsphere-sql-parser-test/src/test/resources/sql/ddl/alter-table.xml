@@ -306,10 +306,6 @@
         <table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="12" stop-index="20" />
     </alter-table>
     
-    <alter-table sql-case-id="alter_table_alter_column">
-        <table name="t_order" start-index="12" stop-index="18" />
-    </alter-table>
-    
     <alter-table sql-case-id="alter_table_alter_columns">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
@@ -352,10 +348,6 @@
         </add-column>
     </alter-table>
     
-    <alter-table sql-case-id="alter_table_alter_column">
-        <table name="t_order" start-index="12" stop-index="18" />
-    </alter-table>
-    
     <alter-table sql-case-id="alter_table_drop_columns_sqlserver">
         <table name="t_order" start-index="12" stop-index="18" />
         <drop-column name="user_id" />
@@ -372,6 +364,14 @@
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_constraints_sqlserver">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_alter_column_for_postgresql">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_alter_column_for_sqlserver">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
 </sql-parser-test-cases>

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.integrate.engine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
@@ -37,10 +37,10 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Properties;
 
-//import static org.hamcrest.CoreMatchers.is;
-//import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -69,10 +69,16 @@ public final class SQLParserParameterizedTest {
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        System.out.println("SQL_CASES_LOADER:" + SQL_CASES_LOADER.countAllSQLCases());
-        System.out.println("SQL_PARSER_TEST_CASES_REGISTRY:" + SQL_PARSER_TEST_CASES_REGISTRY.countAllSQLParserTestCases());
-//        assertThat(SQL_CASES_LOADER.countAllSQLCases(), is(SQL_PARSER_TEST_CASES_REGISTRY.countAllSQLParserTestCases()));
+        checkTestCases();
         return SQL_CASES_LOADER.getSQLTestParameters();
+    }
+    
+    private static void checkTestCases() {
+        Collection<String> allSQLCaseIDs = new HashSet<>(SQL_CASES_LOADER.getAllSQLCaseIDs());
+        if (allSQLCaseIDs.size() != SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs().size()) {
+            allSQLCaseIDs.removeAll(SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs());
+            fail(String.format("The count of SQL cases and SQL parser cases are mismatched, missing cases are: %s", allSQLCaseIDs));
+        }
     }
     
     @Test
