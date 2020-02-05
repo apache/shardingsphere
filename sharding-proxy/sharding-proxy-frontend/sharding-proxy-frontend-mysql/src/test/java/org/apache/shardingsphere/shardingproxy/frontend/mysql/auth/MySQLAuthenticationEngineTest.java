@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MySQLAuthenticationEngineTest {
+public final class MySQLAuthenticationEngineTest {
 
     private final MySQLAuthenticationHandler authenticationHandler = mock(MySQLAuthenticationHandler.class);
 

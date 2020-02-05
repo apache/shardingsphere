@@ -52,6 +52,8 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private static final long TIMESTAMP_LEFT_SHIFT_BITS = WORKER_ID_LEFT_SHIFT_BITS + WORKER_ID_BITS;
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10000;
+
+    private static final int DEFAULT_VIBRATION_VALUE = 1;
     
     private static final String SERVICE_ID_REGULAR_PATTERN = "^((?!/).)*$";
     
@@ -79,7 +81,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
 
     private DistributedLockManagement distributedLockManagement;
     
-    private byte sequenceOffset;
+    private int sequenceOffset = -1;
     
     private long sequence;
     
@@ -90,6 +92,8 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private long lastUpdateTime;
     
     private long maxTolerateTimeDifference;
+
+    private int maxVibrationOffset;
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -116,6 +120,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     private void initializeLeafSnowflakeKeyGeneratorIfNeed() {
         if (needToBeInitialized()) {
             maxTolerateTimeDifference = initializeMaxTolerateTimeDifference();
+            maxVibrationOffset = initializeMaxVibrationOffset();
             distributedLockManagement = initializeDistributedLockManagement();
             initializeTimeNodeIfNeed(maxTolerateTimeDifference, distributedLockManagement);
             initializeCurrentMaxWorkIdNodeIfNeed(distributedLockManagement);
@@ -179,14 +184,14 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     private String getTimeDirectoryWithServiceId() {
-        String serviceId = properties.getProperty("serviceId");
+        String serviceId = properties.getProperty("service.id");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
         Preconditions.checkArgument(serviceId.matches(SERVICE_ID_REGULAR_PATTERN));
         return PARENT_NODE + SLANTING_BAR + serviceId + TIME_NODE;
     }
     
     private String getWorkIdDirectoryWithServiceId() {
-        String serviceId = properties.getProperty("serviceId");
+        String serviceId = properties.getProperty("service.id");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serviceId));
         Preconditions.checkArgument(serviceId.matches(SERVICE_ID_REGULAR_PATTERN));
         return PARENT_NODE + SLANTING_BAR + serviceId + WORK_ID_NODE;
@@ -273,13 +278,19 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     private void vibrateSequenceOffset() {
-        sequenceOffset = (byte) (~sequenceOffset & 1);
+        sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
     }
     
     private long initializeMaxTolerateTimeDifference() {
-        String maxTimeDifference = properties.getProperty("maxTimeDifference", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS));
+        String maxTimeDifference = properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS));
         long result = Long.valueOf(maxTimeDifference);
         Preconditions.checkArgument(result >= 0L && result < Long.MAX_VALUE);
+        return result;
+    }
+
+    private int initializeMaxVibrationOffset() {
+        int result = Integer.parseInt(properties.getProperty("max.vibration.offset", String.valueOf(DEFAULT_VIBRATION_VALUE)));
+        Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset");
         return result;
     }
     
@@ -295,7 +306,7 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     private String getServerList() {
-        String result = properties.getProperty("serverList");
+        String result = properties.getProperty("server.list");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(result));
         return result;
     }

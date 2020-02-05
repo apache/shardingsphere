@@ -23,16 +23,26 @@ import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.metadata.MemorizedDataSourceMetaData;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 
 public abstract class BaseDCLIT extends SingleIT {
     
@@ -42,9 +52,50 @@ public abstract class BaseDCLIT extends SingleIT {
                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), getInstanceDataSourceMap(), getDatabaseTypeEnvironment().getDatabaseType());
+                EnvironmentPath.getAuthorityResourcesPath(shardingRuleType), null == getDataSourceMap() ? null : createInstanceDataSourceMap(), getDatabaseTypeEnvironment().getDatabaseType());
     }
-
+    
+    private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
+        return "masterslave".equals(getRuleType()) || "shadow".equals(getRuleType()) ? getDataSourceMap() : getShardingInstanceDataSourceMap();
+    }
+    
+    private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        Map<String, DataSourceMetaData> dataSourceMetaDataMap = getDataSourceMetaDataMap();
+        for (Entry<String, DataSource> entry : getDataSourceMap().entrySet()) {
+            if (!isExisted(entry.getKey(), result.keySet(), dataSourceMetaDataMap)) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
+        for (Entry<String, DataSource> entry : getDataSourceMap().entrySet()) {
+            try (Connection connection = entry.getValue().getConnection()) {
+                DatabaseMetaData metaData = connection.getMetaData();
+                result.put(entry.getKey(), getDatabaseTypeEnvironment().getDatabaseType().getDataSourceMetaData(metaData.getURL(), metaData.getUserName()));
+            }
+        }
+        return result;
+    }
+    
+    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
+        DataSourceMetaData sample = dataSourceMetaDataMap.get(dataSourceName);
+        for (String each : existedDataSourceNames) {
+            if (isInSameDatabaseInstance(sample, dataSourceMetaDataMap.get(each))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
+        return sample instanceof MemorizedDataSourceMetaData
+                ? (Objects.equals(target.getSchema(), sample.getSchema())) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
+    }
+    
     @BeforeClass
     public static void initDatabasesAndTables() {
         createDatabasesAndTables();
@@ -58,7 +109,7 @@ public abstract class BaseDCLIT extends SingleIT {
     @Before
     public void insertData() throws SQLException, ParseException, IOException, JAXBException {
         if (getDatabaseTypeEnvironment().isEnabled()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getShardingRuleType()), getDataSourceMap()).initialize();
+            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
             authorityEnvironmentManager.initialize();
         }
     }

@@ -23,11 +23,11 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
@@ -70,9 +70,9 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(),
                 new OrchestrationMasterSlaveRule(masterSlaveDataSource.getRuntimeContext().getRule().getRuleConfiguration()), 
-                masterSlaveDataSource.getRuntimeContext().getProps().getProps());
+                masterSlaveDataSource.getRuntimeContext().getProperties().getProps());
         initShardingOrchestrationFacade(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
-                getRuleConfigurationMap(), dataSource.getRuntimeContext().getProps().getProps());
+                getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
@@ -93,7 +93,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @SneakyThrows
     public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), 
-                new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration()), dataSource.getRuntimeContext().getProps().getProps());
+                new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
     /**
@@ -108,7 +108,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         dataSource.close(getDeletedDataSources(dataSourceConfigurations));
         dataSource.close(getModifiedDataSources(dataSourceConfigurations).keySet());
         dataSource = new MasterSlaveDataSource(getChangedDataSources(
-                dataSource.getDataSourceMap(), dataSourceConfigurations), dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getProps().getProps());
+                dataSource.getDataSourceMap(), dataSourceConfigurations), dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getProperties().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }

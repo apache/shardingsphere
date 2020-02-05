@@ -125,7 +125,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     @Test
     public void assertRenewProperties() {
         masterSlaveDataSource.renew(getPropertiesChangedEvent());
-        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(masterSlaveDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
@@ -161,13 +161,13 @@ public final class OrchestrationMasterSlaveDataSourceTest {
         assertThat(masterSlaveDataSource.getConnection("root", "root"), instanceOf(Connection.class));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertClose() throws Exception {
         masterSlaveDataSource.close();
         try {
             masterSlaveDataSource.getDataSource().getDataSourceMap().values().iterator().next().getConnection();
         } catch (final SQLException ex) {
-            throw new ShardingException(ex.getMessage());
+            throw new ShardingSphereException(ex.getMessage());
         }
     }
 }

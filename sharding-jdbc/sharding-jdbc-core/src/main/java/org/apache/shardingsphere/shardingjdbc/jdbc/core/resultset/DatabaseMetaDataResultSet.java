@@ -106,7 +106,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);
                 String indexName = resultSet.getString(i);
-                result.addObject(indexName.endsWith(tableName) ? indexName.substring(0, indexName.indexOf(tableName) - 1) : indexName);
+                result.addObject(null != indexName && indexName.endsWith(tableName) ? indexName.substring(0, indexName.indexOf(tableName) - 1) : indexName);
             } else {
                 result.addObject(resultSet.getObject(i));
             }
@@ -310,18 +310,18 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     @Override
     public int getType() throws SQLException {
         checkClosed();
-        return this.type;
+        return type;
     }
     
     @Override
     public int getConcurrency() throws SQLException {
         checkClosed();
-        return this.concurrency;
+        return concurrency;
     }
     
     @Override
-    public boolean isClosed() throws SQLException {
-        return this.closed;
+    public boolean isClosed() {
+        return closed;
     }
     
     private void checkClosed() throws SQLException {
@@ -338,13 +338,13 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     
     @EqualsAndHashCode
     private final class DatabaseMetaDataObject {
-    
+        
         private final ArrayList<Object> objects;
-    
+        
         private DatabaseMetaDataObject(final int columnCount) {
             this.objects = new ArrayList<>(columnCount);
         }
-    
+        
         public void addObject(final Object object) {
             objects.add(object);
         }

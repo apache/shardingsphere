@@ -19,9 +19,9 @@ package org.apache.shardingsphere.dbtest.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -42,7 +42,7 @@ public final class IntegrateTestEnvironment {
     
     private final boolean runAdditionalTestCases;
     
-    private final Collection<String> shardingRuleTypes;
+    private final Collection<String> ruleTypes;
     
     private final Collection<DatabaseType> databaseTypes;
     
@@ -55,8 +55,8 @@ public final class IntegrateTestEnvironment {
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
-        runAdditionalTestCases = Boolean.valueOf(prop.getProperty("run.additional.cases"));
-        shardingRuleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("sharding.rule.type"));
+        runAdditionalTestCases = Boolean.parseBoolean(prop.getProperty("run.additional.cases"));
+        ruleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("rule.types"));
         databaseTypes = new LinkedList<>();
         for (String each : prop.getProperty("databases", "H2").split(",")) {
             databaseTypes.add(DatabaseTypes.getActualDatabaseType(each.trim()));

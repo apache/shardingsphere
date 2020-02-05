@@ -19,11 +19,11 @@ package org.apache.shardingsphere.opentracing.hook;
 
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.parse.hook.ParsingHook;
-import org.apache.shardingsphere.core.parse.hook.SPIParsingHook;
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
-import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
+import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
@@ -59,13 +59,13 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     @Test
     public void assertExecuteFailure() {
         parsingHook.start("SELECT * FROM XXX;");
-        parsingHook.finishFailure(new ShardingException("parse SQL error"));
+        parsingHook.finishFailure(new ShardingSphereException("parse SQL error"));
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/ShardingSphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();
         assertThat(actualTags.get(Tags.COMPONENT.getKey()), CoreMatchers.<Object>is(ShardingTags.COMPONENT_NAME));
         assertThat(actualTags.get(Tags.SPAN_KIND.getKey()), CoreMatchers.<Object>is(Tags.SPAN_KIND_CLIENT));
         assertThat(actualTags.get(Tags.DB_STATEMENT.getKey()), CoreMatchers.<Object>is("SELECT * FROM XXX;"));
-        assertSpanError(ShardingException.class, "parse SQL error");
+        assertSpanError(ShardingSphereException.class, "parse SQL error");
     }
 }

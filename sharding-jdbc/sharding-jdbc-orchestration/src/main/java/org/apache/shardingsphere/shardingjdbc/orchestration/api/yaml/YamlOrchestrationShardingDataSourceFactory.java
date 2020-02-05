@@ -113,10 +113,10 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
-        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationShardingRuleConfiguration.class);
+        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationShardingRuleConfiguration.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
-        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationShardingRuleConfiguration.class);
+        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationShardingRuleConfiguration.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
     }
 }

@@ -18,20 +18,18 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
-import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
-import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
-import org.apache.shardingsphere.core.execute.sql.execute.result.MemoryQueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.QueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.core.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareCallback;
-import org.apache.shardingsphere.core.route.RouteUnit;
-import org.apache.shardingsphere.core.route.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
+import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
+import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
+import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
+import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
+import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,17 +61,17 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     /**
      * Initialize executor.
      *
-     * @param routeResult route result
+     * @param shardingExecutionContext sharding execution context
      * @throws SQLException SQL exception
      */
-    public void init(final SQLRouteResult routeResult) throws SQLException {
-        setSqlStatementContext(routeResult.getSqlStatementContext());
-        getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
+    public void init(final ShardingExecutionContext shardingExecutionContext) throws SQLException {
+        setSqlStatementContext(shardingExecutionContext.getSqlStatementContext());
+        getInputGroups().addAll(obtainExecuteGroups(shardingExecutionContext.getExecutionUnits()));
         cacheStatements();
     }
     
-    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<RouteUnit> routeUnits) throws SQLException {
-        return getSqlExecutePrepareTemplate().getExecuteUnitGroups(routeUnits, new SQLExecutePrepareCallback() {
+    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
+        return getSqlExecutePrepareTemplate().getExecuteUnitGroups(executionUnits, new SQLExecutePrepareCallback() {
             
             @Override
             public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
@@ -81,8 +79,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
             }
             
             @Override
-            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final RouteUnit routeUnit, final ConnectionMode connectionMode) throws SQLException {
-                return new StatementExecuteUnit(routeUnit, createPreparedStatement(connection, routeUnit.getSqlUnit().getSql()), connectionMode);
+            public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {
+                return new StatementExecuteUnit(executionUnit, createPreparedStatement(connection, executionUnit.getSqlUnit().getSql()), connectionMode);
             }
         });
     }
@@ -104,7 +102,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         SQLExecuteCallback<QueryResult> executeCallback = new SQLExecuteCallback<QueryResult>(getDatabaseType(), isExceptionThrown) {
             
             @Override
-            protected QueryResult executeSQL(final RouteUnit routeUnit, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return getQueryResult(statement, connectionMode);
             }
         };
@@ -114,11 +112,8 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     private QueryResult getQueryResult(final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) statement;
         ResultSet resultSet = preparedStatement.executeQuery();
-        ShardingRule shardingRule = getConnection().getRuntimeContext().getRule();
-        ShardingProperties properties = getConnection().getRuntimeContext().getProps();
         getResultSets().add(resultSet);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet, shardingRule, properties, getSqlStatementContext())
-                : new MemoryQueryResult(resultSet, shardingRule, properties, getSqlStatementContext());
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new StreamQueryResult(resultSet) : new MemoryQueryResult(resultSet);
     }
     
     /**

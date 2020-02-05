@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-orchestration-center</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-orchestration-center-apollo</artifactId>
     <name>${project.artifactId}</name>
@@ -49,6 +49,10 @@
             <artifactId>apollo-openapi</artifactId>
             <version>${apollo.client.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
         </dependency>
     </dependencies>
 </project>

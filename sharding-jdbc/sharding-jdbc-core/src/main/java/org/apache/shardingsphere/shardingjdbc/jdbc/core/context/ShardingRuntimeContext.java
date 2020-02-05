@@ -18,24 +18,25 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
-import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
+import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
-import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceMapConnectionManager;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -46,18 +47,15 @@ import java.util.Properties;
  * @author zhangliang
  */
 @Getter
-public final class ShardingRuntimeContext extends AbstractRuntimeContext<ShardingRule> {
+public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeContext<ShardingRule> {
     
     private final DatabaseMetaData cachedDatabaseMetaData;
     
-    private final ShardingSphereMetaData metaData;
-    
     private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
     
-    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule rule, final Properties props, final DatabaseType databaseType) throws SQLException {
-        super(rule, props, databaseType);
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap, rule);
-        metaData = createMetaData(dataSourceMap, rule, databaseType);
+    public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props, final DatabaseType databaseType) throws SQLException {
+        super(dataSourceMap, shardingRule, props, databaseType);
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap, shardingRule);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
     }
@@ -68,30 +66,15 @@ public final class ShardingRuntimeContext extends AbstractRuntimeContext<Shardin
         }
     }
     
-    private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType) throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(getDataSourceURLs(dataSourceMap), databaseType);
-        TableMetas tableMetas = new TableMetas(getTableMetaDataInitializer(dataSourceMap, dataSourceMetas).load(shardingRule));
-        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
-    }
-    
-    private Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        Map<String, String> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), getDataSourceURL(entry.getValue()));
+    @Override
+    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
+        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(2, 1);
+        tableMetaDataInitializes.put(getRule(), new ShardingTableMetaDataLoader(dataSourceMetas, getExecutorEngine(), new JDBCDataSourceMapConnectionManager(dataSourceMap), 
+                getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED)));
+        if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
+            tableMetaDataInitializes.put(getRule().getEncryptRule(), new EncryptTableMetaDataDecorator());
         }
-        return result;
-    }
-    
-    private String getDataSourceURL(final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return connection.getMetaData().getURL();
-        }
-    }
-    
-    private TableMetaDataInitializer getTableMetaDataInitializer(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
-        return new TableMetaDataInitializer(dataSourceMetas, getExecuteEngine(), new JDBCTableMetaDataConnectionManager(dataSourceMap),
-                this.getProps().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                this.getProps().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     
     @Override

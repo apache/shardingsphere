@@ -144,7 +144,7 @@ public final class OrchestrationEncryptDataSourceTest {
     @Test
     public void assertRenewProperties() {
         encryptDataSource.renew(getPropertiesChangedEvent());
-        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {
