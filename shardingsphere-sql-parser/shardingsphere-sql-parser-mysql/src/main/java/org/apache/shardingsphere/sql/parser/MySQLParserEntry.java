@@ -22,6 +22,11 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLDALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLDCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLDDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLTCLVisitor;
 
 /**
  * SQL parser entry for MySQL.
@@ -47,7 +52,19 @@ public final class MySQLParserEntry implements SQLParserEntry {
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
-        return MySQLVisitor.class;
+    public Class<? extends SQLVisitor> getVisitorClass(final String visitorName) {
+        if (MySQLDMLVisitor.class.getSimpleName().contains(visitorName)) {
+            return MySQLDMLVisitor.class;
+        }
+        if (MySQLDDLVisitor.class.getSimpleName().contains(visitorName)) {
+            return MySQLDDLVisitor.class;
+        }
+        if (MySQLTCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return MySQLTCLVisitor.class;
+        }
+        if (MySQLDCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return MySQLDCLVisitor.class;
+        }
+        return MySQLDALVisitor.class;
     }
 }

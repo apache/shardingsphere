@@ -39,6 +39,6 @@ public final class SQLVisitorEngine {
      * @return ast node
      */
     public ASTNode parse() {
-        return (ASTNode) SQLVisitorFactory.newInstance(databaseTypeName).visit(parseTree);
+        return (ASTNode) SQLVisitorFactory.newInstance(databaseTypeName, parseTree.getClass().getSimpleName()).visit(parseTree);
     }
 }
