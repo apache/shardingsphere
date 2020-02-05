@@ -24,6 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
 import java.util.Collection;
@@ -42,8 +43,18 @@ public final class SQLVisitorFactory {
     private static final Map<String, Collection<String>> SQL_VISITOR_RULES = new LinkedHashMap<>();
     
     static {
-        SQL_VISITOR_RULES.put("DMLVisitor", 
-                Lists.newArrayList(RuleName.SELECT.getName(), RuleName.DELETE.getName(), RuleName.UPDATE.getName(), RuleName.INSERT.getName()));
+        SQL_VISITOR_RULES.put("DMLVisitor", Lists.newArrayList(RuleName.SELECT.getName(), 
+                RuleName.DELETE.getName(), RuleName.UPDATE.getName(), RuleName.INSERT.getName(), RuleName.REPLACE.getName()));
+        SQL_VISITOR_RULES.put("DDLVisitor", Lists.newArrayList(RuleName.CREATE_TABLE.getName(), RuleName.ALTER_TABLE.getName(), 
+                RuleName.DROP_TABLE.getName(), RuleName.TRUNCATE_TABLE.getName(), RuleName.CREATE_INDEX.getName(), RuleName.DROP_INDEX.getName()));
+        SQL_VISITOR_RULES.put("TCLVisitor", Lists.newArrayList(RuleName.SET_TRANSACTION.getName(), RuleName.BEGIN_TRANSACTION.getName(), 
+                RuleName.SET_AUTOCOMMIT.getName(), RuleName.COMMIT.getName(), RuleName.ROLLBACK.getName(), RuleName.SAVE_POINT.getName()));
+        SQL_VISITOR_RULES.put("DCLVisitor", Lists.newArrayList(RuleName.GRANT.getName(), RuleName.REVOKE.getName(), RuleName.CREATE_USER.getName(), 
+                RuleName.DROP_USER.getName(), RuleName.ALTER_USER.getName(), RuleName.RENAME_USER.getName(), RuleName.CREATE_ROLE.getName(), 
+                RuleName.DROP_ROLE.getName(), RuleName.SET_DEFAULT_ROLE.getName(), RuleName.SET_ROLE.getName(), RuleName.SET_PASSWORD.getName()));
+        SQL_VISITOR_RULES.put("DALVisitor", Lists.newArrayList(RuleName.USE.getName(), RuleName.DESC.getName(), RuleName.SHOW_DATABASES.getName(),
+                RuleName.SHOW_TABLES.getName(), RuleName.SHOW_TABLE_STATUS.getName(), RuleName.SHOW_COLUMNS.getName(), RuleName.SHOW_INDEX.getName(),
+                RuleName.SHOW_CREATE_TABLE.getName(), RuleName.SHOW_OTHER.getName(), RuleName.SET_VARIABLE.getName(), RuleName.CALL.getName()));
     }
     
     
@@ -69,8 +80,7 @@ public final class SQLVisitorFactory {
                 return entry.getKey();
             }
         }
-        return "MySQLVisitor";
-//        throw new SQLParsingException("Could not find corresponding SQL visitor for %s.", visitorRuleName);
+        throw new SQLParsingException("Could not find corresponding SQL visitor for %s.", visitorRuleName);
     }
     
     @SneakyThrows

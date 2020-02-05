@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.visitor;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.sql.parser.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
