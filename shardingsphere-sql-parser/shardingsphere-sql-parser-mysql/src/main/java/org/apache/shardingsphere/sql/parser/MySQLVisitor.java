@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -180,7 +178,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
         } else if (!ctx.expr().isEmpty()) {
             return visit(ctx.expr(0));
         }
-        return createExpressionSegment(new LiteralValue(ctx.getText()), ctx);
+        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
@@ -194,7 +192,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
         if (null != ctx.predicate()) {
             return visit(ctx.predicate());
         }
-        return createExpressionSegment(new LiteralValue(ctx.getText()), ctx);
+        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
@@ -209,8 +207,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
             return createBetweenSegment(ctx);
         }
         if (1 == ctx.children.size()) {
-            BitExprContext bitExpr = ctx.bitExpr(0);
-            return createExpressionSegment(visit(bitExpr), ctx);
+            return visit(ctx.bitExpr(0));
         }
         return visitRemainPredicate(ctx);
     }
@@ -219,9 +216,9 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     public ASTNode visitBitExpr(final BitExprContext ctx) {
         SimpleExprContext simple = ctx.simpleExpr();
         if (null != simple) {
-            return visit(simple);
+            return createExpressionSegment(visit(simple), ctx);
         }
-        return new LiteralValue(ctx.getText());
+        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
@@ -497,13 +494,10 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     
     private PredicateSegment createInSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        Collection<ExpressionSegment> segments = Lists.transform(ctx.expr(), new Function<ExprContext, ExpressionSegment>() {
-            
-            @Override
-            public ExpressionSegment apply(final ExprContext input) {
-                return (ExpressionSegment) visit(input);
-            }
-        });
+        Collection<ExpressionSegment> segments = new LinkedList<>();
+        for (ExprContext each : ctx.expr()) {
+            segments.add((ExpressionSegment) visit(each));
+        }
         return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
     }
     
