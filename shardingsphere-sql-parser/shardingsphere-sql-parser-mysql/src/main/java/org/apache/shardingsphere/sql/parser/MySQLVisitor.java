@@ -464,7 +464,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx) {
-        AggregationType type = AggregationType.valueOf(ctx.aggregationFunctionName_().getText());
+        AggregationType type = AggregationType.valueOf(ctx.aggregationFunctionName_().getText().toUpperCase());
         int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
         if (null != ctx.distinct()) {
             return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(),
@@ -526,19 +526,27 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     
     private OrPredicateSegment mergeAndPredicateSegment(final ASTNode left, final ASTNode right) {
         OrPredicateSegment result = new OrPredicateSegment();
-        for (AndPredicate eachLeft : getAndPredicates(left)) {
-            for (AndPredicate eachRight : getAndPredicates(right)) {
-                result.getAndPredicates().add(createAndPredicate(eachLeft, eachRight));
-            }
-        }
+        Collection<AndPredicate> leftPredicates = getAndPredicates(left);
+        Collection<AndPredicate> rightPredicates = getAndPredicates(right);
+        addAndPredicates(result, leftPredicates, rightPredicates);
         return result;
     }
     
-    private AndPredicate createAndPredicate(final AndPredicate left, final AndPredicate right) {
-        AndPredicate result = new AndPredicate();
-        result.getPredicates().addAll(left.getPredicates());
-        result.getPredicates().addAll(right.getPredicates());
-        return result;
+    private void addAndPredicates(final OrPredicateSegment orPredicateSegment, final Collection<AndPredicate> leftPredicates, final Collection<AndPredicate> rightPredicates) {
+        if (0 == leftPredicates.size() && 0 == rightPredicates.size()) {
+            return;
+        }
+        if (0 == leftPredicates.size()) {
+            orPredicateSegment.getAndPredicates().addAll(rightPredicates);
+        }
+        if (0 == rightPredicates.size()) {
+            orPredicateSegment.getAndPredicates().addAll(leftPredicates);
+        }
+        for (AndPredicate eachLeft : leftPredicates) {
+            for (AndPredicate eachRight : rightPredicates) {
+                orPredicateSegment.getAndPredicates().add(createAndPredicate(eachLeft, eachRight));
+            }
+        }
     }
     
     private Collection<AndPredicate> getAndPredicates(final ASTNode astNode) {
@@ -554,6 +562,13 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
             return Collections.singleton(andPredicate);
         }
         return new LinkedList<>();
+    }
+    
+    private AndPredicate createAndPredicate(final AndPredicate left, final AndPredicate right) {
+        AndPredicate result = new AndPredicate();
+        result.getPredicates().addAll(left.getPredicates());
+        result.getPredicates().addAll(right.getPredicates());
+        return result;
     }
     
     private ASTNode visitRemainPredicate(final PredicateContext ctx) {
