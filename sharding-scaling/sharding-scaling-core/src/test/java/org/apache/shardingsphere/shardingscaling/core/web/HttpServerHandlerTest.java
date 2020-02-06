@@ -28,10 +28,6 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobController;
-import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobProgress;
-import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,7 +44,6 @@ import java.util.Map;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HttpServerHandlerTest {
@@ -57,9 +52,6 @@ public class HttpServerHandlerTest {
 
     @Mock
     private ChannelHandlerContext channelHandlerContext;
-    
-    @Mock
-    private ScalingJobController scalingJobController;
 
     private FullHttpRequest fullHttpRequest;
 
@@ -71,7 +63,6 @@ public class HttpServerHandlerTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         initConfig("/config.json");
         httpServerHandler = new HttpServerHandler();
-        ReflectionUtil.setFieldValueToClass(httpServerHandler, "scalingJobController", scalingJobController);
     }
 
     @Test
@@ -108,18 +99,6 @@ public class HttpServerHandlerTest {
     @Test
     public void assertChannelReadProgress() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/shardingscaling/job/progress/2");
-        when(scalingJobController.getProgresses(2)).thenReturn(new ScalingJobProgress(2, "testJob", "STOPPED"));
-        httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
-        ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
-        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
-        FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
-        assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"id\":2,\"jobName\":\"testJob\",\"status\":\"STOPPED\",\"syncTaskProgress\":[]}"));
-    }
-    
-    @Test
-    public void assertChannelReadProgressWithoutJob() {
-        fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/shardingscaling/job/progress/2");
-        when(scalingJobController.getProgresses(2)).thenThrow(new ScalingJobNotFoundException("Can't find scaling job id 2"));
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
@@ -151,7 +130,7 @@ public class HttpServerHandlerTest {
     }
 
     @Test
-    public void assertChannelReadUnsupported1() {
+    public void assertChannelReadUnsupportedUrl() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/1");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);
@@ -161,7 +140,7 @@ public class HttpServerHandlerTest {
     }
 
     @Test
-    public void assertChannelReadUnsupported2() {
+    public void assertChannelReadUnsupportedMethod() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/job/stop");
         httpServerHandler.channelRead0(channelHandlerContext, fullHttpRequest);
         ArgumentCaptor argumentCaptor = ArgumentCaptor.forClass(FullHttpResponse.class);

@@ -66,7 +66,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
 
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
 
-    private final ScalingJobController scalingJobController = new ScalingJobController();
+    private static final ScalingJobController SCALING_JOB_CONTROLLER = new ScalingJobController();
 
     @Override
     protected void channelRead0(final ChannelHandlerContext channelHandlerContext, final FullHttpRequest request) {
@@ -111,7 +111,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             return;
         }
         log.info("start job : {}", requestBody);
-        scalingJobController.start(shardingScalingJob);
+        SCALING_JOB_CONTROLLER.start(shardingScalingJob);
         response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
     }
 
@@ -133,7 +133,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     private void getJobProgress(final ChannelHandlerContext channelHandlerContext, final String requestPath) {
         Integer jobId = Integer.valueOf(requestPath.split("/")[4]);
         try {
-            SyncProgress progresses = scalingJobController.getProgresses(jobId);
+            SyncProgress progresses = SCALING_JOB_CONTROLLER.getProgresses(jobId);
             response(GSON.toJson(ResponseContentUtil.build(progresses)), channelHandlerContext, HttpResponseStatus.OK);
         } catch (ScalingJobNotFoundException e) {
             response(GSON.toJson(ResponseContentUtil.handleBadRequest(e.getMessage())), channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
@@ -141,14 +141,14 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     }
 
     private void listAllJobs(final ChannelHandlerContext channelHandlerContext) {
-        List<ShardingScalingJob> shardingScalingJobs = scalingJobController.listShardingScalingJobs();
+        List<ShardingScalingJob> shardingScalingJobs = SCALING_JOB_CONTROLLER.listShardingScalingJobs();
         response(GSON.toJson(ResponseContentUtil.build(shardingScalingJobs)), channelHandlerContext, HttpResponseStatus.OK);
     }
 
     private void stopJob(final ChannelHandlerContext channelHandlerContext, final String requestBody) {
         ShardingScalingJob shardingScalingJob = GSON.fromJson(requestBody, ShardingScalingJob.class);
         //TODO, Exception handling
-        scalingJobController.stop(shardingScalingJob.getJobId());
+        SCALING_JOB_CONTROLLER.stop(shardingScalingJob.getJobId());
         response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
     }
 
