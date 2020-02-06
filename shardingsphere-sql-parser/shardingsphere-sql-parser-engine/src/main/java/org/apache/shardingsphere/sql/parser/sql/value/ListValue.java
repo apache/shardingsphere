@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * List value.
@@ -29,10 +30,10 @@ import java.util.Collection;
  * @author panjuan
  */
 @RequiredArgsConstructor
+@Getter
 public final class ListValue<T> implements ASTNode {
     
-    @Getter
-    private final Collection<T> values;
+    private final Collection<T> values = new LinkedList<>();
     
     /**
      * Put all values from another list value into this one.

@@ -127,7 +127,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
-        ListValue<AssignmentSegment> result = new ListValue<>(new LinkedList<AssignmentSegment>());
+        ListValue<AssignmentSegment> result = new ListValue<>();
         for (AssignmentContext each : ctx.assignment()) {
             result.getValues().add((AssignmentSegment) visit(each));
         }
@@ -223,7 +223,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        ListValue<TableSegment> result = new ListValue<>();
         result.combine((ListValue<TableSegment>) visit(ctx.multipleTableNames()));
         result.combine((ListValue<TableSegment>) visit(ctx.tableReferences()));
         return result;
@@ -231,7 +231,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitMultipleTableNames(final MultipleTableNamesContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        ListValue<TableSegment> result = new ListValue<>();
         for (TableNameContext each : ctx.tableName()) {
             result.getValues().add((TableSegment) visit(each));
         }
@@ -340,7 +340,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        ListValue<TableSegment> result = new ListValue<>();
         for (EscapedTableReferenceContext each : ctx.escapedTableReference()) {
             result.combine((ListValue<TableSegment>) visit(each));
         }
@@ -354,7 +354,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        ListValue<TableSegment> result = new ListValue<>();
         if (null != ctx.joinedTable()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
                 result.getValues().add((TableSegment) visit(each));

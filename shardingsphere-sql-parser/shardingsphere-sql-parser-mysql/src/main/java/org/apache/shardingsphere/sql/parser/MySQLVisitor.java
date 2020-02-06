@@ -117,7 +117,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     
     @Override
     public ASTNode visitTableNames(final TableNamesContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        ListValue<TableSegment> result = new ListValue<>();
         for (TableNameContext each : ctx.tableName()) {
             result.getValues().add((TableSegment) visit(each));
         }
