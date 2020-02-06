@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.loader;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.SQLCase;
@@ -173,9 +174,6 @@ public final class SQLCasesLoader {
     private Collection<Object[]> getTestParameters(final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
-            if (each == SQLCaseType.Placeholder && !Strings.isNullOrEmpty(sqlCase.getSqlType()) && !("dql".equals(sqlCase.getSqlType()) || "dml".equals(sqlCase.getSqlType()))) {
-                continue;
-            }
             result.addAll(getTestParameters(sqlCase, each));
         }
         return result;
@@ -193,12 +191,8 @@ public final class SQLCasesLoader {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private static Collection<String> getDatabaseTypes(final String databaseTypes) {
-        if (Strings.isNullOrEmpty(databaseTypes)) {
-            return getALlDatabaseTypes();
-        }
-        return Arrays.asList(databaseTypes.split(","));
+        return Strings.isNullOrEmpty(databaseTypes) ? getALlDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
     }
     
     private static Collection<String> getALlDatabaseTypes() {
