@@ -19,15 +19,14 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.encrypt.rewrite.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.EncryptConditionEngine;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateRightValueToken;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
@@ -76,7 +75,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private EncryptPredicateRightValueToken generateSQLToken(final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
-        int startIndex = encryptCondition.getOperator().equals(ShardingOperator.IN) ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
+        int startIndex = encryptCondition.getStartIndex();
         return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues, startIndex)
                 : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex);
     }
