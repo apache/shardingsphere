@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.value;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 import java.util.Collection;
@@ -29,7 +28,6 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class CollectionValue<T> implements ASTNode {
     
