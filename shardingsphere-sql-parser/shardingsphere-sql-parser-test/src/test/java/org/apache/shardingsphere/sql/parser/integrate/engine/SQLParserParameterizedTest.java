@@ -38,6 +38,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.junit.Assert.fail;
@@ -70,7 +71,7 @@ public final class SQLParserParameterizedTest {
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         checkTestCases();
-        return SQL_CASES_LOADER.getSQLTestParameters();
+        return getSQLTestParameters();
     }
     
     private static void checkTestCases() {
@@ -79,6 +80,20 @@ public final class SQLParserParameterizedTest {
             allSQLCaseIDs.removeAll(SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs());
             fail(String.format("The count of SQL cases and SQL parser cases are mismatched, missing cases are: %s", allSQLCaseIDs));
         }
+    }
+    
+    private static Collection<Object[]> getSQLTestParameters() {
+        Collection<Object[]> result = new LinkedList<>();
+        for (Object[] each : SQL_CASES_LOADER.getSQLTestParameters()) {
+            if (!isPlaceholderWithoutParameter(each)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParameter) {
+        return SQLCaseType.Placeholder == sqlTestParameter[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParameter[0].toString()).getParameters().isEmpty();
     }
     
     @Test
