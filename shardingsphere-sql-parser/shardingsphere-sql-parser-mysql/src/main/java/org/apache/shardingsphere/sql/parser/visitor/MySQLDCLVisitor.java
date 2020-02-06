@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.visitor;
 
 import org.apache.shardingsphere.sql.parser.MySQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;
@@ -26,6 +25,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRol
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeLevel_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefaultRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPasswordContext;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatemen
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
+
 
 /**
  * MySQL DCL visitor.
@@ -94,9 +96,9 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
-        MySQLStatementParser.PrivilegeClause_Context privilegeClause = ctx.privilegeClause_();
+        PrivilegeClause_Context privilegeClause = ctx.privilegeClause_();
         if (null != privilegeClause && null != privilegeClause.onObjectClause_()) {
-            MySQLStatementParser.PrivilegeLevel_Context privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel_();
+            PrivilegeLevel_Context privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel_();
             TableNameContext tableNameContext = privilegeLevel.tableName();
             if (null != tableNameContext) {
                 TableSegment tableSegment = createTableSegment(tableNameContext);
