@@ -25,22 +25,22 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * List value.
+ * Collection value.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class ListValue<T> implements ASTNode {
+public final class CollectionValue<T> implements ASTNode {
     
     private final Collection<T> values = new LinkedList<>();
     
     /**
-     * Put all values from another list value into this one.
+     * Put all values from another collection value into this one.
      * 
-     * @param listValue list value
+     * @param collectionValue collection value
      */
-    public void combine(final ListValue<T> listValue) {
-        values.addAll(listValue.getValues());
+    public void combine(final CollectionValue<T> collectionValue) {
+        values.addAll(collectionValue.getValues());
     }
 }
