@@ -341,4 +341,76 @@
             <column-item name="order_id" />
         </order-by>
     </select>
+    
+    <select sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
+        <table name="t_order" start-index="14" stop-index="20" />
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where parameters-count="4" start-index="22" stop-index="68" literal-stop-index="80">
+            <and-predicate>
+                <predicate start-index="28" stop-index="45" literal-stop-index="51">
+                    <column-left-value name="order_id" start-index="28" stop-index="35" />
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1000" />
+                        <literal-expression value="1001" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="51" stop-index="68" literal-start-index="57" literal-stop-index="80">
+                    <column-left-value name="order_id" start-index="51" stop-index="58" literal-start-index="57" literal-stop-index="64" />
+                    <in-right-value>
+                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="3" />
+                        <literal-expression value="1001" />
+                        <literal-expression value="1002" />
+                    </in-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="order_id" />
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
+        <table name="t_order" alias="o" start-index="37" stop-index="43" />
+        <projections start-index="7" stop-index="30">
+            <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="14" />
+        </projections>
+        <where parameters-count="5" start-index="47" stop-index="142" literal-stop-index="148">
+            <and-predicate>
+                <!-- TODO assert predicate with like  -->
+                <!--<predicate start-index="62" stop-index="79">-->
+                <!--<column-left-value name="status" start-index="53" stop-index="60">-->
+                <!--<owner name="o" start-index="53" stop-index="53" />-->
+                <!--</column>-->
+                <!--</predicate>-->
+                <predicate start-index="93" stop-index="111" literal-start-index="98" literal-stop-index="116">
+                    <column-left-value name="user_id" start-index="93" stop-index="101" literal-start-index="98" literal-stop-index="106">
+                        <owner name="o" start-index="93" stop-index="93" literal-start-index="98" literal-stop-index="98" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="2" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="117" stop-index="142" literal-start-index="122" literal-stop-index="148">
+                    <column-left-value name="order_id" start-index="117" stop-index="126" literal-start-index="122" literal-stop-index="131">
+                        <owner name="o" start-index="117" stop-index="117" literal-start-index="122" literal-stop-index="122" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="3" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="4" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+    
 </sql-parser-test-cases>
