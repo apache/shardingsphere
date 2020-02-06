@@ -16,11 +16,8 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="set_role" value="SET ROLE role1" db-types="MySQL" />
-    <sql-case id="set_roles" value="SET ROLE role1, role2" db-types="MySQL" />
-    <sql-case id="set_none_role" value="SET ROLE NONE" db-types="MySQL" />
-    <sql-case id="set_all_role" value="SET ROLE ALL" db-types="MySQL" />
-    <sql-case id="set_all_expect_role" value="SET ROLE ALL EXCEPT role1" db-types="MySQL" />
-    <sql-case id="set_all_expect_roles" value="SET ROLE ALL EXCEPT role1, role2" db-types="MySQL" />
-</sql-cases>
+<sql-parser-test-cases>
+    <set-default-role sql-case-id="set_default_none_role" />
+    <set-default-role sql-case-id="set_default_all_role" />
+    <set-default-role sql-case-id="set_default_roles_to_users" />
+</sql-parser-test-cases>
