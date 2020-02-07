@@ -152,10 +152,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
-        if (null != unreservedWord) {
-            return visit(unreservedWord);
-        }
-        return new LiteralValue(ctx.getText());
+        return null != unreservedWord ? visit(unreservedWord) : new LiteralValue(ctx.getText());
     }
     
     @Override
