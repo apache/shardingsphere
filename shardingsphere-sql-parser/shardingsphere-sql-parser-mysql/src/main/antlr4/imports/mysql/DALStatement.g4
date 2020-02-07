@@ -40,7 +40,7 @@ showTableStatus
     ;
 
 showColumns
-    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema?  (showLike_ | showWhereClause_)?
+    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema?  (showColumnLike_ | showWhereClause_)?
     ;
 
 showIndex
@@ -67,7 +67,7 @@ showLike
     : LIKE stringLiterals
     ;
 
-showLike_
+showColumnLike_
     : LIKE stringLiterals
     ;
 
