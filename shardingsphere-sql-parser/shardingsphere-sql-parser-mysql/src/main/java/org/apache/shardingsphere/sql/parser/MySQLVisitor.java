@@ -369,21 +369,18 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
-        if (AggregationType.isAggregationType(ctx.aggregationFunctionName_().getText())) {
-            return createAggregationSegment(ctx);
-        }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        String aggregationType = ctx.aggregationFunctionName_().getText();
+        return AggregationType.isAggregationType(aggregationType)
+                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
-    private ASTNode createAggregationSegment(final AggregationFunctionContext ctx) {
-        AggregationType type = AggregationType.valueOf(ctx.aggregationFunctionName_().getText().toUpperCase());
+    private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
+        AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
-        if (null != ctx.distinct()) {
-            return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(),
-                    ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
+        if (null == ctx.distinct()) {
+            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex);
         }
-        return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                ctx.getText(), type, innerExpressionStartIndex);
+        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
