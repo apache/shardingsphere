@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
  * @author panjuan
  */
 @RequiredArgsConstructor
+@Getter
 public final class LiteralValue implements ASTNode {
     
-    @Getter
     private final String literal;
 }
