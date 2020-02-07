@@ -73,6 +73,11 @@ public final class SQLVisitorFactory {
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
     }
     
+    @SneakyThrows
+    private static ParseTreeVisitor createSQLVisitor(final SQLParserEntry parserEntry, final String visitorName) {
+        return parserEntry.getVisitorClass(visitorName).getConstructor().newInstance();
+    }
+    
     private static String getVisitorName(final String visitorRuleName) {
         for (Entry<String, Collection<String>> entry : SQL_VISITOR_RULES.entrySet()) {
             if (entry.getValue().contains(visitorRuleName)) {
@@ -80,10 +85,5 @@ public final class SQLVisitorFactory {
             }
         }
         throw new SQLParsingException("Could not find corresponding SQL visitor for %s.", visitorRuleName);
-    }
-    
-    @SneakyThrows
-    private static ParseTreeVisitor createSQLVisitor(final SQLParserEntry parserEntry, final String visitorName) {
-        return parserEntry.getVisitorClass(visitorName).getConstructor().newInstance();
     }
 }
