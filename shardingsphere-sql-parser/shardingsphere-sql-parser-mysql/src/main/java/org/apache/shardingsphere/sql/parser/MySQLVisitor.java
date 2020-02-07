@@ -126,8 +126,10 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return visit(ctx.booleanLiterals());
         }
         if (null != ctx.nullValueLiterals()) {
+            // TODO deal with null value
             return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
         }
+        // TODO deal with dateTimeLiterals, hexadecimalLiterals and bitValueLiterals
         return new LiteralValue(ctx.getText());
     }
     
