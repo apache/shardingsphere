@@ -184,7 +184,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getLiteral());
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(createTableSegment(owner));
+            LiteralValue literalValue = (LiteralValue) visit(owner.identifier());
+            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), literalValue.getLiteral()));
         }
         return result;
     }
@@ -437,11 +438,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
-    }
-    
-    private TableSegment createTableSegment(final OwnerContext ownerContext) {
-        LiteralValue literalValue = (LiteralValue) visit(ownerContext.identifier());
-        return new TableSegment(ownerContext.getStart().getStartIndex(), ownerContext.getStop().getStopIndex(), literalValue.getLiteral());
     }
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
