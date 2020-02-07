@@ -135,6 +135,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
+        // TODO deal with characterSetName_ and collateClause_
         String text = ctx.getText();
         return new LiteralValue(text.substring(1, text.length() - 1));
     }
