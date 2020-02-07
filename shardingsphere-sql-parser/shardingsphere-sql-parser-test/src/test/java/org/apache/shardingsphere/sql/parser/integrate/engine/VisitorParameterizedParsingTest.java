@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
-import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
@@ -118,27 +118,16 @@ public final class VisitorParameterizedParsingTest {
     
     @Test
     public void assertSupportedSQL() {
-        // TODO remove me after all test cases passed
-        if (!"H2".equals(databaseType) && !"MySQL".equals(databaseType)) {
-            return;
-        }
-        String sql;
-        try {
-            sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-            // TODO remove me after all test cases passed
-        } catch (final IllegalStateException ex) {
-            return;
-        }
         SQLParserTestCase expected = VisitorSQLParserTestCasesRegistryFactory.getInstance().getRegistry().get(sqlCaseId);
         if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }
-        String databaseTypeName = "H2".equals(databaseType) ? "MySQL" : databaseType;
-        ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
-        SQLCaseAssertContext assertContext = new SQLCaseAssertContext(sqlCaseId, sqlCaseType);
-        SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
+        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        ParseTree parseTree = SQLParserFactory.newInstance(databaseType, sql).execute().getChild(0);
+        SQLStatement actual = (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseType, parseTree).visit(parseTree);
         if (!expected.isLongSQL()) {
-            SQLStatementAssert.assertIs(assertContext, actual, expected);
+            SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sqlCaseType), actual, expected);
         }
     }
 }
