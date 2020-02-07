@@ -117,7 +117,6 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         ShowColumnsStatement result = new ShowColumnsStatement();
         FromTableContext fromTableContext = ctx.fromTable();
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
-        ShowLikeContext showLikeContext = ctx.showLike();
         if (null != fromTableContext) {
             FromTableSegment fromTableSegment = (FromTableSegment) visit(fromTableContext);
             result.setTable(fromTableSegment.getPattern());
@@ -126,10 +125,6 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != fromSchemaContext) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
-        }
-        if (null != showLikeContext) {
-            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            result.getAllSQLSegments().add(showLikeSegment);
         }
         return result;
     }
