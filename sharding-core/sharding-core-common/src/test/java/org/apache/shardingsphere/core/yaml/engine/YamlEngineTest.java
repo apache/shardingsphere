@@ -19,7 +19,13 @@ package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.core.yaml.config.common.YamlProxyUserConfiguration;
 import org.junit.Test;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -38,9 +44,23 @@ public final class YamlEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertUnmarshalMap() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1");
+        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", Collections.<Class<?>>emptyList());
         assertThat(actual.get("password").toString(), is("pwd"));
         assertThat(actual.get("authorizedSchemas").toString(), is("db1"));
+    }
+    
+    @Test(expected = ConstructorException.class)
+    public void assertUnmarshalMapWithIllegalClasses() {
+        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.<Class<?>>emptyList());
+    }
+    
+    @Test
+    public void assertUnmarshalMapWithAcceptClasses() {
+        Collection<Class<?>> acceptClasses = new LinkedList<>();
+        acceptClasses.add(URLClassLoader.class);
+        acceptClasses.add(URL.class);
+        Map<String, URLClassLoader> actual = (Map) YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptClasses);
+        assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
     }
     
     @SuppressWarnings("unchecked")

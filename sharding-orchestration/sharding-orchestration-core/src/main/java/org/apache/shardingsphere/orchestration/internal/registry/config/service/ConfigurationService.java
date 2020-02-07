@@ -42,6 +42,7 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfigu
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -202,7 +203,8 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
-        Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
+        Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)),
+                Collections.<Class<?>>singletonList(YamlDataSourceConfiguration.class));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
         return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
             
