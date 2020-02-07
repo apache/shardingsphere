@@ -375,6 +375,25 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
+    private ASTNode createAggregationSegment(final AggregationFunctionContext ctx) {
+        AggregationType type = AggregationType.valueOf(ctx.aggregationFunctionName_().getText().toUpperCase());
+        int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
+        if (null != ctx.distinct()) {
+            return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(),
+                    ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
+        }
+        return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ctx.getText(), type, innerExpressionStartIndex);
+    }
+    
+    private String getDistinctExpression(final AggregationFunctionContext ctx) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 3; i < ctx.getChildCount() - 1; i++) {
+            result.append(ctx.getChild(i).getText());
+        }
+        return result.toString();
+    }
+    
     @Override
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
         if (null != ctx.groupConcatFunction()) {
@@ -465,25 +484,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
-    }
-    
-    private ASTNode createAggregationSegment(final AggregationFunctionContext ctx) {
-        AggregationType type = AggregationType.valueOf(ctx.aggregationFunctionName_().getText().toUpperCase());
-        int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
-        if (null != ctx.distinct()) {
-            return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(),
-                    ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
-        }
-        return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                ctx.getText(), type, innerExpressionStartIndex);
-    }
-    
-    private String getDistinctExpression(final AggregationFunctionContext ctx) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 3; i < ctx.getChildCount() - 1; i++) {
-            result.append(ctx.getChild(i).getText());
-        }
-        return result.toString();
     }
     
     private OrPredicateSegment mergePredicateSegment(final ASTNode left, final ASTNode right, final String operator) {
