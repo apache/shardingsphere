@@ -115,6 +115,39 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
+    public final ASTNode visitLiterals(final LiteralsContext ctx) {
+        if (null != ctx.stringLiterals()) {
+            return visit(ctx.stringLiterals());
+        }
+        if (null != ctx.numberLiterals()) {
+            return visit(ctx.numberLiterals());
+        }
+        if (null != ctx.booleanLiterals()) {
+            return visit(ctx.booleanLiterals());
+        }
+        if (null != ctx.nullValueLiterals()) {
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        }
+        return new LiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
+        String text = ctx.getText();
+        return new LiteralValue(text.substring(1, text.length() - 1));
+    }
+    
+    @Override
+    public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
+        return new NumberValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
+        return new BooleanValue(ctx.getText());
+    }
+    
+    @Override
     public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
@@ -246,39 +279,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return visit(ctx.columnName());
         }
         return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
-    }
-    
-    @Override
-    public final ASTNode visitLiterals(final LiteralsContext ctx) {
-        if (null != ctx.stringLiterals()) {
-            return visit(ctx.stringLiterals());
-        }
-        if (null != ctx.numberLiterals()) {
-            return visit(ctx.numberLiterals());
-        }
-        if (null != ctx.booleanLiterals()) {
-            return visit(ctx.booleanLiterals());
-        }
-        if (null != ctx.nullValueLiterals()) {
-            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
-        }
-        return new LiteralValue(ctx.getText());
-    }
-    
-    @Override
-    public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        String text = ctx.getText();
-        return new LiteralValue(text.substring(1, text.length() - 1));
-    }
-    
-    @Override
-    public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
-        return new NumberValue(ctx.getText());
-    }
-    
-    @Override
-    public final ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
-        return new BooleanValue(ctx.getText());
     }
     
     @Override
