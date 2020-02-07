@@ -23,18 +23,25 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateR
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeLevel_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefaultRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPasswordContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
+
 
 /**
  * MySQL DCL visitor.
@@ -81,5 +88,22 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitSetPassword(final SetPasswordContext ctx) {
         return new SetPasswordStatement();
+    }
+
+    @Override
+    public ASTNode visitGrant(final GrantContext ctx) {
+        GrantStatement result = new GrantStatement();
+        PrivilegeClause_Context privilegeClause = ctx.privilegeClause_();
+        if (null != privilegeClause && null != privilegeClause.onObjectClause_()) {
+            PrivilegeLevel_Context privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel_();
+            TableNameContext tableNameContext = privilegeLevel.tableName();
+            if (null != tableNameContext) {
+                TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
+                result.getAllSQLSegments().add(tableSegment);
+                result.getTables().add(tableSegment);
+                return result;
+            }
+        }
+        return result;
     }
 }
