@@ -122,13 +122,12 @@ public final class VisitorParameterizedParsingTest {
         if (expected.isLongSQL() && Boolean.parseBoolean(PROPS.getProperty("long.sql.skip", Boolean.TRUE.toString()))) {
             return;
         }
-        String databaseTypeName = "H2".equals(databaseType) ? "MySQL" : databaseType;
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-        ParseTree parseTree = SQLParserFactory.newInstance(databaseTypeName, sql).execute().getChild(0);
-        SQLCaseAssertContext assertContext = new SQLCaseAssertContext(sqlCaseId, sqlCaseType);
-        SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseTypeName, parseTree).parse();
+        ParseTree parseTree = SQLParserFactory.newInstance(databaseType, sql).execute().getChild(0);
+        SQLStatement actual = (SQLStatement) new SQLVisitorEngine(databaseType, parseTree).parse();
         if (!expected.isLongSQL()) {
-            SQLStatementAssert.assertIs(assertContext, actual, expected);
+            SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sqlCaseType), actual, expected);
         }
     }
 }
