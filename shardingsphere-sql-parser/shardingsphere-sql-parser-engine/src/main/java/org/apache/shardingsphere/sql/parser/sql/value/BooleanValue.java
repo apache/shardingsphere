@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.value;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 /**
@@ -25,16 +26,13 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
+@Getter
 public final class BooleanValue implements ASTNode {
     
-    @Getter
     private final boolean correct;
     
     public BooleanValue(final String correct) {
         this.correct = Boolean.parseBoolean(correct);
-    }
-    
-    public BooleanValue(final boolean correct) {
-        this.correct = correct;
     }
 }
