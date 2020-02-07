@@ -19,7 +19,6 @@
 <sql-cases>
     <sql-case id="set_default_none_role" value="SET DEFAULT ROLE NONE TO user1" db-types="MySQL" />
     <sql-case id="set_default_all_role" value="SET DEFAULT ROLE ALL TO user1" db-types="MySQL" />
-    <!-- <sql-case id="set_default_role" value="SET DEFAULT ROLE" db-types="MySQL" /> -->
     <sql-case id="set_default_role_to_user" value="SET DEFAULT ROLE role1 TO user1" db-types="MySQL" />
     <sql-case id="set_default_roles_to_users" value="SET DEFAULT ROLE role1, role2 TO user1, user2" db-types="MySQL" />
 </sql-cases>
