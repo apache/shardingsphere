@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
@@ -26,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
  *
  * @author panjuan
  */
-public final class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> {
     
     // DALStatement.g4
     // DCLStatement.g4

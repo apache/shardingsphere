@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.apache.shardingsphere.sql.parser.visitor.MySQLDALVisitor;
@@ -52,7 +52,7 @@ public final class MySQLParserEntry implements SQLParserEntry {
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass(final String visitorName) {
+    public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
         if (MySQLDMLVisitor.class.getSimpleName().contains(visitorName)) {
             return MySQLDMLVisitor.class;
         }

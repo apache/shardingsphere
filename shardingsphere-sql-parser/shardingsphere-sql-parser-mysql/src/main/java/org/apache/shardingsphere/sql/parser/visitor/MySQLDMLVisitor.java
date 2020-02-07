@@ -58,6 +58,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
@@ -74,7 +75,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
-import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
+import org.apache.shardingsphere.sql.parser.sql.value.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 
 import java.util.Collection;
@@ -101,7 +102,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.getAllSQLSegments().add(segment);
         }
         if (null != ctx.onDuplicateKeyClause()) {
-            ListValue<AssignmentSegment> segments = (ListValue<AssignmentSegment>) visit(ctx.onDuplicateKeyClause());
+            CollectionValue<AssignmentSegment> segments = (CollectionValue<AssignmentSegment>) visit(ctx.onDuplicateKeyClause());
             result.getAllSQLSegments().addAll(segments.getValues());
         }
         TableSegment table = (TableSegment) visit(ctx.tableName());
@@ -127,7 +128,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
-        ListValue<AssignmentSegment> result = new ListValue<>(new LinkedList<AssignmentSegment>());
+        CollectionValue<AssignmentSegment> result = new CollectionValue<>();
         for (AssignmentContext each : ctx.assignment()) {
             result.getValues().add((AssignmentSegment) visit(each));
         }
@@ -137,7 +138,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
-        ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.tableReferences());
+        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableReferences());
         SetAssignmentSegment setSegment = (SetAssignmentSegment) visit(ctx.setAssignmentsClause());
         result.getTables().addAll(tables.getValues());
         result.setSetAssignment(setSegment);
@@ -195,7 +196,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
         if (null != ctx.multipleTablesClause()) {
-            ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.multipleTablesClause());
+            CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.multipleTablesClause());
             result.getTables().addAll(tables.getValues());
             result.getAllSQLSegments().addAll(tables.getValues());
         } else {
@@ -223,15 +224,15 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
-        result.combine((ListValue<TableSegment>) visit(ctx.multipleTableNames()));
-        result.combine((ListValue<TableSegment>) visit(ctx.tableReferences()));
+        CollectionValue<TableSegment> result = new CollectionValue<>();
+        result.combine((CollectionValue<TableSegment>) visit(ctx.multipleTableNames()));
+        result.combine((CollectionValue<TableSegment>) visit(ctx.tableReferences()));
         return result;
     }
     
     @Override
     public ASTNode visitMultipleTableNames(final MultipleTableNamesContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        CollectionValue<TableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
             result.getValues().add((TableSegment) visit(each));
         }
@@ -262,7 +263,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
         if (null != ctx.fromClause()) {
-            ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.fromClause());
+            CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.fromClause());
             result.getTables().addAll(tables.getValues());
             result.getAllSQLSegments().addAll(tables.getValues());
         }
@@ -326,7 +327,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.setAlias(alias);
             return result;
         }
-        LiteralExpressionSegment column = (LiteralExpressionSegment) visit(ctx.expr());
+        ASTNode projection = visit(ctx.expr());
+        if (projection instanceof AggregationProjectionSegment) {
+            ((AggregationProjectionSegment) projection).setAlias(alias);
+            return projection;
+        }
+        LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = Strings.isNullOrEmpty(alias) ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
                 : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()));
         result.setAlias(alias);
@@ -340,9 +346,9 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        CollectionValue<TableSegment> result = new CollectionValue<>();
         for (EscapedTableReferenceContext each : ctx.escapedTableReference()) {
-            result.combine((ListValue<TableSegment>) visit(each));
+            result.combine((CollectionValue<TableSegment>) visit(each));
         }
         return result;
     }
@@ -354,7 +360,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        CollectionValue<TableSegment> result = new CollectionValue<>();
         if (null != ctx.joinedTable()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
                 result.getValues().add((TableSegment) visit(each));

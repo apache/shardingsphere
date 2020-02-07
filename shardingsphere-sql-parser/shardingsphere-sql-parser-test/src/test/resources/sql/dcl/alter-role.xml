@@ -23,7 +23,6 @@
     <alter-role sql-case-id="alter_role_with_password" />
     <alter-role sql-case-id="alter_role_with_container" />
     <alter-role sql-case-id="alter_role_with_password_postgresql" />
-    <alter-role sql-case-id="alter_current_user_with_password" />
     <alter-role sql-case-id="alter_role_with_option" />
     <alter-role sql-case-id="alter_role_with_options" />
     <alter-role sql-case-id="alter_role_with_rename" />
