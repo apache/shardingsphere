@@ -34,8 +34,8 @@ public final class ClassFilterConstructor extends Constructor {
     
     @Override
     protected Class<?> getClassForName(final String name) throws ClassNotFoundException {
-        for (Class<? extends Object> clz : acceptClasses) {
-            if (name.equals(clz.getName())) {
+        for (Class<? extends Object> each : acceptClasses) {
+            if (name.equals(each.getName())) {
                 return super.getClassForName(name);
             }
         }
