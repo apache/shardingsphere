@@ -110,6 +110,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     private int currentParameterIndex;
     
     @Override
+    public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
+        return new ParameterMarkerValue(currentParameterIndex++);
+    }
+    
+    @Override
     public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
@@ -241,11 +246,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return visit(ctx.columnName());
         }
         return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
-    }
-    
-    @Override
-    public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(currentParameterIndex++);
     }
     
     @Override
