@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateU
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeClause_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeLevel_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPasswordContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
@@ -43,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 
 
 /**
@@ -101,7 +98,7 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
             PrivilegeLevel_Context privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel_();
             TableNameContext tableNameContext = privilegeLevel.tableName();
             if (null != tableNameContext) {
-                TableSegment tableSegment = createTableSegment(tableNameContext);
+                TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
                 result.getAllSQLSegments().add(tableSegment);
                 result.getTables().add(tableSegment);
                 return result;
@@ -109,17 +106,4 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
         }
         return result;
     }
-
-    private TableSegment createTableSegment(final TableNameContext tableNameContext) {
-        LiteralValue tableName = (LiteralValue) visit(tableNameContext.name());
-        TableSegment tableSegment = new TableSegment(tableNameContext.getStart().getStartIndex(), tableNameContext.getStop().getStopIndex(), tableName.getLiteral());
-        OwnerContext ownerContext = tableNameContext.owner();
-        if (null != ownerContext) {
-            LiteralValue literalValue = (LiteralValue) visit(ownerContext.identifier());
-            SchemaSegment schemaSegment = new SchemaSegment(ownerContext.getStart().getStartIndex(), ownerContext.getStop().getStopIndex(), literalValue.getLiteral());
-            tableSegment.setOwner(schemaSegment);
-        }
-        return tableSegment;
-    }
-
 }
