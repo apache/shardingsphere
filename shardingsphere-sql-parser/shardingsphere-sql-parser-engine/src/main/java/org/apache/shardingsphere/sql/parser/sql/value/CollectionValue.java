@@ -18,28 +18,27 @@
 package org.apache.shardingsphere.sql.parser.sql.value;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * List value.
+ * Collection value.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
-public final class ListValue<T> implements ASTNode {
+@Getter
+public final class CollectionValue<T> implements ASTNode {
     
-    @Getter
-    private final Collection<T> values;
+    private final Collection<T> values = new LinkedList<>();
     
     /**
-     * Put all values from another list value into this one.
+     * Put all values from another collection value into this one.
      * 
-     * @param listValue list value
+     * @param collectionValue collection value
      */
-    public void combine(final ListValue<T> listValue) {
-        values.addAll(listValue.getValues());
+    public void combine(final CollectionValue<T> collectionValue) {
+        values.addAll(collectionValue.getValues());
     }
 }

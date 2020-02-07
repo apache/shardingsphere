@@ -90,7 +90,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
-import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
+import org.apache.shardingsphere.sql.parser.sql.value.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
 import org.apache.shardingsphere.sql.parser.sql.value.ParameterMarkerValue;
@@ -117,7 +117,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     
     @Override
     public ASTNode visitTableNames(final TableNamesContext ctx) {
-        ListValue<TableSegment> result = new ListValue<>(new LinkedList<TableSegment>());
+        CollectionValue<TableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
             result.getValues().add((TableSegment) visit(each));
         }

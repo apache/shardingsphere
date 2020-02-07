@@ -55,7 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.ListValue;
+import org.apache.shardingsphere.sql.parser.sql.value.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 
 import java.util.List;
@@ -143,7 +143,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        ListValue<TableSegment> tables = (ListValue<TableSegment>) visit(ctx.tableNames());
+        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNames());
         result.getTables().addAll(tables.getValues());
         result.getAllSQLSegments().addAll(tables.getValues());
         return result;
