@@ -364,7 +364,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.specialFunction()) {
             return visit(ctx.specialFunction());
         }
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
     }
     
     @Override
