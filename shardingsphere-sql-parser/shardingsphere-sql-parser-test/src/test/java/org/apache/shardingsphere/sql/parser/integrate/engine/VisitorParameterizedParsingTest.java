@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserFactory;
-import org.apache.shardingsphere.sql.parser.core.visitor.SQLVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.SQLParserTestCasesRegistry;
@@ -125,7 +125,7 @@ public final class VisitorParameterizedParsingTest {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         ParseTree parseTree = SQLParserFactory.newInstance(databaseType, sql).execute().getChild(0);
-        SQLStatement actual = (SQLStatement) SQLVisitorFactory.newInstance(databaseType, parseTree.getClass().getSimpleName()).visit(parseTree);
+        SQLStatement actual = (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseType, parseTree).visit(parseTree);
         if (!expected.isLongSQL()) {
             SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sqlCaseType), actual, expected);
         }
