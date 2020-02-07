@@ -21,8 +21,8 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
@@ -64,7 +64,7 @@ public final class SQLVisitorFactory {
      * @param visitorRuleName visitor rule name
      * @return SQL visitor
      */
-    public static SQLVisitor newInstance(final String databaseTypeName, final String visitorRuleName) {
+    public static ParseTreeVisitor newInstance(final String databaseTypeName, final String visitorRuleName) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             if (each.getDatabaseTypeName().equals(databaseTypeName)) {
                 return createSQLVisitor(each, getVisitorName(visitorRuleName));
@@ -83,7 +83,7 @@ public final class SQLVisitorFactory {
     }
     
     @SneakyThrows
-    private static SQLVisitor createSQLVisitor(final SQLParserEntry parserEntry, final String visitorName) {
+    private static ParseTreeVisitor createSQLVisitor(final SQLParserEntry parserEntry, final String visitorName) {
         return parserEntry.getVisitorClass(visitorName).getConstructor().newInstance();
     }
 }

@@ -23,7 +23,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
@@ -106,7 +105,7 @@ import java.util.LinkedList;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
     
