@@ -136,7 +136,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        // TODO deal with characterSetName_ and collateClause_
         String text = ctx.getText();
         return new LiteralValue(text.substring(1, text.length() - 1));
     }
@@ -358,11 +357,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.aggregationFunction()) {
             return visit(ctx.aggregationFunction());
         }
-        if (null != ctx.regularFunction()) {
-            return visit(ctx.regularFunction());
-        }
         if (null != ctx.specialFunction()) {
             return visit(ctx.specialFunction());
+        }
+        if (null != ctx.regularFunction()) {
+            return visit(ctx.regularFunction());
         }
         throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
     }
@@ -486,10 +485,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     private OrPredicateSegment mergePredicateSegment(final ASTNode left, final ASTNode right, final String operator) {
         Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(operator);
         Preconditions.checkState(logicalOperator.isPresent());
-        if (LogicalOperator.OR == logicalOperator.get()) {
-            return mergeOrPredicateSegment(left, right);
-        }
-        return mergeAndPredicateSegment(left, right);
+        return LogicalOperator.OR == logicalOperator.get() ? mergeOrPredicateSegment(left, right) : mergeAndPredicateSegment(left, right);
     }
     
     private OrPredicateSegment mergeOrPredicateSegment(final ASTNode left, final ASTNode right) {
