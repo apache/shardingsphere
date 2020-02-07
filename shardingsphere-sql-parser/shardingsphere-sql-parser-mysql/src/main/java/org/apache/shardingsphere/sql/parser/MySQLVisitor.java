@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Identif
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LogicalOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByItemContext;
@@ -223,15 +224,16 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitExpr(final ExprContext ctx) {
-        BooleanPrimaryContext bool = ctx.booleanPrimary();
-        if (null != bool) {
-            return visit(bool);
-        } else if (null != ctx.logicalOperator()) {
-            return mergePredicateSegment(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText());
-        } else if (!ctx.expr().isEmpty()) {
-            return visit(ctx.expr(0));
+        BooleanPrimaryContext booleanPrimaryContext = ctx.booleanPrimary();
+        if (null != booleanPrimaryContext) {
+            return visit(booleanPrimaryContext);
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        LogicalOperatorContext logicalOperatorContext = ctx.logicalOperator();
+        if (null != logicalOperatorContext) {
+            return mergePredicateSegment(visit(ctx.expr(0)), visit(ctx.expr(1)), logicalOperatorContext.getText());
+        }
+        // TODO deal with XOR
+        return visit(ctx.expr().get(0));
     }
     
     @Override
