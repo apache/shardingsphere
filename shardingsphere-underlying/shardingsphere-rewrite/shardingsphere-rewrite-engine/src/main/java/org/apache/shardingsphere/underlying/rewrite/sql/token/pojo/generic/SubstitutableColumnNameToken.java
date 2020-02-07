@@ -27,7 +27,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable
  *
  * @author zhangliang
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable {
     
     @Getter

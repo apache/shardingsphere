@@ -30,7 +30,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 public final class EncryptPredicateInRightValueToken extends SQLToken implements Substitutable {
     
     @Getter
