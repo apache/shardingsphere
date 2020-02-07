@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
@@ -47,7 +47,7 @@ public final class OracleParserEntry implements SQLParserEntry {
     }
 
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass(final String visitorName) {
+    public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
         return OracleVisitor.class;
     }
 }
