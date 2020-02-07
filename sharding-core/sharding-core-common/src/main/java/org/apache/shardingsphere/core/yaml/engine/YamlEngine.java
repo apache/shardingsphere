@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -91,10 +92,11 @@ public final class YamlEngine {
      * Unmarshal YAML.
      *
      * @param yamlContent YAML content
+     * @param acceptClasses accept classes
      * @return map from YAML
      */
-    public static Map<?, ?> unmarshal(final String yamlContent) {
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml().load(yamlContent);
+    public static Map<?, ?> unmarshal(final String yamlContent, final Collection<Class<?>> acceptClasses) {
+        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml(new ClassFilterConstructor(acceptClasses)).load(yamlContent);
     }
     
     /**
