@@ -167,15 +167,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
-    public final ASTNode visitTableNames(final TableNamesContext ctx) {
-        CollectionValue<TableSegment> result = new CollectionValue<>();
-        for (TableNameContext each : ctx.tableName()) {
-            result.getValues().add((TableSegment) visit(each));
-        }
-        return result;
-    }
-    
-    @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         LiteralValue tableName = (LiteralValue) visit(ctx.name());
         TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getLiteral());
@@ -183,17 +174,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != owner) {
             result.setOwner(createSchemaSegment(owner));
         }
-        return result;
-    }
-    
-    @Override
-    public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
-        Collection<ColumnSegment> segments = new LinkedList<>();
-        for (ColumnNameContext each : ctx.columnName()) {
-            segments.add((ColumnSegment) visit(each));
-        }
-        InsertColumnsSegment result = new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        result.getColumns().addAll(segments);
         return result;
     }
     
@@ -213,12 +193,32 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         LiteralValue indexName = (LiteralValue) visit(ctx.identifier());
         return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getLiteral());
     }
-
+    
+    @Override
+    public final ASTNode visitTableNames(final TableNamesContext ctx) {
+        CollectionValue<TableSegment> result = new CollectionValue<>();
+        for (TableNameContext each : ctx.tableName()) {
+            result.getValues().add((TableSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
+        Collection<ColumnSegment> segments = new LinkedList<>();
+        for (ColumnNameContext each : ctx.columnName()) {
+            segments.add((ColumnSegment) visit(each));
+        }
+        InsertColumnsSegment result = new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.getColumns().addAll(segments);
+        return result;
+    }
+    
     @Override
     public final ASTNode visitDataTypeName_(final DataTypeName_Context ctx) {
         return visit(ctx.identifier(0));
     }
-
+    
     @Override
     public final ASTNode visitExpr(final ExprContext ctx) {
         BooleanPrimaryContext bool = ctx.booleanPrimary();
