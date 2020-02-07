@@ -117,6 +117,10 @@ columnName
     : (owner DOT_)? name
     ;
 
+indexName
+    : identifier
+    ;
+
 userName
     : STRING_  AT_ STRING_
     | identifier
@@ -163,10 +167,6 @@ columnNames
 
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
-    ;
-
-indexName
-    : identifier
     ;
 
 characterSetName_
