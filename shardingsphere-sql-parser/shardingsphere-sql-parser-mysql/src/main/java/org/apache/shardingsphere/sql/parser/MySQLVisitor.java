@@ -270,6 +270,22 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         return visitRemainPredicate(ctx);
     }
     
+    private PredicateSegment createInSegment(final PredicateContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
+        Collection<ExpressionSegment> segments = new LinkedList<>();
+        for (ExprContext each : ctx.expr()) {
+            segments.add((ExpressionSegment) visit(each));
+        }
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
+    }
+    
+    private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
+        ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
+    }
+    
     @Override
     public final ASTNode visitBitExpr(final BitExprContext ctx) {
         SimpleExprContext simple = ctx.simpleExpr();
@@ -475,22 +491,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             result.append(ctx.getChild(i).getText());
         }
         return result.toString();
-    }
-    
-    private PredicateSegment createInSegment(final PredicateContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        Collection<ExpressionSegment> segments = new LinkedList<>();
-        for (ExprContext each : ctx.expr()) {
-            segments.add((ExpressionSegment) visit(each));
-        }
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
-    }
-    
-    private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
-        ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
-        ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
     }
     
     private OrPredicateSegment mergePredicateSegment(final ASTNode left, final ASTNode right, final String operator) {
