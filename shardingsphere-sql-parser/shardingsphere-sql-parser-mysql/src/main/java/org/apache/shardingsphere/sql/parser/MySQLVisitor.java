@@ -86,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
@@ -238,13 +239,22 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.subquery()) {
             return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.subquery().getText());
         }
-        if (null != ctx.comparisonOperator()) {
+        if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
             return createCompareSegment(ctx);
         }
         if (null != ctx.predicate()) {
             return visit(ctx.predicate());
         }
+        //TODO deal with IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    private PredicateSegment createCompareSegment(final BooleanPrimaryContext ctx) {
+        ASTNode leftValue = visit(ctx.booleanPrimary());
+        ASTNode rightValue = visit(ctx.predicate());
+        PredicateRightValue predicateRightValue = rightValue instanceof ColumnSegment
+                ? (ColumnSegment) rightValue : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) leftValue, predicateRightValue);
     }
     
     @Override
@@ -469,16 +479,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             result.append(ctx.getChild(i).getText());
         }
         return result.toString();
-    }
-    
-    private PredicateSegment createCompareSegment(final BooleanPrimaryContext ctx) {
-        ASTNode leftValue = visit(ctx.booleanPrimary());
-        ASTNode rightValue = visit(ctx.predicate());
-        if (rightValue instanceof ColumnSegment) {
-            return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) leftValue, (ColumnSegment) rightValue);
-        }
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                (ColumnSegment) leftValue, new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue));
     }
     
     private PredicateSegment createInSegment(final PredicateContext ctx) {
