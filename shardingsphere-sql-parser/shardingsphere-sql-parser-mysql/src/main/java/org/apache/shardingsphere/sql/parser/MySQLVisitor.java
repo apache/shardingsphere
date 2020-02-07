@@ -150,6 +150,20 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
+    public final ASTNode visitIdentifier(final IdentifierContext ctx) {
+        UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
+        if (null != unreservedWord) {
+            return visit(unreservedWord);
+        }
+        return new LiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
+        return new LiteralValue(ctx.getText());
+    }
+    
+    @Override
     public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
@@ -424,20 +438,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
-    }
-    
-    @Override
-    public final ASTNode visitIdentifier(final IdentifierContext ctx) {
-        UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
-        if (null != unreservedWord) {
-            return visit(unreservedWord);
-        }
-        return new LiteralValue(ctx.getText());
-    }
-    
-    @Override
-    public final ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
-        return new LiteralValue(ctx.getText());
     }
     
     // Segments
