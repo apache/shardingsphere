@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
@@ -29,6 +30,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@EqualsAndHashCode(callSuper = true)
 public final class EncryptPredicateEqualRightValueToken extends SQLToken implements Substitutable {
     
     @Getter

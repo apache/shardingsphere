@@ -37,7 +37,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +69,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     }
     
     private Collection<SQLToken> generateSQLTokens(final List<EncryptCondition> encryptConditions) {
-        Collection<SQLToken> result = new LinkedList<>();
+        Collection<SQLToken> result = new LinkedHashSet<>();
         for (EncryptCondition each : encryptConditions) {
             result.add(generateSQLToken(each));
         }
