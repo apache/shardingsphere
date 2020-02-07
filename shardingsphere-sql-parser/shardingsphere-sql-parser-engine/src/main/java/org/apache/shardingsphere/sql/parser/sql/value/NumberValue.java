@@ -28,25 +28,26 @@ import java.math.BigInteger;
  *
  * @author panjuan
  */
+@Getter
 public final class NumberValue implements ASTNode {
     
-    private static final int RADIX = 10;
-    
-    @Getter
     private final Number number;
     
     public NumberValue(final String number) {
-        Number result;
-        try {
-            result = createBigInteger(number);
-        } catch (final NumberFormatException ex) {
-            result = new BigDecimal(number);
-        }
-        this.number = result;
+        this.number = getNumber(number);
     }
     
-    private static Number createBigInteger(final String value) {
-        BigInteger result = new BigInteger(value, RADIX);
+    private Number getNumber(final String value) {
+        try {
+            return getBigInteger(value);
+        } catch (final NumberFormatException ex) {
+            // TODO make sure with double and float
+            return new BigDecimal(value);
+        }
+    }
+    
+    private static Number getBigInteger(final String value) {
+        BigInteger result = new BigInteger(value);
         if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
             return result.intValue();
         }
