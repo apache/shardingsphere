@@ -105,18 +105,18 @@ import java.util.LinkedList;
  *
  * @author panjuan
  */
-public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+@Getter(AccessLevel.PROTECTED)
+public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
-    @Getter(AccessLevel.PROTECTED)
     private int currentParameterIndex;
     
     @Override
-    public ASTNode visitSchemaName(final SchemaNameContext ctx) {
+    public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
     
     @Override
-    public ASTNode visitTableNames(final TableNamesContext ctx) {
+    public final ASTNode visitTableNames(final TableNamesContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
             result.getValues().add((TableSegment) visit(each));
@@ -125,7 +125,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitTableName(final TableNameContext ctx) {
+    public final ASTNode visitTableName(final TableNameContext ctx) {
         LiteralValue tableName = (LiteralValue) visit(ctx.name());
         TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getLiteral());
         OwnerContext owner = ctx.owner();
@@ -136,7 +136,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitColumnNames(final ColumnNamesContext ctx) {
+    public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
         Collection<ColumnSegment> segments = new LinkedList<>();
         for (ColumnNameContext each : ctx.columnName()) {
             segments.add((ColumnSegment) visit(each));
@@ -147,7 +147,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitColumnName(final ColumnNameContext ctx) {
+    public final ASTNode visitColumnName(final ColumnNameContext ctx) {
         LiteralValue columnName = (LiteralValue) visit(ctx.name());
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getLiteral());
         OwnerContext owner = ctx.owner();
@@ -158,18 +158,18 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitIndexName(final IndexNameContext ctx) {
+    public final ASTNode visitIndexName(final IndexNameContext ctx) {
         LiteralValue indexName = (LiteralValue) visit(ctx.identifier());
         return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getLiteral());
     }
 
     @Override
-    public ASTNode visitDataTypeName_(final DataTypeName_Context ctx) {
+    public final ASTNode visitDataTypeName_(final DataTypeName_Context ctx) {
         return visit(ctx.identifier(0));
     }
 
     @Override
-    public ASTNode visitExpr(final ExprContext ctx) {
+    public final ASTNode visitExpr(final ExprContext ctx) {
         BooleanPrimaryContext bool = ctx.booleanPrimary();
         if (null != bool) {
             return visit(bool);
@@ -182,7 +182,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
+    public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.subquery()) {
             return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
         }
@@ -196,7 +196,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitPredicate(final PredicateContext ctx) {
+    public final ASTNode visitPredicate(final PredicateContext ctx) {
         if (null != ctx.subquery()) {
             return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
         }
@@ -213,7 +213,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitBitExpr(final BitExprContext ctx) {
+    public final ASTNode visitBitExpr(final BitExprContext ctx) {
         SimpleExprContext simple = ctx.simpleExpr();
         if (null != simple) {
             return createExpressionSegment(visit(simple), ctx);
@@ -222,7 +222,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
+    public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
         if (null != ctx.subquery()) {
             return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
         }
@@ -245,12 +245,12 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
+    public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);
     }
     
     @Override
-    public ASTNode visitLiterals(final LiteralsContext ctx) {
+    public final ASTNode visitLiterals(final LiteralsContext ctx) {
         if (null != ctx.stringLiterals()) {
             return visit(ctx.stringLiterals());
         }
@@ -267,29 +267,29 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
+    public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
         String text = ctx.getText();
         return new LiteralValue(text.substring(1, text.length() - 1));
     }
     
     @Override
-    public ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
+    public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
         return new NumberValue(ctx.getText());
     }
     
     @Override
-    public ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
+    public final ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
         return new BooleanValue(ctx.getText());
     }
     
     @Override
-    public ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
+    public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
+    public final ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
         for (OrderByItemContext each : ctx.orderByItem()) {
             items.add((OrderByItemSegment) visit(each));
@@ -298,7 +298,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitOrderByItem(final OrderByItemContext ctx) {
+    public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
@@ -312,7 +312,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitFunctionCall(final FunctionCallContext ctx) {
+    public final ASTNode visitFunctionCall(final FunctionCallContext ctx) {
         if (null != ctx.aggregationFunction()) {
             return visit(ctx.aggregationFunction());
         }
@@ -326,7 +326,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
+    public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         if (AggregationType.isAggregationType(ctx.aggregationFunctionName_().getText())) {
             return createAggregationSegment(ctx);
         }
@@ -334,7 +334,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
+    public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
         if (null != ctx.groupConcatFunction()) {
             return visit(ctx.groupConcatFunction());
         }
@@ -366,67 +366,67 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
+    public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
+    public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitCastFunction(final CastFunctionContext ctx) {
+    public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
+    public final ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
+    public final ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
+    public final ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
+    public final ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitCharFunction(final CharFunctionContext ctx) {
+    public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitWeightStringFunction(final WeightStringFunctionContext ctx) {
+    public final ASTNode visitWeightStringFunction(final WeightStringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
+    public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitIdentifier(final IdentifierContext ctx) {
+    public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
         if (null != unreservedWord) {
             return visit(unreservedWord);
@@ -435,7 +435,7 @@ public class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements 
     }
     
     @Override
-    public ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
+    public final ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
         return new LiteralValue(ctx.getText());
     }
     
