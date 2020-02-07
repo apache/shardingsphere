@@ -286,6 +286,22 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
     }
     
+    private ASTNode visitRemainPredicate(final PredicateContext ctx) {
+        for (BitExprContext each : ctx.bitExpr()) {
+            visit(each);
+        }
+        for (ExprContext each : ctx.expr()) {
+            visit(each);
+        }
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            visit(each);
+        }
+        if (null != ctx.predicate()) {
+            visit(ctx.predicate());
+        }
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
     @Override
     public final ASTNode visitBitExpr(final BitExprContext ctx) {
         SimpleExprContext simple = ctx.simpleExpr();
@@ -293,6 +309,19 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return createExpressionSegment(visit(simple), ctx);
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
+        if (astNode instanceof LiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((LiteralValue) astNode).getLiteral());
+        }
+        if (astNode instanceof NumberValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
+        }
+        if (astNode instanceof ParameterMarkerValue) {
+            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getParameterIndex());
+        }
+        return astNode;
     }
     
     @Override
@@ -461,19 +490,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
-    private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
-        if (astNode instanceof LiteralValue) {
-            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((LiteralValue) astNode).getLiteral());
-        }
-        if (astNode instanceof NumberValue) {
-            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
-        }
-        if (astNode instanceof ParameterMarkerValue) {
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getParameterIndex());
-        }
-        return astNode;
-    }
-    
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx) {
         AggregationType type = AggregationType.valueOf(ctx.aggregationFunctionName_().getText().toUpperCase());
         int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
@@ -554,22 +570,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         result.getPredicates().addAll(left.getPredicates());
         result.getPredicates().addAll(right.getPredicates());
         return result;
-    }
-    
-    private ASTNode visitRemainPredicate(final PredicateContext ctx) {
-        for (BitExprContext each : ctx.bitExpr()) {
-            visit(each);
-        }
-        for (ExprContext each : ctx.expr()) {
-            visit(each);
-        }
-        for (SimpleExprContext each : ctx.simpleExpr()) {
-            visit(each);
-        }
-        if (null != ctx.predicate()) {
-            visit(ctx.predicate());
-        }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
