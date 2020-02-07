@@ -62,6 +62,14 @@ nullValueLiterals
     : NULL
     ;
 
+characterSetName_
+    : IDENTIFIER_
+    ;
+
+collationName_
+   : IDENTIFIER_
+   ;
+
 identifier
     : IDENTIFIER_ | unreservedWord_
     ;
@@ -161,21 +169,13 @@ name
     : identifier
     ;
 
-columnNames
-    : LP_? columnName (COMMA_ columnName)* RP_?
-    ;
-
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
     ;
 
-characterSetName_
-    : IDENTIFIER_
+columnNames
+    : LP_? columnName (COMMA_ columnName)* RP_?
     ;
-
-collationName_
-   : IDENTIFIER_
-   ;
 
 groupName
     : IDENTIFIER_
