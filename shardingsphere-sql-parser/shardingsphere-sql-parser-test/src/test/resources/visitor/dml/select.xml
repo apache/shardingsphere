@@ -413,4 +413,266 @@
         </where>
     </select>
     
+    <select sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
+        <table name="t_order" alias="o" start-index="16" stop-index="22" />
+        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where parameters-count="4" start-index="99" stop-index="154" literal-stop-index="155">
+            <and-predicate>
+                <predicate start-index="105" stop-index="123">
+                    <column-left-value name="user_id" start-index="105" stop-index="113">
+                        <owner name="o" start-index="105" stop-index="105" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="129" stop-index="154" literal-stop-index="155">
+                    <column-left-value name="order_id" start-index="129" stop-index="138">
+                        <owner name="o" start-index="129" stop-index="129" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
+            </column-item>
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_full_route_with_binding_tables">
+        <table name="t_order" alias="o" start-index="16" stop-index="22" />
+        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="108" stop-index="108" />
+            </column-item>
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
+        <table name="t_order" alias="o" start-index="16" stop-index="22" />
+        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where parameters-count="5" start-index="147" stop-index="219" literal-stop-index="225">
+            <and-predicate>
+                <predicate start-index="153" stop-index="171">
+                    <column-left-value name="user_id" start-index="153" stop-index="161">
+                        <owner name="o" start-index="153" stop-index="153" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="177" stop-index="202" literal-stop-index="203">
+                    <column-left-value name="order_id" start-index="177" stop-index="186">
+                        <owner name="o" start-index="177" stop-index="177" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="208" stop-index="219" literal-start-index="209" literal-stop-index="225">
+                    <column-left-value name="status" start-index="208" stop-index="215" literal-start-index="209" literal-stop-index="216">
+                        <owner name="o" start-index="208" stop-index="208" literal-start-index="209" literal-stop-index="209" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="230" stop-index="230" literal-start-index="236" literal-stop-index="236" />
+            </column-item>
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
+        <table name="t_order" alias="o" start-index="16" stop-index="22" />
+        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <table name="select" alias="c" start-delimiter="`" end-delimiter="`" start-index="104" stop-index="111" />
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where parameters-count="5" start-index="138" stop-index="210" literal-stop-index="216">
+            <and-predicate>
+                <predicate start-index="144" stop-index="162">
+                    <column-left-value name="user_id" start-index="144" stop-index="152">
+                        <owner name="o" start-index="144" stop-index="144" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="168" stop-index="193" literal-stop-index="194">
+                    <column-left-value name="order_id" start-index="168" stop-index="177">
+                        <owner name="o" start-index="168" stop-index="168" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="199" stop-index="210" literal-start-index="200" literal-stop-index="216">
+                    <column-left-value name="status" start-index="199" stop-index="206" literal-start-index="200" literal-stop-index="207">
+                        <owner name="o" start-index="199" stop-index="199" literal-start-index="200" literal-stop-index="200" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" />
+                        <literal-expression value="init" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id">
+                <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
+            </column-item>
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_alias_as_keyword" parameters="1">
+        <table name="t_order_item" alias="length" start-index="36" stop-index="47" />
+        <projections start-index="7" stop-index="29">
+            <column-projection name="item_id" alias="password" start-index="7" stop-index="20">
+                <owner name="length" start-index="7" stop-index="12" />
+            </column-projection>>
+        </projections>
+        <where parameters-count="1" start-index="56" stop-index="79">
+            <and-predicate>
+                <predicate start-index="62" stop-index="79">
+                    <column-left-value name="item_id" start-index="62" stop-index="75">
+                        <owner name="length" start-index="62" stop-index="67" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_with_force_index_join" parameters="1000">
+        <table name="t_order" alias="o" start-index="16" stop-index="22" />
+        <table name="t_order_item" alias="i" start-index="56" stop-index="67" />
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where parameters-count="1" start-index="96" stop-index="115" literal-stop-index="118">
+            <and-predicate>
+                <predicate start-index="102" stop-index="115" literal-stop-index="118">
+                    <column-left-value name="order_id" start-index="102" stop-index="111">
+                        <owner name="o" start-index="102" stop-index="102" />
+                    </column-left-value>
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_with_schema" >
+        <table name="t_order" start-index="14" stop-index="24">
+                <owner name="db1" start-index="14" stop-index="16" />
+            </table>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_special_function_nested" parameters="12, 1000">
+        <table name="t_order" start-index="48" stop-index="54" />
+        <projections start-index="7" stop-index="41">
+            <aggregation-projection type="SUM" inner-expression-start-index="10" alias="func_status" start-index="7" stop-index="29" />
+        </projections>
+        <where parameters-count="2" start-index="56" stop-index="89" literal-stop-index="93">
+            <and-predicate>
+                <predicate start-index="62" stop-index="72" literal-stop-index="73">
+                    <column-left-value name="user_id" start-index="62" stop-index="68" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="12" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="78" stop-index="89" literal-start-index="79" literal-stop-index="93">
+                    <column-left-value name="order_id" start-index="78" stop-index="85" literal-start-index="79" literal-stop-index="86" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1000" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_with_row_subquery_without_row_keyword">
+        <table name="t_order" start-index="14" stop-index="20" />
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where parameters-count="0" start-index="92" stop-index="105">
+            <!-- FIXME cannot parse subquery's predicate -->
+        </where>
+    </select>
+    
+    <select sql-case-id="select_with_row_subquery">
+        <table name="t_order" start-index="14" stop-index="20" />
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where parameters-count="0" start-index="95" stop-index="107">
+            <!-- FIXME cannot parse subquery's predicate -->
+        </where>
+    </select>
 </sql-parser-test-cases>
