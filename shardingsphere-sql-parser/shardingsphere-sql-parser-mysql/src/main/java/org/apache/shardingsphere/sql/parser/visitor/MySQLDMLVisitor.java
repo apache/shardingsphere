@@ -361,13 +361,13 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
+        if (null != ctx.tableFactor()) {
+            result.getValues().add((TableSegment) visit(ctx.tableFactor()));
+        }
         if (null != ctx.joinedTable()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
                 result.getValues().add((TableSegment) visit(each));
             }
-        }
-        if (null != ctx.tableFactor()) {
-            result.getValues().add((TableSegment) visit(ctx.tableFactor()));
         }
         return result;
     }

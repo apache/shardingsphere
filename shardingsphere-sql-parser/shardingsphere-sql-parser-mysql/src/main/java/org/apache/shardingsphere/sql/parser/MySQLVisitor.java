@@ -235,17 +235,24 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.subquery().getText());
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
-            ASTNode leftValue = visit(ctx.booleanPrimary());
-            ASTNode rightValue = visit(ctx.predicate());
-            PredicateRightValue predicateRightValue = rightValue instanceof ColumnSegment
-                    ? (ColumnSegment) rightValue : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
-            return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) leftValue, predicateRightValue);
+            return createCompareSegment(ctx);
         }
         if (null != ctx.predicate()) {
             return visit(ctx.predicate());
         }
         //TODO deal with IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
+        ASTNode leftValue = visit(ctx.booleanPrimary());
+        ASTNode rightValue = visit(ctx.predicate());
+        if (!(leftValue instanceof ColumnSegment)) {
+            return leftValue;
+        }
+        PredicateRightValue predicateRightValue = rightValue instanceof ColumnSegment
+                ? (ColumnSegment) rightValue : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) leftValue, predicateRightValue);
     }
     
     @Override
