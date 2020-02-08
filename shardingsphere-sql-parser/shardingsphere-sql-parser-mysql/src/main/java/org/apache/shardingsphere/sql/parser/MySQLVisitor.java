@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -61,9 +59,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Unreser
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.core.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
@@ -80,8 +78,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
@@ -227,7 +223,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return visit(ctx.booleanPrimary());
         }
         if (null != ctx.logicalOperator()) {
-            return mergePredicateSegment(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText());
+            return new PredicateBuilder(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText()).mergePredicate();
         }
         // TODO deal with XOR
         return visit(ctx.expr().get(0));
@@ -480,66 +476,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
-    }
-    
-    private OrPredicateSegment mergePredicateSegment(final ASTNode left, final ASTNode right, final String operator) {
-        Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(operator);
-        Preconditions.checkState(logicalOperator.isPresent());
-        return LogicalOperator.OR == logicalOperator.get() ? mergeOrPredicateSegment(left, right) : mergeAndPredicateSegment(left, right);
-    }
-    
-    private OrPredicateSegment mergeOrPredicateSegment(final ASTNode left, final ASTNode right) {
-        OrPredicateSegment result = new OrPredicateSegment();
-        result.getAndPredicates().addAll(getAndPredicates(left));
-        result.getAndPredicates().addAll(getAndPredicates(right));
-        return result;
-    }
-    
-    private OrPredicateSegment mergeAndPredicateSegment(final ASTNode left, final ASTNode right) {
-        OrPredicateSegment result = new OrPredicateSegment();
-        Collection<AndPredicate> leftPredicates = getAndPredicates(left);
-        Collection<AndPredicate> rightPredicates = getAndPredicates(right);
-        addAndPredicates(result, leftPredicates, rightPredicates);
-        return result;
-    }
-    
-    private void addAndPredicates(final OrPredicateSegment orPredicateSegment, final Collection<AndPredicate> leftPredicates, final Collection<AndPredicate> rightPredicates) {
-        if (0 == leftPredicates.size() && 0 == rightPredicates.size()) {
-            return;
-        }
-        if (0 == leftPredicates.size()) {
-            orPredicateSegment.getAndPredicates().addAll(rightPredicates);
-        }
-        if (0 == rightPredicates.size()) {
-            orPredicateSegment.getAndPredicates().addAll(leftPredicates);
-        }
-        for (AndPredicate eachLeft : leftPredicates) {
-            for (AndPredicate eachRight : rightPredicates) {
-                orPredicateSegment.getAndPredicates().add(createAndPredicate(eachLeft, eachRight));
-            }
-        }
-    }
-    
-    private Collection<AndPredicate> getAndPredicates(final ASTNode astNode) {
-        if (astNode instanceof OrPredicateSegment) {
-            return ((OrPredicateSegment) astNode).getAndPredicates();
-        }
-        if (astNode instanceof AndPredicate) {
-            return Collections.singleton((AndPredicate) astNode);
-        }
-        if (astNode instanceof PredicateSegment) {
-            AndPredicate andPredicate = new AndPredicate();
-            andPredicate.getPredicates().add((PredicateSegment) astNode);
-            return Collections.singleton(andPredicate);
-        }
-        return new LinkedList<>();
-    }
-    
-    private AndPredicate createAndPredicate(final AndPredicate left, final AndPredicate right) {
-        AndPredicate result = new AndPredicate();
-        result.getPredicates().addAll(left.getPredicates());
-        result.getPredicates().addAll(right.getPredicates());
-        return result;
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
