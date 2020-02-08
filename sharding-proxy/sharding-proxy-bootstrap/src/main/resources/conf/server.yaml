@@ -29,11 +29,6 @@
 #    namespace: orchestration
 #    props:
 #      overwrite: false
-#      retry-interval-milliseconds: 10
-#      time-to-live-seconds: 10
-#      max-retries: 10
-#      operation-timeout-milliseconds: 10
-#      digest: 123
 #
 #authentication:
 #  users:
