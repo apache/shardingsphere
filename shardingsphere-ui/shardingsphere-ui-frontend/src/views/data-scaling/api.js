@@ -16,6 +16,9 @@
  */
 
 import API from '@/utils/api'
+import ruleConfigApi from '@/views/rule-config/api'
+
+const { getSchema, getSchemaDataSource, getSchemaRule } = ruleConfigApi
 
 export default {
   getJobStart: (params = {}) =>
@@ -28,5 +31,7 @@ export default {
     }),
   postJobStop: (params = {}) =>
     API.post(`/shardingscaling/job/stop`, params, { host: 'OTHERHOST' }),
-  getSchema: (params = {}) => API.get(`/api/schema`, params)
+  getSchema,
+  getSchemaDataSource,
+  getSchemaRule
 }

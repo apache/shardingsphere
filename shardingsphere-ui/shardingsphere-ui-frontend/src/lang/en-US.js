@@ -152,18 +152,34 @@ export default {
       jobName: 'jobName',
       status: 'status',
       operate: 'operate',
-      operateStop: 'stop'
+      operateStop: 'stop',
+      operateSee: 'see'
     },
     registDialog: {
       title: 'Add a job',
       source: 'Source',
       target: 'Target',
+      jobCount: 'JobCount',
+      jobCountPlaceholder: 'Please enter jobCount',
+      username: 'Username',
+      usernamePlaceholder: 'Please enter username',
+      password: 'Password',
+      passwordPlaceholder: 'Please enter password',
+      url: 'Url',
+      urlPlaceholder: 'Please enter url',
       btnConfirmTxt: 'Confirm',
       btnCancelTxt: 'Cancel'
     },
     rules: {
-      source: 'Please enter the source of the registration center',
+      source: 'Please select the source of the registration center',
       target: 'Please select a target'
+    },
+    notify: {
+      title: 'Prompt',
+      conSucMessage: 'Add Succeeded',
+      conFailMessage: 'Add Failed',
+      delSucMessage: 'Delete Succeeded',
+      delFailMessage: 'Delete Failed'
     }
   }
 }

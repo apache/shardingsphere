@@ -40,7 +40,7 @@
         >
           <template slot-scope="scope">
             <el-tooltip
-              :content="$t('dataScaling.tableList.operateStop')"
+              :content="$t('dataScaling.tableList.operateSee')"
               class="item"
               effect="dark"
               placement="top"
@@ -59,9 +59,10 @@
               placement="top"
             >
               <el-button
+                :disabled="scope.row.status === 'STOPPED'"
+                icon="el-icon-video-pause"
                 size="small"
                 type="danger"
-                icon="el-icon-video-pause"
                 @click="handlerStop(scope.row)"
               />
             </el-tooltip>
@@ -78,6 +79,7 @@
         />
       </div>
     </div>
+    <!-- add Dialog -->
     <el-dialog
       :title="$t('dataScaling.registDialog.title')"
       :visible.sync="DataScalingDialogVisible"
@@ -91,10 +93,15 @@
           <el-select
             v-model="form.source"
             :placeholder="$t('dataScaling.rules.source')"
+            :disabled="!schemaData.length"
             @change="selectChange"
           >
-            <el-option label="Schema" value="3"></el-option>
+            <el-option v-for="(item, index) in schemaData" :label="item" :value="item" :key="index"></el-option>
           </el-select>
+          <span v-show="form.source" style="margin-left: 10px">
+            <el-button type="primary" size="mini" @click="showDatasource">Datasource</el-button>
+            <el-button type="primary" size="mini" @click="showRule">Rule</el-button>
+          </span>
         </el-form-item>
         <el-form-item
           :label="$t('dataScaling.registDialog.target')"
@@ -104,6 +111,32 @@
             <el-radio label="Proxy">Proxy</el-radio>
           </el-radio-group>
         </el-form-item>
+        <div v-show="schemaData.length > 0">
+          <el-form-item
+            :label="$t('dataScaling.registDialog.username')"
+            prop="username"
+          >
+            <el-input v-model="form.username" :placeholder="$t('dataScaling.registDialog.usernamePlaceholder')"></el-input>
+          </el-form-item>
+          <el-form-item
+            :label="$t('dataScaling.registDialog.password')"
+            prop="password"
+          >
+            <el-input v-model="form.password" :placeholder="$t('dataScaling.registDialog.passwordPlaceholder')"></el-input>
+          </el-form-item>
+          <el-form-item
+            :label="$t('dataScaling.registDialog.url')"
+            prop="url"
+          >
+            <el-input v-model="form.url" :placeholder="$t('dataScaling.registDialog.urlPlaceholder')"></el-input>
+          </el-form-item>
+          <el-form-item
+            :label="$t('dataScaling.registDialog.jobCount')"
+            prop="jobCount"
+          >
+            <el-input v-model="form.jobCount" :placeholder="$t('dataScaling.registDialog.jobCountPlaceholder')"></el-input>
+          </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="DataScalingDialogVisible = false">{{
@@ -114,11 +147,49 @@
         }}</el-button>
       </div>
     </el-dialog>
+    <!-- showDatasource -->
+    <el-dialog
+      :visible.sync="DatasourceVisible"
+      title="Result Datasource:"
+      width="1010px"
+    >
+      <el-row>
+        <el-col :span="24">
+          <el-input
+            :rows="20"
+            v-model="textareaDatasourceCom"
+            type="textarea"
+            readonly
+            class="show-text"
+          />
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer"></div>
+    </el-dialog>
+    <!-- showRule -->
+    <el-dialog
+      :visible.sync="RuleVisible"
+      title="Result Rule:"
+      width="1010px"
+    >
+      <el-row>
+        <el-col :span="24">
+          <el-input
+            :rows="20"
+            v-model="textareaRuleCom"
+            type="textarea"
+            readonly
+            class="show-text"
+          />
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer"></div>
+    </el-dialog>
     <!-- syncTaskProgress -->
     <el-dialog
-      :title="$t('dataScaling.registDialog.title')"
       :visible.sync="DataScalingDialogProgressVisible"
       width="1010px"
+      @close="close()"
     >
       <el-form :inline="true">
         <el-form-item label="JobID">
@@ -161,7 +232,6 @@
     </el-dialog>
     <!-- syncTaskProgressDetail -->
     <el-dialog
-      :title="$t('dataScaling.registDialog.title')"
       :visible.sync="DataScalingDialogSyncTaskProgressDetailVisible"
       width="1010px"
     >
@@ -184,7 +254,7 @@
             ></el-button>
           </el-col>
           <el-col :span="2"><div style="color: #333; font-weight: 500;">Preparing</div></el-col>
-          <el-col :span="10" class="collapse-progress collapse-active">
+          <el-col :span="6" class="collapse-progress collapse-active">
             <el-progress
               :stroke-width="10"
               :percentage="100"
@@ -196,7 +266,7 @@
       <el-collapse>
         <el-collapse-item>
           <template slot="title">
-            <el-row class="collapse-row">
+            <el-row class="collapse-row progress-item">
               <el-col :span="2">
                 <el-button
                   size="mini"
@@ -206,8 +276,8 @@
                 ></el-button>
               </el-col>
               <el-col :span="2"><div>History</div></el-col>
-              <el-col :span="20" class="collapse-progress">
-                <el-progress :stroke-width="10" :percentage="70"></el-progress>
+              <el-col :span="6" class="collapse-progress">
+                <el-progress :stroke-width="10" :percentage="getPercentage(syncTaskProgress.historySyncTaskProgress)"></el-progress>
               </el-col>
             </el-row>
           </template>
@@ -219,7 +289,7 @@
             >
               <el-card shadow="hover" style="margin-bottom: 10px">
                 {{ item.id }}
-                <v-chart :options="liquidFillOptions" />
+                <v-chart :options="getOption(item)" />
               </el-card>
             </el-col>
           </el-row>
@@ -238,15 +308,17 @@
               <el-col :span="2"><div>Realtime</div></el-col>
             </el-row>
           </template>
-          <div>
-            delayMillisecond:
-            {{
-              this.$moment(
-                syncTaskProgress.realTimeSyncTaskProgress &&
-                  syncTaskProgress.realTimeSyncTaskProgress.delayMillisecond
-              ).format('DD')
-            }}s
-          </div>
+          <el-row class="progress-item">
+            <el-col :span="10">
+              <span style="color: #333; font-weight: 500;">delayMillisecond:</span>
+              {{
+                this.$moment(
+                  syncTaskProgress.realTimeSyncTaskProgress &&
+                    syncTaskProgress.realTimeSyncTaskProgress.delayMillisecond
+                ).format('s')
+              }}s
+            </el-col>
+          </el-row>
         </el-collapse-item>
       </el-collapse>
       <div slot="footer" class="dialog-footer"></div>
@@ -254,15 +326,43 @@
   </el-row>
 </template>
 <script>
+import yaml from 'js-yaml'
 import Vue from 'vue'
 import ECharts from 'vue-echarts'
 import moment from 'moment'
-import { mapActions } from 'vuex'
 import clone from 'lodash/clone'
 import 'echarts-liquidfill'
 import API from '../api'
 
 Vue.prototype.$moment = moment
+
+/**
+ * 保留n位小数
+ */
+const nDecimal = (num = 0, n = 0) => {
+  if (num === null) return '--'
+  let f_x = parseFloat(num)
+  if (isNaN(f_x)) {
+    console.log('function:changeTwoDecimal->parameter error')
+    return false
+  }
+
+  if (!n) return parseInt(f_x)
+
+  f_x = Math.round(num * 100) / 100
+  let s_x = f_x.toString()
+  let pos_decimal = s_x.indexOf('.')
+  if (pos_decimal < 0) {
+    pos_decimal = s_x.length
+    s_x += '.'
+  }
+  while (s_x.length <= pos_decimal + n) {
+    s_x += '0'
+  }
+  return s_x
+}
+
+let timer = null
 
 export default {
   name: 'DataScalingIndex',
@@ -274,7 +374,11 @@ export default {
       DataScalingDialogVisible: false,
       DataScalingDialogProgressVisible: false,
       DataScalingDialogSyncTaskProgressDetailVisible: false,
+      DatasourceVisible: false,
+      RuleVisible: false,
       schemaData: [],
+      textareaDatasource: ``,
+      textareaRule: ``,
       column: [
         {
           label: this.$t('dataScaling').tableList.jobId,
@@ -291,7 +395,11 @@ export default {
       ],
       form: {
         source: '',
-        target: 'Proxy'
+        target: 'Proxy',
+        username: '',
+        password: '',
+        url: '',
+        jobCount: '3'
       },
       progressRow: {},
       syncTaskProgress: {},
@@ -309,19 +417,104 @@ export default {
             message: this.$t('dataScaling').rules.target,
             trigger: 'change'
           }
+        ],
+        username: [
+          {
+            required: true,
+            message: this.$t('dataScaling').registDialog.usernamePlaceholder,
+            trigger: 'change'
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: this.$t('dataScaling').registDialog.passwordPlaceholder,
+            trigger: 'change'
+          }
+        ],
+        url: [
+          {
+            required: true,
+            message: this.$t('dataScaling').registDialog.urlPlaceholder,
+            trigger: 'change'
+          }
+        ],
+        jobCount: [
+          {
+            required: true,
+            message: this.$t('dataScaling').registDialog.jobCountPlaceholder,
+            trigger: 'change'
+          }
         ]
       },
       tableData: [],
       cloneTableData: [],
       currentPage: 1,
       pageSize: 10,
-      total: null,
-      liquidFillOptions: {
+      total: null
+    }
+  },
+  computed: {
+    textareaDatasourceCom() {
+      const dsYamlType = new yaml.Type(
+        'tag:yaml.org,2002:org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const DS_SCHEMA = yaml.Schema.create(dsYamlType)
+      return JSON.stringify(
+        yaml.load(this.textareaDatasource, { schema: DS_SCHEMA }),
+        null,
+        '\t'
+      )
+    },
+    textareaRuleCom() {
+      const dsYamlType = new yaml.Type(
+        'tag:yaml.org,2002:org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
+        }
+      )
+      const DS_SCHEMA = yaml.Schema.create(dsYamlType)
+      return JSON.stringify(
+        yaml.load(this.textareaRule, { schema: DS_SCHEMA }),
+        null,
+        '\t'
+      )
+    }
+  },
+  created() {
+    this.getJobList()
+  },
+  methods: {
+    getPercentage(arr) {
+      if (!arr) return
+      let sumEstimatedRows = ''
+      let sumSyncedRows = ''
+      for (const v of arr) {
+        sumEstimatedRows += v.estimatedRows
+        sumSyncedRows += v.syncedRows
+      }
+      return nDecimal(sumSyncedRows / sumEstimatedRows, 2) * 100
+    },
+    getOption(obj) {
+      let data = 0
+      if (obj.estimatedRows) {
+        data = obj.syncedRows / obj.estimatedRows
+      }
+      const option = {
         series: [
           {
             type: 'liquidFill',
             radius: '90%',
-            data: [0.6],
+            data: [data],
             outline: {
               show: false
             },
@@ -331,28 +524,35 @@ export default {
           }
         ]
       }
-    }
-  },
-  created() {
-    this.getJobList()
-  },
-  methods: {
-    ...mapActions(['setRegCenterActivated']),
+      return option
+    },
     selectChange(item) {
-      this.getSchema()
+      this.getSchemaDataSource(item)
+      this.getSchemaRule(item)
+    },
+    getSchemaDataSource(schemaName) {
+      API.getSchemaDataSource(schemaName).then(res => {
+        const { model } = res
+        if (Object.prototype.toString.call(model) === '[object String]') {
+          this.textareaDatasource = model
+        } else {
+          this.textareaDatasource = JSON.stringify(model, null, '\t')
+        }
+      })
+    },
+    getSchemaRule(schemaName) {
+      API.getSchemaRule(schemaName).then(res => {
+        const { model } = res
+        if (Object.prototype.toString.call(model) === '[object String]') {
+          this.textareaRule = model
+        } else {
+          this.textareaRule = JSON.stringify(model, null, '\t')
+        }
+      })
     },
     getSchema() {
       API.getSchema().then(res => {
-        const data = res.model
-        const base = ['rule', 'datasource']
-        const newData = []
-        for (const v of data) {
-          newData.push({
-            title: v,
-            children: base
-          })
-        }
-        this.schemaData = newData
+        this.schemaData = res.model
       })
     },
     handleCurrentChange(val) {
@@ -360,44 +560,12 @@ export default {
       this.tableData = data.splice(val - 1, this.pageSize)
     },
     getJobList() {
-      const data = [
-        {
-          jobId: 1,
-          jobName: 'Local Sharding Scaling Job',
-          status: 'RUNNING'
-        }
-      ]
-      this.total = data.length
-      this.cloneTableData = clone(data)
-      this.tableData = data.splice(0, this.pageSize)
-
-      // API.getJobList().then(res => {
-      //   const data = res.model
-      //   this.total = data.length
-      //   this.cloneTableData = clone(res.model)
-      //   this.tableData = data.splice(0, this.pageSize)
-      // })
-    },
-    handleConnect(row) {
-      if (row.activated) {
-        this.$notify({
-          title: this.$t('common').notify.title,
-          message: this.$t('common').connected,
-          type: 'success'
-        })
-      } else {
-        const params = {
-          name: row.name
-        }
-        API.postRegCenterConnect(params).then(res => {
-          this.$notify({
-            title: this.$t('common').notify.title,
-            message: this.$t('common').notify.conSucMessage,
-            type: 'success'
-          })
-          this.getJobList()
-        })
-      }
+      API.getJobList().then(res => {
+        const data = res.model
+        this.total = data.length
+        this.cloneTableData = clone(res.model)
+        this.tableData = data.splice(0, this.pageSize)
+      })
     },
     handlerStop(row) {
       const params = {
@@ -405,118 +573,25 @@ export default {
       }
       API.postJobStop(params).then(res => {
         this.$notify({
-          title: this.$t('common').notify.title,
-          message: this.$t('common').notify.delSucMessage,
+          title: this.$t('dataScaling').notify.title,
+          message: this.$t('dataScaling').notify.delSucMessage,
           type: 'success'
         })
         this.getJobList()
       })
     },
+    getJobProgress(jobId) {
+      API.getJobProgress(jobId).then(res => {
+        this.progressRow = res.model
+        timer = setTimeout(() => {
+          this.getJobProgress(jobId)
+          clearTimeout(timer)
+        }, 2000)
+      })
+    },
     handlerView(row) {
       this.DataScalingDialogProgressVisible = true
-
-      this.progressRow = {
-        id: 1,
-        jobName: 'Local Sharding Scaling Job',
-        status: 'RUNNING/STOPPED',
-        syncTaskProgress: [
-          {
-            id: '127.0.0.1-3306-test',
-            status:
-              'PREPARING/MIGRATE_HISTORY_DATA/SYNCHRONIZE_REALTIME_DATA/STOPPING/STOPPED',
-            historySyncTaskProgress: [
-              {
-                id: 'history-test-t1#0',
-                estimatedRows: 41147,
-                syncedRows: 41147
-              },
-              {
-                id: 'history-test-t1#1',
-                estimatedRows: 42917,
-                syncedRows: 42917
-              },
-              {
-                id: 'history-test-t1#2',
-                estimatedRows: 43543,
-                syncedRows: 43543
-              },
-              {
-                id: 'history-test-t2#0',
-                estimatedRows: 39679,
-                syncedRows: 39679
-              },
-              {
-                id: 'history-test-t2#1',
-                estimatedRows: 41483,
-                syncedRows: 41483
-              },
-              {
-                id: 'history-test-t2#2',
-                estimatedRows: 42107,
-                syncedRows: 42107
-              }
-            ],
-            realTimeSyncTaskProgress: {
-              id: 'realtime-test',
-              delayMillisecond: 1576563771372,
-              logPosition: {
-                filename: 'ON.000007',
-                position: 177532875,
-                serverId: 0
-              }
-            }
-          },
-          {
-            id: '127.0.0.1-3306-test',
-            status:
-              'PREPARING/MIGRATE_HISTORY_DATA/SYNCHRONIZE_REALTIME_DATA/STOPPING/STOPPED',
-            historySyncTaskProgress: [
-              {
-                id: 'history-test-t1#0',
-                estimatedRows: 41147,
-                syncedRows: 41147
-              },
-              {
-                id: 'history-test-t1#1',
-                estimatedRows: 42917,
-                syncedRows: 42917
-              },
-              {
-                id: 'history-test-t1#2',
-                estimatedRows: 43543,
-                syncedRows: 43543
-              },
-              {
-                id: 'history-test-t2#0',
-                estimatedRows: 39679,
-                syncedRows: 39679
-              },
-              {
-                id: 'history-test-t2#1',
-                estimatedRows: 41483,
-                syncedRows: 41483
-              },
-              {
-                id: 'history-test-t2#2',
-                estimatedRows: 42107,
-                syncedRows: 42107
-              }
-            ],
-            realTimeSyncTaskProgress: {
-              id: 'realtime-test',
-              delayMillisecond: 1576563771372,
-              logPosition: {
-                filename: 'ON.000007',
-                position: 177532875,
-                serverId: 0
-              }
-            }
-          }
-        ]
-      }
-      // API.getJobProgress(row.jobId).then(res => {
-
-      // })
+      this.getJobProgress(row.jobId)
     },
     showSyncTaskProgressDetail(item) {
       this.DataScalingDialogSyncTaskProgressDetailVisible = true
@@ -525,79 +600,113 @@ export default {
     onConfirm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          const { username, password, url, jobCount } = this.form
           const params = {
-            source: this.form.source,
-            target: this.form.target
+            ruleConfiguration: {
+              sourceDatasource: this.textareaDatasource,
+              sourceRule: this.textareaRule,
+              // sourceDatasource: "ds_0: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  properties:\n    jdbcUrl: jdbc:mysql://sharding-scaling-mysql:3306/test?serverTimezone=UTC&useSSL=false\n    username: root\n    password: '123456'\n    connectionTimeout: 30000\n    idleTimeout: 60000\n    maxLifetime: 1800000\n    maxPoolSize: 50\n    minPoolSize: 1\n    maintenanceIntervalMilliseconds: 30000\n    readOnly: false\n",
+              // sourceRule: "defaultDatabaseStrategy:\n  inline:\n    algorithmExpression: ds_${user_id % 2}\n    shardingColumn: user_id\ntables:\n  t1:\n    actualDataNodes: ds_0.t1\n    keyGenerator:\n      column: order_id\n      type: SNOWFLAKE\n    logicTable: t1\n    tableStrategy:\n      inline:\n        algorithmExpression: t1\n        shardingColumn: order_id\n  t2:\n    actualDataNodes: ds_0.t2\n    keyGenerator:\n      column: order_item_id\n      type: SNOWFLAKE\n    logicTable: t2\n    tableStrategy:\n      inline:\n        algorithmExpression: t2\n        shardingColumn: order_id\n",
+              destinationDataSources: {
+                username,
+                password,
+                // url: 'jdbc:mysql://sharding-scaling-mysql:3306/test2?serverTimezone=UTC&useSSL=false'
+                url
+              }
+            },
+            jobConfiguration: {
+              concurrency: jobCount
+            }
           }
           API.getJobStart(params).then(res => {
             this.DataScalingDialogVisible = false
             this.$notify({
-              title: this.$t('common').notify.title,
-              message: this.$t('common').notify.conSucMessage,
+              title: this.$t('dataScaling').notify.title,
+              message: this.$t('dataScaling').notify.conSucMessage,
               type: 'success'
             })
+            this.clearForm()
             this.getJobList()
           })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
     },
+    clearForm() {
+      this.form = {
+        source: '',
+        target: 'Proxy',
+        username: '',
+        password: '',
+        url: '',
+        jobCount: '3'
+      }
+    },
     add() {
       this.DataScalingDialogVisible = true
+      this.getSchema()
+    },
+    showDatasource() {
+      this.DatasourceVisible = true
+    },
+    showRule() {
+      this.RuleVisible = true
+    },
+    close() {
+      clearTimeout(timer)
     }
   }
 }
 </script>
 <style lang="scss">
-.btn-group {
-  margin-bottom: 20px;
-}
-.pagination {
-  float: right;
-  margin: 10px -10px 10px 0;
-}
-.collapse-row {
-  width: 100%;
-  .collapse-progress {
-    margin-top: 15px;
+  .btn-group {
+    margin-bottom: 20px;
   }
-}
-.progress-item {
-  height: 48px;
-  line-height: 48px;
-  .collapse-progress {
-    margin-top: 15px;
+  .pagination {
     float: right;
+    margin: 10px -10px 10px 0;
   }
-  .collapse-active {
-    .el-progress-bar__inner:before {
-      content: '';
-      opacity: 0;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #fff;
-      border-radius: 10px;
-      animation: progress-active 2s ease-in-out infinite;
+  .collapse-row {
+    width: 100%;
+    .collapse-progress {
+      margin-top: 15px;
     }
   }
-}
-@keyframes progress-active {
-  0% {
-    opacity: 0.3;
-    width: 0;
+  .progress-item {
+    height: 48px;
+    line-height: 48px;
+    .collapse-progress {
+      margin-top: 15px;
+      float: right;
+    }
+    .collapse-active {
+      .el-progress-bar__inner:before {
+        content: '';
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #fff;
+        border-radius: 10px;
+        animation: progress-active 2s ease-in-out infinite;
+      }
+    }
   }
-  to {
-    opacity: 0;
-    width: 100%;
+  @keyframes progress-active {
+    0% {
+      opacity: 0.3;
+      width: 0;
+    }
+    to {
+      opacity: 0;
+      width: 100%;
+    }
   }
-}
-.echarts {
-  width: 300px;
-  height: 200px;
-}
+  .echarts {
+    width: 300px;
+    height: 200px;
+  }
 </style>
