@@ -85,11 +85,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
-import org.apache.shardingsphere.sql.parser.sql.value.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
-import org.apache.shardingsphere.sql.parser.sql.value.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.BooleanValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.NumberValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
@@ -165,11 +165,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         LiteralValue tableName = (LiteralValue) visit(ctx.name());
-        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getLiteral());
+        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getValue());
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             LiteralValue literalValue = (LiteralValue) visit(owner.identifier());
-            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), literalValue.getLiteral()));
+            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), literalValue.getValue()));
         }
         return result;
     }
@@ -177,11 +177,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
         LiteralValue columnName = (LiteralValue) visit(ctx.name());
-        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getLiteral());
+        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getValue());
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             LiteralValue literalValue = (LiteralValue) visit(owner.identifier());
-            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), literalValue.getLiteral()));
+            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), literalValue.getValue()));
         }
         return result;
     }
@@ -189,14 +189,14 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
         LiteralValue indexName = (LiteralValue) visit(ctx.identifier());
-        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getLiteral());
+        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getValue());
     }
     
     @Override
     public final ASTNode visitTableNames(final TableNamesContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
-            result.getValues().add((TableSegment) visit(each));
+            result.getValue().add((TableSegment) visit(each));
         }
         return result;
     }
@@ -315,13 +315,13 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
         if (astNode instanceof LiteralValue) {
-            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((LiteralValue) astNode).getLiteral());
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((LiteralValue) astNode).getValue());
         }
         if (astNode instanceof NumberValue) {
-            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberValue) astNode).getValue());
         }
         if (astNode instanceof ParameterMarkerValue) {
-            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getParameterIndex());
+            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
         }
         return astNode;
     }

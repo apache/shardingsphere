@@ -67,8 +67,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -121,8 +121,8 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
         CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNames());
-        result.getTables().addAll(tables.getValues());
-        result.getAllSQLSegments().addAll(tables.getValues());
+        result.getTables().addAll(tables.getValue());
+        result.getAllSQLSegments().addAll(tables.getValue());
         return result;
     }
     
@@ -172,7 +172,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         });
         boolean isPrimaryKey = inlineDataTypes.size() > 0 || generatedDataTypes.size() > 0;
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                column.getName(), dataType.getLiteral(), isPrimaryKey);
+                column.getName(), dataType.getValue(), isPrimaryKey);
     }
     
     @Override
@@ -215,7 +215,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
             AddColumnSpecificationContext addColumnSpecification = alterSpecification.addColumnSpecification();
             if (null != addColumnSpecification) {
                 CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
-                for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValues()) {
+                for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
                     result.getAddedColumnDefinitions().add(addColumnDefinition.getColumnDefinition());
                     Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
                     if (columnPositionSegment.isPresent()) {
@@ -271,12 +271,12 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
             }
         });
         if (null == ctx.firstOrAfterColumn()) {
-            result.getValues().addAll(addColumnDefinitions);
+            result.getValue().addAll(addColumnDefinitions);
         } else {
             AddColumnDefinitionSegment addColumnDefinition = addColumnDefinitions.get(0);
             addColumnDefinition.setColumnPosition(extractColumnDefinition(addColumnDefinition.getColumnDefinition(),
                     (ColumnPositionSegment) visit(ctx.firstOrAfterColumn())));
-            result.getValues().add(addColumnDefinition);
+            result.getValue().add(addColumnDefinition);
         }
         return result;
     }

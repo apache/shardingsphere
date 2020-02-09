@@ -44,7 +44,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
 
 /**
  * MySQL DAL visitor.
@@ -57,7 +57,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     public ASTNode visitUse(final UseContext ctx) {
         LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
         UseStatement result = new UseStatement();
-        result.setSchema(schema.getLiteral());
+        result.setSchema(schema.getValue());
         return result;
     }
     
@@ -137,7 +137,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != fromSchemaContext) {
             SchemaNameContext schemaNameContext = fromSchemaContext.schemaName();
             LiteralValue schema = (LiteralValue) visit(schemaNameContext);
-            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), schema.getLiteral());
+            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), schema.getValue());
             result.getAllSQLSegments().add(schemaSegment);
         }
         if (null != fromTableContext) {
@@ -173,6 +173,6 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         LiteralValue literalValue = (LiteralValue) visit(ctx.stringLiterals());
-        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getLiteral());
+        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
     }
 }

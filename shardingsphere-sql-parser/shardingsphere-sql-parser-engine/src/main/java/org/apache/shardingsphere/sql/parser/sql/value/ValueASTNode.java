@@ -17,18 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.sql.value;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 /**
- * Literal value.
+ * Value AST node.
  *
- * @author panjuan
+ * @author zhangliang
+ * 
+ * @param <T> type of value
  */
-@RequiredArgsConstructor
-@Getter
-public final class LiteralValue implements ASTNode {
+public interface ValueASTNode<T> extends ASTNode {
     
-    private final String literal;
+    /**
+     * Get value.
+     * 
+     * @return value
+     */
+    T getValue();
 }
