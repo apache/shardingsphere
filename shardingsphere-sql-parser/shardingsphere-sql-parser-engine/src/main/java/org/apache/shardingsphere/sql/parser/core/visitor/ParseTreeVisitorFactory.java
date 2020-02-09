@@ -21,8 +21,9 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
@@ -33,12 +34,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * SQL visitor factory.
+ * Parse tree visitor factory.
  * 
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLVisitorFactory {
+public final class ParseTreeVisitorFactory {
     
     private static final Map<String, Collection<String>> SQL_VISITOR_RULES = new LinkedHashMap<>();
     
@@ -61,16 +62,21 @@ public final class SQLVisitorFactory {
      * New instance of SQL visitor.
      * 
      * @param databaseTypeName name of database type
-     * @param visitorRuleName visitor rule name
-     * @return SQL visitor
+     * @param parseTree parse tree
+     * @return parse tree visitor
      */
-    public static SQLVisitor newInstance(final String databaseTypeName, final String visitorRuleName) {
+    public static ParseTreeVisitor newInstance(final String databaseTypeName, final ParseTree parseTree) {
         for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
             if (each.getDatabaseTypeName().equals(databaseTypeName)) {
-                return createSQLVisitor(each, getVisitorName(visitorRuleName));
+                return createParseTreeVisitor(each, getVisitorName(parseTree.getClass().getSimpleName()));
             }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
+    }
+    
+    @SneakyThrows
+    private static ParseTreeVisitor createParseTreeVisitor(final SQLParserEntry parserEntry, final String visitorName) {
+        return parserEntry.getVisitorClass(visitorName).getConstructor().newInstance();
     }
     
     private static String getVisitorName(final String visitorRuleName) {
@@ -80,10 +86,5 @@ public final class SQLVisitorFactory {
             }
         }
         throw new SQLParsingException("Could not find corresponding SQL visitor for %s.", visitorRuleName);
-    }
-    
-    @SneakyThrows
-    private static SQLVisitor createSQLVisitor(final SQLParserEntry parserEntry, final String visitorName) {
-        return parserEntry.getVisitorClass(visitorName).getConstructor().newInstance();
     }
 }

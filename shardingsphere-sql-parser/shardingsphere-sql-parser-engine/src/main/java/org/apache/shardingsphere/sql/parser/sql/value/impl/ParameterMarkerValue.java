@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.visitor;
+package org.apache.shardingsphere.sql.parser.sql.value.impl;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
- * SQL parser engine.
+ * Parameter marker value.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class SQLVisitorEngine {
+@Getter
+public final class ParameterMarkerValue implements ValueASTNode<Integer> {
     
-    private final String databaseTypeName;
-    
-    private final ParseTree parseTree;
-    
-    /**
-     * Parse SQL to abstract syntax tree.
-     *
-     * @return ast node
-     */
-    public ASTNode parse() {
-        return (ASTNode) SQLVisitorFactory.newInstance(databaseTypeName, parseTree.getClass().getSimpleName()).visit(parseTree);
-    }
+    private final Integer value;
 }

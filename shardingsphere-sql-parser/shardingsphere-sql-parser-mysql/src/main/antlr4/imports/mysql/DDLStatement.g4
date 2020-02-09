@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule, DMLStatement;
 
 createTable
-    : CREATE createTableSpecification_? TABLE tableNotExistClause_ tableName (createDefinitionClause_ | createLikeClause_)
+    : CREATE createTableSpecification_? TABLE tableNotExistClause_ tableName (createDefinitionClause | createLikeClause)
     ;
 
 createIndex
@@ -32,7 +32,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_?
+    : ALTER TABLE tableName alterDefinitionClause?
     ;
 
 dropTable
@@ -231,8 +231,8 @@ tableNotExistClause_
     : (IF NOT EXISTS)?
     ;
 
-createDefinitionClause_
-    : LP_ createDefinitions_ RP_
+createDefinitionClause
+    : LP_ createDefinitions RP_
     ;
 
 createDatabaseSpecification_
@@ -241,35 +241,35 @@ createDatabaseSpecification_
     | DEFAULT ENCRYPTION EQ_ Y_N_
     ;
 
-createDefinitions_
-    : createDefinition_ (COMMA_ createDefinition_)*
+createDefinitions
+    : createDefinition (COMMA_ createDefinition)*
     ;
 
-createDefinition_
-    : columnDefinition | indexDefinition_ | constraintDefinition_ | checkConstraintDefinition_
+createDefinition
+    : columnDefinition | indexDefinition_ | constraintDefinition | checkConstraintDefinition_
     ;
 
 columnDefinition
-    : columnName dataType (inlineDataType_* | generatedDataType_*)
+    : columnName dataType (inlineDataType* | generatedDataType*)
     ;
 
-inlineDataType_
-    : commonDataTypeOption_
+inlineDataType
+    : commonDataTypeOption
     | AUTO_INCREMENT
     | DEFAULT (literals | expr)
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
     ;
 
-commonDataTypeOption_
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | COMMENT STRING_
+commonDataTypeOption
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition | COMMENT STRING_
     ;
 
 checkConstraintDefinition_
     : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
     ;
 
-referenceDefinition_
+referenceDefinition
     : REFERENCES tableName keyParts_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? (ON (UPDATE | DELETE) referenceOption_)*
     ;
 
@@ -277,8 +277,8 @@ referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
-generatedDataType_
-    : commonDataTypeOption_
+generatedDataType
+    : commonDataTypeOption
     | (GENERATED ALWAYS)? AS expr
     | (VIRTUAL | STORED)
     ;
@@ -307,8 +307,8 @@ indexOption_
     | (VISIBLE | INVISIBLE)
     ;
 
-constraintDefinition_
-    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
+constraintDefinition
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption)
     ;
 
 primaryKeyOption_
@@ -323,11 +323,11 @@ uniqueOption_
     : UNIQUE (INDEX | KEY)? indexName? indexType_? keyParts_ indexOption_*
     ;
 
-foreignKeyOption_
-    : FOREIGN KEY indexName? columnNames referenceDefinition_
+foreignKeyOption
+    : FOREIGN KEY indexName? columnNames referenceDefinition
     ;
 
-createLikeClause_
+createLikeClause
     : LP_? LIKE tableName RP_?
     ;
 
@@ -335,11 +335,11 @@ createIndexSpecification_
     : (UNIQUE | FULLTEXT | SPATIAL)?
     ;
 
-alterDefinitionClause_
-    : alterSpecification_ (COMMA_ alterSpecification_)*
+alterDefinitionClause
+    : alterSpecification (COMMA_ alterSpecification)*
     ;
 
-alterSpecification_
+alterSpecification
     : tableOptions_
     | addColumnSpecification
     | addIndexSpecification
@@ -428,7 +428,7 @@ addIndexSpecification
     ;
 
 addConstraintSpecification
-    : ADD constraintDefinition_
+    : ADD constraintDefinition
     ;
 
 changeColumnSpecification

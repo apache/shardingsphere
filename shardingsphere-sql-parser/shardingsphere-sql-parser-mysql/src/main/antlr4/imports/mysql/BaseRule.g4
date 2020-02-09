@@ -62,17 +62,16 @@ nullValueLiterals
     : NULL
     ;
 
+characterSetName_
+    : IDENTIFIER_
+    ;
+
+collationName_
+   : IDENTIFIER_
+   ;
+
 identifier
     : IDENTIFIER_ | unreservedWord_
-    ;
-
-variable_
-    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
-    ;
-
-scope_
-    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
-    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
     ;
 
 unreservedWord_
@@ -110,6 +109,10 @@ unreservedWord_
     | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | CONTEXT | CODE | CHANNEL | SOURCE
     ;
 
+variable_
+    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
+    ;
+
 schemaName
     : identifier
     ;
@@ -120,6 +123,10 @@ tableName
 
 columnName
     : (owner DOT_)? name
+    ;
+
+indexName
+    : identifier
     ;
 
 userName
@@ -162,25 +169,13 @@ name
     : identifier
     ;
 
-columnNames
-    : LP_? columnName (COMMA_ columnName)* RP_?
-    ;
-
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
     ;
 
-indexName
-    : identifier
+columnNames
+    : LP_? columnName (COMMA_ columnName)* RP_?
     ;
-
-characterSetName_
-    : IDENTIFIER_
-    ;
-
-collationName_
-   : IDENTIFIER_
-   ;
 
 groupName
     : IDENTIFIER_
@@ -497,10 +492,10 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-dataTypeName_
+dataTypeName
     : identifier identifier?
     ;
 

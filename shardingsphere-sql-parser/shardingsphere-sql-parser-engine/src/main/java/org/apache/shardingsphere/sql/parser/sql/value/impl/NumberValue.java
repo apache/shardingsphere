@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value;
+package org.apache.shardingsphere.sql.parser.sql.value.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -28,25 +28,26 @@ import java.math.BigInteger;
  *
  * @author panjuan
  */
-public final class NumberValue implements ASTNode {
+@Getter
+public final class NumberValue implements ValueASTNode<Number> {
     
-    private static final int RADIX = 10;
+    private final Number value;
     
-    @Getter
-    private final Number number;
-    
-    public NumberValue(final String number) {
-        Number result;
-        try {
-            result = createBigInteger(number);
-        } catch (final NumberFormatException ex) {
-            result = new BigDecimal(number);
-        }
-        this.number = result;
+    public NumberValue(final String value) {
+        this.value = getNumber(value);
     }
     
-    private static Number createBigInteger(final String value) {
-        BigInteger result = new BigInteger(value, RADIX);
+    private Number getNumber(final String value) {
+        try {
+            return getBigInteger(value);
+        } catch (final NumberFormatException ex) {
+            // TODO make sure with double and float
+            return new BigDecimal(value);
+        }
+    }
+    
+    private static Number getBigInteger(final String value) {
+        BigInteger result = new BigInteger(value);
         if (result.compareTo(new BigInteger(String.valueOf(Integer.MIN_VALUE))) >= 0 && result.compareTo(new BigInteger(String.valueOf(Integer.MAX_VALUE))) <= 0) {
             return result.intValue();
         }

@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api;
+package org.apache.shardingsphere.sql.parser.sql.value.impl;
 
-import org.antlr.v4.runtime.tree.ParseTree;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
- * SQL visitor.
+ * Identifier value.
  *
  * @author panjuan
  */
-public interface SQLVisitor<T> {
+@RequiredArgsConstructor
+@Getter
+public final class IdentifierValue implements ValueASTNode<String> {
     
-    /**
-     * Visit.
-     * 
-     * @param tree parse tree
-     * @return visited result.
-     */
-    T visit(ParseTree tree);
+    private final String value;
 }
