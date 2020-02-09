@@ -74,9 +74,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
-import org.apache.shardingsphere.sql.parser.sql.value.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.BooleanValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -103,7 +103,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         }
         if (null != ctx.onDuplicateKeyClause()) {
             CollectionValue<AssignmentSegment> segments = (CollectionValue<AssignmentSegment>) visit(ctx.onDuplicateKeyClause());
-            result.getAllSQLSegments().addAll(segments.getValues());
+            result.getAllSQLSegments().addAll(segments.getValue());
         }
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
@@ -138,7 +138,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     public ASTNode visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
         CollectionValue<AssignmentSegment> result = new CollectionValue<>();
         for (AssignmentContext each : ctx.assignment()) {
-            result.getValues().add((AssignmentSegment) visit(each));
+            result.getValue().add((AssignmentSegment) visit(each));
         }
         return result;
     }
@@ -148,9 +148,9 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         UpdateStatement result = new UpdateStatement();
         CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableReferences());
         SetAssignmentSegment setSegment = (SetAssignmentSegment) visit(ctx.setAssignmentsClause());
-        result.getTables().addAll(tables.getValues());
+        result.getTables().addAll(tables.getValue());
         result.setSetAssignment(setSegment);
-        result.getAllSQLSegments().addAll(tables.getValues());
+        result.getAllSQLSegments().addAll(tables.getValue());
         result.getAllSQLSegments().add(setSegment);
         if (null != ctx.whereClause()) {
             WhereSegment whereSegment = (WhereSegment) visit(ctx.whereClause());
@@ -205,8 +205,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         DeleteStatement result = new DeleteStatement();
         if (null != ctx.multipleTablesClause()) {
             CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.multipleTablesClause());
-            result.getTables().addAll(tables.getValues());
-            result.getAllSQLSegments().addAll(tables.getValues());
+            result.getTables().addAll(tables.getValue());
+            result.getAllSQLSegments().addAll(tables.getValue());
         } else {
             TableSegment table = (TableSegment) visit(ctx.singleTableClause());
             result.getTables().add(table);
@@ -242,7 +242,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     public ASTNode visitMultipleTableNames(final MultipleTableNamesContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
-            result.getValues().add((TableSegment) visit(each));
+            result.getValue().add((TableSegment) visit(each));
         }
         return result;
     }
@@ -272,8 +272,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         }
         if (null != ctx.fromClause()) {
             CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.fromClause());
-            result.getTables().addAll(tables.getValues());
-            result.getAllSQLSegments().addAll(tables.getValues());
+            result.getTables().addAll(tables.getValue());
+            result.getAllSQLSegments().addAll(tables.getValue());
         }
         if (null != ctx.whereClause()) {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
@@ -290,8 +290,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     private boolean isDistinct(final SelectClauseContext ctx) {
         for (SelectSpecificationContext each : ctx.selectSpecification()) {
-            boolean eachDistinct = ((BooleanValue) visit(each)).isCorrect();
-            if (eachDistinct) {
+            if (((BooleanValue) visit(each)).getValue()) {
                 return true;
             }
         }
@@ -395,11 +394,11 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
         if (null != ctx.tableFactor()) {
-            result.getValues().add((TableSegment) visit(ctx.tableFactor()));
+            result.getValue().add((TableSegment) visit(ctx.tableFactor()));
         }
         if (null != ctx.joinedTable()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
-                result.getValues().add((TableSegment) visit(each));
+                result.getValue().add((TableSegment) visit(each));
             }
         }
         return result;

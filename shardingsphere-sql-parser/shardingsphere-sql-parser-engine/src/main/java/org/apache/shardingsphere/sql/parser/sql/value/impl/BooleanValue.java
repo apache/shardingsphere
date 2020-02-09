@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value;
+package org.apache.shardingsphere.sql.parser.sql.value.impl;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
  * Boolean value.
@@ -27,12 +26,16 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
  * @author panjuan
  */
 @RequiredArgsConstructor
-@Getter
-public final class BooleanValue implements ASTNode {
+public final class BooleanValue implements ValueASTNode<Boolean> {
     
-    private final boolean correct;
+    private final boolean value;
     
-    public BooleanValue(final String correct) {
-        this.correct = Boolean.parseBoolean(correct);
+    public BooleanValue(final String value) {
+        this.value = Boolean.parseBoolean(value);
+    }
+    
+    @Override
+    public Boolean getValue() {
+        return value;
     }
 }

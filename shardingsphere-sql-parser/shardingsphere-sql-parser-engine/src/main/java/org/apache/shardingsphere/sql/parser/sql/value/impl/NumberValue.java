@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value;
+package org.apache.shardingsphere.sql.parser.sql.value.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -29,12 +29,12 @@ import java.math.BigInteger;
  * @author panjuan
  */
 @Getter
-public final class NumberValue implements ASTNode {
+public final class NumberValue implements ValueASTNode<Number> {
     
-    private final Number number;
+    private final Number value;
     
-    public NumberValue(final String number) {
-        this.number = getNumber(number);
+    public NumberValue(final String value) {
+        this.value = getNumber(value);
     }
     
     private Number getNumber(final String value) {
