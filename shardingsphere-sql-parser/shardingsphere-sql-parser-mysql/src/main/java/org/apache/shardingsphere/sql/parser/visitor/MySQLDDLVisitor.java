@@ -26,27 +26,27 @@ import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddConstraintSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDefinitionClause_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecification_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintDefinition_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClause_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinition_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateIndexContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateLikeClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateLikeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropPrimaryKeySpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FirstOrAfterColumnContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ForeignKeyOption_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedDataType_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InlineDataType_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ForeignKeyOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedDataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InlineDataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinition_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
@@ -87,13 +87,13 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
-        CreateDefinitionClause_Context createDefinitionClause = ctx.createDefinitionClause_();
+        CreateDefinitionClauseContext createDefinitionClause = ctx.createDefinitionClause();
         if (null != createDefinitionClause) {
             CreateTableStatement createDefinition = (CreateTableStatement) visit(createDefinitionClause);
             result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
             result.getAllSQLSegments().addAll(createDefinition.getAllSQLSegments());
         }
-        CreateLikeClause_Context createLikeClause = ctx.createLikeClause_();
+        CreateLikeClauseContext createLikeClause = ctx.createLikeClause();
         if (null != createLikeClause) {
             result.getAllSQLSegments().add((TableSegment) visit(createLikeClause));
         }
@@ -106,7 +106,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
-        AlterDefinitionClause_Context alterDefinitionClause = ctx.alterDefinitionClause_();
+        AlterDefinitionClauseContext alterDefinitionClause = ctx.alterDefinitionClause();
         if (null != alterDefinitionClause) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(alterDefinitionClause);
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
@@ -156,18 +156,18 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        LiteralValue dataType = (LiteralValue) visit(ctx.dataType().dataTypeName_());
-        Collection<InlineDataType_Context> inlineDataTypes = Collections2.filter(ctx.inlineDataType_(), new Predicate<InlineDataType_Context>() {
+        LiteralValue dataType = (LiteralValue) visit(ctx.dataType().dataTypeName());
+        Collection<InlineDataTypeContext> inlineDataTypes = Collections2.filter(ctx.inlineDataType(), new Predicate<InlineDataTypeContext>() {
             @Override
-            public boolean apply(final InlineDataType_Context inlineDataType) {
-                return null != inlineDataType.commonDataTypeOption_() && null != inlineDataType.commonDataTypeOption_().primaryKey();
+            public boolean apply(final InlineDataTypeContext inlineDataType) {
+                return null != inlineDataType.commonDataTypeOption() && null != inlineDataType.commonDataTypeOption().primaryKey();
             }
         });
-        Collection<GeneratedDataType_Context> generatedDataTypes = Collections2.filter(ctx.generatedDataType_(), new Predicate<GeneratedDataType_Context>() {
+        Collection<GeneratedDataTypeContext> generatedDataTypes = Collections2.filter(ctx.generatedDataType(), new Predicate<GeneratedDataTypeContext>() {
             @Override
-            public boolean apply(final GeneratedDataType_Context generatedDataType) {
-                return null != generatedDataType.commonDataTypeOption_()
-                        && null != generatedDataType.commonDataTypeOption_().primaryKey();
+            public boolean apply(final GeneratedDataTypeContext generatedDataType) {
+                return null != generatedDataType.commonDataTypeOption()
+                        && null != generatedDataType.commonDataTypeOption().primaryKey();
             }
         });
         boolean isPrimaryKey = inlineDataTypes.size() > 0 || generatedDataTypes.size() > 0;
@@ -183,16 +183,16 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     }
     
     @Override
-    public ASTNode visitCreateDefinitionClause_(final CreateDefinitionClause_Context ctx) {
+    public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        for (CreateDefinition_Context createDefinition : ctx.createDefinitions_().createDefinition_()) {
+        for (CreateDefinitionContext createDefinition : ctx.createDefinitions().createDefinition()) {
             ColumnDefinitionContext columnDefinition = createDefinition.columnDefinition();
             if (null != columnDefinition) {
                 result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
                 result.getAllSQLSegments().addAll(extractColumnDefinition(columnDefinition));
             }
-            ConstraintDefinition_Context constraintDefinition = createDefinition.constraintDefinition_();
-            ForeignKeyOption_Context foreignKeyOption = null == constraintDefinition ? null : constraintDefinition.foreignKeyOption_();
+            ConstraintDefinitionContext constraintDefinition = createDefinition.constraintDefinition();
+            ForeignKeyOptionContext foreignKeyOption = null == constraintDefinition ? null : constraintDefinition.foreignKeyOption();
             if (null != foreignKeyOption) {
                 result.getAllSQLSegments().add((TableSegment) visit(foreignKeyOption));
             }
@@ -204,14 +204,14 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     }
     
     @Override
-    public ASTNode visitCreateLikeClause_(final CreateLikeClause_Context ctx) {
+    public ASTNode visitCreateLikeClause(final CreateLikeClauseContext ctx) {
         return visit(ctx.tableName());
     }
     
     @Override
-    public ASTNode visitAlterDefinitionClause_(final AlterDefinitionClause_Context ctx) {
+    public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         final AlterTableStatement result = new AlterTableStatement();
-        for (AlterSpecification_Context alterSpecification : ctx.alterSpecification_()) {
+        for (AlterSpecificationContext alterSpecification : ctx.alterSpecification()) {
             AddColumnSpecificationContext addColumnSpecification = alterSpecification.addColumnSpecification();
             if (null != addColumnSpecification) {
                 CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
@@ -225,8 +225,8 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
                 result.getAllSQLSegments().addAll(extractColumnDefinitions(addColumnSpecification.columnDefinition()));
             }
             AddConstraintSpecificationContext addConstraintSpecification = alterSpecification.addConstraintSpecification();
-            ForeignKeyOption_Context foreignKeyOption = null == addConstraintSpecification
-                    ? null : addConstraintSpecification.constraintDefinition_().foreignKeyOption_();
+            ForeignKeyOptionContext foreignKeyOption = null == addConstraintSpecification
+                    ? null : addConstraintSpecification.constraintDefinition().foreignKeyOption();
             if (null != foreignKeyOption) {
                 result.getAllSQLSegments().add((TableSegment) visit(foreignKeyOption));
             }
@@ -309,13 +309,13 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     }
     
     @Override
-    public ASTNode visitReferenceDefinition_(final ReferenceDefinition_Context ctx) {
+    public ASTNode visitReferenceDefinition(final ReferenceDefinitionContext ctx) {
         return visit(ctx.tableName());
     }
     
     @Override
-    public ASTNode visitForeignKeyOption_(final ForeignKeyOption_Context ctx) {
-        return visit(ctx.referenceDefinition_());
+    public ASTNode visitForeignKeyOption(final ForeignKeyOptionContext ctx) {
+        return visit(ctx.referenceDefinition());
     }
     
     private ModifyColumnDefinitionSegment extractModifyColumnDefinition(final Token start, final Token stop, final ColumnDefinitionContext columnDefinition,
@@ -337,14 +337,14 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     
     private Collection<TableSegment> extractColumnDefinition(final ColumnDefinitionContext columnDefinition) {
         Collection<TableSegment> result = new LinkedList<>();
-        for (InlineDataType_Context inlineDataType : columnDefinition.inlineDataType_()) {
-            if (null != inlineDataType.commonDataTypeOption_() && null != inlineDataType.commonDataTypeOption_().referenceDefinition_()) {
-                result.add((TableSegment) visit(inlineDataType.commonDataTypeOption_().referenceDefinition_()));
+        for (InlineDataTypeContext inlineDataType : columnDefinition.inlineDataType()) {
+            if (null != inlineDataType.commonDataTypeOption() && null != inlineDataType.commonDataTypeOption().referenceDefinition()) {
+                result.add((TableSegment) visit(inlineDataType.commonDataTypeOption().referenceDefinition()));
             }
         }
-        for (GeneratedDataType_Context generatedDataType : columnDefinition.generatedDataType_()) {
-            if (null != generatedDataType.commonDataTypeOption_() && null != generatedDataType.commonDataTypeOption_().referenceDefinition_()) {
-                result.add((TableSegment) visit(generatedDataType.commonDataTypeOption_().referenceDefinition_()));
+        for (GeneratedDataTypeContext generatedDataType : columnDefinition.generatedDataType()) {
+            if (null != generatedDataType.commonDataTypeOption() && null != generatedDataType.commonDataTypeOption().referenceDefinition()) {
+                result.add((TableSegment) visit(generatedDataType.commonDataTypeOption().referenceDefinition()));
             }
         }
         return result;
