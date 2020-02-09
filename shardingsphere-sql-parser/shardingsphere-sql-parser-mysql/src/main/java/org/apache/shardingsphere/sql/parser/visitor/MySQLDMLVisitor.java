@@ -126,6 +126,14 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
+    private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
+        Collection<InsertValuesSegment> result = new LinkedList<>();
+        for (AssignmentValuesContext each : assignmentValuesContexts) {
+            result.add((InsertValuesSegment) visit(each));
+        }
+        return result;
+    }
+    
     @Override
     public ASTNode visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
         CollectionValue<AssignmentSegment> result = new CollectionValue<>();
@@ -280,6 +288,16 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
+    private boolean isDistinct(final SelectClauseContext ctx) {
+        for (SelectSpecificationContext each : ctx.selectSpecification()) {
+            boolean eachDistinct = ((BooleanValue) visit(each)).isCorrect();
+            if (eachDistinct) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @Override
     public ASTNode visitSelectSpecification(final SelectSpecificationContext ctx) {
         if (null != ctx.duplicateSpecification()) {
@@ -327,6 +345,10 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.setAlias(alias);
             return result;
         }
+        return createProjection(ctx, alias);
+    }
+    
+    private ASTNode createProjection(final ProjectionContext ctx, final String alias) {
         ASTNode projection = visit(ctx.expr());
         if (projection instanceof AggregationProjectionSegment) {
             ((AggregationProjectionSegment) projection).setAlias(alias);
@@ -335,6 +357,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         if (projection instanceof ExpressionProjectionSegment) {
             ((ExpressionProjectionSegment) projection).setAlias(alias);
             return projection;
+        }
+        if (projection instanceof CommonExpressionSegment) {
+            CommonExpressionSegment segment = (CommonExpressionSegment) projection;
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText());
+            result.setAlias(alias);
+            return result;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = Strings.isNullOrEmpty(alias) ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
@@ -407,23 +435,5 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         }
         result.setParametersCount(getCurrentParameterIndex());
         return result;
-    }
-    
-    private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
-        Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (AssignmentValuesContext each : assignmentValuesContexts) {
-            result.add((InsertValuesSegment) visit(each));
-        }
-        return result;
-    }
-    
-    private boolean isDistinct(final SelectClauseContext ctx) {
-        for (SelectSpecificationContext each : ctx.selectSpecification()) {
-            boolean eachDistinct = ((BooleanValue) visit(each)).isCorrect();
-            if (eachDistinct) {
-                return true;
-            }
-        }
-        return false;
     }
 }
