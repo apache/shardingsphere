@@ -68,7 +68,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.impl.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -156,7 +156,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        LiteralValue dataType = (LiteralValue) visit(ctx.dataType().dataTypeName_());
+        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName_());
         Collection<InlineDataType_Context> inlineDataTypes = Collections2.filter(ctx.inlineDataType_(), new Predicate<InlineDataType_Context>() {
             @Override
             public boolean apply(final InlineDataType_Context inlineDataType) {

@@ -87,6 +87,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.impl.BooleanValue;
 import org.apache.shardingsphere.sql.parser.sql.value.impl.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.impl.NumberValue;
 import org.apache.shardingsphere.sql.parser.sql.value.impl.ParameterMarkerValue;
@@ -149,12 +150,12 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
-        return null != unreservedWord ? visit(unreservedWord) : new LiteralValue(ctx.getText());
+        return null != unreservedWord ? visit(unreservedWord) : new IdentifierValue(ctx.getText());
     }
     
     @Override
     public final ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
-        return new LiteralValue(ctx.getText());
+        return new IdentifierValue(ctx.getText());
     }
     
     @Override
@@ -164,31 +165,29 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
-        LiteralValue tableName = (LiteralValue) visit(ctx.name());
+        IdentifierValue tableName = (IdentifierValue) visit(ctx.name());
         TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getValue());
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            LiteralValue literalValue = (LiteralValue) visit(owner.identifier());
-            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), literalValue.getValue()));
+            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ((IdentifierValue) visit(owner.identifier())).getValue()));
         }
         return result;
     }
     
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
-        LiteralValue columnName = (LiteralValue) visit(ctx.name());
+        IdentifierValue columnName = (IdentifierValue) visit(ctx.name());
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getValue());
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            LiteralValue literalValue = (LiteralValue) visit(owner.identifier());
-            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), literalValue.getValue()));
+            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ((IdentifierValue) visit(owner.identifier())).getValue()));
         }
         return result;
     }
     
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
-        LiteralValue indexName = (LiteralValue) visit(ctx.identifier());
+        IdentifierValue indexName = (IdentifierValue) visit(ctx.identifier());
         return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getValue());
     }
     
