@@ -580,18 +580,21 @@ export default {
         this.getJobList()
       })
     },
-    getJobProgress(jobId) {
+    getJobProgress(row) {
+      const { jobId, status } = row
       API.getJobProgress(jobId).then(res => {
         this.progressRow = res.model
-        timer = setTimeout(() => {
-          this.getJobProgress(jobId)
-          clearTimeout(timer)
-        }, 2000)
+        if (status !== 'STOPPED') {
+          timer = setTimeout(() => {
+            this.getJobProgress(row)
+            clearTimeout(timer)
+          }, 2000)
+        }
       })
     },
     handlerView(row) {
       this.DataScalingDialogProgressVisible = true
-      this.getJobProgress(row.jobId)
+      this.getJobProgress(row)
     },
     showSyncTaskProgressDetail(item) {
       this.DataScalingDialogSyncTaskProgressDetailVisible = true
