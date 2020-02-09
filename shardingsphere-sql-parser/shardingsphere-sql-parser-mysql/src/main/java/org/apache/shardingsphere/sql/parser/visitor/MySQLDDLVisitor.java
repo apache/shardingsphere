@@ -71,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -334,8 +335,8 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
                 ((ColumnAfterPositionSegment) columnPosition).getAfterColumnName());
     }
     
-    private List<TableSegment> extractColumnDefinition(final ColumnDefinitionContext columnDefinition) {
-        List<TableSegment> result = Lists.newArrayList();
+    private Collection<TableSegment> extractColumnDefinition(final ColumnDefinitionContext columnDefinition) {
+        Collection<TableSegment> result = new LinkedList<>();
         for (InlineDataType_Context inlineDataType : columnDefinition.inlineDataType_()) {
             if (null != inlineDataType.commonDataTypeOption_() && null != inlineDataType.commonDataTypeOption_().referenceDefinition_()) {
                 result.add((TableSegment) visit(inlineDataType.commonDataTypeOption_().referenceDefinition_()));
@@ -349,8 +350,8 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         return result;
     }
     
-    private List<TableSegment> extractColumnDefinitions(final List<ColumnDefinitionContext> columnDefinitions) {
-        List<TableSegment> result = Lists.newArrayList();
+    private Collection<TableSegment> extractColumnDefinitions(final List<ColumnDefinitionContext> columnDefinitions) {
+        Collection<TableSegment> result = new LinkedList<>();
         for (ColumnDefinitionContext columnDefinition : columnDefinitions) {
             result.addAll(extractColumnDefinition(columnDefinition));
         }
