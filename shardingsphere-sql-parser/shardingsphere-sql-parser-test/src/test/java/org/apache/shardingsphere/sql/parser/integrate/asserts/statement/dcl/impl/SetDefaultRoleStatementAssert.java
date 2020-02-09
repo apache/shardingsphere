@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetDefaultRoleStatement;
 
 /**
- * Set role statement assert.
+ * Set default role statement assert.
  *
- * @author zhangliang
+ * @author duanchao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SetDefaultRoleStatementAssert {

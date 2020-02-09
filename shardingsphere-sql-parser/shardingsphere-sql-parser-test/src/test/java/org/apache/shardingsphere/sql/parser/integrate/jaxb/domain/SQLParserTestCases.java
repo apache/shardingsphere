@@ -247,6 +247,7 @@ public final class SQLParserTestCases {
         putAll(createRoleTestCases, result);
         putAll(alterRoleTestCases, result);
         putAll(dropRoleTestCases, result);
+        putAll(setDefaultRoleTestCases, result);
         putAll(setRoleTestCases, result);
         putAll(setPasswordTestCases, result);
         putAll(useTestCases, result);
