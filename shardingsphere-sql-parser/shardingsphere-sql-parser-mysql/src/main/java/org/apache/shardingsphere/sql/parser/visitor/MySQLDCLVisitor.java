@@ -24,8 +24,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateU
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeClause_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeLevel_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeLevelContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefaultRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPasswordContext;
@@ -93,9 +93,9 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
-        PrivilegeClause_Context privilegeClause = ctx.privilegeClause_();
+        PrivilegeClauseContext privilegeClause = ctx.privilegeClause();
         if (null != privilegeClause && null != privilegeClause.onObjectClause_()) {
-            PrivilegeLevel_Context privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel_();
+            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel();
             TableNameContext tableNameContext = privilegeLevel.tableName();
             if (null != tableNameContext) {
                 TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
