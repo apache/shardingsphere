@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.impl.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
 
 /**
@@ -55,9 +56,8 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {
-        LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
         UseStatement result = new UseStatement();
-        result.setSchema(schema.getValue());
+        result.setSchema(((IdentifierValue) visit(ctx.schemaName())).getValue());
         return result;
     }
     
@@ -136,8 +136,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         FromTableContext fromTableContext = ctx.fromTable();
         if (null != fromSchemaContext) {
             SchemaNameContext schemaNameContext = fromSchemaContext.schemaName();
-            LiteralValue schema = (LiteralValue) visit(schemaNameContext);
-            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), schema.getValue());
+            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), ((IdentifierValue) visit(schemaNameContext)).getValue());
             result.getAllSQLSegments().add(schemaSegment);
         }
         if (null != fromTableContext) {
