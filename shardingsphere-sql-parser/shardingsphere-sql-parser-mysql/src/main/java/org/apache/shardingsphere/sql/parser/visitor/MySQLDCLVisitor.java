@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Privile
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefaultRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPasswordContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 
@@ -62,6 +64,11 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
+        return new SetDefaultRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetRole(final SetRoleContext ctx) {
         return new SetRoleStatement();
     }
     

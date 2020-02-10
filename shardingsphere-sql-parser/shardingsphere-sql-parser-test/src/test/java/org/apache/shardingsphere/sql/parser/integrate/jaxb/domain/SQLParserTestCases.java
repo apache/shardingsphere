@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.GrantStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.RenameUserStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.RevokeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.SetDefaultRoleStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.SetRoleStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.AlterIndexStatementTestCase;
@@ -170,6 +171,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-role")
     private final List<DropRoleStatementTestCase> dropRoleTestCases = new LinkedList<>();
     
+    @XmlElement(name = "set-default-role")
+    private final List<SetDefaultRoleStatementTestCase> setDefaultRoleTestCases = new LinkedList<>();
+    
     @XmlElement(name = "set-role")
     private final List<SetRoleStatementTestCase> setRoleTestCases = new LinkedList<>();
     
@@ -243,6 +247,7 @@ public final class SQLParserTestCases {
         putAll(createRoleTestCases, result);
         putAll(alterRoleTestCases, result);
         putAll(dropRoleTestCases, result);
+        putAll(setDefaultRoleTestCases, result);
         putAll(setRoleTestCases, result);
         putAll(setPasswordTestCases, result);
         putAll(useTestCases, result);

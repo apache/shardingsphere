@@ -17,9 +17,10 @@
   -->
 
 <sql-parser-test-cases>
-    <!-- FIXME -->
-    <!--<set-role sql-case-id="set_default_none_role" />-->
-    <!--<set-role sql-case-id="set_default_all_role" />-->
-    <!--<set-role sql-case-id="set_default_role" />-->
-    <!--<set-role sql-case-id="set_default_roles_to_users" />-->
+    <set-role sql-case-id="set_role" />
+    <set-role sql-case-id="set_roles" />
+    <set-role sql-case-id="set_none_role" />
+    <set-role sql-case-id="set_all_role" />
+    <set-role sql-case-id="set_all_expect_role" />
+    <set-role sql-case-id="set_all_expect_roles" />
 </sql-parser-test-cases>
