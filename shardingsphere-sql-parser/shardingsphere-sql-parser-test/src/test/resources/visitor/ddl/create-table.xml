@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-table sql-case-id="create_table">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_if_not_exists">
+        <table name="t_log" start-index="27" stop-index="31" />
+        <column-definition type="int">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_temporary_table_if_not_exists">
+        <table name="t_temp_log" start-index="37" stop-index="46" />
+        <column-definition type="int">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_space">
+        <table name="t_order_item" start-index="17" stop-index="28" />
+        <column-definition type="INT">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="13" stop-index="21" />
+        <column-definition type="INT">
+            <column name="order_id" start-delimiter="`" end-delimiter="`" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" start-delimiter="`" end-delimiter="`" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" start-delimiter="`" end-delimiter="`" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" start-delimiter="`" end-delimiter="`" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" start-delimiter="`" end-delimiter="`" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" start-delimiter="`" end-delimiter="`" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_temporary_table">
+        <table name="t_order" start-index="23" stop-index="29" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_column_not_null">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_column_default">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_column_increment">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_column_generated">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_column_comment">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_inline_primary_key">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="true">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_inline_unique_key">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_inline_foreign_key">
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <table name="t_order" start-index="64" stop-index="70" />
+        <column-definition type="INT">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_inline_constraints">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" primary-key="trur">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_primary_key">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_composite_primary_key">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <!-- FIXME cannot parse pk -->
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_unique_key">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_composite_unique_key">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_foreign_key">
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <table name="t_order" start-index="207" stop-index="213" />
+        <column-definition type="INT">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_composite_foreign_key">
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <table name="t_order" start-index="224" stop-index="230" />
+        <column-definition type="INT">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_check">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_constraints">
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <table name="t_order" start-index="225" stop-index="231" />
+        <column-definition type="INT">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_index">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+        <!-- FIXME cannot parse index -->
+        <!--<index name="order_index" />-->
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_composite_index">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+        <!-- FIXME cannot parse index -->
+        <!--<index name="order_index" />-->
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_out_of_line_btree_index">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+        <!-- FIXME cannot parse index name -->
+        <!--<index name="order_index" />-->
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_comment">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_partition">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+</sql-parser-test-cases>

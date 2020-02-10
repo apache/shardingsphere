@@ -1,0 +1,66 @@
+Add git message title here
+
+# See links to relevant web pages, issue trackers, etc.
+See: https://github.com/
+See: [Git Page](https://github.com/)
+
+# List all co-authors, so people can contact with them
+Co-authored-by: Name <name@example.com>
+
+# Why is this change happening, e.g. goals, use cases, stories, etc.?
+Why:
+
+# How is this change happening, e.g. implementations, algorithms, etc.?
+How:
+
+# Tags suitable for searching, such as hashtags, keywords, etc.
+Tags:
+
+# ## Help ##
+#
+# Subject line imperative uppercase verbs:
+#
+#   Add = Create a capability e.g. feature, test, dependency.
+#   Drop = Delete a capability e.g. feature, test, dependency.
+#   Fix = Fix an issue e.g. bug, typo, accident, misstatement.
+#   Bump = Increase the version of something e.g. a dependency.
+#   Make = Change the build process, or tools, or infrastructure.
+#   Start = Begin doing something; e.g. enable a toggle, feature flag, etc.
+#   Stop = End doing something; e.g. disable a toggle, feature flag, etc.
+#   Refactor = A change that MUST be just refactoring.
+#   Reformat = A change that MUST be just format, e.g. indent line, trim space, etc.
+#   Rephrase = A change that MUST be just textual, e.g. edit a comment, doc, etc.
+#   Optimize = A change that MUST be just about performance, e.g. speed up code.
+#   Document = A change that MUST be only in the documentation, e.g. help files.
+#
+# For the subject line:
+#   * Use 50 characters maximum.
+#   * Do not use a sentence-ending period.
+#
+# For the body text:
+#   * Use as many lines as you like.
+#   * Use 72 characters maximum per line for typical word wrap text.
+#
+#
+# ## About ##
+#
+# This is our git commit messages.
+# You can edit this template if you want
+#
+# ## Usage ##
+#
+# Put the template file here:
+#
+#     ~/.git_commit_template.txt
+#
+# Configure git to use the template file by running:
+#
+#     git config --global commit.template ~/.git_commit_template.txt
+#
+# Add the template file to the ~/.gitconfig file:
+#
+#     [commit]
+#       template = ~/.git_commit_template.txt
+#
+# you could put it in other location if you prefer
+#

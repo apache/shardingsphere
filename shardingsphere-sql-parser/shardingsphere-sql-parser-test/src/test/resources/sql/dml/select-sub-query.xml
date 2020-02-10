@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <!-- TODO cannot pass,add later 
+    <select sql-case-id="select_sub_query_with_multiple_tables" parameters="1, 2">
+        <table name="t_order" alias="o" start-index="33" stop-index="39" />
+        <table name="t_order_item" alias="i" start-index="44" stop-index="55" />
+        <conditions>
+            <condition column-name="order_id" table-name="t_order" operator="IN">
+                <value index="0" literal="1" type="int" />
+                <value index="1" literal="2" type="int" />
+            </condition>
+        </conditions>
+    </select>
+    -->
+    
+    <!-- TODO do not support ORDER BY or ORDER BY in subquery for now, add later
+    <select sql-case-id="select_sub_query_with_order_by">
+        <table name="t_order" start-index="52" stop-index="58" />
+        <projections start-index="45" stop-index="45">
+            <aggregation-projection type="COUNT" alias="orders_count" />
+            <shorthand-projection start-index="45" stop-index="45" />
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_sub_query_with_group_by">
+        <table name="t_order_item" start-index="64" stop-index="75" />
+        <projections start-index="50" stop-index="57">
+            <column-projection name="order_id" start-index="50" stop-index="57" />
+        </projections>
+    </select>
+    -->
+</sql-parser-test-cases>
