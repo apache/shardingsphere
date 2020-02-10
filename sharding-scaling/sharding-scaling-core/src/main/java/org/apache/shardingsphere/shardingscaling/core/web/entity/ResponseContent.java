@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.shardingscaling.core.web.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Http response content.
  *
  * @author ssxlulu
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Setter
 public class ResponseContent<T> {
 
     private boolean success = true;

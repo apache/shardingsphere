@@ -31,6 +31,8 @@ import org.postgresql.replication.LogSequenceNumber;
 @RequiredArgsConstructor
 public class WalPosition implements LogPosition<WalPosition> {
     
+    private static final long serialVersionUID = -3498484556749679001L;
+    
     private final LogSequenceNumber logSequenceNumber;
     
     @Override
@@ -40,12 +42,6 @@ public class WalPosition implements LogPosition<WalPosition> {
         }
         long o1 = logSequenceNumber.asLong();
         long o2 = walPosition.getLogSequenceNumber().asLong();
-        if (o1 == o2) {
-            return 0;
-        } else if (o1 > o2) {
-            return 1;
-        } else {
-            return -1;
-        }
+        return Long.compare(o1, o2);
     }
 }

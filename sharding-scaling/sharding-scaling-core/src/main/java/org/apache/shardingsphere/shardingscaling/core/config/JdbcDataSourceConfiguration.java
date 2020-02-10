@@ -22,15 +22,16 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
 import lombok.EqualsAndHashCode;
-
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Jdbc data source configuration.
  *
  * @author avalon566
  */
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(exclude = {"databaseType"})
 public final class JdbcDataSourceConfiguration implements DataSourceConfiguration {
     

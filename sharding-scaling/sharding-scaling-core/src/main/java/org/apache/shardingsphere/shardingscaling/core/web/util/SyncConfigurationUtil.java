@@ -55,41 +55,13 @@ public class SyncConfigurationUtil {
             RdbmsConfiguration readerConfiguration = createReaderConfiguration(sourceDatasource.get(each));
             RdbmsConfiguration writerConfiguration = createWriterConfiguration(scalingConfiguration);
             Map<String, String> tableNameMap = dataSourceTableNameMap.get(each);
-            if (null == tableNameMap) {
-                tableNameMap = new HashMap<>();
-            }
-            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap,
-                    readerConfiguration, writerConfiguration));
+            result.add(new SyncConfiguration(scalingConfiguration.getJobConfiguration().getConcurrency(), tableNameMap, readerConfiguration, writerConfiguration));
         }
         return result;
     }
     
-    private static RdbmsConfiguration createReaderConfiguration(final DataSourceConfiguration dataSource) {
-        RdbmsConfiguration result = new RdbmsConfiguration();
-        JdbcDataSourceConfiguration readerDataSourceConfiguration = new JdbcDataSourceConfiguration(
-                dataSource.getProperties().get("jdbcUrl").toString(),
-                dataSource.getProperties().get("username").toString(),
-                dataSource.getProperties().get("password").toString());
-        result.setDataSourceConfiguration(readerDataSourceConfiguration);
-        return result;
-    }
-    
-    private static RdbmsConfiguration createWriterConfiguration(final ScalingConfiguration scalingConfiguration) {
-        RdbmsConfiguration writerConfiguration = new RdbmsConfiguration();
-        JdbcDataSourceConfiguration writerDataSourceConfiguration = new JdbcDataSourceConfiguration(
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
-                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());
-        writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
-        return writerConfiguration;
-    }
-    
-    private static ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
-        return new ShardingRule(shardingRuleConfig, dataSourceNames);
-    }
-    
     private static Map<String, Map<String, String>> toDataSourceTableNameMap(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
-        ShardingRule shardingRule = getShardingRule(shardingRuleConfig, dataSourceNames);
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, dataSourceNames);
         Map<String, Map<String, String>> result = new HashMap<>();
         for (TableRule each : shardingRule.getTableRules()) {
             mergeDataSourceTableNameMap(result, toDataSourceTableNameMap(each));
@@ -110,22 +82,42 @@ public class SyncConfigurationUtil {
         return result;
     }
     
-    private static void mergeDataSourceTableNameMap(final Map<String, Map<String, String>> o, final Map<String, Map<String, String>> n) {
-        for (Map.Entry<String, Map<String, String>> each : n.entrySet()) {
-            Map<String, String> tableNameMap = o.get(each.getKey());
-            if (null == tableNameMap) {
-                o.put(each.getKey(), each.getValue());
-            } else {
-                tableNameMap.putAll(each.getValue());
-            }
-        }
-    }
-    
     private static Map<String, String> toTableNameMap(final String logicalTable, final Collection<String> actualTables) {
         Map<String, String> result = new HashMap<>();
         for (String each : actualTables) {
             result.put(each, logicalTable);
         }
         return result;
+    }
+    
+    private static void mergeDataSourceTableNameMap(final Map<String, Map<String, String>> mergedResult, final Map<String, Map<String, String>> newDataSourceTableNameMap) {
+        for (Map.Entry<String, Map<String, String>> each : newDataSourceTableNameMap.entrySet()) {
+            Map<String, String> tableNameMap = mergedResult.get(each.getKey());
+            if (null == tableNameMap) {
+                mergedResult.put(each.getKey(), each.getValue());
+            } else {
+                tableNameMap.putAll(each.getValue());
+            }
+        }
+    }
+    
+    private static RdbmsConfiguration createReaderConfiguration(final DataSourceConfiguration dataSourceConfiguration) {
+        RdbmsConfiguration result = new RdbmsConfiguration();
+        Map<String, Object> dataSourceProperties = dataSourceConfiguration.getProperties();
+        JdbcDataSourceConfiguration readerDataSourceConfiguration = new JdbcDataSourceConfiguration(
+                dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
+                dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());
+        result.setDataSourceConfiguration(readerDataSourceConfiguration);
+        return result;
+    }
+    
+    private static RdbmsConfiguration createWriterConfiguration(final ScalingConfiguration scalingConfiguration) {
+        RdbmsConfiguration writerConfiguration = new RdbmsConfiguration();
+        JdbcDataSourceConfiguration writerDataSourceConfiguration = new JdbcDataSourceConfiguration(
+                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
+                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
+                scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());
+        writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
+        return writerConfiguration;
     }
 }

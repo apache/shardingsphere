@@ -131,7 +131,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     }
 
     private void getJobProgress(final ChannelHandlerContext channelHandlerContext, final String requestPath) {
-        Integer jobId = Integer.valueOf(requestPath.split("/")[4]);
+        int jobId = Integer.parseInt(requestPath.split("/")[4]);
         try {
             SyncProgress progresses = SCALING_JOB_CONTROLLER.getProgresses(jobId);
             response(GSON.toJson(ResponseContentUtil.build(progresses)), channelHandlerContext, HttpResponseStatus.OK);
@@ -151,14 +151,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         SCALING_JOB_CONTROLLER.stop(shardingScalingJob.getJobId());
         response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
     }
-
-    /**
-     * response to client.
-     *
-     * @param content content for response
-     * @param ctx     channelHandlerContext
-     * @param status  http response status
-     */
+    
     private void response(final String content, final ChannelHandlerContext ctx, final HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;charset=UTF-8");

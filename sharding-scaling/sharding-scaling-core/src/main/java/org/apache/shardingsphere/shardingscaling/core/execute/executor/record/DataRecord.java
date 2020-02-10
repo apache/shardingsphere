@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.record;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,8 @@ import java.util.List;
  *
  * @author avalon566
  */
-@Data
+@Setter
+@Getter
 public final class DataRecord extends Record {
 
     private String type;
