@@ -85,11 +85,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.value.literal.BooleanValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.value.literal.NumberValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
@@ -128,23 +128,23 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
         }
         // TODO deal with dateTimeLiterals, hexadecimalLiterals and bitValueLiterals
-        return new LiteralValue(ctx.getText());
+        return new StringLiteralValue(ctx.getText());
     }
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
         String text = ctx.getText();
-        return new LiteralValue(text.substring(1, text.length() - 1));
+        return new StringLiteralValue(text.substring(1, text.length() - 1));
     }
     
     @Override
     public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
-        return new NumberValue(ctx.getText());
+        return new NumberLiteralValue(ctx.getText());
     }
     
     @Override
     public final ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
-        return new BooleanValue(ctx.getText());
+        return new BooleanLiteralValue(ctx.getText());
     }
     
     @Override
@@ -313,11 +313,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
-        if (astNode instanceof LiteralValue) {
-            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((LiteralValue) astNode).getValue());
+        if (astNode instanceof StringLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((StringLiteralValue) astNode).getValue());
         }
-        if (astNode instanceof NumberValue) {
-            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberValue) astNode).getValue());
+        if (astNode instanceof NumberLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberLiteralValue) astNode).getValue());
         }
         if (astNode instanceof ParameterMarkerValue) {
             return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());

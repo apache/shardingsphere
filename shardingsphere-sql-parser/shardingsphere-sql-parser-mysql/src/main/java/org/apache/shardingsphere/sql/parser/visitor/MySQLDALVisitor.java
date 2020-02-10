@@ -45,7 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
 
 /**
  * MySQL DAL visitor.
@@ -171,7 +171,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
-        LiteralValue literalValue = (LiteralValue) visit(ctx.stringLiterals());
+        StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
         return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
     }
 }

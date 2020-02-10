@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.literal;
+package org.apache.shardingsphere.sql.parser.sql.value.literal.impl;
 
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
 
 /**
- * Literal value.
+ * String literal value.
  *
- * @author zhangliang
- * 
- * @param <T> type of value
+ * @author panjuan
  */
-public interface LiteralValue<T> extends ValueASTNode<T> {
+@RequiredArgsConstructor
+@Getter
+public final class StringLiteralValue implements LiteralValue<String> {
+    
+    private final String value;
 }
