@@ -31,6 +31,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromCla
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitOffsetContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitRowCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OnDuplicateKeyClauseContext;
@@ -65,6 +68,10 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
@@ -74,9 +81,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -285,6 +294,9 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.setOrderBy(orderBy);
             result.getAllSQLSegments().add(orderBy);
         }
+        if (null != ctx.limitClause()) {
+            result.getAllSQLSegments().add((LimitSegment) visit(ctx.limitClause()));
+        }
         return result;
     }
     
@@ -435,5 +447,38 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         }
         result.setParametersCount(getCurrentParameterIndex());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitLimitClause(final LimitClauseContext ctx) {
+        if (null == ctx.limitOffset()) {
+            return new LimitSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, (PaginationValueSegment) visit(ctx.limitRowCount()));
+        }
+        PaginationValueSegment rowCount;
+        PaginationValueSegment limitOffset;
+        if (null != ctx.OFFSET()) {
+            rowCount = (PaginationValueSegment) visit(ctx.limitRowCount());
+            limitOffset = (PaginationValueSegment) visit(ctx.limitOffset());
+        } else {
+            limitOffset = (PaginationValueSegment) visit(ctx.limitOffset());
+            rowCount = (PaginationValueSegment) visit(ctx.limitRowCount());
+        }
+        return new LimitSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), limitOffset, rowCount);
+    }
+    
+    @Override
+    public ASTNode visitLimitRowCount(final LimitRowCountContext ctx) {
+        if (null != ctx.numberLiterals()) {
+            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
+        }
+        return new ParameterMarkerLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitLimitOffset(final LimitOffsetContext ctx) {
+        if (null != ctx.numberLiterals()) {
+            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
+        }
+        return new ParameterMarkerLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
     }
 }
