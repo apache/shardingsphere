@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.impl;
+package org.apache.shardingsphere.sql.parser.sql.value.literal.impl;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
 
 /**
- * Collection value.
+ * Boolean literal value.
  *
  * @author panjuan
  */
-@Getter
-public final class CollectionValue<T> implements ValueASTNode<Collection> {
+@RequiredArgsConstructor
+public final class BooleanLiteralValue implements LiteralValue<Boolean> {
     
-    private final Collection<T> value = new LinkedList<>();
+    private final boolean value;
     
-    /**
-     * Put all values from another collection value into this one.
-     * 
-     * @param collectionValue collection value
-     */
-    public void combine(final CollectionValue<T> collectionValue) {
-        value.addAll(collectionValue.getValue());
+    public BooleanLiteralValue(final String value) {
+        this.value = Boolean.parseBoolean(value);
+    }
+    
+    @Override
+    public Boolean getValue() {
+        return value;
     }
 }
