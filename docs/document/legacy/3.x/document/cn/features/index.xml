@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>概念 &amp; 功能 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/</link>
+    <description>Recent content in 概念 &amp; 功能 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+  </channel>
+</rss>

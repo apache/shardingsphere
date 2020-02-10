@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.20.7" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/favicon.png" type="image/x-icon" />
+
+    
+    <title>配置手册</title>
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/nucleus.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/theme.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/hugo-theme.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <style type="text/css">:root #header + #content > #left > #rlblock_left
+    {display:none !important;}</style>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/highlight.js/9.8.0/styles/monokai-sublime.min.css">
+<link rel="stylesheet" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/style.css">
+  </head>
+  <body class="" data-url="/02-guide/configuration/">
+    
+    <nav id="sidebar">
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/sharding-jdbc.png" />
+    </div>
+</div>
+  <div class="highlightable">
+    <ul class="topics">
+      
+        
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/00-overview/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/">
+          <span>
+            
+              <b>0. </b>
+            
+             概览
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/00-overview/intro/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/intro/">
+                <span>简介     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/news/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/news/">
+                <span>新闻     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/contribution/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/contribution/">
+                <span>贡献代码     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/01-start/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/">
+          <span>
+            
+              <b>1. </b>
+            
+             起航
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/01-start/quick-start/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/quick-start/">
+                <span>快速入门     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/code-demo/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/code-demo/">
+                <span>使用示例     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/faq/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/faq/">
+                <span>FAQ     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/features/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/features/">
+                <span>详细功能列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/limitations/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/limitations/">
+                <span>使用限制     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/sql-supported/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/sql-supported/">
+                <span>SQL支持详细列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/stress-test/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/stress-test/">
+                <span>性能测试报告     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  parent" data-nav-id="/02-guide/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/">
+          <span>
+            
+              <b>2. </b>
+            
+             使用指南
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/02-guide/concepts/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/concepts/">
+                <span>核心概念     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/sharding/">
+                <span>分库分表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/master-slave/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/master-slave/">
+                <span>读写分离     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/config_domain/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/config_domain/">
+                <span>配置域模型     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item active" data-nav-id="/02-guide/configuration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/configuration/">
+                <span>配置手册     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/orchestration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/orchestration/">
+                <span>编排治理     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/hint-sharding-value/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/hint-sharding-value/">
+                <span>强制路由     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/key-generator/">
+                <span>分布式主键     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/transaction/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/transaction/">
+                <span>事务支持     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/subquery/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/subquery/">
+                <span>分页及子查询     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/test-framework/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/test-framework/">
+                <span>测试引擎     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/apm/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/apm/">
+                <span>应用性能监控     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding-jdbc-server/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/sharding-jdbc-server/">
+                <span>Sharding-JDBC-Server     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/03-design/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/">
+          <span>
+            
+              <b>3. </b>
+            
+             设计规划
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/03-design/architecture/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/architecture/">
+                <span>架构设计     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/module/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/module/">
+                <span>模块说明     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/roadmap/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/roadmap/">
+                <span>未来线路规划     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+    </ul>
+    <hr>
+     
+  </div>
+</nav>
+
+        <section id="body">
+        <div id="overlay"></div>
+
+        <div class="padding highlightable">
+
+            <div id="top-bar">
+              
+              <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                  <span id="sidebar-toggle-span">
+                      <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                  </span>
+                
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                
+                
+                  
+                  
+                  
+                    
+                    
+                <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/" itemprop="url"><span itemprop="title">使用指南</span></a> <i class="fa fa-angle-right"></i>
+                    
+                  
+                
+                <span itemprop="title"> 配置手册</span>
+              </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-java配置">1.JAVA配置</a>
+<ul>
+<li><a href="#引入maven依赖">引入maven依赖</a></li>
+<li><a href="#配置示例">配置示例</a>
+<ul>
+<li><a href="#分库分表">分库分表</a></li>
+<li><a href="#读写分离">读写分离</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#2-yaml配置">2.YAML配置</a>
+<ul>
+<li><a href="#引入maven依赖-1">引入maven依赖</a></li>
+<li><a href="#配置示例-1">配置示例</a>
+<ul>
+<li><a href="#分库分表-1">分库分表</a></li>
+<li><a href="#分库分表配置项说明">分库分表配置项说明</a></li>
+<li><a href="#分库分表数据源构建方式">分库分表数据源构建方式</a></li>
+<li><a href="#读写分离-1">读写分离</a></li>
+<li><a href="#读写分离配置项说明">读写分离配置项说明</a></li>
+<li><a href="#读写分离数据源构建方式">读写分离数据源构建方式</a></li>
+</ul></li>
+<li><a href="#yaml格式特别说明">YAML格式特别说明</a></li>
+</ul></li>
+<li><a href="#3-spring命名空间配置">3.Spring命名空间配置</a>
+<ul>
+<li><a href="#引入maven依赖-2">引入maven依赖</a></li>
+<li><a href="#配置示例-2">配置示例</a></li>
+<li><a href="#标签说明">标签说明</a>
+<ul>
+<li><a href="#sharding-data-source">&lt;sharding:data-source/&gt;</a></li>
+<li><a href="#sharding-sharding-rule">&lt;sharding:sharding-rule/&gt;</a></li>
+<li><a href="#sharding-table-rules">&lt;sharding:table-rules/&gt;</a></li>
+<li><a href="#sharding-table-rule">&lt;sharding:table-rule/&gt;</a></li>
+<li><a href="#sharding-binding-table-rules">&lt;sharding:binding-table-rules/&gt;</a></li>
+<li><a href="#sharding-binding-table-rule">&lt;sharding:binding-table-rule/&gt;</a></li>
+<li><a href="#sharding-standard-strategy">&lt;sharding:standard-strategy/&gt;</a></li>
+<li><a href="#sharding-complex-strategy">&lt;sharding:complex-strategy/&gt;</a></li>
+<li><a href="#sharding-inline-strategy">&lt;sharding:inline-strategy/&gt;</a></li>
+<li><a href="#sharding-hint-database-strategy">&lt;sharding:hint-database-strategy/&gt;</a></li>
+<li><a href="#sharding-none-strategy">&lt;sharding:none-strategy/&gt;</a></li>
+<li><a href="#sharding-props">&lt;sharding:props/&gt;</a></li>
+<li><a href="#master-slave-data-source">&lt;master-slave:data-source/&gt;</a></li>
+<li><a href="#spring格式特别说明">Spring格式特别说明</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#分片算法表达式语法说明">分片算法表达式语法说明</a>
+<ul>
+<li><a href="#inline表达式特别说明">inline表达式特别说明</a></li>
+<li><a href="#字符串内嵌groovy代码">字符串内嵌groovy代码</a></li>
+</ul></li>
+<li><a href="#4-spring-boot配置">4.Spring Boot配置</a>
+<ul>
+<li><a href="#引入maven依赖-3">引入maven依赖</a></li>
+<li><a href="#配置示例-3">配置示例</a>
+<ul>
+<li><a href="#分库分表配置">分库分表配置</a></li>
+<li><a href="#分库分表配置项说明-1">分库分表配置项说明</a></li>
+<li><a href="#读写分离配置">读写分离配置</a></li>
+<li><a href="#读写分离配置项说明-1">读写分离配置项说明</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+              
+
+            </div>
+            
+              <div id="body-inner">
+                
+                <h1>配置手册</h1>
+                
+
+
+
+<h2 id="1-java配置">1.JAVA配置</h2>
+
+<h3 id="引入maven依赖">引入maven依赖</h3>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.shardingjdbc&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-jdbc-core&lt;/artifactId&gt;
+    &lt;version&gt;${latest.release.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h3 id="配置示例">配置示例</h3>
+
+<h4 id="分库分表">分库分表</h4>
+
+<pre><code class="language-java">     DataSource getShardingDataSource() throws SQLException {
+         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+         shardingRuleConfig.getBindingTableGroups().add(&quot;t_order, t_order_item&quot;);
+         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&quot;user_id&quot;, &quot;demo_ds_${user_id % 2}&quot;));
+         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration(&quot;order_id&quot;, ModuloShardingTableAlgorithm.class.getName()));
+         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
+     }
+     
+     TableRuleConfiguration getOrderTableRuleConfiguration() {
+         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
+         orderTableRuleConfig.setLogicTable(&quot;t_order&quot;);
+         orderTableRuleConfig.setActualDataNodes(&quot;demo_ds_${0..1}.t_order_${0..1}&quot;);
+         orderTableRuleConfig.setKeyGeneratorColumnName(&quot;order_id&quot;);
+         return orderTableRuleConfig;
+     }
+     
+     TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+         TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration();
+         orderItemTableRuleConfig.setLogicTable(&quot;t_order_item&quot;);
+         orderItemTableRuleConfig.setActualDataNodes(&quot;demo_ds_${0..1}.t_order_item_${0..1}&quot;);
+         return orderItemTableRuleConfig;
+     }
+     
+     Map&lt;String, DataSource&gt; createDataSourceMap() {
+         Map&lt;String, DataSource&gt; result = new HashMap&lt;&gt;(2, 1);
+         result.put(&quot;demo_ds_0&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_0&quot;));
+         result.put(&quot;demo_ds_1&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_1&quot;));
+         return result;
+     }
+</code></pre>
+
+<h4 id="读写分离">读写分离</h4>
+
+<pre><code class="language-java">     DataSource getMasterSlaveDataSource() throws SQLException {
+         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
+         masterSlaveRuleConfig.setName(&quot;demo_ds_master_slave&quot;);
+         masterSlaveRuleConfig.setMasterDataSourceName(&quot;demo_ds_master&quot;);
+         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList(&quot;demo_ds_slave_0&quot;, &quot;demo_ds_slave_1&quot;));
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig);
+     }
+     
+     Map&lt;String, DataSource&gt; createDataSourceMap() {
+         final Map&lt;String, DataSource&gt; result = new HashMap&lt;&gt;(3, 1);
+         result.put(&quot;demo_ds_master&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_master&quot;));
+         result.put(&quot;demo_ds_slave_0&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_slave_0&quot;));
+         result.put(&quot;demo_ds_slave_1&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_slave_1&quot;));
+         return result;
+     }
+</code></pre>
+
+<h2 id="2-yaml配置">2.YAML配置</h2>
+
+<h3 id="引入maven依赖-1">引入maven依赖</h3>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.shardingjdbc&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-jdbc-core&lt;/artifactId&gt;
+    &lt;version&gt;${latest.release.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h3 id="配置示例-1">配置示例</h3>
+
+<h4 id="分库分表-1">分库分表</h4>
+
+<pre><code class="language-yaml">dataSources:
+  db0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+
+shardingRule:
+  tables:
+    config:
+      actualDataNodes: db${0..1}.t_config
+    t_order: 
+      actualDataNodes: db${0..1}.t_order_${0..1}
+      databaseStrategy: 
+        standard:
+          shardingColumn: user_id
+          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmInlineExpression: t_order_${order_id % 2}
+      keyGeneratorColumnName: order_id
+      keyGeneratorClass: io.shardingjdbc.core.yaml.fixture.IncrementKeyGenerator
+    t_order_item:
+      actualDataNodes: db${0..1}.t_order_item_${0..1}
+      #绑定表中其余的表的策略与第一张表的策略相同
+      databaseStrategy: 
+        standard:
+          shardingColumn: user_id
+          preciseAlgorithmClassName: io.shardingjdbc.core.yaml.fixture.SingleAlgorithm
+      tableStrategy: 
+        inline:
+          shardingColumn: order_id
+          algorithmInlineExpression: t_order_item_${order_id % 2}
+  bindingTables:
+    - t_order,t_order_item
+  #默认数据库分片策略
+  defaultDatabaseStrategy:
+    none:
+  defaultTableStrategy:
+    complex:
+      shardingColumns: id, order_id
+      algorithmClassName: io.shardingjdbc.core.yaml.fixture.MultiAlgorithm
+  props:
+    sql.show: true
+</code></pre>
+
+<h4 id="分库分表配置项说明">分库分表配置项说明</h4>
+
+<pre><code class="language-yaml">dataSources: 数据源配置
+  &lt;data_source_name&gt; 可配置多个: !!数据库连接池实现类
+    driverClassName: 数据库驱动类名
+    url: 数据库url连接
+    username: 数据库用户名
+    password: 数据库密码
+    ... 数据库连接池的其它属性
+
+defaultDataSourceName: 默认数据源，未配置分片规则的表将通过默认数据源定位
+
+tables: 分库分表配置，可配置多个logic_table_name
+    &lt;logic_table_name&gt;: 逻辑表名
+        actualDataNodes: 真实数据节点，由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。
+        databaseStrategy: 分库策略，以下的分片策略只能任选其一
+            standard: 标准分片策略，用于单分片键的场景
+                shardingColumn: 分片列名
+                preciseAlgorithmClassName: 精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器
+                rangeAlgorithmClassName: 范围的分片算法类名称，用于BETWEEN，可以不配置。该类需使用默认的构造器或者提供无参数的构造器
+            complex: 复合分片策略，用于多分片键的场景
+                shardingColumns : 分片列名，多个列以逗号分隔
+                algorithmClassName: 分片算法类名称。该类需使用默认的构造器或者提供无参数的构造器
+            inline: inline表达式分片策略
+                shardingColumn : 分片列名
+                algorithmInlineExpression: 分库算法Inline表达式，需要符合groovy动态语法
+            hint: Hint分片策略
+                algorithmClassName: 分片算法类名称。该类需使用默认的构造器或者提供无参数的构造器
+            none: 不分片
+        tableStrategy: 分表策略，同分库策略
+  bindingTables: 绑定表列表
+  - 逻辑表名列表，多个&lt;logic_table_name&gt;以逗号分隔
+  
+defaultDatabaseStrategy: 默认数据库分片策略，同分库策略
+ 
+defaultTableStrategy: 默认数据表分片策略，同分库策略
+
+props: 属性配置(可选)
+    sql.show: 是否开启SQL显示，默认值: false
+    executor.size: 工作线程数量，默认值: CPU核数
+</code></pre>
+
+<h4 id="分库分表数据源构建方式">分库分表数据源构建方式</h4>
+
+<pre><code class="language-java">    DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
+</code></pre>
+
+<h4 id="读写分离-1">读写分离</h4>
+
+<pre><code class="language-yaml">dataSources:
+  db_master: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db_master;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db_slave_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db_slave_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+  db_slave_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:db_slave_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+    maxActive: 100
+
+masterSlaveRule:
+  name: db_ms
+
+  masterDataSourceName: db_master
+
+  slaveDataSourceNames: [db_slave_0, db_slave_1]
+</code></pre>
+
+<h4 id="读写分离配置项说明">读写分离配置项说明</h4>
+
+<pre><code class="language-yaml">dataSource: 数据源配置，同分库分表
+
+name: 分库分表数据源名称
+
+masterDataSourceName: master数据源名称
+
+slaveDataSourceNames：slave数据源名称，用数组表示多个
+</code></pre>
+
+<h4 id="读写分离数据源构建方式">读写分离数据源构建方式</h4>
+
+<pre><code class="language-java">    DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
+</code></pre>
+
+<h3 id="yaml格式特别说明">YAML格式特别说明</h3>
+
+<p>!! 表示实现类</p>
+
+<p>[] 表示多个</p>
+
+<h2 id="3-spring命名空间配置">3.Spring命名空间配置</h2>
+
+<h3 id="引入maven依赖-2">引入maven依赖</h3>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.shardingjdbc&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-jdbc-core-spring-namespace&lt;/artifactId&gt;
+    &lt;version&gt;${latest.release.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h3 id="配置示例-2">配置示例</h3>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+    xmlns:sharding=&quot;http://shardingsphere.io/schema/shardingjdbc/sharding&quot;
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://shardingsphere.io/schema/shardingjdbc/sharding
+                        http://shardingsphere.io/schema/shardingjdbc/sharding/sharding.xsd
+                        &quot;&gt;
+    &lt;context:property-placeholder location=&quot;classpath:conf/rdb/conf.properties&quot; ignore-unresolvable=&quot;true&quot; /&gt;
+    
+    &lt;bean id=&quot;dbtbl_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot; /&gt;
+    &lt;/bean&gt;
+    
+    &lt;sharding:standard-strategy id=&quot;databaseStrategy&quot; sharding-column=&quot;user_id&quot; precise-algorithm-class=&quot;io.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm&quot; /&gt;
+    &lt;sharding:standard-strategy id=&quot;tableStrategy&quot; sharding-column=&quot;order_id&quot; precise-algorithm-class=&quot;io.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm&quot; /&gt;
+    
+    &lt;sharding:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;sharding:sharding-rule data-source-names=&quot;dbtbl_0,dbtbl_1&quot; default-data-source-name=&quot;dbtbl_0&quot;&gt;
+            &lt;sharding:table-rules&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order&quot; actual-data-nodes=&quot;dbtbl_${0..1}.t_order_${0..3}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;tableStrategy&quot; /&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order_item&quot; actual-data-nodes=&quot;dbtbl_${0..1}.t_order_item_${0..3}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;tableStrategy&quot; /&gt;
+            &lt;/sharding:table-rules&gt;
+            &lt;sharding:binding-table-rules&gt;
+                &lt;sharding:binding-table-rule logic-tables=&quot;t_order, t_order_item&quot; /&gt;
+            &lt;/sharding:binding-table-rules&gt;
+        &lt;/sharding:sharding-rule&gt;
+        &lt;sharding:props&gt;
+            &lt;prop key=&quot;sql.show&quot;&gt;true&lt;/prop&gt;
+        &lt;/sharding:props&gt;
+    &lt;/sharding:data-source&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h3 id="标签说明">标签说明</h3>
+
+<h4 id="sharding-data-source">&lt;sharding:data-source/&gt;</h4>
+
+<p>定义sharding-jdbc数据源</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>Spring Bean ID</td>
+</tr>
+
+<tr>
+<td>sharding-rule</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>分片规则</td>
+</tr>
+
+<tr>
+<td>binding-table-rules?</td>
+<td>标签</td>
+<td>-</td>
+<td>否</td>
+<td>绑定表规则</td>
+</tr>
+
+<tr>
+<td>props?</td>
+<td>标签</td>
+<td>-</td>
+<td>否</td>
+<td>相关属性配置</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-sharding-rule">&lt;sharding:sharding-rule/&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>data-source-names</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>数据源Bean列表，需要配置所有需要被Sharding-JDBC管理的数据源BEAN ID（包括默认数据源），多个Bean以逗号分隔</td>
+</tr>
+
+<tr>
+<td>default-data-source-name</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>默认数据源名称，未配置分片规则的表将通过默认数据源定位</td>
+</tr>
+
+<tr>
+<td>default-database-strategy-ref</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>默认分库策略，对应&lt;sharding:xxx-strategy&gt;中的策略id，不填则使用不分库的策略</td>
+</tr>
+
+<tr>
+<td>default-table-strategy-ref</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>默认分表策略，对应&lt;sharding:xxx-strategy&gt;中的策略id，不填则使用不分表的策略</td>
+</tr>
+
+<tr>
+<td>table-rules</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>分片规则列表</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-table-rules">&lt;sharding:table-rules/&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>table-rule+</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>分片规则</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-table-rule">&lt;sharding:table-rule/&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>logic-table</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>逻辑表名</td>
+</tr>
+
+<tr>
+<td>actual-data-nodes</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>真实数据节点，由数据源名（读写分离引用<a href="master-slave:data-source">master-slave:data-source</a>中的id属性） + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。不填写表示将为现有已知的数据源 + 逻辑表名称生成真实数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况。</td>
+</tr>
+
+<tr>
+<td>database-strategy-ref</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>分库策略，对应&lt;sharding:xxx-strategy&gt;中的策略id，不填则使用&lt;sharding:sharding-rule/&gt;配置的default-database-strategy-ref</td>
+</tr>
+
+<tr>
+<td>table-strategy-ref</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>分表策略，对应&lt;sharding:xxx-strategy&gt;中的略id，不填则使用&lt;sharding:sharding-rule/&gt;配置的default-table-strategy-ref</td>
+</tr>
+
+<tr>
+<td>logic-index</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-binding-table-rules">&lt;sharding:binding-table-rules/&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>binding-table-rule</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>绑定规则</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-binding-table-rule">&lt;sharding:binding-table-rule/&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>logic-tables</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>逻辑表名，多个表名以逗号分隔</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-standard-strategy">&lt;sharding:standard-strategy/&gt;</h4>
+
+<p>标准分片策略，用于单分片键的场景</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sharding-column</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片列名</td>
+</tr>
+
+<tr>
+<td>precise-algorithm-class</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>精确的分片算法类名称，用于=和IN。该类需使用默认的构造器或者提供无参数的构造器</td>
+</tr>
+
+<tr>
+<td>range-algorithm-class</td>
+<td>属性</td>
+<td>String</td>
+<td>否</td>
+<td>范围的分片算法类名称，用于BETWEEN。该类需使用默认的构造器或者提供无参数的构造器</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-complex-strategy">&lt;sharding:complex-strategy/&gt;</h4>
+
+<p>复合分片策略，用于多分片键的场景</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sharding-columns</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片列名，多个列以逗号分隔</td>
+</tr>
+
+<tr>
+<td>algorithm-class</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-inline-strategy">&lt;sharding:inline-strategy/&gt;</h4>
+
+<p>inline表达式分片策略</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sharding-column</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片列名</td>
+</tr>
+
+<tr>
+<td>algorithm-expression</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片算法表达式</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-hint-database-strategy">&lt;sharding:hint-database-strategy/&gt;</h4>
+
+<p>Hint方式分片策略</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>algorithm-class</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>分片算法全类名，该类需使用默认的构造器或者提供无参数的构造器</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="sharding-none-strategy">&lt;sharding:none-strategy/&gt;</h4>
+
+<p>不分片的策略</p>
+
+<h4 id="sharding-props">&lt;sharding:props/&gt;</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sql.show</td>
+<td>属性</td>
+<td>boolean</td>
+<td>是</td>
+<td>是否开启SQL显示，默认为false不开启</td>
+</tr>
+
+<tr>
+<td>executor.size</td>
+<td>属性</td>
+<td>int</td>
+<td>否</td>
+<td>最大工作线程数量</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="master-slave-data-source">&lt;master-slave:data-source/&gt;</h4>
+
+<p>定义sharding-jdbc读写分离的数据源</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>数据类型</em></th>
+<th><em>必填</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>id</td>
+<td>属性</td>
+<td>String</td>
+<td>是</td>
+<td>Spring Bean ID</td>
+</tr>
+
+<tr>
+<td>master-data-source-name</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>主库数据源Bean ID</td>
+</tr>
+
+<tr>
+<td>slave-data-source-names</td>
+<td>标签</td>
+<td>-</td>
+<td>是</td>
+<td>从库数据源Bean列表，多个Bean以逗号分隔</td>
+</tr>
+
+<tr>
+<td>strategy-ref?</td>
+<td>标签</td>
+<td>-</td>
+<td>否</td>
+<td>主从库复杂策略Bean ID，可以使用自定义复杂策略</td>
+</tr>
+
+<tr>
+<td>strategy-type?</td>
+<td>标签</td>
+<td>String</td>
+<td>否</td>
+<td>主从库复杂策略类型<br />可选值：ROUND_ROBIN, RANDOM<br />默认值：ROUND_ROBIN</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="spring格式特别说明">Spring格式特别说明</h4>
+
+<p>如需使用inline表达式，需配置ignore-unresolvable为true，否则placeholder会把inline表达式当成属性key值导致出错.</p>
+
+<h2 id="分片算法表达式语法说明">分片算法表达式语法说明</h2>
+
+<h3 id="inline表达式特别说明">inline表达式特别说明</h3>
+
+<p>${begin..end} 表示范围区间</p>
+
+<p>${[unit1, unit2, unitX]} 表示枚举值</p>
+
+<p>inline表达式中连续多个${&hellip;}表达式，整个inline最终的结果将会根据每个子表达式的结果进行笛卡尔组合，例如正式表inline表达式如下：</p>
+
+<pre><code class="language-groovy">dbtbl_${['online', 'offline']}_${1..3}
+</code></pre>
+
+<p>最终会解析为dbtbl_online_1，dbtbl_online_2，dbtbl_online_3，dbtbl_offline_1，dbtbl_offline_2和dbtbl_offline_3这6张表。</p>
+
+<h3 id="字符串内嵌groovy代码">字符串内嵌groovy代码</h3>
+
+<p>表达式本质上是一段字符串，字符串中使用${}来嵌入groovy代码。</p>
+
+<pre><code class="language-groovy">data_source_${id % 2 + 1}
+</code></pre>
+
+<p>上面的表达式中data_source_是字符串前缀，id % 2 + 1是groovy代码。</p>
+
+<h2 id="4-spring-boot配置">4.Spring Boot配置</h2>
+
+<h3 id="引入maven依赖-3">引入maven依赖</h3>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.shardingjdbc&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-jdbc-core-spring-boot-starter&lt;/artifactId&gt;
+    &lt;version&gt;${latest.release.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h3 id="配置示例-3">配置示例</h3>
+
+<h4 id="分库分表配置">分库分表配置</h4>
+
+<pre><code class="language-yaml">sharding.jdbc.datasource.names=ds,ds_0,ds_1
+sharding.jdbc.datasource.ds.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds.driverClassName=org.h2.Driver
+sharding.jdbc.datasource.ds.url=jdbc:mysql://localhost:3306/ds
+sharding.jdbc.datasource.ds.username=root
+sharding.jdbc.datasource.ds.password=
+
+sharding.jdbc.datasource.ds_0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_0.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_0.url=jdbc:mysql://localhost:3306/ds_0
+sharding.jdbc.datasource.ds_0.username=root
+sharding.jdbc.datasource.ds_0.password=
+
+sharding.jdbc.datasource.ds_1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_1.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_1.url=jdbc:mysql://localhost:3306/ds_1
+sharding.jdbc.datasource.ds_1.username=root
+sharding.jdbc.datasource.ds_1.password=
+
+sharding.jdbc.config.sharding.default-data-source-name=ds
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds_${user_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.actualDataNodes=ds_${0..1}.t_order_${0..1}
+sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.shardingColumn=order_id
+sharding.jdbc.config.sharding.tables.t_order.tableStrategy.inline.algorithmInlineExpression=t_order_${order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.keyGeneratorColumnName=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.actualDataNodes=ds_${0..1}.t_order_item_${0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.shardingColumn=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.tableStrategy.inline.algorithmInlineExpression=t_order_item_${order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.keyGeneratorColumnName=order_item_id
+</code></pre>
+
+<h4 id="分库分表配置项说明-1">分库分表配置项说明</h4>
+
+<p>同<a href="#分库分表配置项说明">分库分表Yaml配置</a></p>
+
+<h4 id="读写分离配置">读写分离配置</h4>
+
+<pre><code class="language-yaml">sharding.jdbc.datasource.names=ds_master,ds_slave_0,ds_slave_1
+
+sharding.jdbc.datasource.ds_master.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_master.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_master.url=jdbc:mysql://localhost:3306/demo_ds_master
+sharding.jdbc.datasource.ds_master.username=root
+sharding.jdbc.datasource.ds_master.password=
+
+sharding.jdbc.datasource.ds_slave_0.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_slave_0.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave_0.url=jdbc:mysql://localhost:3306/demo_ds_slave_0
+sharding.jdbc.datasource.ds_slave_0.username=root
+sharding.jdbc.datasource.ds_slave_0.password=
+
+sharding.jdbc.datasource.ds_slave_1.type=org.apache.commons.dbcp.BasicDataSource
+sharding.jdbc.datasource.ds_slave_1.driverClassName=com.mysql.jdbc.Driver
+sharding.jdbc.datasource.ds_slave_1.url=jdbc:mysql://localhost:3306/demo_ds_slave_1
+sharding.jdbc.datasource.ds_slave_1.username=root
+sharding.jdbc.datasource.ds_slave_1.password=
+
+sharding.jdbc.config.masterslave.load-balance-algorithm-type=round_robin
+sharding.jdbc.config.masterslave.name=ds_ms
+sharding.jdbc.config.masterslave.master-data-source-name=ds_master
+sharding.jdbc.config.masterslave.slave-data-source-names=ds_slave_0,ds_slave_1
+
+</code></pre>
+
+<h4 id="读写分离配置项说明-1">读写分离配置项说明</h4>
+
+<p>同<a href="#读写分离配置项说明">读写分离Yaml配置</a></p>
+
+
+      
+      
+      </div>
+    </div>
+
+    
+
+    <div id="navigation">
+        
+        <a class="nav nav-prev" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/master-slave/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/orchestration/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/clipboard.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/perfect-scrollbar.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/jquery.sticky-kit.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/featherlight.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/html5shiv-printshiv.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/learn.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/hugo-learn.js"></script>
+    <script src="http://cdn.bootcss.com/highlight.js/9.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
+

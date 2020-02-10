@@ -1,0 +1,3390 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="https://shardingsphere.apache.org/document/legacy/3.x/document/img/favicon.png" type="image/x-icon" />
+
+    <title>Performance Test :: ShardingSphere</title>
+    
+    
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/nucleus.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/font-awesome.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hybrid.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/featherlight.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/perfect-scrollbar.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/auto-complete.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hugo-theme.css?1547543307" rel="stylesheet">
+    
+      <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme-black.css?1547543307" rel="stylesheet">
+    
+
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery-2.x.min.js?1547543307"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+
+  </head>
+  <body class="" data-url="/en/manual/sharding-jdbc/stress-test/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/logo_v2.png" />
+
+    </div>
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/overview/" title="Overview" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/overview/">
+          <b>1. </b>Overview
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/quick-start/" title="Quick Start" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/">
+          <b>2. </b>Quick Start
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/quick-start/sharding-jdbc-quick-start/" title="Sharding-JDBC" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/sharding-jdbc-quick-start/">
+        <b>2.1. </b>Sharding-JDBC
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/quick-start/sharding-proxy-quick-start/" title="Sharding-Proxy" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/sharding-proxy-quick-start/">
+        <b>2.2. </b>Sharding-Proxy
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/" title="Concepts &amp; Features" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/">
+          <b>3. </b>Concepts &amp; Features
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/" title="Data sharding" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/">
+          <b>3.1. </b>Data sharding
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/concept/" title="Core Concept" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/">
+          <b>3.1.1. </b>Core Concept
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/sharding/" title="Sharding" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sharding/">
+        Sharding
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/configuration/" title="Configuration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/configuration/">
+        Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/principle/" title="Guide to Kernel" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/">
+          <b>3.1.1. </b>Guide to Kernel
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/parse/" title="Parse Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/parse/">
+        Parse Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/route/" title="Route Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/route/">
+        Route Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/rewrite/" title="Rewrite Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/rewrite/">
+        Rewrite Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/execute/" title="Execute Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/execute/">
+        Execute Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/merge/" title="Merger Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/merge/">
+        Merger Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/use-norms/" title="Use Norms" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/">
+          <b>3.1.3. </b>Use Norms
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/use-norms/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/use-norms/pagination/" title="Pagination" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/pagination/">
+        Pagination
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/other-features/" title="Other Features" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/">
+          <b>3.1.4. </b>Other Features
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/inline-expression/" title="Inline Expression" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/inline-expression/">
+        Inline Expression
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/key-generator/" title="Distributed Primary Key" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/key-generator/">
+        Distributed Primary Key
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/sharding-hint/" title="Sharding Hint" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/sharding-hint/">
+        Sharding Hint
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/read-write-split/" title="Read-write splitting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/">
+          <b>3.2. </b>Read-write splitting
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/concept/" title="Core Concept" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/concept/">
+        <b>3.2.1. </b>Core Concept
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/core-features/" title="Core Features" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/core-features/">
+        <b>3.2.2. </b>Core Features
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/unsupported-items/" title="Unsupported Items" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/unsupported-items/">
+        <b>3.2.3. </b>Unsupported Items
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/orchestration/" title="Orchestration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/">
+          <b>3.3. </b>Orchestration
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/config-center/" title="Config Center" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/config-center/">
+        <b>3.3.1. </b>Config Center
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/orchestration/" title="Orchestration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/orchestration/">
+        <b>3.3.2. </b>Orchestration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/supported-registry-repo/" title="Available Registry Center" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/supported-registry-repo/">
+        <b>3.3.3. </b>Available Registry Center
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/apm/" title="APM" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/apm/">
+        <b>3.3.4. </b>APM
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/transaction/" title="Distributed Transaction" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/">
+          <b>3.4. </b>Distributed Transaction
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/local-transaction/" title="Local transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/local-transaction/">
+        <b>3.4.1. </b>Local transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/2pc-transaction/" title="2PC Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/2pc-transaction/">
+        <b>3.4.2. </b>2PC Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/base-transaction/" title="BASE Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/base-transaction/">
+        <b>3.4.3. </b>BASE Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/" title="User Manual" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/">
+          <b>4. </b>User Manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/" title="Sharding-JDBC" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/">
+          <b>4.1. </b>Sharding-JDBC
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/usage/" title="Manual" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/">
+          <b>4.1.1. </b>Manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/sharding/" title="Sharding" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/sharding/">
+        Sharding
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/read-write-splitting/" title="Read-write Splitting" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/read-write-splitting/">
+        Read-write Splitting
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/hint/" title="Hint" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/hint/">
+        Hint
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/orchestration/" title="Orchestration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/orchestration/">
+        Orchestration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/transaction/" title="Distribute Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/transaction/">
+        Distribute Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/configuration/" title="Configuration manual" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/">
+          <b>4.1.2. </b>Configuration manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-java/" title="Java" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-java/">
+        Java
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-yaml/" title="Yaml" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-yaml/">
+        Yaml
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-spring-boot/" title="Spring Boot" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-boot/">
+        Spring Boot
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-spring-namespace/" title="Spring Namespace" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-namespace/">
+        Spring Namespace
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/unsupported-items/" title="Unsupported JDBC Items" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/unsupported-items/">
+        <b>4.1.3. </b>Unsupported JDBC Items
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/stress-test/" title="Performance Test" class="dd-item active">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/stress-test/">
+        <b>4.1.4. </b>Performance Test
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-proxy/" title="Sharding-Proxy" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/">
+          <b>4.2. </b>Sharding-Proxy
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/usage/" title="User Manual" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/usage/">
+        <b>4.2.1. </b>User Manual
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/configuration/" title="Configuration Manual" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/configuration/">
+        <b>4.2.2. </b>Configuration Manual
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/docker/" title="Docker Image" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/docker/">
+        <b>4.2.3. </b>Docker Image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-sidecar/" title="Sharding-Sidecar" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-sidecar/">
+          <b>4.3. </b>Sharding-Sidecar
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/faq/" title="FAQ" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/faq/">
+          <b>5. </b>FAQ
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fa fa-fw fa-language"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+<option id="en" value="/document/legacy/3.x/document/en/manual/sharding-jdbc/stress-test/" selected>English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+<option id="cn" value="/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/">Chinese</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+       
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <p></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/en/'>ShardingSphere</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/'>User Manual</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/'>Sharding-JDBC</a> > Performance Test
+          
+         
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#summary-of-test-result">Summary of test result</a>
+<ul>
+<li><a href="#baseline-performance-test">Baseline performance test</a></li>
+<li><a href="#performance-test-for-different-dbs-and-tables-in-jdbc-and-sharding-jdbc">Performance test for different DBs and Tables in JDBC and Sharding-JDBC</a></li>
+<li><a href="#sharding-jdbc-v1-4-2-vs-sharding-jdbc-v1-5-2">Sharding-JDBC v1.4.2 vs Sharding-JDBC v1.5.2</a></li>
+</ul></li>
+<li><a href="#test-purpose">Test purpose</a></li>
+<li><a href="#test-scene">Test scene</a>
+<ul>
+<li><a href="#business-scene-for-jdbc">Business scene for JDBC</a></li>
+<li><a href="#business-scene-for-sharding-jdbc">Business scene for Sharding-JDBC</a></li>
+</ul></li>
+<li><a href="#test-method">Test method</a></li>
+<li><a href="#test-environment">Test environment</a></li>
+<li><a href="#test-procedure">Test procedure</a></li>
+<li><a href="#baseline-test">Baseline test</a>
+<ul>
+<li><a href="#select-in-one-table-in-one-db">SELECT in one table in one DB</a></li>
+<li><a href="#update-in-one-table-in-one-db">UPDATE in one table in one DB</a></li>
+<li><a href="#insert-in-one-table-in-one-db">INSERT in one table in one DB</a></li>
+</ul></li>
+<li><a href="#limit-test">Limit test</a>
+<ul>
+<li><a href="#select-in-one-table-in-one-db-and-the-select-in-one-table-in-each-of-two-dbs">SELECT in one table in one DB and The SELECT in one table in each of two DBs</a></li>
+<li><a href="#select-in-two-tables-in-one-db-and-the-select-in-two-tables-in-each-of-two-dbs">SELECT in two tables in one DB and The SELECT in two tables in each of two DBs</a></li>
+<li><a href="#update-in-one-table-in-one-db-and-the-update-in-one-table-in-each-of-two-dbs">UPDATE in one table in one DB and The UPDATE in one table in each of two DBs</a></li>
+<li><a href="#update-in-two-tables-in-one-db-and-the-update-in-two-tables-in-each-of-two-dbs">UPDATE in two tables in one DB and The UPDATE in two tables in each of two DBs</a></li>
+<li><a href="#insert-in-one-table-in-one-db-and-the-insert-in-one-table-in-each-of-two-dbs">INSERT in one table in one DB and The INSERT in one table in each of two DBs</a></li>
+<li><a href="#insert-in-two-tables-in-one-db-and-the-insert-in-two-tables-in-each-of-two-dbs">INSERT in two tables in one DB and The INSERT in two tables in each of two DBs</a></li>
+<li><a href="#operations-in-one-table-in-each-of-two-dbs-for-sharding-jdbc-1-4-2-and-1-5-2">Operations in one table in each of two DBs for Sharding-JDBC 1.4.2 and 1.5.2</a></li>
+</ul></li>
+<li><a href="#appendix">Appendix</a>
+<ul>
+<li><a href="#sql-of-creating-tables">SQL of creating tables</a></li>
+<li><a href="#sql-statements">SQL Statements</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>Performance Test</h1>
+          
+
+        
+
+
+
+
+<h2 id="summary-of-test-result">Summary of test result</h2>
+
+<ol>
+<li>Performance lose: When the server resources are sufficient and the number of concurrency is the same, we compare the performance loss of JDBC and Sharding-JDBC, the result is that the performance loss of Sharding-JDBC is less than 7%, compared with JDBC.</li>
+<li>Performance test: The server resources are used to the limit, the throughput of Sharding-JDBC and JDBC are on a fairly level.</li>
+<li>Performance test: The server resources are used to the limit, the throughput of Sharding-JDBC with Sharding is improved nearly twice than JDBC without Sharding.</li>
+<li>Performance test: The server resources are used to the limit, The performance of Sharding-JDBC V1.5.2 is more stable V1.4.2.</li>
+</ol>
+
+<h3 id="baseline-performance-test">Baseline performance test</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">JDBC</th>
+<th align="left">Sharding-JDBC1.5.2</th>
+<th align="left">Loss ratio of Sharding-JDBC1.5.2/JDBC</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">The SELECT for single table in single DB</td>
+<td align="left">493</td>
+<td align="left">470</td>
+<td align="left">4.7%</td>
+</tr>
+
+<tr>
+<td align="left">The UPDATE for single table in single DB</td>
+<td align="left">6682</td>
+<td align="left">6303</td>
+<td align="left">5.7%</td>
+</tr>
+
+<tr>
+<td align="left">The INSERT for single table in single DB</td>
+<td align="left">6855</td>
+<td align="left">6375</td>
+<td align="left">7%</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="performance-test-for-different-dbs-and-tables-in-jdbc-and-sharding-jdbc">Performance test for different DBs and Tables in JDBC and Sharding-JDBC</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Two tables in single DB for JDBC</th>
+<th align="left">Two tables in each of two DBs for Sharding-JDBC</th>
+<th align="left">Improved performance percentage</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT</td>
+<td align="left">1736</td>
+<td align="left">3331</td>
+<td align="left">192%</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE</td>
+<td align="left">9170</td>
+<td align="left">17997</td>
+<td align="left">196%</td>
+</tr>
+
+<tr>
+<td align="left">INSERT</td>
+<td align="left">11574</td>
+<td align="left">23043</td>
+<td align="left">199%</td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">One table in single DB for JDBC</th>
+<th align="left">One table in each of two DBs for Sharding-JDBC</th>
+<th align="left">Improved performance percentage</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT</td>
+<td align="left">1586</td>
+<td align="left">2944</td>
+<td align="left">185%</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE</td>
+<td align="left">9548</td>
+<td align="left">18561</td>
+<td align="left">194%</td>
+</tr>
+
+<tr>
+<td align="left">INSERT</td>
+<td align="left">11182</td>
+<td align="left">21414</td>
+<td align="left">192%</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="sharding-jdbc-v1-4-2-vs-sharding-jdbc-v1-5-2">Sharding-JDBC v1.4.2 vs Sharding-JDBC v1.5.2</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Sharding-JDBC 1.4.2</th>
+<th align="left">Sharding-JDBC 1.5.2</th>
+<th align="left">Improved ratio of 1.5.2 / 1.4.2</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT</td>
+<td align="left">2934</td>
+<td align="left">2944</td>
+<td align="left">100.34%</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE</td>
+<td align="left">18454</td>
+<td align="left">18561</td>
+<td align="left">100.58%</td>
+</tr>
+
+<tr>
+<td align="left">INSERT</td>
+<td align="left">21045</td>
+<td align="left">21414</td>
+<td align="left">101.75%</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="test-purpose">Test purpose</h2>
+
+<ul>
+<li>To get the performance loss comparison between Sharding-JDBC 1.5.2 and JDBC.</li>
+<li>To get the performance loss comparison between Sharding-jdbc 1.52 and 1.4.2.</li>
+<li>To check whether there are performance problems in Sharding-JDBC 1.5.2.</li>
+</ul>
+
+<h2 id="test-scene">Test scene</h2>
+
+<h3 id="business-scene-for-jdbc">Business scene for JDBC</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Operation abbreviation</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT in one table in one DB</td>
+<td align="left">JSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in one table in one DB</td>
+<td align="left">JSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in one table in one DB</td>
+<td align="left">JSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in two tables in one DB</td>
+<td align="left">JSdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in two tables in one DB</td>
+<td align="left">JSdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in two tables in one DB</td>
+<td align="left">JSdbMtUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="business-scene-for-sharding-jdbc">Business scene for Sharding-JDBC</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Operation abbreviation</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT in one table in one DB</td>
+<td align="left">SJSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in one table in one DB</td>
+<td align="left">SJSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in one table in one DB</td>
+<td align="left">SJSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in two tables in one DB</td>
+<td align="left">SJSdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in two tables in one DB</td>
+<td align="left">SJSdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in two tables in one DB</td>
+<td align="left">SJSdbMtUpdate</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in one table in each of two DBs</td>
+<td align="left">SJMdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in one table in each of two DBs</td>
+<td align="left">SJMdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in one table in each of two DBs</td>
+<td align="left">SJMdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in two tables in each of two DBs</td>
+<td align="left">SJMdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in two tables in each of two DBs</td>
+<td align="left">SJMdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in two tables in each of two DBs</td>
+<td align="left">SJMdbMtUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<p>The limit test scope is the whole operations, and the baseline test scope is the following operations:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">The operation abbreviation</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT in one table in one DB</td>
+<td align="left">JSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in one table in one DB</td>
+<td align="left">JSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in one table in one DB</td>
+<td align="left">JSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in one table in one DB</td>
+<td align="left">SJSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in one table in one DB</td>
+<td align="left">SJSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in one table in one DB</td>
+<td align="left">SJSdbStUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="test-method">Test method</h2>
+
+<p>Baseline test: the server resources are sufficient and the number of concurrency is the same.</p>
+
+<p>Limit test: The server resources are used to the limit, and TPS is no longer increasing.</p>
+
+<h2 id="test-environment">Test environment</h2>
+
+<p>Server environment:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">DB-Name</th>
+<th align="left">Hardware Information</th>
+<th align="left">Software Information</th>
+<th align="left">Hybrid Application</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">DB0</td>
+<td align="left">OS: CentOS 6.6 64bit<br/>CPU: 2C 4core<br/>Memory: 32G<br/>Storage: 250G*2_RAID1+600G*4_RAID10<br/>Network card: 1000mbps</td>
+<td align="left">MySQL 5.7.13</td>
+<td align="left">N</td>
+</tr>
+
+<tr>
+<td align="left">DB1</td>
+<td align="left">OS: CentOS 6.6 64bit<br/>CPU: 2C 4core<br/>Memory: 32G<br/>Storage: 250G*2_RAID1+600G*4_RAID10<br/>Network card: 1000mbps</td>
+<td align="left">MySQL 5.7.13</td>
+<td align="left">N</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="test-procedure">Test procedure</h2>
+
+<h2 id="baseline-test">Baseline test</h2>
+
+<h3 id="select-in-one-table-in-one-db">SELECT in one table in one DB</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT in one table in one DB for JDBC</td>
+<td align="left">7</td>
+<td align="left">493</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in one table in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">8</td>
+<td align="left">470</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-query-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-query-rt.png" alt="RT" /></p>
+
+<h3 id="update-in-one-table-in-one-db">UPDATE in one table in one DB</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">UPDATE in one table in one DB for JDBC</td>
+<td align="left">2</td>
+<td align="left">6682</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in one table in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">3</td>
+<td align="left">6303</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-update-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-update-rt.png" alt="RT" /></p>
+
+<h3 id="insert-in-one-table-in-one-db">INSERT in one table in one DB</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">INSERT in one table in one DB for JDBC</td>
+<td align="left">2</td>
+<td align="left">6855</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in one table in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">2</td>
+<td align="left">6375</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-insert-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/b-SdbSt-insert-rt.png" alt="RT" /></p>
+
+<h2 id="limit-test">Limit test</h2>
+
+<h3 id="select-in-one-table-in-one-db-and-the-select-in-one-table-in-each-of-two-dbs">SELECT in one table in one DB and The SELECT in one table in each of two DBs</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT in one table in one DB for JDBC</td>
+<td align="left">7</td>
+<td align="left">1586</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in one table in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">7</td>
+<td align="left">1600</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in two tables in each of two DBs for Sharding-JDBC 1.5.2</td>
+<td align="left">13</td>
+<td align="left">2944</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-query-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-query-rt.png" alt="RT" /></p>
+
+<h3 id="select-in-two-tables-in-one-db-and-the-select-in-two-tables-in-each-of-two-dbs">SELECT in two tables in one DB and The SELECT in two tables in each of two DBs</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT in two tables in one DB for JDBC</td>
+<td align="left">6</td>
+<td align="left">1736</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in two tables in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">7</td>
+<td align="left">1732</td>
+</tr>
+
+<tr>
+<td align="left">SELECT in two tables in each of two DBs for Sharding-JDBC 1.5.2</td>
+<td align="left">10</td>
+<td align="left">3331</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-query-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-query-rt.png" alt="RT" /></p>
+
+<h3 id="update-in-one-table-in-one-db-and-the-update-in-one-table-in-each-of-two-dbs">UPDATE in one table in one DB and The UPDATE in one table in each of two DBs</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">UPDATE in two tables in one DB for JDBC</td>
+<td align="left">7</td>
+<td align="left">9548</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in one table in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">7</td>
+<td align="left">9263</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE in one table in each of two DBs for Sharding-JDBC 1.5.2</td>
+<td align="left">4</td>
+<td align="left">18561</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-update-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-update-rt.png" alt="RT" /></p>
+
+<h3 id="update-in-two-tables-in-one-db-and-the-update-in-two-tables-in-each-of-two-dbs">UPDATE in two tables in one DB and The UPDATE in two tables in each of two DBs</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">The UPDATE in two tables in one DB for JDBC</td>
+<td align="left">7</td>
+<td align="left">9170</td>
+</tr>
+
+<tr>
+<td align="left">The UPDATE in two tables in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">7</td>
+<td align="left">8941</td>
+</tr>
+
+<tr>
+<td align="left">The UPDATE in two tables in each of two DBs for Sharding-JDBC 1.5.2</td>
+<td align="left">5</td>
+<td align="left">17997</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-update-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-update-rt.png" alt="RT" /></p>
+
+<h3 id="insert-in-one-table-in-one-db-and-the-insert-in-one-table-in-each-of-two-dbs">INSERT in one table in one DB and The INSERT in one table in each of two DBs</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">INSERT in one table in one DB for JDBC</td>
+<td align="left">5</td>
+<td align="left">11182</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in one table in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">5</td>
+<td align="left">10882</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in one table in each of two DBs for Sharding-JDBC 1.5.2</td>
+<td align="left">4</td>
+<td align="left">21414</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-insert-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbSt-MdbSt-insert-rt.png" alt="RT" /></p>
+
+<h3 id="insert-in-two-tables-in-one-db-and-the-insert-in-two-tables-in-each-of-two-dbs">INSERT in two tables in one DB and The INSERT in two tables in each of two DBs</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Average response time(ms)</th>
+<th align="left">TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">INSERT in two tables in one DB for JDBC</td>
+<td align="left">4</td>
+<td align="left">11574</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in two tables in one DB for Sharding-JDBC 1.5.2</td>
+<td align="left">5</td>
+<td align="left">10849</td>
+</tr>
+
+<tr>
+<td align="left">INSERT in two tables in each of two DBs Sharding-JDBC 1.5.2</td>
+<td align="left">4</td>
+<td align="left">23043</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-insert-tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/l-SdbMt-MdbMt-insert-rt.png" alt="RT" /></p>
+
+<h3 id="operations-in-one-table-in-each-of-two-dbs-for-sharding-jdbc-1-4-2-and-1-5-2">Operations in one table in each of two DBs for Sharding-JDBC 1.4.2 and 1.5.2</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">Operation</th>
+<th align="left">Sharding-JDBC 1.4.2</th>
+<th align="left">Sharding-JDBC 1.5.2</th>
+<th align="left">1.5.2 / 1.4.2</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">SELECT</td>
+<td align="left">2934</td>
+<td align="left">2944</td>
+<td align="left">100.34%</td>
+</tr>
+
+<tr>
+<td align="left">UPDATE</td>
+<td align="left">18454</td>
+<td align="left">18561</td>
+<td align="left">100.58%</td>
+</tr>
+
+<tr>
+<td align="left">INSERT</td>
+<td align="left">21045</td>
+<td align="left">21414</td>
+<td align="left">101.75%</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/152vs142tps.png" alt="TPS" /></p>
+
+<p>Response Time:</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/stress-test/152vs142rt.png" alt="RT" /></p>
+
+<h2 id="appendix">Appendix</h2>
+
+<p>There are two test servers, and two parent tables and two child tables in single database in each of servers.</p>
+
+<h3 id="sql-of-creating-tables">SQL of creating tables</h3>
+
+<p>Structure of table <code>order</code>:</p>
+
+<pre><code class="language-sql">CREATE TABLE `order0` (
+  `id` bigint(50) NOT NULL AUTO_INCREMENT,
+  `order_id` varchar(50) NOT NULL,
+  `order_type` int(11) DEFAULT NULL,
+  `cust_id` int(11) DEFAULT NULL,
+  `cust_type` int(11) DEFAULT NULL,
+  `cust_email` varchar(50) DEFAULT NULL,
+  `payment_method_type` int(11) DEFAULT NULL,
+  `payment_provider_id` int(11) DEFAULT NULL,
+  `shipping_method_type` int(11) DEFAULT NULL,
+  `packing_type` int(11) DEFAULT NULL,
+  `preferred_shipping_time_type` int(11) DEFAULT NULL,
+  `receiver_name` varchar(100) DEFAULT NULL,
+  `receiver_address` varchar(200) DEFAULT NULL,
+  `receiver_country_id` int(11) DEFAULT NULL,
+  `receiver_province_id` int(11) DEFAULT NULL,
+  `receiver_city_id` int(11) DEFAULT NULL,
+  `receiver_zip` varchar(20) DEFAULT NULL,
+  `receiver_tel` varchar(50) DEFAULT NULL,
+  `receiver_mobile_tel` varchar(50) DEFAULT NULL,
+  `cust_message` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `index_id` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5189307 DEFAULT CHARSET=gbk 
+</code></pre>
+
+<p>Structure of table <code>ordert</code>:</p>
+
+<pre><code class="language-sql">CREATE TABLE `ordert0` (
+  `idm` bigint(50) NOT NULL,
+  `id` int(10) DEFAULT NULL,
+  `order_idm` varchar(50) DEFAULT NULL,
+  `order_typem` int(11) DEFAULT NULL,
+  `cust_idm` int(11) DEFAULT NULL,
+  `cust_typem` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=gbk ROW_FORMAT=DYNAMIC
+</code></pre>
+
+<h3 id="sql-statements">SQL Statements</h3>
+
+<p>JDBC INSERT</p>
+
+<pre><code class="language-sql">insert 
+into order?(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
+</code></pre>
+
+<p>JDBC SELECT</p>
+
+<pre><code class="language-sql">select a.id,order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order? a,ordert? b where a.id=? and a.id%100=b.idm%100;
+</code></pre>
+
+<p>JDBC UPDATE</p>
+
+<pre><code class="language-sql">Update order? SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
+</code></pre>
+
+<p>Sharding-JDBC INSERT</p>
+
+<pre><code class="language-sql">INSERT INTO `order`(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
+</code></pre>
+
+<p>Sharding-JDBC SELECT</p>
+
+<pre><code class="language-sql">select cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order a,order_item b where a.id=? and a.id%100=b.idm%100;
+</code></pre>
+
+<p>Sharding-JDBC UPDATE</p>
+
+<pre><code class="language-sql">update order SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
+</code></pre>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/unsupported-items/" title="Unsupported JDBC Items"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/" title="Sharding-Proxy" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/clipboard.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.jquery.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery.sticky.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/featherlight.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/html5shiv-printshiv.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/highlight.pack.js?1547543307"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/modernizr.custom.71422.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/learn.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/hugo-learn.js?1547543307"></script>
+
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.css?1547543307" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.js?1547543307"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

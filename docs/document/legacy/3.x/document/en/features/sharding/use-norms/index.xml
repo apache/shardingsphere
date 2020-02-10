@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Use Norms on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/</link>
+    <description>Recent content in Use Norms on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SQL</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/sql/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/sql/</guid>
+      <description>Since the syntax of SQL is flexible and complex and query situations of distributed databases and stand-alone databases are not identical with each other, SQLs incompatible with stand-alone databases are hard to avoid.
+To try to avoid traps for users, this document has listed identified available SQL types and unavailable SQL types.
+It is inevitably to have some SQLs that have not been listed yet, welcome to supplement for that.</description>
+    </item>
+    
+    <item>
+      <title>Pagination</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/pagination/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/pagination/</guid>
+      <description>Totally available for pagination queries of MySQL, PostgreSQL and Oracle; partly available for SQLServer pagination query due to its complexity.
+Pagination Performance Performance Bottleneck Pagination with query offset too high can lead to a low data accessibility, take MySQL as an example:
+SELECT * FROM t_order ORDER BY id LIMIT 1000000, 10  This SQL will make MySQL acquire 10 records after skipping 1,000,000 records when it is not able to use indexes.</description>
+    </item>
+    
+  </channel>
+</rss>

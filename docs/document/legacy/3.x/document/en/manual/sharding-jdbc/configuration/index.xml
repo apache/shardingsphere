@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Configuration manual on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/</link>
+    <description>Recent content in Configuration manual on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-java/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-java/</guid>
+      <description>Example Sharding DataSource getShardingDataSource() throws SQLException { ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration(); shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration()); shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration()); shardingRuleConfig.getBindingTableGroups().add(&amp;quot;t_order, t_order_item&amp;quot;); shardingRuleConfig.getBroadcastTables().add(&amp;quot;t_config&amp;quot;); shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;user_id&amp;quot;, &amp;quot;ds${user_id % 2}&amp;quot;)); shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration(&amp;quot;order_id&amp;quot;, new ModuloShardingTableAlgorithm())); return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig); } TableRuleConfiguration getOrderTableRuleConfiguration() { TableRuleConfiguration result = new TableRuleConfiguration(); result.setLogicTable(&amp;quot;t_order&amp;quot;); result.setActualDataNodes(&amp;quot;ds${0..1}.t_order${0..1}&amp;quot;); result.setKeyGeneratorColumnName(&amp;quot;order_id&amp;quot;); return result; } TableRuleConfiguration getOrderItemTableRuleConfiguration() { TableRuleConfiguration result = new TableRuleConfiguration(); result.setLogicTable(&amp;quot;t_order_item&amp;quot;); result.setActualDataNodes(&amp;quot;ds${0..1}.t_order_item${0..1}&amp;quot;); return result; } Map&amp;lt;String, DataSource&amp;gt; createDataSourceMap() { Map&amp;lt;String, DataSource&amp;gt; result = new HashMap&amp;lt;&amp;gt;(); result.put(&amp;quot;ds0&amp;quot;, DataSourceUtil.createDataSource(&amp;quot;ds0&amp;quot;)); result.</description>
+    </item>
+    
+    <item>
+      <title>Yaml</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-yaml/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-yaml/</guid>
+      <description>Example Sharding dataSources: ds0: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds0 username: root password: ds1: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds1 username: root password: shardingRule: tables: t_order: actualDataNodes: ds${0..1}.t_order${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order${order_id % 2} keyGeneratorColumnName: order_id t_order_item: actualDataNodes: ds${0..1}.t_order_item${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order_item${order_id % 2} bindingTables: - t_order,t_order_item broadcastTables: - t_config defaultDataSourceName: ds0 defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} defaultTableStrategy: none: defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator props: sql.show: true  Read-write splitting dataSources: ds_master: !</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-boot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-boot/</guid>
+      <description>Attention Inline expression identifier can use ${...} or $-&amp;gt;{...}, but ${...} is conflict with spring placeholder of properties, so use $-&amp;gt;{...} on spring environment is better.
+Example Sharding sharding.jdbc.datasource.names=ds0,ds1 sharding.jdbc.datasource.ds0.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0 sharding.jdbc.datasource.ds0.username=root sharding.jdbc.datasource.ds0.password= sharding.jdbc.datasource.ds1.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1 sharding.jdbc.datasource.ds1.username=root sharding.jdbc.datasource.ds1.password= sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$-&amp;gt;{0..1}.t_order$-&amp;gt;{0..1} sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$-&amp;gt;{order_id % 2} sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$-&amp;gt;{0..1}.t_order_item$-&amp;gt;{0..1} sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$-&amp;gt;{order_id % 2} sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item sharding.jdbc.config.sharding.broadcast-tables=t_config sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$-&amp;gt;{user_id % 2}  Read-write splitting sharding.jdbc.datasource.names=master,slave0,slave1 sharding.jdbc.datasource.master.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.master.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.master.url=jdbc:mysql://localhost:3306/master sharding.jdbc.datasource.master.username=root sharding.jdbc.datasource.master.password= sharding.jdbc.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0 sharding.</description>
+    </item>
+    
+    <item>
+      <title>Spring Namespace</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-namespace/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-namespace/</guid>
+      <description>Attention Inline expression identifier can use ${...} or $-&amp;gt;{...}, but ${...} is conflict with spring placeholder of properties, so use $-&amp;gt;{...} on spring environment is better.
+Example Sharding &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt; &amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; xmlns:p=&amp;quot;http://www.springframework.org/schema/p&amp;quot; xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot; xmlns:tx=&amp;quot;http://www.springframework.org/schema/tx&amp;quot; xmlns:sharding=&amp;quot;http://shardingsphere.io/schema/shardingsphere/sharding&amp;quot; xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://shardingsphere.io/schema/shardingsphere/sharding http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd&amp;quot;&amp;gt; &amp;lt;context:annotation-config /&amp;gt; &amp;lt;context:component-scan base-package=&amp;quot;io.shardingsphere.example.spring.namespace.jpa&amp;quot; /&amp;gt; &amp;lt;bean id=&amp;quot;entityManagerFactory&amp;quot; class=&amp;quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&amp;quot;&amp;gt; &amp;lt;property name=&amp;quot;dataSource&amp;quot; ref=&amp;quot;shardingDataSource&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaVendorAdapter&amp;quot;&amp;gt; &amp;lt;bean class=&amp;quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&amp;quot; p:database=&amp;quot;MYSQL&amp;quot; /&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property name=&amp;quot;packagesToScan&amp;quot; value=&amp;quot;io.shardingsphere.example.spring.namespace.jpa.entity&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaProperties&amp;quot;&amp;gt; &amp;lt;props&amp;gt; &amp;lt;prop key=&amp;quot;hibernate.</description>
+    </item>
+    
+  </channel>
+</rss>

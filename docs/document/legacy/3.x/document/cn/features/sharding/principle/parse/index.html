@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="cn" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="https://shardingsphere.apache.org/document/legacy/3.x/document/img/favicon.png" type="image/x-icon" />
+
+    <title>解析引擎 :: ShardingSphere</title>
+    
+    
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/nucleus.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/font-awesome.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hybrid.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/featherlight.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/perfect-scrollbar.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/auto-complete.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hugo-theme.css?1547543307" rel="stylesheet">
+    
+      <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme-black.css?1547543307" rel="stylesheet">
+    
+
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery-2.x.min.js?1547543307"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+
+  </head>
+  <body class="" data-url="/cn/features/sharding/principle/parse/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/logo_v2.png" />
+
+    </div>
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/overview/" title="概览" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/overview/">
+          <b>1. </b>概览
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/quick-start/" title="快速入门" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/">
+          <b>2. </b>快速入门
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/quick-start/sharding-jdbc-quick-start/" title="Sharding-JDBC" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-jdbc-quick-start/">
+        <b>2.1. </b>Sharding-JDBC
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/quick-start/sharding-proxy-quick-start/" title="Sharding-Proxy" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-proxy-quick-start/">
+        <b>2.2. </b>Sharding-Proxy
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/" title="概念 &amp; 功能" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/">
+          <b>3. </b>概念 &amp; 功能
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/" title="数据分片" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/">
+          <b>3.1. </b>数据分片
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/concept/" title="核心概念" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/">
+          <b>3.1.1. </b>核心概念
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/sharding/" title="分片" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sharding/">
+        分片
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/concept/configuration/" title="配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/configuration/">
+        配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/principle/" title="内核剖析" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/">
+          <b>3.1.2. </b>内核剖析
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/parse/" title="解析引擎" class="dd-item active">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/parse/">
+        解析引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/route/" title="路由引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/route/">
+        路由引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/rewrite/" title="改写引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/rewrite/">
+        改写引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/execute/" title="执行引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/execute/">
+        执行引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/principle/merge/" title="归并引擎" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/merge/">
+        归并引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/use-norms/" title="使用规范" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/">
+          <b>3.1.3. </b>使用规范
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/use-norms/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/use-norms/pagination/" title="分页" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/pagination/">
+        分页
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/sharding/other-features/" title="其他功能" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/">
+          <b>3.1.4. </b>其他功能
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/inline-expression/" title="行表达式" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/inline-expression/">
+        行表达式
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/key-generator/" title="分布式主键" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/key-generator/">
+        分布式主键
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/sharding/other-features/sharding-hint/" title="强制分片路由" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/sharding-hint/">
+        强制分片路由
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/read-write-split/" title="读写分离" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/">
+          <b>3.2. </b>读写分离
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/concept/" title="核心概念" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/concept/">
+        <b>3.2.1. </b>核心概念
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/core-features/" title="核心功能" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/core-features/">
+        <b>3.2.2. </b>核心功能
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/read-write-split/unsupported-items/" title="不支持项" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/unsupported-items/">
+        <b>3.2.3. </b>不支持项
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/orchestration/" title="数据治理" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/">
+          <b>3.3. </b>数据治理
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/config-center/" title="配置中心" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/config-center/">
+        <b>3.3.1. </b>配置中心
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/orchestration/" title="编排治理" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/orchestration/">
+        <b>3.3.2. </b>编排治理
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/supported-registry-repo/" title="支持的注册中心" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/supported-registry-repo/">
+        <b>3.3.3. </b>支持的注册中心
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/orchestration/apm/" title="应用性能监控" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/apm/">
+        <b>3.3.4. </b>应用性能监控
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/features/transaction/" title="分布式事务" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/">
+          <b>3.4. </b>分布式事务
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/local-transaction/" title="本地事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/local-transaction/">
+        <b>3.4.1. </b>本地事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/2pc-transaction/" title="两阶段事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/2pc-transaction/">
+        <b>3.4.2. </b>两阶段事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/features/transaction/base-transaction/" title="柔性事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/base-transaction/">
+        <b>3.4.3. </b>柔性事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/" title="使用手册" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/">
+          <b>4. </b>使用手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/" title="Sharding-JDBC" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/">
+          <b>4.1. </b>Sharding-JDBC
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/usage/" title="使用手册" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/">
+          <b>4.1.1. </b>使用手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/sharding/" title="数据分片" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/sharding/">
+        数据分片
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/read-write-splitting/" title="读写分离" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/">
+        读写分离
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/hint/" title="强制路由" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/hint/">
+        强制路由
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/orchestration/" title="数据治理" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/orchestration/">
+        数据治理
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/usage/transaction/" title="分布式事务" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/transaction/">
+        分布式事务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-jdbc/configuration/" title="配置手册" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/">
+          <b>4.1.2. </b>配置手册
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-java/" title="Java配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-java/">
+        Java配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-yaml/" title="Yaml配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-yaml/">
+        Yaml配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-spring-boot/" title="Spring Boot配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-boot/">
+        Spring Boot配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/configuration/config-spring-namespace/" title="Spring命名空间配置" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-namespace/">
+        Spring命名空间配置
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/unsupported-items/" title="JDBC不支持项" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/">
+        <b>4.1.3. </b>JDBC不支持项
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-jdbc/stress-test/" title="性能测试报告" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/">
+        <b>4.1.4. </b>性能测试报告
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-proxy/" title="Sharding-Proxy" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/">
+          <b>4.2. </b>Sharding-Proxy
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/usage/" title="使用手册" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/usage/">
+        <b>4.2.1. </b>使用手册
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/configuration/" title="配置手册" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/configuration/">
+        <b>4.2.2. </b>配置手册
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/manual/sharding-proxy/docker/" title="Docker镜像" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/docker/">
+        <b>4.2.3. </b>Docker镜像
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/manual/sharding-sidecar/" title="Sharding-Sidecar" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-sidecar/">
+          <b>4.3. </b>Sharding-Sidecar
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/faq/" title="FAQ" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/faq/">
+          <b>5. </b>FAQ
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fa fa-fw fa-language"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+<option id="en" value="/document/legacy/3.x/document/en/features/sharding/principle/parse/">English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+<option id="cn" value="/document/legacy/3.x/document/cn/features/sharding/principle/parse/" selected>Chinese</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+       
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <p></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/'>ShardingSphere</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/'>概念 & 功能</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/'>数据分片</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/'>内核剖析</a> > 解析引擎
+          
+         
+          
+         
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#抽象语法树">抽象语法树</a></li>
+<li><a href="#sql解析引擎">SQL解析引擎</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>解析引擎</h1>
+          
+
+        
+
+
+
+
+<p>相对于其他编程语言，SQL是比较简单的。
+不过，它依然是一门完善的编程语言，因此对SQL的语法进行解析，与解析其他编程语言（如：Java语言、C语言、Go语言等）并无本质区别。</p>
+
+<h2 id="抽象语法树">抽象语法树</h2>
+
+<p>解析过程分为词法解析和语法解析。
+词法解析器用于将SQL拆解为不可再分的原子符号，称为Token。并根据不同数据库方言所提供的字典，将其归类为关键字，表达式，字面量和操作符。
+再使用语法解析器将SQL转换为抽象语法树。</p>
+
+<p>例如，以下SQL：</p>
+
+<pre><code class="language-sql">SELECT id, name FROM t_user WHERE status = 'ACTIVE' AND age &gt; 18
+</code></pre>
+
+<p>解析之后的为抽象语法树见下图。</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/sql_ast.png" alt="SQL抽象语法树" /></p>
+
+<p>为了便于理解，抽象语法树中的关键字的Token用绿色表示，变量的Token用红色表示，灰色表示需要进一步拆分。</p>
+
+<p>最后，通过对抽象语法树的遍历去提炼分片所需的上下文，并标记有可能需要改写的位置。
+供分片使用的解析上下文包含查询选择项（Select Items）、表信息（Table）、分片条件（Sharding Condition）、自增主键信息（Auto increment Primary Key）、排序信息（Order By）、分组信息（Group By）以及分页信息（Limit、Rownum、Top）。
+SQL的一次解析过程是不可逆的，一个个Token的按SQL原本的顺序依次进行解析，性能很高。
+考虑到各种数据库SQL方言的异同，在解析模块提供了各类数据库的SQL方言字典。</p>
+
+<h2 id="sql解析引擎">SQL解析引擎</h2>
+
+<p>SQL解析作为分库分表类产品的核心，其性能和兼容性是最重要的衡量指标。
+ShardingSphere的SQL解析器经历了3代产品的更新迭代。</p>
+
+<p>第一代SQL解析器为了追求性能与快速实现，在1.4.x之前的版本使用Druid作为SQL解析器。经实际测试，它的性能远超其它解析器。</p>
+
+<p>第二代SQL解析器从1.5.x版本开始，ShardingSphere采用完全自研的SQL解析引擎。
+由于目的不同，ShardingSphere并不需要将SQL转为一颗完全的抽象语法树，也无需通过访问器模式进行二次遍历。它采用对SQL<code>半理解</code>的方式，仅提炼数据分片需要关注的上下文，因此SQL解析的性能和兼容性得到了进一步的提高。</p>
+
+<p>第三代SQL解析器则从3.0.x版本开始，ShardingSphere尝试使用ANTLR作为SQL解析的引擎，并计划根据<code>DDL -&gt; TCL -&gt; DAL –&gt; DCL -&gt; DML –&gt;DQL</code>这个顺序，依次替换原有的解析引擎，目前仍处于替换迭代中。
+使用ANTLR的原因是希望ShardingSphere的解析引擎能够更好的对SQL进行兼容。对于复杂的表达式、递归、子查询等语句，虽然ShardingSphere的分片核心并不关注，但是会影响对于SQL理解的友好度。
+经过实例测试，ANTLR解析SQL的性能比自研的SQL解析引擎慢3-10倍左右。为了弥补这一差距，ShardingSphere将使用<code>PreparedStatement</code>的SQL解析的语法树放入缓存。
+因此建议采用<code>PreparedStatement</code>这种SQL预编译的方式提升性能。</p>
+
+<p>第三代SQL解析引擎的整体结构划分如下图所示。</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/sharding/parsing_architecture_cn.png" alt="解析引擎结构" /></p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/" title="内核剖析"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/route/" title="路由引擎" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/clipboard.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.jquery.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery.sticky.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/featherlight.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/html5shiv-printshiv.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/highlight.pack.js?1547543307"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/modernizr.custom.71422.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/learn.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/hugo-learn.js?1547543307"></script>
+
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.css?1547543307" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.js?1547543307"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+
