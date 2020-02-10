@@ -21,8 +21,8 @@ import com.atomikos.beans.PropertyUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinitionFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
@@ -71,17 +71,17 @@ public final class XADataSourceFactory {
     
     private static XADataSource createXADataSource(final XADataSourceDefinition xaDataSourceDefinition) {
         XADataSource result = null;
-        List<ShardingSphereException> exceptions = new LinkedList<>();
+        List<ShardingException> exceptions = new LinkedList<>();
         for (String each : xaDataSourceDefinition.getXADriverClassName()) {
             try {
                 result = loadXADataSource(each);
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 exceptions.add(ex);
             }
         }
         if (null == result && !exceptions.isEmpty()) {
             if (exceptions.size() > 1) {
-                throw new ShardingSphereException("Failed to create [%s] XA DataSource", xaDataSourceDefinition);
+                throw new ShardingException("Failed to create [%s] XA DataSource", xaDataSourceDefinition);
             } else {
                 throw exceptions.iterator().next();
             }
@@ -97,13 +97,13 @@ public final class XADataSourceFactory {
             try {
                 xaDataSourceClass = Class.forName(xaDataSourceClassName);
             } catch (final ClassNotFoundException ex) {
-                throw new ShardingSphereException("Failed to load [%s]", xaDataSourceClassName);
+                throw new ShardingException("Failed to load [%s]", xaDataSourceClassName);
             }
         }
         try {
             return (XADataSource) xaDataSourceClass.newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new ShardingSphereException("Failed to instance [%s]", xaDataSourceClassName);
+            throw new ShardingException("Failed to instance [%s]", xaDataSourceClassName);
         }
     }
 }

@@ -23,7 +23,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.command.CommandExecutorTask;
@@ -48,8 +48,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private volatile boolean authorized;
     
     private final BackendConnection backendConnection = new BackendConnection(
-            TransactionType.valueOf(ShardingProxyContext.getInstance().getProperties().<String>getValue(PropertiesConstant.PROXY_TRANSACTION_TYPE)),
-            ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.PROXY_HINT_ENABLED));
+            TransactionType.valueOf(ShardingProxyContext.getInstance().getShardingProperties().<String>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE)),
+            ShardingProxyContext.getInstance().getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_HINT_ENABLED));
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {

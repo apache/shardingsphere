@@ -29,7 +29,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
@@ -63,8 +62,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
-    private volatile boolean isErrorResponse;
-    
     public PostgreSQLComBindExecutor(final PostgreSQLComBindPacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         databaseCommunicationEngine = null == packet.getSql()
@@ -83,7 +80,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         }
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
         if (backendResponse instanceof ErrorResponse) {
-            isErrorResponse = true;
             result.add(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
@@ -99,7 +95,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
-        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
+        return new PostgreSQLErrorResponsePacket();
     }
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
@@ -127,11 +123,6 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
-    }
-    
-    @Override
-    public boolean isErrorResponse() {
-        return isErrorResponse;
     }
     
     @Override

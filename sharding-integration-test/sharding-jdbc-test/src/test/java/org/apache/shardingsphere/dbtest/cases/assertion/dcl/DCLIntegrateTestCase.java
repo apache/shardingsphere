@@ -30,7 +30,7 @@ import java.util.List;
  * @author panjuan
  */
 @Getter
-public final class DCLIntegrateTestCase extends IntegrateTestCase {
+public class DCLIntegrateTestCase extends IntegrateTestCase {
     
     @XmlElement(name = "assertion")
     private List<DCLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();

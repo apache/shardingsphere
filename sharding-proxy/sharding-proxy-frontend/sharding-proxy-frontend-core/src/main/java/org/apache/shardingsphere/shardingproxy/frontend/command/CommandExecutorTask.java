@@ -21,8 +21,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
-import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.core.execute.hook.RootInvokeHook;
+import org.apache.shardingsphere.core.execute.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
@@ -53,12 +53,6 @@ public final class CommandExecutorTask implements Runnable {
     
     private final Object message;
     
-    /**
-     * To make sure SkyWalking will be available at the next release of ShardingSphere,
-     * a new plugin should be provided to SkyWalking project if this API changed.
-     *
-     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
-     */
     @Override
     public void run() {
         RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();

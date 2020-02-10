@@ -29,7 +29,14 @@ fi
 
 STDOUT_FILE=${LOGS_DIR}/stdout.log
 
-CLASS_PATH=.:..:${DEPLOY_DIR}/lib/*
+PIDS=`ps -ef | grep java | grep "$DEPLOY_DIR" | grep -v grep | awk '{print $2}'`
+if [ -n "$PIDS" ]; then
+    echo "ERROR: The $SERVER_NAME already started!"
+    echo "PID: $PIDS"
+    exit 1
+fi
+
+CLASS_PATH=.:${DEPLOY_DIR}/conf:${DEPLOY_DIR}/lib/*
 JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
 
 JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "
@@ -40,18 +47,14 @@ echo "Starting the $SERVER_NAME ..."
 
 if [ $# == 1 ]; then
     MAIN_CLASS=${MAIN_CLASS}" "$1
-    echo "The port is $1"
-    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
+    echo "The port is configured as $1"
 fi
 
 if [ $# == 2 ]; then
     MAIN_CLASS=${MAIN_CLASS}" "$1" "$2
-    echo "The port is $1"
-    echo "The configuration path is $DEPLOY_DIR/$2"
-    CLASS_PATH=${DEPLOY_DIR}/$2:${CLASS_PATH}
+    echo "The port is configured as $1"
+    echo "The configuration file is $DEPLOY_DIR/conf/$2"
 fi
-
-echo "The classpath is ${CLASS_PATH}"
 
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 sleep 1

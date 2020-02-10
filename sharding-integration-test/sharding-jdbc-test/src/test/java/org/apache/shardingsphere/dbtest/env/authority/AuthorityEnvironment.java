@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbtest.env.authority;
 
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

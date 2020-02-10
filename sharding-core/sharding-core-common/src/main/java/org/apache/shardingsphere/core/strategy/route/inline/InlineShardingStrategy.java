@@ -24,11 +24,8 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.core.util.InlineExpressionParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,12 +53,9 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ShardingSphereProperties properties) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
         RouteValue shardingValue = shardingValues.iterator().next();
-        if (properties.<Boolean>getValue(PropertiesConstant.ALLOW_RANGE_QUERY_WITH_INLINE_SHARDING) && shardingValue instanceof RangeRouteValue) {
-            return availableTargetNames;
-        }
-        Preconditions.checkState(shardingValue instanceof ListRouteValue, "Inline strategy cannot support this type sharding:" + shardingValue.toString());
+        Preconditions.checkState(shardingValue instanceof ListRouteValue, "Inline strategy cannot support range sharding.");
         Collection<String> shardingResult = doSharding((ListRouteValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : shardingResult) {
@@ -92,7 +86,7 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     private String execute(final PreciseShardingValue shardingValue) {
         Closure<?> result = closure.rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
-        result.setProperty(shardingColumn, shardingValue.getValue());
+        result.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return result.call().toString();
     }
     

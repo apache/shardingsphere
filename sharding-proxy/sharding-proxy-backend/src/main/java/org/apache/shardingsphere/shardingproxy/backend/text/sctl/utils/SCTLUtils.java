@@ -17,28 +17,19 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.utils;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+public class SCTLUtils {
 
-/**
- * SCTL utils.
- * 
- * @author zhangliang 
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SCTLUtils {
-    
     private static final String COMMENT_PREFIX = "/*";
-    
+
     private static final String COMMENT_SUFFIX = "*/";
-    
+
     private static final String SQL_END = ";";
-    
+
     /**
      * Trim the comment of sql.
      *
      * @param sql SQL to be trim
-     * @return remove comment from SQL
+     * @return the sql remove comment
      */
     public static String trimComment(final String sql) {
         String result = sql;

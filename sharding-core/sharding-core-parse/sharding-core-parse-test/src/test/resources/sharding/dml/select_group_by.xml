@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<parser-result-sets>
+    <parser-result sql-case-id="select_group_by_with_sum">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="49" table-name="t_order" length="7" />
+        </tokens>
+        <group-by-columns>
+            <group-by-column name="user_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" order-direction="ASC" />
+        </order-by-columns>
+        <select-items start-index="7" stop-index="42">
+            <aggregation-select-items>
+                <aggregation-select-item text="SUM(order_id)" type="SUM" innerExpressionStartIndex="10" stop-index="19" />
+            </aggregation-select-items>
+            <column-select-items>
+                <column-select-item text="user_id" start-index="36" stop-index="42" />
+            </column-select-items>
+        </select-items>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_count">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="53" table-name="t_order" length="7" />
+        </tokens>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(order_id)" alias="orders_count" />
+            </aggregation-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" order-direction="ASC" />
+        </order-by-columns>
+        <select-items start-index="7" stop-index="46">
+            <aggregation-select-items>
+                <aggregation-select-item text="COUNT(order_id)" type="COUNT" innerExpressionStartIndex="12" stop-index="21" />
+            </aggregation-select-items>
+            <column-select-items>
+                <column-select-item text="user_id" start-index="40" stop-index="46" />
+            </column-select-items>
+        </select-items>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_max">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="51" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="44">
+            <aggregation-select-items>
+                <aggregation-select-item text="MAX(order_id)" type="MAX" innerExpressionStartIndex="10" stop-index="19" />
+            </aggregation-select-items>
+            <column-select-items>
+                <column-select-item text="user_id" start-index="38" stop-index="44" />
+            </column-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_min">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="51" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="44">
+            <aggregation-select-items>
+                <aggregation-select-item text="MIN(order_id)" type="MIN" innerExpressionStartIndex="10" stop-index="19" />
+            </aggregation-select-items>
+            <column-select-items>
+                <column-select-item text="user_id" start-index="38" stop-index="44" />
+            </column-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_avg">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="49" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="42">
+            <aggregation-select-items>
+                <aggregation-select-item text="AVG(order_id)" type="AVG" innerExpressionStartIndex="10" stop-index="19"/>
+            </aggregation-select-items>
+            <column-select-items>
+                <column-select-item text="user_id" start-index="36" stop-index="42"/>
+            </column-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_order_by_desc">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="49" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="42">
+            <aggregation-select-items>
+                <aggregation-select-item stop-index="19" type="SUM" innerExpressionStartIndex="10" text="SUM(order_id)" alias="orders_sum" />
+            </aggregation-select-items>
+            <column-select-items>
+                <column-select-item text="user_id" start-index="36" stop-index="42" />
+            </column-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="orders_sum" order-direction="DESC" />
+        </order-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_without_grouped_column" parameters="1, 2, 9, 10">
+        <tables>
+            <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
+        </tables>
+        <tokens>
+            <table-token start-index="36" table-name="t_order" length="7" />
+            <table-token start-index="51" table-name="t_order_item" length="12" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="7" stop-index="29">
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" stop-index="14" innerExpressionStartIndex="12" text="count(*)" alias="items_count" />
+            </aggregation-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" owner="o" order-direction="ASC" />
+        </group-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_limit" parameters="5">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="20" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="13">
+            <column-select-items>
+                <column-select-item text="user_id" stop-index="13" />
+            </column-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" order-direction="ASC" />
+        </order-by-columns>
+        <row-count value="5" parameter-index="0" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_order_by_and_limit" parameters="5">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="49" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="42">
+            <column-select-items>
+                <column-select-item text="user_id" stop-index="13" />
+            </column-select-items>
+            <aggregation-select-items>
+                <aggregation-select-item start-index="16" stop-index="28" innerExpressionStartIndex="19" type="SUM" text="SUM(order_id)" alias="orders_sum" />
+            </aggregation-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="user_id" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="SUM(order_id)" order-direction="ASC" />
+        </order-by-columns>
+        <row-count value="5" parameter-index="0" />
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">
+        <tables>
+            <table name="t_order" alias="o" />
+        </tables>
+        <tokens>
+            <table-token start-index="26" table-name="t_order" length="7" />
+        </tokens>
+        <group-by-columns>
+            <group-by-column name="user_id" owner="o" alias="uid" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column name="user_id" owner="o" order-direction="ASC" />
+        </order-by-columns>
+        <select-items start-index="7" stop-index="19">
+            <column-select-items>
+                <column-select-item text="o.user_id" alias="uid" start-index="7" stop-index="7">
+                    <table-segment name="o" start-index="7" stop-index="7" />
+                </column-select-item>
+            </column-select-items>
+        </select-items>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_date_function" parameters="1000, 1100">
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <tokens>
+            <table-token start-index="91" table-name="t_order_item" left-delimiter="`" right-delimiter="`" length="14" />
+        </tokens>
+        <sharding-conditions>
+            <and-condition>
+                <condition column-name="order_id" table-name="t_order_item" operator="IN">
+                    <value index="0" literal="1000" type="int" />
+                    <value index="1" literal="1100" type="int" />
+                </condition>
+            </and-condition>
+        </sharding-conditions>
+        <select-items start-index="7" stop-index="84">
+            <expression-items>
+                <expression-item start-index="7" stop-index="45" text="date_format(creation_date,'%y-%m-%d')" alias="creation_date" />
+            </expression-items>
+            <aggregation-select-items>
+                <aggregation-select-item start-index="65" stop-index="72" innerExpressionStartIndex="70" type="COUNT" text="count(*)" alias="c_number" />
+            </aggregation-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" />
+        </group-by-columns>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_group_by_with_keyword_alias">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="58" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="51">
+            <aggregation-select-items>
+                <aggregation-select-item type="SUM" start-index="7" stop-index="19" innerExpressionStartIndex="10" text="SUM(order_id)" alias="orders_sum" />
+            </aggregation-select-items>
+            <column-select-items>
+                <column-select-item text="user_id" alias="key" start-index="36" stop-index="42" />
+            </column-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column name="key" alias="key" order-direction="ASC" />
+        </group-by-columns>
+    </parser-result>
+
+    <parser-result sql-case-id="select_group_by_with_count_without_column_name">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="53" table-name="t_order" length="7" />
+        </tokens>
+        <select-items start-index="7" stop-index="46">
+            <aggregation-select-items>
+                <aggregation-select-item start-index="7" stop-index="21" innerExpressionStartIndex="12" type="COUNT" text="COUNT(order_id)" alias="orders_count" />
+            </aggregation-select-items>
+            <column-select-items>
+                <column-select-item text="user_id" start-index="40" stop-index="46" />
+            </column-select-items>
+        </select-items>
+        <group-by-columns>
+            <group-by-column index="2" order-direction="ASC" />
+        </group-by-columns>
+        <order-by-columns>
+            <order-by-column index="2" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+</parser-result-sets>

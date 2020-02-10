@@ -27,15 +27,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlInstanceConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationShardingRuleConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.constructor.YamlOrchestrationShardingRuleConfigurationConstructor;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Orchestration sharding data source factory for YAML.
@@ -114,10 +113,10 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
-        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationShardingRuleConfiguration.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
+        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationShardingRuleConfiguration.class);
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
-        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationShardingRuleConfiguration.class, new YamlOrchestrationShardingRuleConfigurationConstructor());
+        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationShardingRuleConfiguration.class);
     }
 }

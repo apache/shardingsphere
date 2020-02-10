@@ -24,8 +24,8 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.core.shard.fixture.PreciseShardingAlgorithmFixture;
+import org.apache.shardingsphere.core.config.ShardingConfigurationException;
+import org.apache.shardingsphere.core.fixture.PreciseShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
@@ -121,7 +121,7 @@ public final class ShardingRuleTest {
         assertThat(shardingRule.getTableRule("Default_Table").getLogicTable(), is("default_table"));
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertGetTableRuleFailure() {
         createMinimumShardingRule().getTableRule("New_Table");
     }
@@ -222,11 +222,6 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertIsNotAllInDefaultDataSourceWithoutDefaultDataSource() {
-        assertFalse(createMinimumShardingRule().isAllInDefaultDataSource(Collections.singletonList("table_0")));
-    }
-    
-    @Test
     public void assertIsNotAllInDefaultDataSourceWithShardingTable() {
         assertFalse(createMaximumShardingRule().isAllInDefaultDataSource(Arrays.asList("table_0", "logic_table")));
     }
@@ -283,7 +278,7 @@ public final class ShardingRuleTest {
         assertFalse(createMinimumShardingRule().findGenerateKeyColumnName("sub_logic_table").isPresent());
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertGenerateKeyFailure() {
         createMaximumShardingRule().generateKey("table_0");
     }
@@ -347,7 +342,7 @@ public final class ShardingRuleTest {
         assertThat(createMaximumShardingRule().getDataNode("ds_1", "logic_table"), is(new DataNode("ds_1.table_0")));
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertGetDataNodeByLogicTableFailureWithDataSourceName() {
         createMaximumShardingRule().getDataNode("ds_3", "logic_table");
     }
@@ -371,21 +366,6 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_0", "master_ds_0", "slave_ds_0"));
         shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(createMasterSlaveRuleConfiguration("ms_ds_1", "master_ds_1", "slave_ds_1"));
         new ShardingRule(shardingRuleConfiguration, null);
-    }
-    
-    @Test
-    public void assertTableRuleExists() {
-        assertTrue(createMaximumShardingRule().tableRuleExists(Collections.singletonList("logic_table")));
-    }
-    
-    @Test
-    public void assertTableRuleExistsForMultipleTables() {
-        assertTrue(createMaximumShardingRule().tableRuleExists(Arrays.asList("logic_table", "table_0")));
-    }
-    
-    @Test
-    public void assertTableRuleNotExists() {
-        assertFalse(createMinimumShardingRule().tableRuleExists(Collections.singletonList("table_0")));
     }
     
     private ShardingRule createMaximumShardingRule() {

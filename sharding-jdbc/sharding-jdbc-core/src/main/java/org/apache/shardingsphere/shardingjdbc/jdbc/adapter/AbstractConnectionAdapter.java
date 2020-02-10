@@ -21,10 +21,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
-import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
+import org.apache.shardingsphere.core.constant.ConnectionMode;
+import org.apache.shardingsphere.core.execute.hook.RootInvokeHook;
+import org.apache.shardingsphere.core.execute.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
@@ -50,17 +50,10 @@ import java.util.Map.Entry;
  * @author zhaojun
  * @author maxiaoguang
  */
+@Getter
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     
-    @Getter
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
-    
-    @Getter
-    private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
-    
-    private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
-    
-    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
     private boolean autoCommit = true;
     
@@ -69,6 +62,12 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private volatile boolean closed;
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
+    
+    private final ForceExecuteTemplate<Connection> forceExecuteTemplate = new ForceExecuteTemplate<>();
+    
+    private final ForceExecuteTemplate<Entry<String, Connection>> forceExecuteTemplateForClose = new ForceExecuteTemplate<>();
+    
+    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
     protected AbstractConnectionAdapter() {
         rootInvokeHook.start();

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.internal.registry.state.schema;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.core.constant.ShardingConstant;
 
 import java.util.List;
 

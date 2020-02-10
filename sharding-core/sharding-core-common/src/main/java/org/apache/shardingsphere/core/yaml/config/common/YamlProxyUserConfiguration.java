@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.yaml.config.common;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 /**
  * Proxy user for YAML.

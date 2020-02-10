@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaChangedListenerTest {
+public class SchemaChangedListenerTest {
     
     private static final String DATA_SOURCE_YAML = "master_ds: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n"

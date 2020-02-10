@@ -9,7 +9,7 @@
 
 [![Total Lines](https://tokei.rs/b1/github/apache/incubator-shardingsphere?category=lines)](https://github.com/apache/incubator-shardingsphere)
 [![Build Status](https://builds.apache.org/job/shardingsphere-ci-dev/badge/icon)](https://builds.apache.org/job/shardingsphere-ci-dev/)
-[![Coverage Status](https://coveralls.io/repos/github/apache/incubator-shardingsphere/badge.svg?branch=master)](https://coveralls.io/github/apache/incubator-shardingsphere?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/apache/incubator-shardingsphere/badge.svg?branch=dev)](https://coveralls.io/github/apache/incubator-shardingsphere?branch=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
 [![snyk](https://snyk.io/test/github/apache/incubator-shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/incubator-shardingsphere?targetFile=pom.xml)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
@@ -50,7 +50,7 @@ __Apache官方发布从4.0.0版本开始。__
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0/apache-shardingsphere-incubating-4.0.0-sharding-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC2/apache-shardingsphere-incubating-4.0.0-RC2-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 定位为透明化的数据库代理端，提供封装了数据库二进制协议的服务端版本，用于完成对异构语言的支持。
@@ -118,8 +118,6 @@ ShardingSphere是多接入端共同组成的生态圈。
 
 ## 如何构建
 
-### 构建ShardingSphere
-
 ```bash
 ./mvnw clean install -Prelease
 ``` 
@@ -129,27 +127,6 @@ ShardingSphere是多接入端共同组成的生态圈。
 ```
 sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-jdbc-bin.tar.gz: Sharding-JDBC的二进制包
 sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-proxy-bin.tar.gz: Sharding-Proxy的二进制包
+sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Sharding-UI的二进制包
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: ShardingSphere的源码包
 ```
-
-### 构建ShardingSphere UI
-
-```bash
-cd shardingsphere-ui
-./mvnw clean install -Prelease
-```
-
-构建产物：
-
-```
-shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: ShardingSphere-UI的二进制包
-```
-
-## 全景图
-
-<p align="center">
-<br/><br/>
-<img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
-<br/><br/>
-ShardingSphere进入了<a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF云原生全景图。</a>
-</p>

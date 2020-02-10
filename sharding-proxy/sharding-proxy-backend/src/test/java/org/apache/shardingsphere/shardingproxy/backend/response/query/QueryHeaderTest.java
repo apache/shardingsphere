@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.shardingproxy.backend.response.query;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.spi.database.DataSourceMetaData;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
 import java.sql.Types;
-import java.util.Collections;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -67,7 +67,7 @@ public final class QueryHeaderTest {
     @Test
     public void assertQueryHeaderColumnLength() throws Exception {
         QueryHeader header = new QueryHeader(getResultSetMetaData(), getShardingSchema(), 1);
-        assertThat(header.getColumnLength(), is(1));
+        assertThat(header.getColumnLength(), is(Integer.valueOf(1)));
     }
     
     @Test
@@ -79,7 +79,7 @@ public final class QueryHeaderTest {
     @Test
     public void assertQueryHeaderDecimals() throws Exception {
         QueryHeader header = new QueryHeader(getResultSetMetaData(), getShardingSchema(), 1);
-        assertThat(header.getDecimals(), is(1));
+        assertThat(header.getDecimals(), is(Integer.valueOf(1)));
     }
     
     @Test
@@ -109,9 +109,10 @@ public final class QueryHeaderTest {
     @SneakyThrows
     private ShardingSchema getShardingSchema() {
         ShardingSchema result = mock(ShardingSchema.class);
-        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", "int", true);
+        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", "int", true, true, true);
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList("order_id")));
+        when(tableMetas.get("t_order")).thenReturn(new TableMetaData(Arrays.asList(columnMetaData), Arrays.asList("order_id")));
+        when(tableMetas.containsTable("t_order")).thenReturn(true);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getTables()).thenReturn(tableMetas);
         DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
@@ -119,7 +120,7 @@ public final class QueryHeaderTest {
         when(metaData.getDataSources()).thenReturn(dataSourceMetas);
         when(result.getMetaData()).thenReturn(metaData);
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.getLogicTableNames("t_order")).thenReturn(Collections.singletonList("t_logic_order"));
+        when(shardingRule.getLogicTableNames("t_order")).thenReturn(Arrays.asList("t_logic_order"));
         when(result.getShardingRule()).thenReturn(shardingRule);
         when(result.getName()).thenReturn("sharding_schema");
         return result;
@@ -133,8 +134,6 @@ public final class QueryHeaderTest {
         when(result.getColumnName(1)).thenReturn("order_id");
         when(result.getColumnType(1)).thenReturn(Types.INTEGER);
         when(result.isSigned(1)).thenReturn(true);
-        when(result.isAutoIncrement(1)).thenReturn(true);
-        when(result.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
         when(result.getColumnDisplaySize(1)).thenReturn(1);
         when(result.getScale(1)).thenReturn(1);
         return result;

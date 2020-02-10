@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.sql;
 
-import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -28,34 +28,35 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class SQLCasesLoaderTest {
     
     @Test
     public void assertGetSQLForLiteralWithoutParameter() {
-        assertThat(SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_constant_without_table", SQLCaseType.Literal, Collections.emptyList()), is("SELECT 1 as a"));
+        assertThat(ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_constant_without_table", SQLCaseType.Literal, Collections.emptyList()), is("SELECT 1 as a"));
     }
     
     @Test
     public void assertGetSQLForLiteralWithParameters() {
-        assertThat(SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_with_same_table_name_and_alias", SQLCaseType.Literal, Arrays.asList(10, 1000)), 
+        assertThat(ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_with_same_table_name_and_alias", SQLCaseType.Literal, Arrays.asList(10, 1000)), 
                 is("SELECT t_order.* FROM t_order t_order WHERE user_id = 10 AND order_id = 1000"));
     }
     
     @Test
     public void assertGetSQLForPlaceholder() {
-        assertThat(SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_with_same_table_name_and_alias", SQLCaseType.Placeholder, Arrays.asList(10, 1000)),
+        assertThat(ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("select_with_same_table_name_and_alias", SQLCaseType.Placeholder, Arrays.asList(10, 1000)),
                 is("SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?"));
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertGetSQLWithoutSQLCaseId() {
-        SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("no_sql_case_id", SQLCaseType.Literal, Collections.emptyList());
+        ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL("no_sql_case_id", SQLCaseType.Literal, Collections.emptyList());
     }
     
     @Test
     public void assertGetTestParameters() {
-        Collection<Object[]> actual = SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQLTestParameters();
+        Collection<Object[]> actual = ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQLTestParameters();
         assertFalse(actual.isEmpty());
         Object[] actualRow = actual.iterator().next();
         assertThat(actualRow.length, is(3));
@@ -66,6 +67,6 @@ public final class SQLCasesLoaderTest {
     
     @Test
     public void assertCountAllSQLCases() {
-        assertFalse(SQLCasesRegistry.getInstance().getSqlCasesLoader().getAllSQLCaseIDs().isEmpty());
+        assertTrue(ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().countAllSQLCases() > 0);
     }
 }

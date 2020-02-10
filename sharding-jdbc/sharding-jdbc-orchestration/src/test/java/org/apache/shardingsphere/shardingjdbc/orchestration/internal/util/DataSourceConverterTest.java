@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.util;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DataSourceConverterTest {
+public class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSourceMap() {

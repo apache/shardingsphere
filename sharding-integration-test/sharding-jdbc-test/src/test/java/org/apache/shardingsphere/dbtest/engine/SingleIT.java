@@ -19,11 +19,13 @@ package org.apache.shardingsphere.dbtest.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.dbtest.cases.assertion.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
+import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.loader.sharding.ShardingSQLCasesRegistry;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -34,6 +36,10 @@ import java.util.List;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
+    
+    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
+    
+    private static IntegrateTestCasesLoader integrateTestCasesLoader = IntegrateTestCasesLoader.getInstance();
     
     private final IntegrateTestCaseAssertion assertion;
     
@@ -57,6 +63,6 @@ public abstract class SingleIT extends BaseIT {
         for (SQLValue each : assertion.getSQLValues()) {
             parameters.add(each.toString());
         }
-        return SQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, caseType, parameters);
+        return ShardingSQLCasesRegistry.getInstance().getSqlCasesLoader().getSQL(sqlCaseId, caseType, parameters);
     }
 }

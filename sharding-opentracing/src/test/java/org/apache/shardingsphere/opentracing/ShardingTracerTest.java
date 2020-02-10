@@ -21,7 +21,7 @@ import io.opentracing.NoopTracerFactory;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.opentracing.fixture.FooTracer;
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -51,11 +52,11 @@ public final class ShardingTracerTest {
     @Test
     public void assertDuplicatedLoading() {
         ShardingTracer.init(mock(Tracer.class));
-        Tracer tracer = ShardingTracer.get();
+        Tracer t1 = ShardingTracer.get();
         ShardingTracer.init();
-        assertThat(ShardingTracer.get(), is(tracer));
+        assertEquals(t1, ShardingTracer.get());
         ShardingTracer.init(mock(Tracer.class));
-        assertThat(ShardingTracer.get(), is(tracer));
+        assertEquals(t1, ShardingTracer.get());
     }
     
     @Test
@@ -66,7 +67,7 @@ public final class ShardingTracerTest {
         assertThat(ShardingTracer.get(), is(ShardingTracer.get()));
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test(expected = ShardingException.class)
     public void assertTracerClassError() {
         System.setProperty("org.apache.shardingsphere.opentracing.tracer.class", "com.foo.FooTracer");
         ShardingTracer.init();

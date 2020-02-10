@@ -27,10 +27,12 @@ import java.util.Map;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
@@ -40,8 +42,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Pr
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -144,7 +144,7 @@ public final class OrchestrationEncryptDataSourceTest {
     @Test
     public void assertRenewProperties() {
         encryptDataSource.renew(getPropertiesChangedEvent());
-        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getProperties().getProps().getProperty("sql.show"), is("true"));
+        assertThat(encryptDataSource.getDataSource().getRuntimeContext().getProps().getProps().getProperty("sql.show"), is("true"));
     }
     
     private PropertiesChangedEvent getPropertiesChangedEvent() {

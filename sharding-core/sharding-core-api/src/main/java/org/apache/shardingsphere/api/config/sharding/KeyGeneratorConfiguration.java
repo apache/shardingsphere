@@ -20,7 +20,7 @@ package org.apache.shardingsphere.api.config.sharding;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.config.TypeBasedSPIConfiguration;
+import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
 
 import java.util.Properties;
 

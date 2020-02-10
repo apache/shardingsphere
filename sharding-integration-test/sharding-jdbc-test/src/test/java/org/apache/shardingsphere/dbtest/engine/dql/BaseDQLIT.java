@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbtest.engine.dql;
 
+import org.apache.shardingsphere.core.database.DatabaseTypes;
 import org.apache.shardingsphere.dbtest.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.dbtest.cases.dataset.DataSet;
 import org.apache.shardingsphere.dbtest.cases.dataset.metadata.DataSetColumn;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.dbtest.env.datasource.DataSourceUtil;
 import org.apache.shardingsphere.dbtest.env.schema.SchemaEnvironmentManager;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -57,6 +58,8 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleIT {
     
+    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
+    
     public BaseDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
                      final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
         super(sqlCaseId, path, assertion, shardingRuleType, databaseTypeEnvironment, caseType);
@@ -65,27 +68,31 @@ public abstract class BaseDQLIT extends SingleIT {
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
         createDatabasesAndTables();
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-            insertData(each);
+        for (DatabaseType each : DatabaseTypes.getDatabaseTypes()) {
+            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
+                insertData(each);
+            }
         }
     }
     
     private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).initialize();
         }
     }
     
     @AfterClass
     public static void clearData() throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-            clearData(each);
+        for (DatabaseType each : DatabaseTypes.getDatabaseTypes()) {
+            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
+                clearData(each);
+            }
         }
         dropDatabases();
     }
     
     private static void clearData(final DatabaseType databaseType) throws SQLException, IOException, JAXBException {
-        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
+        for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).clear();
         }
     }
@@ -128,7 +135,7 @@ public abstract class BaseDQLIT extends SingleIT {
             assertTrue("Size of actual result set is different with size of expected dat set rows.", count < expectedDatSetRows.size());
             for (String each : expectedDatSetRows.get(count).getValues()) {
                 if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    if (!NOT_VERIFY_FLAG.equals(each)) {
+                    if (!getNotVerifyFlag().equals(each)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(actualMetaData.getColumnLabel(index))), is(each));
                     }

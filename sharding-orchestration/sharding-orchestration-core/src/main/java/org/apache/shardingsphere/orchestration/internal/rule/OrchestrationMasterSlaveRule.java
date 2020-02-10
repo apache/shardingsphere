@@ -23,7 +23,6 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Orchestration master slave rule.
@@ -44,11 +43,11 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
      * @return available slave data source names
      */
     @Override
-    public List<String> getSlaveDataSourceNames() {
+    public Collection<String> getSlaveDataSourceNames() {
         if (disabledDataSourceNames.isEmpty()) {
             return super.getSlaveDataSourceNames();
         }
-        List<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
+        Collection<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
         result.removeAll(disabledDataSourceNames);
         return result;
     }

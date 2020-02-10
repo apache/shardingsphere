@@ -29,7 +29,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class Dbcp2DataSourcePropertiesSetterTest {
+public class Dbcp2DataSourcePropertiesSetterTest {
     
     private final CommonDbcp2DataSourcePropertiesSetter dbcp2DataSourcePropertiesSetter = new CommonDbcp2DataSourcePropertiesSetter();
     

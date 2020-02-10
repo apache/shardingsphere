@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingproxy.context;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.log.ConfigurationLogger;
+import org.apache.shardingsphere.core.util.ConfigurationLogger;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -42,7 +42,7 @@ public final class ShardingProxyContext {
     
     private static final ShardingProxyContext INSTANCE = new ShardingProxyContext();
     
-    private ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
+    private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
     private Authentication authentication;
     
@@ -69,7 +69,7 @@ public final class ShardingProxyContext {
      */
     public void init(final Authentication authentication, final Properties props) {
         this.authentication = authentication;
-        properties = new ShardingSphereProperties(props);
+        shardingProperties = new ShardingProperties(props);
     }
     
     /**
@@ -80,7 +80,7 @@ public final class ShardingProxyContext {
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         ConfigurationLogger.log(event.getProps());
-        properties = new ShardingSphereProperties(event.getProps());
+        shardingProperties = new ShardingProperties(event.getProps());
     }
     
     /**

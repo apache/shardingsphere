@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spring.boot.datasource;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 
 import java.util.HashMap;
 import java.util.Map;

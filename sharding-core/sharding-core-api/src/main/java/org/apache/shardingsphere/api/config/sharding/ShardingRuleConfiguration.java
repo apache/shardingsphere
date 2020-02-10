@@ -19,8 +19,8 @@ package org.apache.shardingsphere.api.config.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 

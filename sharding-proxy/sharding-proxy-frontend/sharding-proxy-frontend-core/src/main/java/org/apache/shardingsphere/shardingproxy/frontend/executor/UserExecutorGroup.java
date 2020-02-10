@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingproxy.frontend.executor;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.executor.engine.impl.ShardingSphereExecutorService;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.execute.ShardingExecutorService;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 /**
@@ -37,14 +37,14 @@ public final class UserExecutorGroup implements AutoCloseable {
     
     private static final UserExecutorGroup INSTANCE = new UserExecutorGroup();
     
-    private final ShardingSphereExecutorService shardingSphereExecutorService;
+    private final ShardingExecutorService shardingExecutorService;
     
     @Getter
     private final ListeningExecutorService executorService;
     
     private UserExecutorGroup() {
-        shardingSphereExecutorService = new ShardingSphereExecutorService(SHARDING_PROXY_CONTEXT.getProperties().<Integer>getValue(PropertiesConstant.ACCEPTOR_SIZE), NAME_FORMAT);
-        executorService = shardingSphereExecutorService.getExecutorService();
+        shardingExecutorService = new ShardingExecutorService(SHARDING_PROXY_CONTEXT.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE), NAME_FORMAT);
+        executorService = shardingExecutorService.getExecutorService();
     }
     
     /**
@@ -58,6 +58,6 @@ public final class UserExecutorGroup implements AutoCloseable {
     
     @Override
     public void close() {
-        shardingSphereExecutorService.close();
+        shardingExecutorService.close();
     }
 }

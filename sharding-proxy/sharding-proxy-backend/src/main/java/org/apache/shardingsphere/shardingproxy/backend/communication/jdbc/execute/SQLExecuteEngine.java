@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute;
 
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 
 import java.sql.SQLException;
@@ -32,9 +32,9 @@ public interface SQLExecuteEngine {
     /**
      * Execute SQL.
      *
-     * @param executionContext execution context
+     * @param routeResult route result
      * @return execute response
      * @throws SQLException SQL exception
      */
-    BackendResponse execute(ExecutionContext executionContext) throws SQLException;
+    BackendResponse execute(SQLRouteResult routeResult) throws SQLException;
 }

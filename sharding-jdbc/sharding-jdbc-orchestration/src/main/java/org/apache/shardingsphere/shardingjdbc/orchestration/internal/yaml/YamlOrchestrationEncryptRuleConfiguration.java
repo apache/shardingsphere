@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.encrypt.YamlRootEncryptRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 
 /**

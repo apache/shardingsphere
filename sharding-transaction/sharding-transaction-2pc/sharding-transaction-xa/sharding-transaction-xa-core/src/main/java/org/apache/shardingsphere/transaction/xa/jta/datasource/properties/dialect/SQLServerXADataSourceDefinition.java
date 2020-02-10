@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.database.metadata.dialect.SQLServerDataSourceMetaData;
+import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import java.util.Collection;
@@ -51,7 +51,7 @@ public final class SQLServerXADataSourceDefinition implements XADataSourceDefini
         result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
         result.setProperty("serverName", dataSourceMetaData.getHostName());
         result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("databaseName", dataSourceMetaData.getCatalog());
+        result.setProperty("databaseName", dataSourceMetaData.getSchemaName());
         return result;
     }
 }

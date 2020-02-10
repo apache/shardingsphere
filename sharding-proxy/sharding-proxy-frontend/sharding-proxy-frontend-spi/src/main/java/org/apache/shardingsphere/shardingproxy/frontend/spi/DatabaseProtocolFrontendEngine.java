@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.transport.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.spi.database.type.DatabaseTypeAwareSPI;
+import org.apache.shardingsphere.spi.DatabaseTypeAwareSPI;
 
 /**
  * Database protocol frontend engine.

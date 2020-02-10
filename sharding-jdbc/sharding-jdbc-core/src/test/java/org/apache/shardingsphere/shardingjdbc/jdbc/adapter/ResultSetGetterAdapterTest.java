@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -227,7 +227,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 assertTrue(each.getBytes(1).length > 0);
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -239,7 +239,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 assertTrue(each.getBytes(columnName).length > 0);
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -251,7 +251,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getDate(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -263,7 +263,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getDate(columnName);
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -275,7 +275,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getDate(1, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -287,7 +287,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getDate(columnName, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -299,7 +299,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getTime(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -311,7 +311,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getTime(columnName);
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -323,7 +323,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getTime(1, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -335,7 +335,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getTime(columnName, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -350,7 +350,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -365,7 +365,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -380,7 +380,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -395,7 +395,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
+            } catch (final ShardingException ex) {
                 assertFalse(ex.getMessage().isEmpty());
             }
         }
@@ -434,7 +434,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(1).read(b);
-                } catch (final ShardingSphereException ignored) {
+                } catch (final ShardingException ignored) {
                 }
             } else {
                 each.getValue().getUnicodeStream(1).read(b);
@@ -454,7 +454,7 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             if (DatabaseTypes.getActualDatabaseType("H2") == each.getKey() || DatabaseTypes.getActualDatabaseType("SQLServer") == each.getKey()) {
                 try {
                     each.getValue().getUnicodeStream(columnName).read(b);
-                } catch (final ShardingSphereException ignored) {
+                } catch (final ShardingException ignored) {
                 }
             } else {
                 each.getValue().getUnicodeStream(columnName).read(b);

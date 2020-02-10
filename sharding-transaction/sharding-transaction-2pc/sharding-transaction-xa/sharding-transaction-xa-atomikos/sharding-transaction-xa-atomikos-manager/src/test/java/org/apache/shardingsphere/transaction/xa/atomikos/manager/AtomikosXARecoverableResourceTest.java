@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AtomikosXARecoverableResourceTest {
+public class AtomikosXARecoverableResourceTest {
     
     @Mock
     private SingleXAResource singleXAResource;

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
@@ -76,15 +76,15 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertProperties() {
-        boolean showSQL = getProperties("encryptDataSourceOrchestration").getValue(PropertiesConstant.SQL_SHOW);
-        boolean queryWithCipherColumn = getProperties("encryptDataSourceOrchestration").getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean showSQL = getShardingProperties("encryptDataSourceOrchestration").getValue(ShardingPropertiesConstant.SQL_SHOW);
+        boolean queryWithCipherColumn = getShardingProperties("encryptDataSourceOrchestration").getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
         assertTrue(showSQL);
         assertFalse(queryWithCipherColumn);
     }
     
-    private ShardingSphereProperties getProperties(final String encryptDatasourceName) {
+    private ShardingProperties getShardingProperties(final String encryptDatasourceName) {
         OrchestrationSpringEncryptDataSource encryptDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringEncryptDataSource.class);
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
-        return dataSource.getRuntimeContext().getProperties();
+        return dataSource.getRuntimeContext().getProps();
     }
 }

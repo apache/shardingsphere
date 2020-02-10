@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.unsupported;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
+import org.apache.shardingsphere.shardingjdbc.jdbc.JDBCTestSQL;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.junit.After;
 import org.junit.Before;
@@ -33,17 +34,15 @@ import java.util.List;
 
 public final class UnsupportedOperationPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
-    private static final String SQL = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
-    
     private final List<ShardingConnection> shardingConnections = new ArrayList<>();
     
     private final List<PreparedStatement> statements = new ArrayList<>();
     
     @Before
-    public void init() throws SQLException {
+    public void init() {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();
         shardingConnections.add(shardingConnection);
-        PreparedStatement preparedStatement = shardingConnection.prepareStatement(SQL);
+        PreparedStatement preparedStatement = shardingConnection.prepareStatement(JDBCTestSQL.SELECT_WITH_ALIAS_SQL);
         statements.add(preparedStatement);
     }
     

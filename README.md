@@ -9,7 +9,7 @@
 
 [![Total Lines](https://tokei.rs/b1/github/apache/incubator-shardingsphere?category=lines)](https://github.com/apache/incubator-shardingsphere)
 [![Build Status](https://builds.apache.org/job/shardingsphere-ci-dev/badge/icon)](https://builds.apache.org/job/shardingsphere-ci-dev/)
-[![Coverage Status](https://coveralls.io/repos/github/apache/incubator-shardingsphere/badge.svg?branch=master)](https://coveralls.io/github/apache/incubator-shardingsphere?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/apache/incubator-shardingsphere/badge.svg?branch=dev)](https://coveralls.io/github/apache/incubator-shardingsphere?branch=dev)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
 [![snyk](https://snyk.io/test/github/apache/incubator-shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/incubator-shardingsphere?targetFile=pom.xml)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
@@ -49,7 +49,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 ### Sharding-Proxy
 
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0/apache-shardingsphere-incubating-4.0.0-sharding-proxy-bin.tar.gz)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](https://www.apache.org/dyn/closer.cgi?path=incubator/shardingsphere/4.0.0-RC2/apache-shardingsphere-incubating-4.0.0-RC2-sharding-proxy-bin.tar.gz)
 [![Docker Pulls](https://img.shields.io/docker/pulls/shardingsphere/sharding-proxy.svg)](https://store.docker.com/community/images/shardingsphere/sharding-proxy)
 
 Sharding-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
@@ -121,38 +121,15 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## How to Build
 
-### Build ShardingSphere
-
 ```bash
 ./mvnw clean install -Prelease
-```
+``` 
 
 Artifact:
 
 ```
 sharding-distribution/sharding-jdbc-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-jdbc-bin.tar.gz: Binary package of Sharding-JDBC
 sharding-distribution/sharding-proxy-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-proxy-bin.tar.gz: Binary package of Sharding-Proxy
+sharding-distribution/sharding-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz: Binary package of Sharding-UI
 sharding-distribution/shardingsphere-src-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-src.zip: Source code package of ShardingSphere
 ```
-
-### Build ShardingSphere-UI
-
-```bash
-cd shardingsphere-ui
-./mvnw clean install -Prelease
-```
-
-Artifact:
-
-```
-shardingsphere-ui/shardingsphere-ui-distribution/shardingsphere-ui-bin-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-shardingsphere-ui-bin.tar.gz: Binary package of ShardingSphere-UI
-```
-
-## Landscapes
-
-<p align="center">
-<br/><br/>
-<img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
-<br/><br/>
-ShardingSphere enriches the <a href="https://landscape.cncf.io/landscape=observability-and-analysis&license=apache-license-2-0">CNCF CLOUD NATIVE Landscape.</a>
-</p>

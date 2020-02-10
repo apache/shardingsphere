@@ -22,8 +22,11 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.api.config.encrypt.EncryptRuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.core.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -37,9 +40,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 
 /**
  * Orchestration encrypt data source.
@@ -68,10 +68,10 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         this.dataSource = new EncryptDataSource(
-                dataSource.getDataSource(), new EncryptRule(dataSource.getRuntimeContext().getRule().getRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
+                dataSource.getDataSource(), new EncryptRule(dataSource.getRuntimeContext().getRule().getRuleConfiguration()), dataSource.getRuntimeContext().getProps().getProps());
         initShardingOrchestrationFacade(
             Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
-            getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
+            getRuleConfigurationMap(), dataSource.getRuntimeContext().getProps().getProps());
     }
     
     private void checkDataSourceConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
@@ -96,7 +96,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
         dataSource.close();
         checkDataSourceConfiguration(dataSourceConfigurations);
         dataSource = new EncryptDataSource(DataSourceConverter.getDataSourceMap(
-                dataSourceConfigurations).values().iterator().next(), dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getProperties().getProps());
+                dataSourceConfigurations).values().iterator().next(), dataSource.getRuntimeContext().getRule(), dataSource.getRuntimeContext().getProps().getProps());
         getDataSourceConfigurations().clear();
         getDataSourceConfigurations().putAll(dataSourceConfigurations);
     }
@@ -110,7 +110,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     @SneakyThrows
     public final synchronized void renew(final EncryptRuleChangedEvent encryptRuleChangedEvent) {
         dataSource = new EncryptDataSource(
-                dataSource.getDataSource(), new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
+                dataSource.getDataSource(), new EncryptRule(encryptRuleChangedEvent.getEncryptRuleConfiguration()), dataSource.getRuntimeContext().getProps().getProps());
     }
     
     /**

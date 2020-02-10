@@ -43,7 +43,7 @@
     <dcl-test-case sql-case-id="create_role_identified_by">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="create_role_with_password">
+    <dcl-test-case sql-case-id="create_role_password">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="alter_all_roles_reset_config">
@@ -257,6 +257,9 @@
     <dcl-test-case sql-case-id="create_global_user">
         <assertion />
     </dcl-test-case>
+    <dcl-test-case sql-case-id="create_login_set_expired_password">
+        <assertion />
+    </dcl-test-case>
     <dcl-test-case sql-case-id="create_login_to_credential">
         <assertion />
     </dcl-test-case>
@@ -281,7 +284,7 @@
     <dcl-test-case sql-case-id="create_no_identified_role">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="create_role_with_authorization">
+    <dcl-test-case sql-case-id="create_role_authorization">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_if_not_exists">
@@ -296,7 +299,7 @@
     <dcl-test-case sql-case-id="create_role_with_options">
         <assertion />
     </dcl-test-case>
-    <dcl-test-case sql-case-id="create_role_with_identified_by_password">
+    <dcl-test-case sql-case-id="create_role_with_password">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="create_role_with_role">
@@ -599,6 +602,9 @@
     <dcl-test-case sql-case-id="revoke_select_on_sequences">
         <assertion />
     </dcl-test-case>
+    <dcl-test-case sql-case-id="revoke_select_on_table">
+        <assertion />
+    </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_select_on_tables">
         <assertion />
     </dcl-test-case>
@@ -642,12 +648,6 @@
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="revoke_usage_on_types">
-        <assertion />
-    </dcl-test-case>
-    <dcl-test-case sql-case-id="revoke_select_on_table_for_postgresql">
-        <assertion />
-    </dcl-test-case>
-    <dcl-test-case sql-case-id="revoke_select_on_table_for_sqlserver">
         <assertion />
     </dcl-test-case>
     <dcl-test-case sql-case-id="set_all_expect_role">

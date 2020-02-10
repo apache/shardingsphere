@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintClearCommand;
@@ -29,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -37,135 +36,113 @@ import static org.junit.Assert.assertTrue;
 public final class ShardingCTLHintParserTest {
     
     @Test
-    public void assertValidSetMasterOnlySQL() {
-        String sql = "sctl:hint set master_only=true ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertTrue(((HintSetMasterOnlyCommand) actual.get().getHintCommand()).isMasterOnly());
+    public void assertValidSetMasterOnlySql() {
+        String masterOnlySql = "sctl:hint set master_only=true ";
+        ShardingCTLHintStatement masterOnlyStatement = new ShardingCTLHintParser(masterOnlySql).doParse().get();
+        assertTrue(((HintSetMasterOnlyCommand) masterOnlyStatement.getHintCommand()).isMasterOnly());
     }
     
     @Test
-    public void assertInValidSetMasterOnlySQL() {
-        String sql = "sctl:hint set master_only1=true ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+    public void assertInValidSetMasterOnlySql() {
+        String masterOnlySql = "sctl:hint set master_only1=true ";
+        assertThat(new ShardingCTLHintParser(masterOnlySql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
-    public void assertValidSetDatabaseShardingValueSQL() {
+    public void assertValidSetDatabaseShardingValueSql() {
         String sql = " sctl:HINT set DatabaseShardingValue=100  ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(((HintSetDatabaseShardingValueCommand) actual.get().getHintCommand()).getValue(), is("100"));
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertEquals(((HintSetDatabaseShardingValueCommand) statement.getHintCommand()).getValue(), "100");
     }
     
     @Test
-    public void assertInValidSetDatabaseShardingValueSQL() {
+    public void assertInValidSetDatabaseShardingValueSql() {
         String sql = " sctl:HINT set DatabaseShardingValue1=100  ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+        assertThat(new ShardingCTLHintParser(sql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
-    public void assertValidAddDatabaseShardingValueSQL() {
-        String sql = " sctl:HINT addDatabaseShardingValue user=100 ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        HintAddDatabaseShardingValueCommand databaseCommand = (HintAddDatabaseShardingValueCommand) actual.get().getHintCommand();
-        assertThat(databaseCommand.getLogicTable(), is("user"));
-        assertThat(databaseCommand.getValue(), is("100"));
+    public void assertValidAddDatabaseShardingValueSql() {
+        String databaseSql = " sctl:HINT addDatabaseShardingValue user=100 ";
+        ShardingCTLHintStatement databaseStatement = new ShardingCTLHintParser(databaseSql).doParse().get();
+        HintAddDatabaseShardingValueCommand databaseCommand = (HintAddDatabaseShardingValueCommand) databaseStatement.getHintCommand();
+        assertEquals(databaseCommand.getLogicTable(), "user");
+        assertEquals(databaseCommand.getValue(), "100");
     }
     
     @Test
-    public void assertInValidAddDatabaseShardingValueSQL() {
-        String sql = " sctl:HINT addDatabaseShardingValue1 user=100 ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+    public void assertInValidAddDatabaseShardingValueSql() {
+        String databaseSql = " sctl:HINT addDatabaseShardingValue1 user=100 ";
+        assertThat(new ShardingCTLHintParser(databaseSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
-    public void assertValidAddTableShardingValueSQL() {
-        String sql = " sctl:HINT addTableShardingValue order=some ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        HintAddTableShardingValueCommand tableCommand = (HintAddTableShardingValueCommand) actual.get().getHintCommand();
-        assertThat(tableCommand.getLogicTable(), is("order"));
-        assertThat(tableCommand.getValue(), is("some"));
+    public void assertValidAddTableShardingValueSql() {
+        String tableSql = " sctl:HINT addTableShardingValue order=some ";
+        ShardingCTLHintStatement tableStatement = new ShardingCTLHintParser(tableSql).doParse().get();
+        HintAddTableShardingValueCommand tableCommand = (HintAddTableShardingValueCommand) tableStatement.getHintCommand();
+        assertEquals(tableCommand.getLogicTable(), "order");
+        assertEquals(tableCommand.getValue(), "some");
     }
     
     @Test
-    public void assertInValidAddTableShardingValueSQL() {
-        String sql = " sctl:HINT addTableShardingValue 100 ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+    public void assertInValidAddTableShardingValueSql() {
+        String databaseSql = " sctl:HINT addTableShardingValue 100 ";
+        assertThat(new ShardingCTLHintParser(databaseSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
-    public void assertInValidAddShardingValueSQL() {
-        String databaseSQL = " sctl:HINT addShardingValue1 value_Type=database user=100 ";
-        Optional<ShardingCTLHintStatement> databaseSQLActual = new ShardingCTLHintParser(databaseSQL).doParse();
-        assertTrue(databaseSQLActual.isPresent());
-        assertThat(databaseSQLActual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
-        String tableSQL = " sctl:HINT addShardingValue Value_Type=Table1 order=some ";
-        Optional<ShardingCTLHintStatement> tableSQLActual = new ShardingCTLHintParser(tableSQL).doParse();
-        assertTrue(tableSQLActual.isPresent());
-        assertThat(tableSQLActual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+    public void assertInValidAddShardingValueSql() {
+        String databaseSql = " sctl:HINT addShardingValue1 value_Type=database user=100 ";
+        String tableSql = " sctl:HINT addShardingValue Value_Type=Table1 order=some ";
+        assertThat(new ShardingCTLHintParser(databaseSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+        assertThat(new ShardingCTLHintParser(tableSql).doParse().get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
-    public void assertValidClearSQL() {
+    public void assertValidClearSql() {
         String sql = " sctl:HINT clear ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintClearCommand.class));
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintClearCommand.class));
     }
     
     @Test
-    public void assertInValidClearSQL() {
+    public void assertInValidClearSql() {
         String sql = " sctl:HINT clear xxx";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
-    public void assertValidShowStatusSQL() {
+    public void assertValidShowStatusSql() {
         String sql = " sctl:HINT show status ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintShowStatusCommand.class));
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintShowStatusCommand.class));
     }
     
     @Test
-    public void assertInValidShowStatusSQL() {
+    public void assertInValidShowStatusSql() {
         String sql = " sctl:HINT show status1";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
-    public void assertValidShowTableStatusSQL() {
+    public void assertValidShowTableStatusSql() {
         String sql = " sctl:HINT show table status ";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintShowTableStatusCommand.class));
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintShowTableStatusCommand.class));
     }
     
     @Test
-    public void assertInValidShowTableStatusSQL() {
+    public void assertInValidShowTableStatusSql() {
         String sql = " sctl:HINT show table status1";
-        Optional<ShardingCTLHintStatement> actual = new ShardingCTLHintParser(sql).doParse();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getHintCommand(), instanceOf(HintErrorParameterCommand.class));
+        ShardingCTLHintStatement statement = new ShardingCTLHintParser(sql).doParse().get();
+        assertThat(statement.getHintCommand(), instanceOf(HintErrorParameterCommand.class));
     }
     
     @Test
-    public void assertNotHintSQL() {
+    public void assertNotHintSql() {
         String sql = "sctl:hint1 abcd efg hijk lmn";
         assertFalse(new ShardingCTLHintParser(sql).doParse().isPresent());
     }

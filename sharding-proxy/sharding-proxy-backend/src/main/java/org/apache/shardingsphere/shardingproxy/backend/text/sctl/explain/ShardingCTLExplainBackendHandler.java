@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.explain;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.core.route.RouteUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
@@ -49,7 +49,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     
     private List<QueryHeader> queryHeaders;
     
-    private Iterator<ExecutionUnit> executionUnits;
+    private Iterator<RouteUnit> routeUnits;
     
     @Override
     public BackendResponse execute() {
@@ -58,7 +58,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
             return new ErrorResponse(new InvalidShardingCTLFormatException(sql));
         }
         StatementExecutorWrapper statementExecutorWrapper = new StatementExecutorWrapper(backendConnection.getLogicSchema());
-        executionUnits = statementExecutorWrapper.route(explainStatement.get().getSql()).getExecutionUnits().iterator();
+        routeUnits = statementExecutorWrapper.route(explainStatement.get().getSql()).getRouteUnits().iterator();
         queryHeaders = new ArrayList<>(2);
         queryHeaders.add(new QueryHeader("", "", "datasource_name", "", 255, Types.CHAR, 0, false, false, false, false));
         queryHeaders.add(new QueryHeader("", "", "sql", "", 255, Types.CHAR, 0, false, false, false, false));
@@ -67,15 +67,15 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     
     @Override
     public boolean next() {
-        return null != executionUnits && executionUnits.hasNext();
+        return null != routeUnits && routeUnits.hasNext();
     }
     
     @Override
     public QueryData getQueryData() {
-        ExecutionUnit executionUnit = executionUnits.next();
+        RouteUnit routeUnit = routeUnits.next();
         List<Object> row = new ArrayList<>(queryHeaders.size());
-        row.add(executionUnit.getDataSourceName());
-        row.add(executionUnit.getSqlUnit().getSql());
+        row.add(routeUnit.getDataSourceName());
+        row.add(routeUnit.getSqlUnit().getSql());
         List<Integer> columnTypes = new ArrayList<>(queryHeaders.size());
         columnTypes.add(queryHeaders.get(0).getColumnType());
         columnTypes.add(queryHeaders.get(1).getColumnType());

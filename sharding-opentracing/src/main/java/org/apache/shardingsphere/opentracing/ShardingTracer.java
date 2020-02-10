@@ -22,7 +22,7 @@ import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.core.exception.ShardingException;
 
 /**
  * Sharding tracer object container.
@@ -44,7 +44,7 @@ public final class ShardingTracer {
         try {
             init((Tracer) Class.forName(tracerClassName).newInstance());
         } catch (final ReflectiveOperationException ex) {
-            throw new ShardingSphereException("Initialize opentracing tracer class failure.", ex);
+            throw new ShardingException("Initialize opentracing tracer class failure.", ex);
         }
     }
     
