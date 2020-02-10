@@ -18,19 +18,17 @@
 package org.apache.shardingsphere.sql.parser.sql.value.literal.impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
 
 /**
- * String literal value.
+ * Other literal value.
  *
- * @author panjuan
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-public final class StringLiteralValue implements LiteralValue<String> {
+public final class OtherLiteralValue implements LiteralValue<String> {
     
     private final String value;
-    
-    public StringLiteralValue(final String value) {
-        this.value = value.substring(1, value.length() - 1);
-    }
 }
