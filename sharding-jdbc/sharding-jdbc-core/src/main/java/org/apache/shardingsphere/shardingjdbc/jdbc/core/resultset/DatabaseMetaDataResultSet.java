@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import com.google.common.collect.Lists;
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
@@ -34,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -82,7 +82,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     }
     
     private Iterator<DatabaseMetaDataObject> initIterator(final ResultSet resultSet) throws SQLException {
-        ArrayList<DatabaseMetaDataObject> result = Lists.newArrayList();
+        LinkedList<DatabaseMetaDataObject> result = new LinkedList<>();
         Set<DatabaseMetaDataObject> removeDuplicationSet = new HashSet<>();
         int tableNameColumnIndex = columnLabelIndexMap.containsKey(TABLE_NAME) ? columnLabelIndexMap.get(TABLE_NAME) : -1;
         int indexNameColumnIndex = columnLabelIndexMap.containsKey(INDEX_NAME) ? columnLabelIndexMap.get(INDEX_NAME) : -1;

@@ -50,7 +50,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowOtherStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
 
 import java.util.List;
 
@@ -63,9 +64,8 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {
-        LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
         UseStatement result = new UseStatement();
-        result.setSchema(schema.getLiteral());
+        result.setSchema(((IdentifierValue) visit(ctx.schemaName())).getValue());
         return result;
     }
     
@@ -125,7 +125,6 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         ShowColumnsStatement result = new ShowColumnsStatement();
         FromTableContext fromTableContext = ctx.fromTable();
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
-        ShowLikeContext showLikeContext = ctx.showLike();
         if (null != fromTableContext) {
             FromTableSegment fromTableSegment = (FromTableSegment) visit(fromTableContext);
             result.setTable(fromTableSegment.getTable());
@@ -134,10 +133,6 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != fromSchemaContext) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
-        }
-        if (null != showLikeContext) {
-            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            result.getAllSQLSegments().add(showLikeSegment);
         }
         return result;
     }
@@ -149,8 +144,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         FromTableContext fromTableContext = ctx.fromTable();
         if (null != fromSchemaContext) {
             SchemaNameContext schemaNameContext = fromSchemaContext.schemaName();
-            LiteralValue schema = (LiteralValue) visit(schemaNameContext);
-            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), schema.getLiteral());
+            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), ((IdentifierValue) visit(schemaNameContext)).getValue());
             result.getAllSQLSegments().add(schemaSegment);
         }
         if (null != fromTableContext) {
@@ -203,7 +197,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
-        LiteralValue literalValue = (LiteralValue) visit(ctx.stringLiterals());
-        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getLiteral());
+        StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
+        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
     }
 }

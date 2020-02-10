@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/quick-start/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/architecture/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/concepts/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/faq/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/sharding/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/module/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/features/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/master-slave/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/roadmap/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/configuration/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/hint-sharding-value/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/key-generator/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/transaction/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/subquery/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/test-framework/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/</loc>
+  </url>
+  
+  <url>
+    <loc>http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/</loc>
+  </url>
+  
+</urlset>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Other Features on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/</link>
+    <description>Recent content in Other Features on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Inline Expression</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/inline-expression/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/inline-expression/</guid>
+      <description>Motivation Configuration simplicity and unity are two main problems that inline expression wants to solve.
+In complex data sharding rules, with the increase of data nodes, a large number of repeated configurations make it difficult to maintain. Inline expressions can simplify data node configuration work.
+Realizing common sharding algorithms with Java codes is not helpful to the unified management of configurations. Writing sharding algorithms with inline expressions enables rule configurations to be stored together, making it easier to browse and store them.</description>
+    </item>
+    
+    <item>
+      <title>Distributed Primary Key</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/key-generator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/key-generator/</guid>
+      <description>Motivation In traditional database software development, the automatic primary key generation technology is a basic requirement. All kinds of databases have provided corresponding support for this requirement, such as MySQL auto-increment key, Oracle auto-increment sequence and so on. It is a tricky problem that different data nodes only generate one primary key after sharding. Auto-increment keys in different physical tables within the same logic table can not perceive each other and thereby generate repeated primary keys.</description>
+    </item>
+    
+    <item>
+      <title>Sharding Hint</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/sharding-hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/sharding-hint/</guid>
+      <description>Motivation ShardingSphere can be compatible with SQL in way of extracting sharding columns and values to shard after parsing SQL statements. Without sharding conditions in SQL statement, it is impossible to shard but requires full route.
+In some application situations, sharding conditions do not exist in SQL but in external business logic. So it requires to provide an externally designated sharding result method, which is referred to as Hint in ShardingSphere.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -95,7 +95,7 @@ public final class VisitorParameterizedParsingTest {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType sqlCaseType = (SQLCaseType) each[2];
-            if (!"H2".equals(databaseType) && !"MySQL".equals(databaseType)) {
+            if (!"MySQL".contains(databaseType)) {
                 continue;
             }
             try {

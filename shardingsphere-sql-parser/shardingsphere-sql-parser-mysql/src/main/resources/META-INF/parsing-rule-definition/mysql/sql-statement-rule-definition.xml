@@ -45,7 +45,7 @@
     <sql-statement-rule context="renameUser" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement" />
     <sql-statement-rule context="createRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement" />
     <sql-statement-rule context="dropRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement" />
-    <sql-statement-rule context="setDefaultRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement" />
+    <sql-statement-rule context="setDefaultRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetDefaultRoleStatement" />
     <sql-statement-rule context="setRole" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement" />
     <sql-statement-rule context="setPassword" sql-statement-class="org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement" />
     

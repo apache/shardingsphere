@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>03-designs on </title>
+    <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/</link>
+    <description>Recent content in 03-designs on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	<atom:link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>设计规划</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/</guid>
+      <description> 本章导航  想了解架构设计及项目模块设计的概念，请阅读架构设计及目录结构说明。 Sharding-JDBC未来规划有哪些呢？请阅读未来规划。  </description>
+    </item>
+    
+    <item>
+      <title>架构设计</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/architecture/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/architecture/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>目录结构说明</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/module/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/module/</guid>
+      <description>sharding-jdbc ├──sharding-jdbc-core 分库分表核心模块，可直接使用 ├──sharding-jdbc-config-parent 配置父模块，不应直接使用 ├ ├──sharding-jdbc-config-common 配置公共模块，不应直接使用 ├ ├──sharding-jdbc-config-spring Spring命名空间支持模块，可直接使用 ├ ├──sharding-jdbc-config-yaml YAML配置，可直接使用 ├──sharding-jdbc-transaction-parent 柔性事务父模块，不应直接使用 ├ ├──sharding-jdbc-transaction 柔性事务核心模块，可直接使用 ├ ├──sharding-jdbc-transaction-storage 柔性事务存储模块，不应直接使用 ├ ├──sharding-jdbc-transaction-async-job 柔性事务异步作业，不应直接使用，直接下载tar包配置启动即可 ├──sharding-jdbc-plugin 插件模块，目前包含自定义分布式自增主键，可直接使用 ├──sharding-jdbc-example 使用示例 ├ ├──sharding-jdbc-example-jdbc 基于JDBC的使用示例 ├ ├──sharding-jdbc-example-jpa 基于JPA的使用示例 ├ ├──sharding-jdbc-example-mybatis 基于MyBatis的使用示例 ├ ├──sharding-jdbc-example-config-spring 基于Spring命名空间配置的使用示例 ├ ├──sharding-jdbc-example-config-yaml 基于YAML配置的使用示例 ├ ├──sharding-jdbc-example-jdbc-transaction 柔性事务的使用示例 ├──sharding-jdbc-doc markdown生成文档的项目，使用方无需关注  </description>
+    </item>
+    
+    <item>
+      <title>未来线路规划</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/roadmap/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/roadmap/</guid>
+      <description> 已完成 数据库  MySQL Oracle SQLServer PostgreSQL  DQL  JOIN BETWEEN IN ORDER BY GROUP BY COUNT, SUM, MAX, MIN, AVG LIMIT, rownum, TOP 非功能型子查询  DML  INSERT INTO INSERT SET UPDATE DELETE  DDL  CREATE ALTER DROP TRUNCATE  配置  Java API Spring命名空间 Yaml (仅读写分离未完成)  SQL解析  词法分析 语法分析  SQL改写  正确性改写 优化改写  访问路由  Hint路由 简单路由 笛卡尔积路由  结果归并  流式归并 内存归并 装饰者归并  分库分表  分库 分表 动态表 默认数据源  读写分离  读写分离 同一线程且同一数据库连接内一致性保证 Hint强制主库路由  分布式主键  JDBC集成 分布式主键策略接口 基于snowflake的分布式主键算法实现  柔性事务  最大努力送达型  计划中 配置  读写分离独立化 Binding策略提升 集中化 动态化  治理  数据源健康检测及发现 数据源动态切换 流量控制  待定 DQL  DISTINCT HAVING OR UNION, UNION ALL 全子查询 计算表达式，如：SUM(pv) / COUNT(uv) 通过SQL注释指定SQL Hint  DML  INSERT INTO VALUES (xxx), (xxx) 多表UPDATE 多表DELETE  DDL  CREATE VIEW CREATE INDEX CREATE OR REPLACE  SQL解析提升  批量解析 冗余括号 通过SQL注释指定SQL Hint  柔性事务提升  TCC  运维工具  字典表复制广播 动态扩容  </description>
+    </item>
+    
+  </channel>
+</rss>

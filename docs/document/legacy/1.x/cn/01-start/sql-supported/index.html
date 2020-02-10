@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.20.7" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/img/favicon.png" type="image/x-icon" />
+
+    
+    <title>SQL支持详细列表</title>
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/nucleus.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/theme.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/hugo-theme.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <style type="text/css">:root #header + #content > #left > #rlblock_left
+    {display:none !important;}</style>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/highlight.js/9.8.0/styles/monokai-sublime.min.css">
+<link rel="stylesheet" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/style.css">
+  </head>
+  <body class="" data-url="/01-start/sql-supported/">
+    
+    <nav id="sidebar">
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="http://shardingsphere.apache.org/document/legacy/1.x/cn/img/sharding-jdbc.png" />
+    </div>
+</div>
+  <div class="highlightable">
+    <ul class="topics">
+      
+        
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/00-overview/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/">
+          <span>
+            
+              <b>0. </b>
+            
+             概览
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/00-overview/intro/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/">
+                <span>简介     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/news/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/">
+                <span>新闻     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/company/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/">
+                <span>采用公司     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/contribution/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/">
+                <span>贡献代码     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  parent" data-nav-id="/01-start/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/">
+          <span>
+            
+              <b>1. </b>
+            
+             起航
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/01-start/quick-start/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/quick-start/">
+                <span>快速入门     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/faq/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/faq/">
+                <span>FAQ     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/features/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/features/">
+                <span>详细功能列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/limitations/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations/">
+                <span>使用限制     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item active" data-nav-id="/01-start/sql-supported/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported/">
+                <span>SQL支持详细列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/stress-test/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test/">
+                <span>性能测试报告     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/02-guide/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/">
+          <span>
+            
+              <b>2. </b>
+            
+             使用指南
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/02-guide/concepts/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/concepts/">
+                <span>核心概念     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/sharding/">
+                <span>分库分表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/master-slave/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/master-slave/">
+                <span>读写分离     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/configuration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/configuration/">
+                <span>配置手册     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/hint-sharding-value/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/hint-sharding-value/">
+                <span>强制路由     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/key-generator/">
+                <span>分布式主键     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/transaction/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/transaction/">
+                <span>事务支持     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/subquery/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/subquery/">
+                <span>分页及子查询     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/test-framework/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/test-framework/">
+                <span>测试引擎     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/03-design/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/">
+          <span>
+            
+              <b>3. </b>
+            
+             设计规划
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/03-design/architecture/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/architecture/">
+                <span>架构设计     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/module/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/module/">
+                <span>目录结构说明     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/roadmap/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/roadmap/">
+                <span>未来线路规划     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+    </ul>
+    <hr>
+     
+  </div>
+</nav>
+
+        <section id="body">
+        <div id="overlay"></div>
+
+        <div class="padding highlightable">
+
+            <div id="top-bar">
+              
+              <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                  <span id="sidebar-toggle-span">
+                      <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                  </span>
+                
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                
+                
+                  
+                  
+                  
+                    
+                    
+                <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/" itemprop="url"><span itemprop="title">起航</span></a> <i class="fa fa-angle-right"></i>
+                    
+                  
+                
+                <span itemprop="title"> SQL支持详细列表</span>
+              </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#全局不支持项">全局不支持项</a>
+<ul>
+<li><a href="#动态表">动态表</a></li>
+<li><a href="#有限支持子查询">有限支持子查询</a></li>
+<li><a href="#不支持包含冗余括号的sql">不支持包含冗余括号的SQL</a></li>
+<li><a href="#不支持or">不支持OR</a></li>
+<li><a href="#不支持case-when">不支持CASE WHEN</a></li>
+</ul></li>
+<li><a href="#支持的sql">支持的SQL</a>
+<ul>
+<li><a href="#dql">DQL</a>
+<ul>
+<li><a href="#select主语句">SELECT主语句</a></li>
+<li><a href="#select-expr">select_expr</a></li>
+<li><a href="#table-reference">table_reference</a></li>
+<li><a href="#示例">示例</a></li>
+</ul></li>
+<li><a href="#dql-1">DQL</a></li>
+<li><a href="#dml">DML</a></li>
+<li><a href="#ddl">DDL</a></li>
+</ul></li>
+<li><a href="#不支持的sql">不支持的SQL</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+              
+
+            </div>
+            
+              <div id="body-inner">
+                
+                <h1>SQL支持详细列表</h1>
+                
+
+
+
+<p>由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。
+本文详细罗列出已明确可支持的SQL种类以及已明确不支持的SQL种类，尽量让使用者避免踩坑。
+其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。</p>
+
+<h2 id="全局不支持项">全局不支持项</h2>
+
+<h3 id="动态表">动态表</h3>
+
+<p>未配置逻辑表和真实表对应关系的真实表，称为动态表。凡是动态表且未在SQL或Hint中包含分片键的SQL均不支持。
+原因是未找到分片键则需全路由，但由于未配置逻辑表和真实表的对应关系，无法全路由。</p>
+
+<h3 id="有限支持子查询">有限支持子查询</h3>
+
+<p>子查询支持详情请参考<a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/subquery/">分页及子查询</a>。</p>
+
+<h3 id="不支持包含冗余括号的sql">不支持包含冗余括号的SQL</h3>
+
+<h3 id="不支持or">不支持OR</h3>
+
+<h3 id="不支持case-when">不支持CASE WHEN</h3>
+
+<h2 id="支持的sql">支持的SQL</h2>
+
+<h3 id="dql">DQL</h3>
+
+<h4 id="select主语句">SELECT主语句</h4>
+
+<pre><code class="language-sql">SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...]
+[WHERE where_condition] 
+[GROUP BY {col_name | position} [ASC | DESC]] 
+[ORDER BY {col_name | position} [ASC | DESC], ...] 
+[LIMIT {[offset,] row_count | row_count OFFSET offset}]
+</code></pre>
+
+<h4 id="select-expr">select_expr</h4>
+
+<pre><code class="language-sql">* | 
+COLUMN_NAME [AS] [alias] | 
+(MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
+COUNT(* | COLUMN_NAME | alias) [AS] [alias]
+</code></pre>
+
+<h4 id="table-reference">table_reference</h4>
+
+<pre><code class="language-sql">tbl_name [AS] alias] [index_hint_list] | 
+table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
+</code></pre>
+
+<h4 id="示例">示例</h4>
+
+<h3 id="dql-1">DQL</h3>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>无条件支持</th>
+<th>必要条件</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>SELECT * FROM tbl_name</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit</td>
+<td>是</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="dml">DML</h3>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>无条件支持</th>
+<th>必要条件</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>INSERT INTO tbl_name (col1, col2,&hellip;) VALUES (val1, val2,&hellip;.)</td>
+<td>否</td>
+<td>插入列需要包含分片键</td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name VALUES (val1, val2,&hellip;.)</td>
+<td>否</td>
+<td>通过Hint注入分片键</td>
+</tr>
+
+<tr>
+<td>UPDATE tbl_name SET col1 = val1 WHERE col2 = val2</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>DELETE FROM tbl_name WHERE col1 = val1</td>
+<td>是</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ddl">DDL</h3>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>无条件支持</th>
+<th>必要条件</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>CREATE TABLE tbl_name (col1 int,&hellip;)</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>ALTER TABLE tbl_name ADD col1 varchar(10)</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>DROP TABLE tbl_name</td>
+<td>是</td>
+<td></td>
+</tr>
+
+<tr>
+<td>TRUNCATE TABLE tbl_name</td>
+<td>是</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="不支持的sql">不支持的SQL</h2>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>INSERT INTO tbl_name (col1, col2, &hellip;) VALUES (val1, val2,&hellip;.), (val3, val4,&hellip;.)</td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name (col1, col2, &hellip;) SELECT col1, col2, &hellip; FROM tbl_name WHERE col3 = val3</td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name SET col1 = val1</td>
+</tr>
+
+<tr>
+<td>SELECT DISTINCT * FROM tbl_name WHERE column1 = value1</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name WHERE column1 = value1 OR column1 = value2</td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias &gt; val1</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)</td>
+</tr>
+</tbody>
+</table>
+
+
+      
+      
+      </div>
+    </div>
+
+    
+
+    <div id="navigation">
+        
+        <a class="nav nav-prev" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/clipboard.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/perfect-scrollbar.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/jquery.sticky-kit.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/featherlight.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/html5shiv-printshiv.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/learn.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/hugo-learn.js"></script>
+    <script src="http://cdn.bootcss.com/highlight.js/9.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
+
