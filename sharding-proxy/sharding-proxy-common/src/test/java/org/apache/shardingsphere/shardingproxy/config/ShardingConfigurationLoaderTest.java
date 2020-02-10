@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.config;
 
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.encrypt.YamlEncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
@@ -40,7 +40,7 @@ public final class ShardingConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        ShardingConfiguration actual = new ShardingConfigurationLoader().load();
+        ShardingConfiguration actual = new ShardingConfigurationLoader().load("/conf/");
         assertOrchestrationConfiguration(actual.getServerConfiguration().getOrchestration());
         assertThat(actual.getRuleConfigurationMap().size(), is(3));
         assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));
@@ -73,6 +73,7 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getTables().get("t_order").getDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${user_id % 2}"));
         assertThat(actual.getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
+        assertNotNull(actual.getDefaultDatabaseStrategy().getNone());
     }
     
     private void assertMasterSlaveRuleConfiguration(final YamlProxyRuleConfiguration actual) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer;
 
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.H2Recognizer;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.MySQLRecognizer;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl.OracleRecognizer;
@@ -55,7 +55,7 @@ public final class JDBCDriverURLRecognizerEngineTest {
         assertThat(JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("jdbc:h2:xxx"), instanceOf(H2Recognizer.class));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertGetJDBCDriverURLRecognizerFailure() {
         JDBCDriverURLRecognizerEngine.getJDBCDriverURLRecognizer("xxx");
     }

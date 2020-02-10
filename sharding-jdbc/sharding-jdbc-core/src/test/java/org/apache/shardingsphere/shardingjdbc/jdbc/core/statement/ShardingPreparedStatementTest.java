@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
-import org.apache.shardingsphere.shardingjdbc.jdbc.JDBCTestSQL;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -29,16 +28,29 @@ import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
+    private static final String INSERT_WITH_GENERATE_KEY_SQL = "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
+    
+    private static final String INSERT_WITHOUT_GENERATE_KEY_SQL = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
+    
+    private static final String SELECT_SQL_WITHOUT_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = %d AND order_id= %s AND status = 'BATCH'";
+    
+    private static final String SELECT_SQL_WITH_PARAMETER_MARKER = "SELECT item_id FROM t_order_item WHERE user_id = ? AND order_id= ? AND status = 'BATCH'";
+    
+    private static final String UPDATE_SQL = "UPDATE t_order SET status = ? WHERE user_id = ? AND order_id = ?";
+    
+    private static final String UPDATE_BATCH_SQL = "UPDATE t_order SET status=? WHERE status=?";
+    
     @Test
     public void assertAddBatch() throws SQLException {
         try (
             Connection connection = getShardingDataSource().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
             preparedStatement.setInt(1, 3101);
             preparedStatement.setInt(2, 11);
             preparedStatement.setInt(3, 11);
@@ -60,18 +72,17 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             preparedStatement.setString(4, "BATCH");
             preparedStatement.addBatch();
             int[] result = preparedStatement.executeBatch();
-            for (int rs : result) {
-                assertThat(rs, is(1));
+            for (int each : result) {
+                assertThat(each, is(1));
             }
         }
     }
     
     @Test
     public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
-        String sql = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
         try (
             Connection connection = getShardingDataSource().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITHOUT_GENERATE_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
             Statement queryStatement = connection.createStatement()) {
             preparedStatement.setInt(1, 11);
             preparedStatement.setInt(2, 11);
@@ -90,8 +101,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             preparedStatement.setString(3, "BATCH");
             preparedStatement.addBatch();
             int[] result = preparedStatement.executeBatch();
-            for (int rs : result) {
-                assertThat(rs, is(1));
+            for (int each : result) {
+                assertThat(each, is(1));
             }
             ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
             assertTrue(generateKeyResultSet.next());
@@ -103,21 +114,21 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getLong(1), is(4L));
             assertFalse(generateKeyResultSet.next());
-            try (ResultSet rs = queryStatement.executeQuery(String.format(JDBCTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 11, 11))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(1));
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_SQL_WITHOUT_PARAMETER_MARKER, 11, 11))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(1));
             }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(JDBCTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 12, 12))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(2));
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_SQL_WITHOUT_PARAMETER_MARKER, 12, 12))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(2));
             }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(JDBCTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 21, 21))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(3));
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_SQL_WITHOUT_PARAMETER_MARKER, 21, 21))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(3));
             }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(JDBCTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 22, 22))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(4));
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_SQL_WITHOUT_PARAMETER_MARKER, 22, 22))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(4));
             }
         }
     }
@@ -125,9 +136,9 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     @Test
     public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
         try (
-            Connection connection = getShardingDataSource().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL, Statement.RETURN_GENERATED_KEYS);
-            Statement queryStatement = connection.createStatement()) {
+                Connection connection = getShardingDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
+                Statement queryStatement = connection.createStatement()) {
             preparedStatement.setInt(1, 1);
             preparedStatement.setInt(2, 11);
             preparedStatement.setInt(3, 11);
@@ -149,8 +160,8 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             preparedStatement.setString(4, "BATCH");
             preparedStatement.addBatch();
             int[] result = preparedStatement.executeBatch();
-            for (int rs : result) {
-                assertThat(rs, is(1));
+            for (int each : result) {
+                assertThat(each, is(1));
             }
             ResultSet generateKeyResultSet = preparedStatement.getGeneratedKeys();
             assertTrue(generateKeyResultSet.next());
@@ -162,31 +173,30 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             assertTrue(generateKeyResultSet.next());
             assertThat(generateKeyResultSet.getLong(1), is(4L));
             assertFalse(generateKeyResultSet.next());
-            try (ResultSet rs = queryStatement.executeQuery(String.format(JDBCTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 11, 11))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(1));
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_SQL_WITHOUT_PARAMETER_MARKER, 11, 11))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(1));
             }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(JDBCTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 12, 12))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(2));
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_SQL_WITHOUT_PARAMETER_MARKER, 12, 12))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(2));
             }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(JDBCTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 21, 21))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(3));
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_SQL_WITHOUT_PARAMETER_MARKER, 21, 21))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(3));
             }
-            try (ResultSet rs = queryStatement.executeQuery(String.format(JDBCTestSQL.SELECT_WITH_AUTO_INCREMENT_COLUMN_SQL, 22, 22))) {
-                assertTrue(rs.next());
-                assertThat(rs.getInt(1), is(4));
+            try (ResultSet resultSet = queryStatement.executeQuery(String.format(SELECT_SQL_WITHOUT_PARAMETER_MARKER, 22, 22))) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(4));
             }
         }
     }
     
     @Test
     public void assertUpdateBatch() throws SQLException {
-        String sql = "UPDATE t_order SET status=? WHERE status=?";
         try (
             Connection connection = getShardingDataSource().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_BATCH_SQL)) {
             preparedStatement.setString(1, "batch");
             preparedStatement.setString(2, "init");
             preparedStatement.addBatch();
@@ -203,12 +213,34 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
             assertThat(result[2], is(4));
         }
     }
-    
+
+    @Test
+    public void assertExecuteGetResultSet() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(UPDATE_SQL)) {
+            preparedStatement.setString(1, "OK");
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setInt(3, 11);
+            preparedStatement.execute();
+            assertNull(preparedStatement.getResultSet());
+        }
+    }
+
+    @Test
+    public void assertExecuteUpdateGetResultSet() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(UPDATE_SQL)) {
+            preparedStatement.setString(1, "OK");
+            preparedStatement.setInt(2, 11);
+            preparedStatement.setInt(3, 11);
+            preparedStatement.executeUpdate();
+            assertNull(preparedStatement.getResultSet());
+        }
+    }
+
     @Test
     public void assertClearBatch() throws SQLException {
         try (
             Connection connection = getShardingDataSource().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(JDBCTestSQL.INSERT_ORDER_ITEM_WITH_ALL_PLACEHOLDERS_SQL)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
             preparedStatement.setInt(1, 3101);
             preparedStatement.setInt(2, 11);
             preparedStatement.setInt(3, 11);
@@ -222,13 +254,26 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertInitPreparedStatementExecutorWithReplayMethod() throws SQLException {
-        String sql = "SELECT item_id from t_order_item where user_id = ? and order_id= ? and status = 'BATCH'";
-        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER)) {
             preparedStatement.setQueryTimeout(1);
             preparedStatement.setInt(1, 11);
             preparedStatement.setInt(2, 11);
             preparedStatement.executeQuery();
             assertThat(preparedStatement.getQueryTimeout(), is(1));
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithNull() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement(null)) {
+            preparedStatement.executeQuery();
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithEmptyString() throws SQLException {
+        try (PreparedStatement preparedStatement = getShardingDataSource().getConnection().prepareStatement("")) {
+            preparedStatement.executeQuery();
         }
     }
 }

@@ -119,11 +119,11 @@
         <assertion parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-data-file="batch_insert_with_generate_key_column.xml" />
     </dml-test-case>
     
-    <dml-test-case sql-case-id="insert_with_batch_and_without_generate_key_column">
-        <assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />
-        <!-- TODO add gen column on create table -->
-        <!--<assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />-->
-    </dml-test-case>
+    <!--<dml-test-case sql-case-id="insert_with_batch_and_without_generate_key_column">-->
+        <!--<assertion sharding-rule-type="dbtbl_with_masterslave" parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />-->
+        <!--&lt;!&ndash; TODO add gen column on create table &ndash;&gt;-->
+        <!--&lt;!&ndash;<assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />&ndash;&gt;-->
+    <!--</dml-test-case>-->
     
     <dml-test-case sql-case-id="update_without_alias">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
@@ -72,7 +72,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             return;
         }
         int count = 0;
-        int flushThreshold = ShardingProxyContext.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int flushThreshold = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
         int currentSequenceId = 0;
         while (queryCommandExecutor.next()) {
             count++;

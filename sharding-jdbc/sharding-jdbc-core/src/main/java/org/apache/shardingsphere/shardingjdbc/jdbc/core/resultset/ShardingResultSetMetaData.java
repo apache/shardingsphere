@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
-import org.apache.shardingsphere.core.preprocessor.segment.select.projection.DerivedColumn;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
@@ -128,7 +128,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     private String getLogicColumn(final String actualColumn) throws SQLException {
         for (Entry<String, String> entry : logicAndActualColumns.entrySet()) {
-            if (entry.getValue().contains(actualColumn)) {
+            if (entry.getValue().equals(actualColumn)) {
                 return entry.getKey();
             }
         }

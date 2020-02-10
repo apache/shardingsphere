@@ -25,6 +25,7 @@ import org.apache.shardingsphere.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -49,7 +50,7 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues, final ShardingSphereProperties properties) {
         ListRouteValue shardingValue = (ListRouteValue) shardingValues.iterator().next();
         Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, 
                 new HintShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValues()));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import java.util.Arrays;
