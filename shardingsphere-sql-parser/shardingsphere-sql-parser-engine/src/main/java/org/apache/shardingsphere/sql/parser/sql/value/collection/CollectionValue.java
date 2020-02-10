@@ -15,20 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.impl;
+package org.apache.shardingsphere.sql.parser.sql.value.collection;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
- * Parameter marker value.
+ * Collection value.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-public final class ParameterMarkerValue implements ValueASTNode<Integer> {
+public final class CollectionValue<T> implements ValueASTNode<Collection> {
     
-    private final Integer value;
+    private final Collection<T> value = new LinkedList<>();
+    
+    /**
+     * Put all values from another collection value into this one.
+     * 
+     * @param collectionValue collection value
+     */
+    public void combine(final CollectionValue<T> collectionValue) {
+        value.addAll(collectionValue.getValue());
+    }
 }

@@ -74,9 +74,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.BooleanValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -197,7 +197,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitBlobValue(final BlobValueContext ctx) {
-        return new LiteralValue(ctx.STRING_().getText());
+        return new StringLiteralValue(ctx.STRING_().getText());
     }
     
     @Override
@@ -290,7 +290,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     private boolean isDistinct(final SelectClauseContext ctx) {
         for (SelectSpecificationContext each : ctx.selectSpecification()) {
-            if (((BooleanValue) visit(each)).getValue()) {
+            if (((BooleanLiteralValue) visit(each)).getValue()) {
                 return true;
             }
         }
@@ -302,16 +302,16 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         if (null != ctx.duplicateSpecification()) {
             return visit(ctx.duplicateSpecification());
         }
-        return new BooleanValue(false);
+        return new BooleanLiteralValue(false);
     }
     
     @Override
     public ASTNode visitDuplicateSpecification(final DuplicateSpecificationContext ctx) {
         String text = ctx.getText();
         if ("DISTINCT".equalsIgnoreCase(text) || "DISTINCTROW".equalsIgnoreCase(text)) {
-            return new BooleanValue(true);
+            return new BooleanLiteralValue(true);
         }
-        return new BooleanValue(false);
+        return new BooleanLiteralValue(false);
     }
     
     @Override

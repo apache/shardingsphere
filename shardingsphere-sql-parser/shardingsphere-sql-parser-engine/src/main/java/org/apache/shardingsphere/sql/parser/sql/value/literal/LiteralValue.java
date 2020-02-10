@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.impl;
+package org.apache.shardingsphere.sql.parser.sql.value.literal;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
- * Boolean value.
+ * Literal value.
  *
- * @author panjuan
+ * @author zhangliang
+ * 
+ * @param <T> type of value
  */
-@RequiredArgsConstructor
-public final class BooleanValue implements ValueASTNode<Boolean> {
-    
-    private final boolean value;
-    
-    public BooleanValue(final String value) {
-        this.value = Boolean.parseBoolean(value);
-    }
-    
-    @Override
-    public Boolean getValue() {
-        return value;
-    }
+public interface LiteralValue<T> extends ValueASTNode<T> {
 }

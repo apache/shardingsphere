@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.impl;
+package org.apache.shardingsphere.sql.parser.sql.value.literal.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * Number value.
+ * Number literal value.
  *
  * @author panjuan
  */
 @Getter
-public final class NumberValue implements ValueASTNode<Number> {
+public final class NumberLiteralValue implements LiteralValue<Number> {
     
     private final Number value;
     
-    public NumberValue(final String value) {
+    public NumberLiteralValue(final String value) {
         this.value = getNumber(value);
     }
     

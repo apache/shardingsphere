@@ -67,8 +67,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
