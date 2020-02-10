@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantCo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeLevelContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefaultRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPasswordContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetRoleContext;
@@ -40,10 +41,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
-
 
 /**
  * MySQL DCL visitor.
@@ -97,6 +98,23 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
         return new SetPasswordStatement();
     }
 
+    @Override
+    public ASTNode visitRevoke(final RevokeContext ctx) {
+        RevokeStatement result = new RevokeStatement();
+        PrivilegeClauseContext privilegeClause = ctx.privilegeClause();
+        if (null != privilegeClause && null != privilegeClause.onObjectClause_()) {
+            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel();
+            TableNameContext tableNameContext = privilegeLevel.tableName();
+            if (null != tableNameContext) {
+                TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
+                result.getAllSQLSegments().add(tableSegment);
+                result.getTables().add(tableSegment);
+                return result;
+            }
+        }
+        return result;
+    }
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
