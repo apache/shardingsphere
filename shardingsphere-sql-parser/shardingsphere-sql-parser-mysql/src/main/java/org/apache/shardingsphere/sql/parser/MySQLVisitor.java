@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastFunctionContext;
@@ -32,14 +33,17 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnN
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DateTimeLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HexadecimalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByItemContext;
@@ -85,11 +89,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.OtherLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
@@ -120,15 +125,22 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.numberLiterals()) {
             return visit(ctx.numberLiterals());
         }
+        if (null != ctx.dateTimeLiterals()) {
+            return visit(ctx.dateTimeLiterals());
+        }
+        if (null != ctx.hexadecimalLiterals()) {
+            return visit(ctx.hexadecimalLiterals());
+        }
+        if (null != ctx.bitValueLiterals()) {
+            return visit(ctx.bitValueLiterals());
+        }
         if (null != ctx.booleanLiterals()) {
             return visit(ctx.booleanLiterals());
         }
         if (null != ctx.nullValueLiterals()) {
-            // TODO deal with null value
-            return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+            return visit(ctx.nullValueLiterals());
         }
-        // TODO deal with dateTimeLiterals, hexadecimalLiterals and bitValueLiterals
-        return new StringLiteralValue(ctx.getText());
+        throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
     }
     
     @Override
@@ -143,8 +155,32 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
+    public final ASTNode visitDateTimeLiterals(final DateTimeLiteralsContext ctx) {
+        // TODO deal with dateTimeLiterals
+        return new OtherLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitHexadecimalLiterals(final HexadecimalLiteralsContext ctx) {
+        // TODO deal with hexadecimalLiterals
+        return new OtherLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitBitValueLiterals(final BitValueLiteralsContext ctx) {
+        // TODO deal with bitValueLiterals
+        return new OtherLiteralValue(ctx.getText());
+    }
+    
+    @Override
     public final ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
         return new BooleanLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitNullValueLiterals(final NullValueLiteralsContext ctx) {
+        // TODO deal with nullValueLiterals
+        return new OtherLiteralValue(ctx.getText());
     }
     
     @Override
@@ -321,6 +357,9 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         }
         if (astNode instanceof ParameterMarkerValue) {
             return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
+        }
+        if (astNode instanceof OtherLiteralValue) {
+            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText());
         }
         return astNode;
     }

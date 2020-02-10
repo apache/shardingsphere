@@ -53,7 +53,7 @@ hexadecimalLiterals
 bitValueLiterals
     : characterSetName_? BIT_NUM_ collateClause_?
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
