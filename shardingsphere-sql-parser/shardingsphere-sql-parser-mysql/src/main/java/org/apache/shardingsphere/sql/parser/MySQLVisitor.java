@@ -85,12 +85,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.BooleanValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.LiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.NumberValue;
-import org.apache.shardingsphere.sql.parser.sql.value.impl.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.BooleanValue;
+import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.NumberValue;
+import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;

@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.impl;
+package org.apache.shardingsphere.sql.parser.sql.value.parametermarker;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
- * Boolean value.
+ * Parameter marker value.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class BooleanValue implements ValueASTNode<Boolean> {
+@Getter
+public final class ParameterMarkerValue implements ValueASTNode<Integer> {
     
-    private final boolean value;
-    
-    public BooleanValue(final String value) {
-        this.value = Boolean.parseBoolean(value);
-    }
-    
-    @Override
-    public Boolean getValue() {
-        return value;
-    }
+    private final Integer value;
 }

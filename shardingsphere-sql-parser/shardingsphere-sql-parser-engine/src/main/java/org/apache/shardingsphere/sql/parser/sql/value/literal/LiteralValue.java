@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.impl;
+package org.apache.shardingsphere.sql.parser.sql.value.literal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
- * Parameter marker value.
+ * Literal value.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class ParameterMarkerValue implements ValueASTNode<Integer> {
+public final class LiteralValue implements ValueASTNode<String> {
     
-    private final Integer value;
+    private final String value;
 }

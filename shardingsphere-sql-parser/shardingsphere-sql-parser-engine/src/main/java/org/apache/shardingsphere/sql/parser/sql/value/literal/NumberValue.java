@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.impl;
+package org.apache.shardingsphere.sql.parser.sql.value.literal;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
