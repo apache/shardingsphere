@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@AllArgsConstructor
-@Data
+@Setter
+@Getter
 public class ScalingConfiguration {
-
+    
     private RuleConfiguration ruleConfiguration;
 
     private JobConfiguration jobConfiguration;

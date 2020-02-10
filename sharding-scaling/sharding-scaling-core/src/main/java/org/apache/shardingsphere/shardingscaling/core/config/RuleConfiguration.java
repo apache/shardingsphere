@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Rule configuration.
  *
  * @author avalon566
  */
-@Data
+@Setter
+@Getter
 public class RuleConfiguration {
 
     private String sourceDatasource;
@@ -34,8 +35,8 @@ public class RuleConfiguration {
 
     private YamlDataSourceParameter destinationDataSources;
 
-    @AllArgsConstructor
-    @Data
+    @Setter
+    @Getter
     public static final class YamlDataSourceParameter {
 
         private String name;

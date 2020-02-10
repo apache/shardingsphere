@@ -25,7 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class FixtureH2JdbcReader extends AbstractJdbcReader {
+public final class FixtureH2JdbcReader extends AbstractJdbcReader {
     
     public FixtureH2JdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         super(rdbmsConfiguration, dataSourceFactory);
