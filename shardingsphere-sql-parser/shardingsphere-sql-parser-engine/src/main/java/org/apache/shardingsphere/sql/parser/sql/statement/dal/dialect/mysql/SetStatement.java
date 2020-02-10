@@ -15,20 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
-import javax.xml.bind.annotation.XmlElement;
-
-/**
- * Show create table statement test case.
- * 
- * @author zhangliang 
- */
-public final class ShowCreateTableStatementTestCase extends SQLParserTestCase {
-
-    @XmlElement
-    private ExpectedTable table;
+public final class SetStatement extends DALStatement {
 }

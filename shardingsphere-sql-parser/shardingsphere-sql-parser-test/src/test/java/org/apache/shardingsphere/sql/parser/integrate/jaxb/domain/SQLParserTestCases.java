@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.UseStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowColumnsStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.SetVariableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.AlterLoginStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.AlterRoleStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.AlterUserStatementTestCase;
@@ -189,7 +191,7 @@ public final class SQLParserTestCases {
     private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-columns")
-    private final List<ShowTablesStatementTestCase> showColumnsTestCases = new LinkedList<>();
+    private final List<ShowColumnsStatementTestCase> showColumnsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-create-table")
     private final List<ShowCreateTableStatementTestCase> showCreateTableTestCases = new LinkedList<>();
@@ -199,6 +201,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "show-index")
     private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
+
+    @XmlElement(name = "set-variable")
+    private final List<SetVariableStatementTestCase> setVariableStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show")
     private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();
@@ -253,6 +258,7 @@ public final class SQLParserTestCases {
         putAll(showCreateTableTestCases, result);
         putAll(showTableStatusTestCases, result);
         putAll(showIndexTestCases, result);
+        putAll(setVariableStatementTestCases, result);
         putAll(showTestCases, result);
         putAll(commonTestCases, result);
         return result;

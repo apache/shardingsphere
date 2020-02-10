@@ -32,16 +32,15 @@ public class FromTableSegment implements SQLSegment, TableAvailable {
 
     private int stopIndex;
 
-    private TableSegment pattern;
+    private TableSegment table;
 
     @Override
     public String getTableName() {
-        return pattern.getTableName();
+        return table.getTableName();
     }
 
     @Override
     public QuoteCharacter getTableQuoteCharacter() {
         return QuoteCharacter.NONE;
     }
-
 }

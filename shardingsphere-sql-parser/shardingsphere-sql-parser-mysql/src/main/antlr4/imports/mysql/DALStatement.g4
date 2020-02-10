@@ -80,7 +80,11 @@ showProfileType
     ;
 
 setVariable
-    : SET variable_?
+    : SET variableExpr+
+    ;
+
+variableExpr
+    : variable_ EQ_ expr
     ;
 
 showBinaryLogs
