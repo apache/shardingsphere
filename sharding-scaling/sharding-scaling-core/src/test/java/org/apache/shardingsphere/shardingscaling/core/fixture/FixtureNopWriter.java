@@ -40,7 +40,7 @@ public final class FixtureNopWriter implements Writer {
     }
 
     @Override
-    public void write(final Channel channel) {
+    public void write() {
         while (running) {
             channel.fetchRecords(100, 3);
             channel.ack();
@@ -60,6 +60,6 @@ public final class FixtureNopWriter implements Writer {
     @Override
     public void run() {
         start();
-        write(channel);
+        write();
     }
 }

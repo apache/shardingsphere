@@ -23,6 +23,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Jdbc data source configuration.
@@ -30,14 +31,15 @@ import lombok.Getter;
  * @author avalon566
  */
 @Getter
+@Setter
 @EqualsAndHashCode(exclude = {"databaseType"})
 public final class JdbcDataSourceConfiguration implements DataSourceConfiguration {
     
-    private final String jdbcUrl;
+    private String jdbcUrl;
     
-    private final String username;
+    private String username;
     
-    private final String password;
+    private String password;
     
     private DatabaseType databaseType;
     
