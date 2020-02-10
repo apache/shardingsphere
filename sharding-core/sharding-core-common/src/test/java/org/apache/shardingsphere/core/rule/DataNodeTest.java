@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.core.config.ShardingConfigurationException;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,17 +34,17 @@ public final class DataNodeTest {
         assertThat(dataNode.getTableName(), is("tbl_0"));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = ShardingSphereConfigurationException.class)
     public void assertNewInValidDataNodeWithoutDelimiter() {
         new DataNode("ds_0tbl_0");
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = ShardingSphereConfigurationException.class)
     public void assertNewInValidDataNodeWithTwoDelimiters() {
         new DataNode("ds_0.tbl_0.tbl_1");
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = ShardingSphereConfigurationException.class)
     public void assertNewValidDataNodeWithInvalidDelimiter() {
         new DataNode("ds_0,tbl_0");
     }

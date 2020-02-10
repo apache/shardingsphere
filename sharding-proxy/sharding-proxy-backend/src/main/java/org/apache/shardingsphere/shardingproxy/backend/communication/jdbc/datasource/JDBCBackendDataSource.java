@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -76,7 +76,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                throw new ShardingException(String.format("Can not build data source, name is `%s`.", entry.getKey()), ex);
+                throw new ShardingSphereException(String.format("Can not build data source, name is `%s`.", entry.getKey()), ex);
             }
         }
         return result;

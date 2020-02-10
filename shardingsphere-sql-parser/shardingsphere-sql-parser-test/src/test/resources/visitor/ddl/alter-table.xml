@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-table sql-case-id="alter_table">
+        <table name="t_log" start-index="12" stop-index="16" />
+        <add-column type="varchar">
+            <column name="name" />
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_force">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_space">
+        <table name="t_order" start-index="24" stop-index="30" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_back_quota">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_column">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_columns">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
+        <add-column name="column5" type="VARCHAR">
+            <column name="column5" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column6" />
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_column_with_first">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="VARCHAR">
+            <column name="column3" />
+        </add-column>
+        <position-changed-column>
+            <column name="column3" />
+        </position-changed-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_column_with_after">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
+        <position-changed-column>
+            <column name="column4" />
+            <after-column name="order_id" />
+        </position-changed-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_column_with_first_after">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="VARCHAR">
+            <column name="column5" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column6" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column7" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column8" />
+        </add-column>
+        <position-changed-column>
+            <column name="column5" />
+        </position-changed-column>
+        <position-changed-column>
+            <column name="column6" />
+        </position-changed-column>
+        <position-changed-column>
+            <column name="column7" />
+            <after-column name="column5" />
+        </position-changed-column>
+        <position-changed-column column-name="column8" after-column="column6">
+            <column name="column8" />
+            <after-column name="column6" />
+        </position-changed-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_columns">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_first">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <position-changed-column>
+            <column name="status" />
+        </position-changed-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_after">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <position-changed-column>
+            <column name="status" />
+            <after-column name="order_id" />
+        </position-changed-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_first_after">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <position-changed-column>
+            <column name="status" />
+        </position-changed-column>
+        <position-changed-column>
+            <column name="user_id" />
+            <after-column name="status" />
+        </position-changed-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_column">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <drop-column name="user_id" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_columns">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <drop-column name="user_id" />
+        <drop-column name="column5" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_change_column">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_primary_key">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_composite_primary_key">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="int">
+            <column name="status" />
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_unique_key">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_foreign_key">
+        <table name="t_order_item" start-index="12" stop-index="23" />
+        <table name="t_order" start-index="86" stop-index="92" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraints">
+        <table name="t_order_item" start-index="12" stop-index="23" />
+        <table name="t_order" start-index="113" stop-index="119" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_primary_key">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_foreign_key">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_constraints">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_index">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_fulltext_index">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_composite_index">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_indexes">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_index">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_indexes">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_rename_index">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_composite_operate_columns">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="VARCHAR">
+            <column name="column4" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column5" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column6" />
+        </add-column>
+        <drop-column name="status" />
+    </alter-table>
+</sql-parser-test-cases>

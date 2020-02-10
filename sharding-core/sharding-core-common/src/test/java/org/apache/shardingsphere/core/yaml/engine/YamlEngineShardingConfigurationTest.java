@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -40,7 +42,7 @@ public final class YamlEngineShardingConfigurationTest {
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
         assertNotNull(url);
-        assertYamlShardingConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class));
+        assertYamlShardingConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class, new YamlRootShardingConfigurationConstructor()));
     }
     
     @Test
@@ -56,7 +58,7 @@ public final class YamlEngineShardingConfigurationTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        assertYamlShardingConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootShardingConfiguration.class));
+        assertYamlShardingConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootShardingConfiguration.class, new YamlRootShardingConfigurationConstructor()));
     }
     
     private void assertYamlShardingConfig(final YamlRootShardingConfiguration actual) {
@@ -127,6 +129,7 @@ public final class YamlEngineShardingConfigurationTest {
         assertThat(actual.getShardingRule().getDefaultDataSourceName(), is("default_ds"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${order_id % 2}"));
+        assertNotNull(actual.getShardingRule().getDefaultTableStrategy().getNone());
     }
     
     private void assertMasterSlaveRules(final YamlRootShardingConfiguration actual) {

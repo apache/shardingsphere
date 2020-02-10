@@ -24,9 +24,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.route.router.masterslave.MasterVisitedManager;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -98,10 +98,10 @@ public final class BackendConnection implements AutoCloseable {
      */
     public void setTransactionType(final TransactionType transactionType) {
         if (null == schemaName) {
-            throw new ShardingException("Please select database, then switch transaction type.");
+            throw new ShardingSphereException("Please select database, then switch transaction type.");
         }
         if (isSwitchFailed()) {
-            throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
+            throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
         }
         this.transactionType = transactionType;
     }
@@ -113,7 +113,7 @@ public final class BackendConnection implements AutoCloseable {
      */
     public void setCurrentSchema(final String schemaName) {
         if (isSwitchFailed()) {
-            throw new ShardingException("Failed to switch schema, please terminate current transaction.");
+            throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
         }
         this.schemaName = schemaName;
         this.logicSchema = LogicSchemas.getInstance().getLogicSchema(schemaName);

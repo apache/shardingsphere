@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.parse;
 
-import org.apache.shardingsphere.core.parse.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;

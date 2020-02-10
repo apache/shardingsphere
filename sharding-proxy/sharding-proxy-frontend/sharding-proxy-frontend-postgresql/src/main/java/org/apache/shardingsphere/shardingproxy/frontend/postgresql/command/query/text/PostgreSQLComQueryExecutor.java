@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.text;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.PostgreSQLErrPacketFactory;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -56,6 +57,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private volatile boolean isQuery;
     
+    private volatile boolean isErrorResponse;
+    
     public PostgreSQLComQueryExecutor(final PostgreSQLComQueryPacket comQueryPacket, final BackendConnection backendConnection) {
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypes.getActualDatabaseType("PostgreSQL"), comQueryPacket.getSql(), backendConnection);
     }
@@ -67,6 +70,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
+            isErrorResponse = true;
             return Collections.<DatabasePacket>singletonList(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
@@ -77,7 +81,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
-        return new PostgreSQLErrorResponsePacket();
+        return PostgreSQLErrPacketFactory.newInstance(errorResponse.getCause());
     }
     
     private PostgreSQLCommandCompletePacket createUpdatePacket(final UpdateResponse updateResponse) {
@@ -105,6 +109,11 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     @Override
     public boolean isQuery() {
         return isQuery;
+    }
+    
+    @Override
+    public boolean isErrorResponse() {
+        return isErrorResponse;
     }
     
     @Override

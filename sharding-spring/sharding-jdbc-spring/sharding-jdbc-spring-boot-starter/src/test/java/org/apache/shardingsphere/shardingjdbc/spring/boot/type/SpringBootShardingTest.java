@@ -20,17 +20,17 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.rule.DataNode;
-import org.apache.shardingsphere.core.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestShardingEncryptor;
-import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.shardingjdbc.spring.boot.fixture.TestEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -63,10 +63,10 @@ public class SpringBootShardingTest {
         for (DataSource each : ((ShardingDataSource) dataSource).getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(100));
         }
-        assertTrue(runtimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
-        ShardingProperties shardingProperties = runtimeContext.getProps();
-        assertTrue((Boolean) shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW));
-        assertThat((Integer) shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE), is(100));
+        assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
+        ShardingSphereProperties properties = runtimeContext.getProperties();
+        assertTrue((Boolean) properties.getValue(PropertiesConstant.SQL_SHOW));
+        assertThat((Integer) properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
     }
     
     @Test
@@ -77,9 +77,9 @@ public class SpringBootShardingTest {
         assertTrue(encryptRule.findEncryptTable("t_order").isPresent());
         assertThat(encryptRule.findEncryptTable("t_order").get().getCipherColumns().size(), is(2));
         assertThat(encryptRule.getAssistedQueryAndPlainColumns("t_order").size(), is(1));
-        Optional<ShardingEncryptor> shardingEncryptor = encryptRule.findShardingEncryptor("t_order", "pwd");
-        assertTrue(shardingEncryptor.isPresent());
-        assertThat(shardingEncryptor.get(), instanceOf(TestShardingEncryptor.class));
+        Optional<Encryptor> encryptor = encryptRule.findEncryptor("t_order", "pwd");
+        assertTrue(encryptor.isPresent());
+        assertThat(encryptor.get(), instanceOf(TestEncryptor.class));
     }
     
     @Test

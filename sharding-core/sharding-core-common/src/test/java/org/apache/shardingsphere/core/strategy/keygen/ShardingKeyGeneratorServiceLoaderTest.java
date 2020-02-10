@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.strategy.keygen;
 
-import org.apache.shardingsphere.core.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;
