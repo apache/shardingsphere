@@ -127,7 +127,7 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 ### Update Release Notes
 
 ```
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 ```
 
 ### Create Release Branch
@@ -371,7 +371,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere (Incubating) version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
@@ -488,7 +488,7 @@ ShardingSphere community vote and result thread:
 https://lists.apache.org/thread.html/xxxxxxxxxxxxxxxxxxxxxxx
 
 Release notes:
-https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION}/
@@ -573,7 +573,7 @@ I will process to publish the release and send ANNOUNCE.
 
 ## Finish the Release
 
-1. Move source packages, binary packages and KEYS from the `dev` directory to `release` directory
+### Move source packages, binary packages and KEYS from the `dev` directory to `release` directory
 
 ```shell
 svn mv https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/${RELEASE.VERSION} https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer packages for ${RELEASE.VERSION}"
@@ -581,62 +581,77 @@ svn delete https://dist.apache.org/repos/dist/release/incubator/shardingsphere/K
 svn cp https://dist.apache.org/repos/dist/dev/incubator/shardingsphere/KEYS https://dist.apache.org/repos/dist/release/incubator/shardingsphere/ -m "transfer KEYS for ${RELEASE.VERSION}"
 ```
 
-2. Find ShardingSphere in staging repository and click `Release`
+### Find ShardingSphere in staging repository and click `Release`
 
-3. Merge release branch to `dev` and delete release branch on Github
+### Merge release branch to `master` and delete release branch on Github
 
 ```shell
-git checkout dev
+git checkout master
 git merge origin/${RELEASE.VERSION}-release
 git push
 git push --delete origin ${RELEASE.VERSION}-release
 ```
 
-4. Update the download page
+### Update READEME files
 
-```
+Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md
+
+Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `CURRENT_VERSION` in `Dockerfile`
+
+Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `imageName` in Maven `Docker` plugin
+
+Update `${RELEASE.VERSION}` to `${NEXT.RELEASE.VERSION}` for `SERVER_VERSION` in `MySQLServerInfo.java`
+
+### Update the download page
+
 https://shardingsphere.apache.org/document/current/en/downloads/
+
 https://shardingsphere.apache.org/document/current/cn/downloads/
+
+### Docker Release
+
+#### Preparation
+
+Install docker locally and start the docker service
+
+#### Compile Docker Image
+
+```shell
+cd ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/
+mvn clean package docker:build
 ```
 
-5. Update READEME files
+#### Tag the local Docker Image
 
-Update ${PREVIOUS.RELEASE.VERSION} to ${LATEST.RELEASE.VERSION} in README.md and README_ZH.md
+Check the image ID through `docker images`, for example: e9ea51023687
 
-6. Docker Release
-
-```
-0 Preparation
-0.1 Install docker locally and start the docker service
-0.2 Enter ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/src/main/docker/
-vim Dockerfile,change `ENV CURRENT_VERSION `${LEGACY.RELEASE.VERSION}` to `${LATEST.RELEASE.VERSION}`
+```shell
+docker tag e9ea51023687 apache/sharding-proxy:latest
+docker tag e9ea51023687 apache/sharding-proxy:${RELEASE.VERSION}
 ```
 
-```
-1 Compile Docker Image
-1.1 Enter ~/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/
-1.2 Execute `mvn clean package docker:build`
+#### Publish Docker Image
+
+```shell
+docker push apache/sharding-proxy:latest
+docker push apache/sharding-proxy:${RELEASE_VERSION}
 ```
 
-```
-2 Tag the local Docker Image
-2.1 Check the image ID through `docker images`, for example: e9ea51023687
-2.2 Execute `docker tag e9ea51023687 apache/sharding-proxy:latest`
-2.3 Execute `docker tag e9ea51023687 apache/sharding-proxy:${LATEST.RELEASE.VERSION}`
-```
+#### Confirm the successful release
 
-```
-3 Publish Docker Image
-3.1 Execute `docker push apache/sharding-proxy:latest`
-3.2 Execute `docker push apache/sharding-proxy:${RELEASE_VERSION}`
-```
+Login [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) to check whether there are published images
 
-```
-4 Confirm the successful release
-4.1 Login [Docker Hub](https://hub.docker.com/r/apache/sharding-proxy/) to check whether there are published images
-```
+### Publish release in GitHub
 
-7. Send e-mail to `general@incubator.apache.org` and `dev@shardingsphere.apache.org` to announce the release is finished.
+Click `Edit` in [GitHub Releases](https://github.com/apache/incubator-shardingsphere/releases)'s `${RELEASE_VERSION}` version
+
+Edit version number and release notes, click `Publish release`
+
+### Tag ShardingSphere's Example Project
+
+[GitHub repository](https://github.com/apache/incubator-shardingsphere-example)
+
+### Send e-mail to `general@incubator.apache.org` and `dev@shardingsphere.apache.org` to announce the release is finished
 
 Announcement e-mail template:
 
@@ -661,7 +676,7 @@ Therefore, at the current stage, we prefer to focus on its increment instead of 
 
 Download Links: https://shardingsphere.apache.org/document/current/en/downloads/
 
-Release Notes: https://github.com/apache/incubator-shardingsphere/blob/dev/RELEASE-NOTES.md
+Release Notes: https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 
 Website: https://shardingsphere.apache.org/
 

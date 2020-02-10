@@ -194,7 +194,7 @@ weight = 1
     }
     
     private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration("zookeeper");//注册中心的类型可以是Zookeeper，Etcd等
         regConfig.setServerLists("localhost:2181");
         regConfig.setNamespace("sharding-sphere-orchestration");
         return regConfig;
