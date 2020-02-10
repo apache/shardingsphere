@@ -145,8 +145,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        String text = ctx.getText();
-        return new StringLiteralValue(text.substring(1, text.length() - 1));
+        return new StringLiteralValue(ctx.getText());
     }
     
     @Override
@@ -341,9 +340,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitBitExpr(final BitExprContext ctx) {
-        SimpleExprContext simple = ctx.simpleExpr();
-        if (null != simple) {
-            return createExpressionSegment(visit(simple), ctx);
+        if (null != ctx.simpleExpr()) {
+            return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
