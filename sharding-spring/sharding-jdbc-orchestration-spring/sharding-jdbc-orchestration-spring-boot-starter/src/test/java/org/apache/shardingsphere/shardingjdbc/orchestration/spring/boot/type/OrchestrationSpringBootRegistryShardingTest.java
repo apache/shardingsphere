@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
+import java.lang.reflect.Field;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
@@ -27,9 +30,9 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestRegistryCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,10 +40,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -59,8 +58,8 @@ public class OrchestrationSpringBootRegistryShardingTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestRegistryCenter testRegistryCenter = new TestRegistryCenter();
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/datasource", "ds: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+        TestCenter testCenter = new TestCenter();
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", "ds: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
@@ -81,7 +80,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: sa\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/schema/logic_db/rule", "bindingTables:\n"
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/rule", "bindingTables:\n"
             + "- t_order\n"
             + "- t_order_item\n"
             + "broadcastTables:\n"
@@ -116,8 +115,8 @@ public class OrchestrationSpringBootRegistryShardingTest {
             + "      inline:\n"
             + "        algorithmExpression: t_order_item_${order_id % 2}\n"
             + "        shardingColumn: order_id\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/config/props", "executor.size: '100'\nsql.show: 'true'\n");
-        testRegistryCenter.persist("/demo_spring_boot_ds_registry/state/datasources", "");
+        testCenter.persist("/demo_spring_boot_ds_center/config/props", "executor.size: '100'\nsql.show: 'true'\n");
+        testCenter.persist("/demo_spring_boot_ds_center/state/datasources", "");
     }
     
     @Test

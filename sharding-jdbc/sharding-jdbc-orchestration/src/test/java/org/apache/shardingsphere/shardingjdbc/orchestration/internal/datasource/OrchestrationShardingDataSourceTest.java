@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import java.util.HashMap;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -66,10 +68,26 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration("TestRegistryCenter");
-        registryCenterConfiguration.setNamespace("test_sharding");
-        registryCenterConfiguration.setServerLists("localhost:3181");
-        return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        instanceConfigurationMap.put("test_sharding_registry_name", getRegistryCenterConfiguration());
+        instanceConfigurationMap.put("test_sharding_config_name", getConfigCenterConfiguration());
+        return new OrchestrationConfiguration(instanceConfigurationMap);
+    }
+    
+    private static InstanceConfiguration getRegistryCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("FourthTestRegistryCenter");
+        result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+        result.setNamespace("test_sharding_registry");
+        result.setServerLists("localhost:3181");
+        return result;
+    }
+    
+    private static InstanceConfiguration getConfigCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("FourthTestConfigCenter");
+        result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
+        result.setNamespace("test_sharding_config");
+        result.setServerLists("localhost:3181");
+        return result;
     }
     
     @Test

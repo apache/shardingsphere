@@ -28,9 +28,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>sharding-orchestration-center</module>
         <module>sharding-orchestration-core</module>
-        <module>sharding-orchestration-reg</module>
-        <module>sharding-orchestration-zookeeper-curator-integration-test</module>
-        <module>sharding-orchestration-config</module>
     </modules>
 </project>

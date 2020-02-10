@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.service;
 
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.internal.registry.state.instance.OrchestrationInstance;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNode;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 /**
  * Instance state service.
  * 
  * @author caohao
  * @author panjuan
+ * @author wangguangyuan
  */
 public final class StateService {
     

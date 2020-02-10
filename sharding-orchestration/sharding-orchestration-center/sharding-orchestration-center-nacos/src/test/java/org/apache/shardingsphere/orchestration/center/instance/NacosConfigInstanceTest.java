@@ -1,0 +1,112 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.orchestration.center.instance;
+
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.config.listener.Listener;
+import java.lang.reflect.Field;
+import java.util.Properties;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.AdditionalAnswers;
+import org.mockito.stubbing.VoidAnswer3;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+public class NacosConfigInstanceTest {
+    
+    private static ConfigCenter nacosConfigCenter = new NacosConfigInstance();
+    
+    private ConfigService configService = mock(ConfigService.class);
+    
+    private String group = "SHARDING_SPHERE_DEFAULT_GROUP";
+    
+    @Before
+    public void init() {
+        Properties properties = new Properties();
+        properties.setProperty("group", group);
+        properties.setProperty("timeout", "3000");
+        InstanceConfiguration configuration = new InstanceConfiguration(nacosConfigCenter.getType(), properties);
+        configuration.setServerLists("127.0.0.1:8848");
+        nacosConfigCenter.init(configuration);
+        setConfigService(configService);
+    }
+    
+    @SneakyThrows
+    private void setConfigService(final ConfigService configService) {
+        Field configServiceField = NacosConfigInstance.class.getDeclaredField("configService");
+        configServiceField.setAccessible(true);
+        configServiceField.set(nacosConfigCenter, configService);
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertPersist() {
+        String value = "value";
+        nacosConfigCenter.persist("sharding/test", value);
+        verify(configService).publishConfig("sharding.test", group, value);
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGet() {
+        String value = "value";
+        when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn(value);
+        Assert.assertEquals(value, nacosConfigCenter.get("sharding/test"));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertWatch() {
+        final String expectValue = "expectValue";
+        final String[] actualValue = {null};
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
+            .when(configService)
+            .addListener(anyString(), anyString(), any(Listener.class));
+        DataChangedEventListener listener = new DataChangedEventListener() {
+            @Override
+            public void onChange(final DataChangedEvent dataChangedEvent) {
+                actualValue[0] = dataChangedEvent.getValue();
+            }
+        };
+        nacosConfigCenter.watch("sharding/test", listener);
+        Assert.assertEquals(expectValue, actualValue[0]);
+    }
+    
+    private VoidAnswer3 getListenerAnswer(final String expectValue) {
+        return new VoidAnswer3<String, String, Listener>() {
+            @Override
+            public void answer(final String dataId, final String group, final Listener listener) {
+                listener.receiveConfigInfo(expectValue);
+            }
+        };
+    }
+}

@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingRegistryCenterEventListener;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNode;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 
 /**
  * Data source state changed listener.
  *
  * @author caohao
  * @author panjuan
+ * @author wangguangyuan
  */
-public final class DataSourceStateChangedListener extends PostShardingOrchestrationEventListener {
+public final class DataSourceStateChangedListener extends PostShardingRegistryCenterEventListener {
     
     private final StateNode stateNode;
     
