@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLComStmtResetExecutorTest {
+public class MySQLComStmtResetExecutorTest {
     
     @Mock
     private MySQLComStmtResetPacket packet;

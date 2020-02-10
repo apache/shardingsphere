@@ -23,43 +23,36 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
-import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
-import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
-import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.execute.ShardingExecuteGroup;
+import org.apache.shardingsphere.core.execute.StatementExecuteUnit;
+import org.apache.shardingsphere.core.execute.metadata.TableMetaDataInitializer;
+import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteCallback;
+import org.apache.shardingsphere.core.execute.sql.execute.SQLExecuteTemplate;
+import org.apache.shardingsphere.core.execute.sql.prepare.SQLExecutePrepareTemplate;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.preprocessor.statement.SQLStatementContext;
+import org.apache.shardingsphere.core.parse.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceMapConnectionManager;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -69,7 +62,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author maxiaoguang
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractStatementExecutor {
+public class AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
     
@@ -103,7 +96,7 @@ public abstract class AbstractStatementExecutor {
     @Getter
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
-    private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
+    private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
@@ -111,14 +104,14 @@ public abstract class AbstractStatementExecutor {
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
         this.connection = shardingConnection;
-        int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        ExecutorEngine executorEngine = connection.getRuntimeContext().getExecutorEngine();
+        int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProps().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        ShardingExecuteEngine executeEngine = connection.getRuntimeContext().getExecuteEngine();
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(executorEngine, connection.isHoldTransaction());
+        sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, connection.isHoldTransaction());
     }
     
     protected final void cacheStatements() {
-        for (InputGroup<StatementExecuteUnit> each : inputGroups) {
+        for (ShardingExecuteGroup<StatementExecuteUnit> each : executeGroups) {
             statements.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
                 
                 @Override
@@ -130,43 +123,27 @@ public abstract class AbstractStatementExecutor {
                 
                 @Override
                 public List<Object> apply(final StatementExecuteUnit input) {
-                    return input.getExecutionUnit().getSqlUnit().getParameters();
+                    return input.getRouteUnit().getSqlUnit().getParameters();
                 }
             }));
         }
     }
     
-    /**
-     * To make sure SkyWalking will be available at the next release of ShardingSphere,
-     * a new plugin should be provided to SkyWalking project if this API changed.
-     * 
-     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
-     * 
-     * @param executeCallback execute callback
-     * @param <T> class type of return value 
-     * @return result
-     * @throws SQLException SQL exception
-     */
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
-        List<T> result = sqlExecuteTemplate.execute((Collection) inputGroups, executeCallback);
+        List<T> result = sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
         refreshMetaDataIfNeeded(connection.getRuntimeContext(), sqlStatementContext);
         return result;
     }
     
-    /**
-     * is accumulate.
-     * 
-     * @return accumulate or not
-     */
-    public final boolean isAccumulate() {
+    protected final boolean isAccumulate() {
         return !connection.getRuntimeContext().getRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
     /**
      * Clear data.
      *
-     * @throws SQLException SQL exception
+     * @throws SQLException sql exception
      */
     public void clear() throws SQLException {
         clearStatements();
@@ -174,7 +151,7 @@ public abstract class AbstractStatementExecutor {
         parameterSets.clear();
         connections.clear();
         resultSets.clear();
-        inputGroups.clear();
+        executeGroups.clear();
     }
     
     private void clearStatements() throws SQLException {
@@ -202,12 +179,12 @@ public abstract class AbstractStatementExecutor {
     
     private void refreshTableMetaDataForCreateTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        runtimeContext.getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry().init(tableName));
+        runtimeContext.getMetaData().getTables().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
     }
     
     private void refreshTableMetaDataForAlterTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        runtimeContext.getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry().init(tableName));
+        runtimeContext.getMetaData().getTables().put(tableName, getTableMetaDataInitializer().load(tableName, runtimeContext.getRule()));
     }
     
     private void refreshTableMetaDataForDropTable(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) {
@@ -256,16 +233,11 @@ public abstract class AbstractStatementExecutor {
         return Optional.absent();
     }
     
-    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry() {
-        ShardingRule shardingRule = connection.getRuntimeContext().getRule();
-        ShardingSphereProperties properties = connection.getRuntimeContext().getProperties();
-        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(2, 1);
-        tableMetaDataInitializes.put(shardingRule, new ShardingTableMetaDataLoader(connection.getRuntimeContext().getMetaData().getDataSources(), connection.getRuntimeContext().getExecutorEngine(), 
-                new JDBCDataSourceMapConnectionManager(connection.getDataSourceMap()),
-                properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED)));
-        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            tableMetaDataInitializes.put(shardingRule.getEncryptRule(), new EncryptTableMetaDataDecorator());
-        }
-        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
+    private TableMetaDataInitializer getTableMetaDataInitializer() {
+        ShardingProperties shardingProperties = connection.getRuntimeContext().getProps();
+        return new TableMetaDataInitializer(connection.getRuntimeContext().getMetaData().getDataSources(), 
+                connection.getRuntimeContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
+                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
 }

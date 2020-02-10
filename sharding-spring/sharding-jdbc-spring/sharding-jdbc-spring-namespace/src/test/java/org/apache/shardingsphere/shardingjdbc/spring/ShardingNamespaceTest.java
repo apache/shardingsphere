@@ -22,13 +22,13 @@ import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrate
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.encrypt.strategy.impl.MD5Encryptor;
+import org.apache.shardingsphere.core.strategy.encrypt.impl.MD5ShardingEncryptor;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.shardingjdbc.spring.algorithm.RangeModuloTableS
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.spi.encrypt.ShardingEncryptor;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -112,8 +112,8 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertThat(shardingRule.getTableRules().iterator().next().getLogicTable(), is("t_order"));
         assertTrue(shardingRule.getEncryptRule().findEncryptTable("t_order").isPresent());
         assertThat(shardingRule.getEncryptRule().findEncryptTable("t_order").get().getCipherColumn("user_id"), is("user_encrypt"));
-        assertTrue(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").isPresent());
-        assertThat(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").get(), CoreMatchers.<Encryptor>instanceOf(MD5Encryptor.class));
+        assertTrue(shardingRule.getEncryptRule().findShardingEncryptor("t_order", "order_id").isPresent());
+        assertThat(shardingRule.getEncryptRule().findShardingEncryptor("t_order", "order_id").get(), CoreMatchers.<ShardingEncryptor>instanceOf(MD5ShardingEncryptor.class));
         shardingRule.getTableRule("t_order");
     }
     
@@ -232,13 +232,13 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
     public void assertPropsDataSource() {
         ShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSource", ShardingDataSource.class);
         ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "runtimeContext", true);
-        assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        ShardingSphereProperties properties = runtimeContext.getProperties();
-        boolean showSql = properties.getValue(PropertiesConstant.SQL_SHOW);
+        assertTrue(runtimeContext.getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        ShardingProperties shardingProperties = runtimeContext.getProps();
+        boolean showSql = shardingProperties.getValue(ShardingPropertiesConstant.SQL_SHOW);
         assertTrue(showSql);
-        int executorSize = properties.getValue(PropertiesConstant.EXECUTOR_SIZE);
+        int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
-        assertNull(PropertiesConstant.findByKey("foo"));
+        assertNull(ShardingPropertiesConstant.findByKey("foo"));
     }
     
     @Test

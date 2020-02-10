@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.database.metadata.dialect.MariaDBDataSourceMetaData;
+import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.core.metadata.datasource.dialect.MariaDBDataSourceMetaData;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import java.util.Collection;
@@ -52,7 +52,7 @@ public final class MariaDBXADataSourceDefinition implements XADataSourceDefiniti
         result.setProperty("url", databaseAccessConfiguration.getUrl());
         result.setProperty("ServerName", dataSourceMetaData.getHostName());
         result.setProperty("port", String.valueOf(dataSourceMetaData.getPort()));
-        result.setProperty("DatabaseName", dataSourceMetaData.getCatalog());
+        result.setProperty("DatabaseName", dataSourceMetaData.getSchemaName());
         return result;
     }
 }

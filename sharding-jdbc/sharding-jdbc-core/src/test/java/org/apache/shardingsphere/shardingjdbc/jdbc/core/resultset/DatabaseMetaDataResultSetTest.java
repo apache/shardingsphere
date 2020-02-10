@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DatabaseMetaDataResultSetTest {
+public class DatabaseMetaDataResultSetTest {
     
     private static final String TABLE_NAME_COLUMN_LABEL = "TABLE_NAME";
     
@@ -94,7 +94,7 @@ public final class DatabaseMetaDataResultSetTest {
     private ResultSet mockResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.getMetaData()).thenReturn(resultSetMetaData);
-        when(result.getString(1)).thenReturn(ACTUAL_TABLE_NAME);
+        when(result.getString(1)).thenReturn(ACTUAL_TABLE_NAME, ACTUAL_TABLE_NAME);
         when(result.getObject(2)).thenReturn(NON_TABLE_NAME);
         when(result.getObject(3)).thenReturn(NUMBER);
         when(result.getObject(4)).thenReturn(BYTES);

@@ -27,7 +27,7 @@ import javax.sql.DataSource;
  * @author zhaojun
  */
 @Getter
-public final class ResourceDataSource {
+public class ResourceDataSource {
     
     private final String originalName;
     

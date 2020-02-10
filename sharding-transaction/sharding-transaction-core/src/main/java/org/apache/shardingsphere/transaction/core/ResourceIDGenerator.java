@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceIDGenerator {
+public class ResourceIDGenerator {
     
     private static final ResourceIDGenerator INSTANCE = new ResourceIDGenerator();
     

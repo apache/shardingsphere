@@ -19,8 +19,8 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.core.exception.ShardingException;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -46,7 +46,7 @@ public final class DataSourceSwapper {
             String password = (String) findGetterMethod(dataSource, provider.getPasswordPropertyName()).invoke(dataSource);
             return new DatabaseAccessConfiguration(url, username, password);
         } catch (final ReflectiveOperationException ex) {
-            throw new ShardingSphereException("Cannot swap data source type: `%s`, please provide an implementation from SPI `%s`", 
+            throw new ShardingException("Cannot swap data source type: `%s`, please provide an implementation from SPI `%s`", 
                     dataSource.getClass().getName(), DataSourcePropertyProvider.class.getName());
         }
     }

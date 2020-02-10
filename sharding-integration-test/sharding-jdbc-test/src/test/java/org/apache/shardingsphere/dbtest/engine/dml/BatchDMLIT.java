@@ -47,7 +47,7 @@ public final class BatchDMLIT extends BatchIT {
     @Test
     public void assertExecuteBatch() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         int[] actualUpdateCounts;
@@ -76,7 +76,7 @@ public final class BatchDMLIT extends BatchIT {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getShardingRuleType())) {
             return;
         }
         try (Connection connection = getDataSource().getConnection()) {

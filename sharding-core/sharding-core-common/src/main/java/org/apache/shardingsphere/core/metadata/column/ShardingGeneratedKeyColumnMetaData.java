@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.metadata.column;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 
 /**
  * Column meta data for sharding generated key.
@@ -32,7 +31,8 @@ import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaDat
 @ToString(callSuper = true)
 public final class ShardingGeneratedKeyColumnMetaData extends ColumnMetaData {
     
-    public ShardingGeneratedKeyColumnMetaData(final String name, final String dataType, final boolean primaryKey) {
-        super(name, dataType, primaryKey);
+    public ShardingGeneratedKeyColumnMetaData(final String name, final String dataType, final boolean primaryKey, 
+                                              final boolean notNull, final boolean autoIncrement) {
+        super(name, dataType, primaryKey, notNull, autoIncrement);
     }
 }

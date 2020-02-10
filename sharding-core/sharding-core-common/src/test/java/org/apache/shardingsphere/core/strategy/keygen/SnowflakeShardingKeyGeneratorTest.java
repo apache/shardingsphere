@@ -68,7 +68,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         keyGenerator.setProperties(new Properties());
         SnowflakeShardingKeyGenerator.setTimeService(new FixedTimeService(1));
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
+        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
@@ -77,50 +77,14 @@ public final class SnowflakeShardingKeyGeneratorTest {
     }
     
     @Test
-    public void assertLastDigitalOfGenerateKeySameMillisecond() {
-        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
-        Properties properties = new Properties();
-        SnowflakeShardingKeyGenerator.setTimeService(new FixedTimeService(5));
-        properties.setProperty("max.vibration.offset", String.valueOf(3));
-        keyGenerator.setProperties(properties);
-        assertThat(keyGenerator.generateKey(), is((Comparable) 0L));
-        assertThat(keyGenerator.generateKey(), is((Comparable) 1L));
-        assertThat(keyGenerator.generateKey(), is((Comparable) 2L));
-        assertThat(keyGenerator.generateKey(), is((Comparable) 3L));
-        assertThat(keyGenerator.generateKey(), is((Comparable) 4L));
-    }
-    
-    @Test
-    public void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
-        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
-        Properties properties = new Properties();
-        SnowflakeShardingKeyGenerator.setTimeService(new TimeService());
-        properties.setProperty("max.vibration.offset", String.valueOf(3));
-        keyGenerator.setProperties(properties);
-        String actualGenerateKeyBinaryString0 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString0.substring(actualGenerateKeyBinaryString0.length() - 3), 2), is(0));
-        Thread.sleep(2L);
-        String actualGenerateKeyBinaryString1 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString1.substring(actualGenerateKeyBinaryString1.length() - 3), 2), is(1));
-        Thread.sleep(2L);
-        String actualGenerateKeyBinaryString2 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString2.substring(actualGenerateKeyBinaryString2.length() - 3), 2), is(2));
-        Thread.sleep(2L);
-        String actualGenerateKeyBinaryString3 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString3.substring(actualGenerateKeyBinaryString3.length() - 3), 2), is(3));
-        Thread.sleep(2L);
-        String actualGenerateKeyBinaryString4 = Long.toBinaryString(Long.parseLong(keyGenerator.generateKey().toString()));
-        assertThat(Integer.parseInt(actualGenerateKeyBinaryString4.substring(actualGenerateKeyBinaryString4.length() - 3), 2), is(0));
-    }
-    
-    @Test
+    @SneakyThrows
     public void assertGenerateKeyWithClockCallBack() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         SnowflakeShardingKeyGenerator.setTimeService(timeService);
         keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
+        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
@@ -154,7 +118,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
         keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis());
         setSequence(keyGenerator, (1 << DEFAULT_SEQUENCE_BITS) - 1);
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
+        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
@@ -186,28 +150,10 @@ public final class SnowflakeShardingKeyGeneratorTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertSetMaxVibrationOffsetFailureWhenNegative() {
-        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
-        Properties properties = new Properties();
-        properties.setProperty("max.vibration.offset", String.valueOf(-1));
-        keyGenerator.setProperties(properties);
-        keyGenerator.generateKey();
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertSetWorkerIdFailureWhenOutOfRange() {
+    public void assertSetWorkerIdFailureWhenTooMuch() {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("worker.id", String.valueOf(Long.MIN_VALUE));
-        keyGenerator.setProperties(properties);
-        keyGenerator.generateKey();
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
-        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
-        Properties properties = new Properties();
-        properties.setProperty("max.vibration.offset", String.valueOf(4096));
         keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
     }

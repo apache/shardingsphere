@@ -54,7 +54,7 @@ public final class PreparedStatementAdapterTest extends AbstractShardingJDBCData
     private final List<PreparedStatement> preparedStatements = new ArrayList<>();
     
     @Before
-    public void init() throws SQLException {
+    public void init() {
         ShardingConnection shardingConnection = getShardingDataSource().getConnection();
         shardingConnections.add(shardingConnection);
         preparedStatements.add(shardingConnection.prepareStatement(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));

@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author zhaojun
  */
-public final class ResourceSynchronizer {
+public class ResourceSynchronizer {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200;
     

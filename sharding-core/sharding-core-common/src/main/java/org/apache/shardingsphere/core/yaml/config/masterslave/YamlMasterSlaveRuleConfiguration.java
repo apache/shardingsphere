@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.yaml.config.masterslave;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -39,7 +39,7 @@ public class YamlMasterSlaveRuleConfiguration implements YamlConfiguration {
     
     private String masterDataSourceName;
     
-    private List<String> slaveDataSourceNames = new ArrayList<>();
+    private Collection<String> slaveDataSourceNames = new ArrayList<>();
     
     private String loadBalanceAlgorithmType;
     

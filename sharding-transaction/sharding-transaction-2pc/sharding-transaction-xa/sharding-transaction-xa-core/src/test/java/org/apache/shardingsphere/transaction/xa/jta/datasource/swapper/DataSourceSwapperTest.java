@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;

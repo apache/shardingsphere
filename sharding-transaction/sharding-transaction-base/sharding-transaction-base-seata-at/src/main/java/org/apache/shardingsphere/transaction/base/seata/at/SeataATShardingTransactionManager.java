@@ -27,7 +27,7 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.TMClient;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;

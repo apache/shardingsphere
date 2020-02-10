@@ -55,11 +55,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test
     public void assertGenerateKeyWithSingleThread() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.segment.step", "5");
-        properties.setProperty("leaf.key", "test_table_1");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("step", "5");
+        properties.setProperty("leafKey", "test_table_1");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(100001L, 100002L, 100003L, 100004L, 100005L, 100006L, 100007L, 100008L, 100009L, 100010L);
         List<Comparable<?>> actual = new ArrayList<>();
@@ -72,11 +72,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test
     public void assertGenerateKeyWithFirstSpecialStep() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.key", "test_table_6");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("step", "3");
+        properties.setProperty("leafKey", "test_table_6");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(100001L, 100002L, 100003L, 100004L, 100005L, 100006L, 100007L, 100008L, 100009L, 100010L);
         List<Comparable<?>> actual = new ArrayList<>();
@@ -89,11 +89,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test
     public void assertGenerateKeyWithSecondSpecialStep() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.segment.step", "7");
-        properties.setProperty("leaf.key", "test_table_7");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("step", "7");
+        properties.setProperty("leafKey", "test_table_7");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(100001L, 100002L, 100003L, 100004L, 100005L, 100006L, 100007L, 100008L, 100009L, 100010L);
         List<Comparable<?>> actual = new ArrayList<>();
@@ -108,11 +108,11 @@ public final class LeafSegmentKeyGeneratorTest {
         int threadNumber = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.key", "test_table_2");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("step", "3");
+        properties.setProperty("leafKey", "test_table_2");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
         int taskNumber = threadNumber * 2;
@@ -132,12 +132,12 @@ public final class LeafSegmentKeyGeneratorTest {
         int threadNumber = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("registry.center.digest", "name:123456");
-        properties.setProperty("leaf.key", "test_table_3");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("step", "3");
+        properties.setProperty("digest", "name:123456");
+        properties.setProperty("leafKey", "test_table_3");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
         int taskNumber = threadNumber * 2;
@@ -157,10 +157,10 @@ public final class LeafSegmentKeyGeneratorTest {
         int threadNumber = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "test_table_4");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "test_table_4");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         Set<Comparable<?>> actual = new HashSet<>();
         int taskNumber = threadNumber * 2;
@@ -180,10 +180,10 @@ public final class LeafSegmentKeyGeneratorTest {
         int threadNumber = 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.key", "test_table_5");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", "3");
+        properties.setProperty("leafKey", "test_table_5");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         int taskNumber = threadNumber * 2;
         Set<Comparable<?>> actual = new HashSet<>();
@@ -201,11 +201,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetStepFailureWhenNegative() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", String.valueOf(-1L));
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "test_table_9");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", String.valueOf(-1L));
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "test_table_9");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -213,11 +213,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetStepFailureWhenZero() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", String.valueOf(0L));
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "test_table_10");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", String.valueOf(0L));
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "test_table_10");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -225,11 +225,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetStepFailureWhenTooMuch() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", String.valueOf(Long.MAX_VALUE));
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "test_table_11");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", String.valueOf(Long.MAX_VALUE));
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "test_table_11");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -237,11 +237,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetInitialValueFailureWhenNegative() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.segment.id.initial.value", String.valueOf(-1L));
-        properties.setProperty("leaf.key", "test_table_12");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", "3");
+        properties.setProperty("initialValue", String.valueOf(-1L));
+        properties.setProperty("leafKey", "test_table_12");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -249,11 +249,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetInitialValueFailureWhenTooMuch() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.segment.id.initial.value", String.valueOf(Long.MAX_VALUE));
-        properties.setProperty("leaf.key", "test_table_13");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", "3");
+        properties.setProperty("initialValue", String.valueOf(Long.MAX_VALUE));
+        properties.setProperty("leafKey", "test_table_13");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -261,10 +261,10 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServerListFailureWhenNull() {
         Properties properties = new Properties();
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "test_table_14");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("step", "3");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "test_table_14");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -272,11 +272,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetServerListFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "test_table_15");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "");
+        properties.setProperty("step", "3");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "test_table_15");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -284,11 +284,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetLeafKeyFailureWhenArgumentIllegal() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "/test_table_16");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", "3");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "/test_table_16");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -296,11 +296,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetLeafKeyFailureWhenArgumentEmpty() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", "3");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -308,10 +308,10 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetLeafKeyFailureWhenNull() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", "3");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }
@@ -319,11 +319,11 @@ public final class LeafSegmentKeyGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetRegistryCenterTypeFailureWhenWrongType() {
         Properties properties = new Properties();
-        properties.setProperty("server.list", "127.0.0.1:2181");
-        properties.setProperty("leaf.segment.step", "3");
-        properties.setProperty("leaf.segment.id.initial.value", "100001");
-        properties.setProperty("leaf.key", "/test_table_17");
-        properties.setProperty("registry.center.type", "ThirdDistributedLockManagement");
+        properties.setProperty("serverList", "127.0.0.1:2181");
+        properties.setProperty("step", "3");
+        properties.setProperty("initialValue", "100001");
+        properties.setProperty("leafKey", "/test_table_17");
+        properties.setProperty("registryCenterType", "ThirdDistributedLockManagement");
         leafSegmentKeyGenerator.setProperties(properties);
         leafSegmentKeyGenerator.generateKey();
     }

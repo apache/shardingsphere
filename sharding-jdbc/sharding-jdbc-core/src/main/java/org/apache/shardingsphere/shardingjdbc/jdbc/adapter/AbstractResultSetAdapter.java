@@ -20,15 +20,15 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.route.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -57,23 +57,22 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
-    @Getter
-    private final ShardingExecutionContext shardingExecutionContext;
+    private final SQLRouteResult sqlRouteResult;
     
     @Getter(AccessLevel.PROTECTED)
     private final Map<String, String> logicAndActualColumns; 
     
-    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ShardingExecutionContext shardingExecutionContext) {
+    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final SQLRouteResult sqlRouteResult) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
-        this.shardingExecutionContext = shardingExecutionContext;
+        this.sqlRouteResult = sqlRouteResult;
         logicAndActualColumns = createLogicAndActualColumns();
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), shardingExecutionContext.getSqlStatementContext(), logicAndActualColumns);
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), sqlRouteResult.getSqlStatementContext(), logicAndActualColumns);
     }
     
     private Map<String, String> createLogicAndActualColumns() {
@@ -82,7 +81,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private Map<String, String> createLogicAndCipherColumns() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (String each : shardingExecutionContext.getSqlStatementContext().getTablesContext().getTableNames()) {
+        for (String each : sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()) {
             result.putAll(getShardingRule().getEncryptRule().getLogicAndCipherColumns(each));
         }
         return result;
@@ -90,7 +89,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private Map<String, String> createLogicAndPlainColumns() {
         Map<String, String> result = new LinkedHashMap<>();
-        for (String each : shardingExecutionContext.getSqlStatementContext().getTablesContext().getTableNames()) {
+        for (String each : sqlRouteResult.getSqlStatementContext().getTablesContext().getTableNames()) {
             result.putAll(getShardingRule().getEncryptRule().getLogicAndPlainColumns(each));
         }
         return result;
@@ -104,8 +103,8 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     private boolean isQueryWithCipherColumn() {
         return statement instanceof ShardingPreparedStatement
-                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN)
-                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN)
+                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
     }
     
     @Override

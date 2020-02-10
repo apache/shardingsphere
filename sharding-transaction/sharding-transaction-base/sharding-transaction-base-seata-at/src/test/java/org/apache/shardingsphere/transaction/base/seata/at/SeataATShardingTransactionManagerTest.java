@@ -29,8 +29,8 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
+import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
@@ -57,7 +57,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SeataATShardingTransactionManagerTest {
+public class SeataATShardingTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
     
@@ -97,7 +97,7 @@ public final class SeataATShardingTransactionManagerTest {
     
     @After
     public void tearDown() {
-        ExecutorDataMap.getValue().clear();
+        ShardingExecuteDataMap.getDataMap().clear();
         RootContext.unbind();
         SeataTransactionHolder.clear();
         seataATShardingTransactionManager.close();
@@ -136,7 +136,7 @@ public final class SeataATShardingTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
-        assertTrue(ExecutorDataMap.getValue().containsKey("SEATA_TX_XID"));
+        assertTrue(ShardingExecuteDataMap.getDataMap().containsKey("SEATA_TX_XID"));
         assertTrue(seataATShardingTransactionManager.isInTransaction());
         assertResult();
     }

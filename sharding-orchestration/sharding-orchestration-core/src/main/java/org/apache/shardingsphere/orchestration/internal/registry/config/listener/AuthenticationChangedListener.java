@@ -19,13 +19,13 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.listene
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingConfigCenterEventListener;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Authentication changed listener.

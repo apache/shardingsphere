@@ -51,7 +51,7 @@ public final class ShardingDataSourceFactoryTest {
         Properties props = new Properties();
         DataSource dataSource = ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, props);
         assertNotNull(getShardingRule(dataSource));
-        assertThat(getProperties(dataSource), is(props));
+        assertThat(getShardingProperties(dataSource), is(props));
     }
     
     private Map<String, DataSource> getDataSourceMap() throws SQLException {
@@ -90,10 +90,10 @@ public final class ShardingDataSourceFactoryTest {
     }
     
     @SneakyThrows
-    private Properties getProperties(final DataSource dataSource) {
+    private Properties getShardingProperties(final DataSource dataSource) {
         Field field = dataSource.getClass().getDeclaredField("runtimeContext");
         field.setAccessible(true);
         ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) field.get(dataSource);
-        return runtimeContext.getProperties().getProps();
+        return runtimeContext.getProps().getProps();
     }
 }

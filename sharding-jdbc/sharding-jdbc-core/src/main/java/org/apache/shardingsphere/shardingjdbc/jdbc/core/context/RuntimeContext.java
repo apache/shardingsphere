@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
+import org.apache.shardingsphere.core.execute.ShardingExecuteEngine;
+import org.apache.shardingsphere.core.parse.SQLParseEngine;
+import org.apache.shardingsphere.core.rule.BaseRule;
+import org.apache.shardingsphere.spi.database.DatabaseType;
 
 /**
  * Runtime context.
@@ -44,7 +44,7 @@ public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
      *
      * @return properties
      */
-    ShardingSphereProperties getProperties();
+    ShardingProperties getProps();
     
     /**
      * Get database type.
@@ -58,7 +58,7 @@ public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {
      * 
      * @return execute engine
      */
-    ExecutorEngine getExecutorEngine();
+    ShardingExecuteEngine getExecuteEngine();
     
     /**
      * Get parse engine.

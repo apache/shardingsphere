@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.strategy.route;
 
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 
 import java.util.Collection;
 
@@ -41,8 +40,7 @@ public interface ShardingStrategy {
      *
      * @param availableTargetNames available data sources or tables's names
      * @param shardingValues sharding values
-     * @param properties ShardingSphere properties
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<RouteValue> shardingValues, ShardingSphereProperties properties);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<RouteValue> shardingValues);
 }

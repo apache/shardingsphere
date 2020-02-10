@@ -32,7 +32,7 @@ import java.util.List;
  */
 @Getter
 @XmlRootElement(name = "integrate-test-cases")
-public final class DQLIntegrateTestCases implements IntegrateTestCases {
+public class DQLIntegrateTestCases implements IntegrateTestCases {
     
     @XmlElement(name = "dql-test-case")
     private List<DQLIntegrateTestCase> integrateTestCases = new LinkedList<>();

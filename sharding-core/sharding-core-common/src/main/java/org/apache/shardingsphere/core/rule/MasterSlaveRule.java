@@ -20,11 +20,10 @@ package org.apache.shardingsphere.core.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmServiceLoader;
+import org.apache.shardingsphere.core.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Databases and tables master-slave rule.
@@ -39,13 +38,13 @@ public class MasterSlaveRule implements BaseRule {
     
     private final String masterDataSourceName;
     
-    private final List<String> slaveDataSourceNames;
+    private final Collection<String> slaveDataSourceNames;
     
     private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
     
     private final MasterSlaveRuleConfiguration ruleConfiguration;
     
-    public MasterSlaveRule(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
+    public MasterSlaveRule(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
         this.name = name;
         this.masterDataSourceName = masterDataSourceName;
         this.slaveDataSourceNames = slaveDataSourceNames;

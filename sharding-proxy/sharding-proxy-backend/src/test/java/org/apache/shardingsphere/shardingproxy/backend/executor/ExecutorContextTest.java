@@ -26,6 +26,6 @@ public final class ExecutorContextTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(BackendExecutorContext.getInstance().getExecutorEngine()));
+        assertThat(BackendExecutorContext.getInstance().getExecuteEngine(), is(BackendExecutorContext.getInstance().getExecuteEngine()));
     }
 }
