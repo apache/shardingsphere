@@ -27,10 +27,9 @@ import java.util.Collection;
  *
  * @author ssxlulu
  */
-public class PostgreSQLDatasourceChecker extends AbstractDatasourceChecker {
+public final class PostgreSQLDatasourceChecker extends AbstractDatasourceChecker {
 
     @Override
     public void checkPrivilege(final Collection<DataSource> dataSources) {
-
     }
 }
