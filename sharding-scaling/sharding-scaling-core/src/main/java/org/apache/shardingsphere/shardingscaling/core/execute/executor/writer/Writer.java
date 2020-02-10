@@ -36,8 +36,6 @@ public interface Writer extends SyncRunner {
 
     /**
      * write data to channel.
-     *
-     * @param channel channel
      */
-    void write(Channel channel);
+    void write();
 }

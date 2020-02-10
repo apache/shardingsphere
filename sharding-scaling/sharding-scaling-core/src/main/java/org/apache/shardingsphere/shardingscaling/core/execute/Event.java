@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,13 +25,11 @@ import lombok.RequiredArgsConstructor;
  *
  * @author avalon566
  */
-@Data
 @RequiredArgsConstructor
+@Getter
 public class Event {
 
     private final String taskId;
 
     private final EventType eventType;
-
-    private Object payload;
 }

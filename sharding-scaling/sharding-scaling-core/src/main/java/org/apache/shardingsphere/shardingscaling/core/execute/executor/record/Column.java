@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.record;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Column.
  *
  * @author avalon566
  */
-@Data
-@AllArgsConstructor
+@Getter
+@RequiredArgsConstructor
 public final class Column {
     
-    private Object value;
+    private final Object value;
 
-    private boolean updated;
+    private final boolean updated;
 }

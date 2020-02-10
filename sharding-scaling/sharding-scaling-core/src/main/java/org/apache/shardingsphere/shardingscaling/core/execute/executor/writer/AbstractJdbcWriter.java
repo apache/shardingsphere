@@ -78,11 +78,11 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     @Override
     public final void run() {
         start();
-        write(channel);
+        write();
     }
     
     @Override
-    public final void write(final Channel channel) {
+    public final void write() {
         try {
             while (isRunning()) {
                 List<Record> records = channel.fetchRecords(100, 3);

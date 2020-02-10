@@ -88,10 +88,6 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
         return result;
     }
     
-    private synchronized void releaseWorkerThread() {
-        availableWorkerThread++;
-    }
-    
     private void addReleaseWorkerThreadCallback(final ListenableFuture listenableFuture) {
         Futures.addCallback(listenableFuture, new FutureCallback() {
         
@@ -105,5 +101,9 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
                 releaseWorkerThread();
             }
         });
+    }
+    
+    private synchronized void releaseWorkerThread() {
+        availableWorkerThread++;
     }
 }
