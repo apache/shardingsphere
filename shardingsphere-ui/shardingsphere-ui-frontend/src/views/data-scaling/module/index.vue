@@ -502,7 +502,11 @@ export default {
         sumEstimatedRows += v.estimatedRows
         sumSyncedRows += v.syncedRows
       }
-      return nDecimal(sumSyncedRows / sumEstimatedRows, 2) * 100
+      let res = 0
+      if (sumEstimatedRows) {
+        res = sumSyncedRows / sumEstimatedRows
+      }
+      return nDecimal(res, 2) * 100
     },
     getOption(obj) {
       let data = 0
