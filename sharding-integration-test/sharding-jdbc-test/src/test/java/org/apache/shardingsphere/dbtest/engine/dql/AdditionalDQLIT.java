@@ -42,8 +42,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class AdditionalDQLIT extends BaseDQLIT {
     
-    private static IntegrateTestEnvironment integrateTestEnvironment = IntegrateTestEnvironment.getInstance();
-    
     private final DQLIntegrateTestCaseAssertion assertion;
     
     public AdditionalDQLIT(final String sqlCaseId, final String path, final DQLIntegrateTestCaseAssertion assertion, final String shardingRuleType,
@@ -54,7 +52,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Parameters(name = "{0} -> Rule:{3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return integrateTestEnvironment.isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL) : Collections.<Object[]>emptyList();
+        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL) : Collections.<Object[]>emptyList();
     }
     
     @Test

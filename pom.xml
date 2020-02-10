@@ -25,26 +25,33 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>4.0.0-RC3-SNAPSHOT</version>
+    <version>5.0.0-RC1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-spi</module>
+        
+        <module>shardingsphere-sql-parser</module>
+        <module>shardingsphere-underlying</module>
+        
         <module>sharding-core</module>
+        <module>encrypt-core</module>
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
-        <module>sharding-ui</module>
         
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module> 
         <module>sharding-opentracing</module>
-    
+        
         <module>sharding-spring</module>
         <module>sharding-sql-test</module>
         
         <module>sharding-distribution</module>
         <module>sharding-integration-test</module>
+        <module>shadow-core</module>
+        <module>master-slave-core</module>
     </modules>
     
     <properties>
@@ -56,7 +63,7 @@
         <guava.version>18.0</guava.version>
         <slf4j.version>1.7.7</slf4j.version>
         
-        <antlr4.version>4.7.1</antlr4.version>
+        <antlr4.version>4.7.2</antlr4.version>
         
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
@@ -76,7 +83,7 @@
         <opentracing.version>0.30.0</opentracing.version>
         <apollo.client.version>1.5.0</apollo.client.version>
         
-        <lombok.version>1.16.4</lombok.version>
+        <lombok.version>1.16.20</lombok.version>
         
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
@@ -87,17 +94,16 @@
         <logback.version>1.2.0</logback.version>
         
         <hikari-cp.version>2.4.11</hikari-cp.version>
-        <alibaba.druid.version>1.1.11</alibaba.druid.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
-        <tomcat-dbcp.version>9.0.14</tomcat-dbcp.version>
         <commons-pool.version>1.6</commons-pool.version>
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
-        <postgresql.version>42.2.5</postgresql.version>
+        <postgresql.version>42.2.5.jre7</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
 
         <!-- Plugin versions -->
+        <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
@@ -116,20 +122,18 @@
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
-        <jacoco.version>0.7.9</jacoco.version>
+        <jacoco.version>0.8.0</jacoco.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
-        <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
-        <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+        <argLine>-Xmx1024m -XX:MaxMetaspaceSize=256m</argLine>
     </properties>
     
     <dependencyManagement>
@@ -147,6 +151,11 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             
@@ -327,6 +336,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-configuration-processor</artifactId>
                 <version>${spring-boot.version}</version>
+                <scope>provided</scope>
                 <optional>true</optional>
             </dependency>
             
@@ -380,12 +390,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>${alibaba.druid.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons-pool.version}</version>
@@ -401,12 +405,6 @@
                         <artifactId>commons-pool</artifactId>
                     </exclusion>
                 </exclusions>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-dbcp</artifactId>
-                <version>${tomcat-dbcp.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -724,7 +722,7 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>org/apache/shardingsphere/core/parse/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/sql/parser/autogen/*.class</exclude>
                             <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
                             <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
                             <exclude>org/apache/shardingsphere/**/Test*.class</exclude>
@@ -793,6 +791,12 @@
                         <exclude>**/.eslintignore</exclude>
                         <exclude>**/package.json</exclude>
                         <exclude>**/assets/**</exclude>
+                        <exclude>**/dist/**</exclude>
+                        <exclude>**/etc/**</exclude>
+                        <exclude>**/node/**</exclude>
+                        <exclude>**/node_modules/**</exclude>
+                        <exclude>**/test/coverage/**</exclude>
+                        <exclude>**/package-lock.json</exclude>
                     </excludes>
                 </configuration>
                 <executions>

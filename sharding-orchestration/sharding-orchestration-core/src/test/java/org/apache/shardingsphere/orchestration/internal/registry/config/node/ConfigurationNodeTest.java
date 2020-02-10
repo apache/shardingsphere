@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.internal.registry.config.node;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.junit.Test;
 
 import java.util.Collection;

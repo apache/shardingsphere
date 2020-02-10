@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.core.database.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
-import org.apache.shardingsphere.spi.database.DatabaseType;
+import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -175,7 +175,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         doReturn(true).when(shardingStatement1).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement1).getRoutedStatements();
         assertThat(shardingStatement1.getUpdateCount(), is(Integer.MAX_VALUE));
-        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), null));
+        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), sql));
         doReturn(true).when(shardingStatement2).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement2).getRoutedStatements();
         assertThat(shardingStatement2.getUpdateCount(), is(Integer.MAX_VALUE));
@@ -191,7 +191,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
         doReturn(false).when(shardingStatement1).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement1).getRoutedStatements();
         assertThat(shardingStatement1.getUpdateCount(), is(10));
-        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), null));
+        ShardingPreparedStatement shardingStatement2 = spy(new ShardingPreparedStatement(getShardingDataSource().getConnection(), sql));
         doReturn(false).when(shardingStatement2).isAccumulate();
         doReturn(Lists.newArrayList(statement1, statement2)).when(shardingStatement2).getRoutedStatements();
         assertThat(shardingStatement2.getUpdateCount(), is(10));

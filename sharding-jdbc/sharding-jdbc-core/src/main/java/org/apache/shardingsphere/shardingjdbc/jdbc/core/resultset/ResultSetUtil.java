@@ -22,7 +22,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -112,7 +112,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return value.toString();
             default:
-                throw new ShardingException("Unsupported data type: %s", convertType);
+                throw new ShardingSphereException("Unsupported data type: %s", convertType);
         }
     }
     
@@ -128,7 +128,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return date.toString();
             default:
-                throw new ShardingException("Unsupported Date type: %s", convertType);
+                throw new ShardingSphereException("Unsupported Date type: %s", convertType);
         }
     }
     

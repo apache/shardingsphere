@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.center.configuration;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.api.config.TypeBasedSPIConfiguration;
+import org.apache.shardingsphere.underlying.common.config.TypeBasedSPIConfiguration;
 
 /**
  * Orchestration Instance Configuration.

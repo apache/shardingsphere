@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.core.execute.ShardingExecuteDataMap;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
 
 import java.util.Map;
 
@@ -33,7 +33,7 @@ class SeataTransactionBroadcaster {
     
     static void collectGlobalTxId() {
         if (RootContext.inGlobalTransaction()) {
-            ShardingExecuteDataMap.getDataMap().put(SEATA_TX_XID, RootContext.getXID());
+            ExecutorDataMap.getValue().put(SEATA_TX_XID, RootContext.getXID());
         }
     }
     
@@ -44,6 +44,6 @@ class SeataTransactionBroadcaster {
     }
 
     static void clear() {
-        ShardingExecuteDataMap.getDataMap().remove(SEATA_TX_XID);
+        ExecutorDataMap.getValue().remove(SEATA_TX_XID);
     }
 }

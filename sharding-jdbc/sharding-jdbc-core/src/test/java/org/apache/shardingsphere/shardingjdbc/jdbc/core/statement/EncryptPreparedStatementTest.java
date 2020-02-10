@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import org.apache.shardingsphere.core.database.DatabaseTypes;
-import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractEncryptJDBCDatabaseAndTableTest;
 import org.junit.Test;
 
@@ -36,21 +36,25 @@ import static org.junit.Assert.assertTrue;
 
 public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatabaseAndTableTest {
     
-    private static final String INSERT_SQL = "insert into t_query_encrypt(id, pwd) values(?,?)";
+    private static final String INSERT_SQL = "INSERT INTO t_query_encrypt(id, pwd) VALUES(?,?)";
     
-    private static final String INSERT_GENERATED_KEY_SQL = "insert into t_query_encrypt(pwd) values('b')";
+    private static final String INSERT_GENERATED_KEY_SQL = "INSERT INTO t_query_encrypt(pwd) VALUES('b')";
     
-    private static final String DELETE_SQL = "delete from t_query_encrypt where pwd = ? and id = ?";
+    private static final String DELETE_SQL = "DELETE FROM t_query_encrypt WHERE pwd = ? AND id = ?";
     
-    private static final String UPDATE_SQL = "update t_query_encrypt set pwd =? where pwd = ?";
+    private static final String UPDATE_SQL = "UPDATE t_query_encrypt SET pwd =? WHERE pwd = ?";
     
-    private static final String SELECT_SQL = "select * from t_query_encrypt where pwd = ? ";
+    private static final String SELECT_SQL = "SELECT * FROM t_query_encrypt WHERE pwd = ? ";
     
-    private static final String SELECT_ALL_SQL = "select id, cipher_pwd, assist_pwd from t_query_encrypt";
+    private static final String SELECT_ALL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";
+    
+    private static final String SELECT_SQL_WITH_IN_OPERATOR = "SELECT * FROM t_query_encrypt WHERE pwd IN (?)";
+    
+    private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
     
     @Test
     public void assertSqlShow() throws SQLException {
-        assertTrue(getEncryptConnectionWithProps().getRuntimeContext().getProps().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
+        assertTrue(getEncryptConnectionWithProps().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
     }
     
     @Test
@@ -162,6 +166,49 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
                 count += 1;
             }
             assertThat(count - 1, is(resultSetCount));
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithNull() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(null)) {
+            statement.executeQuery();
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertQueryWithEmptyString() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement("")) {
+            statement.executeQuery();
+        }
+    }
+    
+    @Test
+    public void assertSelectWithInOperator() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL_WITH_IN_OPERATOR)) {
+            statement.setObject(1, 'a');
+            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+            assertThat(metaData.getColumnCount(), is(2));
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                assertThat(metaData.getColumnLabel(1), is("id"));
+                assertThat(metaData.getColumnLabel(2), is("pwd"));
+            }
+        }
+    }
+    
+    @Test
+    public void assertSelectWithPlainColumnForContainsColumn() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
+            statement.setObject(1, "plainValue");
+            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+            assertThat(metaData.getColumnCount(), is(5));
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                assertThat(metaData.getColumnLabel(1), is("id"));
+                assertThat(metaData.getColumnLabel(2), is("cipher_pwd"));
+                assertThat(metaData.getColumnLabel(3), is("plain_pwd"));
+                assertThat(metaData.getColumnLabel(4), is("cipher_pwd2"));
+                assertThat(metaData.getColumnLabel(5), is("plain_pwd2"));
+            }
         }
     }
 }
