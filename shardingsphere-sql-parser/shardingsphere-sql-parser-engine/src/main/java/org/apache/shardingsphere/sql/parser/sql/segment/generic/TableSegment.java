@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
  * @author panjuan
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @ToString
 public final class TableSegment implements SQLSegment, TableAvailable, OwnerAvailable<SchemaSegment>, AliasAvailable {
     
@@ -48,13 +50,6 @@ public final class TableSegment implements SQLSegment, TableAvailable, OwnerAvai
     private SchemaSegment owner;
     
     private String alias;
-    
-    public TableSegment(final int startIndex, final int stopIndex, final String name) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.name = SQLUtil.getExactlyValue(name);
-        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
-    }
     
     @Override
     public int getStartIndex() {

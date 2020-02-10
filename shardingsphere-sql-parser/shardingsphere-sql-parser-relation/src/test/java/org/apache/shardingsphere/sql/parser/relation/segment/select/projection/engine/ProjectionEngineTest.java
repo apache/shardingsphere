@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
@@ -59,7 +60,7 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
-        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("text", new ColumnSegment(0, 10, "name"));
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("text", new ColumnSegment(0, 10, "name", QuoteCharacter.NONE));
         columnProjectionSegment.setAlias("alias");
         Optional<Projection> actual = new ProjectionEngine().createProjection(null, columnProjectionSegment);
         assertTrue(actual.isPresent());
