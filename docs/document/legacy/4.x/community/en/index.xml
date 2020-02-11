@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/community/en/</link>
+    <description>Recent content on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/community/en/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Subscribe Guide</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/subscribe/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/subscribe/</guid>
+      <description>During the process of using ShardingSphere, if there is any problem, suggestion or new idea, you can use Apache mailing-list to participate in the community construction.
+ Send e-mail to subscribe. Use your mailbox to send an e-mail to dev-subscribe@shardingsphere.apache.org with any subject or content.
+ Receive and reply the confirmation e-mail. After Step 1, you will receive a confirmation e-mail from dev-help@shardingsphere.apache.org (if you have not receive that, please check “RSS feeds”, “junk e-mail” or other items).</description>
+    </item>
+    
+    <item>
+      <title>Contributor Guide</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/contributor/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/contributor/</guid>
+      <description>You can report a bug, submit a new function enhancement suggestion, or submit a pull request directly.
+Submit an Issue  Before submitting an issue, please go through a comprehensive search to make sure the problem cannot be solved just by searching. Check the Issue List to make sure the problem is not repeated. Create a new issue and choose the type of issue. Define the issue with a clear and descriptive title.</description>
+    </item>
+    
+    <item>
+      <title>Committer Guide</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/committer/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/committer/</guid>
+      <description>Committer Promotion The ShardingSphere community follows the Apache Community’s process on accepting a new committer. After a contributor participate ShardingSphere community actively, (P)PMC and Committers will make decision to invite the contributor join Committers and (P)PMC.
+Processes are:
+ Start the discussion and vote in @private. Only current PMC member could nominate; If the vote passes, send an offer to become a committer with @private CC’ed; New committer sign ICLA and apply Apache ID and email address; Update Team page.</description>
+    </item>
+    
+    <item>
+      <title>Code of Conduct</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/code-conduct/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/code-conduct/</guid>
+      <description>The following code of conduct is based on full compliance with ASF CODE OF CONDUCT.
+Development Guidelines  Write codes with heart. Pursue clean, simplified and extremely elegant codes. Agree with concepts in &amp;lt;Refactoring: Improving the Design of Existing Code&amp;gt; and &amp;lt;Clean Code: A Handbook of Agile Software Craftsmanship&amp;gt;. Be familiar with codes already had, to keep consistent with the style and use. Highly reusable, no duplicated codes or configurations.</description>
+    </item>
+    
+    <item>
+      <title>Documents Contributor Guide</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/document-contributor/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/document-contributor/</guid>
+      <description>If you want to help contribute shardingsphere documents or websites, we are happy to help you! Anyone can contribute, whether you&amp;rsquo;re new to a project or have been using shardingsphere for a long time, whether you&amp;rsquo;re a self identified developer, end-user, or someone who can&amp;rsquo;t stand typos,can contribute to documents or websites. In the contributor guide, we have mentioned how to submit Issues and pull request. here we will introduce how to submit pull request to document.</description>
+    </item>
+    
+    <item>
+      <title>Release Guide</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/release/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/release/</guid>
+      <description>GPG Settings Install GPG Download installation package on official GnuPG website. The command of GnuPG 1.x version can differ a little from that of 2.x version. The following instructions take GnuPG-2.1.23 version for example. After the installation, execute the following command to check the version number.
+gpg --version  Create Key After the installation, execute the following command to create key.
+This command indicates GnuPG-2.x can be used:
+gpg --full-gen-key  This command indicates GnuPG-1.</description>
+    </item>
+    
+    <item>
+      <title>2FA</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/2fa/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/community/en/contribute/2fa/</guid>
+      <description>Two-factor authentication(2FA) Two factor authentication (2FA) refers to the authentication method that combines both passport and an object (credit card, SMS phone, token or biomarkers as fingerprint) to identify a user. To ensure the security of the committer’s account, we need you to enable 2FA to sign in and contribute codes on GitHub.
+More details, please refer to 2FA.
+ To be noticed: If you do not enable 2FA, you will be removed from the project and unable to access our repositories and the fork from our private repository.</description>
+    </item>
+    
+  </channel>
+</rss>

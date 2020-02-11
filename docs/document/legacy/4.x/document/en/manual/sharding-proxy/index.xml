@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sharding-Proxy on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/</link>
+    <description>Recent content in Sharding-Proxy on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Manual</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/usage/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/usage/</guid>
+      <description>Proxy Initialization  Download the latest version of Sharding-Proxy. If users use docker, they can implement docker pull shardingsphere/sharding-proxy to get the clone. Please refer to Docker Clone for more details. After the decompression, revise conf/server.yaml and documents begin with config- prefix, conf/config-xxx.yaml for example, to configure sharding rules and read-write split rules. Please refer to Configuration Manual for the configuration method. Please run bin/start.sh for Linux operating system; run bin/start.</description>
+    </item>
+    
+    <item>
+      <title>Configuration Manual</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/configuration/</guid>
+      <description>Data Source and Sharding Configuration Instance Sharding-Proxy supports multiple logic data source, each one of which is a yalm configuration document named with config- prefix. The following is the configuration instance of config-xxx.yaml.
+Data Sharding dataSources:
+schemaName: sharding_db dataSources: ds0: url: jdbc:postgresql://localhost:5432/ds0 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 ds1: url: jdbc:postgresql://localhost:5432/ds1 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 shardingRule: tables: t_order: actualDataNodes: ds${0.</description>
+    </item>
+    
+    <item>
+      <title>Docker Clone</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/docker/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/docker/</guid>
+      <description>Pull Official Docker Clone docker pull apache/sharding-proxy  Build Docker Clone Manually (Optional) git clone https://github.com/apache/incubator-shardingsphere mvn clean install cd sharding-distribution/sharding-proxy-distribution mvn clean package docker:build  Configure Sharding-Proxy Create /${your_work_dir}/conf/config.yaml document to configure sharding rules. Please refer to Configuration Manual for the configuration method.
+Run Docker docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 apache/sharding-proxy:latest  You can define port 3308 and 13308 by yourself. 3308 refers to docker port; 13308 refers to the host port.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sharding-Proxy on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/</link>
+    <description>Recent content in Sharding-Proxy on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用手册</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/usage/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/usage/</guid>
+      <description>Proxy启动  下载Sharding-Proxy的最新发行版。 如果使用docker，可以执行docker pull shardingsphere/sharding-proxy获取镜像。详细信息请参考Docker镜像。 解压缩后修改conf/server.yaml和以config-前缀开头的文件，如：conf/config-xxx.yaml文件，进行分片规则、读写分离规则配置. 配置方式请参考配置手册。 Linux操作系统请运行bin/start.sh，Windows操作系统请运行bin/start.bat启动Sharding-Proxy。如需配置启动端口、配置文件位置，可参考快速入门 进行启动。 使用任何PostgreSQL的客户端连接。如: psql -U root -h 127.0.0.1 -p 3307  注册中心使用 若想使用Sharding-Proxy的数据库治理功能，则需要使用注册中心实现实例熔断和从库禁用功能。详情请参考支持的注册中心。
+Zookeeper  Sharding-Proxy默认提供了Zookeeper的注册中心解决方案。您只需按照配置规则进行注册中心的配置，即可使用。  其他第三方注册中心  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 使用SPI方式实现相关逻辑编码，并将生成的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  使用自定义分片算法 当用户需要使用自定义的分片算法类时，无法再通过简单的inline表达式在yaml文件进行配置。可通过以下方式配置使用自定义分片算法。
+ 实现ShardingAlgorithm接口定义的算法实现类。 将上述java文件打包成jar包。 将上述jar包拷贝至ShardingProxy解压后的conf/lib目录下。 将上述自定义算法实现类的java文件引用配置在yaml文件里tableRule的algorithmClassName属性上，具体可参考配置规则。  分布式事务 Sharding-Proxy接入的分布式事务API同Sharding-JDBC保持一致，支持LOCAL，XA，BASE类型的事务。
+XA事务 Sharding-Proxy原生支持XA事务，默认的事务管理器为Atomikos。 可以通过在Sharding-Proxy的conf目录中添加jta.properties来定制化Atomikos配置项。 具体的配置规则请参考Atomikos的官方文档。
+BASE事务 BASE目前没有打包到Sharding-Proxy中，使用时需要将实现了ShardingTransactionManagerSPI的jar拷贝至conf/lib目录，然后切换事务类型为BASE。
+SCTL (Sharding-Proxy control language) SCTL为Sharding-Proxy特有的控制语句，可以在运行时修改和查询Sharding-Proxy的状态，目前支持的语法为：
+   语句 说明     sctl:set transaction_type=XX 修改当前TCP连接的事务类型, 支持LOCAL，XA，BASE。例：sctl:set transaction_type=XA   sctl:show transaction_type 查询当前TCP连接的事务类型   sctl:show cached_connections 查询当前TCP连接中缓存的物理数据库连接个数   sctl:explain SQL语句 查看逻辑SQL的执行计划，例：sctl:explain select * from t_order;   sctl:hint set MASTER_ONLY=true 针对当前TCP连接，是否将数据库操作强制路由到主库   sctl:hint set DatabaseShardingValue=yy 针对当前TCP连接，设置hint仅对数据库分片有效，并添加分片值，yy：数据库分片值   sctl:hint addDatabaseShardingValue xx=yy 针对当前TCP连接，为表xx添加分片值yy，xx：逻辑表名称，yy：数据库分片值   sctl:hint addTableShardingValue xx=yy 针对当前TCP连接，为表xx添加分片值yy，xx：逻辑表名称，yy：表分片值   sctl:hint clear 针对当前TCP连接，清除hint所有设置   sctl:hint show status 针对当前TCP连接，查询hint状态，master_only:true/false，sharding_type:databases_only/databases_tables   sctl:hint show table status 针对当前TCP连接，查询逻辑表的hint分片值    Sharding-Proxy 默认不支持hint，如需支持，请在conf/server.</description>
+    </item>
+    
+    <item>
+      <title>配置手册</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/configuration/</guid>
+      <description>数据源与分片配置示例 Sharding-Proxy支持多逻辑数据源，每个以config-前缀命名的yaml配置文件，即为一个逻辑数据源。以下是config-xxx.yaml的配置配置示例。
+数据分片 dataSources:
+schemaName: sharding_db dataSources: ds0: url: jdbc:postgresql://localhost:5432/ds0 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 ds1: url: jdbc:postgresql://localhost:5432/ds1 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 shardingRule: tables: t_order: actualDataNodes: ds${0..1}.t_order${0..1} databaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order${order_id % 2} keyGenerator: type: SNOWFLAKE column: order_id t_order_item: actualDataNodes: ds${0..1}.t_order_item${0..1} databaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order_item${order_id % 2} keyGenerator: type: SNOWFLAKE column: order_item_id bindingTables: - t_order,t_order_item defaultTableStrategy: none:  读写分离 schemaName: master_slave_db dataSources: ds_master: url: jdbc:postgresql://localhost:5432/ds_master username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 ds_slave0: url: jdbc:postgresql://localhost:5432/ds_slave0 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 ds_slave1: url: jdbc:postgresql://localhost:5432/ds_slave1 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 masterSlaveRule: name: ds_ms masterDataSourceName: ds_master slaveDataSourceNames: - ds_slave0 - ds_slave1  数据脱敏 schemaName: encrypt_db dataSource: url: jdbc:mysql://127.</description>
+    </item>
+    
+    <item>
+      <title>Docker镜像</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/docker/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-proxy/docker/</guid>
+      <description>拉取官方Docker镜像 docker pull apache/sharding-proxy  手动构建Docker镜像（可选） git clone https://github.com/apache/incubator-shardingsphere mvn clean install cd sharding-sphere/sharding-distribution/sharding-proxy-distribution mvn clean package docker:build  配置Sharding-Proxy 创建/${your_work_dir}/conf/config.yaml文件，进行分片规则配置。配置方式请参考配置手册。
+运行Docker docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 apache/sharding-proxy:latest  可以自定义端口3308和13308。3308表示docker容器端口, 13308表示宿主机端口。
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS=&amp;quot;-Djava.awt.headless=true&amp;quot; --env PORT=3308 -p13308:3308 apache/sharding-proxy:latest  可以自定义JVM相关参数到环境变量JVM_OPTS中。
+访问Sharding-Proxy 与连接PostgreSQL的方式相同。
+psql -U ${your_user_name} -h ${your_host} -p 13308  FAQ 问题1：I/O exception (java.io.IOException) caught when processing request to {}-&amp;gt;unix://localhost:80: Connection refused？</description>
+    </item>
+    
+  </channel>
+</rss>

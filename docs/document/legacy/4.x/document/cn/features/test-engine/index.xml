@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>测试引擎 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/</link>
+    <description>Recent content in 测试引擎 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SQL测试用例</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/sql-case/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/sql-case/</guid>
+      <description>目标 SQL测试用例的代码位于 sharding-sql-test 模块下。该测试用例的作用主要有两个：
+ 通过单元测试，测试通配符的替换以及 SQLCasesLoader 的稳定性。 将SQL测试用例中 resources 下定义的所有 SQL 共享给其他项目。  待测试的 SQL 存放在 /sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml文件中。例如：
+&amp;lt;sql-cases&amp;gt; &amp;lt;sql-case id=&amp;quot;select_constant_without_table&amp;quot; value=&amp;quot;SELECT 1 as a&amp;quot; /&amp;gt; &amp;lt;sql-case id=&amp;quot;select_with_same_table_name_and_alias&amp;quot; value=&amp;quot;SELECT t_order.* FROM t_order t_order WHERE user_id = ? AND order_id = ?&amp;quot; /&amp;gt; &amp;lt;sql-case id=&amp;quot;select_with_same_table_name_and_alias_column_with_owner&amp;quot; value=&amp;quot;SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?&amp;quot; db-types=&amp;quot;MySQL,H2&amp;quot;/&amp;gt; &amp;lt;/sql-cases&amp;gt;  开发者通过该文件指定待断言的 SQL 以及该 SQL 所适配的数据库类型。将 sharding-sql-test 提取为单独的模块，以保证每个 SQL 用例可以在不同模块的测试引擎中共享。</description>
+    </item>
+    
+    <item>
+      <title>整合测试引擎</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/integration-test-engine/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/integration-test-engine/</guid>
+      <description>流程 Junit 中的 Parameterized 会聚合起所有的测试数据，并将测试数据一一传递给测试方法进行断言。数据处理就像是沙漏中的流沙：
+配置  环境类文件  /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/schema.xml  测试用例类文件  /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/cases/SQL-TYPE/dataset/SHARDING-TYPE/*.xml  sql-case 文件  /sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml   环境配置 集成测试需要真实的数据库环境，根据相应的配置文件创建测试环境：
+首先，修改配置文件 /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env.properties ，例子如下：
+# 测试主键，并发，column index等的开关 run.additional.cases=false # 分片策略，可指定多种策略 sharding.rule.type=db,tbl,dbtbl_with_masterslave,masterslave # 要测试的数据库，可以指定多种数据库(H2,MySQL,Oracle,SQLServer,PostgreSQL) databases=MySQL,PostgreSQL # MySQL配置 mysql.host=127.0.0.1 mysql.port=13306 mysql.username=root mysql.password=root ## PostgreSQL配置 postgresql.host=db.psql postgresql.port=5432 postgresql.username=postgres postgresql.password= ## SQLServer配置 sqlserver.host=db.mssql sqlserver.port=1433 sqlserver.username=sa sqlserver.password=Jdbc1234 ## Oracle配置 oracle.host=db.oracle oracle.port=1521 oracle.username=jdbc oracle.password=jdbc  其次，修改文件 /sharding-integration-test/sharding-jdbc-test/src/test/resources/integrate/env/SQL-TYPE/dataset.xml 在dataset.xml文件中定义元数据和测试数据。例如：
+&amp;lt;dataset&amp;gt; &amp;lt;metadata data-nodes=&amp;quot;tbl.</description>
+    </item>
+    
+    <item>
+      <title>SQL解析测试引擎</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/parse-test-engine/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/parse-test-engine/</guid>
+      <description>数据准备 SQL解析不需要真实的测试环境，开发者只需定义好待测试的SQL，以及解析后的断言数据即可：
+SQL数据 在集成测试的部分提到过sql-case-id，其对应的SQL，可以在不同模块共享。开发者只需要在/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml 添加待测试的SQL即可。
+断言解析数据 断言的解析数据保存在 /sharding-core/sharding-core-parse/sharding-core-parse-test/src/test/resources/sharding/SQL-TYPE/*.xml 在xml文件中，可以针对表名，token，SQL条件等进行断言，例如如下的配置：
+&amp;lt;parser-result-sets&amp;gt; &amp;lt;parser-result sql-case-id=&amp;quot;insert_with_multiple_values&amp;quot;&amp;gt; &amp;lt;tables&amp;gt; &amp;lt;table name=&amp;quot;t_order&amp;quot; /&amp;gt; &amp;lt;/tables&amp;gt; &amp;lt;tokens&amp;gt; &amp;lt;table-token start-index=&amp;quot;12&amp;quot; table-name=&amp;quot;t_order&amp;quot; length=&amp;quot;7&amp;quot; /&amp;gt; &amp;lt;/tokens&amp;gt; &amp;lt;sharding-conditions&amp;gt; &amp;lt;and-condition&amp;gt; &amp;lt;condition column-name=&amp;quot;order_id&amp;quot; table-name=&amp;quot;t_order&amp;quot; operator=&amp;quot;EQUAL&amp;quot;&amp;gt; &amp;lt;value literal=&amp;quot;1&amp;quot; type=&amp;quot;int&amp;quot; /&amp;gt; &amp;lt;/condition&amp;gt; &amp;lt;condition column-name=&amp;quot;user_id&amp;quot; table-name=&amp;quot;t_order&amp;quot; operator=&amp;quot;EQUAL&amp;quot;&amp;gt; &amp;lt;value literal=&amp;quot;1&amp;quot; type=&amp;quot;int&amp;quot; /&amp;gt; &amp;lt;/condition&amp;gt; &amp;lt;/and-condition&amp;gt; &amp;lt;and-condition&amp;gt; &amp;lt;condition column-name=&amp;quot;order_id&amp;quot; table-name=&amp;quot;t_order&amp;quot; operator=&amp;quot;EQUAL&amp;quot;&amp;gt; &amp;lt;value literal=&amp;quot;2&amp;quot; type=&amp;quot;int&amp;quot; /&amp;gt; &amp;lt;/condition&amp;gt; &amp;lt;condition column-name=&amp;quot;user_id&amp;quot; table-name=&amp;quot;t_order&amp;quot; operator=&amp;quot;EQUAL&amp;quot;&amp;gt; &amp;lt;value literal=&amp;quot;2&amp;quot; type=&amp;quot;int&amp;quot; /&amp;gt; &amp;lt;/condition&amp;gt; &amp;lt;/and-condition&amp;gt; &amp;lt;/sharding-conditions&amp;gt; &amp;lt;/parser-result&amp;gt; &amp;lt;/parser-result-sets&amp;gt;  设置好上面两类数据，开发者就可以通过 sharding-core-parse-test 下对应的engine启动SQL解析的测试了。</description>
+    </item>
+    
+    <item>
+      <title>SQL改写测试引擎</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/rewrite-test-engine/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/rewrite-test-engine/</guid>
+      <description>目标 面向逻辑库与逻辑表书写的SQL，并不能够直接在真实的数据库中执行，SQL改写用于将逻辑SQL改写为在真实数据库中可以正确执行的SQL。 它包括正确性改写和优化改写两部分，所以 SQL 改写的测试都是基于这些改写方向进行校验的。
+测试 SQL 改写测试用例位于 sharding-core/sharding-core-rewrite 下的 test 中。SQL 改写的测试主要依赖如下几个部分：
+ 测试引擎 环境配置 验证数据  测试引擎是 SQL 改写测试的入口，跟其他引擎一样，通过 Junit 的 Parameterized 逐条读取 test\resources 目录中测试类型下对应的 xml 文件，然后按读取顺序一一进行验证。
+环境配置存放在 test\resources\yaml 路径中测试类型下对应的 yaml 中。配置了dataSources，shardingRule，encryptRule 等信息，例子如下：
+dataSources: db: !!com.zaxxer.hikari.HikariDataSource driverClassName: org.h2.Driver jdbcUrl: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL username: sa password: ## sharding 规则 shardingRule: tables: t_account: actualDataNodes: db.t_account_${0..1} tableStrategy: inline: shardingColumn: account_id algorithmExpression: t_account_${account_id % 2} keyGenerator: type: TEST column: account_id t_account_detail: actualDataNodes: db.t_account_detail_${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_account_detail_${account_id % 2} bindingTables: - t_account, t_account_detail  验证数据存放在 test\resources 路径中测试类型下对应的 xml 文件中。验证数据中， yaml-rule 指定了环境以及 rule 的配置文件，input 指定了待测试的 SQL 以及参数，output 指定了期待的 SQL 以及参数。 其中 db-type 决定了 SQL 解析的类型，默认为 SQL92, 例如：</description>
+    </item>
+    
+    <item>
+      <title>性能测试</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/performance-test/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/features/test-engine/performance-test/</guid>
+      <description>目标 对Sharding-JDBC，Sharding-Proxy及MySQL进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+脱敏+分库分表，全路由）下，INSERT+UPDATE+DELETE通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将INSERT+SELECT+DELETE作为一组评估性能的关联操作。为了更好的观察效果，设计在一定数据量的基础上，20并发线程持续压测半小时，进行增删改查性能测试。
+测试场景 单路由 在1000数据量的基础上分库分表，根据id分为4个库，根据k分为1024个表，查询操作路由到单库单表。
+主从 基本主从场景，设置一主库一从库，在10000数据量的基础上，观察读写性能。
+主从+脱敏+分库分表 在1000数据量的基础上，根据id分为4个库，根据k分为1024个表，c使用aes加密，pad使用md5加密，查询操作路由到单库单表。
+全路由 在1000数据量的基础上，分库分表，根据id分为4个库，根据k分为1个表，查询操作使用全路由。
+测试环境搭建 数据库表结构 此处表结构参考sysbench的sbtest表
+CREATE TABLE `tbl` ( `id` bigint(20) NOT NULL AUTO_INCREMENT, `k` int(11) NOT NULL DEFAULT 0, `c` char(120) NOT NULL DEFAULT &#39;&#39;, `pad` char(60) NOT NULL DEFAULT &#39;&#39;, PRIMARY KEY (`id`) );  测试场景配置 Sharding-JDBC使用与Sharding-Proxy一致的配置，MySQL直连一个库用作性能对比，下面为四个场景的具体配置：
+单路由配置 schemaName: sharding_db dataSources: ds_0: url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&amp;amp;useSSL=false username: test password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 200 ds_1: url: jdbc:mysql://***.***.***.***:****/ds?serverTimezone=UTC&amp;amp;useSSL=false username: test password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 200 ds_2: url: jdbc:mysql://***.</description>
+    </item>
+    
+  </channel>
+</rss>

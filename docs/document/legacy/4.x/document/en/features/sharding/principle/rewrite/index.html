@@ -1,0 +1,4131 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="https://shardingsphere.apache.org/document/legacy/4.x/document/img/favicon.png" type="image/x-icon" />
+
+    <title>Rewrite Engine :: ShardingSphere</title>
+    
+    
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/nucleus.css?1581407686" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/font-awesome.min.css?1581407686" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/hybrid.css?1581407686" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/featherlight.min.css?1581407686" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/perfect-scrollbar.min.css?1581407686" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/auto-complete.css?1581407686" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/theme.css?1581407686" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/hugo-theme.css?1581407686" rel="stylesheet">
+    
+      <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/css/theme-black.css?1581407686" rel="stylesheet">
+    
+
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/jquery-2.x.min.js?1581407686"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+
+  </head>
+  <body class="" data-url="/en/features/sharding/principle/rewrite/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a href="https://shardingsphere.apache.org/"><img src="https://shardingsphere.apache.org/document/legacy/4.x/document/img/logo_v2.png" /></a>
+
+    </div>
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/overview/" title="Overview" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/overview/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+            <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+          
+          </i>
+          <b>1. </b>Overview
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/quick-start/" title="Quick Start" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>2. </b>Quick Start
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/quick-start/sharding-jdbc-quick-start/" title="Sharding-JDBC" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/sharding-jdbc-quick-start/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>2.1. </b>Sharding-JDBC
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/quick-start/sharding-proxy-quick-start/" title="Sharding-Proxy" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/sharding-proxy-quick-start/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>2.2. </b>Sharding-Proxy
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/" title="Concepts &amp; Features" class="dd-item 
+        parent
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3. </b>Concepts &amp; Features
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/" title="Sharding" class="dd-item 
+        parent
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.1. </b>Sharding
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/concept/" title="Core Concept" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/concept/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.1.1. </b>Core Concept
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/concept/sql/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/sharding/" title="Sharding" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/concept/sharding/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Sharding
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/configuration/" title="Configuration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/concept/configuration/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/principle/" title="Guide to Kernel" class="dd-item 
+        parent
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.1.2. </b>Guide to Kernel
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/parse/" title="Parse Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/parse/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Parse Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/route/" title="Route Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/route/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Route Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/rewrite/" title="Rewrite Engine" class="dd-item active">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/rewrite/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Rewrite Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/execute/" title="Execute Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/execute/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Execute Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/merge/" title="Merger Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/merge/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Merger Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/use-norms/" title="Use Norms" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.1.3. </b>Use Norms
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/use-norms/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/sql/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/use-norms/pagination/" title="Pagination" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/pagination/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Pagination
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/use-norms/parser/" title="Parser" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/parser/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Parser
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/other-features/" title="Other Features" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/other-features/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.1.4. </b>Other Features
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/inline-expression/" title="Inline Expression" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/other-features/inline-expression/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Inline Expression
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/key-generator/" title="Distributed Primary Key" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/other-features/key-generator/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Distributed Primary Key
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/sharding-hint/" title="Sharding Hint" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/other-features/sharding-hint/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Sharding Hint
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/read-write-split/" title="Read-write splitting" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/read-write-split/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.2. </b>Read-write splitting
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/concept/" title="Core Concept" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/read-write-split/concept/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.2.1. </b>Core Concept
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/core-features/" title="Core Features" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/read-write-split/core-features/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.2.2. </b>Core Features
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/unsupported-items/" title="Unsupported Items" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/read-write-split/unsupported-items/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.2.3. </b>Unsupported Items
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/orchestration/" title="Orchestration" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.3. </b>Orchestration
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/config-center/" title="Config Center" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/config-center/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.3.1. </b>Config Center
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/orchestration/" title="Orchestration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/orchestration/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.3.2. </b>Orchestration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/supported-registry-repo/" title="Available Registry Center" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/supported-registry-repo/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.3.3. </b>Available Registry Center
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/apm/" title="APM" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/apm/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.3.4. </b>APM
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/encrypt/" title="Data Masking" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/encrypt/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.3.5. </b>Data Masking
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/transaction/" title="Distributed Transaction" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.4. </b>Distributed Transaction
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/transaction/concept/" title="Core Concept" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.4.1. </b>Core Concept
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/concept/2pc-xa-transaction/" title="2PC Transaction-XA" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/2pc-xa-transaction/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.1.1 </b>2PC Transaction-XA
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/concept/base-transaction-saga/" title="Saga BASE Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/base-transaction-saga/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.1.2 </b>Saga BASE Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/concept/base-transaction-seata/" title="Seata BASE transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/base-transaction-seata/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.1.3 </b>Seata BASE transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/transaction/function/" title="Supported Function" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.4.2. </b>Supported Function
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/function/local-transaction/" title="Local Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/local-transaction/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.2.1 </b>Local Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/function/2pc-xa-transaction/" title="2PC transaction-XA" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/2pc-xa-transaction/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.2.2 </b>2PC transaction-XA
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/function/base-transaction-saga/" title="BASE Transaction saga" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/base-transaction-saga/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.2.3 </b>BASE Transaction saga
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/function/base-transaction-seata/" title="Seata BASE transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/base-transaction-seata/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.2.4 </b>Seata BASE transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/transaction/principle/" title="Principle" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.4.3. </b>Principle
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/principle/2pc-xa-transaction/" title="2PC transaction-XA" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/2pc-xa-transaction/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.3.1 </b>2PC transaction-XA
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/principle/base-transaction-saga/" title="BASE Transaction Saga" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/base-transaction-saga/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.3.2 </b>BASE Transaction Saga
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/principle/base-transaction-seata/" title="Seata BASE transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/base-transaction-seata/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.4.3.3 </b>Seata BASE transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/spi/" title="SPI" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/spi/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+            <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+          
+          </i>
+          <b>3.5. </b>SPI
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/test-engine/" title="Test Engine" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/test-engine/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>3.6. </b>Test Engine
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/test-engine/sql-case/" title="SQL Case" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/test-engine/sql-case/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.6.1. </b>SQL Case
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/test-engine/integration-test-engine/" title="Integration Test Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/test-engine/integration-test-engine/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.6.2. </b>Integration Test Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/test-engine/parse-test-engine/" title="SQL Parse Test Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/test-engine/parse-test-engine/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.6.3. </b>SQL Parse Test Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/test-engine/rewrite-test-engine/" title="SQL Rewrite Test Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/test-engine/rewrite-test-engine/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.6.4. </b>SQL Rewrite Test Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/test-engine/performance-test/" title="Performance Test" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/test-engine/performance-test/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>3.6.5. </b>Performance Test
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/" title="User Manual" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>4. </b>User Manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/" title="Sharding-JDBC" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>4.1. </b>Sharding-JDBC
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/usage/" title="Manual" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/usage/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>4.1.1. </b>Manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/sharding/" title="Sharding" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/usage/sharding/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Sharding
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/read-write-splitting/" title="Read-write Split" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/usage/read-write-splitting/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Read-write Split
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/hint/" title="Hint" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/usage/hint/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Hint
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/orchestration/" title="Orchestration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/usage/orchestration/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Orchestration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/transaction/" title="Distributed Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/usage/transaction/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Distributed Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/encrypt/" title="Data Masking" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/usage/encrypt/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Data Masking
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/configuration/" title="Configuration manual" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/configuration/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>4.1.2. </b>Configuration manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-java/" title="Java Configuration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/configuration/config-java/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Java Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-yaml/" title="Yaml Configuration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/configuration/config-yaml/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Yaml Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-spring-boot/" title="Spring Boot Configuration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/configuration/config-spring-boot/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Spring Boot Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-spring-namespace/" title="Spring Namespace Configuration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/configuration/config-spring-namespace/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Spring Namespace Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/unsupported-items/" title="Unsupported JDBC Items" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/unsupported-items/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>4.1.3. </b>Unsupported JDBC Items
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/stress-test/" title="Performance Test Report" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/stress-test/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>4.1.4. </b>Performance Test Report
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-proxy/" title="Sharding-Proxy" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>4.2. </b>Sharding-Proxy
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/usage/" title="Manual" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/usage/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>4.2.1. </b>Manual
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/configuration/" title="Configuration Manual" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/configuration/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>4.2.2. </b>Configuration Manual
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/docker/" title="Docker Clone" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-proxy/docker/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        <b>4.2.3. </b>Docker Clone
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-sidecar/" title="Sharding-Sidecar" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-sidecar/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+            <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+          
+          </i>
+          <b>4.3. </b>Sharding-Sidecar
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-ui/" title="Sharding-UI" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>4.4. </b>Sharding-UI
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-ui/usage/" title="Manual" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+             <svg  class="icon icon-down" 
+              style="display: none;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"   width="20" height="20" fill="#777">
+              <path d="M500.8 604.778667L267.306667 371.392l-45.226667 45.269333 278.741333 278.613334 278.485334-278.613334-45.248-45.248z" p-id="5376" ></path>
+            </svg>
+            <svg  class="icon icon-right" 
+              style="display: inline-block;"
+              viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="20" height="20" fill="#777">
+              <path d="M593.450667 512.128L360.064 278.613333l45.290667-45.226666 278.613333 278.762666L405.333333 790.613333l-45.226666-45.269333z" p-id="5605" ></path>
+            </svg>
+          
+          </i>
+          <b>4.4.1. </b>Manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-ui/usage/build/" title="Build" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/build/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Build
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-ui/usage/registry-center/" title="Registry Center" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/registry-center/">
+          <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+        Registry Center
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/downloads/" title="Downloads" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/downloads/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+            <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+          
+          </i>
+          <b>5. </b>Downloads
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/faq/" title="FAQ" class="dd-item 
+        
+        
+        
+        ">
+            
+      <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/faq/">
+         <i class="collapse" style="display:inline; font-family:'courier';">
+         
+            <svg  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5375" width="20" height="20"></svg>
+          
+          </i>
+          <b>6. </b>FAQ
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fa fa-fw fa-language"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+<option id="en" value="/document/legacy/4.x/document/en/features/sharding/principle/rewrite/" selected>English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+<option id="cn" value="/document/legacy/4.x/document/cn/features/sharding/principle/rewrite/">Chinese</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+       
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <p></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='https://shardingsphere.apache.org/document/legacy/4.x/document/en/'>ShardingSphere</a> > <a href='https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/'>Concepts & Features</a> > <a href='https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/'>Sharding</a> > <a href='https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/'>Guide to Kernel</a> > Rewrite Engine
+          
+         
+          
+         
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#correctness-rewrite">Correctness Rewrite</a></li>
+<li><a href="#identifier-rewrite">Identifier Rewrite</a></li>
+<li><a href="#column-derivation">Column Derivation</a></li>
+<li><a href="#pagination-revision">Pagination Revision</a></li>
+<li><a href="#batch-split">Batch Split</a></li>
+<li><a href="#optimization-rewrite">Optimization Rewrite</a>
+<ul>
+<li><a href="#single-node-optimization">Single Node Optimization</a></li>
+<li><a href="#stream-merger-optimization">Stream Merger Optimization</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>Rewrite Engine</h1>
+          
+
+        
+
+
+
+
+<p>The SQL written by engineers facing logic databases and tables cannot be executed directly in actual databases. SQL rewrite is used to rewrite logic SQL into rightly executable ones in actual databases, including two parts, correctness rewrite and optimization rewrite.</p>
+
+<h2 id="correctness-rewrite">Correctness Rewrite</h2>
+
+<p>In situation with sharding tables, it requires to rewrite logic table names in sharding settings into actual table names acquired after routing. Database sharding does not require to rewrite table names. In addition to that, there are also column derivation, pagination information revision and other content.</p>
+
+<h2 id="identifier-rewrite">Identifier Rewrite</h2>
+
+<p>Identifiers that need to be rewritten include table name, index name and schema name. Table name rewrite refers to the process to locate the position of logic tables in the original SQL and rewrite it as the physical table. Table name rewrite is one typical situation that requires to parse SQL. From a most plain case, if the logic SQL is as follow:</p>
+
+<pre><code class="language-sql">SELECT order_id FROM t_order WHERE order_id=1;
+</code></pre>
+
+<p>If the SQL is configured with sharding key order_id=1, it will be routed to Sharding Table 1. Then, the SQL after rewrite should be:</p>
+
+<pre><code class="language-sql">SELECT order_id FROM t_order_1 WHERE order_id=1;
+</code></pre>
+
+<p>In this most simple kind of SQL, whether parsing SQL to abstract syntax tree seems unimportant, SQL can be rewritten only by searching for and substituting characters. But in the following situation, it is unable to rewrite SQL rightly merely by searching for and substituting characters:</p>
+
+<pre><code class="language-sql">SELECT order_id FROM t_order WHERE order_id=1 AND remarks=' t_order xxx';
+</code></pre>
+
+<p>The SQL rightly rewritten is supposed to be:</p>
+
+<pre><code class="language-sql">SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=' t_order xxx';
+</code></pre>
+
+<p>Rather than:</p>
+
+<pre><code class="language-sql">SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=' t_order_1 xxx';
+</code></pre>
+
+<p>Because there may be similar characters besides the table name, the simple character substitute method cannot be used to rewrite SQL. Here is another more complex SQL rewrite situation:</p>
+
+<pre><code class="language-sql">SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
+</code></pre>
+
+<p>The SQL above takes table name as the identifier of the field, so it should also be revised when SQL is rewritten:</p>
+
+<pre><code class="language-sql">SELECT t_order_1.order_id FROM t_order_1 WHERE t_order_1.order_id=1 AND remarks=' t_order xxx';
+</code></pre>
+
+<p>But if there is another table name defined in SQL, it is not necessary to revise that, even though that name is the same as the table name. For example:</p>
+
+<pre><code class="language-sql">SELECT t_order.order_id FROM t_order AS t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
+</code></pre>
+
+<p>SQL rewrite only requires to revise its table name:</p>
+
+<pre><code class="language-sql">SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND remarks=' t_order xxx';
+</code></pre>
+
+<p>Index name is another identifier that can be rewritten. In some databases (such as MySQL/SQLServer), the index is created according to the table dimension, and its names in different tables can repeat. In some other databases (such as PostgreSQL/Oracle), however, the index is created according to the database dimension, index names in different tables are required to be one and the only.</p>
+
+<p>In ShardingSphere, schema management method is similar to that of the table. It uses logic schema to manage a set of data sources, so it requires to replace the logic schema written by users in SQL with physical database schema.</p>
+
+<p>ShardingSphere only supports to use schema in database management statements but not in DQL and DML statements, for example:</p>
+
+<pre><code class="language-sql">SHOW COLUMNS FROM t_order FROM order_ds;
+</code></pre>
+
+<p>Schema rewrite refers to rewriting logic schema as a right and real schema found arbitrarily with unicast route.</p>
+
+<h2 id="column-derivation">Column Derivation</h2>
+
+<p>Column derivation in query statements usually results from two situations. First, ShardingSphere needs to acquire the corresponding data when merging results, but it is not returned through the query SQL. This kind of situation aims mainly at GROUP BY and ORDER BY. Result merger requires sorting and ranking according to items of <code>GROUP BY</code> and <code>ORDER BY</code>field. But if sorting and ranking items are not included in the original SQL, it should be rewritten. Look at the situation where the original SQL has the information required by result merger:</p>
+
+<pre><code class="language-sql">SELECT order_id, user_id FROM t_order ORDER BY user_id;
+</code></pre>
+
+<p>Since user_id is used in ranking, the result merger needs the data able to acquire user_id. The SQL above is able to acquire user_id data, so there is no need to add columns.</p>
+
+<p>If the selected item does not contain the column required by result merger, it will need to add column, as the following SQL:</p>
+
+<pre><code class="language-sql">SELECT order_id FROM t_order ORDER BY user_id;
+</code></pre>
+
+<p>Since the original SQL does not contain user_id needed by result merger, the SQL needs to be rewritten by adding columns, and after that, it will be:</p>
+
+<pre><code class="language-sql">SELECT order_id, user_id AS ORDER_BY_DERIVED_0 FROM t_order ORDER BY user_id;
+</code></pre>
+
+<p>What’s to be mentioned, column derivation will only add the missing column rather than all of them; the SQL that includes <code>*</code> in SELECT will also selectively add columns according to the meta-data information of tables. Here is a relatively complex SQL column derivation case:</p>
+
+<pre><code class="language-sql">SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id=i.order_id ORDER BY user_id, order_item_id;
+</code></pre>
+
+<p>Suppose only t_order_item table contains order_item_id column, according to the meta-data information of tables, the user_id in sorting item exists in table t_order as merging result, but order_item_id does not exist in t_order, so it needs to add columns. The SQL after that will be:</p>
+
+<pre><code class="language-sql">SELECT o.*, order_item_id AS ORDER_BY_DERIVED_0 FROM t_order o, t_order_item i WHERE o.order_id=i.order_id ORDER BY user_id, order_item_id;
+</code></pre>
+
+<p>Another situation of column derivation is using AVG aggregation function. In distributed situations, it is not right to calculate the average value with avg1 + avg2 + avg3 / 3, and it should be rewritten as (sum1 + sum2 + sum3) / (count1 + count2 + count3). This requires to rewrite the SQL that contains AVG as SUM and COUNT and recalculate the average value in result merger. Such as the following SQL:</p>
+
+<pre><code class="language-sql">SELECT AVG(price) FROM t_order WHERE user_id=1;
+</code></pre>
+
+<p>Should be rewritten as:</p>
+
+<pre><code class="language-sql">SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_SUM_0 FROM t_order WHERE user_id=1;
+</code></pre>
+
+<p>Then it can calculate the right average value through result merger.</p>
+
+<p>The last kind of column derivation is in SQL with INSERT. With database auto-increment key, there is no need to fill in primary key field. But database auto-increment key cannot satisfy the requirement of only one primary key being in the distributed situation. So ShardingSphere provides a distributed auto-increment key generation strategy, enabling users to replace the current auto-increment key invisibly with a distributed one without changing existing codes through column derivation. Distributed auto-increment key generation strategy will be expounded in the following part, here we only explain the content related to SQL rewrite. For example, if the primary key of t_order is order_id, and the original SQL is:</p>
+
+<pre><code class="language-sql">INSERT INTO t_order (`field1`, `field2`) VALUES (10, 1);
+</code></pre>
+
+<p>It can be seen that the SQL above does not include an auto-increment key, which will be filled by the database itself. After ShardingSphere set an auto-increment key, the SQL will be rewritten as:</p>
+
+<pre><code class="language-sql">INSERT INTO t_order (`field1`, `field2`, order_id) VALUES (10, 1, xxxxx);
+</code></pre>
+
+<p>Rewritten SQL will add auto-increment key name and its value generated automatically in the last part of INSERT FIELD and INSERT VALUE. <code>xxxxx</code> in the SQL above stands for the latter one.</p>
+
+<p>If INSERT SQL does not contain the column name of the table, ShardingSphere can also automatically generate auto-increment key by comparing the number of parameter and column in the table meta-information. For example, the original SQL is:</p>
+
+<pre><code class="language-sql">INSERT INTO t_order VALUES (10, 1);
+</code></pre>
+
+<p>The rewritten SQL only needs to add an auto-increment key in the column where the primary key is:</p>
+
+<pre><code class="language-sql">INSERT INTO t_order VALUES (xxxxx, 10, 1);
+</code></pre>
+
+<p>When auto-increment key derives column, if the user writes SQL with placeholder, he only needs to rewrite parameter list but not SQL itself.</p>
+
+<h2 id="pagination-revision">Pagination Revision</h2>
+
+<p>The scenarios of acquiring pagination data from multiple databases is different from that of one single database. If every 10 pieces of data are taken as one page, the user wants to take the second page of data. It is not right to take, acquire LIMIT 10, 10 under sharding situations, and take out the first 10 pieces of data according to sorting conditions after merging. For example, if the SQL is:</p>
+
+<pre><code class="language-sql">SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
+</code></pre>
+
+<p>The following picture shows the pagination execution results without SQL rewrite.</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/4.x/document/img/sharding/pagination_without_rewrite.png" alt="Pagination without rewrite" /></p>
+
+<p>As shown in the picture, if you want to acquire the second and the third piece of data ordered by score common in both tables, and they are supposed to be <code>95</code> and <code>90</code>.
+Since the executed SQL can only acquire the second and the third piece of data from each table, i.e., <code>90</code> and <code>80</code> from t_score_0, <code>85</code> and <code>75</code> from t_score_1.
+When merging results, it can only merge from <code>90</code>, <code>80</code>, <code>85</code> and <code>75</code> already acquired, so the right result cannot be acquired anyway.</p>
+
+<p>The right way is to rewrite pagination conditions as <code>LIMIT 0, 3</code>, take out all the data from the first two pages and combine sorting conditions to calculate the right data.
+The following picture shows the execution of pagination results after SQL rewrite.</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/4.x/document/img/sharding/pagination_with_rewrite.png" alt="Pagination with rewrite" /></p>
+
+<p>The latter the offset position is, the lower the efficiency of using LIMIT pagination will be.
+There are many ways to avoid using LIMIT as pagination method, such as constructing a secondary index to record line record number and line offset amount,
+or using the tail ID of last pagination data as the pagination method of conditions of the next query.</p>
+
+<p>When revising pagination information, if the user uses placeholder method to write SQL, he only needs to rewrite parameter list rather than SQL itself.</p>
+
+<h2 id="batch-split">Batch Split</h2>
+
+<p>When using batch inserted SQL, if the inserted data crosses sharding, the user needs to rewrite SQL to avoid writing excessive data into the database. The differences between insert operation and query operation are: though the query sentence has used sharding keys that do not exist in current sharding, they will not have any influence on data, but insert operation has to delete extra sharding keys. Take the following SQL for example:</p>
+
+<pre><code class="language-sql">INSERT INTO t_order (order_id, xxx) VALUES (1, 'xxx'), (2, 'xxx'), (3, 'xxx');
+</code></pre>
+
+<p>If the database is still divided into two parts according to odd and even number of order_id, this SQL will be executed after its table name is revised. Then, both shards will be written with the same record. Though only the data that satisfies sharding conditions can be taken out from query statement, it is not reasonable for the schema to have excessive data. So the SQL should be rewritten as:</p>
+
+<pre><code class="language-sql">INSERT INTO t_order_0 (order_id, xxx) VALUES (2, 'xxx');
+INSERT INTO t_order_1 (order_id, xxx) VALUES (1, 'xxx'), (3, 'xxx');
+</code></pre>
+
+<p>IN query is similar to batch insertion, but IN operation will not lead to wrong data query result. Through rewriting IN query, the query performance can be further improved. Like the following SQL:</p>
+
+<pre><code class="language-sql">SELECT * FROM t_order WHERE order_id IN (1, 2, 3);
+</code></pre>
+
+<p>Is rewritten as:</p>
+
+<pre><code class="language-sql">SELECT * FROM t_order_0 WHERE order_id IN (2);
+SELECT * FROM t_order_1 WHERE order_id IN (1, 3);
+</code></pre>
+
+<p>The query performance will be further improved. For now, ShardingSphere has not realized this rewrite strategy, so the current rewrite result is:</p>
+
+<pre><code class="language-sql">SELECT * FROM t_order_0 WHERE order_id IN (1, 2, 3);
+SELECT * FROM t_order_1 WHERE order_id IN (1, 2, 3);
+</code></pre>
+
+<p>Though the execution result of SQL is right, but it has not achieved the most optimized query efficiency.</p>
+
+<h2 id="optimization-rewrite">Optimization Rewrite</h2>
+
+<p>Its purpose is to effectively improve the performance without influencing the correctness of the query. It can be divided into single node optimization and stream merger optimization.</p>
+
+<h3 id="single-node-optimization">Single Node Optimization</h3>
+
+<p>It refers to the optimization that stops the SQL rewrite from the route to the single node. After acquiring one route result, if it is routed to a single data node, result merging is unnecessary to be involved, so there is no need for rewrites as derived column, pagination information and others. In particular, there is no need to read from the first piece of information, which reduces the pressure for the database to a large extent and saves meaningless consumption of the network bandwidth.</p>
+
+<h3 id="stream-merger-optimization">Stream Merger Optimization</h3>
+
+<p>It only adds sorting items and sorting orders identical with grouping items and <code>ORDER BY</code> to <code>GROUP BY</code> SQL, and they are used to transfer memory merger to stream merger. In the result merger part, stream merger and memory merger will be explained in detail.</p>
+
+<p>The overall structure of rewrite engine is shown in the following picture.</p>
+
+<p><img src="https://shardingsphere.apache.org/document/legacy/4.x/document/img/sharding/rewrite_architecture_en.png" alt="Rewrite Engine" /></p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/route/" title="Route Engine"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/principle/execute/" title="Execute Engine" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/clipboard.min.js?1581407686"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/perfect-scrollbar.min.js?1581407686"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/perfect-scrollbar.jquery.min.js?1581407686"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/jquery.sticky.js?1581407686"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/featherlight.min.js?1581407686"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/html5shiv-printshiv.min.js?1581407686"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/highlight.pack.js?1581407686"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/modernizr.custom.71422.js?1581407686"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/learn.js?1581407686"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/js/hugo-learn.js?1581407686"></script>
+
+    <link href="https://shardingsphere.apache.org/document/legacy/4.x/document/mermaid/mermaid.css?1581407686" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/legacy/4.x/document/mermaid/mermaid.js?1581407686"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

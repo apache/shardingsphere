@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Core Concept on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/</link>
+    <description>Recent content in Core Concept on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>2PC Transaction-XA</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/2pc-xa-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/2pc-xa-transaction/</guid>
+      <description>2PC transaction submit uses the DTP Model defined by X/OPEN, in which extracted AP, TM and RM can guarantee a high transaction consistency. TM and RM exchange transaction information according to XA. Compared with traditional local transactions, XA transactions have a prepare phase, where the database can not only passively receive commands, but also notify the submitter whether the transaction can be accepted. So TM can collect all the prepare results of transactions in branches before submitting all of them together, which has guaranteed the high consistency.</description>
+    </item>
+    
+    <item>
+      <title>Saga BASE Transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/base-transaction-saga/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/base-transaction-saga/</guid>
+      <description>Saga Transaction The concept of Saga comes from a database paper Sagas more than 30 years ago. A Saga transaction is a long-term transaction consisting of several short-term transactions. In the distributed transaction scenario, we consider a saga distributed transaction as a transaction composed of multiple local transactions, each of which has a corresponding compensation transaction. During the execution of saga transaction, if an exception occurs in one step of execution, the saga transaction will be terminated, and the corresponding compensation transaction will be invoked to complete the relevant recovery operation, so as to ensure that the local transactions related to saga are either successfully executed or recovery to the state before the transaction is executed through compensation.</description>
+    </item>
+    
+    <item>
+      <title>Seata BASE transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/base-transaction-seata/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/concept/base-transaction-seata/</guid>
+      <description>Seata BASE transaction Seata is a distributed transaction framework developed by Alibaba Group and Ant Finance. As of 0.5.x, it includes AT and TCC transactions. The goal of AT transaction is to provide incremental transaction ACID semantics under the micro-service architecture, so that users can use distributed transactions as they use local transactions. The core idea of AT transaction is the same as ShardingSphere.
+Seata AT transaction model Seata AT transaction model includes TM (transaction manager), RM (resource manager), TC (transaction coordinator).</description>
+    </item>
+    
+  </channel>
+</rss>

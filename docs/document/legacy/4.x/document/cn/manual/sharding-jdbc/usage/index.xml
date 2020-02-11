@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>使用手册 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/</link>
+    <description>Recent content in 使用手册 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>数据分片</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/sharding/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/sharding/</guid>
+      <description>不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
+// 配置真实数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // 配置第一个数据源 BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds0&amp;quot;); dataSource1.setUsername(&amp;quot;root&amp;quot;); dataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds0&amp;quot;, dataSource1); // 配置第二个数据源 BasicDataSource dataSource2 = new BasicDataSource(); dataSource2.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource2.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds1&amp;quot;); dataSource2.setUsername(&amp;quot;root&amp;quot;); dataSource2.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds1&amp;quot;, dataSource2); // 配置Order表规则 TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration(&amp;quot;t_order&amp;quot;,&amp;quot;ds${0..1}.t_order${0..1}&amp;quot;); // 配置分库 + 分表策略 orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;user_id&amp;quot;, &amp;quot;ds${user_id % 2}&amp;quot;)); orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;order_id&amp;quot;, &amp;quot;t_order${order_id % 2}&amp;quot;)); // 配置分片规则 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration(); shardingRuleConfig.</description>
+    </item>
+    
+    <item>
+      <title>读写分离</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/</guid>
+      <description>不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 配置真实数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // 配置主库 BasicDataSource masterDataSource = new BasicDataSource(); masterDataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); masterDataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_master&amp;quot;); masterDataSource.setUsername(&amp;quot;root&amp;quot;); masterDataSource.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_master&amp;quot;, masterDataSource); // 配置第一个从库 BasicDataSource slaveDataSource1 = new BasicDataSource(); slaveDataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave0&amp;quot;); slaveDataSource1.setUsername(&amp;quot;root&amp;quot;); slaveDataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave0&amp;quot;, slaveDataSource1); // 配置第二个从库 BasicDataSource slaveDataSource2 = new BasicDataSource(); slaveDataSource2.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource2.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave1&amp;quot;); slaveDataSource2.setUsername(&amp;quot;root&amp;quot;); slaveDataSource2.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave1&amp;quot;, slaveDataSource2); // 配置读写分离规则 MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration(&amp;quot;ds_master_slave&amp;quot;, &amp;quot;ds_master&amp;quot;, Arrays.asList(&amp;quot;ds_slave0&amp;quot;, &amp;quot;ds_slave1&amp;quot;)); // 获取数据源对象 DataSource dataSource = MasterSlaveDataSourceFactory.</description>
+    </item>
+    
+    <item>
+      <title>强制路由</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/hint/</guid>
+      <description>简介 ShardingSphere使用ThreadLocal管理分片键值进行Hint强制路由。可以通过编程的方式向HintManager中添加分片值，该分片值仅在当前线程内生效。 Hint方式主要使用场景：
+1.分片字段不存在SQL中、数据库表结构中，而存在于外部业务逻辑。
+2.强制在主库进行某些数据操作。
+基于暗示(Hint)的数据分片 配置Hint分片算法 Hint分片算法需要用户实现org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm接口。ShardingSphere在进行Routing时，如果发现LogicTable的TableRule采用了 Hint的分片算法，将会从HintManager中获取分片值进行路由操作。
+参考配置如下：
+shardingRule: tables: t_order: actualDataNodes: demo_ds_${0..1}.t_order_${0..1} databaseStrategy: hint: algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm tableStrategy: hint: algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm defaultTableStrategy: none: defaultKeyGenerator: type: SNOWFLAKE column: order_id props: sql.show: true  获取HintManager HintManager hintManager = HintManager.getInstance();  添加分片键值  使用hintManager.addDatabaseShardingValue来添加数据源分片键值。 使用hintManager.addTableShardingValue来添加表分片键值。   分库不分表情况下，强制路由至某一个分库时，可使用hintManager.setDatabaseShardingValue方式添加分片。通过此方式添加分片键值后，将跳过SQL解析和改写阶段，从而提高整体执行效率。
+ 清除分片键值 分片键值保存在ThreadLocal中，所以需要在操作结束时调用hintManager.close()来清除ThreadLocal中的内容。
+hintManager实现了AutoCloseable接口，可推荐使用try with resource自动关闭。
+完整代码示例 // Sharding database and table with using hintManager. String sql = &amp;quot;SELECT * FROM t_order&amp;quot;; try (HintManager hintManager = HintManager.</description>
+    </item>
+    
+    <item>
+      <title>编排治理</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/orchestration/</guid>
+      <description>使用治理功能需要指定一个注册中心。配置将全部存入注册中心，可以在每次启动时使用本地配置覆盖注册中心配置，也可以只通过注册中心读取配置。
+不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-orchestration&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--若使用zookeeper, 请加入下面Maven坐标--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-zookeeper-curator&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 省略配置dataSourceMap以及shardingRuleConfig // ... // 配置注册中心 RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration(&amp;quot;zookeeper&amp;quot;); regConfig.setServerLists(&amp;quot;localhost:2181&amp;quot;); regConfig.setNamespace(&amp;quot;sharding-sphere-orchestration&amp;quot;); // 配置治理 OrchestrationConfiguration orchConfig = new OrchestrationConfiguration(&amp;quot;orchestration-sharding-data-source&amp;quot;, regConfig, false); // 获取数据源对象 DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new Properties(), orchConfig);  基于Yaml的规则配置 或通过Yaml方式配置，与以上配置等价：
+orchestration: name: orchestration-sharding-data-source overwrite: false registry: type: zookeeper serverLists: localhost:2181 namespace: sharding-sphere-orchestration  DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);  使用Spring 引入Maven依赖 &amp;lt;!</description>
+    </item>
+    
+    <item>
+      <title>分布式事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/transaction/</guid>
+      <description>ShardingDataSource已经整合了分布式事务的功能，因此不需要用户进行额外的配置，每次获取ShardingConnection前，通过修改TransactionTypeHolder，可以对事务类型进行切换。
+XA事务 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-xa-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  JAVA编码方式设置事务类型 TransactionTypeHolder.set(TransactionType.XA);  XA事务管理器参数配置（可选） ShardingSphere默认的XA事务管理器为Atomikos，在项目的logs目录中会生成xa_tx.log, 这是XA崩溃恢复时所需的日志，请勿删除。
+也可以通过在项目的classpath中添加jta.properties来定制化Atomikos配置项。具体的配置规则请参考Atomikos的官方文档。
+BASE（柔性）事务 ShardingSphere中已经整合了Saga和Seata两种BASE类型的事务
+引入Maven依赖 &amp;lt;!-- saga柔性事务 --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-base-saga&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere-spi-impl.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ${shardingsphere-spi-impl.version} 的jar暂未发布到maven中央仓，因此需要您根据源码自行部署。项目地址: shardingsphere-spi-impl
+&amp;lt;!-- seata柔性事务 --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-base-seata-at&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  JAVA编码方式设置事务类型 TransactionTypeHolder.set(TransactionType.BASE);  Saga配置 可以通过在项目的classpath中添加saga.properties来定制化Saga事务的配置项。当saga.persistence.enabled=true时，事务日志默认按JDBC的方式持久化到数据库中，也可以通过实现io.shardingsphere.transaction.saga.persistence.SagaPersistence SPI，支持定制化存储，具体可参考项目sharding-transaction-base-saga-persistence-jpa。
+配置项的属性及说明如下：
+   属性名称 默认值 说明     saga.actuator.executor.size 5 使用的线程池大小   saga.actuator.transaction.max.retries 5 失败SQL的最大重试次数   saga.actuator.compensation.max.retries 5 失败SQL的最大尝试补偿次数   saga.</description>
+    </item>
+    
+    <item>
+      <title>数据脱敏</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/encrypt/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/cn/manual/sharding-jdbc/usage/encrypt/</guid>
+      <description>该章节主要介绍如何使用数据脱敏功能，如何进行相关配置。数据脱敏功能即可与数据分片功能共同使用，又可作为单独功能组件，独立使用。 与数据分片功能共同使用时，会创建ShardingDataSource；单独使用时，会创建EncryptDataSource来完成数据脱敏功能。
+不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 配置数据源 BasicDataSource dataSource = new BasicDataSource(); dataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource.setUrl(&amp;quot;jdbc:mysql://127.0.0.1:3306/encrypt&amp;quot;); dataSource.setUsername(&amp;quot;root&amp;quot;); dataSource.setPassword(&amp;quot;&amp;quot;); // 配置脱敏规则 Properties props = new Properties(); props.setProperty(&amp;quot;aes.key.value&amp;quot;, &amp;quot;123456&amp;quot;); EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration(&amp;quot;AES&amp;quot;, props); EncryptColumnRuleConfiguration columnConfig = new EncryptColumnRuleConfiguration(&amp;quot;plain_pwd&amp;quot;, &amp;quot;cipher_pwd&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;aes&amp;quot;); EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration(Collections.singletonMap(&amp;quot;pwd&amp;quot;, columnConfig)); EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(); encryptRuleConfig.getEncryptors().put(&amp;quot;aes&amp;quot;, encryptorConfig); encryptRuleConfig.getTables().put(&amp;quot;t_encrypt&amp;quot;, tableConfig); // 获取数据源对象 DataSource dataSource = EncryptDataSourceFactory.createDataSource(dataSource, encryptRuleConfig, new Properties());  基于Yaml的规则配置 或通过Yaml方式配置，与以上配置等价：</description>
+    </item>
+    
+  </channel>
+</rss>

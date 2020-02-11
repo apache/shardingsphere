@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Quick Start on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/</link>
+    <description>Recent content in Quick Start on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Sharding-JDBC</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/sharding-jdbc-quick-start/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/sharding-jdbc-quick-start/</guid>
+      <description>1. Import maven dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Notice: Please change ${latest.release.version} to the actual version.
+2. Sharding Rule Configuration Sharding-JDBC can be configured by four methods, Java, YAML, Spring namespace and Spring boot starter. Developers can choose the suitable method according to different situations. Please refer to Configuration Manual for more details.
+3. Create DataSource Use ShardingDataSourceFactory and rule configuration objects to create ShardingDataSource, which is realized from DataSource, a standard JDBC interface.</description>
+    </item>
+    
+    <item>
+      <title>Sharding-Proxy</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/sharding-proxy-quick-start/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/quick-start/sharding-proxy-quick-start/</guid>
+      <description>1. Sharding Rule Configuration Edit %SHARDING_PROXY_HOME%\conf\config-xxx.yaml. Please refer to Configuration Manual for more details.
+Edit %SHARDING_PROXY_HOME%\conf\server.yaml. Please refer to Configuration Manual for more details.
+2. Introduce Dependencies If the backend database is PostgreSQL, there&amp;rsquo;s no need for additional dependencies.
+If the backend database is MySQL, download MySQL Connector/J and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-proxy}\lib directory.
+3. Start Server  Use default configuration to start  ${sharding-proxy}\bin\start.sh   Configure the port  ${sharding-proxy}\bin\start.</description>
+    </item>
+    
+  </channel>
+</rss>

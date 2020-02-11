@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sharding-JDBC on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/</link>
+    <description>Recent content in Sharding-JDBC on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Unsupported JDBC Items</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/unsupported-items/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/unsupported-items/</guid>
+      <description>DataSource Interface  Do not support timeout related operations  Connection Interface  Do not support operations of stored procedure, function and cursor Do not support native SQL Do not support savepoint related operations Do not support Schema / Catalog operation Do not support self-defined mapping  Statement and PreparedStatement Interface  Do not support statements that return multiple result sets (stored procedures, multiple pieces of non-SELECT data) Do not support the operation of international characters  Interface for ResultSet  Do not support getting result set pointer position Do not support changing result pointer position through none-next method Do not support revising the content of result set Do not support acquiring international characters Do not support getting Array  JDBC 4.</description>
+    </item>
+    
+    <item>
+      <title>Performance Test Report</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/stress-test/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-jdbc/stress-test/</guid>
+      <description>Test Result Overview  Performance loss test: with sufficient server resources and equal concurrency, the performance loss of Sharding-JDBC, compared to that of JDBC, is lower than 7%. Performance comparison test: with the extreme use of server resources, JDBC and Sharding-JDBC have equal throughput under the same situation. Performance comparison test: with the extreme use of server resources, Sharding-JDBC, after database and table sharding, can have a throughput increase of nearly twice, compared to JDBC without sharding table.</description>
+    </item>
+    
+  </channel>
+</rss>

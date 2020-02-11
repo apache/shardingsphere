@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Supported Function on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/</link>
+    <description>Recent content in Supported Function on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Local Transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/local-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/local-transaction/</guid>
+      <description>Function  Fully support none-cross-database transactions, for example, sharding table or sharding database with its route result in one database.
+ Fully support cross-database transactions caused by logic exceptions, for example, the update of two databases in one transaction, after which, databases will throw null cursor and the content in both databases can be rolled back.
+ Do not support the cross-database transactions caused by network or hardware exceptions. For example, after the update of two databases in one transaction, if one database is down before submitted, then only the data of the other database can be submitted.</description>
+    </item>
+    
+    <item>
+      <title>2PC transaction-XA</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/2pc-xa-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/2pc-xa-transaction/</guid>
+      <description>Function  Support cross-database XA transactions after sharding. Operation atomicity and high data consistency in 2PC transactions. When service is down and restarted, commit and rollback transactions can be recovered automatically. An SPI mechanism that integrates mainstream XA managers: Atomikos default and Narayana and Bitronix optional. Support XA and non-XA connection pool in the same time. Provide spring-boot and namespace access.  Not Support  Recover committing and rolling back in other machines after the service is down.</description>
+    </item>
+    
+    <item>
+      <title>BASE Transaction saga</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/base-transaction-saga/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/base-transaction-saga/</guid>
+      <description>Function  Fully support cross-database transactions. Re-try failed SQL and try to deliver it. Support reverted SQL, update snapshot auto-generation and auto-compensation. Use relational databases to take snapshot and persist transaction log; support SPI to load other persistent data.  Unsupported  Not support resource isolation for now. Not support automatic recovery of commit and rollback after the service is down for now.  Support Our BASE transaction has implemented Saga transaction through third party SPI and uses Servicecomb-Saga as Saga engine.</description>
+    </item>
+    
+    <item>
+      <title>Seata BASE transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/base-transaction-seata/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/function/base-transaction-seata/</guid>
+      <description> Function  Fully support cross-database transactions. Support RC isolation. Rollback transaction according to undo snapshot. Support recovery committing/rolling back transaction automatically after the service is down.  Prerequisite  Need to deploy seata-server process to do transaction coordination.  Need to Optimize  SQL will be parsed twice by ShardingSphere and Seata.  </description>
+    </item>
+    
+  </channel>
+</rss>

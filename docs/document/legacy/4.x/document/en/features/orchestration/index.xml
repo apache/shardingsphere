@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Orchestration on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/</link>
+    <description>Recent content in Orchestration on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Config Center</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/config-center/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/config-center/</guid>
+      <description>Motivation  Centralized configuration: more and more running examples have made it hard to manage separate configurations and asynchronized configurations can cause serious problems. Concentrating them in the configuration center can make the management more effective.
+ Dynamic configuration: distribution after configuration modification is another important capability of configuration center. It can support dynamic switch between data sources, tables, shards and the read-write split strategy.
+  Data Structure in Configuration Center Under defined name space config, configuration center stores data sources, sharding databases, sharding tables, read-write split, and properties in YAML.</description>
+    </item>
+    
+    <item>
+      <title>Orchestration</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/orchestration/</guid>
+      <description>Motivation Registry center can disable the access to slave database and the access of application. Orchestration still has many functions to be developed.
+Data Structure in Registry Center The registry center can create running node of database access object under state in defined name space, to distinguish different database access instances, including instances and datasources nodes.
+instances ├──your_instance_ip_a@-@your_instance_pid_x ├──your_instance_ip_b@-@your_instance_pid_y ├──.... datasources ├──ds0 ├──ds1 ├──....  Sharding-Proxy can support multiple logical data sources, so datasources sub-nodes are named schema_name.</description>
+    </item>
+    
+    <item>
+      <title>Available Registry Center</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/supported-registry-repo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/supported-registry-repo/</guid>
+      <description>SPI Service Provider Interface (SPI) is a kind of API that aims to be implemented or extended by the third party. It can be used to realize framework extension or component replacement.
+ShardingSphere uses SPI to load data to the registry center and disable instances and databases. Currently, ShardingSphere supports frequently used registry centers, Zookeeper. In addition, by injecting them to ShardingSphere with SPI, users can use other third-party registry centers to enable database orchestration.</description>
+    </item>
+    
+    <item>
+      <title>APM</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/apm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/apm/</guid>
+      <description>Background APM is the abbreviation for application performance monitoring. Currently, main APM functions lie in the performance diagnosis of distributed systems, including chain demonstration, application topology analysis and so on.
+ShardingSphere is not responsible for gathering, storing and demonstrating APM data, but sends the core information of SQL parsing and enforcement to APM to process. In other words, ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol.</description>
+    </item>
+    
+    <item>
+      <title>Data Masking</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/encrypt/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/orchestration/encrypt/</guid>
+      <description>Background Security control has always been a crucial link of orchestration; data masking falls into this category. For both Internet enterprises and traditional sectors, data security has always been a highly valued and sensitive topic. Data masking refers to transforming some sensitive information through masking rules to safely protect the private data. Data involves client&amp;rsquo;s security or business sensibility, such as ID number, phone number, card number, client number and other personal information, requires data masking according to relevant regulations.</description>
+    </item>
+    
+  </channel>
+</rss>

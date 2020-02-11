@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Use Norms on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/</link>
+    <description>Recent content in Use Norms on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SQL</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/sql/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/sql/</guid>
+      <description>Since the SQL syntax is flexible and complex and distributed databases and stand-alone databases do not have identical query sceanrios, SQLs incompatible with stand-alone databases are hard to avoid.
+This document has listed identified supported SQL types and unsupported SQL types, trying to avoid traps for users.
+It is inevitably to have some unlisted SQLs, welcome to supplement for that. We will also try to support those unavailable SQLs in future versions.</description>
+    </item>
+    
+    <item>
+      <title>Pagination</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/pagination/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/pagination/</guid>
+      <description>Totally support pagination queries of MySQL, PostgreSQL and Oracle; partly support SQLServer pagination query due to its complexity.
+Pagination Performance Performance Bottleneck Pagination with query offset too high can lead to a low data accessibility, take MySQL as an example:
+SELECT * FROM t_order ORDER BY id LIMIT 1000000, 10  This SQL will make MySQL acquire another 10 records after skipping 1,000,000 records when it is not able to use indexes.</description>
+    </item>
+    
+    <item>
+      <title>Parser</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/parser/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/sharding/use-norms/parser/</guid>
+      <description>ShardingSphere supports multiple dialects of SQL using different parsers. For specific SQL dialects that do not implement parsers, the default is to use the SQL92 standard for parsing.
+Specific SQL dialect parser  PostgreSQL parser
+ MySQL parser
+ Oracle parser
+ SQLServer parser
+  Note: MySQL parser supports MySQL, H2, and MariDB dialect.
+Default SQL dialect parser Other SQL dialects, such as SQLite, Sybase, DB2 and Informix, are parsed by default using the standard of SQL92.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Principle on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/</link>
+    <description>Recent content in Principle on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>2PC transaction-XA</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/2pc-xa-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/2pc-xa-transaction/</guid>
+      <description>Principle ShardingSphere has defined an SPI for distributed transactions, ShardingTransactionManager. Sharding-JDBC and Sharding-Proxy are two accesses for distributed transactions. XAShardingTransactionManager is its XA implementation, which can be added to ShardingSphere distributed ecology by introducing sharding-transaction-xa-core dependency. XAShardingTransactionManager manages and adapts to actual datasource; it delegates begin/commit/rollback in access transactions to XA managers.
+1.Begin Receiving set autoCommit=0 in the access, XAShardingTransactionManager will use XA transaction managers to start overall XA transactions, which is usually marked by XID.</description>
+    </item>
+    
+    <item>
+      <title>BASE Transaction Saga</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/base-transaction-saga/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/base-transaction-saga/</guid>
+      <description>Principle The implementation class of Saga is SagaShardingTransactionManager. ShardingSphere intercepts the parsing and routing results of logical SQL by Hook. In this way, reverse SQL can be generated before physical SQL is executed, and then the SQL call chain is handed over to Saga engine at the transaction submission stage.
+1.Init(Init Saga component) When an application containing SagaShardingTransactionManager startup, saga-actuator engined will be initialized through saga.properties configuration.
+2.Begin(Begin Saga global transaction) Every time a saga global transaction is created, the context of this global transaction (SagaTransactionContext) is generated.</description>
+    </item>
+    
+    <item>
+      <title>Seata BASE transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/base-transaction-seata/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/features/transaction/principle/base-transaction-seata/</guid>
+      <description>Principle When integrating Seata AT transaction, we need to integrate TM, RM and TC component into ShardingTransactionManager. Seata have proxied DataSource in order to communication with TC throng RPC protocal. Similarly, we can wrap user configured datasource into seata DataSource proxy to make sure distribute transaction after sharding.
+1.Init(Init Seata component) When an application containing ShardingTransactionBaseSeataAT startup, the user-configured DataSource will be wrapped into seata DataSourceProxy through seata.conf, then registered into RM.</description>
+    </item>
+    
+  </channel>
+</rss>

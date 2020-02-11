@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Manual on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/</link>
+    <description>Recent content in Manual on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Build</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/build/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/build/</guid>
+      <description>Binary Run  git clone https://github.com/apache/incubator-shardingsphere.git; Run mvn clean install -Prelease; Get the package in /sharding-distribution/shardingsphere-ui-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-ui-bin.tar.gz; After the decompression, run bin/start.sh; visit http://localhost:8088/.  Source Code Debug Sharding-UI use frontend and backend separately mode.
+backend  Main class is org.apache.shardingsphere.ui.Bootstrap; visit http://localhost:8088/.  frontend  cd sharding-ui-frontend/; run npm install; run npm run dev; visit http://localhost:8080/.  Configuration Configuration file of Sharding-UI is conf/application.properties in distribution package. It is constituted by two parts.</description>
+    </item>
+    
+    <item>
+      <title>Registry Center</title>
+      <link>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/registry-center/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/4.x/document/en/manual/sharding-ui/usage/registry-center/</guid>
+      <description>Registry Center Configuration The registry center needs to be added and activated first. Multiple registries can be added, but only one is active, and the following configuration management and orchestration operate on the currently active registry. Zookeeper support is provided now, and the support for other registries will be added later.
+Configuration Management The configuration of all data sources in the current active registry can be obtained, including data sharding, read-write split, properties, and so on.</description>
+    </item>
+    
+  </channel>
+</rss>
