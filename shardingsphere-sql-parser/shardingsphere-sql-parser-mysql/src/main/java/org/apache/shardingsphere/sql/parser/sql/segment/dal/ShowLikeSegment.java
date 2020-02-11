@@ -19,8 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Show like segment.
@@ -29,11 +28,11 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowLikeSegment implements TableAvailable {
+public final class ShowLikeSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final IdentifierValue table;
+    private final String pattern;
 }
