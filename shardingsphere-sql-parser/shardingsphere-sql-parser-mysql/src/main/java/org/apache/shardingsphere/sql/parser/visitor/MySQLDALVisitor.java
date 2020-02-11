@@ -167,10 +167,10 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitFromTable(final FromTableContext ctx) {
-        FromTableSegment fromTableSegment = new FromTableSegment();
+        FromTableSegment result = new FromTableSegment();
         TableSegment tableSegment = (TableSegment) visit(ctx.tableName());
-        fromTableSegment.setTable(tableSegment);
-        return fromTableSegment;
+        result.setTable(tableSegment);
+        return result;
     }
 
     @Override

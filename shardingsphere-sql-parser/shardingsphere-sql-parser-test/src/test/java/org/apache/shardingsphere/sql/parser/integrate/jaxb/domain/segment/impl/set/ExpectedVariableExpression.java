@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.set;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -28,11 +29,12 @@ import javax.xml.bind.annotation.XmlElement;
  * @author lujingshang
  */
 @Getter
+@Setter
 public final class ExpectedVariableExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "variable")
     private String variable;
-
+    
     @XmlElement(name = "expression")
     private String expression;
 }

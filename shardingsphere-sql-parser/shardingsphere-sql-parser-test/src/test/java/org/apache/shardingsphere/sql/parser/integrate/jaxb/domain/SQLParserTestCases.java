@@ -202,16 +202,16 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-index")
     private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show")
     private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "set-variable")
     private final List<SetVariableStatementTestCase> setVariableTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
     
@@ -263,8 +263,8 @@ public final class SQLParserTestCases {
         putAll(showCreateTableTestCases, result);
         putAll(showTableStatusTestCases, result);
         putAll(showIndexTestCases, result);
-        putAll(setVariableTestCases, result);
         putAll(showTestCases, result);
+        putAll(setVariableTestCases, result);
         putAll(commonTestCases, result);
         return result;
     }

@@ -24,21 +24,26 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
+/**
+ * From table segment.
+ * 
+ * @author zhangliang 
+ */
 @Setter
 @Getter
-public class FromTableSegment implements SQLSegment, TableAvailable {
-
+public final class FromTableSegment implements SQLSegment, TableAvailable {
+    
     private int startIndex;
-
+    
     private int stopIndex;
-
+    
     private TableSegment table;
-
+    
     @Override
     public String getTableName() {
         return table.getTableName();
     }
-
+    
     @Override
     public QuoteCharacter getTableQuoteCharacter() {
         return QuoteCharacter.NONE;
