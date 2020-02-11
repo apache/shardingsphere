@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,12 +52,14 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
     @Override
     public boolean isShadowSQL() {
         if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
-            LinkedList<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns();
-            for (int i = 0; i < columnSegments.size(); i++) {
-                if (columnSegments.get(i).getIdentifier().getValue().equals(shadowRule.getColumn())) {
-                    final Object value = parameters.get(i);
+            Collection<ColumnSegment> columnSegments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns();
+            int count = 0;
+            for (ColumnSegment each : columnSegments) {
+                if (each.getIdentifier().getValue().equals(shadowRule.getColumn())) {
+                    Object value = parameters.get(count);
                     return value instanceof Boolean && (Boolean) value;
                 }
+                count++;
             }
             return false;
         }

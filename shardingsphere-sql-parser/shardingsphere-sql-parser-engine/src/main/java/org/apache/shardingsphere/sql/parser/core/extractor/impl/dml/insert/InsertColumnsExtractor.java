@@ -45,8 +45,8 @@ public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor
         if (!insertValuesClause.isPresent()) {
             return Optional.absent();
         }
-        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(insertValuesClause.get().getStart().getStartIndex(), extractStopIndex(insertValuesClause.get()));
-        insertColumnsSegment.getColumns().addAll(extractColumns(insertValuesClause.get(), parameterMarkerIndexes));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(
+                insertValuesClause.get().getStart().getStartIndex(), extractStopIndex(insertValuesClause.get()), extractColumns(insertValuesClause.get(), parameterMarkerIndexes));
         return Optional.of(insertColumnsSegment);
     }
     

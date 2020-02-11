@@ -200,8 +200,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
-        IdentifierValue tableIdentifier = (IdentifierValue) visit(ctx.name());
-        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableIdentifier);
+        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
@@ -235,18 +234,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
-        Collection<ColumnSegment> segments = new LinkedList<>();
+        Collection<ColumnSegment> columnSegments = new LinkedList<>();
         for (ColumnNameContext each : ctx.columnName()) {
-            segments.add((ColumnSegment) visit(each));
+            columnSegments.add((ColumnSegment) visit(each));
         }
-        InsertColumnsSegment result = new InsertColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        result.getColumns().addAll(segments);
-        return result;
-    }
-    
-    @Override
-    public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        return visit(ctx.identifier(0));
+        return new InsertColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments);
     }
     
     @Override
@@ -517,6 +509,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
+        return visit(ctx.identifier(0));
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
