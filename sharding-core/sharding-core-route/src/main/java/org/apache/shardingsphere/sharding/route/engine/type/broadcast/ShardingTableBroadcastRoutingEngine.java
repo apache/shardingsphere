@@ -66,8 +66,8 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     private Collection<String> getTableNamesFromMetaData(final DropIndexStatement dropIndexStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : dropIndexStatement.getIndexes()) {
-            Optional<String> tableName = findLogicTableNameFromMetaData(each.getName());
-            Preconditions.checkState(tableName.isPresent(), "Cannot find index name `%s`.", each.getName());
+            Optional<String> tableName = findLogicTableNameFromMetaData(each.getIdentifier().getValue());
+            Preconditions.checkState(tableName.isPresent(), "Cannot find index name `%s`.", each.getIdentifier().getValue());
             result.add(tableName.get());
         }
         return result;

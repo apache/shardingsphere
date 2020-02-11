@@ -46,7 +46,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, I
         for (OrderByItem each : ((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
-                QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getQuoteCharacter();
+                QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getIdentifier().getQuoteCharacter();
                 columnLabel = quoteCharacter.getStartDelimiter() + columnOrderByItemSegment.getText() + quoteCharacter.getEndDelimiter();
             } else if (each.getSegment() instanceof ExpressionOrderByItemSegment) {
                 columnLabel = ((ExpressionOrderByItemSegment) each.getSegment()).getText();

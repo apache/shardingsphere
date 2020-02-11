@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
@@ -37,7 +36,7 @@ public final class ColumnProjectionSegment extends ColumnSegment implements Proj
     private String alias;
     
     public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
-        super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), new IdentifierValue(columnSegment.getName()).getValue(), new IdentifierValue(columnSegment.getName()).getQuoteCharacter());
+        super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getIdentifier());
         this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
         if (columnSegment.getOwner().isPresent()) {
             setOwner(columnSegment.getOwner().get());

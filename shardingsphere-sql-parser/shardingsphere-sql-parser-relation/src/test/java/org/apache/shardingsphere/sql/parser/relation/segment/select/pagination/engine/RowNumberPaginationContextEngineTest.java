@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.Pa
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -89,7 +89,7 @@ public final class RowNumberPaginationContextEngineTest {
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         AndPredicate andPredicate = mock(AndPredicate.class);
         PredicateSegment predicateSegment = mock(PredicateSegment.class);
-        when(predicateSegment.getColumn()).thenReturn(new ColumnSegment(0, 10, "rownum", QuoteCharacter.NONE));
+        when(predicateSegment.getColumn()).thenReturn(new ColumnSegment(0, 10, new IdentifierValue("rownum")));
         when(andPredicate.getPredicates()).thenReturn(Collections.singleton(predicateSegment));
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.singleton(andPredicate), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
@@ -102,7 +102,7 @@ public final class RowNumberPaginationContextEngineTest {
         when(predicateCompareRightValue.getOperator()).thenReturn(">");
         when(predicateCompareRightValue.getExpression()).thenReturn(new ParameterMarkerExpressionSegment(0, 10, 0));
         AndPredicate andPredicate = new AndPredicate();
-        andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, "rownum", QuoteCharacter.NONE), predicateCompareRightValue));
+        andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, new IdentifierValue("rownum")), predicateCompareRightValue));
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext paginationContext = new RowNumberPaginationContextEngine()
@@ -118,7 +118,7 @@ public final class RowNumberPaginationContextEngineTest {
         when(predicateCompareRightValue.getOperator()).thenReturn(operator);
         when(predicateCompareRightValue.getExpression()).thenReturn(new LiteralExpressionSegment(0, 10, 100));
         AndPredicate andPredicate = new AndPredicate();
-        andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, "rownum", QuoteCharacter.NONE), predicateCompareRightValue));
+        andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, new IdentifierValue("rownum")), predicateCompareRightValue));
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.singleton(andPredicate), projectionsContext, Collections.emptyList());
@@ -138,7 +138,7 @@ public final class RowNumberPaginationContextEngineTest {
         when(predicateCompareRightValue.getOperator()).thenReturn(operator);
         when(predicateCompareRightValue.getExpression()).thenReturn(new LiteralExpressionSegment(0, 10, 100));
         AndPredicate andPredicate = new AndPredicate();
-        andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, "rownum", QuoteCharacter.NONE), predicateCompareRightValue));
+        andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, new IdentifierValue("rownum")), predicateCompareRightValue));
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
         PaginationContext rowNumberPaginationContextEngine = new RowNumberPaginationContextEngine()

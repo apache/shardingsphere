@@ -44,12 +44,11 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     
     private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
         ParserRuleContext nameNode = ExtractorUtils.getFirstChildNode(columnNode, RuleName.NAME);
-        IdentifierValue columnIdentifier = new IdentifierValue(nameNode.getText());
-        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), columnIdentifier.getValue(), columnIdentifier.getQuoteCharacter());
+        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), new IdentifierValue(nameNode.getText()));
         Optional<ParserRuleContext> ownerNode = ExtractorUtils.findFirstChildNodeNoneRecursive(columnNode, RuleName.OWNER);
         if (ownerNode.isPresent()) {
             IdentifierValue ownerIdentifier = new IdentifierValue(ownerNode.get().getText());
-            result.setOwner(new TableSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
+            result.setOwner(new TableSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerIdentifier));
         }
         return result;
     }

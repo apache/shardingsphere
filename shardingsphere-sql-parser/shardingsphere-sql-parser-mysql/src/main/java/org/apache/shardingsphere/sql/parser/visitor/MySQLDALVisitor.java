@@ -145,8 +145,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         FromTableContext fromTableContext = ctx.fromTable();
         if (null != fromSchemaContext) {
             SchemaNameContext schemaNameContext = fromSchemaContext.schemaName();
-            IdentifierValue identifier = (IdentifierValue) visit(schemaNameContext);
-            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), identifier.getValue(), identifier.getQuoteCharacter());
+            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), (IdentifierValue) visit(schemaNameContext));
             result.getAllSQLSegments().add(schemaSegment);
         }
         if (null != fromTableContext) {
@@ -182,12 +181,12 @@ public final class MySQLDALVisitor extends MySQLVisitor {
 
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        List<VariableExprContext> variableExprs = ctx.variableExpr();
+        List<VariableExprContext> variableExpressions = ctx.variableExpr();
         SetStatement result = new SetStatement();
-        for (VariableExprContext vectx: variableExprs) {
-            String variable = vectx.variable_().getText();
-            String expr = vectx.expr().getText();
-            VariableExpressionSegment variableExpressionSegment = new VariableExpressionSegment(vectx.start.getStartIndex(), vectx.stop.getStopIndex(), variable, expr);
+        for (VariableExprContext each: variableExpressions) {
+            String variable = each.variable_().getText();
+            String expr = each.expr().getText();
+            VariableExpressionSegment variableExpressionSegment = new VariableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), variable, expr);
             result.getAllSQLSegments().add(variableExpressionSegment);
         }
         return result;
@@ -201,6 +200,6 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
-        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
+        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(literalValue.getValue()));
     }
 }

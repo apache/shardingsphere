@@ -68,7 +68,7 @@ public final class TopPaginationContextEngine {
     }
     
     private boolean isRowNumberColumn(final PredicateSegment predicate, final String rowNumberAlias) {
-        return predicate.getColumn().getName().equalsIgnoreCase(rowNumberAlias);
+        return predicate.getColumn().getIdentifier().getValue().equalsIgnoreCase(rowNumberAlias);
     }
     
     private boolean isCompareCondition(final PredicateSegment predicate) {

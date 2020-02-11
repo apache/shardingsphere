@@ -60,13 +60,13 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
         GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
             ExpressionSegment expressionSegment = each.getValue();
-            Object cipherColumnValue = null;
+            Object cipherColumnValue;
             Object plainColumnValue = null;
             if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                 plainColumnValue = parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
             }
             if (queryWithCipherColumn) {
-                Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, each.getColumn().getName());
+                Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, each.getColumn().getIdentifier().getValue());
                 if (encryptor.isPresent()) {
                     cipherColumnValue = encryptor.get().encrypt(plainColumnValue);
                     groupedParameterBuilder.getOnDuplicateKeyUpdateAddedParameters().add(cipherColumnValue);

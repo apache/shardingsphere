@@ -48,7 +48,7 @@ public final class ShorthandProjectionExtractor implements OptionalSQLSegmentExt
                     qualifiedShorthandNode.get().getStart().getStartIndex(), qualifiedShorthandNode.get().getStop().getStopIndex(), qualifiedShorthandNode.get().getText());
             ParserRuleContext ownerNode = (ParserRuleContext) qualifiedShorthandNode.get().getChild(0);
             IdentifierValue ownerIdentifier = new IdentifierValue(ownerNode.getText());
-            result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
+            result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerIdentifier));
             return Optional.of(result);
         }
         return Optional.absent();

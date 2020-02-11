@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -157,7 +157,7 @@ public final class TablesContextTest {
         selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 10, "table_1", QuoteCharacter.NONE)));
+        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 10, new IdentifierValue("table_1"))));
         assertTrue(tablesContext.findTableName(columnSegment, null).isPresent());
     }
     
@@ -167,8 +167,7 @@ public final class TablesContextTest {
         selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
         selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         RelationMetas relationMetas = mock(RelationMetas.class);
         assertFalse(tablesContext.findTableName(columnSegment, relationMetas).isPresent());
     }
@@ -178,9 +177,7 @@ public final class TablesContextTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
         selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
-        when(columnSegment.getName()).thenReturn("columnName");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
         assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, relationMetas).isPresent());
@@ -196,16 +193,15 @@ public final class TablesContextTest {
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         SQLStatement sqlStatement = mock(SQLStatement.class);
-        TableSegment tableSegment = new TableSegment(0, 10, "TableSegmentName", QuoteCharacter.NONE);
-        SchemaSegment schemaSegment = mock(SchemaSegment.class);
-        when(schemaSegment.getName()).thenReturn("SchemaSegmentName");
+        TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
+        SchemaSegment schemaSegment = new SchemaSegment(0, 0, new IdentifierValue("schema"));
         tableSegment.setOwner(schemaSegment);
         when(sqlStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable) tableSegment));
         new TablesContext(sqlStatement);
     }
     
     private TableSegment createTableSegment(final String tableName, final String alias) {
-        TableSegment result = new TableSegment(0, 0, tableName, QuoteCharacter.NONE);
+        TableSegment result = new TableSegment(0, 0, new IdentifierValue(tableName));
         result.setAlias(alias);
         return result;
     }

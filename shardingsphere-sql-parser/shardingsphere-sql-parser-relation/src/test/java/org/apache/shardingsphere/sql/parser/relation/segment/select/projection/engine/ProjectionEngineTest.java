@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectio
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -52,7 +52,7 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegment() {
         ShorthandProjectionSegment shorthandProjectionSegment = mock(ShorthandProjectionSegment.class);
-        when(shorthandProjectionSegment.getOwner()).thenReturn(Optional.of(mock(TableSegment.class)));
+        when(shorthandProjectionSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 0, new IdentifierValue("tbl"))));
         Optional<Projection> actual = new ProjectionEngine().createProjection(null, shorthandProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
@@ -60,7 +60,7 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
-        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("text", new ColumnSegment(0, 10, "name", QuoteCharacter.NONE));
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("text", new ColumnSegment(0, 10, new IdentifierValue("name")));
         columnProjectionSegment.setAlias("alias");
         Optional<Projection> actual = new ProjectionEngine().createProjection(null, columnProjectionSegment);
         assertTrue(actual.isPresent());

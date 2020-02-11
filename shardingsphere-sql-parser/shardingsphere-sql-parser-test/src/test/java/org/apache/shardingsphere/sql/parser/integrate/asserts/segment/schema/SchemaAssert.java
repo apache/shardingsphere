@@ -43,9 +43,9 @@ public final class SchemaAssert {
      * @param expected expected schema
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SchemaSegment actual, final ExpectedSchema expected) {
-        assertThat(assertContext.getText("Owner name assertion error: "), actual.getName(), is(expected.getName()));
-        assertThat(assertContext.getText("Owner start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertContext.getText("Owner end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertContext.getText("Owner name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
+        assertThat(assertContext.getText("Owner start delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertContext.getText("Owner end delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

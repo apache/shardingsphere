@@ -200,32 +200,28 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
-        IdentifierValue tableName = (IdentifierValue) visit(ctx.name());
-        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getValue(), tableName.getQuoteCharacter());
+        IdentifierValue tableIdentifier = (IdentifierValue) visit(ctx.name());
+        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableIdentifier);
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            IdentifierValue ownerIdentifier = (IdentifierValue) visit(owner.identifier());
-            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
+            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
     }
     
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
-        IdentifierValue columnName = (IdentifierValue) visit(ctx.name());
-        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getValue(), columnName.getQuoteCharacter());
+        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            IdentifierValue ownerIdentifier = (IdentifierValue) visit(owner.identifier());
-            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
+            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
     }
     
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
-        IdentifierValue indexName = (IdentifierValue) visit(ctx.identifier());
-        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getValue(), indexName.getQuoteCharacter());
+        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @Override

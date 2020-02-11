@@ -22,11 +22,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
  * Column segment.
@@ -45,9 +45,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final int stopIndex;
     
-    private final String name;
-    
-    private final QuoteCharacter quoteCharacter;
+    private final IdentifierValue identifier;
     
     private TableSegment owner;
     
@@ -57,7 +55,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
      * @return qualified name
      */
     public final String getQualifiedName() {
-        return null == owner ? name : owner.getTableName() + "." + name;
+        return null == owner ? identifier.getValue() : owner.getTable().getValue() + "." + identifier.getValue();
     }
 
     @Override

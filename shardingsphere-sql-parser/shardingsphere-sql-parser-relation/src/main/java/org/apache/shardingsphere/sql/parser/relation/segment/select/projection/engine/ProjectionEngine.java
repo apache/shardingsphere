@@ -74,12 +74,12 @@ public final class ProjectionEngine {
     
     private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
         Optional<TableSegment> owner = projectionSegment.getOwner();
-        return new ShorthandProjection(owner.isPresent() ? owner.get().getTableName() : null);
+        return new ShorthandProjection(owner.isPresent() ? owner.get().getTable().getValue() : null);
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
-        String owner = projectionSegment.getOwner().isPresent() ? projectionSegment.getOwner().get().getTableName() : null;
-        return new ColumnProjection(owner, projectionSegment.getName(), projectionSegment.getAlias().orNull());
+        String owner = projectionSegment.getOwner().isPresent() ? projectionSegment.getOwner().get().getTable().getValue() : null;
+        return new ColumnProjection(owner, projectionSegment.getIdentifier().getValue(), projectionSegment.getAlias().orNull());
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {

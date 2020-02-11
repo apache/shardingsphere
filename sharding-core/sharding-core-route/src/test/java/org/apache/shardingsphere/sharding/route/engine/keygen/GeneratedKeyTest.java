@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.keygen;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,9 +57,9 @@ public final class GeneratedKeyTest {
     
     @Before
     public void setUp() {
-        insertStatement.setTable(new TableSegment(0, 0, "tbl", QuoteCharacter.NONE));
+        insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
-        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, "id", QuoteCharacter.NONE));
+        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("id")));
         insertStatement.setColumns(insertColumnsSegment);
     }
     

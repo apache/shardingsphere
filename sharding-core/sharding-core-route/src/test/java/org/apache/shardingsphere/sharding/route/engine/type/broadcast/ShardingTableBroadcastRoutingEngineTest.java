@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
@@ -89,8 +90,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     @Test(expected = IllegalStateException.class)
     public void assertRouteForNonExistDropIndex() {
         DropIndexStatement indexStatement = mock(DropIndexStatement.class);
-        IndexSegment indexSegment = mock(IndexSegment.class);
-        when(indexSegment.getName()).thenReturn("no_index");
+        IndexSegment indexSegment = new IndexSegment(0, 0, new IdentifierValue("no_index"));
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
         tableBroadcastRoutingEngine.route(shardingRule);
@@ -99,8 +99,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     @Test
     public void assertRouteForDropIndex() {
         DropIndexStatement indexStatement = mock(DropIndexStatement.class);
-        IndexSegment indexSegment = mock(IndexSegment.class);
-        when(indexSegment.getName()).thenReturn("index_name");
+        IndexSegment indexSegment = new IndexSegment(0, 0, new IdentifierValue("index_name"));
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
         RouteResult actual = tableBroadcastRoutingEngine.route(shardingRule);
