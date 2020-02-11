@@ -102,8 +102,8 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
         PrivilegeClauseContext privilegeClause = ctx.privilegeClause();
-        if (null != privilegeClause && null != privilegeClause.onObjectClause()) {
-            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause().privilegeLevel();
+        if (null != privilegeClause && null != privilegeClause.onObjectClause_()) {
+            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel();
             TableNameContext tableNameContext = privilegeLevel.tableName();
             if (null != tableNameContext) {
                 TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
@@ -119,8 +119,8 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
         PrivilegeClauseContext privilegeClause = ctx.privilegeClause();
-        if (null != privilegeClause && null != privilegeClause.onObjectClause()) {
-            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause().privilegeLevel();
+        if (null != privilegeClause && null != privilegeClause.onObjectClause_()) {
+            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause_().privilegeLevel();
             TableNameContext tableNameContext = privilegeLevel.tableName();
             if (null != tableNameContext) {
                 TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);

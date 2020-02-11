@@ -32,7 +32,7 @@ proxyClause_
     ;
 
 privilegeClause
-    : privileges_ ON onObjectClause (TO | FROM) userOrRoles_ withGrantOption_? grantOption_?
+    : privileges_ ON onObjectClause_ (TO | FROM) userOrRoles_ withGrantOption_? grantOption_?
     ;
 
 roleClause_
@@ -93,7 +93,7 @@ privilegeType_
     | VERSION_TOKEN_ADMIN
     ;
 
-onObjectClause
+onObjectClause_
     : objectType_? privilegeLevel
     ;
 
