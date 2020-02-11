@@ -19,5 +19,10 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
+/**
+ * Set variable statement.
+ *
+ * @author lujingshang
+ */
 public final class SetStatement extends DALStatement {
 }

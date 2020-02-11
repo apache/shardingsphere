@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.SetStatement;
 
 /**
- * set variable statement assert.
+ * Set variable statement assert.
  *
  * @author lujingshang
  */
@@ -32,10 +32,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.SetS
 public final class SetVariableStatementAssert {
     
     /**
-     * Assert describe statement is correct with expected parser result.
+     * Assert set variable statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual describe statement
+     * @param actual actual set Variable statement
      * @param expected expected describe statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetStatement actual, final SetVariableStatementTestCase expected) {

@@ -86,10 +86,10 @@ public final class DALStatementAssert {
             ShowTableStatusStatementAssert.assertIs(assertContext, (ShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
         } else if (actual instanceof ShowIndexStatement) {
             ShowIndexStatementAssert.assertIs(assertContext, (ShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
-        } else if (actual instanceof SetStatement) {
-            SetVariableStatementAssert.assertIs(assertContext, (SetStatement) actual, (SetVariableStatementTestCase) expected);
         } else if (actual instanceof ShowStatement) {
             ShowStatementAssert.assertIs(assertContext, (ShowStatement) actual, (ShowStatementTestCase) expected);
+        } else if (actual instanceof SetStatement) {
+            SetVariableStatementAssert.assertIs(assertContext, (SetStatement) actual, (SetVariableStatementTestCase) expected);
         }
     }
 }

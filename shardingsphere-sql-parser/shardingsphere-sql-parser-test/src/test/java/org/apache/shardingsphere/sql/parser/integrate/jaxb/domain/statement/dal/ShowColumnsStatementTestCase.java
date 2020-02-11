@@ -31,6 +31,4 @@ public final class ShowColumnsStatementTestCase extends SQLParserTestCase {
 
     @XmlElement
     private ExpectedTable table;
-
-
 }

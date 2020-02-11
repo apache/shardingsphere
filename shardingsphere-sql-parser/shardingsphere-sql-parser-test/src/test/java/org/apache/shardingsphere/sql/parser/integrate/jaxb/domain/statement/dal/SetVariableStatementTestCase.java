@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.set.ExpectedVariableExpr;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.set.ExpectedVariableExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -35,8 +35,6 @@ import java.util.List;
 @Setter
 public final class SetVariableStatementTestCase extends SQLParserTestCase {
 
-    @XmlElement(name = "variable-expr")
-    private final List<ExpectedVariableExpr> variableExprs = new LinkedList<>();
-
-
+    @XmlElement(name = "variable-expression")
+    private final List<ExpectedVariableExpression> variableExpressions = new LinkedList<>();
 }

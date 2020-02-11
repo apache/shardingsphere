@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.set;
+package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
- * Expected variable expr.
- * 
+ * Variable expr segment.
+ *
  * @author lujingshang
  */
+@RequiredArgsConstructor
 @Getter
-public final class ExpectedVariableExpr extends AbstractExpectedSQLSegment {
-    
-    @XmlElement(name = "variable")
-    private String variable;
+public final class VariableExpressionSegment implements SQLSegment {
 
-    @XmlElement(name = "expr")
-    private String expr;
+    private final int startIndex;
+
+    private final int stopIndex;
+
+    private final String variable;
+
+    private final String expression;
 }

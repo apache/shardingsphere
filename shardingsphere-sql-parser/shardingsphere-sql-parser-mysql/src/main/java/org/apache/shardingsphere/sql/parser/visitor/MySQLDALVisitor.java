@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableExprSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.SetStatement;
@@ -184,8 +184,8 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         for (VariableExprContext vectx: variableExprs) {
             String variable = vectx.variable_().getText();
             String expr = vectx.expr().getText();
-            VariableExprSegment variableExprSegment = new VariableExprSegment(vectx.start.getStartIndex(), vectx.stop.getStopIndex(), variable, expr);
-            result.getAllSQLSegments().add(variableExprSegment);
+            VariableExpressionSegment variableExpressionSegment = new VariableExpressionSegment(vectx.start.getStartIndex(), vectx.stop.getStopIndex(), variable, expr);
+            result.getAllSQLSegments().add(variableExpressionSegment);
         }
         return result;
     }
