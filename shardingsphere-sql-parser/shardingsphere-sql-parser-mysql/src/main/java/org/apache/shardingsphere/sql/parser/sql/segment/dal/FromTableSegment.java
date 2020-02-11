@@ -19,9 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
@@ -31,21 +29,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
  */
 @Setter
 @Getter
-public final class FromTableSegment implements SQLSegment, TableAvailable {
+public final class FromTableSegment implements SQLSegment {
     
     private int startIndex;
     
     private int stopIndex;
     
     private TableSegment table;
-    
-    @Override
-    public String getTableName() {
-        return table.getTableName();
-    }
-    
-    @Override
-    public QuoteCharacter getTableQuoteCharacter() {
-        return QuoteCharacter.NONE;
-    }
 }
