@@ -87,15 +87,13 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
-        CreateDefinitionClauseContext createDefinitionClause = ctx.createDefinitionClause();
-        if (null != createDefinitionClause) {
-            CreateTableStatement createDefinition = (CreateTableStatement) visit(createDefinitionClause);
+        if (null != ctx.createDefinitionClause()) {
+            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
             result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
             result.getAllSQLSegments().addAll(createDefinition.getAllSQLSegments());
         }
-        CreateLikeClauseContext createLikeClause = ctx.createLikeClause();
-        if (null != createLikeClause) {
-            result.getAllSQLSegments().add((TableSegment) visit(createLikeClause));
+        if (null != ctx.createLikeClause()) {
+            result.getAllSQLSegments().add((TableSegment) visit(ctx.createLikeClause()));
         }
         return result;
     }
@@ -106,9 +104,8 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
         result.getAllSQLSegments().add(table);
-        AlterDefinitionClauseContext alterDefinitionClause = ctx.alterDefinitionClause();
-        if (null != alterDefinitionClause) {
-            AlterTableStatement alterDefinition = (AlterTableStatement) visit(alterDefinitionClause);
+        if (null != ctx.alterDefinitionClause()) {
+            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
             result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
             result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());
@@ -155,8 +152,6 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
         Collection<InlineDataTypeContext> inlineDataTypes = Collections2.filter(ctx.inlineDataType(), new Predicate<InlineDataTypeContext>() {
             
             @Override
@@ -167,13 +162,13 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         Collection<GeneratedDataTypeContext> generatedDataTypes = Collections2.filter(ctx.generatedDataType(), new Predicate<GeneratedDataTypeContext>() {
             @Override
             public boolean apply(final GeneratedDataTypeContext generatedDataType) {
-                return null != generatedDataType.commonDataTypeOption()
-                        && null != generatedDataType.commonDataTypeOption().primaryKey();
+                return null != generatedDataType.commonDataTypeOption() && null != generatedDataType.commonDataTypeOption().primaryKey();
             }
         });
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         boolean isPrimaryKey = inlineDataTypes.size() > 0 || generatedDataTypes.size() > 0;
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
     }
     
     @Override
