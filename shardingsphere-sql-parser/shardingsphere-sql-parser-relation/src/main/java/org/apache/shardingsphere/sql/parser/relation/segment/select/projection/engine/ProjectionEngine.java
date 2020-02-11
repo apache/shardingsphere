@@ -79,7 +79,7 @@ public final class ProjectionEngine {
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
         String owner = projectionSegment.getOwner().isPresent() ? projectionSegment.getOwner().get().getTable().getValue() : null;
-        return new ColumnProjection(owner, projectionSegment.getName(), projectionSegment.getAlias().orNull());
+        return new ColumnProjection(owner, projectionSegment.getIdentifier().getValue(), projectionSegment.getAlias().orNull());
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {

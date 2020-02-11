@@ -223,7 +223,7 @@ public final class ProjectionsContextEngine {
     private boolean isSameProjection(final TablesContext tablesContext, final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
         Optional<Table> table = tablesContext.find(shorthandProjection.getOwner().get());
-        return table.isPresent() && relationMetas.containsColumn(table.get().getName(), orderItem.getColumn().getName());
+        return table.isPresent() && relationMetas.containsColumn(table.get().getName(), orderItem.getColumn().getIdentifier().getValue());
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {

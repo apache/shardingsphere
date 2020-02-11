@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -45,7 +44,7 @@ public final class InsertSQLStatementContextTest {
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
         insertColumnsSegment.getColumns().addAll(Arrays.asList(
-                new ColumnSegment(0, 0, "id", QuoteCharacter.NONE), new ColumnSegment(0, 0, "name", QuoteCharacter.NONE), new ColumnSegment(0, 0, "status", QuoteCharacter.NONE)));
+                new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
         insertStatement.setColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
         InsertSQLStatementContext actual = new InsertSQLStatementContext(mock(RelationMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);

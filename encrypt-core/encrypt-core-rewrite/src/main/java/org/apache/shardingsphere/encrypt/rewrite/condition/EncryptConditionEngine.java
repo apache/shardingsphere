@@ -97,7 +97,7 @@ public final class EncryptConditionEngine {
     
     private Optional<EncryptCondition> createEncryptCondition(final PredicateSegment predicateSegment, final TablesContext tablesContext) {
         Optional<String> tableName = tablesContext.findTableName(predicateSegment.getColumn(), relationMetas);
-        return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), predicateSegment.getColumn().getName()).isPresent()
+        return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), predicateSegment.getColumn().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(predicateSegment, tableName.get()) : Optional.<EncryptCondition>absent();
     }
     
@@ -117,7 +117,7 @@ public final class EncryptConditionEngine {
     
     private static Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment
-                ? Optional.<EncryptCondition>of(new EncryptEqualCondition(predicateSegment.getColumn().getName(), tableName, compareRightValue.getExpression().getStartIndex(), 
+                ? Optional.<EncryptCondition>of(new EncryptEqualCondition(predicateSegment.getColumn().getIdentifier().getValue(), tableName, compareRightValue.getExpression().getStartIndex(), 
                 predicateSegment.getStopIndex(), compareRightValue.getExpression()))
                 : Optional.<EncryptCondition>absent();
     }
@@ -130,8 +130,8 @@ public final class EncryptConditionEngine {
             }
         }
         return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent()
-                : Optional.<EncryptCondition>of(new EncryptInCondition(
-                        predicateSegment.getColumn().getName(), tableName, inRightValue.getSqlExpressions().iterator().next().getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
+                : Optional.<EncryptCondition>of(new EncryptInCondition(predicateSegment.getColumn().getIdentifier().getValue(), 
+                tableName, inRightValue.getSqlExpressions().iterator().next().getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
     }
     
     private boolean isSupportedOperator(final String operator) {

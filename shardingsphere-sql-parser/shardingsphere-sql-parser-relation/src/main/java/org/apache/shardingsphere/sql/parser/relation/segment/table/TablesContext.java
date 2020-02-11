@@ -167,7 +167,7 @@ public final class TablesContext {
             Optional<Table> table = find(columnSegment.getOwner().get().getTable().getValue());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
-        return findTableNameFromMetaData(columnSegment.getName(), relationMetas);
+        return findTableNameFromMetaData(columnSegment.getIdentifier().getValue(), relationMetas);
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {

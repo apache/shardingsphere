@@ -55,7 +55,7 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
         if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
             LinkedList<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns();
             for (int i = 0; i < columnSegments.size(); i++) {
-                if (columnSegments.get(i).getName().equals(shadowRule.getColumn())) {
+                if (columnSegments.get(i).getIdentifier().getValue().equals(shadowRule.getColumn())) {
                     final Object value = parameters.get(i);
                     return value instanceof Boolean && (Boolean) value;
                 }
@@ -79,7 +79,7 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
     
     private boolean judgePredicateSegments(final Collection<PredicateSegment> predicates) {
         for (PredicateSegment each : predicates) {
-            if (each.getColumn().getName().equals(shadowRule.getColumn())) {
+            if (each.getColumn().getIdentifier().getValue().equals(shadowRule.getColumn())) {
                 Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be PredicateCompareRightValue");
                 PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
                 int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) rightValue.getExpression()).getParameterMarkerIndex();

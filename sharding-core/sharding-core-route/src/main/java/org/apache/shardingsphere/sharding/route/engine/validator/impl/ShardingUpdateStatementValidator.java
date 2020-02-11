@@ -48,7 +48,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement, final List<Object> parameters) {
         String tableName = new TablesContext(sqlStatement).getSingleTableName();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
-            String shardingColumn = each.getColumn().getName();
+            String shardingColumn = each.getColumn().getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
                 Optional<Object> shardingColumnSetAssignmentValue = getShardingColumnSetAssignmentValue(each, parameters);
                 Optional<Object> shardingValue = Optional.absent();
@@ -88,7 +88,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     
     private Optional<Object> getShardingValue(final AndPredicate andPredicate, final List<Object> parameters, final String shardingColumn) {
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            if (!shardingColumn.equalsIgnoreCase(each.getColumn().getName())) {
+            if (!shardingColumn.equalsIgnoreCase(each.getColumn().getIdentifier().getValue())) {
                 continue;
             }
             PredicateRightValue rightValue = each.getRightValue();

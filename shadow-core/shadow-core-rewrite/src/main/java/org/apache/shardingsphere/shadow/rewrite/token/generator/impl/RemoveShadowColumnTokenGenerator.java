@@ -50,7 +50,7 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
         Collection<RemoveToken> result = new LinkedList<>();
         LinkedList<ColumnSegment> columns = (LinkedList<ColumnSegment>) sqlSegment.get().getColumns();
         for (int i = 0; i < columns.size(); i++) {
-            if (getShadowRule().getColumn().equals(columns.get(i).getName())) {
+            if (getShadowRule().getColumn().equals(columns.get(i).getIdentifier().getValue())) {
                 if (i == 0) {
                     result.add(new RemoveToken(columns.get(i).getStartIndex(), columns.get(i + 1).getStartIndex() - 1));
                 } else {

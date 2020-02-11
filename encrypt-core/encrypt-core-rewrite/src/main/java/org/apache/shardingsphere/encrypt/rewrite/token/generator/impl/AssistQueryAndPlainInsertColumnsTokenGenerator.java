@@ -63,11 +63,11 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     
     private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         List<String> result = new LinkedList<>();
-        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnSegment.getName());
+        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue());
         if (assistedQueryColumn.isPresent()) {
             result.add(assistedQueryColumn.get());
         }
-        Optional<String> plainColumn = encryptTable.findPlainColumn(columnSegment.getName());
+        Optional<String> plainColumn = encryptTable.findPlainColumn(columnSegment.getIdentifier().getValue());
         if (plainColumn.isPresent()) {
             result.add(plainColumn.get());
         }

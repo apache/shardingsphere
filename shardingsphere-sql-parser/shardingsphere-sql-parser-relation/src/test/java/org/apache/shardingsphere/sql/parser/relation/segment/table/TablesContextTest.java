@@ -167,8 +167,7 @@ public final class TablesContextTest {
         selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
         selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         RelationMetas relationMetas = mock(RelationMetas.class);
         assertFalse(tablesContext.findTableName(columnSegment, relationMetas).isPresent());
     }
@@ -178,9 +177,7 @@ public final class TablesContextTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
         selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
-        when(columnSegment.getName()).thenReturn("columnName");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
         assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, relationMetas).isPresent());

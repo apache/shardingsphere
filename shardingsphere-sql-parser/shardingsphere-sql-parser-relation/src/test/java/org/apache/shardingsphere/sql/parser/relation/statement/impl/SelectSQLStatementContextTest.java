@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.relation.statement.impl;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -151,13 +150,13 @@ public final class SelectSQLStatementContextTest {
             case INDEX_ORDER_BY:
                 return new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, OrderDirection.ASC);
             case COLUMN_ORDER_BY_WITH_OWNER:
-                ColumnSegment columnSegment = new ColumnSegment(0, 0, "name", QuoteCharacter.NONE);
+                ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
                 columnSegment.setOwner(new TableSegment(0, 0, new IdentifierValue("table")));
                 return new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, OrderDirection.ASC);
             case COLUMN_ORDER_BY_WITH_ALIAS:
-                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, "n", QuoteCharacter.NONE), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("n")), OrderDirection.ASC, OrderDirection.ASC);
             default:
-                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, "id", QuoteCharacter.NONE), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, OrderDirection.ASC);
         }
     }
     

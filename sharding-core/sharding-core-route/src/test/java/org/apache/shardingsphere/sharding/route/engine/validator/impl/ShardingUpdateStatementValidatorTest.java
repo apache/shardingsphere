@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -87,7 +86,7 @@ public final class ShardingUpdateStatementValidatorTest {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("user")));
         result.setSetAssignment(
-                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id", QuoteCharacter.NONE), new LiteralExpressionSegment(0, 0, "")))));
+                new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
         return result;
     }
     
@@ -95,14 +94,14 @@ public final class ShardingUpdateStatementValidatorTest {
         UpdateStatement result = new UpdateStatement();
         result.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("user")));
         Collection<AssignmentSegment> assignments = Collections.singletonList(
-                new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id", QuoteCharacter.NONE), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
+                new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);
         result.setSetAssignment(setAssignmentSegment);
         WhereSegment where = new WhereSegment(0, 0);
         where.setParametersCount(1);
         where.setParameterMarkerStartIndex(0);
         AndPredicate andPre = new AndPredicate();
-        andPre.getPredicates().add(new PredicateSegment(0, 1, new ColumnSegment(0, 0, "id", QuoteCharacter.NONE), new PredicateCompareRightValue("=", new ParameterMarkerExpressionSegment(0, 0, 0))));
+        andPre.getPredicates().add(new PredicateSegment(0, 1, new ColumnSegment(0, 0, new IdentifierValue("id")), new PredicateCompareRightValue("=", new ParameterMarkerExpressionSegment(0, 0, 0))));
         where.getAndPredicates().add(andPre);
         result.setWhere(where);
         return result;

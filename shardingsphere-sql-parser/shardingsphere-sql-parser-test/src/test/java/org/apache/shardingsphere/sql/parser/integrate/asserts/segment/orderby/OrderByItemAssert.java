@@ -91,7 +91,7 @@ public final class OrderByItemAssert {
     
     private static void assertColumnOrderByItem(final SQLCaseAssertContext assertContext,
                                                 final ColumnOrderByItemSegment actual, final ExpectedColumnOrderByItem expected, final String type) {
-        assertThat(assertContext.getText(String.format("%s item column name assertion error: ", type)), actual.getColumn().getName(), is(expected.getName()));
+        assertThat(assertContext.getText(String.format("%s item column name assertion error: ", type)), actual.getColumn().getIdentifier().getValue(), is(expected.getName()));
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
             TableAssert.assertOwner(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());

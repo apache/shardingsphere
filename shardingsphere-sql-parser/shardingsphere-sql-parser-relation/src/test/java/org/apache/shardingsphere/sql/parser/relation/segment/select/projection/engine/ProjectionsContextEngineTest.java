@@ -162,9 +162,8 @@ public final class ProjectionsContextEngineTest {
         owner.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);
         when(selectStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable) tableSegment));
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getName()).thenReturn("name");
-        when(columnSegment.getOwner()).thenReturn(Optional.of(tableSegment));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
+        columnSegment.setOwner(tableSegment);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);
         columnProjectionSegment.setOwner(owner);
         when(projectionsSegment.getProjections()).thenReturn(Lists.<ProjectionSegment>newArrayList(columnProjectionSegment, shorthandProjectionSegment));
