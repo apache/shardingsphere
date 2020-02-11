@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.ui.web.response;
 
+import com.google.gson.Gson;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -50,6 +51,16 @@ public final class ResponseResultUtil {
         result.setSuccess(true);
         result.setModel(model);
         return result;
+    }
+    
+    /**
+     * Build the response from json.
+     *
+     * @param responseResultJson response result json string
+     * @return response result
+     */
+    public static ResponseResult buildFromJson(final String responseResultJson) {
+        return new Gson().fromJson(responseResultJson, ResponseResult.class);
     }
     
     /**
