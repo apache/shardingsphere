@@ -145,8 +145,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         FromTableContext fromTableContext = ctx.fromTable();
         if (null != fromSchemaContext) {
             SchemaNameContext schemaNameContext = fromSchemaContext.schemaName();
-            IdentifierValue identifier = (IdentifierValue) visit(schemaNameContext);
-            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), identifier.getValue(), identifier.getQuoteCharacter());
+            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), (IdentifierValue) visit(schemaNameContext));
             result.getAllSQLSegments().add(schemaSegment);
         }
         if (null != fromTableContext) {

@@ -196,9 +196,8 @@ public final class TablesContextTest {
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         SQLStatement sqlStatement = mock(SQLStatement.class);
-        TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("TableSegmentName"));
-        SchemaSegment schemaSegment = mock(SchemaSegment.class);
-        when(schemaSegment.getName()).thenReturn("SchemaSegmentName");
+        TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
+        SchemaSegment schemaSegment = new SchemaSegment(0, 0, new IdentifierValue("schema"));
         tableSegment.setOwner(schemaSegment);
         when(sqlStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable) tableSegment));
         new TablesContext(sqlStatement);

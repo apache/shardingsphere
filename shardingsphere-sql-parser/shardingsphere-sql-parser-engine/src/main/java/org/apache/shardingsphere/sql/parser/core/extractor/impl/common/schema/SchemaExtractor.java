@@ -38,8 +38,7 @@ public final class SchemaExtractor implements OptionalSQLSegmentExtractor {
     public Optional<SchemaSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> schemaNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SCHEMA_NAME);
         if (schemaNode.isPresent()) {
-            IdentifierValue identifier = new IdentifierValue(schemaNode.get().getText());
-            return Optional.of(new SchemaSegment(schemaNode.get().getStart().getStartIndex(), schemaNode.get().getStop().getStopIndex(), identifier.getValue(), identifier.getQuoteCharacter()));
+            return Optional.of(new SchemaSegment(schemaNode.get().getStart().getStartIndex(), schemaNode.get().getStop().getStopIndex(), new IdentifierValue(schemaNode.get().getText())));
         }
         return Optional.absent();
     }

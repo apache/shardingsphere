@@ -71,10 +71,10 @@ public final class TablesContext {
     
     private void setSchema(final TableSegment tableSegment) {
         if (tableSegment.getOwner().isPresent()) {
-            if (null != schema && !tableSegment.getOwner().get().getName().equalsIgnoreCase(schema)) {
+            if (null != schema && !tableSegment.getOwner().get().getIdentifier().getValue().equalsIgnoreCase(schema)) {
                 throw new UnsupportedOperationException("Cannot support multiple schemas in one SQL");
             }
-            schema = tableSegment.getOwner().get().getName();
+            schema = tableSegment.getOwner().get().getIdentifier().getValue();
         }
     }
     
