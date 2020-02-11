@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
@@ -27,8 +29,10 @@ import javax.xml.bind.annotation.XmlElement;
  * 
  * @author zhangliang 
  */
+@Getter
+@Setter
 public final class ShowColumnsStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement
     private ExpectedTable table;
 }

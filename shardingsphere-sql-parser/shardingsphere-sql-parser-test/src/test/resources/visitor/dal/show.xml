@@ -47,11 +47,11 @@
             <owner name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27" />
         </table>
     </show-index>
-
+    
     <show-columns sql-case-id="show_columns_from_table">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26"/>
     </show-columns>
-
+    
     <show-create-table sql-case-id="show_create_table">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26"/>
     </show-create-table>
