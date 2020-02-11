@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-const HOST = ''
-const OTHERHOST = ''
+const HOST = 'http://47.100.190.183:8088'
+const OTHERHOST = 'http://47.92.121.69:88'
 
 export default {
   HOST,

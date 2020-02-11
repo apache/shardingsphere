@@ -183,7 +183,6 @@
           />
         </el-col>
       </el-row>
-      <div slot="footer" class="dialog-footer"></div>
     </el-dialog>
     <!-- syncTaskProgress -->
     <el-dialog
@@ -228,7 +227,6 @@
           </el-card>
         </el-col>
       </el-row>
-      <div slot="footer" class="dialog-footer"></div>
     </el-dialog>
     <!-- syncTaskProgressDetail -->
     <el-dialog
@@ -321,7 +319,23 @@
           </el-row>
         </el-collapse-item>
       </el-collapse>
-      <div slot="footer" class="dialog-footer"></div>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="serverDialogVisible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      title="Data Scaling Seting"
+      width="480px"
+      center>
+      <el-form :inline="true">
+        <el-form-item label="Data Scaling Server:">
+          <el-input v-model="serverInput" placeholder="Example 127.0.0.1"/>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="setServer">确 定</el-button>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </el-row>
 </template>
@@ -375,7 +389,9 @@ export default {
       DataScalingDialogProgressVisible: false,
       DataScalingDialogSyncTaskProgressDetailVisible: false,
       DatasourceVisible: false,
+      serverDialogVisible: true,
       RuleVisible: false,
+      serverInput: '',
       schemaData: [],
       textareaDatasource: ``,
       textareaRule: ``,
@@ -494,6 +510,13 @@ export default {
     this.getJobList()
   },
   methods: {
+    setServer() {
+      this.$notify({
+        title: this.$t('dataScaling').notify.title,
+        message: 'Set up successfully！',
+        type: 'success'
+      })
+    },
     getPercentage(arr) {
       if (!arr) return
       let sumEstimatedRows = ''
