@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
- * Show columns statement test case.
- * 
- * @author zhangliang 
+ * Variable expr segment.
+ *
+ * @author lujingshang
  */
-public final class ShowColumnsStatementTestCase extends SQLParserTestCase {
+@RequiredArgsConstructor
+@Getter
+public final class VariableExpressionSegment implements SQLSegment {
 
-    @XmlElement
-    private ExpectedTable table;
+    private final int startIndex;
+
+    private final int stopIndex;
+
+    private final String variable;
+
+    private final String expression;
 }

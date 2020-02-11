@@ -17,18 +17,24 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal;
 
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.set.ExpectedVariableExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Show columns statement test case.
+ * set variable statement test case.
  * 
- * @author zhangliang 
+ * @author lujingshang
  */
-public final class ShowColumnsStatementTestCase extends SQLParserTestCase {
+@Getter
+@Setter
+public final class SetVariableStatementTestCase extends SQLParserTestCase {
 
-    @XmlElement
-    private ExpectedTable table;
+    @XmlElement(name = "variable-expression")
+    private final List<ExpectedVariableExpression> variableExpressions = new LinkedList<>();
 }

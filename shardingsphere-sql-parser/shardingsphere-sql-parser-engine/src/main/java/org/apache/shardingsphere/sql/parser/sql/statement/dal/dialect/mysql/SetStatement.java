@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
- * Show columns statement test case.
- * 
- * @author zhangliang 
+ * Set variable statement.
+ *
+ * @author lujingshang
  */
-public final class ShowColumnsStatementTestCase extends SQLParserTestCase {
-
-    @XmlElement
-    private ExpectedTable table;
+public final class SetStatement extends DALStatement {
 }

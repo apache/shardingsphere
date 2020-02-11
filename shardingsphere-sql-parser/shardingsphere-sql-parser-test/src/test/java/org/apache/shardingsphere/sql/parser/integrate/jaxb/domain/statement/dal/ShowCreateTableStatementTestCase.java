@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal;
 
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Show create table statement test case.
@@ -25,4 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLP
  * @author zhangliang 
  */
 public final class ShowCreateTableStatementTestCase extends SQLParserTestCase {
+
+    @XmlElement
+    private ExpectedTable table;
 }
