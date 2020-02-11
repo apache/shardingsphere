@@ -177,7 +177,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         for (AssignmentContext each : ctx.assignment()) {
             assignments.add((AssignmentSegment) visit(each));
         }
-        return new SetAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
+        return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), assignments);
     }
     
     @Override
@@ -186,14 +186,14 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         for (AssignmentValueContext each : ctx.assignmentValue()) {
             segments.add((ExpressionSegment) visit(each));
         }
-        return new InsertValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segments);
+        return new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), segments);
     }
     
     @Override
     public ASTNode visitAssignment(final AssignmentContext ctx) {
         ColumnSegment column = (ColumnSegment) visitColumnName(ctx.columnName());
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        return new AssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), column, value);
+        return new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), column, value);
     }
     
     @Override
@@ -202,7 +202,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         if (null != expr) {
             return visit(expr);
         }
-        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), ctx.getText());
     }
     
     @Override
@@ -337,7 +337,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         for (ProjectionContext each : ctx.projection()) {
             projections.add((ProjectionSegment) visit(each));
         }
-        ProjectionsSegment result = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        ProjectionsSegment result = new ProjectionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex());
         result.getProjections().addAll(projections);
         return result;
     }
@@ -437,7 +437,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
-        WhereSegment result = new WhereSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex());
         result.setParameterMarkerStartIndex(getCurrentParameterIndex());
         ASTNode segment = visit(ctx.expr());
         if (segment instanceof OrPredicateSegment) {
@@ -454,7 +454,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitLimitClause(final LimitClauseContext ctx) {
         if (null == ctx.limitOffset()) {
-            return new LimitSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, (PaginationValueSegment) visit(ctx.limitRowCount()));
+            return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), null, (PaginationValueSegment) visit(ctx.limitRowCount()));
         }
         PaginationValueSegment rowCount;
         PaginationValueSegment limitOffset;
@@ -465,22 +465,22 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             limitOffset = (PaginationValueSegment) visit(ctx.limitOffset());
             rowCount = (PaginationValueSegment) visit(ctx.limitRowCount());
         }
-        return new LimitSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), limitOffset, rowCount);
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), limitOffset, rowCount);
     }
     
     @Override
     public ASTNode visitLimitRowCount(final LimitRowCountContext ctx) {
         if (null != ctx.numberLiterals()) {
-            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
-        return new ParameterMarkerLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
     }
     
     @Override
     public ASTNode visitLimitOffset(final LimitOffsetContext ctx) {
         if (null != ctx.numberLiterals()) {
-            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
-        return new ParameterMarkerLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
     }
 }
