@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/</link>
+    <description>Recent content on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Config Center</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/config-center/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/config-center/</guid>
+      <description>Motivation  Configuration centralization: increasing runtime instances make it hard to manage separate configurations and asynchronized configurations can cause serious problems. Concentrating configurations in configuration center makes it more effective to manage.
+ Dynamic configuration: distribution after configuration modification is another important capability that configuration center can provide. It can support dynamic switch between data sources, tables, shards and the read-write split strategy.
+  Data Structure in Configuration Center Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, ConfigMap and Properties configurations in YAML form.</description>
+    </item>
+    
+    <item>
+      <title>Core Concept</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/concept/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/concept/</guid>
+      <description>Master Database It refers to the database used in data insert, update and delete operations. Only support single master database for now.
+Slave Database It refers to the database used in data query. Support multiple slave databases.
+Master-slave replication It refers to the operation to asynchronously replicate the data from the master database to the slave database. Because of master-slave asynchronization between the master database and the slave database, there may be short-time data inconsistency between the master database and the slave database.</description>
+    </item>
+    
+    <item>
+      <title>Inline Expression</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/inline-expression/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/inline-expression/</guid>
+      <description>Motivation Configuration simplicity and unity are two main problems that inline expression wants to solve.
+In complex data sharding rules, with the increase of data nodes, a large number of repeated configurations make it difficult to maintain. Inline expressions can simplify data node configuration work.
+Realizing common sharding algorithms with Java codes is not helpful to the unified management of configurations. Writing sharding algorithms with inline expressions enables rule configurations to be stored together, making it easier to browse and store them.</description>
+    </item>
+    
+    <item>
+      <title>Java</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-java/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-java/</guid>
+      <description>Example Sharding DataSource getShardingDataSource() throws SQLException { ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration(); shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration()); shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration()); shardingRuleConfig.getBindingTableGroups().add(&amp;quot;t_order, t_order_item&amp;quot;); shardingRuleConfig.getBroadcastTables().add(&amp;quot;t_config&amp;quot;); shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;user_id&amp;quot;, &amp;quot;ds${user_id % 2}&amp;quot;)); shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration(&amp;quot;order_id&amp;quot;, new ModuloShardingTableAlgorithm())); return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig); } TableRuleConfiguration getOrderTableRuleConfiguration() { TableRuleConfiguration result = new TableRuleConfiguration(); result.setLogicTable(&amp;quot;t_order&amp;quot;); result.setActualDataNodes(&amp;quot;ds${0..1}.t_order${0..1}&amp;quot;); result.setKeyGeneratorColumnName(&amp;quot;order_id&amp;quot;); return result; } TableRuleConfiguration getOrderItemTableRuleConfiguration() { TableRuleConfiguration result = new TableRuleConfiguration(); result.setLogicTable(&amp;quot;t_order_item&amp;quot;); result.setActualDataNodes(&amp;quot;ds${0..1}.t_order_item${0..1}&amp;quot;); return result; } Map&amp;lt;String, DataSource&amp;gt; createDataSourceMap() { Map&amp;lt;String, DataSource&amp;gt; result = new HashMap&amp;lt;&amp;gt;(); result.put(&amp;quot;ds0&amp;quot;, DataSourceUtil.createDataSource(&amp;quot;ds0&amp;quot;)); result.</description>
+    </item>
+    
+    <item>
+      <title>Local transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/local-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/local-transaction/</guid>
+      <description>Concept  Fully support none-cross-database transactions, for example, table sharding only or database sharding with route result in the single database.
+ Fully support cross-database transactions caused by logic exceptions, for example, the update of two databases in one transaction. After the update, the null cursor is thrown and the content in both databases can be rolled back.
+ Do not support the cross-database transactions caused by network or hardware exceptions.</description>
+    </item>
+    
+    <item>
+      <title>Parse Engine</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/parse/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/parse/</guid>
+      <description>SQL is relatively simple compared to other programming languages, but it is still a complete set of programming language, so there is no essential difference between parsing SQL grammar and parsing other languages (Java, C and Go, etc.).
+Abstract Syntax Tree The parsing process can be divided into lexical parsing and syntactic parsing. Lexical parser is used to divide SQL into indivisible atomic signs, i.e., Token. According to the dictionary provided by different database dialect, it is categorized into keyword, expression, literal and operator.</description>
+    </item>
+    
+    <item>
+      <title>SQL</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sql/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sql/</guid>
+      <description>Logic Table It refers collectively to the same kind of databases (tables) of horizontal sharding. For instance, the order data is divided into 10 tables according to the last number of the primary key, and they are from t_order_0 to t_order_9, whose logic name is t_order.
+Actual Table The physical table that really exists in the sharding database, e.g. t_order_0 to t_order_9 in the instance above.
+Data Node The smallest unit of data sharding, consist of source data name and table name, e.</description>
+    </item>
+    
+    <item>
+      <title>SQL</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/sql/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/sql/</guid>
+      <description>Since the syntax of SQL is flexible and complex and query situations of distributed databases and stand-alone databases are not identical with each other, SQLs incompatible with stand-alone databases are hard to avoid.
+To try to avoid traps for users, this document has listed identified available SQL types and unavailable SQL types.
+It is inevitably to have some SQLs that have not been listed yet, welcome to supplement for that.</description>
+    </item>
+    
+    <item>
+      <title>Sharding</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/sharding/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/sharding/</guid>
+      <description>Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java Database sharding and table sharding of Sharding-JDBC configure descriptions according to rules. The following example is two databases plus two tables configurations, whose databases take module and split according to order_id, tables take module and split according to order_id.
+// Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure first data source BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.</description>
+    </item>
+    
+    <item>
+      <title>Sharding-JDBC</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/sharding-jdbc-quick-start/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/sharding-jdbc-quick-start/</guid>
+      <description>1. Import maven dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Note: Please change the ${latest.release.version} to the actual version.
+2. Configure sharding rule configuration Sharding-JDBC support 4 types for sharding rule configuration, they are Java, YAML, Spring namespace and Spring boot starter. Developers can choose any one for best suitable situation. More details please reference Configuration Manual.
+3. Create DataSource Use ShardingDataSourceFactory to create ShardingDataSource, which is a standard JDBC DataSource.</description>
+    </item>
+    
+    <item>
+      <title>User Manual</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/usage/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/usage/</guid>
+      <description>Proxy  Download the latest version of Sharding-Proxy from https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz If using docker，execute command docker pull shardingsphere/sharding-proxy to get image. More details please referenceDocker Image. Modify the conf/server.yaml and conf/config-xxx.yaml file after decompression, and configure the sharding rule and master-slave rule. Please reference Configuration Manual. Run bin/start.sh on Linux, or bin/start.bat on Windows to start Sharding-Proxy. If you want to set port and configuration file, please refer to quick-start. Connect to it by means of any client tools, e.</description>
+    </item>
+    
+    <item>
+      <title>2PC Transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/2pc-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/2pc-transaction/</guid>
+      <description> Concept  Fully support cross-database transactions.
+ Use Atomikos by default; support to use SPI to upload other XA transaction managers.
+  Supported Situation  Sharding-JDBC can support users&amp;rsquo; own configurations of XA data source.
+ Sharding-Proxy support.
+  </description>
+    </item>
+    
+    <item>
+      <title>Configuration Manual</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/configuration/</guid>
+      <description>Data sources and sharding rule configuration example Sharding-Proxy support multiple logic schema, for every configuration file which prefix as config-, and suffix as .yaml. Below is configuration example of config-xxx.yaml.
+Sharding schemaName: sharding_db dataSources: ds0: url: jdbc:mysql://localhost:3306/ds0 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 ds1: url: jdbc:mysql://localhost:3306/ds1 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 shardingRule: tables: t_order: actualDataNodes: ds${0.</description>
+    </item>
+    
+    <item>
+      <title>Core Features</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/core-features/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/core-features/</guid>
+      <description>Provide the read-write split configuration of one master database with multiple slave databases, which can be used alone as well as with sharding table and database. SQL pass-through is available when using read-write split alone. If there is write operation in the same thread and database connection, all the following read operations must be from the master database to ensure data consistency. Mandatory master database route strategy based on SQL Hint.</description>
+    </item>
+    
+    <item>
+      <title>Distributed Primary Key</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/key-generator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/key-generator/</guid>
+      <description>Motivation In traditional database software development, the automatic primary key generation technology is a basic requirement. All kinds of databases have provided corresponding support for this requirement, such as MySQL auto-increment key, Oracle auto-increment sequence and so on. It is a tricky problem that different data nodes only generate one primary key after sharding. Auto-increment keys in different physical tables within the same logic table can not perceive each other and thereby generate repeated primary keys.</description>
+    </item>
+    
+    <item>
+      <title>Orchestration</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/orchestration/</guid>
+      <description>Motivation Registry center provides the ability to disable the access of application to database and the access to slave database. Data orchestration still has many functions to be developed.
+Data Structure in Registry Center Registry center creates running node of database access object under state in defined name space, to distinguish different database access instances, including instances and datasources nodes.
+instances ├──your_instance_ip_a@-@your_instance_pid_x ├──your_instance_ip_b@-@your_instance_pid_y ├──.... datasources ├──ds0 ├──ds1 ├──....  Sharding-Proxy can support multiple logical data sources, so datasources sub-nodes are named in the form of schema_name.</description>
+    </item>
+    
+    <item>
+      <title>Pagination</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/pagination/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/pagination/</guid>
+      <description>Totally available for pagination queries of MySQL, PostgreSQL and Oracle; partly available for SQLServer pagination query due to its complexity.
+Pagination Performance Performance Bottleneck Pagination with query offset too high can lead to a low data accessibility, take MySQL as an example:
+SELECT * FROM t_order ORDER BY id LIMIT 1000000, 10  This SQL will make MySQL acquire 10 records after skipping 1,000,000 records when it is not able to use indexes.</description>
+    </item>
+    
+    <item>
+      <title>Read-write Splitting</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/read-write-splitting/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/read-write-splitting/</guid>
+      <description>Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure master data source BasicDataSource masterDataSource = new BasicDataSource(); masterDataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); masterDataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_master&amp;quot;); masterDataSource.setUsername(&amp;quot;root&amp;quot;); masterDataSource.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_master&amp;quot;, masterDataSource); // Configure first slave data source BasicDataSource slaveDataSource1 = new BasicDataSource(); slaveDataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave0&amp;quot;); slaveDataSource1.setUsername(&amp;quot;root&amp;quot;); slaveDataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave0&amp;quot;, slaveDataSource1); // Configure second slave data source BasicDataSource slaveDataSource2 = new BasicDataSource(); slaveDataSource2.</description>
+    </item>
+    
+    <item>
+      <title>Route Engine</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/route/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/route/</guid>
+      <description>It is the sharding strategy that matches databases and tables according to the parsing context and generates route path. SQL with sharding keys can be divided into single-sharding route (equal mark as the operator of sharding key), multiple-sharding route (IN as the operator of sharding key) and range sharding route (BETWEEN as the operator of sharding key). SQL without sharding key adopts broadcast route.
+Sharding strategies can usually be set in the database or by users.</description>
+    </item>
+    
+    <item>
+      <title>Sharding</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sharding/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sharding/</guid>
+      <description>Sharding Key The database field used in sharding refers to the key field in horizontal sharding of the database (table). For example, in last number modulo of order ID sharding, order ID is taken as the sharding key. The full route executed when there is no sharding field in SQL has a poor performance. Beside single sharding column, ShardingSphere also supports multiple sharding columns.
+Sharding Algorithm The sharding of data can be achieved by sharding algorithms through =, BETWEEN and IN.</description>
+    </item>
+    
+    <item>
+      <title>Sharding-Proxy</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/sharding-proxy-quick-start/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/sharding-proxy-quick-start/</guid>
+      <description> 1. Configure sharding rule Edit %SHARDING_PROXY_HOME%\conf\config-xxx.yaml. More details please reference Configuration Manual.
+Edit %SHARDING_PROXY_HOME%\conf\server.yaml. More details please reference Configuration Manual.
+2. Start server  Use default configuration to start  ${sharding-proxy}\bin\start.sh ${port}   Set port to start  ${sharding-proxy}\bin\start.sh ${port}  </description>
+    </item>
+    
+    <item>
+      <title>Yaml</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-yaml/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-yaml/</guid>
+      <description>Example Sharding dataSources: ds0: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds0 username: root password: ds1: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds1 username: root password: shardingRule: tables: t_order: actualDataNodes: ds${0..1}.t_order${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order${order_id % 2} keyGeneratorColumnName: order_id t_order_item: actualDataNodes: ds${0..1}.t_order_item${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order_item${order_id % 2} bindingTables: - t_order,t_order_item broadcastTables: - t_config defaultDataSourceName: ds0 defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} defaultTableStrategy: none: defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator props: sql.show: true  Read-write splitting dataSources: ds_master: !</description>
+    </item>
+    
+    <item>
+      <title>Available Registry Center</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/supported-registry-repo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/supported-registry-repo/</guid>
+      <description>SPI Service Provider Interface (SPI) is a kind of API that aims to be realized or extended by the third party. It can be used to realize framework extension or component replacement.
+ShardingSphere uses SPI to load data to the registry center and disable instances and databases. Currently, ShardingSphere supports two kinds of common registry centers in it, Zookeeper and Etcd. In addition, by injecting them to ShardingSphere with SPI, users can use other third-party registry centers to realize database orchestration function.</description>
+    </item>
+    
+    <item>
+      <title>BASE Transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/base-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/base-transaction/</guid>
+      <description> Concept  Fully support cross-database transactions.
+ Use Servicecomb-Saga.
+ Support reverted SQL, auto-generation of update snapshot and auto-compensation.
+  Supported  Will support at 4.0.0  </description>
+    </item>
+    
+    <item>
+      <title>Configuration</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/configuration/</guid>
+      <description>Sharding Rule The main entrance for Sharding rules includes the configurations of data source, tables, binding tables and read-write split.
+Data Sources Configuration Real data sources list.
+Tables Configuration Configurations of logic table names, data node and table sharding rules.
+Data Node Configuration It is used in the configurations of the mapping relationship between logic tables and actual tables, can be divided into two kinds: uniform distribution and user-defined distribution.</description>
+    </item>
+    
+    <item>
+      <title>Docker Image</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/docker/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/docker/</guid>
+      <description>Pull official docker image docker pull shardingsphere/sharding-proxy  Manual build docker image（Optional） git clone https://github.com/sharding-sphere/sharding-sphere mvn clean install cd sharding-sphere/sharding-proxy mvn clean package docker:build  Configure Sharding-Proxy Create /${your_work_dir}/conf/config.yaml file to configure sharding rule. More details please reference Configuration Manual.
+Run docker docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest  The port 3308 and 13308 could be customized, 3308 represents port of docker container, 13308 represents port of host machine.</description>
+    </item>
+    
+    <item>
+      <title>Hint</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/hint/</guid>
+      <description>Introduction ShardingSphere uses ThreadLocal to manage sharding-columns and sharding-values. Developers can use HintManager to add sharding conditions by coding, sharding conditions effective only on current thread.
+Main usages of Hint:
+ Sharding column does not exist in SQL or tables in databases, but exist in external business logic. Therefore, it is possible to get the sharding result by Hint.
+ Mandatory Master routing strategy based in Hint.
+  Sharding with hint configuration Hint is used for mandatory data sharding, which requires HintManager to be used together with database or table ShardingStrategy.</description>
+    </item>
+    
+    <item>
+      <title>Rewrite Engine</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/rewrite/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/rewrite/</guid>
+      <description>The SQL written by developers facing logic databases and logic tables cannot be executed directly in actual databases. The SQL rewrite is used to rewrite logic SQL into the rightly executable one in actual databases, including two parts, correctness rewrite and optimization rewrite.
+Correctness Rewrite In the situation that contains sharding tables, it requires to rewrite logic table names in sharding settings into actual table names acquired after routing. Database sharding does not require the rewrite of table names.</description>
+    </item>
+    
+    <item>
+      <title>Sharding Hint</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/sharding-hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/sharding-hint/</guid>
+      <description>Motivation ShardingSphere can be compatible with SQL in way of extracting sharding columns and values to shard after parsing SQL statements. Without sharding conditions in SQL statement, it is impossible to shard but requires full route.
+In some application situations, sharding conditions do not exist in SQL but in external business logic. So it requires to provide an externally designated sharding result method, which is referred to as Hint in ShardingSphere.</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-boot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-boot/</guid>
+      <description>Attention Inline expression identifier can use ${...} or $-&amp;gt;{...}, but ${...} is conflict with spring placeholder of properties, so use $-&amp;gt;{...} on spring environment is better.
+Example Sharding sharding.jdbc.datasource.names=ds0,ds1 sharding.jdbc.datasource.ds0.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0 sharding.jdbc.datasource.ds0.username=root sharding.jdbc.datasource.ds0.password= sharding.jdbc.datasource.ds1.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1 sharding.jdbc.datasource.ds1.username=root sharding.jdbc.datasource.ds1.password= sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$-&amp;gt;{0..1}.t_order$-&amp;gt;{0..1} sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$-&amp;gt;{order_id % 2} sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$-&amp;gt;{0..1}.t_order_item$-&amp;gt;{0..1} sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$-&amp;gt;{order_id % 2} sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item sharding.jdbc.config.sharding.broadcast-tables=t_config sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$-&amp;gt;{user_id % 2}  Read-write splitting sharding.jdbc.datasource.names=master,slave0,slave1 sharding.jdbc.datasource.master.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.master.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.master.url=jdbc:mysql://localhost:3306/master sharding.jdbc.datasource.master.username=root sharding.jdbc.datasource.master.password= sharding.jdbc.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0 sharding.</description>
+    </item>
+    
+    <item>
+      <title>Unsupported Items</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/unsupported-items/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/unsupported-items/</guid>
+      <description> Data replication between the master and the slave database. Data inconsistency caused by replication delay between the master database and the slave database. Double or multiple master databases to provide write operation.  </description>
+    </item>
+    
+    <item>
+      <title>Unsupported JDBC Items</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/unsupported-items/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/unsupported-items/</guid>
+      <description>DataSource  Do not support methods related to timeout  Connection  Do not support stored procedures, functions, cursor operation Do not Native SQL Do not support savepoint related operations Do not support Schema / Catalog operation Do not support Custom type mapping  Statement &amp;amp; PreparedStatement  Do not support statements that return multiple result sets (That is, stored procedures) Do not support using international characters  ResultSet  Do not support getting result set pointer position Do not support changing the position of the result pointer by none-next methods Do not support modifying the content of result set Do not support using international characters Do not support getting Array  New interface of JDBC 4.</description>
+    </item>
+    
+    <item>
+      <title>APM</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/apm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/apm/</guid>
+      <description>Background APM is the abbreviation for application performance monitoring. Currently, APM mainly focuses its functions on the performance diagnosis of distributed systems, including call chain demonstration, application topology analysis and so on.
+ShardingSphere is not responsible for gathering, storing and demonstrating APM related data, but sends the relevant core information of two data shards, SQL parsing and enforcement to APM to process. In other words, ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol.</description>
+    </item>
+    
+    <item>
+      <title>Execute Engine</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/execute/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/execute/</guid>
+      <description>ShardingSphere adopts a set of automatic execution engine, responsible for sending the true SQL, which has been routed and rewritten, to execute in the underlying data source safely and effectively. It does not directly send the SQL through JDBC to execute in the underlying data source simply, or put execution requests directly to the thread pool to execute concurrently, but focuses more on the creation of a balanced data source connection, the consumption generated by the memory usage, the maximum utilization of the concurrency and other problems.</description>
+    </item>
+    
+    <item>
+      <title>Orchestration</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/orchestration/</guid>
+      <description>Use orchestration feature need indicate a registry center. Configuration will save into registry center. Configuration can overwrite by local when every application startup, or load from registry center only.
+Without spring Add maven dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-orchestration&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use zookeeper, please use the artifactId below.--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-zookeeper-curator&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use etcd, please use the artifactId below.--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-etcd&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt;  Configure orchestration with java // Configure dataSourceMap and shardingRuleConfig // .</description>
+    </item>
+    
+    <item>
+      <title>Performance Test</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/stress-test/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/stress-test/</guid>
+      <description>Summary of test result  Performance lose: When the server resources are sufficient and the number of concurrency is the same, we compare the performance loss of JDBC and Sharding-JDBC, the result is that the performance loss of Sharding-JDBC is less than 7%, compared with JDBC. Performance test: The server resources are used to the limit, the throughput of Sharding-JDBC and JDBC are on a fairly level. Performance test: The server resources are used to the limit, the throughput of Sharding-JDBC with Sharding is improved nearly twice than JDBC without Sharding.</description>
+    </item>
+    
+    <item>
+      <title>Spring Namespace</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-namespace/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-namespace/</guid>
+      <description>Attention Inline expression identifier can use ${...} or $-&amp;gt;{...}, but ${...} is conflict with spring placeholder of properties, so use $-&amp;gt;{...} on spring environment is better.
+Example Sharding &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt; &amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; xmlns:p=&amp;quot;http://www.springframework.org/schema/p&amp;quot; xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot; xmlns:tx=&amp;quot;http://www.springframework.org/schema/tx&amp;quot; xmlns:sharding=&amp;quot;http://shardingsphere.io/schema/shardingsphere/sharding&amp;quot; xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://shardingsphere.io/schema/shardingsphere/sharding http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd&amp;quot;&amp;gt; &amp;lt;context:annotation-config /&amp;gt; &amp;lt;context:component-scan base-package=&amp;quot;io.shardingsphere.example.spring.namespace.jpa&amp;quot; /&amp;gt; &amp;lt;bean id=&amp;quot;entityManagerFactory&amp;quot; class=&amp;quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&amp;quot;&amp;gt; &amp;lt;property name=&amp;quot;dataSource&amp;quot; ref=&amp;quot;shardingDataSource&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaVendorAdapter&amp;quot;&amp;gt; &amp;lt;bean class=&amp;quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&amp;quot; p:database=&amp;quot;MYSQL&amp;quot; /&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property name=&amp;quot;packagesToScan&amp;quot; value=&amp;quot;io.shardingsphere.example.spring.namespace.jpa.entity&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaProperties&amp;quot;&amp;gt; &amp;lt;props&amp;gt; &amp;lt;prop key=&amp;quot;hibernate.</description>
+    </item>
+    
+    <item>
+      <title>Distribute Transaction</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/transaction/</guid>
+      <description>to be translate</description>
+    </item>
+    
+    <item>
+      <title>Merger Engine</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/merge/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/merge/</guid>
+      <description>Result merger refers to merging multi-data result set acquired from all the data nodes as one result set and returning it to the request end rightly.
+In function, the result merger supported by ShardingSphere can be divided into iteration, order-by, group-by, pagination and aggregation these five kinds, which are in composition relation rather than clash relation. In structure, it can be divided into stream merger, memory merger and decorator merger, in which stream merger and the memory merger clash with each other, and the decorator merger can be further processed based on stream merger and memory merger.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Read-write splitting on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/</link>
+    <description>Recent content in Read-write splitting on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Core Concept</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/concept/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/concept/</guid>
+      <description>Master Database It refers to the database used in data insert, update and delete operations. Only support single master database for now.
+Slave Database It refers to the database used in data query. Support multiple slave databases.
+Master-slave replication It refers to the operation to asynchronously replicate the data from the master database to the slave database. Because of master-slave asynchronization between the master database and the slave database, there may be short-time data inconsistency between the master database and the slave database.</description>
+    </item>
+    
+    <item>
+      <title>Core Features</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/core-features/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/core-features/</guid>
+      <description>Provide the read-write split configuration of one master database with multiple slave databases, which can be used alone as well as with sharding table and database. SQL pass-through is available when using read-write split alone. If there is write operation in the same thread and database connection, all the following read operations must be from the master database to ensure data consistency. Mandatory master database route strategy based on SQL Hint.</description>
+    </item>
+    
+    <item>
+      <title>Unsupported Items</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/unsupported-items/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/unsupported-items/</guid>
+      <description> Data replication between the master and the slave database. Data inconsistency caused by replication delay between the master database and the slave database. Double or multiple master databases to provide write operation.  </description>
+    </item>
+    
+  </channel>
+</rss>

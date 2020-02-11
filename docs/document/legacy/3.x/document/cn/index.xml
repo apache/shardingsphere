@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/</link>
+    <description>Recent content on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java配置</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-java/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-java/</guid>
+      <description>配置示例 数据分片 DataSource getShardingDataSource() throws SQLException { ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration(); shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration()); shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration()); shardingRuleConfig.getBindingTableGroups().add(&amp;quot;t_order, t_order_item&amp;quot;); shardingRuleConfig.getBroadcastTables().add(&amp;quot;t_config&amp;quot;); shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;user_id&amp;quot;, &amp;quot;ds${user_id % 2}&amp;quot;)); shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration(&amp;quot;order_id&amp;quot;, new ModuloShardingTableAlgorithm())); return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig); } TableRuleConfiguration getOrderTableRuleConfiguration() { TableRuleConfiguration result = new TableRuleConfiguration(); result.setLogicTable(&amp;quot;t_order&amp;quot;); result.setActualDataNodes(&amp;quot;ds${0..1}.t_order${0..1}&amp;quot;); result.setKeyGeneratorColumnName(&amp;quot;order_id&amp;quot;); return result; } TableRuleConfiguration getOrderItemTableRuleConfiguration() { TableRuleConfiguration result = new TableRuleConfiguration(); result.setLogicTable(&amp;quot;t_order_item&amp;quot;); result.setActualDataNodes(&amp;quot;ds${0..1}.t_order_item${0..1}&amp;quot;); return result; } Map&amp;lt;String, DataSource&amp;gt; createDataSourceMap() { Map&amp;lt;String, DataSource&amp;gt; result = new HashMap&amp;lt;&amp;gt;(); result.put(&amp;quot;ds0&amp;quot;, DataSourceUtil.createDataSource(&amp;quot;ds0&amp;quot;)); result.</description>
+    </item>
+    
+    <item>
+      <title>SQL</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sql/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sql/</guid>
+      <description>逻辑表 水平拆分的数据库（表）的相同逻辑和数据结构表的总称。例：订单数据根据主键尾数拆分为10张表，分别是t_order_0到t_order_9，他们的逻辑表名为t_order。
+真实表 在分片的数据库中真实存在的物理表。即上个示例中的t_order_0到t_order_9。
+数据节点 数据分片的最小单元。由数据源名称和数据表组成，例：ds_0.t_order_0。
+绑定表 指分片规则一致的主表和子表。例如：t_order表和t_order_item表，均按照order_id分片，则此两张表互为绑定表关系。绑定表之间的多表关联查询不会出现笛卡尔积关联，关联查询效率将大大提升。举例说明，如果SQL为：
+SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);  在不配置绑定表关系时，假设分片键order_id将数值10路由至第0片，将数值11路由至第1片，那么路由后的SQL应该为4条，它们呈现为笛卡尔积：
+SELECT i.* FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11); SELECT i.* FROM t_order_0 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11); SELECT i.* FROM t_order_1 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11); SELECT i.</description>
+    </item>
+    
+    <item>
+      <title>SQL</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/sql/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/sql/</guid>
+      <description>由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。
+本文详细罗列出已明确可支持的SQL种类以及已明确不支持的SQL种类，尽量让使用者避免踩坑。
+其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。
+支持项 路由至单数据节点  100%全兼容（目前仅MySQL，其他数据库完善中）。  路由至多数据节点以及非MySQL 全面支持DQL、DML、DDL、DCL、TCL和MySQL的部分DAL。支持分页、去重、排序、分组、聚合、关联查询（不支持跨库关联）。以下用最为复杂的DQL举例：
+ SELECT主语句  SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...] [WHERE where_condition] [GROUP BY {col_name | position} [ASC | DESC]] [ORDER BY {col_name | position} [ASC | DESC], ...] [LIMIT {[offset,] row_count | row_count OFFSET offset}]   select_expr  * | [DISTINCT] COLUMN_NAME [AS] [alias] | (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | COUNT(* | COLUMN_NAME | alias) [AS] [alias]   table_reference  tbl_name [AS] alias] [index_hint_list] | table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] |  不支持项 路由至多数据节点以及非MySQL 不支持冗余括号、CASE WHEN、HAVING、UNION (ALL)，有限支持子查询。</description>
+    </item>
+    
+    <item>
+      <title>Sharding-JDBC</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-jdbc-quick-start/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-jdbc-quick-start/</guid>
+      <description> 1. 引入maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  注意: 请将${latest.release.version}更改为实际的版本号。
+2. 规则配置 Sharding-JDBC可以通过Java，YAML，Spring命名空间和Spring Boot Starter四种方式配置，开发者可根据场景选择适合的配置方式。详情请参见配置手册。
+3. 创建DataSource 通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后即可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);  </description>
+    </item>
+    
+    <item>
+      <title>使用手册</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/usage/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/usage/</guid>
+      <description>Proxy启动  下载Sharding-Proxy的最新发行版，地址:https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz 如果使用docker，可以执行docker pull shardingsphere/sharding-proxy获取镜像。详细信息请参考Docker镜像。 解压缩后修改conf/server.yaml和以config-前缀开头的文件，如：conf/config-xxx.yaml文件，进行分片规则、读写分离规则配置. 配置方式请参考配置手册。 Linux操作系统请运行bin/start.sh，Windows操作系统请运行bin/start.bat启动Sharding-Proxy。如需配置启动端口、配置文件位置，可参考快速入门 进行启动。 使用任何MySQL的客户端连接。如: mysql -u root -h 127.0.0.1 -P 3307  注册中心使用 若想使用Sharding-Proxy的数据库治理功能，则需要使用注册中心实现实例熔断和从库禁用功能。详情请参考支持的注册中心。
+Zookeeper  Sharding-Proxy默认提供了Zookeeper的注册中心解决方案。您只需按照配置规则进行注册中心的配置，即可使用。  Etcd  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 Maven仓库下载Etcd解决方案的最新稳定版jar包。 将下载下来的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  其他第三方注册中心  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 使用SPI方式实现相关逻辑编码，并将生成的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  分布式事务 Sharding-Proxy原生支持XA事务，不需要额外的配置。
+配置默认事务类型 默认事务类型可在server.yaml中进行配置，例如：
+proxy.transaction.type: XA  切换运行时事务类型 命令行方式 mysql&amp;gt; sctl: set transantcion_type=XA mysql&amp;gt; sctl: show transaction_type  原生JDBC方式 如果通过JDBC-Driver的方式连接Sharding-Proxy，可以在获取连接后，发送sctl:set transaction_type=XA的SQL切换事务类型。
+Spring注解方式 引入Maven依赖：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  然后在需要事务的方法或类中添加相关注解即可，例如：
+@ShardingTransactionType(TransactionType.LOCAL) @Transactional  或</description>
+    </item>
+    
+    <item>
+      <title>数据分片</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/sharding/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/sharding/</guid>
+      <description>不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 Sharding-JDBC的分库分表通过规则配置描述，以下例子是根据user_id取模分库, 且根据order_id取模分表的两库两表的配置。
+// 配置真实数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // 配置第一个数据源 BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds0&amp;quot;); dataSource1.setUsername(&amp;quot;root&amp;quot;); dataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds0&amp;quot;, dataSource1); // 配置第二个数据源 BasicDataSource dataSource2 = new BasicDataSource(); dataSource2.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); dataSource2.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds1&amp;quot;); dataSource2.setUsername(&amp;quot;root&amp;quot;); dataSource2.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds1&amp;quot;, dataSource2); // 配置Order表规则 TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration(); orderTableRuleConfig.setLogicTable(&amp;quot;t_order&amp;quot;); orderTableRuleConfig.setActualDataNodes(&amp;quot;ds${0..1}.t_order${0..1}&amp;quot;); // 配置分库 + 分表策略 orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;user_id&amp;quot;, &amp;quot;ds${user_id % 2}&amp;quot;)); orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(&amp;quot;order_id&amp;quot;, &amp;quot;t_order${order_id % 2}&amp;quot;)); // 配置分片规则 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration(); shardingRuleConfig.</description>
+    </item>
+    
+    <item>
+      <title>本地事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/local-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/local-transaction/</guid>
+      <description> 概念  完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。
+ 完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。
+ 不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库宕机，则只有第二个库数据提交。
+  支持情况  Sharding-JDBC可以支持由用户自行配置不使用XA数据源
+ Sharding-Proxy无需支持，使用XA或柔性事务即可
+  </description>
+    </item>
+    
+    <item>
+      <title>核心概念</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/concept/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/concept/</guid>
+      <description>主库 添加、更新以及删除数据操作所使用的数据库，目前仅支持单主库。
+从库 查询数据操作所使用的数据库，可支持多从库。
+主从同步 将主库的数据异步的同步到从库的操作。由于主从同步的异步性，从库与主库的数据会短时间内不一致。
+负载均衡策略 通过负载均衡策略将查询请求疏导至不同从库。
+Config Map 配置读写分离数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的masterSlaveConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。</description>
+    </item>
+    
+    <item>
+      <title>行表达式</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/inline-expression/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/inline-expression/</guid>
+      <description>实现动机 配置的简化与一体化是行表达式所希望解决的两个主要问题。
+在繁琐的数据分片规则配置中，随着数据节点的增多，大量的重复配置使得配置本身不易被维护。通过行表达式可以有效的简化数据节点配置工作量。
+对于常见的分片算法，使用Java代码实现并不有助于配置的统一管理。通过行表达式书写分片算法，可以有效的将规则配置一同存放，更加易于浏览与存储。
+语法说明 行表达式的使用非常直观，只需要在配置中使用${ expression }或$-&amp;gt;{ expression }标识行表达式即可。 目前支持数据节点和分片算法这两个部分的配置。行表达式的内容使用的是Groovy的语法，Groovy能够支持的所有操作，行表达式均能够支持。例如：
+${begin..end}表示范围区间
+${[unit1, unit2, unit_x]}表示枚举值
+行表达式中如果出现连续多个${ expression }或$-&amp;gt;{ expression }表达式，整个表达式最终的结果将会根据每个子表达式的结果进行笛卡尔组合。
+例如，以下行表达式：
+${[&#39;online&#39;, &#39;offline&#39;]}_table${1..3}  最终会解析为：
+online_table1, online_table2, online_table3, offline_table1, offline_table2, offline_table3  配置数据节点 对于均匀分布的数据节点，如果数据结构如下：
+db0 ├── t_order0 └── t_order1 db1 ├── t_order0 └── t_order1  用行表达式可以简化为：
+db${0..1}.t_order${0..1}  或者
+db$-&amp;gt;{0..1}.t_order$-&amp;gt;{0..1}  对于自定义的数据节点，如果数据结构如下：
+db0 ├── t_order0 └── t_order1 db1 ├── t_order2 ├── t_order3 └── t_order4  用行表达式可以简化为：
+db0.t_order${0..1},db1.t_order${2..4}  或者</description>
+    </item>
+    
+    <item>
+      <title>解析引擎</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/parse/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/parse/</guid>
+      <description>相对于其他编程语言，SQL是比较简单的。 不过，它依然是一门完善的编程语言，因此对SQL的语法进行解析，与解析其他编程语言（如：Java语言、C语言、Go语言等）并无本质区别。
+抽象语法树 解析过程分为词法解析和语法解析。 词法解析器用于将SQL拆解为不可再分的原子符号，称为Token。并根据不同数据库方言所提供的字典，将其归类为关键字，表达式，字面量和操作符。 再使用语法解析器将SQL转换为抽象语法树。
+例如，以下SQL：
+SELECT id, name FROM t_user WHERE status = &#39;ACTIVE&#39; AND age &amp;gt; 18  解析之后的为抽象语法树见下图。
+为了便于理解，抽象语法树中的关键字的Token用绿色表示，变量的Token用红色表示，灰色表示需要进一步拆分。
+最后，通过对抽象语法树的遍历去提炼分片所需的上下文，并标记有可能需要改写的位置。 供分片使用的解析上下文包含查询选择项（Select Items）、表信息（Table）、分片条件（Sharding Condition）、自增主键信息（Auto increment Primary Key）、排序信息（Order By）、分组信息（Group By）以及分页信息（Limit、Rownum、Top）。 SQL的一次解析过程是不可逆的，一个个Token的按SQL原本的顺序依次进行解析，性能很高。 考虑到各种数据库SQL方言的异同，在解析模块提供了各类数据库的SQL方言字典。
+SQL解析引擎 SQL解析作为分库分表类产品的核心，其性能和兼容性是最重要的衡量指标。 ShardingSphere的SQL解析器经历了3代产品的更新迭代。
+第一代SQL解析器为了追求性能与快速实现，在1.4.x之前的版本使用Druid作为SQL解析器。经实际测试，它的性能远超其它解析器。
+第二代SQL解析器从1.5.x版本开始，ShardingSphere采用完全自研的SQL解析引擎。 由于目的不同，ShardingSphere并不需要将SQL转为一颗完全的抽象语法树，也无需通过访问器模式进行二次遍历。它采用对SQL半理解的方式，仅提炼数据分片需要关注的上下文，因此SQL解析的性能和兼容性得到了进一步的提高。
+第三代SQL解析器则从3.0.x版本开始，ShardingSphere尝试使用ANTLR作为SQL解析的引擎，并计划根据DDL -&amp;gt; TCL -&amp;gt; DAL –&amp;gt; DCL -&amp;gt; DML –&amp;gt;DQL这个顺序，依次替换原有的解析引擎，目前仍处于替换迭代中。 使用ANTLR的原因是希望ShardingSphere的解析引擎能够更好的对SQL进行兼容。对于复杂的表达式、递归、子查询等语句，虽然ShardingSphere的分片核心并不关注，但是会影响对于SQL理解的友好度。 经过实例测试，ANTLR解析SQL的性能比自研的SQL解析引擎慢3-10倍左右。为了弥补这一差距，ShardingSphere将使用PreparedStatement的SQL解析的语法树放入缓存。 因此建议采用PreparedStatement这种SQL预编译的方式提升性能。
+第三代SQL解析引擎的整体结构划分如下图所示。</description>
+    </item>
+    
+    <item>
+      <title>配置中心</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/config-center/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/config-center/</guid>
+      <description>实现动机  配置集中化：越来越多的运行时实例，使得散落的配置难于管理，配置不同步导致的问题十分严重。将配置集中于配置中心，可以更加有效进行管理。
+ 配置动态化：配置修改后的分发，是配置中心可以提供的另一个重要能力。它可支持数据源、表与分片及读写分离策略的动态切换。
+  配置中心数据结构 配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，数据分片，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
+config ├──authentication # Sharding-Proxy权限配置 ├──configMap # 数据分片ConfigMap配置，以K/V形式存储，如：{&amp;quot;key1&amp;quot;:&amp;quot;value1&amp;quot;} ├──props # 属性配置 ├──schema # Schema配置 ├ ├──sharding_db # SchemaName配置 ├ ├ ├──datasource # 数据源配置 ├ ├ ├──rule # 数据分片规则配置 ├ ├──masterslave_db # SchemaName配置 ├ ├ ├──datasource # 数据源配置 ├ ├ ├──rule # 读写分离规则  config/authentication password: root username: root  config/configmap 读写分离ConfigMap配置，以K/V形式存储。
+key2: value2  config/sharding/props 相对于sharding-sphere配置里面的Sharding Properties。
+executor.size: 20 sql.show: true  config/schema/schemeName/datasource 多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）。</description>
+    </item>
+    
+    <item>
+      <title>Sharding-Proxy</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-proxy-quick-start/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/quick-start/sharding-proxy-quick-start/</guid>
+      <description> 1. 规则配置 编辑%SHARDING_PROXY_HOME%\conf\config-xxx.yaml。详情请参见配置手册。
+编辑%SHARDING_PROXY_HOME%\conf\server.yaml。详情请参见配置手册。
+2. 启动服务  使用默认配置项  ${sharding-proxy}\bin\start.sh ${port}   配置端口  ${sharding-proxy}\bin\start.sh ${port}  </description>
+    </item>
+    
+    <item>
+      <title>Yaml配置</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-yaml/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-yaml/</guid>
+      <description>配置示例 数据分片 dataSources: ds0: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds0 username: root password: ds1: !!org.apache.commons.dbcp.BasicDataSource driverClassName: com.mysql.jdbc.Driver url: jdbc:mysql://localhost:3306/ds1 username: root password: shardingRule: tables: t_order: actualDataNodes: ds${0..1}.t_order${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order${order_id % 2} keyGeneratorColumnName: order_id t_order_item: actualDataNodes: ds${0..1}.t_order_item${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order_item${order_id % 2} bindingTables: - t_order,t_order_item broadcastTables: - t_config defaultDataSourceName: ds0 defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} defaultTableStrategy: none: defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator props: sql.show: true  读写分离 dataSources: ds_master: !</description>
+    </item>
+    
+    <item>
+      <title>两阶段事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/2pc-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/2pc-transaction/</guid>
+      <description> 概念  完全支持跨库事务。
+ 默认使用Atomikos，支持使用SPI的方式加载其他XA事务管理器。
+  支持情况  Sharding-JDBC可以支持由用户自行配置XA数据源
+ Sharding-Proxy支持
+  </description>
+    </item>
+    
+    <item>
+      <title>分布式主键</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/key-generator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/key-generator/</guid>
+      <description>实现动机 传统数据库软件开发中，主键自动生成技术是基本需求。而各个数据库对于该需求也提供了相应的支持，比如MySQL的自增键，Oracle的自增序列等。 数据分片后，不同数据节点生成全局唯一主键是非常棘手的问题。同一个逻辑表内的不同实际表之间的自增键由于无法互相感知而产生重复主键。 虽然可通过约束自增主键初始值和步长的方式避免碰撞，但需引入额外的运维规则，使解决方案缺乏完整性和可扩展性。
+目前有许多第三方解决方案可以完美解决这个问题，如UUID等依靠特定算法自生成不重复键，或者通过引入主键生成服务等。 但也正因为这种多样性导致了ShardingSphere如果强依赖于任何一种方案就会限制其自身的发展。
+基于以上的原因，ShardingSphere最终采用以接口来实现对于生成主键的访问，而将底层具体的主键生成实现分离出来。
+默认分布式主键生成器 ShardingSphere提供灵活的配置分布式主键生成策略方式。 在分片规则配置模块可配置每个表的主键生成策略，默认使用雪花算法（snowflake）生成64bit的长整型数据。
+雪花算法是由Twitter公布的分布式主键生成算法，它能够保证不同进程主键的不重复性，以及相同进程主键的有序性。
+在同一个进程中，它首先是通过时间位保证不重复，如果时间相同则是通过序列位保证。 同时由于时间位是单调递增的，且各个服务器如果大体做了时间同步，那么生成的主键在分布式环境可以认为是总体有序的，这就保证了对索引字段的插入的高效性。例如MySQL的Innodb存储引擎的主键。
+使用雪花算法生成的主键，二进制表示形式包含4部分，从高位到低位分表为：1bit符号位、41bit时间戳位、10bit工作进程位以及12bit序列号位。
+ 符号位(1bit)  预留的符号位，恒为零。
+ 时间戳位(41bit)  41位的时间戳可以容纳的毫秒数是2的41次幂，一年所使用的毫秒数是：365 * 24 * 60 * 60 * 1000。通过计算可知：
+Math.pow(2, 41) / (365 * 24 * 60 * 60 * 1000L);  结果约等于69.73年。ShardingSphere的雪花算法的时间纪元从2016年11月1日零点开始，可以使用到2086年，相信能满足绝大部分系统的要求。
+ 工作进程位(10bit)  该标志在Java进程内是唯一的，如果是分布式应用部署应保证每个工作进程的id是不同的。该值默认为0，可通过调用静态方法DefaultKeyGenerator.setWorkerId()设置。
+ 序列号位(12bit)  该序列是用来在同一个毫秒内生成不同的ID。如果在这个毫秒内生成的数量超过4096(2的12次幂)，那么生成器会等待到下个毫秒继续生成。
+时钟回拨 服务器时钟回拨会导致产生重复序列，因此默认分布式主键生成器提供了一个最大容忍的时钟回拨毫秒数。 如果时钟回拨的时间超过最大容忍的毫秒数阈值，则程序报错；如果在可容忍的范围内，默认分布式主键生成器会等待时钟同步到最后一次主键生成的时间后再继续工作。 最大容忍的时钟回拨毫秒数的默认值为0，可通过调用静态方法DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds()设置。
+雪花算法主键的详细结构见下图。</description>
+    </item>
+    
+    <item>
+      <title>分片</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sharding/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/sharding/</guid>
+      <description>分片键 用于分片的数据库字段，是将数据库(表)水平拆分的关键字段。例：将订单表中的订单主键的尾数取模分片，则订单主键为分片字段。 SQL中如果无分片字段，将执行全路由，性能较差。 除了对单分片字段的支持，ShardingSphere也支持根据多个字段进行分片。
+分片算法 通过分片算法将数据分片，支持通过=、BETWEEN和IN分片。分片算法需要应用方开发者自行实现，可实现的灵活度非常高。
+目前提供4种分片算法。由于分片算法和业务实现紧密相关，因此并未提供内置分片算法，而是通过分片策略将各种场景提炼出来，提供更高层级的抽象，并提供接口让应用开发者自行实现分片算法。
+ 精确分片算法  对应PreciseShardingAlgorithm，用于处理使用单一键作为分片键的=与IN进行分片的场景。需要配合StandardShardingStrategy使用。
+ 范围分片算法  对应RangeShardingAlgorithm，用于处理使用单一键作为分片键的BETWEEN AND进行分片的场景。需要配合StandardShardingStrategy使用。
+ 复合分片算法  对应ComplexKeysShardingAlgorithm，用于处理使用多键作为分片键进行分片的场景，包含多个分片键的逻辑较复杂，需要应用开发者自行处理其中的复杂度。需要配合ComplexShardingStrategy使用。
+ Hint分片算法  对应HintShardingAlgorithm，用于处理使用Hint行分片的场景。需要配合HintShardingStrategy使用。
+分片策略 包含分片键和分片算法，由于分片算法的独立性，将其独立抽离。真正可用于分片操作的是分片键 + 分片算法，也就是分片策略。目前提供5种分片策略。
+ 标准分片策略  对应StandardShardingStrategy。提供对SQL语句中的=, IN和BETWEEN AND的分片操作支持。StandardShardingStrategy只支持单分片键，提供PreciseShardingAlgorithm和RangeShardingAlgorithm两个分片算法。PreciseShardingAlgorithm是必选的，用于处理=和IN的分片。RangeShardingAlgorithm是可选的，用于处理BETWEEN AND分片，如果不配置RangeShardingAlgorithm，SQL中的BETWEEN AND将按照全库路由处理。
+ 复合分片策略  对应ComplexShardingStrategy。复合分片策略。提供对SQL语句中的=, IN和BETWEEN AND的分片操作支持。ComplexShardingStrategy支持多分片键，由于多分片键之间的关系复杂，因此并未进行过多的封装，而是直接将分片键值组合以及分片操作符透传至分片算法，完全由应用开发者实现，提供最大的灵活度。
+ 行表达式分片策略  对应InlineShardingStrategy。使用Groovy的表达式，提供对SQL语句中的=和IN的分片操作支持，只支持单分片键。对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的Java代码开发，如: t_user_$-&amp;gt;{u_id % 8} 表示t_user表根据u_id模8，而分成8张表，表名称为t_user_0到t_user_7。
+ Hint分片策略  对应HintShardingStrategy。通过Hint而非SQL解析的方式分片的策略。
+ 不分片策略  对应NoneShardingStrategy。不分片的策略。
+SQL Hint 对于分片字段非SQL决定，而由其他外置条件决定的场景，可使用SQL Hint灵活的注入分片字段。例：内部系统，按照员工登录主键分库，而数据库中并无此字段。SQL Hint支持通过Java API和SQL注释(待实现)两种方式使用。</description>
+    </item>
+    
+    <item>
+      <title>分页</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/pagination/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/use-norms/pagination/</guid>
+      <description>完全支持MySQL、PostgreSQL和Oracle的分页查询，SQLServer由于分页查询较为复杂，仅部分支持。
+分页性能 性能瓶颈 查询偏移量过大的分页会导致数据库获取数据性能低下，以MySQL为例：
+SELECT * FROM t_order ORDER BY id LIMIT 1000000, 10  这句SQL会使得MySQL在无法利用索引的情况下跳过1000000条记录后，再获取10条记录，其性能可想而知。 而在分库分表的情况下（假设分为2个库），为了保证数据的正确性，SQL会改写为：
+SELECT * FROM t_order ORDER BY id LIMIT 0, 1000010  即将偏移量前的记录全部取出，并仅获取排序后的最后10条记录。这会在数据库本身就执行很慢的情况下，进一步加剧性能瓶颈。 因为原SQL仅需要传输10条记录至客户端，而改写之后的SQL则会传输1,000,010 * 2的记录至客户端。
+ShardingSphere的优化 ShardingSphere进行了2个方面的优化。
+首先，采用流式处理 + 归并排序的方式来避免内存的过量占用。由于SQL改写不可避免的占用了额外的带宽，但并不会导致内存暴涨。 与直觉不同，大多数人认为ShardingSphere会将1,000,010 * 2记录全部加载至内存，进而占用大量内存而导致内存溢出。 但由于每个结果集的记录是有序的，因此ShardingSphere每次比较仅获取各个分片的当前结果集记录，驻留在内存中的记录仅为当前路由到的分片的结果集的当前游标指向而已。 对于本身即有序的待排序对象，归并排序的时间复杂度仅为O(n)，性能损耗很小。
+其次，ShardingSphere对仅落至单分片的查询进行进一步优化。 落至单分片查询的请求并不需要改写SQL也可以保证记录的正确性，因此在此种情况下，ShardingSphere并未进行SQL改写，从而达到节省带宽的目的。
+分页方案优化 由于LIMIT并不能通过索引查询数据，因此如果可以保证ID的连续性，通过ID进行分页是比较好的解决方案：
+SELECT * FROM t_order WHERE id &amp;gt; 100000 AND id &amp;lt;= 100010 ORDER BY id  或通过记录上次查询结果的最后一条记录的ID进行下一页的查询：
+SELECT * FROM t_order WHERE id &amp;gt; 100000 LIMIT 10  分页子查询 Oracle和SQLServer的分页都需要通过子查询来处理，ShardingSphere支持分页相关的子查询。</description>
+    </item>
+    
+    <item>
+      <title>核心功能</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/core-features/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/core-features/</guid>
+      <description> 提供一主多从的读写分离配置，可独立使用，也可配合分库分表使用。 独立使用读写分离支持SQL透传。 同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。 基于Hint的强制主库路由。  </description>
+    </item>
+    
+    <item>
+      <title>编排治理</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/orchestration/</guid>
+      <description> 实现动机 通过注册中心，提供熔断数据库访问程序对数据库的访问和禁用从库的访问的能力。数据治理仍然有大量未完成的功能。
+注册中心数据结构 注册中心在定义的命名空间的state下，创建数据库访问对象运行节点，用于区分不同数据库访问实例。包括instances和datasources节点。
+instances ├──your_instance_ip_a@-@your_instance_pid_x ├──your_instance_ip_b@-@your_instance_pid_y ├──.... datasources ├──ds0 ├──ds1 ├──....  Sharding-Proxy支持多逻辑数据源,因此datasources子节点的名称采用schema_name.data_source_name的形式。
+instances ├──your_instance_ip_a@-@your_instance_pid_x ├──your_instance_ip_b@-@your_instance_pid_y ├──.... datasources ├──sharding_db.ds0 ├──sharding_db.ds1 ├──....  state/instances 数据库访问对象运行实例信息，子节点是当前运行实例的标识。 运行实例标识由运行服务器的IP地址和PID构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
+state/datasources 可以治理读写分离从库，可动态添加删除以及禁用。
+操作指南 熔断实例 可在IP地址@-@PID节点写入DISABLED（忽略大小写）表示禁用该实例，删除DISABLED表示启用。
+Zookeeper命令如下：
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED  Etcd命令如下：
+etcdctl set /your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED  禁用从库 在读写分离（或数据分片+读写分离）场景下，可在数据源名称子节点中写入DISABLED（忽略大小写）表示禁用从库数据源，删除DISABLED或节点表示启用。
+Zookeeper命令如下：
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED  Etcd命令如下：
+etcdctl set /your_app_name/state/datasources/your_slave_datasource_name DISABLED  </description>
+    </item>
+    
+    <item>
+      <title>读写分离</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/read-write-splitting/</guid>
+      <description>不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 配置真实数据源 Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // 配置主库 BasicDataSource masterDataSource = new BasicDataSource(); masterDataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); masterDataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_master&amp;quot;); masterDataSource.setUsername(&amp;quot;root&amp;quot;); masterDataSource.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_master&amp;quot;, masterDataSource); // 配置第一个从库 BasicDataSource slaveDataSource1 = new BasicDataSource(); slaveDataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave0&amp;quot;); slaveDataSource1.setUsername(&amp;quot;root&amp;quot;); slaveDataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave0&amp;quot;, slaveDataSource1); // 配置第二个从库 BasicDataSource slaveDataSource2 = new BasicDataSource(); slaveDataSource2.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource2.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave1&amp;quot;); slaveDataSource2.setUsername(&amp;quot;root&amp;quot;); slaveDataSource2.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave1&amp;quot;, slaveDataSource2); // 配置读写分离规则 MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration(&amp;quot;ds_master_slave&amp;quot;, &amp;quot;ds_master&amp;quot;, Arrays.asList(&amp;quot;ds_slave0&amp;quot;, &amp;quot;ds_slave1&amp;quot;)); // 获取数据源对象 DataSource dataSource = MasterSlaveDataSourceFactory.</description>
+    </item>
+    
+    <item>
+      <title>路由引擎</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/route/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/route/</guid>
+      <description>根据解析上下文匹配数据库和表的分片策略，并生成路由路径。 对于携带分片键的SQL，根据分片键的不同可以划分为单片路由(分片键的操作符是等号)、多片路由(分片键的操作符是IN)和范围路由(分片键的操作符是BETWEEN)。 不携带分片键的SQL则采用广播路由。
+分片策略通常可以采用由数据库内置或由用户方配置。 数据库内置的方案较为简单，内置的分片策略大致可分为尾数取模、哈希、范围、标签、时间等。 由用户方配置的分片策略则更加灵活，可以根据使用方需求定制复合分片策略。 如果配合数据自动迁移来使用，可以做到无需用户关注分片策略，自动由数据库中间层分片和平衡数据即可，进而做到使分布式数据库具有的弹性伸缩的能力。 在ShardingSphere的线路规划中，弹性伸缩将于4.x开启。
+分片路由 用于根据分片键进行路由的场景，又细分为直接路由、标准路由和笛卡尔积路由这3种类型。
+满足直接路由的条件相对苛刻，它需要通过Hint（使用HintAPI直接指定路由至库表）方式分片，并且是只分库不分表的前提下，则可以避免SQL解析和之后的结果归并。 因此它的兼容性最好，可以执行包括子查询、自定义函数等复杂情况的任意SQL。直接路由还可以用于分片键不在SQL中的场景。
+标准路由是ShardingSphere最为推荐使用的分片方式，它的适用范围是不包含关联查询或仅包含绑定表之间关联查询的SQL。 当分片运算符是等于号时，路由结果将落入单库（表），当分片运算符是BETWEEN或IN时，则路由结果不一定落入唯一的库（表），因此一条逻辑SQL最终可能被拆分为多条用于执行的真实SQL。 举例说明，如果按照order_id的奇数和偶数进行数据分片，一个单表查询的SQL如下：
+SELECT * FROM t_order WHERE order_id IN (1, 2);  那么路由的结果应为：
+SELECT * FROM t_order_0 WHERE order_id IN (1, 2); SELECT * FROM t_order_1 WHERE order_id IN (1, 2);  绑定表的关联查询与单表查询复杂度和性能相当。举例说明，如果一个包含绑定表的关联查询的SQL如下：
+SELECT * FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE order_id IN (1, 2);  那么路由的结果应为：
+SELECT * FROM t_order_0 o JOIN t_order_item_0 i ON o.</description>
+    </item>
+    
+    <item>
+      <title>配置手册</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/configuration/</guid>
+      <description>数据源与分片配置示例 Sharding-Proxy支持多逻辑数据源，每个以config-前缀命名的yaml配置文件，即为一个逻辑数据源。以下是config-xxx.yaml的配置配置示例。
+数据分片 dataSources:
+schemaName: sharding_db dataSources: ds0: url: jdbc:mysql://localhost:3306/ds0 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 ds1: url: jdbc:mysql://localhost:3306/ds1 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 shardingRule: tables: t_order: actualDataNodes: ds${0..1}.t_order${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order${order_id % 2} keyGeneratorColumnName: order_id t_order_item: actualDataNodes: ds${0..1}.t_order_item${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order_item${order_id % 2} bindingTables: - t_order,t_order_item defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} defaultTableStrategy: none: defaultKeyGeneratorClassName: io.</description>
+    </item>
+    
+    <item>
+      <title>Docker镜像</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/docker/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/docker/</guid>
+      <description>拉取官方Docker镜像 docker pull shardingsphere/sharding-proxy  手动构建Docker镜像（可选） git clone https://github.com/sharding-sphere/sharding-sphere mvn clean install cd sharding-sphere/sharding-proxy mvn clean package docker:build  配置Sharding-Proxy 创建/${your_work_dir}/conf/config.yaml文件，进行分片规则配置。配置方式请参考配置手册。
+运行Docker docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest  可以自定义端口3308和13308。3308表示docker容器端口, 13308表示宿主机端口。
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS=&amp;quot;-Djava.awt.headless=true&amp;quot; --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest  可以自定义JVM相关参数到环境变量JVM_OPTS中。
+访问Sharding-Proxy 与连接MySQL的方式相同。
+mysql -u${your_user_name} -p${your_password} -h${your_host} -P13308  FAQ 问题1：I/O exception (java.io.IOException) caught when processing request to {}-&amp;gt;unix://localhost:80: Connection refused？
+回答：在构建镜像前，请确保docker daemon进程已经运行。</description>
+    </item>
+    
+    <item>
+      <title>JDBC不支持项</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/</guid>
+      <description>DataSource接口  不支持timeout相关操作  Connection接口  不支持存储过程，函数，游标的操作 不支持执行native的SQL 不支持savepoint相关操作 不支持Schema/Catalog的操作 不支持自定义类型映射  Statement和PreparedStatement接口  不支持返回多结果集的语句（即存储过程，非SELECT多条数据） 不支持国际化字符的操作  对于ResultSet接口  不支持对于结果集指针位置判断 不支持通过非next方法改变结果指针位置 不支持修改结果集内容 不支持获取国际化字符 不支持获取Array  JDBC 4.1  不支持JDBC 4.1接口新功能  查询所有未支持方法，请阅读io.shardingsphere.core.jdbc.unsupported包。</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot配置</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-boot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-boot/</guid>
+      <description>注意事项 行表达式标识符可以使用${...}或$-&amp;gt;{...}，但前者与Spring本身的属性文件占位符冲突，因此在Spring环境中使用行表达式标识符建议使用$-&amp;gt;{...}。
+配置示例 数据分片 sharding.jdbc.datasource.names=ds0,ds1 sharding.jdbc.datasource.ds0.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.ds0.url=jdbc:mysql://localhost:3306/ds0 sharding.jdbc.datasource.ds0.username=root sharding.jdbc.datasource.ds0.password= sharding.jdbc.datasource.ds1.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1 sharding.jdbc.datasource.ds1.username=root sharding.jdbc.datasource.ds1.password= sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$-&amp;gt;{0..1}.t_order$-&amp;gt;{0..1} sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$-&amp;gt;{order_id % 2} sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$-&amp;gt;{0..1}.t_order_item$-&amp;gt;{0..1} sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$-&amp;gt;{order_id % 2} sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item sharding.jdbc.config.sharding.broadcast-tables=t_config sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$-&amp;gt;{user_id % 2}  读写分离 sharding.jdbc.datasource.names=master,slave0,slave1 sharding.jdbc.datasource.master.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.master.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.master.url=jdbc:mysql://localhost:3306/master sharding.jdbc.datasource.master.username=root sharding.jdbc.datasource.master.password= sharding.jdbc.datasource.slave0.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.slave0.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.slave0.url=jdbc:mysql://localhost:3306/slave0 sharding.jdbc.datasource.slave0.username=root sharding.jdbc.datasource.slave0.password= sharding.jdbc.datasource.slave1.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.slave1.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.slave1.url=jdbc:mysql://localhost:3306/slave1 sharding.jdbc.datasource.slave1.username=root sharding.jdbc.datasource.slave1.password= sharding.jdbc.config.masterslave.load-balance-algorithm-type=round_robin sharding.jdbc.config.masterslave.name=ms sharding.jdbc.config.masterslave.master-data-source-name=master sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1 sharding.jdbc.config.props.sql.show=true  数据分片 + 读写分离 sharding.jdbc.datasource.names=master0,master1,master0slave0,master0slave1,master1slave0,master1slave1 sharding.jdbc.datasource.master0.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.master0.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.master0.url=jdbc:mysql://localhost:3306/master0 sharding.jdbc.datasource.master0.username=root sharding.jdbc.datasource.master0.password= sharding.jdbc.datasource.master0slave0.type=org.apache.commons.dbcp.BasicDataSource sharding.jdbc.datasource.master0slave0.driver-class-name=com.mysql.jdbc.Driver sharding.jdbc.datasource.master0slave0.url=jdbc:mysql://localhost:3306/master0slave0 sharding.</description>
+    </item>
+    
+    <item>
+      <title>不支持项</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/unsupported-items/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/read-write-split/unsupported-items/</guid>
+      <description> 主库和从库的数据同步。 主库和从库的数据同步延迟导致的数据不一致。 主库双写或多写。  </description>
+    </item>
+    
+    <item>
+      <title>强制分片路由</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/sharding-hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/other-features/sharding-hint/</guid>
+      <description>实现动机 通过解析SQL语句提取分片键列与值并进行分片是ShardingSphere对SQL零侵入的实现方式。若SQL语句中没有分片条件，则无法进行分片，需要全路由。
+在一些应用场景中，分片条件并不存在于SQL，而存在于外部业务逻辑。因此需要提供一种通过外部指定分片结果的方式，在ShardingSphere中叫做Hint。
+实现机制 ShardingSphere使用ThreadLocal管理分片键值。可以通过编程的方式向HintManager中添加分片条件，该分片条件仅在当前线程内生效。
+除了通过编程的方式使用强制分片路由，ShardingSphere还计划通过SQL中的特殊注释的方式引用Hint，使开发者可以采用更加透明的方式使用该功能。
+指定了强制分片路由的SQL将会无视原有的分片逻辑，直接路由至指定的真实数据节点。</description>
+    </item>
+    
+    <item>
+      <title>强制路由</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/hint/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/hint/</guid>
+      <description>简介 ShardingSphere使用ThreadLocal管理分片键值进行Hint强制路由。可以通过编程的方式向HintManager中添加分片条件，该分片条件仅在当前线程内生效。 Hint方式主要使用场景：
+1.分片字段不存在SQL中、数据库表结构中，而存在于外部业务逻辑。因此，通过Hint实现外部指定分片结果进行数据操作。
+2.强制在主库进行某些数据操作。
+基于暗示(Hint)的数据分片 配置 使用hint进行强制数据分片，需要使用HintManager搭配分片策略配置共同使用。若DatabaseShardingStrategy配置了Hint分片算法，则可使用HintManager进行分库路由结果的注入。同理，若TableShardingStrategy配置了Hint分片算法，则同样可 使用HintManager进行分表路由结果的注入。所以使用Hint之前，需要配置Hint分片算法。
+参考代码如下：
+shardingRule: tables: t_order: actualDataNodes: demo_ds_${0..1}.t_order_${0..1} databaseStrategy: hint: algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm tableStrategy: hint: algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: demo_ds_${user_id % 2} defaultTableStrategy: none: defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator props: sql.show: true  实例化 HintManager hintManager = HintManager.getInstance();  添加分片键值  使用hintManager.addDatabaseShardingValue来添加数据源分片键值。 使用hintManager.addTableShardingValue来添加表分片键值。   分库不分表情况下，强制路由至某一个分库时，可使用hintManager.setDatabaseShardingValue方式添加分片。通过此方式添加分片键值后，将跳过SQL解析和改写阶段，从而提高整体执行效率。
+ 清除分片键值 分片键值保存在ThreadLocal中，所以需要在操作结束时调用hintManager.close()来清除ThreadLocal中的内容。
+hintManager实现了AutoCloseable接口，可推荐使用try with resource自动关闭。
+完整代码示例 // Sharding database and table with using hintManager. String sql = &amp;quot;SELECT * FROM t_order&amp;quot;; try (HintManager hintManager = HintManager.</description>
+    </item>
+    
+    <item>
+      <title>支持的注册中心</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/supported-registry-repo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/supported-registry-repo/</guid>
+      <description>SPI Service Provider Interface (SPI)是一种为了被第三方实现或扩展的API。它可以用于实现框架扩展或组件替换。
+ShardingSphere在数据库治理模块使用SPI方式载入注册中心，进行实例熔断和数据库禁用。 目前，ShardingSphere内部支持Zookeeper和Etcd两种常用的注册中心。 此外，您可以使用其他第三方注册中心，并通过SPI的方式注入到ShardingSphere，从而使用该注册中心，实现数据库治理功能。
+Zookeeper ShardingSphere官方使用Apache Curator作为Zookeeper的实现方案。 请使用Zookeeper 3.4.6及其以上版本，详情请参见官方网站。
+Etcd ShardingSphere官方使用原生的Etcd作为Etcd的实现方案。 请使用Etcd V3及其以上版本，详情请参见官方网站。
+其他 使用SPI方式自行实现相关逻辑编码。</description>
+    </item>
+    
+    <item>
+      <title>改写引擎</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/rewrite/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/rewrite/</guid>
+      <description>工程师面向逻辑库与逻辑表书写的SQL，并不能够直接在真实的数据库中执行，SQL改写用于将逻辑SQL改写为在真实数据库中可以正确执行的SQL。 它包括正确性改写和优化改写两部分。
+正确性改写 在包含分表的场景中，需要将分表配置中的逻辑表名称改写为路由之后所获取的真实表名称。仅分库则不需要表名称的改写。除此之外，还包括补列和分页信息修正等内容。
+标识符改写 需要改写的标识符包括表名称、索引名称以及Schema名称。
+表名称改写是指将找到逻辑表在原始SQL中的位置，并将其改写为真实表的过程。表名称改写是一个典型的需要对SQL进行解析的场景。 从一个最简单的例子开始，若逻辑SQL为：
+SELECT order_id FROM t_order WHERE order_id=1;  假设该SQL配置分片键order_id，并且order_id=1的情况，将路由至分片表1。那么改写之后的SQL应该为：
+SELECT order_id FROM t_order_1 WHERE order_id=1;  在这种最简单的SQL场景中，是否将SQL解析为抽象语法树似乎无关紧要，只要通过字符串查找和替换就可以达到SQL改写的效果。 但是下面的场景，就无法仅仅通过字符串的查找替换来正确的改写SQL了：
+SELECT order_id FROM t_order WHERE order_id=1 AND remarks=` t_order xxx`;  正确改写的SQL应该是：
+SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=` t_order xxx`;  而非：
+SELECT order_id FROM t_order_1 WHERE order_id=1 AND remarks=` t_order_1 xxx`;  由于表名之外可能含有表名称的类似字符，因此不能通过简单的字符串替换的方式去改写SQL。
+下面再来看一个更加复杂的SQL改写场景：
+SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=` t_order xxx`;  上面的SQL将表名作为字段的标识符，因此在SQL改写时需要一并修改：</description>
+    </item>
+    
+    <item>
+      <title>柔性事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/base-transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/transaction/base-transaction/</guid>
+      <description> 概念  完全支持跨库事务。
+ 使用Servicecomb-Saga。
+ 支持反向SQL以及更新快照自动生成以及自动补偿。
+  支持情况  预计4.0.0支持  </description>
+    </item>
+    
+    <item>
+      <title>配置</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/concept/configuration/</guid>
+      <description>分片规则 分片规则配置的总入口。包含数据源配置、表配置、绑定表配置以及读写分离配置等。
+数据源配置 真实数据源列表。
+表配置 逻辑表名称、数据节点与分表规则的配置。
+数据节点配置 用于配置逻辑表与真实表的映射关系。可分为均匀分布和自定义分布两种形式。
+ 均匀分布  指数据表在每个数据源内呈现均匀分布的态势，例如：
+db0 ├── t_order0 └── t_order1 db1 ├── t_order0 └── t_order1  那么数据节点的配置如下：
+db0.t_order0, db0.t_order1, db1.t_order0, db1.t_order1   自定义分布  指数据表呈现有特定规则的分布，例如：
+db0 ├── t_order0 └── t_order1 db1 ├── t_order2 ├── t_order3 └── t_order4  那么数据节点的配置如下：
+db0.t_order0, db0.t_order1, db1.t_order2, db1.t_order3, db1.t_order4  分片策略配置 对于分片策略存有数据源分片策略和表分片策略两种维度。
+ 数据源分片策略  对应于DatabaseShardingStrategy。用于配置数据被分配的目标数据源。
+ 表分片策略  对应于TableShardingStrategy。用于配置数据被分配的目标表，该目标表存在与该数据的目标数据源内。故表分片策略是依赖与数据源分片策略的结果的。
+两种策略的API完全相同。
+自增主键生成策略 通过在客户端生成自增主键替换以数据库原生自增主键的方式，做到分布式主键无重复。
+Config Map 配置分库分表数据源的元数据，可通过调用ConfigMapContext.getInstance()获取ConfigMap中的shardingConfig数据。例：如果机器权重不同则流量可能不同，可通过ConfigMap配置机器权重元数据。</description>
+    </item>
+    
+    <item>
+      <title>Spring命名空间配置</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-namespace/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-spring-namespace/</guid>
+      <description>注意事项 行表达式标识符可以使用${...}或$-&amp;gt;{...}，但前者与Spring本身的属性文件占位符冲突，因此在Spring环境中使用行表达式标识符建议使用$-&amp;gt;{...}。
+配置示例 数据分片 &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt; &amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; xmlns:p=&amp;quot;http://www.springframework.org/schema/p&amp;quot; xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot; xmlns:tx=&amp;quot;http://www.springframework.org/schema/tx&amp;quot; xmlns:sharding=&amp;quot;http://shardingsphere.io/schema/shardingsphere/sharding&amp;quot; xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://shardingsphere.io/schema/shardingsphere/sharding http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd&amp;quot;&amp;gt; &amp;lt;context:annotation-config /&amp;gt; &amp;lt;context:component-scan base-package=&amp;quot;io.shardingsphere.example.spring.namespace.jpa&amp;quot; /&amp;gt; &amp;lt;bean id=&amp;quot;entityManagerFactory&amp;quot; class=&amp;quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&amp;quot;&amp;gt; &amp;lt;property name=&amp;quot;dataSource&amp;quot; ref=&amp;quot;shardingDataSource&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaVendorAdapter&amp;quot;&amp;gt; &amp;lt;bean class=&amp;quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&amp;quot; p:database=&amp;quot;MYSQL&amp;quot; /&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;property name=&amp;quot;packagesToScan&amp;quot; value=&amp;quot;io.shardingsphere.example.spring.namespace.jpa.entity&amp;quot; /&amp;gt; &amp;lt;property name=&amp;quot;jpaProperties&amp;quot;&amp;gt; &amp;lt;props&amp;gt; &amp;lt;prop key=&amp;quot;hibernate.dialect&amp;quot;&amp;gt;org.hibernate.dialect.MySQLDialect&amp;lt;/prop&amp;gt; &amp;lt;prop key=&amp;quot;hibernate.hbm2ddl.auto&amp;quot;&amp;gt;create&amp;lt;/prop&amp;gt; &amp;lt;prop key=&amp;quot;hibernate.show_sql&amp;quot;&amp;gt;true&amp;lt;/prop&amp;gt; &amp;lt;/props&amp;gt; &amp;lt;/property&amp;gt; &amp;lt;/bean&amp;gt; &amp;lt;bean id=&amp;quot;transactionManager&amp;quot; class=&amp;quot;org.springframework.orm.jpa.JpaTransactionManager&amp;quot; p:entityManagerFactory-ref=&amp;quot;entityManagerFactory&amp;quot; /&amp;gt; &amp;lt;tx:annotation-driven /&amp;gt; &amp;lt;bean id=&amp;quot;ds0&amp;quot; class=&amp;quot;org.apache.commons.dbcp.BasicDataSource&amp;quot; destroy-method=&amp;quot;close&amp;quot;&amp;gt; &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;com.</description>
+    </item>
+    
+    <item>
+      <title>应用性能监控</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/apm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/apm/</guid>
+      <description>背景 APM是应用性能监控的缩写。目前APM的主要功能着眼于分布式系统的性能诊断，其主要功能包括调用链展示，应用拓扑分析等。
+ShardingSphere并不负责如何采集、存储以及展示应用性能监控的相关数据，而是将SQL解析与SQL执行这两块数据分片的最核心的相关信息发送至应用性能监控系统，并交由其处理。 换句话说，ShardingSphere仅负责产生具有价值的数据，并通过标准协议递交至相关系统。ShardingSphere可以通过两种方式对接应用性能监控系统。
+第一种方式是使用OpenTracing API发送性能追踪数据。面向OpenTracing协议的APM产品都可以和ShardingSphere自动对接，比如SkyWalking，Zipkin和Jaeger。使用这种方式只需要在启动时配置OpenTracing协议的实现者即可。 它的优点是可以兼容所有的与OpenTracing协议兼容的产品作为APM的展现系统，如果采用公司愿意实现自己的APM系统，也只需要实现OpenTracing协议，即可自动展示ShardingSphere的链路追踪信息。 缺点是OpenTracing协议发展并不稳定，较新的版本实现者较少，且协议本身过于中立，对于个性化的相关产品的实现不如原生支持强大。
+第二种方式是使用SkyWalking的自动探针。 ShardingSphere团队与SkyWalking团队共同合作，在SkyWalking中实现了ShardingSphere自动探针，可以将相关的应用性能数据自动发送到SkyWalking中。
+使用方法 使用OpenTracing协议  方法1：通过读取系统参数注入APM系统提供的Tracer实现类  启动时添加参数
+ -Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer  调用初始化方法
+ShardingTracer.init();   方法2：通过参数注入APM系统提供的Tracer实现类  ShardingTracer.init(new SkywalkingTracer());  注意:使用SkyWalking的OpenTracing探针时，应将原ShardingSphere探针插件禁用，以防止两种插件互相冲突
+使用SkyWalking自动探针 请参考SkyWalking部署手册。
+效果展示 无论使用哪种方式，都可以方便的将APM信息展示在对接的系统中，以下以SkyWalking为例。
+应用架构 使用Sharding-Proxy访问两个数据库192.168.0.1:3306和192.168.0.2:3306，且每个数据库中有两个分表。
+拓扑图展示 从图中看，用户访问18次Sharding-Proxy应用，每次每个数据库访问了两次。这是由于每次访问涉及到每个库中的两个分表，所以每次访问了四张表。
+跟踪数据展示 从跟踪图中可以能够看到SQL解析和执行的情况。
+/Sharding-Sphere/parseSQL/ : 表示本次SQL的解析性能。
+/Sharding-Sphere/executeSQL/ : 表示具体执行的实际SQL的性能。
+异常情况展示 从跟踪图中可以能够看到发生异常的节点。
+/Sharding-Sphere/executeSQL/ : 表示执行SQL异常的结果。
+/Sharding-Sphere/executeSQL/ : 表示执行SQL异常的日志。</description>
+    </item>
+    
+    <item>
+      <title>性能测试报告</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/</guid>
+      <description>测试结果概述  性能损耗测试：服务器资源充足、并发数相同，比较JDBC和Sharding-JDBC性能损耗，Sharding-JDBC相对JDBC损耗不超过7%。 性能对比测试：服务器资源使用到极限，相同的场景JDBC与Sharding-JDBC的吞吐量相当。 性能对比测试：服务器资源使用到极限，Sharding-JDBC采用分库分表后，Sharding-JDBC吞吐量较JDBC不分表有接近2倍的提升。 性能对比测试：服务器资源使用到极限，Sharding-JDBC V1.5.2与V1.4.2对比，性能比较稳定。  基准测试性能对比    业务场景 JDBC Sharding-JDBC1.5.2 Sharding-JDBC1.5.2/JDBC损耗     单库单表查询 493 470 4.7%   单库单表更新 6682 6303 5.7%   单库单表插入 6855 6375 7%    JDBC单库两库表与Sharding-JDBC两库各两表对比    业务场景 JDBC单库两表 Sharding-JDBC两库各两表 性能提升至     查询 1736 3331 192%   更新 9170 17997 196%   插入 11574 23043 199%    JDBC单库单表与Sharding-JDBC两库各一表对比    业务场景 JDBC单库单表 Sharding-JDBC两库各一表 性能提升至     查询 1586 2944 185%   更新 9548 18561 194%   插入 11182 21414 192%    Sharding-JDBC v1.</description>
+    </item>
+    
+    <item>
+      <title>执行引擎</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/execute/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/execute/</guid>
+      <description>ShardingSphere采用一套自动化的执行引擎，负责将路由和改写完成之后的真实SQL安全且高效发送到底层数据源执行。 它不是简单地将SQL通过JDBC直接发送至数据源执行；也并非直接将执行请求放入线程池去并发执行。它更关注平衡数据源连接创建以及内存占用所产生的消耗，以及最大限度地合理利用并发等问题。 执行引擎的目标是自动化的平衡资源控制与执行效率。
+连接模式 从资源控制的角度看，业务方访问数据库的连接数量应当有所限制。 它能够有效地防止某一业务操作过多的占用资源，从而将数据库连接的资源耗尽，以致于影响其他业务的正常访问。 特别是在一个数据库实例中存在较多分表的情况下，一条不包含分片键的逻辑SQL将产生落在同库不同表的大量真实SQL，如果每条真实SQL都占用一个独立的连接，那么一次查询无疑将会占用过多的资源。
+从执行效率的角度看，为每个分片查询维持一个独立的数据库连接，可以更加有效的利用多线程来提升执行效率。 为每个数据库连接开启独立的线程，可以将I/O所产生的消耗并行处理。为每个分片维持一个独立的数据库连接，还能够避免过早的将查询结果数据加载至内存。 独立的数据库连接，能够持有查询结果集游标位置的引用，在需要获取相应数据时移动游标即可。
+以结果集游标下移进行结果归并的方式，称之为流式归并，它无需将结果数据全数加载至内存，可以有效的节省内存资源，进而减少垃圾回收的频次。当无法保证每个分片查询持有一个独立数据库连接时，则需要在复用该数据库连接获取下一张分表的查询结果集之前，将当前的查询结果集全数加载至内存。 因此，即使可以采用流式归并，在此场景下也将退化为内存归并。
+一方面是对数据库连接资源的控制保护，一方面是采用更优的归并模式达到对中间件内存资源的节省，如何处理好两者之间的关系，是ShardingSphere执行引擎需求解决的问题。 具体来说，如果一条SQL在经过ShardingSphere的分片后，需要操作某数据库实例下的200张表。 那么，是选择创建200个连接并行执行，还是选择创建一个连接串行执行呢？效率与资源控制又应该如何抉择呢？
+针对上述场景，ShardingSphere提供了一种解决思路。 它提出了连接模式（Connection Mode）的概念，将其划分为内存限制模式（MEMORY_STRICTLY）和连接限制模式（CONNECTION_STRICTLY）这两种类型。
+内存限制模式 使用此模式的前提是，ShardingSphere对一次操作所耗费的数据库连接数量不做限制。 如果实际执行的SQL需要对某数据库实例中的200张表做操作，则对每张表创建一个新的数据库连接，并通过多线程的方式并发处理，以达成执行效率最大化。 并且在SQL满足条件情况下，优先选择流式归并，以防止出现内存溢出或避免频繁垃圾回收情况。
+连接限制模式 使用此模式的前提是，ShardingSphere严格控制对一次操作所耗费的数据库连接数量。 如果实际执行的SQL需要对某数据库实例中的200张表做操作，那么只会创建唯一的数据库连接，并对其200张表串行处理。 如果一次操作中的分片散落在不同的数据库，仍然采用多线程处理对不同库的操作，但每个库的每次操作仍然只创建一个唯一的数据库连接。 这样即可以防止对一次请求对数据库连接占用过多所带来的问题。该模式始终选择内存归并。
+内存限制模式适用于OLAP操作，可以通过放宽对数据库连接的限制提升系统吞吐量； 连接限制模式适用于OLTP操作，OLTP通常带有分片键，会路由到单一的分片，因此严格控制数据库连接，以保证在线系统数据库资源能够被更多的应用所使用，是明智的选择。
+自动化执行引擎 ShardingSphere最初将使用何种模式的决定权交由用户配置，让开发者依据自己业务的实际场景需求选择使用内存限制模式或连接限制模式。
+这种解决方案将两难的选择的决定权交由用户，使得用户必须要了解这两种模式的利弊，并依据业务场景需求进行选择。 这无疑增加了用户对ShardingSphere的学习和使用的成本，并非最优方案。
+这种一分为二的处理方案，将两种模式的切换交由静态的初始化配置，是缺乏灵活应对能力的。在实际的使用场景中，面对不同SQL以及占位符参数，每次的路由结果是不同的。 这就意味着某些操作可能需要使用内存归并，而某些操作则可能选择流式归并更优，具体采用哪种方式不应该由用户在ShardingSphere启动之前配置好，而是应该根据SQL和占位符参数的场景，来动态的决定连接模式。
+为了降低用户的使用成本以及连接模式动态化这两个问题，ShardingSphere提炼出自动化执行引擎的思路，在其内部消化了连接模式概念。 用户无需了解所谓的内存限制模式和连接限制模式是什么，而是交由执行引擎根据当前场景自动选择最优的执行方案。
+自动化执行引擎将连接模式的选择粒度细化至每一次SQL的操作。 针对每次SQL请求，自动化执行引擎都将根据其路由结果，进行实时的演算和权衡，并自主地采用恰当的连接模式执行，以达到资源控制和效率的最优平衡。 针对自动化的执行引擎，用户只需配置maxConnectionSizePerQuery即可，该参数表示一次查询时每个数据库所允许使用的最大连接数。
+执行引擎分为准备和执行两个阶段。
+准备阶段 顾名思义，此阶段用于准备执行的数据。它分为结果集分组和执行单元创建两个步骤。
+结果集分组是实现内化连接模式概念的关键。执行引擎根据maxConnectionSizePerQuery配置项，结合当前路由结果，选择恰当的连接模式。 具体步骤如下：
+ 将SQL的路由结果按照数据源的名称进行分组。
+ 通过下图的公式，可以获得每个数据库实例在maxConnectionSizePerQuery的允许范围内，每个连接需要执行的SQL路由结果组，并计算出本次请求的最优连接模式。
+  在maxConnectionSizePerQuery允许的范围内，当一个连接需要执行的请求数量大于1时，意味着当前的数据库连接无法持有相应的数据结果集，则必须采用内存归并； 反之，当一个连接需要执行的请求数量等于1时，意味着当前的数据库连接可以持有相应的数据结果集，则可以采用流式归并。
+每一次的连接模式的选择，是针对每一个物理数据库的。也就是说，在同一次查询中，如果路由至一个以上的数据库，每个数据库的连接模式不一定一样，它们可能是混合存在的形态。
+通过上一步骤获得的路由分组结果创建执行的单元。 当数据源使用数据库连接池等控制数据库连接数量的技术时，在获取数据库连接时，如果不妥善处理并发，则有一定几率发生死锁。 在多个请求相互等待对方释放数据库连接资源时，将会产生饥饿等待，造成交叉的死锁问题。
+举例说明，假设一次查询需要在某一数据源上获取两个数据库连接，并路由至同一个数据库的两个分表查询。 则有可能出现查询A已获取到该数据源的1个数据库连接，并等待获取另一个数据库连接；而查询B也已经在该数据源上获取到的一个数据库连接，并同样等待另一个数据库连接的获取。 如果数据库连接池的允许最大连接数是2，那么这2个查询请求将永久的等待下去。下图描绘了死锁的情况。
+ShardingSphere为了避免死锁的出现，在获取数据库连接时进行了同步处理。 它在创建执行单元时，以原子性的方式一次性获取本次SQL请求所需的全部数据库连接，杜绝了每次查询请求获取到部分资源的可能。 由于对数据库的操作非常频繁，每次获取数据库连接时时都进行锁定，会降低ShardingSphere的并发。因此，ShardingSphere在这里进行了2点优化：
+ 避免锁定一次性只需要获取1个数据库连接的操作。因为每次仅需要获取1个连接，则不会发生两个请求相互等待的场景，无需锁定。 对于大部分OLTP的操作，都是使用分片键路由至唯一的数据节点，这会使得系统变为完全无锁的状态，进一步提升了并发效率。 除了路由至单分片的情况，读写分离也在此范畴之内。
+ 仅针对内存限制模式时才进行资源锁定。在使用连接限制模式时，所有的查询结果集将在装载至内存之后释放掉数据库连接资源，因此不会产生死锁等待的问题。</description>
+    </item>
+    
+    <item>
+      <title>数据治理</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/orchestration/</guid>
+      <description>使用数据治理功能需要指定一个注册中心。配置将全部存入注册中心，可以在每次启动时使用本地配置覆盖注册中心配置，也可以只通过注册中心读取配置。
+不使用Spring 引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-orchestration&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--若使用zookeeper, 请加入下面Maven坐标--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-zookeeper-curator&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--若使用etcd, 请下面Maven坐标--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-etcd&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt;  基于Java编码的规则配置 // 省略配置dataSourceMap以及shardingRuleConfig // ... // 配置注册中心 RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration(); regConfig.setServerLists(&amp;quot;localhost:2181&amp;quot;); regConfig.setNamespace(&amp;quot;sharding-sphere-orchestration&amp;quot;); // 配置数据治理 OrchestrationConfiguration orchConfig = new OrchestrationConfiguration(&amp;quot;orchestration-sharding-data-source&amp;quot;, regConfig, false); // 获取数据源对象 DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);  基于Yaml的规则配置 或通过Yaml方式配置，与以上配置等价：
+orchestration: name: orchestration-sharding-data-source overwrite: false registry: serverLists: localhost:2181 namespace: sharding-sphere-orchestration  DataSource dataSource = YamlOrchestrationShardingDataSourceFactory.</description>
+    </item>
+    
+    <item>
+      <title>分布式事务</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/transaction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/usage/transaction/</guid>
+      <description>引入Maven依赖 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
+连接池配置 ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的连接池，对HikariCP, Druid和DBCP2连接池内置支持，无需额外配置。 其它连接池需要用户实现DataSourceMapConverter的SPI接口进行扩展，可以参考io.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper的实现。 若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：
+   属性名称 默认值     connectionTimeoutMilliseconds 30 * 1000   idleTimeoutMilliseconds 60 * 1000   maintenanceIntervalMilliseconds 30 * 1000   maxLifetimeMilliseconds 0 (无限制)   maxPoolSize 50   minPoolSize 1    事务类型切换 ShardingSphere的事务类型存放在TransactionTypeHolder的本地线程变量中，因此在数据库连接创建前修改此值，可以达到自由切换事务类型的效果。
+注意：数据库连接创建之后，事务类型将无法更改。
+API方式 TransactionTypeHolder.set(TransactionType.LOCAL);  或
+TransactionTypeHolder.set(TransactionType.XA);  SpringBootStarter使用方式 引入Maven依赖：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring-boot-starter&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  SpringBoot使用方式 引入Maven依赖：</description>
+    </item>
+    
+    <item>
+      <title>归并引擎</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/merge/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/sharding/principle/merge/</guid>
+      <description>将从各个数据节点获取的多数据结果集，组合成为一个结果集并正确的返回至请求客户端，称为结果归并。
+ShardingSphere支持的结果归并从功能上分为遍历、排序、分组、分页和聚合5种类型，它们是组合而非互斥的关系。 从结构划分，可分为流式归并、内存归并和装饰者归并。流式归并和内存归并是互斥的，装饰者归并可以在流式归并和内存归并之上做进一步的处理。
+由于从数据库中返回的结果集是逐条返回的，并不需要将所有的数据一次性加载至内存中，因此，在进行结果归并时，沿用数据库返回结果集的方式进行归并，能够极大减少内存的消耗，是归并方式的优先选择。
+流式归并是指每一次从结果集中获取到的数据，都能够通过逐条获取的方式返回正确的单条数据，它与数据库原生的返回结果集的方式最为契合。遍历、排序以及流式分组都属于流式归并的一种。
+内存归并则是需要将结果集的所有数据都遍历并存储在内存中，再通过统一的分组、排序以及聚合等计算之后，再将其封装成为逐条访问的数据结果集返回。
+装饰者归并是对所有的结果集归并进行统一的功能增强，目前装饰者归并有分页归并和聚合归并这2种类型。
+遍历归并 它是最为简单的归并方式。 只需将多个数据结果集合并为一个单向链表即可。在遍历完成链表中当前数据结果集之后，将链表元素后移一位，继续遍历下一个数据结果集即可。
+排序归并 由于在SQL中存在ORDER BY语句，因此每个数据结果集自身是有序的，因此只需要将数据结果集当前游标指向的数据值进行排序即可。 这相当于对多个有序的数组进行排序，归并排序是最适合此场景的排序算法。
+ShardingSphere在对排序的查询进行归并时，将每个结果集的当前数据值进行比较（通过实现Java的Comparable接口完成），并将其放入优先级队列。 每次获取下一条数据时，只需将队列顶端结果集的游标下移，并根据新游标重新进入优先级排序队列找到自己的位置即可。
+通过一个例子来说明ShardingSphere的排序归并，下图是一个通过分数进行排序的示例图。 图中展示了3张表返回的数据结果集，每个数据结果集已经根据分数排序完毕，但是3个数据结果集之间是无序的。 将3个数据结果集的当前游标指向的数据值进行排序，并放入优先级队列，t_score_0的第一个数据值最大，t_score_2的第一个数据值次之，t_score_1的第一个数据值最小，因此优先级队列根据t_score_0，t_score_2和t_score_1的方式排序队列。
+下图则展现了进行next调用的时候，排序归并是如何进行的。 通过图中我们可以看到，当进行第一次next调用时，排在队列首位的t_score_0将会被弹出队列，并且将当前游标指向的数据值（也就是100）返回至查询客户端，并且将游标下移一位之后，重新放入优先级队列。 而优先级队列也会根据t_score_0的当前数据结果集指向游标的数据值（这里是90）进行排序，根据当前数值，t_score_0排列在队列的最后一位。 之前队列中排名第二的t_score_2的数据结果集则自动排在了队列首位。
+在进行第二次next时，只需要将目前排列在队列首位的t_score_2弹出队列，并且将其数据结果集游标指向的值返回至客户端，并下移游标，继续加入队列排队，以此类推。 当一个结果集中已经没有数据了，则无需再次加入队列。
+可以看到，对于每个数据结果集中的数据有序，而多数据结果集整体无序的情况下，ShardingSphere无需将所有的数据都加载至内存即可排序。 它使用的是流式归并的方式，每次next仅获取唯一正确的一条数据，极大的节省了内存的消耗。
+从另一个角度来说，ShardingSphere的排序归并，是在维护数据结果集的纵轴和横轴这两个维度的有序性。 纵轴是指每个数据结果集本身，它是天然有序的，它通过包含ORDER BY的SQL所获取。 横轴是指每个数据结果集当前游标所指向的值，它需要通过优先级队列来维护其正确顺序。 每一次数据结果集当前游标的下移，都需要将该数据结果集重新放入优先级队列排序，而只有排列在队列首位的数据结果集才可能发生游标下移的操作。
+分组归并 分组归并的情况最为复杂，它分为流式分组归并和内存分组归并。 流式分组归并要求SQL的排序项与分组项的字段以及排序类型（ASC或DESC）必须保持一致，否则只能通过内存归并才能保证其数据的正确性。
+举例说明，假设根据科目分片，表结构中包含考生的姓名（为了简单起见，不考虑重名的情况）和分数。通过SQL获取每位考生的总分，可通过如下SQL：
+SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY name;  在分组项与排序项完全一致的情况下，取得的数据是连续的，分组所需的数据全数存在于各个数据结果集的当前游标所指向的数据值，因此可以采用流式归并。如下图所示。
+进行归并时，逻辑与排序归并类似。 下图展现了进行next调用的时候，流式分组归并是如何进行的。
+通过图中我们可以看到，当进行第一次next调用时，排在队列首位的t_score_java将会被弹出队列，并且将分组值同为“Jetty”的其他结果集中的数据一同弹出队列。 在获取了所有的姓名为“Jetty”的同学的分数之后，进行累加操作，那么，在第一次next调用结束后，取出的结果集是“Jetty”的分数总和。 与此同时，所有的数据结果集中的游标都将下移至数据值“Jetty”的下一个不同的数据值，并且根据数据结果集当前游标指向的值进行重排序。 因此，包含名字顺着第二位的“John”的相关数据结果集则排在的队列的前列。
+流式分组归并与排序归并的区别仅仅在于两点：
+ 它会一次性的将多个数据结果集中的分组项相同的数据全数取出。 它需要根据聚合函数的类型进行聚合计算。  对于分组项与排序项不一致的情况，由于需要获取分组的相关的数据值并非连续的，因此无法使用流式归并，需要将所有的结果集数据加载至内存中进行分组和聚合。 例如，若通过以下SQL获取每位考生的总分并按照分数从高至低排序：
+SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY score DESC;  那么各个数据结果集中取出的数据与排序归并那张图的上半部分的表结构的原始数据一致，是无法进行流式归并的。</description>
+    </item>
+    
+  </channel>
+</rss>

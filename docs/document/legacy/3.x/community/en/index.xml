@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/community/en/</link>
+    <description>Recent content on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/community/en/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Subscribe Guide</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/subscribe/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/subscribe/</guid>
+      <description>During the process of using ShardingSphere, if there is any problem, suggestion or new idea, you can use Apache mail-list or submit GitHub issue to participate in the community construction.
+Subscribe Apache ShardingSphere (Incubating) mail-list  Send e-mail to subscribe Use your mailbox to send an e-mail to dev-subscribe@shardingsphere.apache.org with any subject or content.
+ Receive and reply the confirmation e-mail After Step 1, you will receive a confirmation e-mail from dev-help@shardingsphere.</description>
+    </item>
+    
+    <item>
+      <title>Contributor Guide</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/contributor/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/contributor/</guid>
+      <description>You can report a bug, submit a new function enhancement recommendation, or submit a development patch about the content above directly.
+Submit an Issue  Before submitting an issue, please go through a comprehensive search to make sure the problem cannot be solved just by searching. Check the Issue List to make sure the problem is not repeated. Create a new issue. Define the issue with a clear and descriptive title.</description>
+    </item>
+    
+    <item>
+      <title>Committer Guide</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/committer/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/committer/</guid>
+      <description> Becoming a Committer  Make contributions consistently during the past 6 months Understand the core technology of ShardingSphere deeply Obey the Code of Conduct Submit high-quality content Enable Google Two-factor authentication(2FA)  Maintainers’ Responsibilities Maintainers are committers who spent a significant amount of time and energy to maintain the project components, which means a maintainer should:
+ Review PRs reliably and in time Whittle down the Pull Request backlog actively Answer problems Receive core changes, bugs and feature requests Make sure an important change is finished Improve processes and tools Refactor  </description>
+    </item>
+    
+    <item>
+      <title>2FA</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/2fa/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/2fa/</guid>
+      <description>Two-factor authentication(2FA) Two factor authentication (2FA) refers to the authentication method that combines both passport and an object (credit card, SMS phone, token or biomarkers as fingerprint) to identify a user. To ensure the security of the committer’s account, we need you to enable 2FA to sign in and contribute codes on GitHub.
+More details, please refer to 2FA.
+ To be noticed: If you do not enable 2FA, you will be removed from the project and unable to access our repositories and the fork from our private repository.</description>
+    </item>
+    
+    <item>
+      <title>Code of Conduct</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/code-conduct/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/code-conduct/</guid>
+      <description>Development Concept  Write codes with heart. Pursue clean, simplified and extremely elegant codes. Agree with concepts in &amp;lt;Refactoring: Improving the Design of Existing Code&amp;gt; and &amp;lt;Clean Code: A Handbook of Agile Software Craftsmanship&amp;gt;. Be familiar with codes already had, to keep consistent with the style and use. Highly reusable, no duplicated codes or configurations. Delete codes out of use in time.  Contributor Covenant Submitting of Conduct  Make sure all the test cases are passed, Make sure mvn clean install can be compiled and tested successfully.</description>
+    </item>
+    
+    <item>
+      <title>External dependencies</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/external-dependency/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/external-dependency/</guid>
+      <description>Dependency License scope     Guava Apache-2.0 compile   Guava Retrying Apache-2.0 compile   commons-codec Apache-2.0 compile   commons-pool Apache-2.0 test   commons-dbcp Apache-2.0 test   netty Apache-2.0 compile   curator Apache-2.0 compile   grpc Apache-2.0 compile   protobuf BSD 3-clause compile   lombok MIT provided   groovy Apache-2.0 compile   snakeyaml Apache-2.0 compile   spring-context-support Apache-2.</description>
+    </item>
+    
+    <item>
+      <title>Test Engine</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/test-engine/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/community/en/contribute/test-engine/</guid>
+      <description>ShardingSphere has provided a full test engine, which defines SQL in the form of XML. Each SQL is driven by an SQL parsing unit test engine and an integration test engine, while each engine runs test cases for H2, MySQL, PostgreSQL, SQLServer and Oracle databases separately.
+The SQL parsing unit test covers both SQL placeholder and literal dimension. Integration test can be further divided into two dimensions of strategy and JDBC; the former one includes strategies as Sharding, table Sharding, database Sharding, and read-write split while the latter one includes Statement and PreparedStatement.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>00-overviews on </title>
+    <link>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/</link>
+    <description>Recent content in 00-overviews on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	<atom:link href="http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Overview</title>
+      <link>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/</guid>
+      <description>Overview &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+Sharding-JDBC: A data sharding, read-write splitting, BASE transaction and database orchestration middleware. It provides maximum compatibilities for applications by JDBC and MySQL protocol.
+
+  
+    
+Features 1. Data sharding  Both databases and tables sharding supported. Standard aggregation functions, GROUP BY, ORDER BY, LIMIT and JOIN DQL supported. Standard DML, DDL, TCL and database administrator command supported. Sharding operator =, BETWEEN and IN supported.</description>
+    </item>
+    
+    <item>
+      <title>Brief Introduction</title>
+      <link>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/intro/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/intro/</guid>
+      <description>Sharding-JDBC directly encapsulates the JDBC API,can be understood as a enhanced version of the JDBC driver, migrate legacy code almost zero costs:
+ Suitable for any java ORM frameworks, such as: JPA, Hibernate, Mybatis or JDBC directly. Suitable for any database connection pool, such as: DBCP, C3P0, BoneCP, etc. In theory, any database that implements the JDBC specification can be supported.Support MySQL, Oracle, SQLServer and PostgreSQL.  Sharding-JDBC is a lightweight java framework, using the java-jdbc-client to connect database, providing services all-in-jar, no middle layer is used, no other dependence, DBA also don’t need to change the original dev mode.</description>
+    </item>
+    
+    <item>
+      <title>News</title>
+      <link>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/news/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/news/</guid>
+      <description> News  2017-07 InfoQ新闻：分布式数据库中间件Sharding-JDBC 1.5.0发布——自研SQL解析引擎+全数据库支持里程碑版本 2017-07 芋艿V的博客：Sharding-JDBC 源码分析 2017-07 DBAPlus分享：轻量级数据库中间件利器Sharding-JDBC深度解析 2017-03 开源中国高手问答：高手问答第144期—轻量级数据库中间层 Sharding-JDBC 深度解析 2016-06 InfoQ文章：Sharding-JDBC 1.3.0发布——支持读写分离 2016-02 CSDN文章：解读分库分表中间件Sharding-JDBC 2016-01 InfoQ新闻：当当开源sharding-jdbc，轻量级数据库分库分表中间件  </description>
+    </item>
+    
+    <item>
+      <title>Contribute Code</title>
+      <link>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/contribution/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/contribution/</guid>
+      <description>You can report bugs, submit a new feature enhancement recommendation, or submit an improved patch directly to the above.
+Reporting Bugs This section guides you through submitting a bug report for Sharding-JDBC.
+Before Submitting A Bug Report  Please make sure this is not a repeated bug. Check Issue Page list，search if the bug you want to submit has been reported. Please make sure the bug exists in the latest version.</description>
+    </item>
+    
+  </channel>
+</rss>
