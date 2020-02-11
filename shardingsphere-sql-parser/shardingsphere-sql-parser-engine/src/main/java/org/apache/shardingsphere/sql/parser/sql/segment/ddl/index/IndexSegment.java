@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sql.parser.sql.segment.ddl.index;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
  * Index segment.
@@ -35,7 +35,5 @@ public final class IndexSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final String name;
-    
-    private final QuoteCharacter quoteCharacter;
+    private final IdentifierValue identifier;
 }

@@ -90,7 +90,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     public void assertRouteForNonExistDropIndex() {
         DropIndexStatement indexStatement = mock(DropIndexStatement.class);
         IndexSegment indexSegment = mock(IndexSegment.class);
-        when(indexSegment.getName()).thenReturn("no_index");
+        when(indexSegment.getIdentifier().getValue()).thenReturn("no_index");
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
         tableBroadcastRoutingEngine.route(shardingRule);
@@ -100,7 +100,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     public void assertRouteForDropIndex() {
         DropIndexStatement indexStatement = mock(DropIndexStatement.class);
         IndexSegment indexSegment = mock(IndexSegment.class);
-        when(indexSegment.getName()).thenReturn("index_name");
+        when(indexSegment.getIdentifier().getValue()).thenReturn("index_name");
         when(indexStatement.getIndexes()).thenReturn(Lists.newArrayList(indexSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(indexStatement);
         RouteResult actual = tableBroadcastRoutingEngine.route(shardingRule);

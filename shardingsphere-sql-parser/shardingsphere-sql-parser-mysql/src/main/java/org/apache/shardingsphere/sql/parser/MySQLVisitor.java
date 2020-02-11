@@ -222,8 +222,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
-        IdentifierValue indexName = (IdentifierValue) visit(ctx.identifier());
-        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getValue(), indexName.getQuoteCharacter());
+        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @Override

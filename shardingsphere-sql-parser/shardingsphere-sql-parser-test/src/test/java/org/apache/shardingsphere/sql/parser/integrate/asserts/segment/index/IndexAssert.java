@@ -44,9 +44,9 @@ public final class IndexAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final IndexSegment actual, final ExpectedIndex expected) {
         assertNotNull(assertContext.getText("Index should exist."), expected);
-        assertThat(assertContext.getText("Index name assertion error: "), actual.getName(), is(expected.getName()));
-        assertThat(assertContext.getText("Index name start delimiter assertion error: "), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertContext.getText("Index name end delimiter assertion error: "), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertContext.getText("Index name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
+        assertThat(assertContext.getText("Index name start delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertContext.getText("Index name end delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
         // TODO assert start index and stop index
         //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
