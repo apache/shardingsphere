@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmen
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 import java.util.Map;
 
@@ -36,7 +37,10 @@ public final class SchemaExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<SchemaSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> schemaNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SCHEMA_NAME);
-        return schemaNode.isPresent() ? Optional.of(new SchemaSegment(schemaNode.get().getStart().getStartIndex(), schemaNode.get().getStop().getStopIndex(), schemaNode.get().getText()))
-                : Optional.<SchemaSegment>absent();
+        if (schemaNode.isPresent()) {
+            IdentifierValue identifier = new IdentifierValue(schemaNode.get().getText());
+            return Optional.of(new SchemaSegment(schemaNode.get().getStart().getStartIndex(), schemaNode.get().getStop().getStopIndex(), identifier.getValue(), identifier.getQuoteCharacter()));
+        }
+        return Optional.absent();
     }
 }

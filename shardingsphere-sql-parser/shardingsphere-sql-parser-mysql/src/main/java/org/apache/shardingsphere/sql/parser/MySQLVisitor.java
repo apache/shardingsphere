@@ -201,10 +201,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         IdentifierValue tableName = (IdentifierValue) visit(ctx.name());
-        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getValue());
+        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getValue(), tableName.getQuoteCharacter());
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ((IdentifierValue) visit(owner.identifier())).getValue()));
+            IdentifierValue ownerIdentifier = (IdentifierValue) visit(owner.identifier());
+            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
         }
         return result;
     }
@@ -212,10 +213,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
         IdentifierValue columnName = (IdentifierValue) visit(ctx.name());
-        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getValue());
+        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getValue(), columnName.getQuoteCharacter());
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ((IdentifierValue) visit(owner.identifier())).getValue()));
+            IdentifierValue ownerIdentifier = (IdentifierValue) visit(owner.identifier());
+            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
         }
         return result;
     }
@@ -223,7 +225,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitIndexName(final IndexNameContext ctx) {
         IdentifierValue indexName = (IdentifierValue) visit(ctx.identifier());
-        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getValue());
+        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getValue(), indexName.getQuoteCharacter());
     }
     
     @Override

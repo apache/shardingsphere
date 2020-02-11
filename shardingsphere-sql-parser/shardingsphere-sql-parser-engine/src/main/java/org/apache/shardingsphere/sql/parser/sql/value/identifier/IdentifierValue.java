@@ -18,17 +18,24 @@
 package org.apache.shardingsphere.sql.parser.sql.value.identifier;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Identifier value.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class IdentifierValue implements ValueASTNode<String> {
     
     private final String value;
+    
+    private final QuoteCharacter quoteCharacter;
+    
+    public IdentifierValue(final String text) {
+        value = SQLUtil.getExactlyValue(text);
+        quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
+    }
 }

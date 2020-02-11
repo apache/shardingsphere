@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -54,8 +55,8 @@ public final class ShardingInsertStatementValidatorTest {
     
     private InsertStatement createInsertStatement() {
         InsertStatement result = new InsertStatement();
-        result.setTable(new TableSegment(0, 0, "user"));
-        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id");
+        result.setTable(new TableSegment(0, 0, "user", QuoteCharacter.NONE));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, "id", QuoteCharacter.NONE);
         AssignmentSegment assignmentSegment = new AssignmentSegment(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 1));
         result.getAllSQLSegments().add(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
         return result;

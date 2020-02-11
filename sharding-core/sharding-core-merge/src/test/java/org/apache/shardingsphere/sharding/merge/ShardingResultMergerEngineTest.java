@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge;
 
 import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -67,9 +68,9 @@ public final class ShardingResultMergerEngineTest {
     @Test
     public void assertNewInstanceWithOtherStatement() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
+        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl", QuoteCharacter.NONE));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
-        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, "col"));
+        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, "col", QuoteCharacter.NONE));
         insertStatement.setColumns(insertColumnsSegment);
         SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
