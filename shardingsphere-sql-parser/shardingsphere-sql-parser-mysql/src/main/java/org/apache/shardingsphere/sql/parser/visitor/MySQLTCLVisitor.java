@@ -49,19 +49,16 @@ public final class MySQLTCLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitSetAutoCommit(final SetAutoCommitContext ctx) {
         SetAutoCommitStatement result = new SetAutoCommitStatement();
-        AutoCommitValueContext autoCommitValueContext = ctx.autoCommitValue();
-        if (null != autoCommitValueContext) {
-            AutoCommitSegment autoCommitSegment = (AutoCommitSegment) visit(ctx.autoCommitValue());
-            result.getAllSQLSegments().add(autoCommitSegment);
-            result.setAutoCommit(autoCommitSegment.isAutoCommit());
-        }
+        AutoCommitSegment autoCommitSegment = (AutoCommitSegment) visit(ctx.autoCommitValue());
+        result.getAllSQLSegments().add(autoCommitSegment);
+        result.setAutoCommit(autoCommitSegment.isAutoCommit());
         return result;
     }
     
     @Override
     public ASTNode visitAutoCommitValue(final AutoCommitValueContext ctx) {
         boolean autoCommit = "1".equals(ctx.getText()) || "ON".equals(ctx.getText());
-        return new AutoCommitSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), autoCommit);
+        return new AutoCommitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), autoCommit);
     }
     
     @Override
