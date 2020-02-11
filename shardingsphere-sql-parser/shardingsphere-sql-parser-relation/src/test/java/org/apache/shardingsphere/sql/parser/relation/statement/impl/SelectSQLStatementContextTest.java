@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -149,13 +150,13 @@ public final class SelectSQLStatementContextTest {
             case INDEX_ORDER_BY:
                 return new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, OrderDirection.ASC);
             case COLUMN_ORDER_BY_WITH_OWNER:
-                ColumnSegment columnSegment = new ColumnSegment(0, 0, "name");
-                columnSegment.setOwner(new TableSegment(0, 0, "table"));
+                ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+                columnSegment.setOwner(new TableSegment(0, 0, new IdentifierValue("table")));
                 return new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, OrderDirection.ASC);
             case COLUMN_ORDER_BY_WITH_ALIAS:
-                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, "n"), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("n")), OrderDirection.ASC, OrderDirection.ASC);
             default:
-                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, "id"), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, OrderDirection.ASC);
         }
     }
     

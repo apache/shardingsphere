@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.20.7" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/favicon.png" type="image/x-icon" />
+
+    
+    <title>读写分离</title>
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/nucleus.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/theme.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/hugo-theme.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <style type="text/css">:root #header + #content > #left > #rlblock_left
+    {display:none !important;}</style>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/highlight.js/9.8.0/styles/monokai-sublime.min.css">
+<link rel="stylesheet" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/style.css">
+  </head>
+  <body class="" data-url="/02-guide/master-slave/">
+    
+    <nav id="sidebar">
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/sharding-jdbc.png" />
+    </div>
+</div>
+  <div class="highlightable">
+    <ul class="topics">
+      
+        
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/00-overview/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/">
+          <span>
+            
+              <b>0. </b>
+            
+             概览
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/00-overview/intro/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/intro/">
+                <span>简介     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/news/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/news/">
+                <span>新闻     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/contribution/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/contribution/">
+                <span>贡献代码     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/01-start/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/">
+          <span>
+            
+              <b>1. </b>
+            
+             起航
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/01-start/quick-start/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/quick-start/">
+                <span>快速入门     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/code-demo/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/code-demo/">
+                <span>使用示例     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/faq/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/faq/">
+                <span>FAQ     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/features/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/features/">
+                <span>详细功能列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/limitations/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/limitations/">
+                <span>使用限制     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/sql-supported/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/sql-supported/">
+                <span>SQL支持详细列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/stress-test/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/stress-test/">
+                <span>性能测试报告     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  parent" data-nav-id="/02-guide/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/">
+          <span>
+            
+              <b>2. </b>
+            
+             使用指南
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/02-guide/concepts/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/concepts/">
+                <span>核心概念     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/sharding/">
+                <span>分库分表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item active" data-nav-id="/02-guide/master-slave/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/master-slave/">
+                <span>读写分离     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/config_domain/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/config_domain/">
+                <span>配置域模型     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/configuration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/configuration/">
+                <span>配置手册     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/orchestration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/orchestration/">
+                <span>编排治理     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/hint-sharding-value/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/hint-sharding-value/">
+                <span>强制路由     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/key-generator/">
+                <span>分布式主键     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/transaction/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/transaction/">
+                <span>事务支持     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/subquery/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/subquery/">
+                <span>分页及子查询     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/test-framework/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/test-framework/">
+                <span>测试引擎     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/apm/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/apm/">
+                <span>应用性能监控     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding-jdbc-server/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/sharding-jdbc-server/">
+                <span>Sharding-JDBC-Server     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/03-design/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/">
+          <span>
+            
+              <b>3. </b>
+            
+             设计规划
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/03-design/architecture/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/architecture/">
+                <span>架构设计     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/module/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/module/">
+                <span>模块说明     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/roadmap/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/roadmap/">
+                <span>未来线路规划     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+    </ul>
+    <hr>
+     
+  </div>
+</nav>
+
+        <section id="body">
+        <div id="overlay"></div>
+
+        <div class="padding highlightable">
+
+            <div id="top-bar">
+              
+              <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                  <span id="sidebar-toggle-span">
+                      <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                  </span>
+                
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                
+                
+                  
+                  
+                  
+                    
+                    
+                <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/" itemprop="url"><span itemprop="title">使用指南</span></a> <i class="fa fa-angle-right"></i>
+                    
+                  
+                
+                <span itemprop="title"> 读写分离</span>
+              </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#概念">概念</a></li>
+<li><a href="#支持项">支持项</a></li>
+<li><a href="#不支持范围">不支持范围</a></li>
+<li><a href="#代码开发示例">代码开发示例</a>
+<ul>
+<li><a href="#仅读写分离">仅读写分离</a></li>
+<li><a href="#分库分表-读写分离">分库分表 + 读写分离</a></li>
+</ul></li>
+<li><a href="#spring命名空间配置示例">Spring命名空间配置示例</a></li>
+<li><a href="#使用hint强制路由主库示例">使用Hint强制路由主库示例</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+              
+
+            </div>
+            
+              <div id="body-inner">
+                
+                <h1>读写分离</h1>
+                
+
+
+
+<h2 id="概念">概念</h2>
+
+<p>为了缓解数据库压力，将写入和读取操作分离为不同数据源，写库称为主库，读库称为从库，一主库可配置多从库。</p>
+
+<h2 id="支持项">支持项</h2>
+
+<ol>
+<li>提供了一主多从的读写分离配置，可独立使用，也可配合分库分表使用。</li>
+<li>独立使用读写分离支持SQL透传。</li>
+<li>同一线程且同一数据库连接内，如有写入操作，以后的读操作均从主库读取，用于保证数据一致性。</li>
+<li>Spring命名空间。</li>
+<li>基于Hint的强制主库路由。</li>
+</ol>
+
+<h2 id="不支持范围">不支持范围</h2>
+
+<ol>
+<li>主库和从库的数据同步。</li>
+<li>主库和从库的数据同步延迟导致的数据不一致。</li>
+<li>主库双写或多写。</li>
+</ol>
+
+<h2 id="代码开发示例">代码开发示例</h2>
+
+<h3 id="仅读写分离">仅读写分离</h3>
+
+<pre><code class="language-java">// 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource, slaveDataSource0, slaveDataSource1等为使用DBCP等连接池配置的真实数据源
+Map&lt;String, DataSource&gt; dataSourceMap = new HashMap&lt;&gt;();
+dataSourceMap.put(&quot;masterDataSource&quot;, masterDataSource);
+dataSourceMap.put(&quot;slaveDataSource0&quot;, slaveDataSource0);
+dataSourceMap.put(&quot;slaveDataSource1&quot;, slaveDataSource1);
+
+// 构建读写分离配置
+MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
+masterSlaveRuleConfig.setName(&quot;ms_ds&quot;);
+masterSlaveRuleConfig.setMasterDataSourceName(&quot;masterDataSource&quot;);
+masterSlaveRuleConfig.getSlaveDataSourceNames().add(&quot;slaveDataSource0&quot;);
+masterSlaveRuleConfig.getSlaveDataSourceNames().add(&quot;slaveDataSource1&quot;);
+
+DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig);
+</code></pre>
+
+<h3 id="分库分表-读写分离">分库分表 + 读写分离</h3>
+
+<pre><code class="language-java">// 构建读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理. masterDataSource0, slaveDataSource00, slaveDataSource01等为使用DBCP等连接池配置的真实数据源
+Map&lt;String, DataSource&gt; dataSourceMap = new HashMap&lt;&gt;();
+dataSourceMap.put(&quot;masterDataSource0&quot;, masterDataSource0);
+dataSourceMap.put(&quot;slaveDataSource00&quot;, slaveDataSource00);
+dataSourceMap.put(&quot;slaveDataSource01&quot;, slaveDataSource01);
+
+dataSourceMap.put(&quot;masterDataSource1&quot;, masterDataSource1);
+dataSourceMap.put(&quot;slaveDataSource10&quot;, slaveDataSource10);
+dataSourceMap.put(&quot;slaveDataSource11&quot;, slaveDataSource11);
+
+// 构建读写分离配置
+MasterSlaveRuleConfiguration masterSlaveRuleConfig0 = new MasterSlaveRuleConfiguration();
+masterSlaveRuleConfig0.setName(&quot;ds_0&quot;);
+masterSlaveRuleConfig0.setMasterDataSourceName(&quot;masterDataSource0&quot;);
+masterSlaveRuleConfig0.getSlaveDataSourceNames().add(&quot;slaveDataSource00&quot;);
+masterSlaveRuleConfig0.getSlaveDataSourceNames().add(&quot;slaveDataSource01&quot;);
+
+MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration();
+masterSlaveRuleConfig1.setName(&quot;ds_1&quot;);
+masterSlaveRuleConfig1.setMasterDataSourceName(&quot;masterDataSource1&quot;);
+masterSlaveRuleConfig1.getSlaveDataSourceNames().add(&quot;slaveDataSource10&quot;);
+masterSlaveRuleConfig1.getSlaveDataSourceNames().add(&quot;slaveDataSource11&quot;);
+
+// 通过ShardingSlaveDataSourceFactory继续创建ShardingDataSource
+ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+shardingRuleConfig.getMasterSlaveRuleConfigs().add(masterSlaveRuleConfig0);
+shardingRuleConfig.getMasterSlaveRuleConfigs().add(masterSlaveRuleConfig1);
+
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig);
+</code></pre>
+
+<h2 id="spring命名空间配置示例">Spring命名空间配置示例</h2>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+    xmlns:sharding=&quot;http://shardingsphere.io/schema/shardingjdbc/sharding&quot;
+    xmlns:masterslave=&quot;http://shardingsphere.io/schema/shardingjdbc/masterslave&quot;
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context 
+                        http://www.springframework.org/schema/context/spring-context.xsd 
+                        http://shardingsphere.io/schema/shardingjdbc/sharding
+                        http://shardingsphere.io/schema/shardingjdbc/sharding/sharding.xsd
+                        http://shardingsphere.io/schema/shardingjdbc/masterslave
+                        http://shardingsphere.io/schema/shardingjdbc/masterslave/master-slave.xsd
+                        &quot;&gt;
+    &lt;!-- 配置真实数据源 --&gt;
+    &lt;bean id=&quot;dbtbl_0_master&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0_master&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_0_slave_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0_slave_0&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_0_slave_1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_0_slave_1&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_1_master&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1_master&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_1_slave_0&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1_slave_0&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;bean id=&quot;dbtbl_1_slave_1&quot; class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;com.mysql.jdbc.Driver&quot;/&gt;
+        &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/dbtbl_1_slave_1&quot;/&gt;
+        &lt;property name=&quot;username&quot; value=&quot;root&quot;/&gt;
+        &lt;property name=&quot;password&quot; value=&quot;&quot;/&gt;
+    &lt;/bean&gt;
+    
+    &lt;!-- 定义读写分离数据源, 读写分离数据源实现了DataSource接口, 可直接当做数据源处理 --&gt;
+    &lt;master-slave:data-source id=&quot;dbtbl_0&quot; master-data-source-name=&quot;dbtbl_0_master&quot; slave-data-source-names=&quot;dbtbl_0_slave_0, dbtbl_0_slave_1&quot; strategy-type=&quot;ROUND_ROBIN&quot; /&gt;
+    &lt;master-slave:data-source id=&quot;dbtbl_1&quot; master-data-source-name=&quot;dbtbl_1_master&quot; slave-data-source-names=&quot;dbtbl_1_slave_0, dbtbl_1_slave_1&quot; strategy-type=&quot;ROUND_ROBIN&quot; /&gt;
+    
+    &lt;sharding:inline-strategy id=&quot;databaseStrategy&quot; sharding-column=&quot;user_id&quot; algorithm-expression=&quot;dbtbl_${user_id % 2}&quot; /&gt;
+    &lt;sharding:inline-strategy id=&quot;orderTableStrategy&quot; sharding-column=&quot;order_id&quot; algorithm-expression=&quot;t_order_${order_id % 4}&quot; /&gt;
+    
+    &lt;sharding:data-source id=&quot;shardingDataSource&quot;&gt;
+        &lt;sharding:sharding-rule data-source-names=&quot;dbtbl_0, dbtbl_1&quot;&gt;
+            &lt;sharding:table-rules&gt;
+                &lt;sharding:table-rule logic-table=&quot;t_order&quot; actual-data-nodes=&quot;dbtbl_${0..1}.t_order_${0..3}&quot; database-strategy-ref=&quot;databaseStrategy&quot; table-strategy-ref=&quot;orderTableStrategy&quot;/&gt;
+            &lt;/sharding:table-rules&gt;
+        &lt;/sharding:sharding-rule&gt;
+    &lt;/sharding:data-source&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h2 id="使用hint强制路由主库示例">使用Hint强制路由主库示例</h2>
+
+<pre><code class="language-java">HintManager hintManager = HintManager.getInstance();
+hintManager.setMasterRouteOnly();
+// 继续JDBC操作
+</code></pre>
+
+
+      
+      
+      </div>
+    </div>
+
+    
+
+    <div id="navigation">
+        
+        <a class="nav nav-prev" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/sharding/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/configuration/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/clipboard.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/perfect-scrollbar.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/jquery.sticky-kit.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/featherlight.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/html5shiv-printshiv.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/learn.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/hugo-learn.js"></script>
+    <script src="http://cdn.bootcss.com/highlight.js/9.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
+

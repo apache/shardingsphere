@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+            <artifactId>sharding-orchestration-center-zookeeper-curator</artifactId>
             <version>${project.version}</version>
         </dependency>
         

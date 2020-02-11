@@ -173,14 +173,14 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         });
         boolean isPrimaryKey = inlineDataTypes.size() > 0 || generatedDataTypes.size() > 0;
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                column.getName(), dataType.getValue(), isPrimaryKey);
+                column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
     }
     
     @Override
     public ASTNode visitFirstOrAfterColumn(final FirstOrAfterColumnContext ctx) {
         return null == ctx.columnName() ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null)
                 : new ColumnAfterPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null,
-                ((ColumnSegment) visit(ctx.columnName())).getName());
+                ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
     }
     
     @Override
@@ -290,7 +290,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
         return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                ((ColumnSegment) visit(ctx.columnName())).getName());
+                ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
     }
     
     @Override
@@ -306,7 +306,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitRenameColumnSpecification(final RenameColumnSpecificationContext ctx) {
         return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                ((ColumnSegment) visit(ctx.columnName(0))).getName(), ((ColumnSegment) visit(ctx.columnName(1))).getName());
+                ((ColumnSegment) visit(ctx.columnName(0))).getIdentifier().getValue(), ((ColumnSegment) visit(ctx.columnName(1))).getIdentifier().getValue());
     }
     
     @Override

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sharding-Proxy on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/</link>
+    <description>Recent content in Sharding-Proxy on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用手册</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/usage/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/usage/</guid>
+      <description>Proxy启动  下载Sharding-Proxy的最新发行版，地址:https://github.com/sharding-sphere/sharding-sphere-doc/raw/master/dist/sharding-proxy-3.0.0.tar.gz 如果使用docker，可以执行docker pull shardingsphere/sharding-proxy获取镜像。详细信息请参考Docker镜像。 解压缩后修改conf/server.yaml和以config-前缀开头的文件，如：conf/config-xxx.yaml文件，进行分片规则、读写分离规则配置. 配置方式请参考配置手册。 Linux操作系统请运行bin/start.sh，Windows操作系统请运行bin/start.bat启动Sharding-Proxy。如需配置启动端口、配置文件位置，可参考快速入门 进行启动。 使用任何MySQL的客户端连接。如: mysql -u root -h 127.0.0.1 -P 3307  注册中心使用 若想使用Sharding-Proxy的数据库治理功能，则需要使用注册中心实现实例熔断和从库禁用功能。详情请参考支持的注册中心。
+Zookeeper  Sharding-Proxy默认提供了Zookeeper的注册中心解决方案。您只需按照配置规则进行注册中心的配置，即可使用。  Etcd  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 Maven仓库下载Etcd解决方案的最新稳定版jar包。 将下载下来的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  其他第三方注册中心  将Sharding-Proxy的lib目录下的sharding-orchestration-reg-zookeeper-curator-${sharding-sphere.version}.jar文件删除。 使用SPI方式实现相关逻辑编码，并将生成的jar包放到Sharding-Proxy的lib目录下。 按照配置规则进行注册中心的配置，即可使用。  分布式事务 Sharding-Proxy原生支持XA事务，不需要额外的配置。
+配置默认事务类型 默认事务类型可在server.yaml中进行配置，例如：
+proxy.transaction.type: XA  切换运行时事务类型 命令行方式 mysql&amp;gt; sctl: set transantcion_type=XA mysql&amp;gt; sctl: show transaction_type  原生JDBC方式 如果通过JDBC-Driver的方式连接Sharding-Proxy，可以在获取连接后，发送sctl:set transaction_type=XA的SQL切换事务类型。
+Spring注解方式 引入Maven依赖：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-spring&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  然后在需要事务的方法或类中添加相关注解即可，例如：
+@ShardingTransactionType(TransactionType.LOCAL) @Transactional  或</description>
+    </item>
+    
+    <item>
+      <title>配置手册</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/configuration/</guid>
+      <description>数据源与分片配置示例 Sharding-Proxy支持多逻辑数据源，每个以config-前缀命名的yaml配置文件，即为一个逻辑数据源。以下是config-xxx.yaml的配置配置示例。
+数据分片 dataSources:
+schemaName: sharding_db dataSources: ds0: url: jdbc:mysql://localhost:3306/ds0 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 ds1: url: jdbc:mysql://localhost:3306/ds1 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 shardingRule: tables: t_order: actualDataNodes: ds${0..1}.t_order${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order${order_id % 2} keyGeneratorColumnName: order_id t_order_item: actualDataNodes: ds${0..1}.t_order_item${0..1} tableStrategy: inline: shardingColumn: order_id algorithmExpression: t_order_item${order_id % 2} bindingTables: - t_order,t_order_item defaultDatabaseStrategy: inline: shardingColumn: user_id algorithmExpression: ds${user_id % 2} defaultTableStrategy: none: defaultKeyGeneratorClassName: io.</description>
+    </item>
+    
+    <item>
+      <title>Docker镜像</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/docker/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-proxy/docker/</guid>
+      <description>拉取官方Docker镜像 docker pull shardingsphere/sharding-proxy  手动构建Docker镜像（可选） git clone https://github.com/sharding-sphere/sharding-sphere mvn clean install cd sharding-sphere/sharding-proxy mvn clean package docker:build  配置Sharding-Proxy 创建/${your_work_dir}/conf/config.yaml文件，进行分片规则配置。配置方式请参考配置手册。
+运行Docker docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest  可以自定义端口3308和13308。3308表示docker容器端口, 13308表示宿主机端口。
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS=&amp;quot;-Djava.awt.headless=true&amp;quot; --env PORT=3308 -p13308:3308 shardingsphere/sharding-proxy:latest  可以自定义JVM相关参数到环境变量JVM_OPTS中。
+访问Sharding-Proxy 与连接MySQL的方式相同。
+mysql -u${your_user_name} -p${your_password} -h${your_host} -P13308  FAQ 问题1：I/O exception (java.io.IOException) caught when processing request to {}-&amp;gt;unix://localhost:80: Connection refused？
+回答：在构建镜像前，请确保docker daemon进程已经运行。</description>
+    </item>
+    
+  </channel>
+</rss>

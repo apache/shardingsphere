@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据治理 on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/</link>
+    <description>Recent content in 数据治理 on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>配置中心</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/config-center/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/config-center/</guid>
+      <description>实现动机  配置集中化：越来越多的运行时实例，使得散落的配置难于管理，配置不同步导致的问题十分严重。将配置集中于配置中心，可以更加有效进行管理。
+ 配置动态化：配置修改后的分发，是配置中心可以提供的另一个重要能力。它可支持数据源、表与分片及读写分离策略的动态切换。
+  配置中心数据结构 配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，数据分片，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
+config ├──authentication # Sharding-Proxy权限配置 ├──configMap # 数据分片ConfigMap配置，以K/V形式存储，如：{&amp;quot;key1&amp;quot;:&amp;quot;value1&amp;quot;} ├──props # 属性配置 ├──schema # Schema配置 ├ ├──sharding_db # SchemaName配置 ├ ├ ├──datasource # 数据源配置 ├ ├ ├──rule # 数据分片规则配置 ├ ├──masterslave_db # SchemaName配置 ├ ├ ├──datasource # 数据源配置 ├ ├ ├──rule # 读写分离规则  config/authentication password: root username: root  config/configmap 读写分离ConfigMap配置，以K/V形式存储。
+key2: value2  config/sharding/props 相对于sharding-sphere配置里面的Sharding Properties。
+executor.size: 20 sql.show: true  config/schema/schemeName/datasource 多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）。</description>
+    </item>
+    
+    <item>
+      <title>编排治理</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/orchestration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/orchestration/</guid>
+      <description> 实现动机 通过注册中心，提供熔断数据库访问程序对数据库的访问和禁用从库的访问的能力。数据治理仍然有大量未完成的功能。
+注册中心数据结构 注册中心在定义的命名空间的state下，创建数据库访问对象运行节点，用于区分不同数据库访问实例。包括instances和datasources节点。
+instances ├──your_instance_ip_a@-@your_instance_pid_x ├──your_instance_ip_b@-@your_instance_pid_y ├──.... datasources ├──ds0 ├──ds1 ├──....  Sharding-Proxy支持多逻辑数据源,因此datasources子节点的名称采用schema_name.data_source_name的形式。
+instances ├──your_instance_ip_a@-@your_instance_pid_x ├──your_instance_ip_b@-@your_instance_pid_y ├──.... datasources ├──sharding_db.ds0 ├──sharding_db.ds1 ├──....  state/instances 数据库访问对象运行实例信息，子节点是当前运行实例的标识。 运行实例标识由运行服务器的IP地址和PID构成。运行实例标识均为临时节点，当实例上线时注册，下线时自动清理。 注册中心监控这些节点的变化来治理运行中实例对数据库的访问等。
+state/datasources 可以治理读写分离从库，可动态添加删除以及禁用。
+操作指南 熔断实例 可在IP地址@-@PID节点写入DISABLED（忽略大小写）表示禁用该实例，删除DISABLED表示启用。
+Zookeeper命令如下：
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED  Etcd命令如下：
+etcdctl set /your_app_name/state/instances/your_instance_ip_a@-@your_instance_pid_x DISABLED  禁用从库 在读写分离（或数据分片+读写分离）场景下，可在数据源名称子节点中写入DISABLED（忽略大小写）表示禁用从库数据源，删除DISABLED或节点表示启用。
+Zookeeper命令如下：
+[zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED  Etcd命令如下：
+etcdctl set /your_app_name/state/datasources/your_slave_datasource_name DISABLED  </description>
+    </item>
+    
+    <item>
+      <title>支持的注册中心</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/supported-registry-repo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/supported-registry-repo/</guid>
+      <description>SPI Service Provider Interface (SPI)是一种为了被第三方实现或扩展的API。它可以用于实现框架扩展或组件替换。
+ShardingSphere在数据库治理模块使用SPI方式载入注册中心，进行实例熔断和数据库禁用。 目前，ShardingSphere内部支持Zookeeper和Etcd两种常用的注册中心。 此外，您可以使用其他第三方注册中心，并通过SPI的方式注入到ShardingSphere，从而使用该注册中心，实现数据库治理功能。
+Zookeeper ShardingSphere官方使用Apache Curator作为Zookeeper的实现方案。 请使用Zookeeper 3.4.6及其以上版本，详情请参见官方网站。
+Etcd ShardingSphere官方使用原生的Etcd作为Etcd的实现方案。 请使用Etcd V3及其以上版本，详情请参见官方网站。
+其他 使用SPI方式自行实现相关逻辑编码。</description>
+    </item>
+    
+    <item>
+      <title>应用性能监控</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/apm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/features/orchestration/apm/</guid>
+      <description>背景 APM是应用性能监控的缩写。目前APM的主要功能着眼于分布式系统的性能诊断，其主要功能包括调用链展示，应用拓扑分析等。
+ShardingSphere并不负责如何采集、存储以及展示应用性能监控的相关数据，而是将SQL解析与SQL执行这两块数据分片的最核心的相关信息发送至应用性能监控系统，并交由其处理。 换句话说，ShardingSphere仅负责产生具有价值的数据，并通过标准协议递交至相关系统。ShardingSphere可以通过两种方式对接应用性能监控系统。
+第一种方式是使用OpenTracing API发送性能追踪数据。面向OpenTracing协议的APM产品都可以和ShardingSphere自动对接，比如SkyWalking，Zipkin和Jaeger。使用这种方式只需要在启动时配置OpenTracing协议的实现者即可。 它的优点是可以兼容所有的与OpenTracing协议兼容的产品作为APM的展现系统，如果采用公司愿意实现自己的APM系统，也只需要实现OpenTracing协议，即可自动展示ShardingSphere的链路追踪信息。 缺点是OpenTracing协议发展并不稳定，较新的版本实现者较少，且协议本身过于中立，对于个性化的相关产品的实现不如原生支持强大。
+第二种方式是使用SkyWalking的自动探针。 ShardingSphere团队与SkyWalking团队共同合作，在SkyWalking中实现了ShardingSphere自动探针，可以将相关的应用性能数据自动发送到SkyWalking中。
+使用方法 使用OpenTracing协议  方法1：通过读取系统参数注入APM系统提供的Tracer实现类  启动时添加参数
+ -Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer  调用初始化方法
+ShardingTracer.init();   方法2：通过参数注入APM系统提供的Tracer实现类  ShardingTracer.init(new SkywalkingTracer());  注意:使用SkyWalking的OpenTracing探针时，应将原ShardingSphere探针插件禁用，以防止两种插件互相冲突
+使用SkyWalking自动探针 请参考SkyWalking部署手册。
+效果展示 无论使用哪种方式，都可以方便的将APM信息展示在对接的系统中，以下以SkyWalking为例。
+应用架构 使用Sharding-Proxy访问两个数据库192.168.0.1:3306和192.168.0.2:3306，且每个数据库中有两个分表。
+拓扑图展示 从图中看，用户访问18次Sharding-Proxy应用，每次每个数据库访问了两次。这是由于每次访问涉及到每个库中的两个分表，所以每次访问了四张表。
+跟踪数据展示 从跟踪图中可以能够看到SQL解析和执行的情况。
+/Sharding-Sphere/parseSQL/ : 表示本次SQL的解析性能。
+/Sharding-Sphere/executeSQL/ : 表示具体执行的实际SQL的性能。
+异常情况展示 从跟踪图中可以能够看到发生异常的节点。
+/Sharding-Sphere/executeSQL/ : 表示执行SQL异常的结果。
+/Sharding-Sphere/executeSQL/ : 表示执行SQL异常的日志。</description>
+    </item>
+    
+  </channel>
+</rss>

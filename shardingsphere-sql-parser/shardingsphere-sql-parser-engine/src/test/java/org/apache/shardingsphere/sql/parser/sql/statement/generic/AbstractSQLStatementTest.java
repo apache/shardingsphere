@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -38,7 +39,7 @@ public final class AbstractSQLStatementTest {
         SQLStatement sqlStatement = createSQLStatement();
         Optional<TableSegment> actual = sqlStatement.findSQLSegment(TableSegment.class);
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getTableName(), is("tbl1"));
+        assertThat(actual.get().getTable().getValue(), is("tbl1"));
     }
     
     @Test
@@ -52,15 +53,15 @@ public final class AbstractSQLStatementTest {
     public void assertFindSQLSegments() {
         SQLStatement sqlStatement = createSQLStatement();
         Iterator<TableSegment> actual = sqlStatement.findSQLSegments(TableSegment.class).iterator();
-        assertThat(actual.next().getTableName(), is("tbl1"));
-        assertThat(actual.next().getTableName(), is("tbl2"));
+        assertThat(actual.next().getTable().getValue(), is("tbl1"));
+        assertThat(actual.next().getTable().getValue(), is("tbl2"));
         assertFalse(actual.hasNext());
     }
     
     private SQLStatement createSQLStatement() {
         SQLStatement result = new SelectStatement();
-        result.getAllSQLSegments().add(new TableSegment(0, 0, "tbl1"));
-        result.getAllSQLSegments().add(new TableSegment(0, 0, "tbl2"));
+        result.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl1")));
+        result.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl2")));
         return result;
     }
 }

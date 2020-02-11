@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.20.7" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/img/favicon.png" type="image/x-icon" />
+
+    
+    <title>事务支持</title>
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/nucleus.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/theme.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/hugo-theme.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <style type="text/css">:root #header + #content > #left > #rlblock_left
+    {display:none !important;}</style>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/highlight.js/9.8.0/styles/monokai-sublime.min.css">
+<link rel="stylesheet" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/style.css">
+  </head>
+  <body class="" data-url="/02-guide/transaction/">
+    
+    <nav id="sidebar">
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="http://shardingsphere.apache.org/document/legacy/1.x/cn/img/sharding-jdbc.png" />
+    </div>
+</div>
+  <div class="highlightable">
+    <ul class="topics">
+      
+        
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/00-overview/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/">
+          <span>
+            
+              <b>0. </b>
+            
+             概览
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/00-overview/intro/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/">
+                <span>简介     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/news/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/">
+                <span>新闻     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/company/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/">
+                <span>采用公司     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/contribution/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/">
+                <span>贡献代码     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/01-start/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/">
+          <span>
+            
+              <b>1. </b>
+            
+             起航
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/01-start/quick-start/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/quick-start/">
+                <span>快速入门     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/faq/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/faq/">
+                <span>FAQ     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/features/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/features/">
+                <span>详细功能列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/limitations/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations/">
+                <span>使用限制     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/sql-supported/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported/">
+                <span>SQL支持详细列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/stress-test/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test/">
+                <span>性能测试报告     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  parent" data-nav-id="/02-guide/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/">
+          <span>
+            
+              <b>2. </b>
+            
+             使用指南
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/02-guide/concepts/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/concepts/">
+                <span>核心概念     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/sharding/">
+                <span>分库分表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/master-slave/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/master-slave/">
+                <span>读写分离     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/configuration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/configuration/">
+                <span>配置手册     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/hint-sharding-value/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/hint-sharding-value/">
+                <span>强制路由     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/key-generator/">
+                <span>分布式主键     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item active" data-nav-id="/02-guide/transaction/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/transaction/">
+                <span>事务支持     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/subquery/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/subquery/">
+                <span>分页及子查询     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/test-framework/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/test-framework/">
+                <span>测试引擎     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/03-design/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/">
+          <span>
+            
+              <b>3. </b>
+            
+             设计规划
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/03-design/architecture/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/architecture/">
+                <span>架构设计     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/module/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/module/">
+                <span>目录结构说明     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/roadmap/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/roadmap/">
+                <span>未来线路规划     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+    </ul>
+    <hr>
+     
+  </div>
+</nav>
+
+        <section id="body">
+        <div id="overlay"></div>
+
+        <div class="padding highlightable">
+
+            <div id="top-bar">
+              
+              <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                  <span id="sidebar-toggle-span">
+                      <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                  </span>
+                
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                
+                
+                  
+                  
+                  
+                    
+                    
+                <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/" itemprop="url"><span itemprop="title">使用指南</span></a> <i class="fa fa-angle-right"></i>
+                    
+                  
+                
+                <span itemprop="title"> 事务支持</span>
+              </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li><a href="#柔性事务">柔性事务</a>
+<ul>
+<li><a href="#最大努力送达型">最大努力送达型</a>
+<ul>
+<li><a href="#概念">概念</a></li>
+<li><a href="#架构图">架构图</a></li>
+<li><a href="#适用场景">适用场景</a></li>
+<li><a href="#使用限制">使用限制</a></li>
+<li><a href="#开发指南">开发指南</a></li>
+<li><a href="#开发示例">开发示例</a></li>
+<li><a href="#事务管理器配置项">事务管理器配置项</a></li>
+<li><a href="#softtransactionconfiguration配置">SoftTransactionConfiguration配置</a></li>
+<li><a href="#nestedbesteffortsdeliveryjobconfiguration配置-仅开发环境">NestedBestEffortsDeliveryJobConfiguration配置 (仅开发环境)</a></li>
+<li><a href="#独立部署作业指南">独立部署作业指南</a></li>
+<li><a href="#异步作业yaml文件配置">异步作业YAML文件配置</a></li>
+</ul></li>
+<li><a href="#tcc型">TCC型</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+              
+
+            </div>
+            
+              <div id="body-inner">
+                
+                <h1>事务支持</h1>
+                
+
+
+
+<p>Sharding-JDBC由于性能方面的考量，决定不支持强一致性分布式事务。我们已明确规划线路图，未来会支持最终一致性的柔性事务。</p>
+
+<p>目前最大努力送达型柔性事务已开发完成。</p>
+
+<p>如果不使用柔性事务，也会自动包含弱XA事务支持，有以下几点说明：</p>
+
+<ul>
+<li><p>完全支持非跨库事务，例如：仅分表，或分库但是路由的结果在单库中。</p></li>
+
+<li><p>完全支持因逻辑异常导致的跨库事务。例如：同一事务中，跨两个库更新。更新完毕后，抛出空指针，则两个库的内容都能回滚。</p></li>
+
+<li><p>不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库死机，则只有第二个库数据提交。</p></li>
+</ul>
+
+<h1 id="柔性事务">柔性事务</h1>
+
+<h2 id="最大努力送达型">最大努力送达型</h2>
+
+<h3 id="概念">概念</h3>
+
+<p>在分布式数据库的场景下，相信对于该数据库的操作最终一定可以成功，所以通过最大努力反复尝试送达操作。</p>
+
+<h3 id="架构图">架构图</h3>
+
+<p><img src="../../img/architecture-soft-transaction-bed.png" alt="最大努力送达型事务" /></p>
+
+<h3 id="适用场景">适用场景</h3>
+
+<ul>
+<li>根据主键删除数据。</li>
+<li>更新记录永久状态，如更新通知送达状态。</li>
+</ul>
+
+<h3 id="使用限制">使用限制</h3>
+
+<p>使用最大努力送达型柔性事务的SQL需要满足幂等性。</p>
+
+<ul>
+<li>INSERT语句要求必须包含主键，且不能是自增主键。</li>
+<li>UPDATE语句要求幂等，不能是UPDATE xxx SET x=x+1</li>
+<li>DELETE语句无要求。</li>
+</ul>
+
+<h3 id="开发指南">开发指南</h3>
+
+<ul>
+<li>sharding-jdbc-transaction完全基于java开发，直接提供jar包，可直接使用maven导入坐标即可使用。</li>
+<li>为了保证事务不丢失，sharding-jdbc-transaction需要提供数据库存储事务日志，配置方法可参见事务管理器配置项。</li>
+<li>由于柔性事务采用异步尝试，需要部署独立的作业和Zookeeper。sharding-jdbc-transaction采用elastic-job实现的sharding-jdbc-transaction-async-job，通过简单配置即可启动高可用作业异步送达柔性事务，启动脚本为start.sh。</li>
+<li>为了便于开发，sharding-jdbc-transaction提供了基于内存的事务日志存储器和内嵌异步作业。</li>
+</ul>
+
+<h3 id="开发示例">开发示例</h3>
+
+<pre><code class="language-java">    // 1. 配置SoftTransactionConfiguration
+    SoftTransactionConfiguration transactionConfig = new SoftTransactionConfiguration(dataSource);
+    transactionConfig.setXXX();
+    
+    // 2. 初始化SoftTransactionManager
+    SoftTransactionManager transactionManager = new SoftTransactionManager(transactionConfig);
+    transactionManager.init();
+    
+    // 3. 获取BEDSoftTransaction
+    BEDSoftTransaction transaction = (BEDSoftTransaction) transactionManager.getTransaction(SoftTransactionType.BestEffortsDelivery);
+    
+    // 4. 开启事务
+    transaction.begin(connection);
+    
+    // 5. 执行JDBC
+    /* 
+        codes here
+    */
+    * 
+    // 6.关闭事务
+    transaction.end();
+</code></pre>
+
+<h3 id="事务管理器配置项">事务管理器配置项</h3>
+
+<h3 id="softtransactionconfiguration配置">SoftTransactionConfiguration配置</h3>
+
+<p>用于配置事务管理器。</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>必填</em></th>
+<th><em>默认值</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>shardingDataSource</td>
+<td>ShardingDataSource</td>
+<td>是</td>
+<td></td>
+<td>事务管理器管理的数据源</td>
+</tr>
+
+<tr>
+<td>syncMaxDeliveryTryTimes</td>
+<td>int</td>
+<td>否</td>
+<td>3</td>
+<td>同步的事务送达的最大尝试次数</td>
+</tr>
+
+<tr>
+<td>storageType</td>
+<td>enum</td>
+<td>否</td>
+<td>RDB</td>
+<td>事务日志存储类型。可选值: RDB,MEMORY。使用RDB类型将自动建表</td>
+</tr>
+
+<tr>
+<td>transactionLogDataSource</td>
+<td>DataSource</td>
+<td>否</td>
+<td>null</td>
+<td>存储事务日志的数据源，如果storageType为RDB则必填</td>
+</tr>
+
+<tr>
+<td>bestEffortsDeliveryJobConfiguration</td>
+<td>NestedBestEffortsDeliveryJobConfiguration</td>
+<td>否</td>
+<td>null</td>
+<td>最大努力送达型内嵌异步作业配置对象。如需使用，请参考NestedBestEffortsDeliveryJobConfiguration配置</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="nestedbesteffortsdeliveryjobconfiguration配置-仅开发环境">NestedBestEffortsDeliveryJobConfiguration配置 (仅开发环境)</h3>
+
+<p>用于配置内嵌的异步作业，仅用于开发环境。生产环境应使用独立部署的作业版本。</p>
+
+<table>
+<thead>
+<tr>
+<th><em>名称</em></th>
+<th><em>类型</em></th>
+<th><em>必填</em></th>
+<th><em>默认值</em></th>
+<th><em>说明</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>zookeeperPort</td>
+<td>int</td>
+<td>否</td>
+<td>4181</td>
+<td>内嵌的注册中心端口号</td>
+</tr>
+
+<tr>
+<td>zookeeperDataDir</td>
+<td>String</td>
+<td>否</td>
+<td>target/test_zk_data/nano/</td>
+<td>内嵌的注册中心的数据存放目录</td>
+</tr>
+
+<tr>
+<td>asyncMaxDeliveryTryTimes</td>
+<td>int</td>
+<td>否</td>
+<td>3</td>
+<td>异步的事务送达的最大尝试次数</td>
+</tr>
+
+<tr>
+<td>asyncMaxDeliveryTryDelayMillis</td>
+<td>long</td>
+<td>否</td>
+<td>60000</td>
+<td>执行异步送达事务的延迟毫秒数，早于此间隔时间的入库事务才会被异步作业执行</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="独立部署作业指南">独立部署作业指南</h3>
+
+<ul>
+<li>部署用于存储事务日志的数据库。</li>
+<li>部署用于异步作业使用的Zookeeper。</li>
+<li>配置YAML文件,参照示例。</li>
+<li>下载并解压文件sharding-jdbc-transaction-async-job-$VERSION.tar，通过start.sh脚本启动异步作业。</li>
+</ul>
+
+<h3 id="异步作业yaml文件配置">异步作业YAML文件配置</h3>
+
+<pre><code class="language-yaml">#目标数据库的数据源.
+targetDataSource:
+  ds_0: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_0
+    username: root
+    password:
+  ds_1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds_1
+    username: root
+    password:
+
+#事务日志的数据源.
+transactionLogDataSource:
+  ds_trans: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/trans_log
+    username: root
+    password:
+
+#注册中心配置
+zkConfig:
+  #注册中心的连接地址
+  connectionString: localhost:2181
+  
+  #作业的命名空间
+  namespace: Best-Efforts-Delivery-Job
+  
+  #注册中心的等待重试的间隔时间的初始值
+  baseSleepTimeMilliseconds: 1000
+  
+  #注册中心的等待重试的间隔时间的最大值
+  maxSleepTimeMilliseconds: 3000
+  
+  #注册中心的最大重试次数
+  maxRetries: 3
+
+#作业配置
+jobConfig:
+  #作业名称
+  name: bestEffortsDeliveryJob
+  
+  #触发作业的cron表达式
+  cron: 0/5 * * * * ?
+  
+  #每次作业获取的事务日志最大数量
+  transactionLogFetchDataCount: 100
+  
+  #事务送达的最大尝试次数.
+  maxDeliveryTryTimes: 3
+  
+  #执行送达事务的延迟毫秒数,早于此间隔时间的入库事务才会被作业执行
+  maxDeliveryTryDelayMillis: 60000
+</code></pre>
+
+<h2 id="tcc型">TCC型</h2>
+
+<p>开发中&hellip;</p>
+
+
+      
+      
+      </div>
+    </div>
+
+    
+
+    <div id="navigation">
+        
+        <a class="nav nav-prev" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/key-generator/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/subquery/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/clipboard.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/perfect-scrollbar.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/jquery.sticky-kit.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/featherlight.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/html5shiv-printshiv.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/learn.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/hugo-learn.js"></script>
+    <script src="http://cdn.bootcss.com/highlight.js/9.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
+

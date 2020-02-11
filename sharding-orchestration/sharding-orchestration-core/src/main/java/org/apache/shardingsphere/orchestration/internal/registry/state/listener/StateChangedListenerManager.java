@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 
 /**
  * State changed listener manager.
  *
  * @author zhangliang
+ * @author wangguangyuan
  */
 public final class StateChangedListenerManager {
     

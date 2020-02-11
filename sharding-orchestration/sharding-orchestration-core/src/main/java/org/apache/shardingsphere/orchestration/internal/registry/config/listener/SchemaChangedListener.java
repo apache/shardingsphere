@@ -23,15 +23,17 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
+import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
@@ -41,24 +43,23 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Sc
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
-import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
+import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingConfigCenterEventListener;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Schema changed listener.
  *
  * @author panjuan
+ * @author wangguangyuan
  */
-public final class SchemaChangedListener extends PostShardingOrchestrationEventListener {
+public final class SchemaChangedListener extends PostShardingConfigCenterEventListener {
     
     private final ConfigurationService configurationService;
     
@@ -66,9 +67,9 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     
     private final Collection<String> existedSchemaNames = new LinkedList<>();
     
-    public SchemaChangedListener(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
-        super(regCenter, new ConfigurationNode(name).getSchemaPath());
-        configurationService = new ConfigurationService(name, regCenter);
+    public SchemaChangedListener(final String name, final ConfigCenter configCenter, final Collection<String> shardingSchemaNames) {
+        super(configCenter, new ConfigurationNode(name).getAllSchemaConfigPaths(shardingSchemaNames));
+        configurationService = new ConfigurationService(name, configCenter);
         configurationNode = new ConfigurationNode(name);
         existedSchemaNames.addAll(shardingSchemaNames);
     }

@@ -32,7 +32,7 @@ public final class SchemaFiller implements SQLSegmentFiller<SchemaSegment> {
     @Override
     public void fill(final SchemaSegment sqlSegment, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof UseStatement) {
-            ((UseStatement) sqlStatement).setSchema(sqlSegment.getName());
+            ((UseStatement) sqlStatement).setSchema(sqlSegment.getIdentifier().getValue());
         }
     }
 }

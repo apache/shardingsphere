@@ -38,7 +38,7 @@
             <artifactId>sharding-jdbc-orchestration</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>

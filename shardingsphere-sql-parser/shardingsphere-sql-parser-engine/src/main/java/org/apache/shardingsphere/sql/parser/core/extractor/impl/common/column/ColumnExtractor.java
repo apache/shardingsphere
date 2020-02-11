@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 import java.util.Map;
 
@@ -43,10 +44,11 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
     
     private ColumnSegment getColumnSegment(final ParserRuleContext columnNode) {
         ParserRuleContext nameNode = ExtractorUtils.getFirstChildNode(columnNode, RuleName.NAME);
-        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), nameNode.getText());
+        ColumnSegment result = new ColumnSegment(columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), new IdentifierValue(nameNode.getText()));
         Optional<ParserRuleContext> ownerNode = ExtractorUtils.findFirstChildNodeNoneRecursive(columnNode, RuleName.OWNER);
         if (ownerNode.isPresent()) {
-            result.setOwner(new TableSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerNode.get().getText()));
+            IdentifierValue ownerIdentifier = new IdentifierValue(ownerNode.get().getText());
+            result.setOwner(new TableSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerIdentifier));
         }
         return result;
     }

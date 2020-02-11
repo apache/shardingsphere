@@ -55,10 +55,10 @@ public final class TablesContext {
         }
         for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
             Optional<String> alias = getAlias(each);
-            if (aliases.contains(each.getTableName()) && !alias.isPresent()) {
+            if (aliases.contains(each.getTable().getValue()) && !alias.isPresent()) {
                 continue;
             }
-            tables.add(new Table(each.getTableName(), alias.orNull()));
+            tables.add(new Table(each.getTable().getValue(), alias.orNull()));
             if (each instanceof TableSegment) {
                 setSchema((TableSegment) each);
             }
@@ -71,10 +71,10 @@ public final class TablesContext {
     
     private void setSchema(final TableSegment tableSegment) {
         if (tableSegment.getOwner().isPresent()) {
-            if (null != schema && !tableSegment.getOwner().get().getName().equalsIgnoreCase(schema)) {
+            if (null != schema && !tableSegment.getOwner().get().getIdentifier().getValue().equalsIgnoreCase(schema)) {
                 throw new UnsupportedOperationException("Cannot support multiple schemas in one SQL");
             }
-            schema = tableSegment.getOwner().get().getName();
+            schema = tableSegment.getOwner().get().getIdentifier().getValue();
         }
     }
     
@@ -164,10 +164,10 @@ public final class TablesContext {
             return Optional.of(getSingleTableName());
         }
         if (columnSegment.getOwner().isPresent()) {
-            Optional<Table> table = find(columnSegment.getOwner().get().getTableName());
+            Optional<Table> table = find(columnSegment.getOwner().get().getTable().getValue());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
-        return findTableNameFromMetaData(columnSegment.getName(), relationMetas);
+        return findTableNameFromMetaData(columnSegment.getIdentifier().getValue(), relationMetas);
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {

@@ -36,7 +36,7 @@ public final class ColumnProjectionSegment extends ColumnSegment implements Proj
     private String alias;
     
     public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
-        super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getName());
+        super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getIdentifier());
         this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
         if (columnSegment.getOwner().isPresent()) {
             setOwner(columnSegment.getOwner().get());

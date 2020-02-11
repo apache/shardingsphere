@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.sql.parser.visitor;
 
 import org.apache.shardingsphere.sql.parser.MySQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOtherContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
@@ -34,8 +37,10 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
@@ -44,8 +49,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowOtherStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
+
+import java.util.List;
 
 /**
  * MySQL DAL visitor.
@@ -119,7 +127,8 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         FromSchemaContext fromSchemaContext = ctx.fromSchema();
         if (null != fromTableContext) {
             FromTableSegment fromTableSegment = (FromTableSegment) visit(fromTableContext);
-            result.setTable(fromTableSegment.getPattern());
+            result.setTable(fromTableSegment.getTable());
+            result.getAllSQLSegments().add(fromTableSegment.getTable());
             result.getAllSQLSegments().add(fromTableSegment);
         }
         if (null != fromSchemaContext) {
@@ -136,14 +145,15 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         FromTableContext fromTableContext = ctx.fromTable();
         if (null != fromSchemaContext) {
             SchemaNameContext schemaNameContext = fromSchemaContext.schemaName();
-            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), ((IdentifierValue) visit(schemaNameContext)).getValue());
+            SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.start.getStartIndex(), schemaNameContext.stop.getStopIndex(), (IdentifierValue) visit(schemaNameContext));
             result.getAllSQLSegments().add(schemaSegment);
         }
         if (null != fromTableContext) {
             FromTableSegment fromTableSegment = (FromTableSegment) visitFromTable(fromTableContext);
-            TableSegment tableSegment = fromTableSegment.getPattern();
+            TableSegment tableSegment = fromTableSegment.getTable();
             result.setTable(tableSegment);
             result.getAllSQLSegments().add(tableSegment);
+            result.getAllSQLSegments().add(fromTableSegment);
         }
         return result;
     }
@@ -158,10 +168,28 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitFromTable(final FromTableContext ctx) {
-        FromTableSegment fromTableSegment = new FromTableSegment();
+        FromTableSegment result = new FromTableSegment();
         TableSegment tableSegment = (TableSegment) visit(ctx.tableName());
-        fromTableSegment.setPattern(tableSegment);
-        return fromTableSegment;
+        result.setTable(tableSegment);
+        return result;
+    }
+
+    @Override
+    public ASTNode visitShowOther(final ShowOtherContext ctx) {
+        return new ShowOtherStatement();
+    }
+
+    @Override
+    public ASTNode visitSetVariable(final SetVariableContext ctx) {
+        List<VariableExprContext> variableExpressions = ctx.variableExpr();
+        SetStatement result = new SetStatement();
+        for (VariableExprContext each: variableExpressions) {
+            String variable = each.variable_().getText();
+            String expr = each.expr().getText();
+            VariableExpressionSegment variableExpressionSegment = new VariableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), variable, expr);
+            result.getAllSQLSegments().add(variableExpressionSegment);
+        }
+        return result;
     }
     
     @Override
@@ -172,6 +200,6 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
-        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
+        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(literalValue.getValue()));
     }
 }

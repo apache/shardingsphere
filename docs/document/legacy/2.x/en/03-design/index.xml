@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>03-designs on </title>
+    <link>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/</link>
+    <description>Recent content in 03-designs on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	<atom:link href="http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Design Plan</title>
+      <link>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/</guid>
+      <description> Navigation In This Chapter  To understand the concepts of architecture design and project module design, please read architecture design and directory structure specification. What are the future plans for Sharding-JDBC? Please read future plans.  </description>
+    </item>
+    
+    <item>
+      <title>Architecture Design</title>
+      <link>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/architecture/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/architecture/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Module Declaration</title>
+      <link>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/module/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/module/</guid>
+      <description>sharding-jdbc ├──sharding-jdbc-core Can be used directly ├──sharding-jdbc-core-spring Can’t be used directly ├ ├──sharding-jdbc-core-spring-namespace Can be used directly ├ ├──sharding-jdbc-core-spring-boot Can be used directly ├──sharding-jdbc-orchestration Can be used directly ├──sharding-jdbc-transaction-parent Can’t be used directly ├ ├──sharding-jdbc-transaction Can be used directly ├ ├──sharding-jdbc-transaction-storage Can’t be used directly ├ ├──sharding-jdbc-transaction-async-job Can’t be used directly,Download tar packages directly, configure &amp;amp; startup ├──sharding-jdbc-plugin Can be used directly,Currently contains a custom distributed self-increasing primary key sharding-jdbc-example ├──sharding-jdbc-raw-jdbc-example ├ ├──sharding-jdbc-raw-jdbc-java-example ├ ├──sharding-jdbc-raw-jdbc-yaml-example ├──sharding-jdbc-spring-example ├ ├──sharding-jdbc-spring-namespace-jpa-example ├ ├──sharding-jdbc-spring-namespace-mybatis-example ├──sharding-jdbc-spring-boot-example ├ ├──sharding-jdbc-spring-boot-data-jpa-example ├ ├──sharding-jdbc-spring-boot-data-mybatis-example ├──sharding-jdbc-orchestration-example ├ ├──sharding-jdbc-orchestration-etcd-java-example ├ ├──sharding-jdbc-orchestration-zookeeper-yaml-example ├ ├──sharding-jdbc-orchestration-etcd-yaml-example ├──sharding-jdbc-orchestration-spring-example ├ ├──sharding-jdbc-orchestration-zookeeper-spring-boot-example ├ ├──sharding-jdbc-orchestration-etcd-spring-boot-example ├ ├──sharding-jdbc-orchestration-zookeeper-spring-namespace-example ├ ├──sharding-jdbc-orchestration-etcd-spring-namespace-example ├──sharding-jdbc-transaction-example sharding-jdbc-doc Can’t be used directly,please direct read the official website  </description>
+    </item>
+    
+    <item>
+      <title>Roadmap</title>
+      <link>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/roadmap/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/roadmap/</guid>
+      <description>Completed DATABASE  MySQL Oracle SQLServer PostgreSQL  DQL  Simple JOIN BETWEEN IN ORDER BY GROUP BY Aggregation LIMIT, rownum, TOP Simple Sub Query  DML  INSERT INTO INSERT SET UPDATE DELETE  DDL  CREATE ALTER DROP TRUNCATE  Configuration  Java API Spring Namespace Yaml Read-write splitting Independent Configuration Concentrated Configuration Dynamic  SQL Parser  Lexer Analysis Parser Analysis  SQL Rewrite  Correctness Rewrite Polish Rewriting  SQL Router  Hint Router Simple Router Cartesian Product Router  Result Merger  Stream Merger Memory Merger Decorator Merger  Sharding Databases and Tables  Sharding Databases Sharding Tables Default Datasources  Read-write splitting  Read-write splitting Consistent guarantees for the same thread and the same database connection Hint-based forced master routing  Distributed Primary Key  JDBC integration Distributed primary key policy interface The distributed primary key algorithm based on snowflake is implemented  B.</description>
+    </item>
+    
+  </channel>
+</rss>

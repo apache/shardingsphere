@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 import java.util.Map;
 
@@ -46,7 +47,8 @@ public final class ShorthandProjectionExtractor implements OptionalSQLSegmentExt
             ShorthandProjectionSegment result = new ShorthandProjectionSegment(
                     qualifiedShorthandNode.get().getStart().getStartIndex(), qualifiedShorthandNode.get().getStop().getStopIndex(), qualifiedShorthandNode.get().getText());
             ParserRuleContext ownerNode = (ParserRuleContext) qualifiedShorthandNode.get().getChild(0);
-            result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerNode.getText()));
+            IdentifierValue ownerIdentifier = new IdentifierValue(ownerNode.getText());
+            result.setOwner(new TableSegment(ownerNode.getStart().getStartIndex(), ownerNode.getStop().getStopIndex(), ownerIdentifier));
             return Optional.of(result);
         }
         return Optional.absent();

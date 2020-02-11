@@ -158,7 +158,7 @@ public final class ShardingSchema extends LogicSchema {
     private void refreshTableMetaDataForCreateIndex(final SQLStatementContext sqlStatementContext) {
         CreateIndexStatement createIndexStatement = (CreateIndexStatement) sqlStatementContext.getSqlStatement();
         if (null != createIndexStatement.getIndex()) {
-            getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getName());
+            getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getIdentifier().getValue());
         }
     }
     
@@ -191,7 +191,7 @@ public final class ShardingSchema extends LogicSchema {
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : dropIndexStatement.getIndexes()) {
-            result.add(each.getName());
+            result.add(each.getIdentifier().getValue());
         }
         return result;
     }
