@@ -43,7 +43,7 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
     public Collection<IndexToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<IndexToken> result = new LinkedList<>();
         for (SQLSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(IndexSegment.class)) {
-            result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier().getValue(), ((IndexSegment) each).getIdentifier().getQuoteCharacter()));
+            result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier()));
         }
         return result;
     }
