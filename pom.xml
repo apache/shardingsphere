@@ -797,6 +797,8 @@
                         <exclude>**/node_modules/**</exclude>
                         <exclude>**/test/coverage/**</exclude>
                         <exclude>**/package-lock.json</exclude>
+                        <!-- example files -->
+                        <exclude>/examples/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
