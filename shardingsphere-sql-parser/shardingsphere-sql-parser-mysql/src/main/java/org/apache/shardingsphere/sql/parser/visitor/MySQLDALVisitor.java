@@ -128,6 +128,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != fromTableContext) {
             FromTableSegment fromTableSegment = (FromTableSegment) visit(fromTableContext);
             result.setTable(fromTableSegment.getTable());
+            result.getAllSQLSegments().add(fromTableSegment.getTable());
             result.getAllSQLSegments().add(fromTableSegment);
         }
         if (null != fromSchemaContext) {
@@ -153,6 +154,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
             TableSegment tableSegment = fromTableSegment.getTable();
             result.setTable(tableSegment);
             result.getAllSQLSegments().add(tableSegment);
+            result.getAllSQLSegments().add(fromTableSegment);
         }
         return result;
     }
