@@ -98,7 +98,7 @@ import java.util.List;
  * @author panjuan
  */
 public final class MySQLDMLVisitor extends MySQLVisitor {
-
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
