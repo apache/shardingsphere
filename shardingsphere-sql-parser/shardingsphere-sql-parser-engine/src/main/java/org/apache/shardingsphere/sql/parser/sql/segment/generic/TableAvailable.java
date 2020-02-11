@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
  * Table available.
@@ -28,16 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 public interface TableAvailable extends SQLSegment {
     
     /**
-     * Get table name.
+     * Get table.
      *
-     * @return table name
+     * @return table
      */
-    String getTableName();
-    
-    /**
-     * Get table quote character.
-     *
-     * @return table quote character
-     */
-    QuoteCharacter getTableQuoteCharacter();
+    IdentifierValue getTable();
 }

@@ -349,8 +349,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
             ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex(), shorthand.getText());
             IdentifierValue identifier = new IdentifierValue(shorthand.identifier().getText());
-            result.setOwner(new TableSegment(
-                    shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier.getValue(), identifier.getQuoteCharacter()));
+            result.setOwner(new TableSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
             return result;
         }
         String alias = null == ctx.alias() ? null : ctx.alias().getText();

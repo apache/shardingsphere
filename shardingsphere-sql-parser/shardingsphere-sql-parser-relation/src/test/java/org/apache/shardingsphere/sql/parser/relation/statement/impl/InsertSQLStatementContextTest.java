@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralE
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public final class InsertSQLStatementContextTest {
     @Test
     public void assertInsertSQLStatementContextWithColumnNames() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl", QuoteCharacter.NONE));
+        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
         insertColumnsSegment.getColumns().addAll(Arrays.asList(
                 new ColumnSegment(0, 0, "id", QuoteCharacter.NONE), new ColumnSegment(0, 0, "name", QuoteCharacter.NONE), new ColumnSegment(0, 0, "status", QuoteCharacter.NONE)));
@@ -56,7 +57,7 @@ public final class InsertSQLStatementContextTest {
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl", QuoteCharacter.NONE));
+        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
         InsertSQLStatementContext actual = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertSQLStatementContext(actual);
@@ -67,7 +68,7 @@ public final class InsertSQLStatementContextTest {
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl", QuoteCharacter.NONE));
+        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
         InsertSQLStatementContext actual = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertThat(actual.getGroupedParameters().size(), is(2));

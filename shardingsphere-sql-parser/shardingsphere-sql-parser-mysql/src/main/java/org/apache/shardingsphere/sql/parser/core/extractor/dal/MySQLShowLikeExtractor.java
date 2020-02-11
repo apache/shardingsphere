@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmen
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 import java.util.Map;
 
@@ -43,6 +44,6 @@ public final class MySQLShowLikeExtractor implements OptionalSQLSegmentExtractor
         Optional<ParserRuleContext> stringLiteralsNode = ExtractorUtils.findFirstChildNode(showLikeNode.get(), RuleName.STRING_LITERALS);
         Preconditions.checkState(stringLiteralsNode.isPresent());
         String pattern = stringLiteralsNode.get().getText().substring(1, stringLiteralsNode.get().getText().length() - 1);
-        return Optional.of(new ShowLikeSegment(stringLiteralsNode.get().getStart().getStartIndex() + 1, stringLiteralsNode.get().getStop().getStopIndex() - 1, pattern));
+        return Optional.of(new ShowLikeSegment(stringLiteralsNode.get().getStart().getStartIndex() + 1, stringLiteralsNode.get().getStop().getStopIndex() - 1, new IdentifierValue(pattern)));
     }
 }

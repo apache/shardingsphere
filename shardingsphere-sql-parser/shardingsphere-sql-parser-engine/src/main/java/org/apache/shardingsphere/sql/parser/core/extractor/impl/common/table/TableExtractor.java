@@ -50,7 +50,7 @@ public final class TableExtractor implements OptionalSQLSegmentExtractor {
     private TableSegment getTableSegment(final ParserRuleContext tableNode) {
         ParserRuleContext nameNode = ExtractorUtils.getFirstChildNode(tableNode, RuleName.NAME);
         IdentifierValue tableIdentifier = new IdentifierValue(nameNode.getText());
-        TableSegment result = new TableSegment(nameNode.getStart().getStartIndex(), nameNode.getStop().getStopIndex(), tableIdentifier.getValue(), tableIdentifier.getQuoteCharacter());
+        TableSegment result = new TableSegment(nameNode.getStart().getStartIndex(), nameNode.getStop().getStopIndex(), tableIdentifier);
         Optional<ParserRuleContext> ownerNode = ExtractorUtils.findFirstChildNodeNoneRecursive(tableNode, RuleName.OWNER);
         if (ownerNode.isPresent()) {
             IdentifierValue ownerIdentifier = new IdentifierValue(ownerNode.get().getText());

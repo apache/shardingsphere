@@ -49,7 +49,7 @@ public final class ColumnExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> ownerNode = ExtractorUtils.findFirstChildNodeNoneRecursive(columnNode, RuleName.OWNER);
         if (ownerNode.isPresent()) {
             IdentifierValue ownerIdentifier = new IdentifierValue(ownerNode.get().getText());
-            result.setOwner(new TableSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
+            result.setOwner(new TableSegment(ownerNode.get().getStart().getStartIndex(), ownerNode.get().getStop().getStopIndex(), ownerIdentifier));
         }
         return result;
     }

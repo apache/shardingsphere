@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,7 +85,7 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new UpdateStatement();
-        result.getAllSQLSegments().add(new TableSegment(0, 0, "user", QuoteCharacter.NONE));
+        result.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("user")));
         result.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id", QuoteCharacter.NONE), new LiteralExpressionSegment(0, 0, "")))));
         return result;
@@ -92,7 +93,7 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new UpdateStatement();
-        result.getAllSQLSegments().add(new TableSegment(0, 0, "user", QuoteCharacter.NONE));
+        result.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("user")));
         Collection<AssignmentSegment> assignments = Collections.singletonList(
                 new AssignmentSegment(0, 0, new ColumnSegment(0, 0, "id", QuoteCharacter.NONE), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);

@@ -55,10 +55,10 @@ public final class TablesContext {
         }
         for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
             Optional<String> alias = getAlias(each);
-            if (aliases.contains(each.getTableName()) && !alias.isPresent()) {
+            if (aliases.contains(each.getTable().getValue()) && !alias.isPresent()) {
                 continue;
             }
-            tables.add(new Table(each.getTableName(), alias.orNull()));
+            tables.add(new Table(each.getTable().getValue(), alias.orNull()));
             if (each instanceof TableSegment) {
                 setSchema((TableSegment) each);
             }
@@ -164,7 +164,7 @@ public final class TablesContext {
             return Optional.of(getSingleTableName());
         }
         if (columnSegment.getOwner().isPresent()) {
-            Optional<Table> table = find(columnSegment.getOwner().get().getTableName());
+            Optional<Table> table = find(columnSegment.getOwner().get().getTable().getValue());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
         return findTableNameFromMetaData(columnSegment.getName(), relationMetas);
