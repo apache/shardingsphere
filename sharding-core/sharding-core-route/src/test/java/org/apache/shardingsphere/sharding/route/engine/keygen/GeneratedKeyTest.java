@@ -58,9 +58,7 @@ public final class GeneratedKeyTest {
     @Before
     public void setUp() {
         insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
-        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
-        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("id")));
-        insertStatement.setColumns(insertColumnsSegment);
+        insertStatement.setColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
     }
     
     @Test
