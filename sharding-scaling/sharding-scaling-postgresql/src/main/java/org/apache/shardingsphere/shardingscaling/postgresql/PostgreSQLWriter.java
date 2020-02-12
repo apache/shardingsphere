@@ -22,8 +22,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Ab
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractSqlBuilder;
 import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 
@@ -39,14 +39,14 @@ public final class PostgreSQLWriter extends AbstractJdbcWriter {
     }
     
     @Override
-    public AbstractSqlBuilder createSqlBuilder(final DataSource dataSource) {
-        return new PostgreSQLSqlBuilder(dataSource);
+    public AbstractSqlBuilder createSqlBuilder(final DbMetaDataUtil dbMetaDataUtil) {
+        return new PostgreSQLSqlBuilder(dbMetaDataUtil);
     }
     
     private static final class PostgreSQLSqlBuilder extends AbstractSqlBuilder {
         
-        private PostgreSQLSqlBuilder(final DataSource dataSource) {
-            super(dataSource);
+        private PostgreSQLSqlBuilder(final DbMetaDataUtil dbMetaDataUtil) {
+            super(dbMetaDataUtil);
         }
         
         @Override
