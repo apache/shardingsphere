@@ -25,6 +25,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
@@ -43,6 +44,7 @@ import java.util.Properties;
  *
  * @author dongzonglei
  */
+@Slf4j
 public final class ApolloInstance implements ConfigCenter {
     
     private final Map<String, DataChangedEventListener> caches = new HashMap<>();
@@ -74,7 +76,13 @@ public final class ApolloInstance implements ConfigCenter {
     
     @Override
     public void persist(final String key, final String value) {
-        openApiWrapper.persist(ConfigKeyUtils.path2Key(key), value);
+        try {
+            openApiWrapper.persist(ConfigKeyUtils.path2Key(key), value);
+            // CHECKSTYLE:OFF
+        } catch (Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Apollo persist key '{}' throw exception: {}", key, ex);
+        }
     }
     
     @Override
