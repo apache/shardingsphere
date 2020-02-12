@@ -15,16 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.repository;
+package org.apache.shardingsphere.ui.common.constant;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Registry center configs repository interface.
+ * Forward service type.
  *
- * @author chenqingyang
  * @author yangyi
  */
-public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
-
+@RequiredArgsConstructor
+@Getter
+public enum ForwardServiceType {
+    
+    /**
+     * sharding scaling forward service.
+     */
+    SHARDING_SCALING("ShardingScaling");
+    
+    private final String name;
 }

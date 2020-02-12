@@ -17,14 +17,24 @@
 
 package org.apache.shardingsphere.ui.repository;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
-
 /**
- * Registry center configs repository interface.
+ * Configs repository.
  *
- * @author chenqingyang
  * @author yangyi
  */
-public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
-
+public interface ConfigsRepository<T> {
+    
+    /**
+     * Load configs.
+     *
+     * @return configs
+     */
+    T load();
+    
+    /**
+     * Save configs.
+     *
+     * @param configs configs
+     */
+    void save(T configs);
 }
