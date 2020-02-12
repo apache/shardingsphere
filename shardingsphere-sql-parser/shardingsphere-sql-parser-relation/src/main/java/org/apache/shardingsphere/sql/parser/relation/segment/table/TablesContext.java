@@ -22,8 +22,6 @@ import com.google.common.base.Preconditions;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
@@ -47,26 +45,20 @@ public final class TablesContext {
     
     public TablesContext(final SQLStatement sqlStatement) {
         Collection<String> aliases = new HashSet<>();
-        for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
-            Optional<String> alias = getAlias(each);
+        for (TableSegment each : sqlStatement.findSQLSegments(TableSegment.class)) {
+            Optional<String> alias = each.getAlias();
             if (alias.isPresent()) {
                 aliases.add(alias.get());
             }
         }
-        for (TableAvailable each : sqlStatement.findSQLSegments(TableAvailable.class)) {
-            Optional<String> alias = getAlias(each);
-            if (aliases.contains(each.getTable().getValue()) && !alias.isPresent()) {
+        for (TableSegment each : sqlStatement.findSQLSegments(TableSegment.class)) {
+            Optional<String> alias = each.getAlias();
+            if (aliases.contains(each.getIdentifier().getValue()) && !alias.isPresent()) {
                 continue;
             }
-            tables.add(new Table(each.getTable().getValue(), alias.orNull()));
-            if (each instanceof TableSegment) {
-                setSchema((TableSegment) each);
-            }
+            tables.add(new Table(each.getIdentifier().getValue(), alias.orNull()));
+            setSchema(each);
         }
-    }
-    
-    private Optional<String> getAlias(final TableAvailable table) {
-        return table instanceof AliasAvailable ? ((AliasAvailable) table).getAlias() : Optional.<String>absent();
     }
     
     private void setSchema(final TableSegment tableSegment) {
@@ -164,7 +156,7 @@ public final class TablesContext {
             return Optional.of(getSingleTableName());
         }
         if (columnSegment.getOwner().isPresent()) {
-            Optional<Table> table = find(columnSegment.getOwner().get().getTable().getValue());
+            Optional<Table> table = find(columnSegment.getOwner().get().getIdentifier().getValue());
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
         return findTableNameFromMetaData(columnSegment.getIdentifier().getValue(), relationMetas);

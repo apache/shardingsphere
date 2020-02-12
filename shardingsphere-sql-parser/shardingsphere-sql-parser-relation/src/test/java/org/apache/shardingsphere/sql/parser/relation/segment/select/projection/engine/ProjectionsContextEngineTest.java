@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
@@ -161,7 +160,7 @@ public final class ProjectionsContextEngineTest {
         TableSegment owner = new TableSegment(0, 10, new IdentifierValue("name"));
         owner.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);
-        when(selectStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable) tableSegment));
+        when(selectStatement.findSQLSegments(TableSegment.class)).thenReturn(Collections.singletonList(tableSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         columnSegment.setOwner(tableSegment);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);

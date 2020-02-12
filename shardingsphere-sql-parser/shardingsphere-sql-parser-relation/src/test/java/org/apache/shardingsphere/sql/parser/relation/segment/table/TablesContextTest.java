@@ -22,7 +22,6 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -196,7 +195,7 @@ public final class TablesContextTest {
         TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
         SchemaSegment schemaSegment = new SchemaSegment(0, 0, new IdentifierValue("schema"));
         tableSegment.setOwner(schemaSegment);
-        when(sqlStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable) tableSegment));
+        when(sqlStatement.findSQLSegments(TableSegment.class)).thenReturn(Collections.singletonList(tableSegment));
         new TablesContext(sqlStatement);
     }
     
