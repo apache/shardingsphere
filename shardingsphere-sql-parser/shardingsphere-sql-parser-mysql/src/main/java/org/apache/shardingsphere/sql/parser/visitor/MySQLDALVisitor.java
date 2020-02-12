@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor;
 
 import org.apache.shardingsphere.sql.parser.MySQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Variable_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOth
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableExprContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
@@ -160,20 +160,19 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowOther(final ShowOtherContext ctx) {
         return new ShowOtherStatement();
     }
-
+    
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        for (VariableExprContext each: ctx.variableExpr()) {
-            String variable = each.variable_().getText();
-            String expression = each.expr().getText();
-            VariableExpressionSegment variableExpressionSegment = new VariableExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), variable, expression);
-            result.getAllSQLSegments().add(variableExpressionSegment);
+        Variable_Context variableContext = ctx.variable_();
+        if (null != variableContext) {
+            VariableExpressionSegment variable = new VariableExpressionSegment(variableContext.getStart().getStartIndex(), variableContext.getStop().getStopIndex(), variableContext.getText());
+            result.getAllSQLSegments().add(variable);
         }
         return result;
     }

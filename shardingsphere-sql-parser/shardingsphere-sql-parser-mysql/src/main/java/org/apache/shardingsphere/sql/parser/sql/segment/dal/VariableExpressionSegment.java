@@ -35,6 +35,4 @@ public final class VariableExpressionSegment implements SQLSegment {
     private final int stopIndex;
     
     private final String variable;
-    
-    private final String expression;
 }
