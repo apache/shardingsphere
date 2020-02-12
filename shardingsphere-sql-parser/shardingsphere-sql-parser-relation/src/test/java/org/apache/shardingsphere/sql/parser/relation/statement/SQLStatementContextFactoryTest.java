@@ -27,9 +27,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegm
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -58,6 +60,7 @@ public final class SQLStatementContextFactoryTest {
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement() {
         InsertStatement insertStatement = mock(InsertStatement.class);
+        when(insertStatement.getTable()).thenReturn(new TableSegment(0, 0, new IdentifierValue("tbl")));
         when(insertStatement.useDefaultColumns()).thenReturn(false);
         when(insertStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.of(new LimitSegment(0, 10, null, null)));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, insertStatement);

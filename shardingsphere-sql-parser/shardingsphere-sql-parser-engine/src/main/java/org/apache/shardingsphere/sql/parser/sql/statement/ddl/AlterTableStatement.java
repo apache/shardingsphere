@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,10 +33,9 @@ import java.util.TreeSet;
  * @author duhongjun
  */
 @Getter
-@Setter
-public final class AlterTableStatement extends DDLStatement implements TableSegmentAvailable {
+public final class AlterTableStatement extends DDLStatement implements TableSegmentsAvailable {
     
-    private TableSegment table;
+    private final Collection<TableSegment> tables = new LinkedList<>();
     
     private final Collection<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();
     
