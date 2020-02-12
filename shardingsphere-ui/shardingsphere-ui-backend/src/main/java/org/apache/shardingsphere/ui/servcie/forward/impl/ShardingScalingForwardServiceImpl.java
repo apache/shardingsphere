@@ -20,9 +20,14 @@ package org.apache.shardingsphere.ui.servcie.forward.impl;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.ui.common.constant.ForwardServiceType;
+import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfig;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
+import org.apache.shardingsphere.ui.repository.ForwardServiceConfigsRepository;
 import org.apache.shardingsphere.ui.servcie.forward.ShardingScalingForwardService;
 import org.apache.shardingsphere.ui.util.HttpClientUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,10 +38,21 @@ import org.springframework.stereotype.Service;
 @Service
 public final class ShardingScalingForwardServiceImpl implements ShardingScalingForwardService {
     
+    private static final String LIST_JOBS_FORWARD_URL = "http://%s/shardingscaling/job/list";
+    
+    private static final String START_JOB_FORWARD_URL = "http://%s/shardingscaling/job/start";
+    
+    private static final String PROGRESS_JOB_FORWARD_URL = "http://%s/shardingscaling/job/progress/%d";
+    
+    private static final String STOP_JOB_FORWARD_URL = "http://%s/shardingscaling/job/stop";
+    
+    @Autowired
+    private ForwardServiceConfigsRepository forwardServiceConfigsRepository;
+    
     @Override
     public String listAllShardingScalingJobs() {
         try {
-            return HttpClientUtil.doGet("http://172.25.28.30:8084/shardingscaling/job/list");
+            return HttpClientUtil.doGet(String.format(LIST_JOBS_FORWARD_URL, getShardingScalingUrl()));
         } catch (IOException e) {
             throw forwardShardingScalingException();
         } catch (URISyntaxException e) {
@@ -47,7 +63,7 @@ public final class ShardingScalingForwardServiceImpl implements ShardingScalingF
     @Override
     public String startShardingScalingJobs(final String requestBody) {
         try {
-            return HttpClientUtil.doPostWithJsonRequestBody("http://172.25.28.30:8084/shardingscaling/job/start", requestBody);
+            return HttpClientUtil.doPostWithJsonRequestBody(String.format(START_JOB_FORWARD_URL, getShardingScalingUrl()), requestBody);
         } catch (IOException e) {
             throw forwardShardingScalingException();
         }
@@ -56,7 +72,7 @@ public final class ShardingScalingForwardServiceImpl implements ShardingScalingF
     @Override
     public String getShardingScalingJobProgress(final int jobId) {
         try {
-            return HttpClientUtil.doGet("http://172.25.28.30:8084/shardingscaling/job/progress/" + jobId);
+            return HttpClientUtil.doGet(String.format(PROGRESS_JOB_FORWARD_URL, getShardingScalingUrl(), jobId));
         } catch (IOException e) {
             throw forwardShardingScalingException();
         } catch (URISyntaxException e) {
@@ -67,10 +83,18 @@ public final class ShardingScalingForwardServiceImpl implements ShardingScalingF
     @Override
     public String stopShardingScalingJob(final String requestBody) {
         try {
-            return HttpClientUtil.doPostWithJsonRequestBody("http://172.25.28.30:8084/shardingscaling/job/stop", requestBody);
+            return HttpClientUtil.doPostWithJsonRequestBody(String.format(STOP_JOB_FORWARD_URL, getShardingScalingUrl()), requestBody);
         } catch (IOException e) {
             throw forwardShardingScalingException();
         }
+    }
+    
+    private String getShardingScalingUrl() {
+        Optional<ForwardServiceConfig> shardingScalingConfig = forwardServiceConfigsRepository.load().getForwardServiceConfig(ForwardServiceType.SHARDING_SCALING.getName());
+        if (shardingScalingConfig.isPresent()) {
+            return shardingScalingConfig.get().getServerUrl();
+        }
+        throw new ShardingSphereUIException(ShardingSphereUIException.INVALID_PARAM, "No sharding scaling service configured");
     }
     
     private ShardingSphereUIException forwardShardingScalingException() {

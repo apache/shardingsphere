@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.ui.web.controller;
 
+import org.apache.shardingsphere.ui.common.constant.ForwardServiceType;
 import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfig;
 import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfigs;
 import org.apache.shardingsphere.ui.repository.ForwardServiceConfigsRepository;
@@ -41,8 +42,6 @@ import com.google.common.base.Optional;
 @RequestMapping("/api/shardingscaling")
 public final class ShardingScalingForwardController {
     
-    private static final String SHARDING_SCALING = "ShardingScaling";
-    
     @Autowired
     private ShardingScalingForwardService shardingScalingForwardService;
     
@@ -56,7 +55,7 @@ public final class ShardingScalingForwardController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseResult getService() {
-        Optional<ForwardServiceConfig> result = forwardServiceConfigsRepository.load().getForwardServiceConfig(SHARDING_SCALING);
+        Optional<ForwardServiceConfig> result = forwardServiceConfigsRepository.load().getForwardServiceConfig(ForwardServiceType.SHARDING_SCALING.getName());
         return result.isPresent() ? ResponseResultUtil.build(result.get()) : ResponseResultUtil.handleIllegalArgumentException("No configured sharding scaling services");
     }
     
@@ -69,7 +68,7 @@ public final class ShardingScalingForwardController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseResult configService(@RequestBody final ForwardServiceConfig shardingScalingServiceConfig) {
         ForwardServiceConfigs currentForwardServiceConfig = forwardServiceConfigsRepository.load();
-        currentForwardServiceConfig.putForwardServiceConfig(SHARDING_SCALING, shardingScalingServiceConfig);
+        currentForwardServiceConfig.putForwardServiceConfig(ForwardServiceType.SHARDING_SCALING.getName(), shardingScalingServiceConfig);
         forwardServiceConfigsRepository.save(currentForwardServiceConfig);
         return ResponseResultUtil.success();
     }
@@ -82,7 +81,7 @@ public final class ShardingScalingForwardController {
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public ResponseResult deleteService() {
         ForwardServiceConfigs currentForwardServiceConfig = forwardServiceConfigsRepository.load();
-        currentForwardServiceConfig.removeForwardServiceConfig(SHARDING_SCALING);
+        currentForwardServiceConfig.removeForwardServiceConfig(ForwardServiceType.SHARDING_SCALING.getName());
         forwardServiceConfigsRepository.save(currentForwardServiceConfig);
         return ResponseResultUtil.success();
     }
