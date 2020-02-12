@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor;
 
 import org.apache.shardingsphere.sql.parser.MySQLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Variable_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOth
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableExprContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
@@ -59,21 +59,21 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteral
  * @author panjuan
  */
 public final class MySQLDALVisitor extends MySQLVisitor {
-    
+
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         UseStatement result = new UseStatement();
         result.setSchema(((IdentifierValue) visit(ctx.schemaName())).getValue());
         return result;
     }
-    
+
     @Override
     public ASTNode visitDesc(final DescContext ctx) {
         DescribeStatement result = new DescribeStatement();
         result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
-    
+
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
         ShowDatabasesStatement result = new ShowDatabasesStatement();
@@ -84,7 +84,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
         ShowTablesStatement result = new ShowTablesStatement();
@@ -98,7 +98,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
         ShowTableStatusStatement result = new ShowTableStatusStatement();
@@ -112,7 +112,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
         ShowColumnsStatement result = new ShowColumnsStatement();
@@ -128,7 +128,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         ShowIndexStatement result = new ShowIndexStatement();
@@ -146,14 +146,14 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
         ShowCreateTableStatement result = new ShowCreateTableStatement();
         result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
-    
+
     @Override
     public ASTNode visitFromTable(final FromTableContext ctx) {
         FromTableSegment result = new FromTableSegment();
@@ -169,20 +169,19 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        for (VariableExprContext each: ctx.variableExpr()) {
-            String variable = each.variable_().getText();
-            String expression = each.expr().getText();
-            VariableExpressionSegment variableExpressionSegment = new VariableExpressionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), variable, expression);
-            result.getAllSQLSegments().add(variableExpressionSegment);
+        Variable_Context variableContext = ctx.variable_();
+        if (null != variableContext) {
+            VariableExpressionSegment variable = new VariableExpressionSegment(variableContext.getStart().getStartIndex(), variableContext.getStop().getStopIndex(), variableContext.getText());
+            result.getAllSQLSegments().add(variable);
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
-    
+
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
