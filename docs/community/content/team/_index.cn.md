@@ -39,6 +39,7 @@ chapter = true
 | 颜志一           | yanyzy              |
 | 欧阳文           | avalon566              |
 | 董宗磊           | dongzl                 |
+| 蒋晓峰           | SteNicholas            |
 
 ## 导师
 

@@ -39,6 +39,7 @@ The List in alphabet order.
 | Zhiyi Yan       | yanyzy                  |
 | YangWen Ou      | avalon566               |
 | Zonglei Dong    | dongzl                  |
+| Xiaofeng Jiang  | SteNicholas             |
 
 ## Mentors
 
