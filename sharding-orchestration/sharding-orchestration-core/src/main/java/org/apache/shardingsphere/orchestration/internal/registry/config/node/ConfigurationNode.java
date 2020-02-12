@@ -49,6 +49,10 @@ public final class ConfigurationNode {
     
     private static final String PROPS_NODE = "props";
     
+    private static final String COMMA_SEPARATOR = ",";
+    
+    private static final String PATH_SEPARATOR = "/";
+    
     private final String name;
     
     /**
@@ -57,7 +61,7 @@ public final class ConfigurationNode {
      * @return schema path
      */
     public String getSchemaPath() {
-        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE);
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE);
     }
     
     /**
@@ -67,7 +71,7 @@ public final class ConfigurationNode {
      * @return schema name path
      */
     public String getSchemaNamePath(final String schemaName) {
-        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE, schemaName);
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE, schemaName);
     }
     
     /**
@@ -109,11 +113,11 @@ public final class ConfigurationNode {
     }
     
     private String getFullPath(final String schemaName, final String node) {
-        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE, schemaName, node);
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE, schemaName, node);
     }
     
     private String getFullPath(final String node) {
-        return Joiner.on("/").join("", name, ROOT, node);
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, node);
     }
     
     /**
@@ -142,7 +146,7 @@ public final class ConfigurationNode {
         if (Strings.isNullOrEmpty(shardingSchemaNames)) {
             return Collections.emptyList();
         }
-        return Splitter.on(",").splitToList(shardingSchemaNames);
+        return Splitter.on(COMMA_SEPARATOR).splitToList(shardingSchemaNames);
     }
     
     /**
