@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.visitor;
 
 import lombok.AccessLevel;
 import lombok.Getter;

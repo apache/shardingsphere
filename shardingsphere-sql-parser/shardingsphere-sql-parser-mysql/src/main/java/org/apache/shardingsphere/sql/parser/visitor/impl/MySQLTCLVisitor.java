@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
  * MySQL TCL visitor.

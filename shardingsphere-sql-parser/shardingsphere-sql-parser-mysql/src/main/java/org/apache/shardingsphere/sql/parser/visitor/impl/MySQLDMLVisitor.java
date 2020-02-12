@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.sql.parser.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
@@ -87,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLitera
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 import java.util.Collection;
 import java.util.LinkedList;

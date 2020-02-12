@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.PostgreSQLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 /**
  * PostgreSQL DAL visitor.

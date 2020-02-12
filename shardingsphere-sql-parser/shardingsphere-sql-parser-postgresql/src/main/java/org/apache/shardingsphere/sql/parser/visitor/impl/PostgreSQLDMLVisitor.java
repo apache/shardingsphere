@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.sql.parser.PostgreSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AssignmentValuesContext;
@@ -80,6 +79,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 import java.util.Collection;
 import java.util.LinkedList;

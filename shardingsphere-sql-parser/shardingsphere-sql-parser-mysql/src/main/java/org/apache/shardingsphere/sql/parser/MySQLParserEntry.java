@@ -22,11 +22,11 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
-import org.apache.shardingsphere.sql.parser.visitor.MySQLDALVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.MySQLDCLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.MySQLDDLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.MySQLDMLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.MySQLTCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLTCLVisitor;
 
 /**
  * SQL parser entry for MySQL.
