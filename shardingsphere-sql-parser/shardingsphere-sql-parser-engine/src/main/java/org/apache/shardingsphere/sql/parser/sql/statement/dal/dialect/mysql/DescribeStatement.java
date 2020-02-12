@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 /**
  * Describe statement.
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
  */
 @Getter
 @Setter
-public final class DescribeStatement extends DALStatement {
+public final class DescribeStatement extends DALStatement implements TableSegmentAvailable {
 
     private TableSegment table;
 }

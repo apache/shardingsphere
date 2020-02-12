@@ -24,9 +24,12 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
@@ -45,13 +48,14 @@ public final class TablesContext {
     
     public TablesContext(final SQLStatement sqlStatement) {
         Collection<String> aliases = new HashSet<>();
-        for (TableSegment each : sqlStatement.findSQLSegments(TableSegment.class)) {
+        Collection<TableSegment> tableSegments = getTableSegments(sqlStatement);
+        for (TableSegment each : tableSegments) {
             Optional<String> alias = each.getAlias();
             if (alias.isPresent()) {
                 aliases.add(alias.get());
             }
         }
-        for (TableSegment each : sqlStatement.findSQLSegments(TableSegment.class)) {
+        for (TableSegment each : tableSegments) {
             Optional<String> alias = each.getAlias();
             if (aliases.contains(each.getIdentifier().getValue()) && !alias.isPresent()) {
                 continue;
@@ -59,6 +63,17 @@ public final class TablesContext {
             tables.add(new Table(each.getIdentifier().getValue(), alias.orNull()));
             setSchema(each);
         }
+    }
+    
+    private Collection<TableSegment> getTableSegments(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof TableSegmentAvailable) {
+            TableSegment table = ((TableSegmentAvailable) sqlStatement).getTable();
+            return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
+        }
+        if (sqlStatement instanceof TableSegmentsAvailable) {
+            return ((TableSegmentsAvailable) sqlStatement).getTables();
+        }
+        return Collections.emptyList();
     }
     
     private void setSchema(final TableSegment tableSegment) {
