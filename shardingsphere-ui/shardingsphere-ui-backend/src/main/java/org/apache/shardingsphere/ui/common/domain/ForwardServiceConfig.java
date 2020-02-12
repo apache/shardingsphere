@@ -15,16 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.repository;
+package org.apache.shardingsphere.ui.common.domain;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Registry center configs repository interface.
+ * Forward service config.
  *
- * @author chenqingyang
  * @author yangyi
  */
-public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
-
+@Setter
+@Getter
+public final class ForwardServiceConfig {
+    
+    private String serviceName;
+    
+    private String serviceType;
+    
+    private String serverUrl;
 }

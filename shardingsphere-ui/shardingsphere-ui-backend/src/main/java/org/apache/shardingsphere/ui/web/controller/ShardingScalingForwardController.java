@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.ui.web.controller;
 
+import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfig;
+import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfigs;
+import org.apache.shardingsphere.ui.repository.ForwardServiceConfigsRepository;
 import org.apache.shardingsphere.ui.servcie.forward.ShardingScalingForwardService;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
 import org.apache.shardingsphere.ui.web.response.ResponseResultUtil;
@@ -27,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.base.Optional;
+
 /**
  * Sharding scaling forward controller.
  *
@@ -36,8 +41,51 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/shardingscaling")
 public final class ShardingScalingForwardController {
     
+    private static final String SHARDING_SCALING = "ShardingScaling";
+    
     @Autowired
     private ShardingScalingForwardService shardingScalingForwardService;
+    
+    @Autowired
+    private ForwardServiceConfigsRepository forwardServiceConfigsRepository;
+    
+    /**
+     * Get sharding scaling service config.
+     *
+     * @return sharding scaling service config
+     */
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ResponseResult getService() {
+        Optional<ForwardServiceConfig> result = forwardServiceConfigsRepository.load().getForwardServiceConfig(SHARDING_SCALING);
+        return result.isPresent() ? ResponseResultUtil.build(result.get()) : ResponseResultUtil.handleIllegalArgumentException("No configured sharding scaling services");
+    }
+    
+    /**
+     * Configure sharding scaling service.
+     *
+     * @param shardingScalingServiceConfig sharding scaling service config
+     * @return response result
+     */
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseResult configService(@RequestBody final ForwardServiceConfig shardingScalingServiceConfig) {
+        ForwardServiceConfigs currentForwardServiceConfig = forwardServiceConfigsRepository.load();
+        currentForwardServiceConfig.putForwardServiceConfig(SHARDING_SCALING, shardingScalingServiceConfig);
+        forwardServiceConfigsRepository.save(currentForwardServiceConfig);
+        return ResponseResultUtil.success();
+    }
+    
+    /**
+     * Delete sharding scaling service.
+     *
+     * @return response result
+     */
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    public ResponseResult deleteService() {
+        ForwardServiceConfigs currentForwardServiceConfig = forwardServiceConfigsRepository.load();
+        currentForwardServiceConfig.removeForwardServiceConfig(SHARDING_SCALING);
+        forwardServiceConfigsRepository.save(currentForwardServiceConfig);
+        return ResponseResultUtil.success();
+    }
     
     /**
      * List all sharding scaling jobs.

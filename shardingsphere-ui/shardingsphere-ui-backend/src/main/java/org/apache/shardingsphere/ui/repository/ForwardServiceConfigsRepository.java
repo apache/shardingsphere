@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.ui.repository;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
+import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfigs;
 
 /**
- * Registry center configs repository interface.
+ * Sharding scaling config repository.
  *
- * @author chenqingyang
  * @author yangyi
  */
-public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
-
+public interface ForwardServiceConfigsRepository extends ConfigsRepository<ForwardServiceConfigs> {
 }
