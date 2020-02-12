@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.Tabl
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,7 +54,7 @@ public final class CreateTableStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
         // TODO split table and fk table
-        TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
     
     private static void assertColumnDefinitions(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {

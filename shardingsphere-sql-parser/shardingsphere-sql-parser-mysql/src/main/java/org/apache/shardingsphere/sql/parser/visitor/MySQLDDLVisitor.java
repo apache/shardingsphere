@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Referen
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
@@ -85,15 +86,22 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.setTable(table);
+        result.getTables().add(table);
         result.getAllSQLSegments().add(table);
         if (null != ctx.createDefinitionClause()) {
             CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
             result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
-            result.getAllSQLSegments().addAll(createDefinition.getAllSQLSegments());
+            for (SQLSegment each : createDefinition.getAllSQLSegments()) {
+                result.getAllSQLSegments().add(each);
+                if (each instanceof TableSegment) {
+                    result.getTables().add((TableSegment) each);
+                }
+            }
         }
         if (null != ctx.createLikeClause()) {
-            result.getAllSQLSegments().add((TableSegment) visit(ctx.createLikeClause()));
+            TableSegment likeTable = (TableSegment) visit(ctx.createLikeClause());
+            result.getAllSQLSegments().add(likeTable);
+            result.getTables().add(likeTable);
         }
         return result;
     }
@@ -102,14 +110,19 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.setTable(table);
+        result.getTables().add(table);
         result.getAllSQLSegments().add(table);
         if (null != ctx.alterDefinitionClause()) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
             result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
             result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());
-            result.getAllSQLSegments().addAll(alterDefinition.getAllSQLSegments());
+            for (SQLSegment each : alterDefinition.getAllSQLSegments()) {
+                result.getAllSQLSegments().add(each);
+                if (each instanceof TableSegment) {
+                    result.getTables().add((TableSegment) each);
+                }
+            }
         }
         return result;
     }
