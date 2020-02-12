@@ -18,6 +18,8 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Make sure all the test cases are passed, Make sure `./mvnw clean install` can be compiled and tested successfully.
  - Make sure the test coverage rate is not lower than the master branch.
  - Make sure to check codes with Checkstyle. codes that violate check rules should have special reasons. Find checkstyle template from `https://github.com/apache/incubator-shardingsphere/blob/master/src/resources/checkstyle.xml`, please use checkstyle `8.8` to run the rules.
+ - Avoid making each `pull request` bulky, small and frequent `pull request` are welcomed.
+ - Conform to `Contributor Covenant Code of Conduct` below.
 
 ## Contributor Covenant Code of Conduct
 
