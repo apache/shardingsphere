@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.PostgreSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateUserContext;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 import java.util.Collection;
 import java.util.Collections;

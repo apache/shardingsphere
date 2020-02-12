@@ -22,11 +22,11 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
-import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLDALVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLDCLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLDDLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLDMLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLTCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLTCLVisitor;
 
 /**
  * SQL parser entry for PostgreSQL.

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Variable_Context;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
@@ -52,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
  * MySQL DAL visitor.

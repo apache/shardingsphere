@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.sql.parser.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
@@ -87,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLitera
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -99,6 +99,7 @@ import java.util.List;
  */
 public final class MySQLDMLVisitor extends MySQLVisitor {
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
@@ -153,6 +154,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -210,6 +212,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return new StringLiteralValue(ctx.STRING_().getText());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
@@ -240,6 +243,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
@@ -271,6 +275,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return visit(ctx.selectClause(0));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();
@@ -390,6 +395,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return visit(ctx.tableReferences());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.sql.parser.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;
@@ -45,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
  * MySQL DCL visitor.

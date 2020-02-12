@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.visitor;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.PostgreSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 /**
  * PostgreSQL TCL visitor.
