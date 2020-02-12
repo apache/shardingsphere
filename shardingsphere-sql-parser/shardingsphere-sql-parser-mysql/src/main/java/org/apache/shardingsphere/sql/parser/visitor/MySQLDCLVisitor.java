@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateRoleContext;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRol
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeLevelContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetDefaultRoleContext;
@@ -54,28 +54,40 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 public final class MySQLDCLVisitor extends MySQLVisitor {
     
     @Override
+    public ASTNode visitGrant(final GrantContext ctx) {
+        GrantStatement result = new GrantStatement();
+        Optional<TableSegment> tableSegment = null == ctx.privilegeClause() ? Optional.<TableSegment>absent() : getTableFromPrivilegeClause(ctx.privilegeClause());
+        if (tableSegment.isPresent()) {
+            result.getAllSQLSegments().add(tableSegment.get());
+            result.getTables().add(tableSegment.get());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRevoke(final RevokeContext ctx) {
+        RevokeStatement result = new RevokeStatement();
+        Optional<TableSegment> tableSegment = null == ctx.privilegeClause() ? Optional.<TableSegment>absent() : getTableFromPrivilegeClause(ctx.privilegeClause());
+        if (tableSegment.isPresent()) {
+            result.getAllSQLSegments().add(tableSegment.get());
+            result.getTables().add(tableSegment.get());
+        }
+        return result;
+    }
+    
+    private Optional<TableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
+        if (null != ctx.onObjectClause()) {
+            TableNameContext tableName = ctx.onObjectClause().privilegeLevel().tableName();
+            if (null != tableName) {
+                return Optional.of((TableSegment) visitTableName(tableName));
+            }
+        }
+        return Optional.absent();
+    }
+    
+    @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
         return new CreateUserStatement();
-    }
-    
-    @Override
-    public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
-    }
-    
-    @Override
-    public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new SetDefaultRoleStatement();
-    }
-    
-    @Override
-    public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new SetRoleStatement();
-    }
-    
-    @Override
-    public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
     }
     
     @Override
@@ -94,41 +106,27 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
     }
     
     @Override
-    public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new SetPasswordStatement();
-    }
-
-    @Override
-    public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
-        PrivilegeClauseContext privilegeClause = ctx.privilegeClause();
-        if (null != privilegeClause && null != privilegeClause.onObjectClause()) {
-            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause().privilegeLevel();
-            TableNameContext tableNameContext = privilegeLevel.tableName();
-            if (null != tableNameContext) {
-                TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
-                result.getAllSQLSegments().add(tableSegment);
-                result.getTables().add(tableSegment);
-                return result;
-            }
-        }
-        return result;
+    public ASTNode visitCreateRole(final CreateRoleContext ctx) {
+        return new CreateRoleStatement();
     }
     
     @Override
-    public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
-        PrivilegeClauseContext privilegeClause = ctx.privilegeClause();
-        if (null != privilegeClause && null != privilegeClause.onObjectClause()) {
-            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause().privilegeLevel();
-            TableNameContext tableNameContext = privilegeLevel.tableName();
-            if (null != tableNameContext) {
-                TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
-                result.getAllSQLSegments().add(tableSegment);
-                result.getTables().add(tableSegment);
-                return result;
-            }
-        }
-        return result;
+    public ASTNode visitDropRole(final DropRoleContext ctx) {
+        return new DropRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
+        return new SetDefaultRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetRole(final SetRoleContext ctx) {
+        return new SetRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetPassword(final SetPasswordContext ctx) {
+        return new SetPasswordStatement();
     }
 }
