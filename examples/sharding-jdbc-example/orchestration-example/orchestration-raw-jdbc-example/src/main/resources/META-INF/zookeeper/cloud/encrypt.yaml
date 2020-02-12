@@ -1,0 +1,7 @@
+orchestration:
+  name: demo_yaml_ds_encrypt
+  overwrite: false
+  registry:
+    type: zookeeper
+    serverLists: localhost:2181
+    namespace: orchestration-yaml-demo
