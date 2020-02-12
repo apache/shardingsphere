@@ -127,6 +127,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
@@ -217,6 +218,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         return visit(ctx.tableName());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         final AlterTableStatement result = new AlterTableStatement();

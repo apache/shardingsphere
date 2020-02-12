@@ -99,6 +99,7 @@ import java.util.List;
  */
 public final class MySQLDMLVisitor extends MySQLVisitor {
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
@@ -153,6 +154,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
@@ -210,6 +212,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return new StringLiteralValue(ctx.STRING_().getText());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
@@ -240,6 +243,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
@@ -271,6 +275,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return visit(ctx.selectClause(0));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();
@@ -390,6 +395,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return visit(ctx.tableReferences());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
