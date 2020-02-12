@@ -60,7 +60,7 @@ public final class GeneratedKey {
      * @return generate key
      */
     public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final TableMetas tableMetas, final List<Object> parameters, final InsertStatement insertStatement) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTable().getValue());
+        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getIdentifier().getValue());
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
@@ -70,7 +70,7 @@ public final class GeneratedKey {
     
     private static boolean containsGenerateKey(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
         return insertStatement.getColumnNames().isEmpty()
-                ? tableMetas.getAllColumnNames(insertStatement.getTable().getTable().getValue()).size() == insertStatement.getValueCountForPerGroup()
+                ? tableMetas.getAllColumnNames(insertStatement.getTable().getIdentifier().getValue()).size() == insertStatement.getValueCountForPerGroup()
                 : insertStatement.getColumnNames().contains(generateKeyColumnName);
     }
     
@@ -96,13 +96,13 @@ public final class GeneratedKey {
     
     private static int findGenerateKeyIndex(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
         return insertStatement.getColumnNames().isEmpty()
-                ? tableMetas.getAllColumnNames(insertStatement.getTable().getTable().getValue()).indexOf(generateKeyColumnName) : insertStatement.getColumnNames().indexOf(generateKeyColumnName);
+                ? tableMetas.getAllColumnNames(insertStatement.getTable().getIdentifier().getValue()).indexOf(generateKeyColumnName) : insertStatement.getColumnNames().indexOf(generateKeyColumnName);
     }
     
     private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final String generateKeyColumnName) {
         GeneratedKey result = new GeneratedKey(generateKeyColumnName, true);
         for (int i = 0; i < insertStatement.getValueListCount(); i++) {
-            result.getGeneratedValues().add(shardingRule.generateKey(insertStatement.getTable().getTable().getValue()));
+            result.getGeneratedValues().add(shardingRule.generateKey(insertStatement.getTable().getIdentifier().getValue()));
         }
         return result;
     }

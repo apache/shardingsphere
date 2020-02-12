@@ -39,7 +39,7 @@ public final class AbstractSQLStatementTest {
         SQLStatement sqlStatement = createSQLStatement();
         Optional<TableSegment> actual = sqlStatement.findSQLSegment(TableSegment.class);
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getTable().getValue(), is("tbl1"));
+        assertThat(actual.get().getIdentifier().getValue(), is("tbl1"));
     }
     
     @Test
@@ -53,8 +53,8 @@ public final class AbstractSQLStatementTest {
     public void assertFindSQLSegments() {
         SQLStatement sqlStatement = createSQLStatement();
         Iterator<TableSegment> actual = sqlStatement.findSQLSegments(TableSegment.class).iterator();
-        assertThat(actual.next().getTable().getValue(), is("tbl1"));
-        assertThat(actual.next().getTable().getValue(), is("tbl2"));
+        assertThat(actual.next().getIdentifier().getValue(), is("tbl1"));
+        assertThat(actual.next().getIdentifier().getValue(), is("tbl2"));
         assertFalse(actual.hasNext());
     }
     

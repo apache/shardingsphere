@@ -35,13 +35,13 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class TableSegment implements TableAvailable, OwnerAvailable<SchemaSegment>, AliasAvailable {
+public final class TableSegment implements OwnerAvailable<SchemaSegment>, AliasAvailable {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final IdentifierValue table;
+    private final IdentifierValue identifier;
     
     @Setter
     private SchemaSegment owner;

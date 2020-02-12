@@ -19,6 +19,9 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
 import lombok.Setter;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.TableToken;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.Table;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
@@ -27,14 +30,10 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.TableToken;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -66,8 +65,8 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
-            } else if (each instanceof TableAvailable) {
-                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext.getSqlStatement(), (TableAvailable) each);
+            } else if (each instanceof TableSegment) {
+                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext.getSqlStatement(), (TableSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
@@ -92,19 +91,19 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     private Optional<TableToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable<TableSegment> segment) {
         Optional<TableSegment> owner = segment.getOwner();
         return owner.isPresent() && isToGenerateTableToken(sqlStatementContext, owner.get())
-                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getTable())) : Optional.<TableToken>absent();
+                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier())) : Optional.<TableToken>absent();
     }
     
-    private Optional<TableToken> generateSQLToken(final SQLStatement sqlStatement, final TableAvailable segment) {
-        return isToGenerateTableToken(sqlStatement, segment) ? Optional.of(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getTable())) : Optional.<TableToken>absent();
+    private Optional<TableToken> generateSQLToken(final SQLStatement sqlStatement, final TableSegment segment) {
+        return isToGenerateTableToken(sqlStatement, segment) ? Optional.of(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier())) : Optional.<TableToken>absent();
     }
     
     private boolean isToGenerateTableToken(final SQLStatementContext sqlStatementContext, final TableSegment tableSegment) {
-        Optional<Table> table = sqlStatementContext.getTablesContext().find(tableSegment.getTable().getValue());
+        Optional<Table> table = sqlStatementContext.getTablesContext().find(tableSegment.getIdentifier().getValue());
         return table.isPresent() && !table.get().getAlias().isPresent() && shardingRule.findTableRule(table.get().getName()).isPresent();
     }
     
-    private boolean isToGenerateTableToken(final SQLStatement sqlStatement, final TableAvailable segment) {
-        return shardingRule.findTableRule(segment.getTable().getValue()).isPresent() || !(sqlStatement instanceof SelectStatement);
+    private boolean isToGenerateTableToken(final SQLStatement sqlStatement, final TableSegment segment) {
+        return shardingRule.findTableRule(segment.getIdentifier().getValue()).isPresent() || !(sqlStatement instanceof SelectStatement);
     }
 }
