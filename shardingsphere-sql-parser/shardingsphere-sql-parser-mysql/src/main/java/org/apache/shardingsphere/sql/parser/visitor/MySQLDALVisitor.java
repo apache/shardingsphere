@@ -181,7 +181,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
-
+    
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
