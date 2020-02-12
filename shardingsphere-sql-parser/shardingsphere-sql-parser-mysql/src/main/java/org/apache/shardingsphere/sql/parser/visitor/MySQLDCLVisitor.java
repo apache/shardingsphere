@@ -54,50 +54,22 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 public final class MySQLDCLVisitor extends MySQLVisitor {
     
     @Override
-    public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new CreateUserStatement();
+    public ASTNode visitGrant(final GrantContext ctx) {
+        GrantStatement result = new GrantStatement();
+        PrivilegeClauseContext privilegeClause = ctx.privilegeClause();
+        if (null != privilegeClause && null != privilegeClause.onObjectClause()) {
+            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause().privilegeLevel();
+            TableNameContext tableNameContext = privilegeLevel.tableName();
+            if (null != tableNameContext) {
+                TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
+                result.getAllSQLSegments().add(tableSegment);
+                result.getTables().add(tableSegment);
+                return result;
+            }
+        }
+        return result;
     }
     
-    @Override
-    public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
-    }
-    
-    @Override
-    public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new SetDefaultRoleStatement();
-    }
-    
-    @Override
-    public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new SetRoleStatement();
-    }
-    
-    @Override
-    public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
-    }
-    
-    @Override
-    public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement();
-    }
-    
-    @Override
-    public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement();
-    }
-    
-    @Override
-    public ASTNode visitRenameUser(final RenameUserContext ctx) {
-        return new RenameUserStatement();
-    }
-    
-    @Override
-    public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new SetPasswordStatement();
-    }
-
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
@@ -116,19 +88,47 @@ public final class MySQLDCLVisitor extends MySQLVisitor {
     }
     
     @Override
-    public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
-        PrivilegeClauseContext privilegeClause = ctx.privilegeClause();
-        if (null != privilegeClause && null != privilegeClause.onObjectClause()) {
-            PrivilegeLevelContext privilegeLevel = privilegeClause.onObjectClause().privilegeLevel();
-            TableNameContext tableNameContext = privilegeLevel.tableName();
-            if (null != tableNameContext) {
-                TableSegment tableSegment = (TableSegment) visitTableName(tableNameContext);
-                result.getAllSQLSegments().add(tableSegment);
-                result.getTables().add(tableSegment);
-                return result;
-            }
-        }
-        return result;
+    public ASTNode visitCreateUser(final CreateUserContext ctx) {
+        return new CreateUserStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropUser(final DropUserContext ctx) {
+        return new DropUserStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterUser(final AlterUserContext ctx) {
+        return new AlterUserStatement();
+    }
+    
+    @Override
+    public ASTNode visitRenameUser(final RenameUserContext ctx) {
+        return new RenameUserStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateRole(final CreateRoleContext ctx) {
+        return new CreateRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitDropRole(final DropRoleContext ctx) {
+        return new DropRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
+        return new SetDefaultRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetRole(final SetRoleContext ctx) {
+        return new SetRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitSetPassword(final SetPasswordContext ctx) {
+        return new SetPasswordStatement();
     }
 }
