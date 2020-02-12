@@ -66,14 +66,14 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         result.setSchema(((IdentifierValue) visit(ctx.schemaName())).getValue());
         return result;
     }
-
+    
     @Override
     public ASTNode visitDesc(final DescContext ctx) {
         DescribeStatement result = new DescribeStatement();
         result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
         ShowDatabasesStatement result = new ShowDatabasesStatement();
@@ -84,7 +84,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
         ShowTablesStatement result = new ShowTablesStatement();
@@ -98,7 +98,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
         ShowTableStatusStatement result = new ShowTableStatusStatement();
@@ -112,7 +112,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
         ShowColumnsStatement result = new ShowColumnsStatement();
@@ -128,7 +128,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         ShowIndexStatement result = new ShowIndexStatement();
@@ -146,26 +146,26 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
         ShowCreateTableStatement result = new ShowCreateTableStatement();
         result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitFromTable(final FromTableContext ctx) {
         FromTableSegment result = new FromTableSegment();
         result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowOther(final ShowOtherContext ctx) {
         return new ShowOtherStatement();
     }
-
+    
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
@@ -176,7 +176,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
