@@ -20,16 +20,14 @@ package org.apache.shardingsphere.shardingscaling.core.util;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
-import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -47,9 +45,7 @@ public final class DbMetaDataUtil {
     private static final String TYPE_NAME = "TYPE_NAME";
 
     private static final String DATA_TYPE = "DATA_TYPE";
-
-    private static final String TABLE_NAME = "TABLE_NAME";
-
+    
     private final DataSource dataSource;
 
     private LoadingCache<String, List<String>> pksCache;
@@ -101,26 +97,6 @@ public final class DbMetaDataUtil {
                     primaryKeys.add(rs.getString(COLUMN_NAME));
                 }
                 return primaryKeys;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("getTableNames error", e);
-        }
-    }
-
-    /**
-     * Get all table names in current database.
-     *
-     * @return list of table name
-     */
-    public List<String> getTableNames() {
-        try {
-            try (Connection connection = dataSource.getConnection()) {
-                ResultSet rs = connection.getMetaData().getTables(connection.getCatalog(), null, "%", new String[]{"TABLE"});
-                List<String> tableNames = new LinkedList<>();
-                while (rs.next()) {
-                    tableNames.add(rs.getString(TABLE_NAME));
-                }
-                return tableNames;
             }
         } catch (SQLException e) {
             throw new RuntimeException("getTableNames error", e);
