@@ -241,6 +241,8 @@ public enum RuleName {
     
     SET_VARIABLE("SetVariable"),
     
+    SET("Set"),
+    
     CALL("Call");
     
     private final String name;
