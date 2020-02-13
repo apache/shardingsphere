@@ -93,7 +93,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
     }
     
 //    @Override
-//    public ASTNode visitAlterDefinitionClause_(final AlterDefinitionClause_Context ctx) {
+//    public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
 //        final AlterTableStatement result = new AlterTableStatement();
 //        for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
 //            AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
