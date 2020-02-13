@@ -400,7 +400,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         WhereSegment result = new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        result.setParameterMarkerStartIndex(getCurrentParameterIndex());
         ASTNode segment = visit(ctx.expr());
         if (segment instanceof OrPredicateSegment) {
             result.getAndPredicates().addAll(((OrPredicateSegment) segment).getAndPredicates());
@@ -409,7 +408,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
             andPredicate.getPredicates().add((PredicateSegment) segment);
             result.getAndPredicates().add(andPredicate);
         }
-        result.setParametersCount(getCurrentParameterIndex());
         return result;
     }
     

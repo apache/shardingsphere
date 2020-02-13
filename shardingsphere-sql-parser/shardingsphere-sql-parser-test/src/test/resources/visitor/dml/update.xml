@@ -28,7 +28,7 @@
                 </assignment-value>
             </assignment>
         </set>
-        <where parameters-count="3" parameter-marker-start-index="1" start-index="30" stop-index="63" literal-start-index="43" literal-stop-index="54">
+        <where start-index="30" stop-index="63" literal-start-index="43" literal-stop-index="54">
             <and-predicate>
                 <predicate start-index="36" stop-index="47" literal-start-index="43" literal-stop-index="54">
                     <column-left-value name="order_id" start-index="36" stop-index="43" literal-start-index="43" literal-stop-index="50" />
@@ -63,7 +63,7 @@
                 </assignment-value>
             </assignment>
         </set>
-        <where parameters-count="3" parameter-marker-start-index="1" start-index="37" stop-index="74" literal-start-index="44" literal-stop-index="81">
+        <where start-index="37" stop-index="74" literal-start-index="44" literal-stop-index="81">
             <and-predicate>
                 <predicate start-index="43" stop-index="56" literal-start-index="50" literal-stop-index="63">
                     <column-left-value name="order_id" start-index="43" stop-index="52" literal-start-index="50" literal-stop-index="59">
@@ -114,7 +114,7 @@
                 </assignment-value>
             </assignment>
         </set>
-        <where parameters-count="3" parameter-marker-start-index="1" start-index="50" stop-index="83" literal-start-index="57" literal-stop-index="90">
+        <where start-index="50" stop-index="83" literal-start-index="57" literal-stop-index="90">
             <and-predicate>
                 <predicate start-index="56" stop-index="67" literal-start-index="63" literal-stop-index="74">
                     <column-left-value name="order_id" start-index="56" stop-index="63" literal-start-index="63" literal-stop-index="70" />
@@ -147,7 +147,7 @@
                 </assignment-value>
             </assignment>
         </set>
-        <where parameters-count="3" parameter-marker-start-index="1" start-index="34" stop-index="69" literal-start-index="41" literal-stop-index="76">
+        <where start-index="34" stop-index="69" literal-start-index="41" literal-stop-index="76">
             <and-predicate>
                 <predicate start-index="40" stop-index="53" literal-start-index="47" literal-stop-index="60">
                     <column-left-value name="order_id" start-delimiter="`" end-delimiter="`" start-index="40" stop-index="49" literal-start-index="47" literal-stop-index="56" />
@@ -179,7 +179,7 @@
                 </assignment-value>
             </assignment>
         </set>
-        <where parameters-count="0" start-index="37" stop-index="74">
+        <where start-index="37" stop-index="74">
             <and-predicate>
                 <predicate start-index="43" stop-index="57">
                     <column-left-value name="order_id" start-index="43" stop-index="50" />
@@ -209,7 +209,7 @@
                 </assignment-value>
             </assignment>
         </set>
-        <where parameters-count="3" start-index="37" stop-index="88" literal-stop-index="92">
+        <where start-index="37" stop-index="88" literal-stop-index="92">
             <and-predicate>
                 <predicate start-index="44" stop-index="55" literal-stop-index="58">
                     <column-left-value name="order_id" start-index="44" stop-index="51" />

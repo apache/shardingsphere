@@ -30,7 +30,7 @@
                 <owner name="t_order" start-index="7" stop-index="13" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="2" start-index="38" stop-index="71">
+        <where start-index="38" stop-index="71">
             <and-predicate>
                 <predicate start-index="44" stop-index="54">
                     <column-left-value name="user_id" start-index="44" stop-index="50" />
@@ -63,7 +63,7 @@
             </column-projection>
             <column-projection name="status" start-index="40" stop-index="45" />
         </projections>
-        <where parameters-count="2" start-index="68" stop-index="109">
+        <where start-index="68" stop-index="109">
             <and-predicate>
                 <predicate start-index="74" stop-index="92">
                     <column-left-value name="user_id" start-index="74" stop-index="88">
@@ -92,7 +92,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="1" start-index="27" stop-index="44">
+        <where start-index="27" stop-index="44">
             <and-predicate>
                 <predicate start-index="33" stop-index="44">
                     <column-left-value name="item_id" start-index="33" stop-index="39" />
@@ -114,7 +114,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="1" start-index="27" stop-index="44">
+        <where start-index="27" stop-index="44">
             <and-predicate>
                 <predicate start-index="33" stop-index="44">
                     <column-left-value name="item_id" start-index="33" stop-index="39" />
@@ -136,7 +136,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="2" start-index="27" stop-index="77" literal-stop-index="87">
+        <where start-index="27" stop-index="77" literal-stop-index="87">
             <!-- FIXME cannot parse IS NOT NULL -->
             <!--<and-predicate>-->
             <!--<predicate start-index="33" stop-index="51">-->
@@ -157,7 +157,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="2" start-index="27" stop-index="83" literal-stop-index="93">
+        <where start-index="27" stop-index="83" literal-stop-index="93">
             <!-- FIXME can not parse IS NOT NULL -->
             <!--<and-predicate>-->
             <!--<predicate start-index="33" stop-index="51">-->
@@ -178,7 +178,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="2" start-index="22" stop-index="33">
+        <where start-index="22" stop-index="33">
             <and-predicate>
                 <predicate start-index="28" stop-index="38">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
@@ -205,7 +205,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="2" start-index="22" stop-index="56">
+        <where start-index="22" stop-index="56">
             <and-predicate>
                 <predicate start-index="28" stop-index="39">
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
@@ -232,7 +232,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="4" start-index="22" stop-index="107">
+        <where start-index="22" stop-index="107">
             <and-predicate>
                 <predicate start-index="28" stop-index="50" literal-stop-index="51">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
@@ -265,7 +265,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="4" start-index="22" stop-index="119" literal-stop-index="120">
+        <where start-index="22" stop-index="119" literal-stop-index="120">
             <and-predicate>
                 <predicate start-index="28" stop-index="39">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
@@ -312,7 +312,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="5" start-index="22" stop-index="70" literal-stop-index="71">
+        <where start-index="22" stop-index="70" literal-stop-index="71">
             <and-predicate>
                 <predicate start-index="28" stop-index="47">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
@@ -347,7 +347,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="4" start-index="22" stop-index="68" literal-stop-index="80">
+        <where start-index="22" stop-index="68" literal-stop-index="80">
             <and-predicate>
                 <predicate start-index="28" stop-index="45" literal-stop-index="51">
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
@@ -379,7 +379,7 @@
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
-        <where parameters-count="5" start-index="47" stop-index="142" literal-stop-index="148">
+        <where start-index="47" stop-index="142" literal-stop-index="148">
             <and-predicate>
                 <!-- TODO assert predicate with like  -->
                 <!--<predicate start-index="62" stop-index="79">-->
@@ -421,7 +421,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="4" start-index="99" stop-index="154" literal-stop-index="155">
+        <where start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
                     <column-left-value name="user_id" start-index="105" stop-index="113">
@@ -478,7 +478,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="5" start-index="147" stop-index="219" literal-stop-index="225">
+        <where start-index="147" stop-index="219" literal-stop-index="225">
             <and-predicate>
                 <predicate start-index="153" stop-index="171">
                     <column-left-value name="user_id" start-index="153" stop-index="161">
@@ -530,7 +530,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="5" start-index="138" stop-index="210" literal-stop-index="216">
+        <where start-index="138" stop-index="210" literal-stop-index="216">
             <and-predicate>
                 <predicate start-index="144" stop-index="162">
                     <column-left-value name="user_id" start-index="144" stop-index="152">
@@ -580,7 +580,7 @@
                 <owner name="length" start-index="7" stop-index="12" />
             </column-projection>>
         </projections>
-        <where parameters-count="1" start-index="56" stop-index="79">
+        <where start-index="56" stop-index="79">
             <and-predicate>
                 <predicate start-index="62" stop-index="79">
                     <column-left-value name="item_id" start-index="62" stop-index="75">
@@ -604,7 +604,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="1" start-index="96" stop-index="115" literal-stop-index="118">
+        <where start-index="96" stop-index="115" literal-stop-index="118">
             <and-predicate>
                 <predicate start-index="102" stop-index="115" literal-stop-index="118">
                     <column-left-value name="order_id" start-index="102" stop-index="111">
@@ -634,7 +634,7 @@
         <projections start-index="7" stop-index="41">
             <aggregation-projection type="SUM" inner-expression-start-index="10" alias="func_status" start-index="7" stop-index="29" />
         </projections>
-        <where parameters-count="2" start-index="56" stop-index="89" literal-stop-index="93">
+        <where start-index="56" stop-index="89" literal-stop-index="93">
             <and-predicate>
                 <predicate start-index="62" stop-index="72" literal-stop-index="73">
                     <column-left-value name="user_id" start-index="62" stop-index="68" />
@@ -661,7 +661,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="0" start-index="92" stop-index="105">
+        <where start-index="92" stop-index="105">
             <!-- FIXME cannot parse subquery's predicate -->
         </where>
     </select>
@@ -671,7 +671,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="0" start-index="95" stop-index="107">
+        <where start-index="95" stop-index="107">
             <!-- FIXME cannot parse subquery's predicate -->
         </where>
     </select>
@@ -681,7 +681,7 @@
         <projections start-index="7" stop-index="38">
             <expression-projection alias="func_status" start-index="7" stop-index="26" />
         </projections>
-        <where parameters-count="2" start-index="53" stop-index="86" literal-stop-index="90">
+        <where start-index="53" stop-index="86" literal-stop-index="90">
             <and-predicate>
                 <predicate start-index="59" stop-index="69" literal-stop-index="70">
                     <column-left-value name="user_id" start-index="59" stop-index="65" />
@@ -708,7 +708,7 @@
         <projections start-index="7" stop-index="37">
             <expression-projection start-index="7" stop-index="37" />
         </projections>
-        <where parameters-count="0" start-index="57" stop-index="74">
+        <where start-index="57" stop-index="74">
             <and-predicate>
                 <predicate start-index="63" stop-index="74">
                     <column-left-value name="user_id" start-index="63" stop-index="69" />
@@ -726,7 +726,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="1" start-index="22" stop-index="38" literal-stop-index="39">
+        <where start-index="22" stop-index="38" literal-stop-index="39">
             <and-predicate>
                 <predicate start-index="28" stop-index="38" literal-stop-index="39">
                     <column-left-value name="user_id" start-index="28" stop-index="34"  literal-stop-index="34" />
@@ -751,7 +751,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="0" start-index="22" stop-index="47">
+        <where start-index="22" stop-index="47">
             <!-- FIXME cannot parse expr in left value -->
         </where>
     </select>
@@ -761,7 +761,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="0" start-index="22" stop-index="79">
+        <where start-index="22" stop-index="79">
             <!-- FIXME cannot parse expr in left value for predicate -->
             <!--<and-predicate>-->
             <!--<predicate start-index="28" stop-index="79" />-->
@@ -774,7 +774,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="0" start-index="22" stop-index="106">
+        <where start-index="22" stop-index="106">
             <!-- FIXME cannot parse expr in left value -->
             <!--<and-predicate>-->
             <!--<predicate start-index="28" stop-index="106" />-->
