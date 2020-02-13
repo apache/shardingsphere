@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 import lombok.Getter;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
@@ -48,7 +49,10 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
     
     protected SingleDataSourceRuntimeContext(final DataSource dataSource, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(rule, props, databaseType);
+        long start = System.currentTimeMillis();
+        MetaDataLogger.log("Start loading MetaData.");
         metaData = createMetaData(dataSource, databaseType);
+        MetaDataLogger.log("MetaData loading finished, cost {} ms.", System.currentTimeMillis() - start);
     }
     
     private ShardingSphereMetaData createMetaData(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {

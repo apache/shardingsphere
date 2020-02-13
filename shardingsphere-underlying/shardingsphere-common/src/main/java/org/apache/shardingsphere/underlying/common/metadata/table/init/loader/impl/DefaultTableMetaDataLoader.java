@@ -19,6 +19,7 @@ package org.apache.shardingsphere.underlying.common.metadata.table.init.loader.i
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -83,12 +84,14 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     
     @Override
     public TableMetas loadAll(final BaseRule rule) throws SQLException {
+        MetaDataLogger.log("load all tables");
         Collection<String> tableNames = loadAllTableNames();
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
         // TODO concurrency load via maxConnectionsSizePerQuery
         for (String each : tableNames) {
             result.put(each, load(each, rule));
         }
+        MetaDataLogger.logTableMetaData(result);
         return new TableMetas(result);
     }
     

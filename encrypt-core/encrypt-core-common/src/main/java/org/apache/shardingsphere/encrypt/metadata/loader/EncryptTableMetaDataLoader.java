@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.metadata.loader;
 
 import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
@@ -61,6 +62,7 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
         for (String each : allTableNames) {
             result.put(each, encryptTableMetaDataDecorator.decorate(tableMetas.get(each), each, encryptRule));
         }
+        MetaDataLogger.logTableMetaData(result);
         return new TableMetas(result);
     }
 }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -197,6 +198,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         Map<String, TableMetaData> result = new HashMap<>();
         result.putAll(loadShardingTables(shardingRule));
         result.putAll(loadDefaultTables(shardingRule));
+        MetaDataLogger.logTableMetaData(result);
         return new TableMetas(result);
     }
     
