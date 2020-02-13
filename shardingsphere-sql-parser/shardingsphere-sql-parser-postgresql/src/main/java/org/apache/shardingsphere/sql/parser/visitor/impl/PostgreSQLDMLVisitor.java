@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Fr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitOffsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitRowCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MultipleTableNamesContext;
@@ -63,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegm
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
@@ -402,22 +404,35 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
         return result;
     }
     
-//    @Override
-//    public ASTNode visitLimitClause(final LimitClauseContext ctx) {
-//        if (null == ctx.limitRowCountSyntax_()) {
-//            return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, (PaginationValueSegment) visit(ctx.limitRowCount()));
-//        }
-//        PaginationValueSegment rowCount;
-//        PaginationValueSegment limitOffset;
-//        if (null != ctx.OFFSET()) {
-//            rowCount = (PaginationValueSegment) visit(ctx.limitRowCount());
-//            limitOffset = (PaginationValueSegment) visit(ctx.limitOffset());
-//        } else {
-//            limitOffset = (PaginationValueSegment) visit(ctx.limitOffset());
-//            rowCount = (PaginationValueSegment) visit(ctx.limitRowCount());
-//        }
-//        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), limitOffset, rowCount);
-//    }
+    @Override
+    public ASTNode visitLimitClause(final LimitClauseContext ctx) {
+        if (null != ctx.limitRowCountSyntax_() && null != ctx.limitOffsetSyntax_()) {
+            return isRowCountBeforeOffset(ctx) ? createLimitSegmentWhenRowCountBeforeOffset(ctx) : createLimitSegmentWhenRowCountAfterOffset(ctx);
+        }
+        return createLimitSegmentWhenRowCountOrOffsetAbsent(ctx);
+    }
+    
+    private boolean isRowCountBeforeOffset(final LimitClauseContext ctx) {
+        return ctx.limitRowCountSyntax_().getStart().getStartIndex() < ctx.limitOffsetSyntax_().getStart().getStartIndex();
+    }
+    
+    private LimitSegment createLimitSegmentWhenRowCountBeforeOffset(final LimitClauseContext ctx) {
+        LimitValueSegment rowCount = (LimitValueSegment) visit(ctx.limitRowCountSyntax_().limitRowCount());
+        LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitOffsetSyntax_().limitOffset());
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    private LimitSegment createLimitSegmentWhenRowCountAfterOffset(final LimitClauseContext ctx) {
+        LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitOffsetSyntax_().limitOffset());
+        LimitValueSegment rowCount = (LimitValueSegment) visit(ctx.limitRowCountSyntax_().limitRowCount());
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final LimitClauseContext ctx) {
+        LimitValueSegment rowCount = null == ctx.limitRowCountSyntax_() ? null : (LimitValueSegment) visit(ctx.limitRowCountSyntax_().limitRowCount());
+        LimitValueSegment offset = null == ctx.limitOffsetSyntax_() ? null : (LimitValueSegment) visit(ctx.limitOffsetSyntax_().limitOffset());
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
     
     @Override
     public ASTNode visitLimitRowCount(final LimitRowCountContext ctx) {

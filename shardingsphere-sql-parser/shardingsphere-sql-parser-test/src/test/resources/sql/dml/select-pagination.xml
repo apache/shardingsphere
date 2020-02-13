@@ -25,6 +25,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
+        <!-- TODO parameters-count should be 4, because the last parameter is in offset -->
         <where parameters-count="5" start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
@@ -257,6 +258,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
+        <!-- TODO parameters-count should be 4, because the last parameter is in offset -->
         <where parameters-count="6" start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
