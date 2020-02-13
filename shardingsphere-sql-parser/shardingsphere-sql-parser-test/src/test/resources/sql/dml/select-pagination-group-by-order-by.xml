@@ -25,7 +25,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="105" stop-index="160" literal-stop-index="161">
+        <where start-index="105" stop-index="160" literal-stop-index="161">
             <and-predicate>
                 <predicate start-index="111" stop-index="129">
                     <column-left-value name="user_id" start-index="111" stop-index="119">
@@ -75,7 +75,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="105" stop-index="160" literal-stop-index="161">
+        <where start-index="105" stop-index="160" literal-stop-index="161">
             <and-predicate>
                 <predicate start-index="111" stop-index="129">
                     <column-left-value name="user_id" start-index="111" stop-index="119">
@@ -137,7 +137,7 @@
                 <owner name="o" start-index="139" stop-index="139" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="333" stop-index="354" literal-start-index="334" literal-stop-index="355">
+        <where start-index="333" stop-index="354" literal-start-index="334" literal-stop-index="355">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="339" stop-index="354" literal-start-index="340" literal-stop-index="355">
@@ -186,7 +186,7 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="335" stop-index="356" literal-start-index="336" literal-stop-index="357">
+        <where start-index="335" stop-index="356" literal-start-index="336" literal-stop-index="357">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="341" stop-index="356" literal-start-index="342" literal-stop-index="357">
@@ -235,7 +235,7 @@
                 <owner name="o" start-index="139" stop-index="139" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="334" stop-index="355" literal-start-index="335" literal-stop-index="356">
+        <where start-index="334" stop-index="355" literal-start-index="335" literal-stop-index="356">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="340" stop-index="355" literal-start-index="341" literal-stop-index="356">
@@ -284,7 +284,7 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="336" stop-index="357" literal-start-index="337" literal-stop-index="358">
+        <where start-index="336" stop-index="357" literal-start-index="337" literal-stop-index="358">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="342" stop-index="357" literal-start-index="343" literal-stop-index="358">
@@ -327,7 +327,7 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
+        <where start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="392" stop-index="404" literal-start-index="393" literal-stop-index="405">
@@ -370,7 +370,7 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
+        <where start-index="386" stop-index="404" literal-start-index="387" literal-stop-index="405">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="392" stop-index="404" literal-start-index="393" literal-stop-index="405">

@@ -107,7 +107,7 @@
         <projections start-index="7" stop-index="29">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
-        <where parameters-count="4" start-index="119" stop-index="174" literal-stop-index="175">
+        <where start-index="119" stop-index="174" literal-stop-index="175">
             <and-predicate>
                 <predicate start-index="125" stop-index="143">
                     <column-left-value name="user_id" start-index="125" stop-index="133">
@@ -198,7 +198,7 @@
             <expression-projection alias="creation_date" start-index="7" stop-index="45" />
             <aggregation-projection type="COUNT" inner-expression-start-index="70" alias="c_number" start-index="65" stop-index="72" />
         </projections>
-        <where parameters-count="2" start-index="106" stop-index="130" literal-stop-index="135">
+        <where start-index="106" stop-index="130" literal-stop-index="135">
             <and-predicate>
                 <predicate start-index="112" stop-index="129" literal-stop-index="135">
                     <column-left-value name="order_id" start-index="112" stop-index="119" />

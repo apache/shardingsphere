@@ -66,7 +66,6 @@ public final class PaginationContextEngineTest {
         when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.<LimitSegment>absent());
         when(selectStatement.findSQLSegment(TopProjectionSegment.class)).thenReturn(Optional.<TopProjectionSegment>absent());
         WhereSegment whereSegment = new WhereSegment(0, 10);
-        whereSegment.setParametersCount(10);
         when(selectStatement.findSQLSegment(WhereSegment.class)).thenReturn(Optional.of(whereSegment));
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.<String>absent());

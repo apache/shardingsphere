@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -45,14 +44,9 @@ public final class WhereExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         WhereSegment result = new WhereSegment(whereNode.get().getStart().getStartIndex(), whereNode.get().getStop().getStopIndex());
-        result.setParametersCount(parameterMarkerIndexes.size());
         Optional<OrPredicateSegment> orPredicateSegment = predicateExtractor.extract(whereNode.get(), parameterMarkerIndexes);
         if (orPredicateSegment.isPresent()) {
             result.getAndPredicates().addAll(orPredicateSegment.get().getAndPredicates());
-        }
-        Collection<ParserRuleContext> parameterMarkerNodes = ExtractorUtils.getAllDescendantNodes(whereNode.get(), RuleName.PARAMETER_MARKER);
-        if (!parameterMarkerNodes.isEmpty()) {
-            result.setParameterMarkerStartIndex(parameterMarkerIndexes.get(parameterMarkerNodes.iterator().next()));
         }
         return Optional.of(result);
     }
