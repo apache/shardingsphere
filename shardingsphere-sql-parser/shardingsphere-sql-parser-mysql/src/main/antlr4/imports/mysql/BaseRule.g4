@@ -71,10 +71,10 @@ collationName_
    ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | unreservedWord
     ;
 
-unreservedWord_
+unreservedWord
     : ACCOUNT | ACTION | AFTER | ALGORITHM | ALWAYS | ANY | AUTO_INCREMENT 
     | AVG_ROW_LENGTH | BEGIN | BTREE | CHAIN | CHARSET | CHECKSUM | CIPHER 
     | CLIENT | COALESCE | COLUMNS | COLUMN_FORMAT | COMMENT | COMMIT | COMMITTED 

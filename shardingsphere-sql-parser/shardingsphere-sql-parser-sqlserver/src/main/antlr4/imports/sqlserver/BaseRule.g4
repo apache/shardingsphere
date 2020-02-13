@@ -63,10 +63,10 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | unreservedWord
     ;
 
-unreservedWord_
+unreservedWord
     : TRUNCATE | FUNCTION | TRIGGER | LIMIT | OFFSET | SAVEPOINT | BOOLEAN
     | ARRAY | LOCALTIME | LOCALTIMESTAMP | QUARTER | WEEK | MICROSECOND | ENABLE
     | DISABLE | BINARY | HIDDEN_ | MOD | PARTITION | TOP | ROW

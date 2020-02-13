@@ -63,10 +63,10 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | unreservedWord
     ;
 
-unreservedWord_
+unreservedWord
     : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
     | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
     | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET

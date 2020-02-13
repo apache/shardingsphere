@@ -59,7 +59,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringL
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
@@ -184,12 +184,12 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
-        UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
+        UnreservedWordContext unreservedWord = ctx.unreservedWord();
         return null != unreservedWord ? visit(unreservedWord) : new IdentifierValue(ctx.getText());
     }
     
     @Override
-    public final ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
+    public final ASTNode visitUnreservedWord(final UnreservedWordContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
     

@@ -63,14 +63,10 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | unreservedWord
     ;
 
-variable_
-    : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
-    ;
-
-unreservedWord_
+unreservedWord
     : ADA
     | C92 | CATALOG_NAME | CHARACTER_SET_CATALOG | CHARACTER_SET_NAME | CHARACTER_SET_SCHEMA
     | CLASS_ORIGIN | COBOL | COLLATION_CATALOG | COLLATION_NAME | COLLATION_SCHEMA
@@ -86,6 +82,10 @@ unreservedWord_
     | SCALE | SCHEMA_NAME | SERIALIZABLE | SERVER_NAME | SUBCLASS_ORIGIN
     | TABLE_NAME | TYPE
     | UNCOMMITTED | UNNAMED
+    ;
+
+variable_
+    : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
     ;
 
 schemaName

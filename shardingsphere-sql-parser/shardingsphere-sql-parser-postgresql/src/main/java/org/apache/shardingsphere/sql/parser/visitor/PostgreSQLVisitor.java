@@ -51,7 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Sp
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnreservedWord_Context;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
@@ -166,12 +166,12 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
-        UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
+        UnreservedWordContext unreservedWord = ctx.unreservedWord();
         return null != unreservedWord ? visit(unreservedWord) : new IdentifierValue(ctx.getText());
     }
     
     @Override
-    public final ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
+    public final ASTNode visitUnreservedWord(final UnreservedWordContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
     

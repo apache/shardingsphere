@@ -61,7 +61,7 @@ literalsType_
     ;
 
 identifier
-    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord_ 
+    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord 
     ;
 
 unicodeEscapes_
@@ -72,7 +72,7 @@ uescape_
     : UESCAPE STRING_
     ;
     
-unreservedWord_
+unreservedWord
     : ADMIN | ESCAPE | EXCLUDE | KEY | PARTITION | SET | UNKNOWN 
     | ADD | ALTER | ALWAYS | CASCADE | COMMIT | CURRENT | DAY 
     | DELETE | DISABLE | DROP | ENABLE | FUNCTION | GENERATED | INDEX
