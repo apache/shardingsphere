@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.De
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FromClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.JoinedTableContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Li
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LimitRowCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MultipleTablesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedShorthandContext;
@@ -62,7 +64,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProje
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -264,6 +268,11 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
         }
+        if (null != ctx.groupByClause()) {
+            GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
+            result.setGroupBy(groupBy);
+            result.getAllSQLSegments().add(groupBy);
+        }
         if (null != ctx.orderByClause()) {
             OrderBySegment orderBy = (OrderBySegment) visit(ctx.orderByClause());
             result.setOrderBy(orderBy);
@@ -402,6 +411,15 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
         }
         result.setParametersCount(getCurrentParameterIndex());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
+        Collection<OrderByItemSegment> items = new LinkedList<>();
+        for (OrderByItemContext each : ctx.orderByItem()) {
+            items.add((OrderByItemSegment) visit(each));
+        }
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
     
     @Override
