@@ -24,7 +24,6 @@ import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 
@@ -37,11 +36,6 @@ public final class PostgreSQLWriter extends AbstractJdbcWriter {
 
     public PostgreSQLWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
         super(rdbmsConfiguration, dataSourceFactory);
-    }
-    
-    @Override
-    protected DbMetaDataUtil createDbMetaDataUtil(final DataSource dataSource) {
-        return new PostgreSQLMetadataUtil(dataSource);
     }
     
     @Override

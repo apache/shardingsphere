@@ -20,8 +20,6 @@ package org.apache.shardingsphere.shardingscaling.core.util;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 
@@ -40,7 +38,7 @@ import java.util.concurrent.ExecutionException;
  * @author yangyi
  */
 @Slf4j
-public class DbMetaDataUtil {
+public final class DbMetaDataUtil {
 
     private static final String COLUMN_NAME = "COLUMN_NAME";
 
@@ -48,7 +46,6 @@ public class DbMetaDataUtil {
 
     private static final String DATA_TYPE = "DATA_TYPE";
     
-    @Getter(AccessLevel.PROTECTED)
     private final DataSource dataSource;
 
     private LoadingCache<String, List<String>> pksCache;
@@ -119,14 +116,8 @@ public class DbMetaDataUtil {
             throw new RuntimeException(e);
         }
     }
-    
-    /**
-     * Get column metadata info by jdbc method.
-     *
-     * @param tableName table name
-     * @return column metadata info
-     */
-    protected List<ColumnMetaData> getColumnNamesInternal(final String tableName) {
+
+    private List<ColumnMetaData> getColumnNamesInternal(final String tableName) {
         try {
             try (Connection connection = dataSource.getConnection()) {
                 List<ColumnMetaData> result = new ArrayList<>();
