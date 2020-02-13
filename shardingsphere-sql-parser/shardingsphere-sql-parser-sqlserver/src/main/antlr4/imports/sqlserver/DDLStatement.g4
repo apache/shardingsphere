@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE TABLE tableName fileTableClause_ createDefinitionClause_
+    : CREATE TABLE tableName fileTableClause_ createDefinitionClause
     ;
 
 createIndex
@@ -51,7 +51,7 @@ fileTableClause_
     : (AS FILETABLE)?
     ;
 
-createDefinitionClause_
+createDefinitionClause
     : createTableDefinitions_ partitionScheme_ fileGroup_
     ;
 

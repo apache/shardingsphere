@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, SQL92Keyword, Literals, BaseRule, DMLStatement;
 
 createTable
-    : CREATE createTableSpecification_? TABLE tableName (createDefinitionClause_ | createLikeClause_)
+    : CREATE createTableSpecification_? TABLE tableName (createDefinitionClause | createLikeClause_)
     ;
 
 alterTable
@@ -53,7 +53,7 @@ createTableSpecification_
     : (GLOBAL | LOCAL) TEMPORARY
     ;
 
-createDefinitionClause_
+createDefinitionClause
     : LP_ createDefinitions_ RP_
     ;
 

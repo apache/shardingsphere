@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause_
+    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause
     ;
 
 createIndex
@@ -64,7 +64,7 @@ domainIndexClause
     : indexTypeName
     ;
 
-createDefinitionClause_
+createDefinitionClause
     : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
 
