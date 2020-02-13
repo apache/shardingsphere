@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Duplica
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedTableContext;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitRo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OnDuplicateKeyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QualifiedShorthandContext;
@@ -66,7 +68,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProje
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -295,6 +299,11 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
         }
+        if (null != ctx.groupByClause()) {
+            GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
+            result.setGroupBy(groupBy);
+            result.getAllSQLSegments().add(groupBy);
+        }
         if (null != ctx.orderByClause()) {
             OrderBySegment orderBy = (OrderBySegment) visit(ctx.orderByClause());
             result.setOrderBy(orderBy);
@@ -455,6 +464,15 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         }
         result.setParametersCount(getCurrentParameterIndex());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
+        Collection<OrderByItemSegment> items = new LinkedList<>();
+        for (OrderByItemContext each : ctx.orderByItem()) {
+            items.add((OrderByItemSegment) visit(each));
+        }
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
     
     @Override
