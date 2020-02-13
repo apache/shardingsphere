@@ -406,31 +406,32 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
     
     @Override
     public ASTNode visitLimitClause(final LimitClauseContext ctx) {
-        if (null != ctx.limitRowCountSyntax_() && null != ctx.limitOffsetSyntax_()) {
+        if (null != ctx.limitRowCountSyntax() && null != ctx.limitOffsetSyntax()) {
             return isRowCountBeforeOffset(ctx) ? createLimitSegmentWhenRowCountBeforeOffset(ctx) : createLimitSegmentWhenRowCountAfterOffset(ctx);
         }
         return createLimitSegmentWhenRowCountOrOffsetAbsent(ctx);
     }
     
     private boolean isRowCountBeforeOffset(final LimitClauseContext ctx) {
-        return ctx.limitRowCountSyntax_().getStart().getStartIndex() < ctx.limitOffsetSyntax_().getStart().getStartIndex();
+        return ctx.limitRowCountSyntax().getStart().getStartIndex() < ctx.limitOffsetSyntax().getStart().getStartIndex();
     }
     
     private LimitSegment createLimitSegmentWhenRowCountBeforeOffset(final LimitClauseContext ctx) {
-        LimitValueSegment rowCount = (LimitValueSegment) visit(ctx.limitRowCountSyntax_().limitRowCount());
-        LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitOffsetSyntax_().limitOffset());
+        LimitValueSegment rowCount = null == ctx.limitRowCountSyntax().limitRowCount() ? null : (LimitValueSegment) visit(ctx.limitRowCountSyntax().limitRowCount());
+        LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitOffsetSyntax().limitOffset());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
     }
     
     private LimitSegment createLimitSegmentWhenRowCountAfterOffset(final LimitClauseContext ctx) {
-        LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitOffsetSyntax_().limitOffset());
-        LimitValueSegment rowCount = (LimitValueSegment) visit(ctx.limitRowCountSyntax_().limitRowCount());
+        LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitOffsetSyntax().limitOffset());
+        LimitValueSegment rowCount = null == ctx.limitRowCountSyntax().limitRowCount() ? null : (LimitValueSegment) visit(ctx.limitRowCountSyntax().limitRowCount());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
     }
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final LimitClauseContext ctx) {
-        LimitValueSegment rowCount = null == ctx.limitRowCountSyntax_() ? null : (LimitValueSegment) visit(ctx.limitRowCountSyntax_().limitRowCount());
-        LimitValueSegment offset = null == ctx.limitOffsetSyntax_() ? null : (LimitValueSegment) visit(ctx.limitOffsetSyntax_().limitOffset());
+        LimitValueSegment rowCount = null == ctx.limitRowCountSyntax() || null == ctx.limitRowCountSyntax().limitRowCount()
+                ? null : (LimitValueSegment) visit(ctx.limitRowCountSyntax().limitRowCount());
+        LimitValueSegment offset = null == ctx.limitOffsetSyntax() ? null : (LimitValueSegment) visit(ctx.limitOffsetSyntax().limitOffset());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
     }
     
