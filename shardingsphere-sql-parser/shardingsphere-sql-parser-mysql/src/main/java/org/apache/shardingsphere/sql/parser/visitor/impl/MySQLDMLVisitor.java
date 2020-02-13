@@ -463,15 +463,15 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, (PaginationValueSegment) visit(ctx.limitRowCount()));
         }
         PaginationValueSegment rowCount;
-        PaginationValueSegment limitOffset;
+        PaginationValueSegment offset;
         if (null != ctx.OFFSET()) {
             rowCount = (PaginationValueSegment) visit(ctx.limitRowCount());
-            limitOffset = (PaginationValueSegment) visit(ctx.limitOffset());
+            offset = (PaginationValueSegment) visit(ctx.limitOffset());
         } else {
-            limitOffset = (PaginationValueSegment) visit(ctx.limitOffset());
+            offset = (PaginationValueSegment) visit(ctx.limitOffset());
             rowCount = (PaginationValueSegment) visit(ctx.limitRowCount());
         }
-        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), limitOffset, rowCount);
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
     }
     
     @Override
