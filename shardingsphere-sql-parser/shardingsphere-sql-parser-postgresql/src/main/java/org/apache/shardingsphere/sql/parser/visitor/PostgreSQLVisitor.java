@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ca
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeName_Context;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.HexadecimalLiteralsContext;
@@ -429,7 +429,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     }
     
     @Override
-    public final ASTNode visitDataTypeName_(final DataTypeName_Context ctx) {
+    public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
         return visit(ctx.identifier(0));
     }
     

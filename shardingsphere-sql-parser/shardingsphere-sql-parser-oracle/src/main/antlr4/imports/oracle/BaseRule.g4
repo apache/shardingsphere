@@ -308,14 +308,14 @@ lobItemList
     ;
 
 dataType
-    : dataTypeName_ dataTypeLength? | specialDatatype | dataTypeName_ dataTypeLength? datetimeTypeSuffix
+    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix
     ;
 
 specialDatatype
-    : dataTypeName_ (LP_ NUMBER_ IDENTIFIER_ RP_) | NATIONAL dataTypeName_ VARYING? LP_ NUMBER_ RP_ | dataTypeName_ LP_? columnName RP_?
+    : dataTypeName (LP_ NUMBER_ IDENTIFIER_ RP_) | NATIONAL dataTypeName VARYING? LP_ NUMBER_ RP_ | dataTypeName LP_? columnName RP_?
     ;
 
-dataTypeName_
+dataTypeName
     : IDENTIFIER_ IDENTIFIER_ | IDENTIFIER_
     ;
 
@@ -324,7 +324,7 @@ datetimeTypeSuffix
     ;
 
 treatFunction
-    : TREAT LP_ expr AS REF? dataTypeName_ RP_
+    : TREAT LP_ expr AS REF? dataTypeName RP_
     ;
 
 privateExprOfDb
@@ -356,7 +356,7 @@ objectAccessExpression
     ;
 
 constructorExpr
-    : NEW dataTypeName_ exprList
+    : NEW dataTypeName exprList
     ;
 
 ignoredIdentifier_
