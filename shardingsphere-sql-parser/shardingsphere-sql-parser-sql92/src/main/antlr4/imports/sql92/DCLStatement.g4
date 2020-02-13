@@ -20,14 +20,14 @@ grammar DCLStatement;
 import Symbol, Keyword, SQL92Keyword, Literals, BaseRule;
 
 grant
-    : GRANT privilegeClause_ TO grantee_ (COMMA_ grantee_)* (WITH GRANT OPTION)?
+    : GRANT privilegeClause TO grantee_ (COMMA_ grantee_)* (WITH GRANT OPTION)?
     ;
 
 revoke
-    : REVOKE (GRANT OPTION FOR)? privilegeClause_ FROM grantee_ (COMMA_ grantee_)* dropBehaviour_
+    : REVOKE (GRANT OPTION FOR)? privilegeClause FROM grantee_ (COMMA_ grantee_)* dropBehaviour_
     ;  
 
-privilegeClause_
+privilegeClause
     : privileges_ ON onObjectClause_
     ;
 
