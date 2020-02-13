@@ -58,8 +58,8 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getTables().add(table);
         result.getAllSQLSegments().add(table);
-        if (null != ctx.createDefinitionClause_()) {
-            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause_());
+        if (null != ctx.createDefinitionClause()) {
+            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
             result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
             for (SQLSegment each : createDefinition.getAllSQLSegments()) {
                 result.getAllSQLSegments().add(each);
@@ -77,8 +77,8 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
         TableSegment table = (TableSegment) visit(ctx.tableNameClause());
         result.getTables().add(table);
         result.getAllSQLSegments().add(table);
-        if (null != ctx.alterDefinitionClause_()) {
-            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause_());
+        if (null != ctx.alterDefinitionClause()) {
+            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
             result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
             result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());
@@ -93,7 +93,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
     }
     
 //    @Override
-//    public ASTNode visitAlterDefinitionClause_(final AlterDefinitionClause_Context ctx) {
+//    public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
 //        final AlterTableStatement result = new AlterTableStatement();
 //        for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
 //            AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();

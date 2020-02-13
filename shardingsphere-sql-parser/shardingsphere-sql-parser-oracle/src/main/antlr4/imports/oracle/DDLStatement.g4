@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause_
+    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause
     ;
 
 createIndex
@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_
+    : ALTER TABLE tableName alterDefinitionClause
     ;
 
 // TODO hongjun throw exeption when alter index on oracle
@@ -64,7 +64,7 @@ domainIndexClause
     : indexTypeName
     ;
 
-createDefinitionClause_
+createDefinitionClause
     : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
 
@@ -212,7 +212,7 @@ tableAlias
     : tableName alias? (COMMA_ tableName alias?)*
     ;
 
-alterDefinitionClause_
+alterDefinitionClause
     : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
     ;
 

@@ -28,7 +28,7 @@ revoke
     ;
 
 objectPrivilegeClause_
-    : objectPrivileges_ ON onObjectClause_
+    : objectPrivileges_ ON onObjectClause
     ;
 
 systemPrivilegeClause_
@@ -67,7 +67,7 @@ objectPrivilegeType_
     | MERGE VIEW
     ;
 
-onObjectClause_
+onObjectClause
     : USER | DIRECTORY | EDITION | MINING MODEL | SQL TRANSLATION PROFILE
     | JAVA (SOURCE | RESOURCE) tableName
     | tableName

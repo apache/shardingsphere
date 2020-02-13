@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName createDefinitionClause_ inheritClause_
+    : CREATE createTableSpecification_ TABLE tableNotExistClause_ tableName createDefinitionClause inheritClause_
     ;
 
 createIndex
@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause_
+    : ALTER TABLE tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause
     ;
 
 alterIndex
@@ -55,7 +55,7 @@ tableNotExistClause_
     : (IF NOT EXISTS)?
     ;
 
-createDefinitionClause_
+createDefinitionClause
     : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
     ;
 
@@ -168,7 +168,7 @@ asteriskClause_
     : ASTERISK_?
     ;
 
-alterDefinitionClause_
+alterDefinitionClause
     : alterTableActions | renameColumnSpecification | renameConstraint | renameTableSpecification_
     ;
 

@@ -61,7 +61,7 @@ literalsType_
     ;
 
 identifier
-    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord_ 
+    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord 
     ;
 
 unicodeEscapes_
@@ -72,7 +72,7 @@ uescape_
     : UESCAPE STRING_
     ;
     
-unreservedWord_
+unreservedWord
     : ADMIN | ESCAPE | EXCLUDE | KEY | PARTITION | SET | UNKNOWN 
     | ADD | ALTER | ALWAYS | CASCADE | COMMIT | CURRENT | DAY 
     | DELETE | DISABLE | DROP | ENABLE | FUNCTION | GENERATED | INDEX
@@ -211,10 +211,10 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ filterClause_?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ filterClause_?
     ;
 
-aggregationFunctionName_
+aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG
     ;
 

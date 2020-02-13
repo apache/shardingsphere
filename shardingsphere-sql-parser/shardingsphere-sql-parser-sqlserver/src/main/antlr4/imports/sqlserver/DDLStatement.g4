@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE TABLE tableName fileTableClause_ createDefinitionClause_
+    : CREATE TABLE tableName fileTableClause_ createDefinitionClause
     ;
 
 createIndex
@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_
+    : ALTER TABLE tableName alterDefinitionClause
     ;
 
 alterIndex
@@ -51,7 +51,7 @@ fileTableClause_
     : (AS FILETABLE)?
     ;
 
-createDefinitionClause_
+createDefinitionClause
     : createTableDefinitions_ partitionScheme_ fileGroup_
     ;
 
@@ -281,7 +281,7 @@ createIndexSpecification_
     : UNIQUE? clusterOption_?
     ;
 
-alterDefinitionClause_
+alterDefinitionClause
     : modifyColumnSpecification | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
     ;
 

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.GrantContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrivilegeClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -50,8 +50,8 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor {
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
-        if (null != ctx.privilegeClause_()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause_())) {
+        if (null != ctx.privilegeClause()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
                 result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
@@ -62,8 +62,8 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor {
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
-        if (null != ctx.privilegeClause_()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause_())) {
+        if (null != ctx.privilegeClause()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
                 result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
@@ -72,8 +72,8 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor {
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<TableSegment> getTableFromPrivilegeClause(final PrivilegeClause_Context ctx) {
-        return null == ctx.onObjectClause_().tableNames() ? Collections.<TableSegment>emptyList() : ((CollectionValue<TableSegment>) visit(ctx.onObjectClause_().tableNames())).getValue();
+    private Collection<TableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
+        return null == ctx.onObjectClause().tableNames() ? Collections.<TableSegment>emptyList() : ((CollectionValue<TableSegment>) visit(ctx.onObjectClause().tableNames())).getValue();
     }
     
     @Override
