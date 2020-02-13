@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ca
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeName_Context;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.HexadecimalLiteralsContext;
@@ -425,6 +426,11 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitDataTypeName_(final DataTypeName_Context ctx) {
+        return visit(ctx.identifier(0));
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date

@@ -18,17 +18,23 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -40,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 import java.util.Collection;
@@ -67,6 +74,25 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
                     result.getTables().add((TableSegment) each);
                 }
             }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
+        CreateTableStatement result = new CreateTableStatement();
+        for (CreateDefinitionContext each : ctx.createDefinition()) {
+            ColumnDefinitionContext columnDefinition = each.columnDefinition();
+            if (null != columnDefinition) {
+                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
+                result.getAllSQLSegments().addAll(getTableSegments(columnDefinition));
+            }
+            if (null != each.tableConstraint()) {
+                result.getAllSQLSegments().addAll(getTableSegments(each.tableConstraint()));
+            }
+        }
+        if (result.getColumnDefinitions().isEmpty()) {
+            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
         }
         return result;
     }
@@ -194,47 +220,22 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
         return new DropIndexStatement();
     }
     
-//    @Override
-//    public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
-//        Collection<InlineDataTypeContext> inlineDataTypes = Collections2.filter(ctx.inlineDataType(), new Predicate<InlineDataTypeContext>() {
-//            
-//            @Override
-//            public boolean apply(final InlineDataTypeContext inlineDataType) {
-//                return null != inlineDataType.commonDataTypeOption() && null != inlineDataType.commonDataTypeOption().primaryKey();
-//            }
-//        });
-//        Collection<GeneratedDataTypeContext> generatedDataTypes = Collections2.filter(ctx.generatedDataType(), new Predicate<GeneratedDataTypeContext>() {
-//            @Override
-//            public boolean apply(final GeneratedDataTypeContext generatedDataType) {
-//                return null != generatedDataType.commonDataTypeOption() && null != generatedDataType.commonDataTypeOption().primaryKey();
-//            }
-//        });
-//        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-//        boolean isPrimaryKey = inlineDataTypes.size() > 0 || generatedDataTypes.size() > 0;
-//        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
-//        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
-//    }
+    @Override
+    public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName_());
+        boolean isPrimaryKey = containsPrimaryKey(ctx);
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+    }
     
-//    @Override
-//    public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
-//        CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
-//        List<AddColumnDefinitionSegment> addColumnDefinitions = Lists.transform(ctx.columnDefinition(), new Function<ColumnDefinitionContext, AddColumnDefinitionSegment>() {
-//            @Override
-//            public AddColumnDefinitionSegment apply(final ColumnDefinitionContext columnDefinition) {
-//                return new AddColumnDefinitionSegment(columnDefinition.getStart().getStartIndex(),
-//                        columnDefinition.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(columnDefinition));
-//            }
-//        });
-//        if (null == ctx.firstOrAfterColumn()) {
-//            result.getValue().addAll(addColumnDefinitions);
-//        } else {
-//            AddColumnDefinitionSegment addColumnDefinition = addColumnDefinitions.get(0);
-//            addColumnDefinition.setColumnPosition(extractColumnDefinition(addColumnDefinition.getColumnDefinition(),
-//                    (ColumnPositionSegment) visit(ctx.firstOrAfterColumn())));
-//            result.getValue().add(addColumnDefinition);
-//        }
-//        return result;
-//    }
+    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
+        for (ColumnConstraintContext each : ctx.columnConstraint()) {
+            if (null != each.columnConstraintOption().primaryKey()) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
@@ -284,4 +285,22 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
 //        }
 //        return result;
 //    }
+    
+    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ColumnConstraintContext each : columnDefinition.columnConstraint()) {
+            if (null != each.columnConstraintOption().tableName()) {
+                result.add((TableSegment) visit(each.columnConstraintOption().tableName()));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final TableConstraintContext tableConstraint) {
+        Collection<TableSegment> result = new LinkedList<>();
+        if (null != tableConstraint.tableConstraintOption().tableName()) {
+            result.add((TableSegment) visit(tableConstraint.tableConstraintOption().tableName()));
+        }
+        return result;
+    }
 }
