@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
@@ -107,6 +105,32 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     }
     
     @Override
+    public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
+        CreateTableStatement result = new CreateTableStatement();
+        for (CreateDefinitionContext each : ctx.createDefinitions().createDefinition()) {
+            ColumnDefinitionContext columnDefinition = each.columnDefinition();
+            if (null != columnDefinition) {
+                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
+                result.getAllSQLSegments().addAll(getTableSegments(columnDefinition));
+            }
+            ConstraintDefinitionContext constraintDefinition = each.constraintDefinition();
+            ForeignKeyOptionContext foreignKeyOption = null == constraintDefinition ? null : constraintDefinition.foreignKeyOption();
+            if (null != foreignKeyOption) {
+                result.getAllSQLSegments().add((TableSegment) visit(foreignKeyOption));
+            }
+        }
+        if (result.getColumnDefinitions().isEmpty()) {
+            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateLikeClause(final CreateLikeClauseContext ctx) {
+        return visit(ctx.tableName());
+    }
+    
+    @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
@@ -166,23 +190,24 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
-        Collection<InlineDataTypeContext> inlineDataTypes = Collections2.filter(ctx.inlineDataType(), new Predicate<InlineDataTypeContext>() {
-            
-            @Override
-            public boolean apply(final InlineDataTypeContext inlineDataType) {
-                return null != inlineDataType.commonDataTypeOption() && null != inlineDataType.commonDataTypeOption().primaryKey();
-            }
-        });
-        Collection<GeneratedDataTypeContext> generatedDataTypes = Collections2.filter(ctx.generatedDataType(), new Predicate<GeneratedDataTypeContext>() {
-            @Override
-            public boolean apply(final GeneratedDataTypeContext generatedDataType) {
-                return null != generatedDataType.commonDataTypeOption() && null != generatedDataType.commonDataTypeOption().primaryKey();
-            }
-        });
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        boolean isPrimaryKey = inlineDataTypes.size() > 0 || generatedDataTypes.size() > 0;
         IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
+        boolean isPrimaryKey = containsPrimaryKey(ctx);
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+    }
+    
+    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
+        for (InlineDataTypeContext each : ctx.inlineDataType()) {
+            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().primaryKey()) {
+                return true;
+            }
+        }
+        for (GeneratedDataTypeContext each : ctx.generatedDataType()) {
+            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().primaryKey()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override
@@ -190,32 +215,6 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         return null == ctx.columnName() ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null)
                 : new ColumnAfterPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null,
                 ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
-    }
-    
-    @Override
-    public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
-        for (CreateDefinitionContext createDefinition : ctx.createDefinitions().createDefinition()) {
-            ColumnDefinitionContext columnDefinition = createDefinition.columnDefinition();
-            if (null != columnDefinition) {
-                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
-                result.getAllSQLSegments().addAll(extractColumnDefinition(columnDefinition));
-            }
-            ConstraintDefinitionContext constraintDefinition = createDefinition.constraintDefinition();
-            ForeignKeyOptionContext foreignKeyOption = null == constraintDefinition ? null : constraintDefinition.foreignKeyOption();
-            if (null != foreignKeyOption) {
-                result.getAllSQLSegments().add((TableSegment) visit(foreignKeyOption));
-            }
-        }
-        if (result.getColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitCreateLikeClause(final CreateLikeClauseContext ctx) {
-        return visit(ctx.tableName());
     }
     
     @SuppressWarnings("unchecked")
@@ -233,7 +232,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
                         result.getChangedPositionColumns().add(columnPositionSegment.get());
                     }
                 }
-                result.getAllSQLSegments().addAll(extractColumnDefinitions(addColumnSpecification.columnDefinition()));
+                result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
             }
             AddConstraintSpecificationContext addConstraintSpecification = alterSpecification.addConstraintSpecification();
             ForeignKeyOptionContext foreignKeyOption = null == addConstraintSpecification
@@ -247,7 +246,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
                 if (columnPositionSegment.isPresent()) {
                     result.getChangedPositionColumns().add(columnPositionSegment.get());
                 }
-                result.getAllSQLSegments().addAll(extractColumnDefinition(changeColumnSpecification.columnDefinition()));
+                result.getAllSQLSegments().addAll(getTableSegments(changeColumnSpecification.columnDefinition()));
             }
             DropColumnSpecificationContext dropColumnSpecification = alterSpecification.dropColumnSpecification();
             if (null != dropColumnSpecification) {
@@ -259,7 +258,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
                 if (columnPositionSegment.isPresent()) {
                     result.getChangedPositionColumns().add(columnPositionSegment.get());
                 }
-                result.getAllSQLSegments().addAll(extractColumnDefinition(modifyColumnSpecification.columnDefinition()));
+                result.getAllSQLSegments().addAll(getTableSegments(modifyColumnSpecification.columnDefinition()));
             }
         }
         if (result.getAddedColumnDefinitions().isEmpty()) {
@@ -285,7 +284,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
             result.getValue().addAll(addColumnDefinitions);
         } else {
             AddColumnDefinitionSegment addColumnDefinition = addColumnDefinitions.get(0);
-            addColumnDefinition.setColumnPosition(extractColumnDefinition(addColumnDefinition.getColumnDefinition(),
+            addColumnDefinition.setColumnPosition(getColumnPositionSegment(addColumnDefinition.getColumnDefinition(),
                     (ColumnPositionSegment) visit(ctx.firstOrAfterColumn())));
             result.getValue().add(addColumnDefinition);
         }
@@ -334,38 +333,38 @@ public final class MySQLDDLVisitor extends MySQLVisitor {
         ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(start.getStartIndex(), stop.getStopIndex(),
                 (ColumnDefinitionSegment) visit(columnDefinition));
         if (null != firstOrAfterColumn) {
-            result.setColumnPosition(extractColumnDefinition(result.getColumnDefinition(), (ColumnPositionSegment) visit(firstOrAfterColumn)));
+            result.setColumnPosition(getColumnPositionSegment(result.getColumnDefinition(), (ColumnPositionSegment) visit(firstOrAfterColumn)));
         }
         return result;
     }
     
-    private ColumnPositionSegment extractColumnDefinition(final ColumnDefinitionSegment columnDefinition, final ColumnPositionSegment columnPosition) {
+    private Collection<TableSegment> getTableSegments(final List<ColumnDefinitionContext> columnDefinitions) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ColumnDefinitionContext each : columnDefinitions) {
+            result.addAll(getTableSegments(each));
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (InlineDataTypeContext each : columnDefinition.inlineDataType()) {
+            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.commonDataTypeOption().referenceDefinition()));
+            }
+        }
+        for (GeneratedDataTypeContext each : columnDefinition.generatedDataType()) {
+            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.commonDataTypeOption().referenceDefinition()));
+            }
+        }
+        return result;
+    }
+    
+    private ColumnPositionSegment getColumnPositionSegment(final ColumnDefinitionSegment columnDefinition, final ColumnPositionSegment columnPosition) {
         return columnPosition instanceof ColumnFirstPositionSegment
                 ? new ColumnFirstPositionSegment(columnPosition.getStartIndex(), columnPosition.getStopIndex(), columnDefinition.getColumnName())
                 : new ColumnAfterPositionSegment(columnPosition.getStartIndex(), columnPosition.getStopIndex(), columnDefinition.getColumnName(),
                 ((ColumnAfterPositionSegment) columnPosition).getAfterColumnName());
-    }
-    
-    private Collection<TableSegment> extractColumnDefinition(final ColumnDefinitionContext columnDefinition) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (InlineDataTypeContext inlineDataType : columnDefinition.inlineDataType()) {
-            if (null != inlineDataType.commonDataTypeOption() && null != inlineDataType.commonDataTypeOption().referenceDefinition()) {
-                result.add((TableSegment) visit(inlineDataType.commonDataTypeOption().referenceDefinition()));
-            }
-        }
-        for (GeneratedDataTypeContext generatedDataType : columnDefinition.generatedDataType()) {
-            if (null != generatedDataType.commonDataTypeOption() && null != generatedDataType.commonDataTypeOption().referenceDefinition()) {
-                result.add((TableSegment) visit(generatedDataType.commonDataTypeOption().referenceDefinition()));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<TableSegment> extractColumnDefinitions(final List<ColumnDefinitionContext> columnDefinitions) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ColumnDefinitionContext columnDefinition : columnDefinitions) {
-            result.addAll(extractColumnDefinition(columnDefinition));
-        }
-        return result;
     }
 }
