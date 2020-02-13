@@ -28,7 +28,7 @@ revoke
     ;
 
 privilegeClause
-    : privileges_ ON onObjectClause_
+    : privileges_ ON onObjectClause
     ;
     
 roleClause_
@@ -60,7 +60,7 @@ privilegeType_
     | ALL PRIVILEGES?
     ;
 
-onObjectClause_
+onObjectClause
     : DATABASE 
     | SCHEMA
     | DOMAIN

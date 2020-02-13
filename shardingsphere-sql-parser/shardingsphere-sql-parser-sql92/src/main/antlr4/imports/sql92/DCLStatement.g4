@@ -28,7 +28,7 @@ revoke
     ;  
 
 privilegeClause
-    : privileges_ ON onObjectClause_
+    : privileges_ ON onObjectClause
     ;
 
 privileges_
@@ -49,7 +49,7 @@ grantee_
     : PUBLIC | identifier
     ;
 
-onObjectClause_
+onObjectClause
     : objectType_? privilegeLevel_
     ;
 
