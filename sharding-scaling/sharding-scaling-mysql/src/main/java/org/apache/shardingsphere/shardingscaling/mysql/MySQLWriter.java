@@ -21,8 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractJdbcWriter;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractSqlBuilder;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-
-import javax.sql.DataSource;
+import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
 
 /**
  * MySQL writer.
@@ -37,8 +36,8 @@ public final class MySQLWriter extends AbstractJdbcWriter {
     }
     
     @Override
-    public AbstractSqlBuilder createSqlBuilder(final DataSource dataSource) {
-        return new AbstractSqlBuilder(dataSource) {
+    public AbstractSqlBuilder createSqlBuilder(final DbMetaDataUtil dbMetaDataUtil) {
+        return new AbstractSqlBuilder(dbMetaDataUtil) {
             
             @Override
             public String getLeftIdentifierQuoteString() {

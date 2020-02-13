@@ -25,7 +25,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -47,8 +46,8 @@ public abstract class AbstractSqlBuilder {
     @Getter(value = AccessLevel.PROTECTED)
     private final DbMetaDataUtil dbMetaDataUtil;
     
-    public AbstractSqlBuilder(final DataSource dataSource) {
-        this.dbMetaDataUtil = new DbMetaDataUtil(dataSource);
+    public AbstractSqlBuilder(final DbMetaDataUtil dbMetaDataUtil) {
+        this.dbMetaDataUtil = dbMetaDataUtil;
         sqlCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
                 .build(new CacheLoader<String, String>() {
