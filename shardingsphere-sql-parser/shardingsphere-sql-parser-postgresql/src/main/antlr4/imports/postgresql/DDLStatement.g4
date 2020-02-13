@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause_
+    : ALTER TABLE tableExistClause_ onlyClause_ tableNameClause alterDefinitionClause
     ;
 
 alterIndex
@@ -168,7 +168,7 @@ asteriskClause_
     : ASTERISK_?
     ;
 
-alterDefinitionClause_
+alterDefinitionClause
     : alterTableActions | renameColumnSpecification | renameConstraint | renameTableSpecification_
     ;
 

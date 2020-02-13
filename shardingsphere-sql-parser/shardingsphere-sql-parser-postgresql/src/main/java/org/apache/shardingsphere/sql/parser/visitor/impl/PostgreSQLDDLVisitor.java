@@ -77,8 +77,8 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
         TableSegment table = (TableSegment) visit(ctx.tableNameClause());
         result.getTables().add(table);
         result.getAllSQLSegments().add(table);
-        if (null != ctx.alterDefinitionClause_()) {
-            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause_());
+        if (null != ctx.alterDefinitionClause()) {
+            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
             result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
             result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());

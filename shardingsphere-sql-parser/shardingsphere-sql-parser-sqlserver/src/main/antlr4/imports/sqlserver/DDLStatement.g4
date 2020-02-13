@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_
+    : ALTER TABLE tableName alterDefinitionClause
     ;
 
 alterIndex
@@ -281,7 +281,7 @@ createIndexSpecification_
     : UNIQUE? clusterOption_?
     ;
 
-alterDefinitionClause_
+alterDefinitionClause
     : modifyColumnSpecification | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
     ;
 

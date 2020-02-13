@@ -24,7 +24,7 @@ createTable
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_
+    : ALTER TABLE tableName alterDefinitionClause
     ;
 
 dropTable
@@ -130,7 +130,7 @@ createLikeClause_
     : LP_? LIKE tableName RP_?
     ;
 
-alterDefinitionClause_
+alterDefinitionClause
     : alterSpecification_
     ;
 

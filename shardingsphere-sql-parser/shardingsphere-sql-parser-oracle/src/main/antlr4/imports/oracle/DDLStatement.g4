@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_
+    : ALTER TABLE tableName alterDefinitionClause
     ;
 
 // TODO hongjun throw exeption when alter index on oracle
@@ -212,7 +212,7 @@ tableAlias
     : tableName alias? (COMMA_ tableName alias?)*
     ;
 
-alterDefinitionClause_
+alterDefinitionClause
     : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
     ;
 
