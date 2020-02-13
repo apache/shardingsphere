@@ -17,67 +17,69 @@
 
 package org.apache.shardingsphere.orchestration.center.instance;
 
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.openapi.client.ApolloOpenApiClient;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.ctrip.framework.apollo.mockserver.EmbeddedApollo;
+import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.instance.node.ConfigTreeNode;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.FieldSetter;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.util.Set;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ApolloInstanceTest {
+    
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
+    
+    @ClassRule
+    public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
     
     private static ConfigCenter configCenter = new ApolloInstance();
     
     @BeforeClass
     @SneakyThrows
     public static void init() {
-        Config apolloConfig = mock(Config.class);
-        when(apolloConfig.getProperty("test.children.1", "")).thenReturn("value1");
-        when(apolloConfig.getProperty("test2", "")).thenReturn("value2");
-        FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("apolloConfig"), apolloConfig);
-        Set<String> instanceKeys = Sets.newHashSet();
-        instanceKeys.add("test.children.1");
-        instanceKeys.add("test.children.2");
-        instanceKeys.add("test1.children.3");
-        instanceKeys.add("test2");
-        ConfigTreeNode tree = ConfigTreeNode.create(instanceKeys, ".");
-        FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("tree"), tree);
-        ApolloOpenApiClient client = mock(ApolloOpenApiClient.class);
-        FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("client"), client);
+        InstanceConfiguration configuration = new InstanceConfiguration("apollo");
+        configuration.setServerLists("http://config-service-url");
+        configuration.setNamespace("orchestration");
+        Properties properties = new Properties();
+        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, properties);
+        FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("configWrapper"), configWrapper);
     }
     
     @Test
     public void assertGet() {
-        assertThat(configCenter.get("/test2"), is("value2"));
-        assertThat(configCenter.get("/test/children/1"), is("value1"));
+        assertThat(configCenter.get("/test/children/2"), is("value2"));
     }
     
     @Test
-    public void assertGetChildrenKeys() {
-        assertThat(configCenter.getChildrenKeys("/").size(), is(3));
-        assertThat(configCenter.getChildrenKeys("/test/children").size(), is(2));
-        assertEquals(configCenter.getChildrenKeys("/test1/children"), Lists.newArrayList("/test1/children/3"));
-    }
-    
-    @Test
-    public void assertPersist() {
-        configCenter.persist("/test1/children2/4", "value4");
-        assertThat(configCenter.getChildrenKeys("/test1/children2").size(), is(1));
-        assertEquals(configCenter.getChildrenKeys("/test1/children2"), Lists.newArrayList("/test1/children2/4"));
+    @SneakyThrows
+    public void assertWatch() {
+        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
+        configCenter.watch("/test/children/1", new DataChangedEventListener() {
+            
+            @Override
+            public void onChange(final DataChangedEvent dataChangedEvent) {
+                future.set(dataChangedEvent);
+            }
+        });
+        embeddedApollo.addOrModifyProperty("orchestration", "test.children.1", "value3");
+        DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
+        assertThat(changeEvent.getKey(), is("/test/children/1"));
+        assertThat(changeEvent.getValue(), is("value3"));
+        assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
     }
 }

@@ -21,16 +21,14 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-
+import com.google.common.collect.Sets;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
@@ -47,11 +45,14 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.PostSh
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import java.util.Set;
 
 /**
  * Schema changed listener.
@@ -76,6 +77,9 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
     
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+        if (configurationNode.getSchemaPath().equals(event.getKey())) {
+            return createSchemaNamesUpdatedEvent(event.getValue());
+        }
         String shardingSchemaName = configurationNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(shardingSchemaName) || !isValidNodeChangedEvent(shardingSchemaName, event.getKey())) {
             return new IgnoredShardingOrchestrationEvent();
@@ -85,6 +89,19 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
         }
         if (ChangedType.DELETED == event.getChangedType()) {
             return createDeletedEvent(shardingSchemaName);
+        }
+        return new IgnoredShardingOrchestrationEvent();
+    }
+    
+    private ShardingOrchestrationEvent createSchemaNamesUpdatedEvent(final String shardingSchemaNames) {
+        Collection<String> persistShardingSchemaNames = configurationNode.splitShardingSchemaName(shardingSchemaNames);
+        Set<String> addedSchemaNames = Sets.difference(Sets.newHashSet(persistShardingSchemaNames), Sets.newHashSet(existedSchemaNames));
+        if (addedSchemaNames != null && addedSchemaNames.size() > 0) {
+            return createUpdatedEventForNewSchema(addedSchemaNames.iterator().next());
+        }
+        Set<String> deletedSchemaNames = Sets.difference(Sets.newHashSet(existedSchemaNames), Sets.newHashSet(persistShardingSchemaNames));
+        if (deletedSchemaNames != null && deletedSchemaNames.size() > 0) {
+            return createDeletedEvent(deletedSchemaNames.iterator().next());
         }
         return new IgnoredShardingOrchestrationEvent();
     }

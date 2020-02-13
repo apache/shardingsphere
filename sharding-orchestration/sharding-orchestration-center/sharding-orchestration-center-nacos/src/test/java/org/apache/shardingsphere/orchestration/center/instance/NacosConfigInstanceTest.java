@@ -71,7 +71,7 @@ public class NacosConfigInstanceTest {
     @SneakyThrows
     public void assertPersist() {
         String value = "value";
-        nacosConfigCenter.persist("sharding/test", value);
+        nacosConfigCenter.persist("/sharding/test", value);
         verify(configService).publishConfig("sharding.test", group, value);
     }
     
@@ -80,7 +80,7 @@ public class NacosConfigInstanceTest {
     public void assertGet() {
         String value = "value";
         when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn(value);
-        Assert.assertEquals(value, nacosConfigCenter.get("sharding/test"));
+        Assert.assertEquals(value, nacosConfigCenter.get("/sharding/test"));
     }
     
     @Test
@@ -92,17 +92,19 @@ public class NacosConfigInstanceTest {
             .when(configService)
             .addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = new DataChangedEventListener() {
+            
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 actualValue[0] = dataChangedEvent.getValue();
             }
         };
-        nacosConfigCenter.watch("sharding/test", listener);
+        nacosConfigCenter.watch("/sharding/test", listener);
         Assert.assertEquals(expectValue, actualValue[0]);
     }
     
     private VoidAnswer3 getListenerAnswer(final String expectValue) {
         return new VoidAnswer3<String, String, Listener>() {
+            
             @Override
             public void answer(final String dataId, final String group, final Listener listener) {
                 listener.receiveConfigInfo(expectValue);

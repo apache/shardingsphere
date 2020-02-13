@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.orchestration.internal.registry.config.node;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +49,10 @@ public final class ConfigurationNode {
     
     private static final String PROPS_NODE = "props";
     
+    private static final String COMMA_SEPARATOR = ",";
+    
+    private static final String PATH_SEPARATOR = "/";
+    
     private final String name;
     
     /**
@@ -54,7 +61,17 @@ public final class ConfigurationNode {
      * @return schema path
      */
     public String getSchemaPath() {
-        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE);
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE);
+    }
+    
+    /**
+     * Get schema name path.
+     * 
+     * @param schemaName schema name
+     * @return schema name path
+     */
+    public String getSchemaNamePath(final String schemaName) {
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE, schemaName);
     }
     
     /**
@@ -96,11 +113,11 @@ public final class ConfigurationNode {
     }
     
     private String getFullPath(final String schemaName, final String node) {
-        return Joiner.on("/").join("", name, ROOT, SCHEMA_NODE, schemaName, node);
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, SCHEMA_NODE, schemaName, node);
     }
     
     private String getFullPath(final String node) {
-        return Joiner.on("/").join("", name, ROOT, node);
+        return Joiner.on(PATH_SEPARATOR).join("", name, ROOT, node);
     }
     
     /**
@@ -120,6 +137,19 @@ public final class ConfigurationNode {
     }
     
     /**
+     * Split sharding schema name.
+     * 
+     * @param shardingSchemaNames sharding schema names
+     * @return sharding schema names
+     */
+    public Collection<String> splitShardingSchemaName(final String shardingSchemaNames) {
+        if (Strings.isNullOrEmpty(shardingSchemaNames)) {
+            return Collections.emptyList();
+        }
+        return Splitter.on(COMMA_SEPARATOR).splitToList(shardingSchemaNames);
+    }
+    
+    /**
      * Get all schema config paths.
      * 
      * @param schemaNames schema names.
@@ -127,7 +157,9 @@ public final class ConfigurationNode {
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
         Collection<String> result = Lists.newArrayList();
+        result.add(getSchemaPath());
         for (String schemaName : schemaNames) {
+            result.add(getSchemaNamePath(schemaName));
             result.add(getRulePath(schemaName));
             result.add(getDataSourcePath(schemaName));
         }
