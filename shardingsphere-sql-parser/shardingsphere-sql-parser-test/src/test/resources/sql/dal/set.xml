@@ -18,16 +18,16 @@
 
 <sql-parser-test-cases>
     <set-variable sql-case-id="set_parameter_equal" />
-    <common sql-case-id="set_parameter_to" />
-    <common sql-case-id="set_parameter_for_session_scope" />
-    <common sql-case-id="set_parameter_for_local_scope" />
-    <common sql-case-id="set_parameter_for_default_scope" />
-    <common sql-case-id="set_timezone_with_zero_value" />
-    <common sql-case-id="set_timezone_with_positive_value" />
-    <common sql-case-id="set_timezone_with_negative_value" />
-    <common sql-case-id="set_timezone_with_double_value" />
-    <common sql-case-id="set_timezone_for_default_scope" />
-    <common sql-case-id="set_timezone_for_local_scope" />
-    <common sql-case-id="set_timezone_for_session_scope" />
-    <common sql-case-id="set_timezone_for_local_scope_with_double_value" />
+    <set-variable sql-case-id="set_parameter_to" />
+    <set-variable sql-case-id="set_parameter_for_session_scope" />
+    <set-variable sql-case-id="set_parameter_for_local_scope" />
+    <set-variable sql-case-id="set_parameter_for_default_scope" />
+    <set-variable sql-case-id="set_timezone_with_zero_value" />
+    <set-variable sql-case-id="set_timezone_with_positive_value" />
+    <set-variable sql-case-id="set_timezone_with_negative_value" />
+    <set-variable sql-case-id="set_timezone_with_double_value" />
+    <set-variable sql-case-id="set_timezone_for_default_scope" />
+    <set-variable sql-case-id="set_timezone_for_local_scope" />
+    <set-variable sql-case-id="set_timezone_for_session_scope" />
+    <set-variable sql-case-id="set_timezone_for_local_scope_with_double_value" />
 </sql-parser-test-cases>
