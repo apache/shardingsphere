@@ -145,6 +145,8 @@ public final class VisitorParameterizedParsingTest {
         sqlCases.add("select_pagination_with_row_number_and_group_by_and_order_by");
         sqlCases.add("select_pagination_with_row_number_for_greater_than");
         sqlCases.add("select_pagination_with_row_number_for_greater_than_and_equal");
+        sqlCases.add("alter_table_add_foreign_key");
+        sqlCases.add("alter_table_add_primary_foreign_key");
         return sqlCases.contains(sqlCaseId);
     }
     

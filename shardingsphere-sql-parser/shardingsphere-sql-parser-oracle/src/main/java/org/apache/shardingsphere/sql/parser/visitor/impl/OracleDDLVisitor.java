@@ -17,27 +17,43 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnOrVirtualDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OperateColumnClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VirtualColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
 
@@ -128,102 +144,118 @@ public final class OracleDDLVisitor extends OracleVisitor {
         return result;
     }
     
-//    @Override
-//    public ASTNode visitAlterTable(final AlterTableContext ctx) {
-//        AlterTableStatement result = new AlterTableStatement();
-//        TableSegment table = (TableSegment) visit(ctx.tableNameClause());
-//        result.getTables().add(table);
-//        result.getAllSQLSegments().add(table);
-//        if (null != ctx.alterDefinitionClause()) {
-//            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
-//            result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
-//            result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
-//            result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());
-//            for (SQLSegment each : alterDefinition.getAllSQLSegments()) {
-//                result.getAllSQLSegments().add(each);
-//                if (each instanceof TableSegment) {
-//                    result.getTables().add((TableSegment) each);
-//                }
-//            }
-//        }
-//        return result;
-//    }
-//    
-//    @SuppressWarnings("unchecked")
-//    @Override
-//    public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
-//        final AlterTableStatement result = new AlterTableStatement();
-//        if (null != ctx.alterTableActions()) {
-//            for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
-//                AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
-//                if (null != addColumnSpecification) {
-//                    CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
-//                    for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-//                        result.getAddedColumnDefinitions().add(addColumnDefinition.getColumnDefinition());
-//                        Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
-//                        // TODO refactor SQLStatement
-//                        // CHECKSTYLE:OFF
-//                        if (columnPositionSegment.isPresent()) {
-//                            result.getChangedPositionColumns().add(columnPositionSegment.get());
-//                        }
-//                        // CHECKSTYLE:ON
-//                    }
-//                    result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
-//                }
-//                AddConstraintSpecificationContext addConstraintSpecification = each.addConstraintSpecification();
-//                TableConstraintOptionContext tableConstraintOption = null == addConstraintSpecification || null == addConstraintSpecification.tableConstraint()
-//                        ? null : addConstraintSpecification.tableConstraint().tableConstraintOption();
-//                if (null != tableConstraintOption && null != tableConstraintOption.tableName()) {
-//                    result.getAllSQLSegments().add((TableSegment) visit(tableConstraintOption.tableName()));
-//                }
-//                ModifyColumnSpecificationContext modifyColumnSpecification = each.modifyColumnSpecification();
-//                if (null != modifyColumnSpecification) {
-//                    Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
-//                    // TODO refactor SQLStatement
-//                    // CHECKSTYLE:OFF
-//                    if (columnPositionSegment.isPresent()) {
-//                        result.getChangedPositionColumns().add(columnPositionSegment.get());
-//                    }
-//                    // CHECKSTYLE:ON
-//                }
-//                DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
-//                if (null != dropColumnSpecification) {
-//                    result.getDroppedColumnNames().add(((DropColumnDefinitionSegment) visit(dropColumnSpecification)).getColumnName());
-//                }
-//            }
-//        }
-//        if (result.getAddedColumnDefinitions().isEmpty()) {
-//            result.getAllSQLSegments().addAll(result.getAddedColumnDefinitions());
-//        }
-//        if (result.getChangedPositionColumns().isEmpty()) {
-//            result.getAllSQLSegments().addAll(result.getChangedPositionColumns());
-//        }
-//        return result;
-//    }
-//    
-//    @Override
-//    public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
-//        CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
-//        ColumnDefinitionContext columnDefinition = ctx.columnDefinition();
-//        if (null != columnDefinition) {
-//            AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
-//                    ctx.columnDefinition().getStart().getStartIndex(), columnDefinition.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(columnDefinition));
-//            result.getValue().add(addColumnDefinition);
-//        }
-//        return result;
-//    }
-//    
-//    @Override
-//    public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
-//        // TODO visit column definition, need to change g4 for modifyColumn
-//        return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null);
-//    }
-//    
-//    @Override
-//    public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-//        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-//                ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
-//    }
+    private Collection<TableSegment> getTableSegments(final VirtualColumnDefinitionContext virtualColumnDefinition) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (InlineConstraintContext each : virtualColumnDefinition.inlineConstraint()) {
+            if (null != each.referencesClause()) {
+                result.add((TableSegment) visit(each.referencesClause().tableName()));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterTable(final AlterTableContext ctx) {
+        AlterTableStatement result = new AlterTableStatement();
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        result.getTables().add(table);
+        result.getAllSQLSegments().add(table);
+        if (null != ctx.alterDefinitionClause()) {
+            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
+            result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
+            result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
+            result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());
+            for (SQLSegment each : alterDefinition.getAllSQLSegments()) {
+                result.getAllSQLSegments().add(each);
+                if (each instanceof TableSegment) {
+                    result.getTables().add((TableSegment) each);
+                }
+            }
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
+        final AlterTableStatement result = new AlterTableStatement();
+        if (null != ctx.columnClauses()) {
+            for (OperateColumnClauseContext each : ctx.columnClauses().operateColumnClause()) {
+                AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
+                if (null != addColumnSpecification) {
+                    CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
+                    for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
+                        result.getAddedColumnDefinitions().add(addColumnDefinition.getColumnDefinition());
+                        Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
+                        // TODO refactor SQLStatement
+                        // CHECKSTYLE:OFF
+                        if (columnPositionSegment.isPresent()) {
+                            result.getChangedPositionColumns().add(columnPositionSegment.get());
+                        }
+                        // CHECKSTYLE:ON
+                    }
+                    for (ColumnOrVirtualDefinitionContext columnOrVirtualDefinition : addColumnSpecification.columnOrVirtualDefinitions().columnOrVirtualDefinition()) {
+                        // TODO refactor SQLStatement
+                        // CHECKSTYLE:OFF
+                        if (null != columnOrVirtualDefinition.columnDefinition()) {
+                            result.getAllSQLSegments().addAll(getTableSegments(columnOrVirtualDefinition.columnDefinition()));
+                        }
+                        if (null != columnOrVirtualDefinition.virtualColumnDefinition()) {
+                            result.getAllSQLSegments().addAll(getTableSegments(columnOrVirtualDefinition.virtualColumnDefinition()));
+                        }
+                        // CHECKSTYLE:ON
+                    }
+                }
+                ModifyColumnSpecificationContext modifyColumnSpecification = each.modifyColumnSpecification();
+                if (null != modifyColumnSpecification) {
+                    Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
+                    // TODO refactor SQLStatement
+                    // CHECKSTYLE:OFF
+                    if (columnPositionSegment.isPresent()) {
+                        result.getChangedPositionColumns().add(columnPositionSegment.get());
+                    }
+                    // CHECKSTYLE:ON
+                }
+                DropColumnClauseContext dropColumnClause = each.dropColumnClause();
+                if (null != dropColumnClause) {
+                    result.getDroppedColumnNames().add(((DropColumnDefinitionSegment) visit(dropColumnClause)).getColumnName());
+                }
+            }
+        }
+        if (result.getAddedColumnDefinitions().isEmpty()) {
+            result.getAllSQLSegments().addAll(result.getAddedColumnDefinitions());
+        }
+        if (result.getChangedPositionColumns().isEmpty()) {
+            result.getAllSQLSegments().addAll(result.getChangedPositionColumns());
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
+        CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
+        for (ColumnOrVirtualDefinitionContext each : ctx.columnOrVirtualDefinitions().columnOrVirtualDefinition()) {
+            if (null != each.columnDefinition()) {
+                AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
+                        each.columnDefinition().getStart().getStartIndex(), each.columnDefinition().getStop().getStopIndex(), (ColumnDefinitionSegment) visit(each.columnDefinition()));
+                result.getValue().add(addColumnDefinition);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
+        // TODO visit column definition, need to change g4 for modifyColumn
+        return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null);
+    }
+
+    @Override
+    public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
+        // TODO can drop multiple columns
+        return new DropColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ColumnSegment) visit(ctx.columnOrColumnList().columnName(0))).getIdentifier().getValue());
+    }
     
     @SuppressWarnings("unchecked")
     @Override
