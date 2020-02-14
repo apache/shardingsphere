@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Ab
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.AbstractSqlBuilder;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.DbMetaDataUtil;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public final class PostgreSQLWriter extends AbstractJdbcWriter {
     }
     
     @Override
-    public AbstractSqlBuilder createSqlBuilder(final DbMetaDataUtil dbMetaDataUtil) {
+    protected AbstractSqlBuilder createSqlBuilder(final DbMetaDataUtil dbMetaDataUtil) {
         return new PostgreSQLSqlBuilder(dbMetaDataUtil);
     }
     

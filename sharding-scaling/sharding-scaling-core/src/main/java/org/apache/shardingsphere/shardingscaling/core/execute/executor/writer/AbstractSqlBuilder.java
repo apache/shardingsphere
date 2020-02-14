@@ -23,7 +23,7 @@ import com.google.common.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.DbMetaDataUtil;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;

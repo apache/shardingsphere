@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Fi
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.DbMetaDataUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -73,7 +73,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
      * @param dbMetaDataUtil database metadata util
      * @return sql builder
      */
-    public abstract AbstractSqlBuilder createSqlBuilder(DbMetaDataUtil dbMetaDataUtil);
+    protected abstract AbstractSqlBuilder createSqlBuilder(DbMetaDataUtil dbMetaDataUtil);
     
     @Override
     public final void run() {

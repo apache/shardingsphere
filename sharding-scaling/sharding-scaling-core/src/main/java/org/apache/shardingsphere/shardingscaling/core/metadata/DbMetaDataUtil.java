@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.util;
+package org.apache.shardingsphere.shardingscaling.core.metadata;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
