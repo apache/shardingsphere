@@ -243,6 +243,8 @@ public enum RuleName {
     
     SET("Set"),
     
+    RESET_PARAMETER("ResetParameter"),
+    
     CALL("Call");
     
     private final String name;

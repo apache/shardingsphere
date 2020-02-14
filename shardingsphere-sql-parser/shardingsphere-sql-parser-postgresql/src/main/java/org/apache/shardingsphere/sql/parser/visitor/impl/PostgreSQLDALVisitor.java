@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ResetParameterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 /**
@@ -32,5 +34,10 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor {
     @Override
     public ASTNode visitSet(final SetContext ctx) {
         return new SetStatement();
+    }
+    
+    @Override
+    public ASTNode visitResetParameter(final ResetParameterContext ctx) {
+        return new ResetParameterStatement();
     }
 }
