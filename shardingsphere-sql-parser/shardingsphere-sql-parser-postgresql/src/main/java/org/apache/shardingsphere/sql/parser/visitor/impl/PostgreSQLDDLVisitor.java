@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnDefinitionContext;
@@ -27,16 +32,20 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.RenameColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
@@ -87,8 +96,8 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
                 result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
                 result.getAllSQLSegments().addAll(getTableSegments(columnDefinition));
             }
-            if (null != each.tableConstraint()) {
-                result.getAllSQLSegments().addAll(getTableSegments(each.tableConstraint()));
+            if (null != each.tableConstraint() && null != each.tableConstraint().tableConstraintOption().tableName()) {
+                result.getAllSQLSegments().add((TableSegment) visit(each.tableConstraint().tableConstraintOption().tableName()));
             }
         }
         if (result.getColumnDefinitions().isEmpty()) {
@@ -118,57 +127,107 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
         return result;
     }
     
-//    @Override
-//    public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
-//        final AlterTableStatement result = new AlterTableStatement();
-//        for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
-//            AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
-//            if (null != addColumnSpecification) {
-//                CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
-//                for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-//                    result.getAddedColumnDefinitions().add(addColumnDefinition.getColumnDefinition());
-//                    Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
-//                    if (columnPositionSegment.isPresent()) {
-//                        result.getChangedPositionColumns().add(columnPositionSegment.get());
-//                    }
-//                }
-//                result.getAllSQLSegments().addAll(extractColumnDefinitions(addColumnSpecification.columnDefinition()));
-//            }
-//            AddConstraintSpecificationContext addConstraintSpecification = each.addConstraintSpecification();
-//            ForeignKeyOptionContext foreignKeyOption = null == addConstraintSpecification
-//                    ? null : addConstraintSpecification.constraintDefinition().foreignKeyOption();
-//            if (null != foreignKeyOption) {
-//                result.getAllSQLSegments().add((TableSegment) visit(foreignKeyOption));
-//            }
-//            ChangeColumnSpecificationContext changeColumnSpecification = each.changeColumnSpecification();
-//            if (null != changeColumnSpecification) {
-//                Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(changeColumnSpecification)).getColumnPosition();
-//                if (columnPositionSegment.isPresent()) {
-//                    result.getChangedPositionColumns().add(columnPositionSegment.get());
-//                }
-//                result.getAllSQLSegments().addAll(extractColumnDefinition(changeColumnSpecification.columnDefinition()));
-//            }
-//            DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
-//            if (null != dropColumnSpecification) {
-//                result.getDroppedColumnNames().add(((DropColumnDefinitionSegment) visit(dropColumnSpecification)).getColumnName());
-//            }
-//            ModifyColumnSpecificationContext modifyColumnSpecification = each.modifyColumnSpecification();
-//            if (null != modifyColumnSpecification) {
-//                Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
-//                if (columnPositionSegment.isPresent()) {
-//                    result.getChangedPositionColumns().add(columnPositionSegment.get());
-//                }
-//                result.getAllSQLSegments().addAll(extractColumnDefinition(modifyColumnSpecification.columnDefinition()));
-//            }
-//        }
-//        if (result.getAddedColumnDefinitions().isEmpty()) {
-//            result.getAllSQLSegments().addAll(result.getAddedColumnDefinitions());
-//        }
-//        if (result.getChangedPositionColumns().isEmpty()) {
-//            result.getAllSQLSegments().addAll(result.getChangedPositionColumns());
-//        }
-//        return result;
-//    }
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
+        final AlterTableStatement result = new AlterTableStatement();
+        if (null != ctx.alterTableActions()) {
+            for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
+                AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
+                if (null != addColumnSpecification) {
+                    CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
+                    for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
+                        result.getAddedColumnDefinitions().add(addColumnDefinition.getColumnDefinition());
+                        Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
+                        if (columnPositionSegment.isPresent()) {
+                            result.getChangedPositionColumns().add(columnPositionSegment.get());
+                        }
+                    }
+                    result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
+                }
+                AddConstraintSpecificationContext addConstraintSpecification = each.addConstraintSpecification();
+                TableConstraintOptionContext tableConstraintOption = null == addConstraintSpecification ? null : addConstraintSpecification.tableConstraint().tableConstraintOption();
+                if (null != tableConstraintOption && null != tableConstraintOption.tableName()) {
+                    result.getAllSQLSegments().add((TableSegment) visit(tableConstraintOption.tableName()));
+                }
+                ModifyColumnSpecificationContext modifyColumnSpecification = each.modifyColumnSpecification();
+                if (null != modifyColumnSpecification) {
+                    Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
+                    if (columnPositionSegment.isPresent()) {
+                        result.getChangedPositionColumns().add(columnPositionSegment.get());
+                    }
+                }
+                DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
+                if (null != dropColumnSpecification) {
+                    result.getDroppedColumnNames().add(((DropColumnDefinitionSegment) visit(dropColumnSpecification)).getColumnName());
+                }
+            }
+        }
+        if (result.getAddedColumnDefinitions().isEmpty()) {
+            result.getAllSQLSegments().addAll(result.getAddedColumnDefinitions());
+        }
+        if (result.getChangedPositionColumns().isEmpty()) {
+            result.getAllSQLSegments().addAll(result.getChangedPositionColumns());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
+        CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
+        ColumnDefinitionContext columnDefinition = ctx.columnDefinition();
+        if (null != columnDefinition) {
+            AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
+                    ctx.columnDefinition().getStart().getStartIndex(), columnDefinition.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(columnDefinition));
+            result.getValue().add(addColumnDefinition);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
+        boolean isPrimaryKey = containsPrimaryKey(ctx);
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+    }
+    
+    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
+        for (ColumnConstraintContext each : ctx.columnConstraint()) {
+            if (null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
+        // TODO visit column definition, need to change g4 for modifyColumn
+        return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null);
+    }
+    
+    @Override
+    public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
+    }
+    
+    @Override
+    public ASTNode visitRenameColumnSpecification(final RenameColumnSpecificationContext ctx) {
+        return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((ColumnSegment) visit(ctx.columnName(0))).getIdentifier().getValue(), ((ColumnSegment) visit(ctx.columnName(1))).getIdentifier().getValue());
+    }
+    
+    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ColumnConstraintContext each : columnDefinition.columnConstraint()) {
+            if (null != each.columnConstraintOption().tableName()) {
+                result.add((TableSegment) visit(each.columnConstraintOption().tableName()));
+            }
+        }
+        return result;
+    }
     
     @SuppressWarnings("unchecked")
     @Override
@@ -191,22 +250,6 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
     }
     
     @Override
-    public ASTNode visitTableNameClause(final TableNameClauseContext ctx) {
-        return visit(ctx.tableName());
-    }
-    
-    @Override
-    public ASTNode visitTableNamesClause(final TableNamesClauseContext ctx) {
-        Collection<TableSegment> tableSegments = new LinkedList<>();
-        for (int i = 0; i < ctx.tableNameClause().size(); i++) {
-            tableSegments.add((TableSegment) visit(ctx.tableNameClause(i)));
-        }
-        CollectionValue<TableSegment> result = new CollectionValue<>();
-        result.getValue().addAll(tableSegments);
-        return result;
-    }
-    
-    @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
@@ -221,86 +264,18 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
     }
     
     @Override
-    public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
-        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
-        boolean isPrimaryKey = containsPrimaryKey(ctx);
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
-    }
-    
-    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
-        for (ColumnConstraintContext each : ctx.columnConstraint()) {
-            if (null != each.columnConstraintOption().primaryKey()) {
-                return true;
-            }
-        }
-        return false;
+    public ASTNode visitTableNameClause(final TableNameClauseContext ctx) {
+        return visit(ctx.tableName());
     }
     
     @Override
-    public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
-    }
-    
-//    @Override
-//    public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
-//        return extractModifyColumnDefinition(ctx.getStart(), ctx.getStop(), ctx.columnDefinition(), ctx.firstOrAfterColumn());
-//    }
-    
-    @Override
-    public ASTNode visitRenameColumnSpecification(final RenameColumnSpecificationContext ctx) {
-        return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                ((ColumnSegment) visit(ctx.columnName(0))).getIdentifier().getValue(), ((ColumnSegment) visit(ctx.columnName(1))).getIdentifier().getValue());
-    }
-    
-//    private ModifyColumnDefinitionSegment extractModifyColumnDefinition(final Token start, final Token stop, final ColumnDefinitionContext columnDefinition,
-//                                                                  final FirstOrAfterColumnContext firstOrAfterColumn) {
-//        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(start.getStartIndex(), stop.getStopIndex(),
-//                (ColumnDefinitionSegment) visit(columnDefinition));
-//        if (null != firstOrAfterColumn) {
-//            result.setColumnPosition(extractColumnDefinition(result.getColumnDefinition(), (ColumnPositionSegment) visit(firstOrAfterColumn)));
-//        }
-//        return result;
-//    }
-    
-//    private ColumnPositionSegment extractColumnDefinition(final ColumnDefinitionSegment columnDefinition, final ColumnPositionSegment columnPosition) {
-//        return columnPosition instanceof ColumnFirstPositionSegment
-//                ? new ColumnFirstPositionSegment(columnPosition.getStartIndex(), columnPosition.getStopIndex(), columnDefinition.getColumnName())
-//                : new ColumnAfterPositionSegment(columnPosition.getStartIndex(), columnPosition.getStopIndex(), columnDefinition.getColumnName(),
-//                ((ColumnAfterPositionSegment) columnPosition).getAfterColumnName());
-//    }
-//    
-//    private Collection<TableSegment> extractColumnDefinition(final ColumnDefinitionContext columnDefinition) {
-//        Collection<TableSegment> result = new LinkedList<>();
-//        for (InlineDataTypeContext inlineDataType : columnDefinition.inlineDataType()) {
-//            if (null != inlineDataType.commonDataTypeOption() && null != inlineDataType.commonDataTypeOption().referenceDefinition()) {
-//                result.add((TableSegment) visit(inlineDataType.commonDataTypeOption().referenceDefinition()));
-//            }
-//        }
-//        for (GeneratedDataTypeContext generatedDataType : columnDefinition.generatedDataType()) {
-//            if (null != generatedDataType.commonDataTypeOption() && null != generatedDataType.commonDataTypeOption().referenceDefinition()) {
-//                result.add((TableSegment) visit(generatedDataType.commonDataTypeOption().referenceDefinition()));
-//            }
-//        }
-//        return result;
-//    }
-    
-    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ColumnConstraintContext each : columnDefinition.columnConstraint()) {
-            if (null != each.columnConstraintOption().tableName()) {
-                result.add((TableSegment) visit(each.columnConstraintOption().tableName()));
-            }
+    public ASTNode visitTableNamesClause(final TableNamesClauseContext ctx) {
+        Collection<TableSegment> tableSegments = new LinkedList<>();
+        for (int i = 0; i < ctx.tableNameClause().size(); i++) {
+            tableSegments.add((TableSegment) visit(ctx.tableNameClause(i)));
         }
-        return result;
-    }
-    
-    private Collection<TableSegment> getTableSegments(final TableConstraintContext tableConstraint) {
-        Collection<TableSegment> result = new LinkedList<>();
-        if (null != tableConstraint.tableConstraintOption().tableName()) {
-            result.add((TableSegment) visit(tableConstraint.tableConstraintOption().tableName()));
-        }
+        CollectionValue<TableSegment> result = new CollectionValue<>();
+        result.getValue().addAll(tableSegments);
         return result;
     }
 }
