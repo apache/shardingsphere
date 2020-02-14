@@ -55,7 +55,7 @@ public final class VisitorParameterizedParsingTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     
-    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY =  SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
     private static final Properties PROPS = new Properties();
     
