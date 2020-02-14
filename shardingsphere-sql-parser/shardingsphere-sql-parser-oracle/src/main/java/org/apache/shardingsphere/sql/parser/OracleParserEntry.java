@@ -22,6 +22,11 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleTCLVisitor;
 
 /**
  * SQL parser entry for Oracle.
@@ -45,9 +50,21 @@ public final class OracleParserEntry implements SQLParserEntry {
     public Class<? extends SQLParser> getParserClass() {
         return OracleParser.class;
     }
-
+    
     @Override
     public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        return OracleVisitor.class;
+        if (OracleDMLVisitor.class.getSimpleName().contains(visitorName)) {
+            return OracleDMLVisitor.class;
+        }
+        if (OracleDDLVisitor.class.getSimpleName().contains(visitorName)) {
+            return OracleDDLVisitor.class;
+        }
+        if (OracleTCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return OracleTCLVisitor.class;
+        }
+        if (OracleDCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return OracleDCLVisitor.class;
+        }
+        return OracleDALVisitor.class;
     }
 }
