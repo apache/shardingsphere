@@ -763,122 +763,119 @@
         </where>
     </select>
 
-    <!-- FIXME cannot parse multiple parameter-marker from one expr -->
-    <!--<select sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">-->
-        <!--<table name="t_order" start-index="14" stop-index="20" />-->
-        <!--<projections start-index="7" stop-index="7">-->
-            <!--<shorthand-projection start-index="7" stop-index="7" />-->
-        <!--</projections>-->
-        <!--<where start-index="22" stop-index="148" literal-stop-index="170">-->
-            <!--<and-predicate>-->
-                <!--<predicate start-index="28" stop-index="42" literal-stop-index="60">-->
-                    <!--<column-left-value name="rule" start-index="28" stop-index="31" />-->
-                    <!--<operator type="=" />-->
-                    <!--<compare-right-value>-->
-                        <!--<parameter-marker-expression value="0" />-->
-                        <!--<literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />-->
-                    <!--</compare-right-value>-->
-                <!--</predicate>-->
-                <!--<predicate start-index="48" stop-index="115" literal-start-index="66" literal-stop-index="137">-->
-                    <!--<column-left-value name="start_point" start-index="48" stop-index="58" literal-start-index="66" literal-stop-index="76" />-->
-                    <!--<operator type="=" />-->
-                    <!--&lt;!&ndash; TODO assert expression &ndash;&gt;-->
-                <!--</predicate>-->
-                <!--<predicate start-index="121" stop-index="131" literal-start-index="143" literal-stop-index="153">-->
-                    <!--<column-left-value name="user_id" start-index="121" stop-index="127" literal-start-index="143" literal-stop-index="149" />-->
-                    <!--<operator type="=" />-->
-                    <!--<compare-right-value>-->
-                        <!--<parameter-marker-expression value="3" />-->
-                        <!--<literal-expression value="1" />-->
-                    <!--</compare-right-value>-->
-                <!--</predicate>-->
-                <!--<predicate start-index="137" stop-index="148" literal-start-index="159" literal-stop-index="170">-->
-                    <!--<column-left-value name="order_id" start-index="137" stop-index="144" literal-start-index="159" literal-stop-index="166" />-->
-                    <!--<operator type="=" />-->
-                    <!--<compare-right-value>-->
-                        <!--<parameter-marker-expression value="4" />-->
-                        <!--<literal-expression value="2" />-->
-                    <!--</compare-right-value>-->
-                <!--</predicate>-->
-            <!--</and-predicate>-->
-        <!--</where>-->
-    <!--</select>-->
+    <select sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
+        <table name="t_order" start-index="14" stop-index="20" />
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="148" literal-stop-index="170">
+            <and-predicate>
+                <predicate start-index="28" stop-index="42" literal-stop-index="60">
+                    <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="0" />
+                        <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="48" stop-index="115" literal-start-index="66" literal-stop-index="137">
+                    <column-left-value name="start_point" start-index="48" stop-index="58" literal-start-index="66" literal-stop-index="76" />
+                    <operator type="=" />
+                    <!-- TODO assert expression -->
+                </predicate>
+                <predicate start-index="121" stop-index="131" literal-start-index="143" literal-stop-index="153">
+                    <column-left-value name="user_id" start-index="121" stop-index="127" literal-start-index="143" literal-stop-index="149" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="3" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="137" stop-index="148" literal-start-index="159" literal-stop-index="170">
+                    <column-left-value name="order_id" start-index="137" stop-index="144" literal-start-index="159" literal-stop-index="166" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" />
+                        <literal-expression value="2" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
 
-    <!-- FIXME cannot parse multiple parameter-marker from one expr -->
-    <!--<select sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">-->
-        <!--<table name="t_order" start-index="14" stop-index="20" />-->
-        <!--<projections start-index="7" stop-index="7">-->
-            <!--<shorthand-projection start-index="7" stop-index="7" />-->
-        <!--</projections>-->
-        <!--<where start-index="22" stop-index="161" literal-stop-index="201">-->
-            <!--<and-predicate>-->
-                <!--<predicate start-index="28" stop-index="55" literal-stop-index="91">-->
-                    <!--<column-left-value name="rule" start-index="28" stop-index="31" />-->
-                    <!--<in-right-value>-->
-                        <!--<parameter-marker-expression value="0" />-->
-                        <!--<parameter-marker-expression value="1" />-->
-                        <!--<literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />-->
-                        <!--<literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" />-->
-                    <!--</in-right-value>-->
-                <!--</predicate>-->
-                <!--<predicate start-index="61" stop-index="128" literal-start-index="97" literal-stop-index="168">-->
-                    <!--<column-left-value name="start_point" start-index="61" stop-index="71" literal-start-index="97" literal-stop-index="107" />-->
-                    <!--<operator type="=" />-->
-                    <!--&lt;!&ndash; TODO assert expr &ndash;&gt;-->
-                <!--</predicate>-->
-                <!--<predicate start-index="134" stop-index="144" literal-start-index="174" literal-stop-index="184">-->
-                    <!--<column-left-value name="user_id" start-index="134" stop-index="140" literal-start-index="174" literal-stop-index="180" />-->
-                    <!--<operator type="=" />-->
-                    <!--<compare-right-value>-->
-                        <!--<parameter-marker-expression value="4" />-->
-                        <!--<literal-expression value="1" />-->
-                    <!--</compare-right-value>-->
-                <!--</predicate>-->
-                <!--<predicate start-index="150" stop-index="161" literal-start-index="190" literal-stop-index="201">-->
-                    <!--<column-left-value name="order_id" start-index="150" stop-index="157" literal-start-index="190" literal-stop-index="197" />-->
-                    <!--<operator type="=" />-->
-                    <!--<compare-right-value>-->
-                        <!--<parameter-marker-expression value="5" />-->
-                        <!--<literal-expression value="2" />-->
-                    <!--</compare-right-value>-->
-                <!--</predicate>-->
-            <!--</and-predicate>-->
-        <!--</where>-->
-    <!--</select>-->
+    <select sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
+        <table name="t_order" start-index="14" stop-index="20" />
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="161" literal-stop-index="201">
+            <and-predicate>
+                <predicate start-index="28" stop-index="55" literal-stop-index="91">
+                    <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+                        <literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="61" stop-index="128" literal-start-index="97" literal-stop-index="168">
+                    <column-left-value name="start_point" start-index="61" stop-index="71" literal-start-index="97" literal-stop-index="107" />
+                    <operator type="=" />
+                    <!-- TODO assert expr -->
+                </predicate>
+                <predicate start-index="134" stop-index="144" literal-start-index="174" literal-stop-index="184">
+                    <column-left-value name="user_id" start-index="134" stop-index="140" literal-start-index="174" literal-stop-index="180" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="150" stop-index="161" literal-start-index="190" literal-stop-index="201">
+                    <column-left-value name="order_id" start-index="150" stop-index="157" literal-start-index="190" literal-stop-index="197" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="5" />
+                        <literal-expression value="2" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
     
-    <!-- FIXME cannot parse multiple parameter-marker from one expr -->
-    <!--<select sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">-->
-        <!--<table name="t_order" start-index="14" stop-index="20" />-->
-        <!--<projections start-index="7" stop-index="7">-->
-            <!--<shorthand-projection start-index="7" stop-index="7" />-->
-        <!--</projections>-->
-        <!--<where start-index="22" stop-index="151" literal-stop-index="191">-->
-            <!--<and-predicate>-->
-                <!--<predicate start-index="28" stop-index="61" literal-stop-index="97">-->
-                    <!--<column-left-value name="rule" start-index="28" stop-index="31" />-->
-                    <!--<between-right-value>-->
-                        <!--<between-parameter-marker-expression value="0" />-->
-                        <!--<between-literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />-->
-                        <!--<and-parameter-marker-expression value="1" />-->
-                        <!--<and-literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" />-->
-                    <!--</between-right-value>-->
-                <!--</predicate>-->
-                <!--<predicate start-index="67" stop-index="134" literal-start-index="103" literal-stop-index="174">-->
-                    <!--<column-left-value name="start_point" start-index="67" stop-index="77" literal-start-index="103" literal-stop-index="113" />-->
-                    <!--<operator type="=" />-->
-                    <!--&lt;!&ndash; TODO assert right value &ndash;&gt;-->
-                <!--</predicate>-->
-                <!--<predicate start-index="140" stop-index="151" literal-start-index="180" literal-stop-index="191">-->
-                    <!--<column-left-value name="order_id" start-index="140" stop-index="147" literal-start-index="180" literal-stop-index="187" />-->
-                    <!--<operator type="=" />-->
-                    <!--<compare-right-value>-->
-                        <!--<parameter-marker-expression value="4" />-->
-                        <!--<literal-expression value="1" />-->
-                    <!--</compare-right-value>-->
-                <!--</predicate>-->
-            <!--</and-predicate>-->
-        <!--</where>-->
-    <!--</select>-->
+    <select sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
+        <table name="t_order" start-index="14" stop-index="20" />
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="151" literal-stop-index="191">
+            <and-predicate>
+                <predicate start-index="28" stop-index="61" literal-stop-index="97">
+                    <column-left-value name="rule" start-index="28" stop-index="31" />
+                    <between-right-value>
+                        <between-parameter-marker-expression value="0" />
+                        <between-literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+                        <and-parameter-marker-expression value="1" />
+                        <and-literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" />
+                    </between-right-value>
+                </predicate>
+                <predicate start-index="67" stop-index="134" literal-start-index="103" literal-stop-index="174">
+                    <column-left-value name="start_point" start-index="67" stop-index="77" literal-start-index="103" literal-stop-index="113" />
+                    <operator type="=" />
+                    <!-- TODO assert right value -->
+                </predicate>
+                <predicate start-index="140" stop-index="151" literal-start-index="180" literal-stop-index="191">
+                    <column-left-value name="order_id" start-index="140" stop-index="147" literal-start-index="180" literal-stop-index="187" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="4" />
+                        <literal-expression value="1" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </select>
     
     <select sql-case-id="select_with_double_quotes" parameters="1">
         <table name="t_order_item" start-delimiter="&quot;" end-delimiter="&quot;" start-index="14" stop-index="27" />
