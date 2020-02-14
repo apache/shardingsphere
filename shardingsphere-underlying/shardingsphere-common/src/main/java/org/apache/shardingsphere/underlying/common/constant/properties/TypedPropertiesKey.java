@@ -41,5 +41,4 @@ public interface TypedPropertiesKey {
      * @return defaultValue
      */
     String getDefaultValue();
-    
 }
