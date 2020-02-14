@@ -51,9 +51,9 @@ public abstract class MultipleDataSourcesRuntimeContext<T extends BaseRule> exte
     protected MultipleDataSourcesRuntimeContext(final Map<String, DataSource> dataSourceMap, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(rule, props, databaseType);
         long start = System.currentTimeMillis();
-        MetaDataLogger.log("Start loading MetaData.");
+        MetaDataLogger.log("Start loading meta data.");
         metaData = createMetaData(dataSourceMap, databaseType);
-        MetaDataLogger.log("MetaData loading finished, cost {} miles.", System.currentTimeMillis() - start);
+        MetaDataLogger.log("Meta data loading finished, cost {} milliseconds.", System.currentTimeMillis() - start);
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
