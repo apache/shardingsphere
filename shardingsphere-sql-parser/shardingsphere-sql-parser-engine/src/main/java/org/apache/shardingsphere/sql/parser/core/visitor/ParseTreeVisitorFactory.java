@@ -55,7 +55,7 @@ public final class ParseTreeVisitorFactory {
                 RuleName.DROP_ROLE.getName(), RuleName.SET_DEFAULT_ROLE.getName(), RuleName.SET_ROLE.getName(), RuleName.SET_PASSWORD.getName()));
         SQL_VISITOR_RULES.put("DALVisitor", Lists.newArrayList(RuleName.USE.getName(), RuleName.DESC.getName(), RuleName.SHOW_DATABASES.getName(),
                 RuleName.SHOW_TABLES.getName(), RuleName.SHOW_TABLE_STATUS.getName(), RuleName.SHOW_COLUMNS.getName(), RuleName.SHOW_INDEX.getName(),
-                RuleName.SHOW_CREATE_TABLE.getName(), RuleName.SHOW_OTHER.getName(), RuleName.SET_VARIABLE.getName(), RuleName.SET.getName(), 
+                RuleName.SHOW_CREATE_TABLE.getName(), RuleName.SHOW_OTHER.getName(), RuleName.SHOW.getName(), RuleName.SET_VARIABLE.getName(), RuleName.SET.getName(), 
                 RuleName.RESET_PARAMETER.getName(), RuleName.CALL.getName()));
     }
     

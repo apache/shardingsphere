@@ -239,6 +239,8 @@ public enum RuleName {
     
     SHOW_OTHER("ShowOther"),
     
+    SHOW("Show"),
+    
     SET_VARIABLE("SetVariable"),
     
     SET("Set"),
