@@ -392,6 +392,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.setAlias(alias);
             return result;
         }
+        // FIXME :For DISTINCT()
+        if (projection instanceof ColumnSegment) {
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+            result.setAlias(alias);
+            return result;
+        }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = Strings.isNullOrEmpty(alias) ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
                 : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()));
