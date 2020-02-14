@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.visitor;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
@@ -99,6 +101,7 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
+@Getter(AccessLevel.PROTECTED)
 public class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
