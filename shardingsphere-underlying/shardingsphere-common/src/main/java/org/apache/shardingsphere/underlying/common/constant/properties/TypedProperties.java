@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author kimmking
  */
-public class TypedProperties<E extends Enum> {
+public class TypedProperties<E extends Enum & TypedInterface> {
     
     private final Class<E> enumClass;
     
@@ -53,11 +53,10 @@ public class TypedProperties<E extends Enum> {
         Set<String> propertyNames = props.stringPropertyNames();
         Collection<String> errorMessages = new ArrayList<>(propertyNames.size());
         for (String each : propertyNames) {
-            E enumEntry = findByKey(each);
-            if (null == enumEntry) {
+            E typedEnum = findByKey(each);
+            if (null == typedEnum) {
                 continue;
             }
-            TypedInterface typedEnum = (TypedInterface) enumEntry;
             Class<?> type = typedEnum.getType();
             String value = props.getProperty(each);
             if (type == boolean.class && !StringUtil.isBooleanValue(value)) {
@@ -71,23 +70,22 @@ public class TypedProperties<E extends Enum> {
         }
     }
     
-    private String getErrorMessage(final TypedInterface typedEnum, final String invalidValue) {
+    private String getErrorMessage(final E typedEnum, final String invalidValue) {
         return String.format("Value '%s' of '%s' cannot convert to type '%s'.", invalidValue, typedEnum.getKey(), typedEnum.getType().getName());
     }
     
     /**
      * Get property value.
      *
-     * @param enumEntry properties constant
+     * @param typedEnum properties constant
      * @param <T> class type of return value
      * @return property value
      */
     @SuppressWarnings("unchecked")
-    public <T> T getValue(final E enumEntry) {
-        if (cachedProperties.containsKey(enumEntry)) {
-            return (T) cachedProperties.get(enumEntry);
+    public <T> T getValue(final E typedEnum) {
+        if (cachedProperties.containsKey(typedEnum)) {
+            return (T) cachedProperties.get(typedEnum);
         }
-        TypedInterface typedEnum = (TypedInterface) enumEntry;
         String value = props.getProperty(typedEnum.getKey());
         if (Strings.isNullOrEmpty(value)) {
             Object obj = props.get(typedEnum.getKey());
@@ -107,7 +105,7 @@ public class TypedProperties<E extends Enum> {
         } else {
             result = value;
         }
-        cachedProperties.put(enumEntry, result);
+        cachedProperties.put(typedEnum, result);
         return (T) result;
     }
     
@@ -119,10 +117,9 @@ public class TypedProperties<E extends Enum> {
      */
     public E findByKey(final String key) {
         E[] enumConstants = this.enumClass.getEnumConstants();
-        for (E e : enumConstants) {
-            TypedInterface typedEnum = (TypedInterface) e;
+        for (E typedEnum : enumConstants) {
             if (typedEnum.getKey().equals(key)) {
-                return e;
+                return typedEnum;
             }
         }
         return null;
