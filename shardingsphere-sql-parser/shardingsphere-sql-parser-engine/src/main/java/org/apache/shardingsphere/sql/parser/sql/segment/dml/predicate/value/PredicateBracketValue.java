@@ -27,8 +27,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public final class PredicateBracketValue implements PredicateRightValue {
-
+    
     private final PredicateLeftBracketValue predicateLeftBracketValue;
-
+    
     private final PredicateRightBracketValue predicateRightBracketValue;
 }

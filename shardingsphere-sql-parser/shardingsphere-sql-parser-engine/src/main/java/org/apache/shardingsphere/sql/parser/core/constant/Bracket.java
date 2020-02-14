@@ -18,28 +18,26 @@
 package org.apache.shardingsphere.sql.parser.core.constant;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Predicate in bracket.
  *
  * @author chun.yang
  */
+@RequiredArgsConstructor
 @Getter
 public enum Bracket {
-
+    
     /**
-     * in left bracket.
+     * In left bracket.
      */
     LEFT("("),
-
+    
     /**
-     * in right bracket.
+     * In right bracket.
      */
     RIGHT(")");
-
+    
     private final String value;
-
-    Bracket(final String value) {
-        this.value = value;
-    }
 }

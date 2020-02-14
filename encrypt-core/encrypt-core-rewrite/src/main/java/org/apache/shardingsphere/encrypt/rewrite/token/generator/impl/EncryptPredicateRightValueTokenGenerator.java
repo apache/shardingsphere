@@ -48,8 +48,8 @@ import java.util.Map;
  * @author zhangliang
  */
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, 
-        RelationMetasAware, ParametersAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator 
+        implements CollectionSQLTokenGenerator, RelationMetasAware, ParametersAware, QueryWithCipherColumnAware {
     
     private RelationMetas relationMetas;
     

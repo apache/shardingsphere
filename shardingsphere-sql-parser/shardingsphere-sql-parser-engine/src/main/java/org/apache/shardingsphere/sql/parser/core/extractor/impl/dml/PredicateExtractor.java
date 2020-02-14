@@ -83,7 +83,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         }
         return leftPredicate.isPresent() ? leftPredicate : rightPredicate;
     }
-
+    
     private ParserRuleContext extractOperatorNode(final ParserRuleContext exprNode, final int childIndex) {
         ParserRuleContext result = (ParserRuleContext) exprNode.getChild(childIndex);
         while (ExtractorUtils.findFirstChildNodeNoneRecursive(result, RuleName.LOGICAL_OPERATOR).isPresent()) {
@@ -91,7 +91,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         }
         return result;
     }
-
+    
     private Optional<OrPredicateSegment> extractPredicateSegment(final ParserRuleContext exprNode, final ParserRuleContext childNode,
                                                                  final int childIndex, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         ParserRuleContext operatorNode = childNode;
@@ -116,7 +116,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         }
         return result;
     }
-        
+    
     private Optional<OrPredicateSegment> extractRecursiveWithParen(final ParserRuleContext exprNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         if (1 == exprNode.getChild(0).getText().length() && Paren.isLeftParen(exprNode.getChild(0).getText().charAt(0))) {
             return extractRecursiveWithLogicalOperation((ParserRuleContext) exprNode.getChild(1), parameterMarkerIndexes);
@@ -190,7 +190,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
                         predicateNode.getStart().getStartIndex(), predicateNode.getStop().getStopIndex(), column, new PredicateBetweenRightValue(betweenSQLExpression.get(), andSQLExpression.get())))
                 : Optional.<PredicateSegment>absent();
     }
-
+    
     private Optional<PredicateSegment> extractInPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {
         Optional<PredicateBracketValue> predicateBracketValue = extractBracketValue(predicateNode);
         Collection<ExpressionSegment> sqlExpressions = extractInExpressionSegments(predicateNode, parameterMarkerIndexes);
@@ -198,7 +198,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
                 new PredicateInRightValue(predicateBracketValue.get(), sqlExpressions));
         return sqlExpressions.isEmpty() ? Optional.<PredicateSegment>absent() : Optional.of(predicateSegment);
     }
-
+    
     private Optional<PredicateBracketValue> extractBracketValue(final ParserRuleContext predicateNode) {
         PredicateLeftBracketValue predicateLeftBracketValue = null;
         PredicateRightBracketValue predicateRightBracketValue = null;
@@ -215,7 +215,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         }
         return Optional.absent();
     }
-
+    
     private Collection<ExpressionSegment> extractInExpressionSegments(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         List<ExpressionSegment> result = new LinkedList<>();
         for (int i = 3; i < predicateNode.getChildCount(); i++) {
