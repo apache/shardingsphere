@@ -20,14 +20,14 @@ grammar DCLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (objectPrivilegeClause_ | systemPrivilegeClause_ | roleClause_) 
+    : GRANT (objectPrivilegeClause | systemPrivilegeClause_ | roleClause_) 
     ;
 
 revoke
-    : REVOKE (objectPrivilegeClause_ | systemPrivilegeClause_ | roleClause_)
+    : REVOKE (objectPrivilegeClause | systemPrivilegeClause_ | roleClause_)
     ;
 
-objectPrivilegeClause_
+objectPrivilegeClause
     : objectPrivileges_ ON onObjectClause
     ;
 

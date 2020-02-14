@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
 
 /**
- * Oracle visitor.
+ * Oracle DAL visitor.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public final class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> {
-    
-    // DALStatement.g4
-    // DCLStatement.g4
-    // DDLStatement.g4
-    // DMLStatement.g4
-    // TCLStatement.g4
-    // StoreProcedure.g4
-    // BaseRule.g4
+public final class OracleDALVisitor extends OracleVisitor {
 }
