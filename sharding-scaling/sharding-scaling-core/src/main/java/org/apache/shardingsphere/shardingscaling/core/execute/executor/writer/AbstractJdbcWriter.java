@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Fi
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-import org.apache.shardingsphere.shardingscaling.core.metadata.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,7 +54,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     
     private final AbstractSqlBuilder sqlBuilder;
     
-    private DbMetaDataUtil dbMetaDataUtil;
+    private MetaDataManager metaDataManager;
     
     @Setter
     private Channel channel;
@@ -63,17 +63,17 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceFactory = dataSourceFactory;
         DataSource dataSource = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-        dbMetaDataUtil = new DbMetaDataUtil(dataSource);
-        sqlBuilder = createSqlBuilder(dbMetaDataUtil);
+        metaDataManager = new MetaDataManager(dataSource);
+        sqlBuilder = createSqlBuilder(metaDataManager);
     }
     
     /**
      * Create sql builder.
      *
-     * @param dbMetaDataUtil database metadata util
+     * @param metaDataManager database metadata util
      * @return sql builder
      */
-    protected abstract AbstractSqlBuilder createSqlBuilder(DbMetaDataUtil dbMetaDataUtil);
+    protected abstract AbstractSqlBuilder createSqlBuilder(MetaDataManager metaDataManager);
     
     @Override
     public final void run() {
@@ -135,8 +135,8 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(record.getTableName());
-        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
+        List<ColumnMetaData> metaData = metaDataManager.getColumnNames(record.getTableName());
+        List<String> primaryKeys = metaDataManager.getPrimaryKeys(record.getTableName());
         List<ColumnMetaData> updatedColumns = new LinkedList<>();
         List<Column> values = new LinkedList<>();
         for (int i = 0; i < metaData.size(); i++) {
@@ -146,7 +146,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
             }
         }
         for (String primaryKey : primaryKeys) {
-            int index = DbMetaDataUtil.findColumnIndex(metaData, primaryKey);
+            int index = metaDataManager.findColumnIndex(metaData, primaryKey);
             values.add(record.getColumn(index));
         }
         String updateSql = sqlBuilder.buildUpdateSql(record.getTableName(), updatedColumns);
@@ -158,12 +158,12 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     }
     
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
-        List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(record.getTableName());
-        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(record.getTableName());
+        List<ColumnMetaData> metaData = metaDataManager.getColumnNames(record.getTableName());
+        List<String> primaryKeys = metaDataManager.getPrimaryKeys(record.getTableName());
         String deleteSql = sqlBuilder.buildDeleteSql(record.getTableName());
         PreparedStatement ps = connection.prepareStatement(deleteSql);
         for (int i = 0; i < primaryKeys.size(); i++) {
-            int index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(i));
+            int index = metaDataManager.findColumnIndex(metaData, primaryKeys.get(i));
             ps.setObject(i + 1, record.getColumn(index).getValue());
         }
         ps.execute();

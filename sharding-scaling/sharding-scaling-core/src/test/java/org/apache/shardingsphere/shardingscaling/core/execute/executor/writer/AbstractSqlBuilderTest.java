@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.shardingscaling.core.metadata.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 public class AbstractSqlBuilderTest {
     
     @Mock
-    private DbMetaDataUtil dbMetaDataUtil;
+    private MetaDataManager metaDataManager;
     
     private AbstractSqlBuilder sqlBuilder;
     
@@ -58,26 +58,26 @@ public class AbstractSqlBuilderTest {
                 return "`";
             }
         };
-        FieldSetter.setField(sqlBuilder, AbstractSqlBuilder.class.getDeclaredField("dbMetaDataUtil"), dbMetaDataUtil);
+        FieldSetter.setField(sqlBuilder, AbstractSqlBuilder.class.getDeclaredField("dbMetaDataUtil"), metaDataManager);
     }
     
     @Test
     public void assertBuildInsertSql() {
-        when(dbMetaDataUtil.getColumnNames("t1")).thenReturn(mockInsertColumn());
+        when(metaDataManager.getColumnNames("t1")).thenReturn(mockInsertColumn());
         String actual = sqlBuilder.buildInsertSql("t1");
         assertThat(actual, Matchers.is("INSERT INTO `t1`(`id`,`c1`,`c2`,`c3`) VALUES(?,?,?,?)"));
     }
     
     @Test
     public void assertBuildUpdateSql() {
-        when(dbMetaDataUtil.getPrimaryKeys("t2")).thenReturn(mockPrimaryKeys());
+        when(metaDataManager.getPrimaryKeys("t2")).thenReturn(mockPrimaryKeys());
         String actual = sqlBuilder.buildUpdateSql("t2", mockUpdateColumn());
         assertThat(actual, Matchers.is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
     }
     
     @Test
     public void assertBuildDeleteSql() {
-        when(dbMetaDataUtil.getPrimaryKeys("t3")).thenReturn(mockPrimaryKeys());
+        when(metaDataManager.getPrimaryKeys("t3")).thenReturn(mockPrimaryKeys());
         String actual = sqlBuilder.buildDeleteSql("t3");
         assertThat(actual, Matchers.is("DELETE FROM `t3` WHERE `id` = ?"));
     }

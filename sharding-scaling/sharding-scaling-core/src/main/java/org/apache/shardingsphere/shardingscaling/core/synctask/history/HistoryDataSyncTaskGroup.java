@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFa
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-import org.apache.shardingsphere.shardingscaling.core.metadata.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ import java.util.List;
  * @author avalon566
  */
 @Slf4j
-public class HistoryDataSyncTaskGroup implements SyncTask {
+public final class HistoryDataSyncTaskGroup implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
     
@@ -80,10 +80,10 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
     private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
         List<SyncConfiguration> result = new LinkedList<>();
         DataSource dataSource = dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
-        DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil(dataSource);
+        MetaDataManager metaDataManager = new MetaDataManager(dataSource);
         for (SyncConfiguration each : splitByTable(syncConfiguration)) {
-            if (isSpiltByPrimaryKeyRange(each.getReaderConfiguration(), dbMetaDataUtil)) {
-                result.addAll(splitByPrimaryKeyRange(each, dbMetaDataUtil, dataSource));
+            if (isSpiltByPrimaryKeyRange(each.getReaderConfiguration(), metaDataManager)) {
+                result.addAll(splitByPrimaryKeyRange(each, metaDataManager, dataSource));
             } else {
                 result.add(each);
             }
@@ -102,8 +102,8 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
         return result;
     }
     
-    private boolean isSpiltByPrimaryKeyRange(final RdbmsConfiguration rdbmsConfiguration, final DbMetaDataUtil dbMetaDataUtil) {
-        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(rdbmsConfiguration.getTableName());
+    private boolean isSpiltByPrimaryKeyRange(final RdbmsConfiguration rdbmsConfiguration, final MetaDataManager metaDataManager) {
+        List<String> primaryKeys = metaDataManager.getPrimaryKeys(rdbmsConfiguration.getTableName());
         if (null == primaryKeys || 0 == primaryKeys.size()) {
             log.warn("Can't split range for table {}, reason: no primary key", rdbmsConfiguration.getTableName());
             return false;
@@ -112,8 +112,8 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
             log.warn("Can't split range for table {}, reason: primary key is union primary", rdbmsConfiguration.getTableName());
             return false;
         }
-        List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(rdbmsConfiguration.getTableName());
-        int index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(0));
+        List<ColumnMetaData> metaData = metaDataManager.getColumnNames(rdbmsConfiguration.getTableName());
+        int index = metaDataManager.findColumnIndex(metaData, primaryKeys.get(0));
         if (isNotIntegerPrimary(metaData.get(index).getColumnType())) {
             log.warn("Can't split range for table {}, reason: primary key is not integer number", rdbmsConfiguration.getTableName());
             return false;
@@ -125,11 +125,11 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
         return Types.INTEGER != columnType && Types.BIGINT != columnType && Types.SMALLINT != columnType && Types.TINYINT != columnType;
     }
     
-    private Collection<SyncConfiguration> splitByPrimaryKeyRange(final SyncConfiguration syncConfiguration, final DbMetaDataUtil dbMetaDataUtil, final DataSource dataSource) {
+    private Collection<SyncConfiguration> splitByPrimaryKeyRange(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final DataSource dataSource) {
         int concurrency = syncConfiguration.getConcurrency();
         Collection<SyncConfiguration> result = new LinkedList<>();
         RdbmsConfiguration readerConfiguration = syncConfiguration.getReaderConfiguration();
-        String primaryKey = dbMetaDataUtil.getPrimaryKeys(readerConfiguration.getTableName()).get(0);
+        String primaryKey = metaDataManager.getPrimaryKeys(readerConfiguration.getTableName()).get(0);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(String.format("select min(%s),max(%s) from %s limit 1", primaryKey, primaryKey, readerConfiguration.getTableName()));
             ResultSet rs = ps.executeQuery();
