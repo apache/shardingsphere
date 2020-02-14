@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.metadata;
+package org.apache.shardingsphere.shardingscaling.core.metadata.column;
 
 import lombok.Getter;
 import lombok.Setter;

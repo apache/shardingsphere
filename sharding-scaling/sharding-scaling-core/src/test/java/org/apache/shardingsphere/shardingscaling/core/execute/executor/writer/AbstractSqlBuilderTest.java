@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
+import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
 import org.hamcrest.Matchers;
 import org.junit.Before;
