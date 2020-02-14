@@ -20,9 +20,9 @@ package org.apache.shardingsphere.underlying.common.log;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * meta data logger.
@@ -34,16 +34,39 @@ import java.util.Map;
 public class MetaDataLogger {
     
     /**
-     * table meta log.
+     * table MetaData log.
      *
-     * @param tableMetaDataMap table metadata map
+     * @param catalog catalog
+     * @param tableName tableName
      */
-    public static void logTableMetaData(final Map<String, TableMetaData> tableMetaDataMap) {
-        log("load all tables MetaData.");
-        for (Map.Entry<String, TableMetaData> each : tableMetaDataMap.entrySet()) {
-            log("tableName:{}, tableInfo:{}", each.getKey(), each.getValue());
+    public static void logTableMetaData(final String catalog, final String tableName) {
+        logTableMetaData(catalog, null, tableName);
+    }
+    
+    /**
+     * table MetaData log.
+     *
+     * @param catalog catalog
+     * @param schema schema
+     * @param tableName tableName
+     */
+    public static void logTableMetaData(final String catalog, final String schema, final String tableName) {
+        StringBuilder logTemplate = new StringBuilder("loading table MetaData ");
+        List<Object> arguments = new ArrayList<>(3);
+        if (null == tableName) {
+            return;
         }
-        log("load {} tables.", tableMetaDataMap.keySet().size());
+        if (null != catalog) {
+            logTemplate.append("catalog:{}, ");
+            arguments.add(catalog);
+        }
+        if (null != schema) {
+            logTemplate.append("schema:{}, ");
+            arguments.add(schema);
+        }
+        logTemplate.append("actualTableName:{}.");
+        arguments.add(tableName);
+        log(logTemplate.toString(), arguments.toArray());
     }
     
     /**

@@ -53,7 +53,7 @@ public abstract class MultipleDataSourcesRuntimeContext<T extends BaseRule> exte
         long start = System.currentTimeMillis();
         MetaDataLogger.log("Start loading MetaData.");
         metaData = createMetaData(dataSourceMap, databaseType);
-        MetaDataLogger.log("MetaData loading finished. cost {} ms.", System.currentTimeMillis() - start);
+        MetaDataLogger.log("MetaData loading finished, cost {} miles.", System.currentTimeMillis() - start);
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {

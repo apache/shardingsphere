@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.log;
 
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,9 +27,6 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.inOrder;
 
@@ -48,15 +43,24 @@ public class MetaDataLoggerTest {
     }
     
     @Test
-    public void assertLogTableMetaData() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1);
-        TableMetaData tableMetaData = new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptyList());
-        tableMetaDataMap.put("test", tableMetaData);
-        MetaDataLogger.logTableMetaData(tableMetaDataMap);
+    public void assertLog() {
+        MetaDataLogger.log("load all tables MetaData.");
         InOrder inOrder = inOrder(log);
         inOrder.verify(log).info("load all tables MetaData.", new Object[]{});
-        inOrder.verify(log).info("tableName:{}, tableInfo:{}", new Object[]{"test", tableMetaData});
-        inOrder.verify(log).info("load {} tables.", new Object[]{tableMetaDataMap.keySet().size()});
+    }
+    
+    @Test
+    public void assertLogTableMetaData() {
+        MetaDataLogger.logTableMetaData("test", "schema", "table");
+        InOrder inOrder = inOrder(log);
+        inOrder.verify(log).info("loading table MetaData catalog:{}, schema:{}, actualTableName:{}.", "test", "schema", "table");
+    }
+    
+    @Test
+    public void assertLogTableMetaDataWithNullSchema() {
+        MetaDataLogger.logTableMetaData("test", "table");
+        InOrder inOrder = inOrder(log);
+        inOrder.verify(log).info("loading table MetaData catalog:{}, actualTableName:{}.", new Object[]{"test", "table"});
     }
     
     private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {
