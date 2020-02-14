@@ -139,6 +139,12 @@ public final class VisitorParameterizedParsingTest {
         sqlCases.add("create_table_with_exist_index");
         // On the one hand, visitor parser can not give the right stop index for any sql with alias, on the other hand,  the old parser can not handle all sql cases correctly.
         sqlCases.add("select_with_expression");
+        sqlCases.add("select_pagination_with_row_number");
+        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
+        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
+        sqlCases.add("select_pagination_with_row_number_and_group_by_and_order_by");
+        sqlCases.add("select_pagination_with_row_number_for_greater_than");
+        sqlCases.add("select_pagination_with_row_number_for_greater_than_and_equal");
         return sqlCases.contains(sqlCaseId);
     }
     
