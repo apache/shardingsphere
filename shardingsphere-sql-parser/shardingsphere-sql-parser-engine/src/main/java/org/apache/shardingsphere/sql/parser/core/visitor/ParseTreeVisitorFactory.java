@@ -51,11 +51,11 @@ public final class ParseTreeVisitorFactory {
         SQL_VISITOR_RULES.put("TCLVisitor", Lists.newArrayList(RuleName.SET_TRANSACTION.getName(), RuleName.BEGIN_TRANSACTION.getName(), 
                 RuleName.SET_AUTOCOMMIT.getName(), RuleName.COMMIT.getName(), RuleName.ROLLBACK.getName(), RuleName.SAVE_POINT.getName()));
         SQL_VISITOR_RULES.put("DCLVisitor", Lists.newArrayList(RuleName.GRANT.getName(), RuleName.REVOKE.getName(), RuleName.CREATE_USER.getName(), 
-                RuleName.DROP_USER.getName(), RuleName.ALTER_USER.getName(), RuleName.RENAME_USER.getName(), RuleName.CREATE_ROLE.getName(), 
+                RuleName.DROP_USER.getName(), RuleName.ALTER_USER.getName(), RuleName.RENAME_USER.getName(), RuleName.CREATE_ROLE.getName(), RuleName.ALTER_ROLE.getName(),
                 RuleName.DROP_ROLE.getName(), RuleName.SET_DEFAULT_ROLE.getName(), RuleName.SET_ROLE.getName(), RuleName.SET_PASSWORD.getName()));
         SQL_VISITOR_RULES.put("DALVisitor", Lists.newArrayList(RuleName.USE.getName(), RuleName.DESC.getName(), RuleName.SHOW_DATABASES.getName(),
                 RuleName.SHOW_TABLES.getName(), RuleName.SHOW_TABLE_STATUS.getName(), RuleName.SHOW_COLUMNS.getName(), RuleName.SHOW_INDEX.getName(),
-                RuleName.SHOW_CREATE_TABLE.getName(), RuleName.SHOW_OTHER.getName(), RuleName.SET_VARIABLE.getName(), RuleName.SET.getName(), 
+                RuleName.SHOW_CREATE_TABLE.getName(), RuleName.SHOW_OTHER.getName(), RuleName.SHOW.getName(), RuleName.SET_VARIABLE.getName(), RuleName.SET.getName(), 
                 RuleName.RESET_PARAMETER.getName(), RuleName.CALL.getName()));
     }
     

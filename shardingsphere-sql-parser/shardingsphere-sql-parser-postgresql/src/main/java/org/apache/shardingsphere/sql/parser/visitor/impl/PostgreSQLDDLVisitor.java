@@ -139,23 +139,30 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
                     for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
                         result.getAddedColumnDefinitions().add(addColumnDefinition.getColumnDefinition());
                         Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
+                        // TODO refactor SQLStatement
+                        // CHECKSTYLE:OFF
                         if (columnPositionSegment.isPresent()) {
                             result.getChangedPositionColumns().add(columnPositionSegment.get());
                         }
+                        // CHECKSTYLE:ON
                     }
                     result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
                 }
                 AddConstraintSpecificationContext addConstraintSpecification = each.addConstraintSpecification();
-                TableConstraintOptionContext tableConstraintOption = null == addConstraintSpecification ? null : addConstraintSpecification.tableConstraint().tableConstraintOption();
+                TableConstraintOptionContext tableConstraintOption = null == addConstraintSpecification || null == addConstraintSpecification.tableConstraint()
+                        ? null : addConstraintSpecification.tableConstraint().tableConstraintOption();
                 if (null != tableConstraintOption && null != tableConstraintOption.tableName()) {
                     result.getAllSQLSegments().add((TableSegment) visit(tableConstraintOption.tableName()));
                 }
                 ModifyColumnSpecificationContext modifyColumnSpecification = each.modifyColumnSpecification();
                 if (null != modifyColumnSpecification) {
                     Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
+                    // TODO refactor SQLStatement
+                    // CHECKSTYLE:OFF
                     if (columnPositionSegment.isPresent()) {
                         result.getChangedPositionColumns().add(columnPositionSegment.get());
                     }
+                    // CHECKSTYLE:ON
                 }
                 DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
                 if (null != dropColumnSpecification) {

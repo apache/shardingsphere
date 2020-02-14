@@ -213,6 +213,8 @@ public enum RuleName {
     
     CREATE_ROLE("CreateRole"),
     
+    ALTER_ROLE("AlterRole"),
+    
     DROP_ROLE("DropRole"),
     
     SET_DEFAULT_ROLE("SetDefaultRole"),
@@ -238,6 +240,8 @@ public enum RuleName {
     SHOW_CREATE_TABLE("ShowCreateTable"),
     
     SHOW_OTHER("ShowOther"),
+    
+    SHOW("Show"),
     
     SET_VARIABLE("SetVariable"),
     

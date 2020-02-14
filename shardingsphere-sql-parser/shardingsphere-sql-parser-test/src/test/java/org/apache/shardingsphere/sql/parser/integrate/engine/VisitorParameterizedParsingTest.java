@@ -98,8 +98,8 @@ public final class VisitorParameterizedParsingTest {
             if (isPassedSqlCase(sqlCaseId)) {
                 continue;
             }
-//            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType)) {
-            if (!"MySQL".contains(databaseType)) {
+            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType)) {
+//            if (!"MySQL".contains(databaseType)) {
                 continue;
             }
             try {
