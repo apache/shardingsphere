@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.constant.properties;
 
-import com.google.common.base.Enums;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -121,8 +120,8 @@ public class TypedProperties<E extends Enum> {
     public E findByKey(final String key) {
         E[] enumConstants = this.enumClass.getEnumConstants();
         for (E e : enumConstants) {
-            TypedInterface typedEnum = (TypedInterface)e;
-            if(typedEnum.getKey().equals(key)) {
+            TypedInterface typedEnum = (TypedInterface) e;
+            if (typedEnum.getKey().equals(key)) {
                 return e;
             }
         }
