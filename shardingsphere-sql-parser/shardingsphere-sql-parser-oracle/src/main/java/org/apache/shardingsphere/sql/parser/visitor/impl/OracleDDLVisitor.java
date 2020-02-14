@@ -17,7 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Oracle DDL visitor.
@@ -26,44 +49,83 @@ import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
  */
 public final class OracleDDLVisitor extends OracleVisitor {
     
-//    @Override
-//    public ASTNode visitCreateTable(final CreateTableContext ctx) {
-//        CreateTableStatement result = new CreateTableStatement();
-//        TableSegment table = (TableSegment) visit(ctx.tableName());
-//        result.getTables().add(table);
-//        result.getAllSQLSegments().add(table);
-//        if (null != ctx.createDefinitionClause()) {
-//            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
-//            result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
-//            for (SQLSegment each : createDefinition.getAllSQLSegments()) {
-//                result.getAllSQLSegments().add(each);
-//                if (each instanceof TableSegment) {
-//                    result.getTables().add((TableSegment) each);
-//                }
-//            }
-//        }
-//        return result;
-//    }
-//    
-//    @Override
-//    public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
-//        CreateTableStatement result = new CreateTableStatement();
-//        for (CreateDefinitionContext each : ctx.createDefinition()) {
-//            ColumnDefinitionContext columnDefinition = each.columnDefinition();
-//            if (null != columnDefinition) {
-//                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
-//                result.getAllSQLSegments().addAll(getTableSegments(columnDefinition));
-//            }
-//            if (null != each.tableConstraint() && null != each.tableConstraint().tableConstraintOption().tableName()) {
-//                result.getAllSQLSegments().add((TableSegment) visit(each.tableConstraint().tableConstraintOption().tableName()));
-//            }
-//        }
-//        if (result.getColumnDefinitions().isEmpty()) {
-//            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
-//        }
-//        return result;
-//    }
-//    
+    @Override
+    public ASTNode visitCreateTable(final CreateTableContext ctx) {
+        CreateTableStatement result = new CreateTableStatement();
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        result.getTables().add(table);
+        result.getAllSQLSegments().add(table);
+        if (null != ctx.createDefinitionClause()) {
+            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
+            result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
+            for (SQLSegment each : createDefinition.getAllSQLSegments()) {
+                result.getAllSQLSegments().add(each);
+                if (each instanceof TableSegment) {
+                    result.getTables().add((TableSegment) each);
+                }
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
+        CreateTableStatement result = new CreateTableStatement();
+        for (RelationalPropertyContext each : ctx.relationalProperties().relationalProperty()) {
+            ColumnDefinitionContext columnDefinition = each.columnDefinition();
+            if (null != columnDefinition) {
+                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
+                Collection<TableSegment> tableSegments = getTableSegments(columnDefinition);
+                result.getTables().addAll(tableSegments);
+                result.getAllSQLSegments().addAll(tableSegments);
+            }
+            if (null != each.outOfLineConstraint() && null != each.outOfLineConstraint().referencesClause() && null != each.outOfLineConstraint().referencesClause().tableName()) {
+                TableSegment tableSegment = (TableSegment) visit(each.outOfLineConstraint().referencesClause().tableName());
+                result.getTables().add(tableSegment);
+                result.getAllSQLSegments().add(tableSegment);
+            }
+            if (null != each.outOfLineRefConstraint() && null != each.outOfLineRefConstraint().referencesClause() && null != each.outOfLineRefConstraint().referencesClause().tableName()) {
+                TableSegment tableSegment = (TableSegment) visit(each.outOfLineRefConstraint().referencesClause().tableName());
+                result.getTables().add(tableSegment);
+                result.getAllSQLSegments().add(tableSegment);
+            }
+        }
+        if (result.getColumnDefinitions().isEmpty()) {
+            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
+        boolean isPrimaryKey = containsPrimaryKey(ctx);
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+    }
+    
+    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
+        for (InlineConstraintContext each : ctx.inlineConstraint()) {
+            if (null != each.primaryKey()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (InlineConstraintContext each : columnDefinition.inlineConstraint()) {
+            if (null != each.referencesClause()) {
+                result.add((TableSegment) visit(each.referencesClause().tableName()));
+            }
+        }
+        if (null != columnDefinition.inlineRefConstraint()) {
+            result.add((TableSegment) visit(columnDefinition.inlineRefConstraint().tableName()));
+        }
+        return result;
+    }
+    
 //    @Override
 //    public ASTNode visitAlterTable(final AlterTableContext ctx) {
 //        AlterTableStatement result = new AlterTableStatement();
@@ -150,23 +212,6 @@ public final class OracleDDLVisitor extends OracleVisitor {
 //    }
 //    
 //    @Override
-//    public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
-//        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-//        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
-//        boolean isPrimaryKey = containsPrimaryKey(ctx);
-//        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
-//    }
-//    
-//    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
-//        for (ColumnConstraintContext each : ctx.columnConstraint()) {
-//            if (null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey()) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//    
-//    @Override
 //    public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
 //        // TODO visit column definition, need to change g4 for modifyColumn
 //        return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null);
@@ -177,70 +222,40 @@ public final class OracleDDLVisitor extends OracleVisitor {
 //        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
 //                ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
 //    }
-//    
-//    @Override
-//    public ASTNode visitRenameColumnSpecification(final RenameColumnSpecificationContext ctx) {
-//        return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-//                ((ColumnSegment) visit(ctx.columnName(0))).getIdentifier().getValue(), ((ColumnSegment) visit(ctx.columnName(1))).getIdentifier().getValue());
-//    }
-//    
-//    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
-//        Collection<TableSegment> result = new LinkedList<>();
-//        for (ColumnConstraintContext each : columnDefinition.columnConstraint()) {
-//            if (null != each.columnConstraintOption().tableName()) {
-//                result.add((TableSegment) visit(each.columnConstraintOption().tableName()));
-//            }
-//        }
-//        return result;
-//    }
-//    
-//    @SuppressWarnings("unchecked")
-//    @Override
-//    public ASTNode visitDropTable(final DropTableContext ctx) {
-//        DropTableStatement result = new DropTableStatement();
-//        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNames());
-//        result.getTables().addAll(tables.getValue());
-//        result.getAllSQLSegments().addAll(tables.getValue());
-//        return result;
-//    }
-//    
-//    @SuppressWarnings("unchecked")
-//    @Override
-//    public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-//        TruncateStatement result = new TruncateStatement();
-//        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNamesClause());
-//        result.getTables().addAll(tables.getValue());
-//        result.getAllSQLSegments().addAll(tables.getValue());
-//        return result;
-//    }
-//    
-//    @Override
-//    public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-//        CreateIndexStatement result = new CreateIndexStatement();
-//        TableSegment table = (TableSegment) visit(ctx.tableName());
-//        result.setTable(table);
-//        result.getAllSQLSegments().add(table);
-//        return result;
-//    }
-//    
-//    @Override
-//    public ASTNode visitDropIndex(final DropIndexContext ctx) {
-//        return new DropIndexStatement();
-//    }
-//    
-//    @Override
-//    public ASTNode visitTableNameClause(final TableNameClauseContext ctx) {
-//        return visit(ctx.tableName());
-//    }
-//    
-//    @Override
-//    public ASTNode visitTableNamesClause(final TableNamesClauseContext ctx) {
-//        Collection<TableSegment> tableSegments = new LinkedList<>();
-//        for (int i = 0; i < ctx.tableNameClause().size(); i++) {
-//            tableSegments.add((TableSegment) visit(ctx.tableNameClause(i)));
-//        }
-//        CollectionValue<TableSegment> result = new CollectionValue<>();
-//        result.getValue().addAll(tableSegments);
-//        return result;
-//    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitDropTable(final DropTableContext ctx) {
+        DropTableStatement result = new DropTableStatement();
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        result.getTables().add(table);
+        result.getAllSQLSegments().add(table);
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
+        TruncateStatement result = new TruncateStatement();
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        result.getTables().add(table);
+        result.getAllSQLSegments().add(table);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
+        CreateIndexStatement result = new CreateIndexStatement();
+        if (null != ctx.createIndexDefinitionClause_().tableIndexClause_()) {
+            TableSegment table = (TableSegment) visit(ctx.createIndexDefinitionClause_().tableIndexClause_().tableName());
+            result.setTable(table);
+            result.getAllSQLSegments().add(table);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropIndex(final DropIndexContext ctx) {
+        return new DropIndexStatement();
+    }
 }
