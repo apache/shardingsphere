@@ -17,20 +17,29 @@
 
 package org.apache.shardingsphere.underlying.common.constant.properties;
 
-import java.util.Properties;
-
 /**
- * ShardingSphere properties for configuration.
+ * typed interface.
  *
- * @author gaohongtao
- * @author zhangliang
- * @author panjuan
  * @author kimmking
  */
-public final class ShardingSphereProperties extends TypedProperties {
+public interface TypedInterface {
     
-    public ShardingSphereProperties(final Properties props) {
-        super(PropertiesConstant.class, props);
-    }
+    /**
+     * return the specific type.
+     * @return type
+     */
+    Class<?> getType();
+    
+    /**
+     * return the specific key.
+     * @return key
+     */
+    String getKey();
+    
+    /**
+     * return the default value.
+     * @return defaultValue
+     */
+    String getDefaultValue();
     
 }
