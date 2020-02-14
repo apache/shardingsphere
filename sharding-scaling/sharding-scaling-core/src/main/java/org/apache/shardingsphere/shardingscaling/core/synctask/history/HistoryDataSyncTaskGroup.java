@@ -103,7 +103,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     }
     
     private boolean isSpiltByPrimaryKeyRange(final RdbmsConfiguration rdbmsConfiguration, final MetaDataManager metaDataManager) {
-        List<String> primaryKeys = metaDataManager.getPrimaryKeys(rdbmsConfiguration.getTableName());
+        List<String> primaryKeys = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName()).getPrimaryKeyColumns();
         if (null == primaryKeys || 0 == primaryKeys.size()) {
             log.warn("Can't split range for table {}, reason: no primary key", rdbmsConfiguration.getTableName());
             return false;
@@ -129,7 +129,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
         int concurrency = syncConfiguration.getConcurrency();
         Collection<SyncConfiguration> result = new LinkedList<>();
         RdbmsConfiguration readerConfiguration = syncConfiguration.getReaderConfiguration();
-        String primaryKey = metaDataManager.getPrimaryKeys(readerConfiguration.getTableName()).get(0);
+        String primaryKey = metaDataManager.getTableMetaData(readerConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(String.format("select min(%s),max(%s) from %s limit 1", primaryKey, primaryKey, readerConfiguration.getTableName()));
             ResultSet rs = ps.executeQuery();

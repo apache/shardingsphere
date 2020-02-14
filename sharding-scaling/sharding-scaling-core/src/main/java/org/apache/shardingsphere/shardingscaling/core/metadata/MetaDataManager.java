@@ -22,7 +22,6 @@ import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaDa
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,18 +51,5 @@ public final class MetaDataManager {
             tableMetaDataMap.put(tableName, tableMetaDataLoader.load(tableName));
         }
         return tableMetaDataMap.get(tableName);
-    }
-    
-    /**
-     * Get primary key column name by table name.
-     *
-     * @param tableName table name
-     * @return list of table name
-     */
-    public List<String> getPrimaryKeys(final String tableName) {
-        if (!tableMetaDataMap.containsKey(tableName)) {
-            tableMetaDataMap.put(tableName, tableMetaDataLoader.load(tableName));
-        }
-        return tableMetaDataMap.get(tableName).getPrimaryKeyColumns();
     }
 }

@@ -137,7 +137,6 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(record.getTableName());
-        List<String> primaryKeys = metaDataManager.getPrimaryKeys(record.getTableName());
         List<ColumnMetaData> updatedColumns = new LinkedList<>();
         List<Column> values = new LinkedList<>();
         for (int i = 0; i < tableMetaData.getColumnsSize(); i++) {
@@ -146,7 +145,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
                 values.add(record.getColumn(i));
             }
         }
-        for (String primaryKey : primaryKeys) {
+        for (String primaryKey : tableMetaData.getPrimaryKeyColumns()) {
             int index = tableMetaData.findColumnIndex(primaryKey);
             values.add(record.getColumn(index));
         }
@@ -160,7 +159,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(record.getTableName());
-        List<String> primaryKeys = metaDataManager.getPrimaryKeys(record.getTableName());
+        List<String> primaryKeys = metaDataManager.getTableMetaData(record.getTableName()).getPrimaryKeyColumns();
         String deleteSql = sqlBuilder.buildDeleteSql(record.getTableName());
         PreparedStatement ps = connection.prepareStatement(deleteSql);
         for (int i = 0; i < primaryKeys.size(); i++) {

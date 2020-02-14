@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import lombok.SneakyThrows;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -80,21 +79,18 @@ public final class MetaDataManagerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetPrimaryKeys() {
+    public void assertGetTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
-        List<String> actual = metaDataManager.getPrimaryKeys(TEST_TABLE);
+        assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE));
+        assertPrimaryKeys(metaDataManager.getTableMetaData(TEST_TABLE).getPrimaryKeyColumns());
+    }
+    
+    private void assertPrimaryKeys(final List<String> actual) {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is("id"));
     }
     
-    @Test
-    public void assertGetTableMetaData() {
-        MetaDataManager metaDataManager = new MetaDataManager(dataSource);
-        assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE));
-    }
-    
-    public void assertColumnMetaData(final TableMetaData actual) {
+    private void assertColumnMetaData(final TableMetaData actual) {
         assertThat(actual.getColumnsSize(), is(3));
         assertColumnMetaData(actual.getColumnMetaData(0), "id", Types.BIGINT, "BIGINT");
         assertColumnMetaData(actual.getColumnMetaData(1), "name", Types.VARCHAR, "VARCHAR");

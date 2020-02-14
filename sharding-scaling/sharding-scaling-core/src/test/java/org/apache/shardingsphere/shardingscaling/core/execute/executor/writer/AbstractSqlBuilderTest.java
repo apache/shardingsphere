@@ -49,6 +49,7 @@ public class AbstractSqlBuilderTest {
     @Before
     @SneakyThrows
     public void setUp() {
+        tableMetaData = new TableMetaData();
         sqlBuilder = new AbstractSqlBuilder(null) {
             
             @Override
@@ -61,7 +62,7 @@ public class AbstractSqlBuilderTest {
                 return "`";
             }
         };
-        FieldSetter.setField(sqlBuilder, AbstractSqlBuilder.class.getDeclaredField("dbMetaDataUtil"), metaDataManager);
+        FieldSetter.setField(sqlBuilder, AbstractSqlBuilder.class.getDeclaredField("metaDataManager"), metaDataManager);
     }
     
     @Test
@@ -74,20 +75,22 @@ public class AbstractSqlBuilderTest {
     
     @Test
     public void assertBuildUpdateSql() {
-        when(metaDataManager.getPrimaryKeys("t2")).thenReturn(mockPrimaryKeys());
+        mockPrimaryKeys();
+        when(metaDataManager.getTableMetaData("t2")).thenReturn(tableMetaData);
         String actual = sqlBuilder.buildUpdateSql("t2", mockUpdateColumn());
         assertThat(actual, Matchers.is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
     }
     
     @Test
     public void assertBuildDeleteSql() {
-        when(metaDataManager.getPrimaryKeys("t3")).thenReturn(mockPrimaryKeys());
+        mockPrimaryKeys();
+        when(metaDataManager.getTableMetaData("t3")).thenReturn(tableMetaData);
         String actual = sqlBuilder.buildDeleteSql("t3");
         assertThat(actual, Matchers.is("DELETE FROM `t3` WHERE `id` = ?"));
     }
     
-    private List<String> mockPrimaryKeys() {
-        return Collections.singletonList("id");
+    private void mockPrimaryKeys() {
+        tableMetaData.addAllPrimaryKey(Collections.singletonList("id"));
     }
     
     private void mockMetaData() {

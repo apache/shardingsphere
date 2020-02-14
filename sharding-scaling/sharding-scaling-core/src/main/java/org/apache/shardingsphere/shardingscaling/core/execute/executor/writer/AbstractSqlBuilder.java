@@ -138,9 +138,8 @@ public abstract class AbstractSqlBuilder {
     }
     
     private String buildDeleteSqlInternal(final String tableName) {
-        List<String> primaryKeys = metaDataManager.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
-        for (String each : primaryKeys) {
+        for (String each : metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns()) {
             where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
         }
         where.setLength(where.length() - 1);
@@ -148,9 +147,8 @@ public abstract class AbstractSqlBuilder {
     }
     
     private String buildUpdateSqlInternal(final String tableName) {
-        List<String> primaryKeys = metaDataManager.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
-        for (String each : primaryKeys) {
+        for (String each : metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns()) {
             where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
         }
         where.setLength(where.length() - 1);

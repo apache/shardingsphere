@@ -71,7 +71,7 @@ public final class PostgreSQLWriter extends AbstractJdbcWriter {
             holder.setLength(holder.length() - 1);
             String result = String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columns.toString(), holder.toString());
             result += " ON CONFLICT (";
-            for (String each : this.getMetaDataManager().getPrimaryKeys(tableName)) {
+            for (String each : this.getMetaDataManager().getTableMetaData(tableName).getPrimaryKeyColumns()) {
                 result += each + ",";
             }
             result = result.substring(0, result.length() - 1) + ") DO NOTHING";
