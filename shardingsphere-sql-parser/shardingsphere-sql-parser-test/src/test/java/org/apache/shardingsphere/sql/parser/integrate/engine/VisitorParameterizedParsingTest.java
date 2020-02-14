@@ -131,6 +131,8 @@ public final class VisitorParameterizedParsingTest {
         sqlCases.add("show_index_with_indexes_with_table_and_database");
         sqlCases.add("show_index_with_database_back_quotes");
         sqlCases.add("show_index_with_table_back_quotes");
+        // TODO cannot support insert all
+        sqlCases.add("insert_all_with_all_placeholders");
         // TODO cannot parse create index behind pk in create table statement
         sqlCases.add("create_table_with_create_index");
         // TODO cannot parse using index behind pk in create table statement
