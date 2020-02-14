@@ -47,7 +47,7 @@ public final class ParseTreeVisitorFactory {
         SQL_VISITOR_RULES.put("DMLVisitor", Lists.newArrayList(RuleName.SELECT.getName(), 
                 RuleName.DELETE.getName(), RuleName.UPDATE.getName(), RuleName.INSERT.getName(), RuleName.REPLACE.getName()));
         SQL_VISITOR_RULES.put("DDLVisitor", Lists.newArrayList(RuleName.CREATE_TABLE.getName(), RuleName.ALTER_TABLE.getName(), 
-                RuleName.DROP_TABLE.getName(), RuleName.TRUNCATE_TABLE.getName(), RuleName.CREATE_INDEX.getName(), RuleName.DROP_INDEX.getName()));
+                RuleName.DROP_TABLE.getName(), RuleName.TRUNCATE_TABLE.getName(), RuleName.CREATE_INDEX.getName(), RuleName.ALTER_INDEX.getName(), RuleName.DROP_INDEX.getName()));
         SQL_VISITOR_RULES.put("TCLVisitor", Lists.newArrayList(RuleName.SET_TRANSACTION.getName(), RuleName.BEGIN_TRANSACTION.getName(), 
                 RuleName.SET_AUTOCOMMIT.getName(), RuleName.COMMIT.getName(), RuleName.ROLLBACK.getName(), RuleName.SAVE_POINT.getName()));
         SQL_VISITOR_RULES.put("DCLVisitor", Lists.newArrayList(RuleName.GRANT.getName(), RuleName.REVOKE.getName(), RuleName.CREATE_USER.getName(), 

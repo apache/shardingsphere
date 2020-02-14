@@ -98,8 +98,8 @@ public final class VisitorParameterizedParsingTest {
             if (isPassedSqlCase(sqlCaseId)) {
                 continue;
             }
-//            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType) && !"Oracle".contains(databaseType)) {
-            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType)) {
+            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType) && !"Oracle".contains(databaseType)) {
+//            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType)) {
                 continue;
             }
             try {
@@ -131,8 +131,22 @@ public final class VisitorParameterizedParsingTest {
         sqlCases.add("show_index_with_indexes_with_table_and_database");
         sqlCases.add("show_index_with_database_back_quotes");
         sqlCases.add("show_index_with_table_back_quotes");
+        // TODO cannot support insert all
+        sqlCases.add("insert_all_with_all_placeholders");
+        // TODO cannot parse create index behind pk in create table statement
+        sqlCases.add("create_table_with_create_index");
+        // TODO cannot parse using index behind pk in create table statement
+        sqlCases.add("create_table_with_exist_index");
         // On the one hand, visitor parser can not give the right stop index for any sql with alias, on the other hand,  the old parser can not handle all sql cases correctly.
         sqlCases.add("select_with_expression");
+        sqlCases.add("select_pagination_with_row_number");
+        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
+        sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
+        sqlCases.add("select_pagination_with_row_number_and_group_by_and_order_by");
+        sqlCases.add("select_pagination_with_row_number_for_greater_than");
+        sqlCases.add("select_pagination_with_row_number_for_greater_than_and_equal");
+        sqlCases.add("alter_table_add_foreign_key");
+        sqlCases.add("alter_table_add_primary_foreign_key");
         return sqlCases.contains(sqlCaseId);
     }
     

@@ -185,6 +185,8 @@ public enum RuleName {
     
     CREATE_INDEX("CreateIndex"),
     
+    ALTER_INDEX("AlterIndex"),
+    
     DROP_INDEX("DropIndex"),
     
     SET_TRANSACTION("SetTransaction"),
