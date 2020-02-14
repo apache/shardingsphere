@@ -19,6 +19,7 @@ package org.apache.shardingsphere.underlying.common.metadata.table.init.loader.i
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -71,6 +72,7 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     
     private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData, final String table) throws SQLException {
         String catalog = dataSourceMetaData.getCatalog();
+        MetaDataLogger.logTableMetaData(catalog, table);
         Collection<ColumnMetaData> columnMetaDataList = isTableExist(connection, catalog, table) ? columnMetaDataLoader.load(connection, catalog, table) : Collections.<ColumnMetaData>emptyList();
         return new TableMetaData(columnMetaDataList, Collections.<String>emptyList());
     }
@@ -83,7 +85,9 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     
     @Override
     public TableMetas loadAll(final BaseRule rule) throws SQLException {
+        MetaDataLogger.log("load all tables");
         Collection<String> tableNames = loadAllTableNames();
+        MetaDataLogger.log("{} table(s) will be loaded.", tableNames.size());
         Map<String, TableMetaData> result = new HashMap<>(tableNames.size(), 1);
         // TODO concurrency load via maxConnectionsSizePerQuery
         for (String each : tableNames) {
