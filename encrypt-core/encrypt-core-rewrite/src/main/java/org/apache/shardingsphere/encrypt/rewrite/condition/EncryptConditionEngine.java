@@ -121,7 +121,7 @@ public final class EncryptConditionEngine {
                 predicateSegment.getStopIndex(), compareRightValue.getExpression()))
                 : Optional.<EncryptCondition>absent();
     }
-
+    
     private static Optional<EncryptCondition> createInEncryptCondition(final String tableName, final PredicateSegment predicateSegment, final PredicateInRightValue inRightValue) {
         List<ExpressionSegment> expressionSegments = new LinkedList<>();
         for (ExpressionSegment each : inRightValue.getSqlExpressions()) {
@@ -130,7 +130,7 @@ public final class EncryptConditionEngine {
             }
         }
         return expressionSegments.isEmpty() ? Optional.<EncryptCondition>absent()
-                : Optional.<EncryptCondition>of(new EncryptInCondition(predicateSegment.getColumn().getIdentifier().getValue(),
+                : Optional.<EncryptCondition>of(new EncryptInCondition(predicateSegment.getColumn().getIdentifier().getValue(), 
                 tableName, inRightValue.getPredicateBracketValue().getPredicateLeftBracketValue().getStartIndex(), predicateSegment.getStopIndex(), expressionSegments));
     }
     
