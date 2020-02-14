@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum PropertiesConstant implements TypedInterface {
+public enum PropertiesConstant implements TypedPropertiesKey {
     
     /**
      * Enable or Disable to show SQL details.

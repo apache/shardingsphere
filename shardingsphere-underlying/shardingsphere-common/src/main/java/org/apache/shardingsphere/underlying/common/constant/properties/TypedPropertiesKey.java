@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.underlying.common.constant.properties;
 
 /**
- * typed interface.
+ * Typed properties key interface.
  *
  * @author kimmking
  */
-public interface TypedInterface {
+public interface TypedPropertiesKey {
     
     /**
      * return the specific type.
