@@ -213,6 +213,8 @@ public enum RuleName {
     
     CREATE_ROLE("CreateRole"),
     
+    ALTER_ROLE("AlterRole"),
+    
     DROP_ROLE("DropRole"),
     
     SET_DEFAULT_ROLE("SetDefaultRole"),

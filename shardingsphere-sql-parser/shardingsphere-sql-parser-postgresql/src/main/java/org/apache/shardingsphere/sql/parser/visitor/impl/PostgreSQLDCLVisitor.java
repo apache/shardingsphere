@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateUserContext;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Pr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
@@ -94,6 +96,11 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor {
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
         return new CreateRoleStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterRole(final AlterRoleContext ctx) {
+        return new AlterRoleStatement();
     }
     
     @Override
