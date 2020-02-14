@@ -30,8 +30,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public final class PredicateLeftBracketValue implements PredicateRightValue {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
 }

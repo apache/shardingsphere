@@ -31,8 +31,8 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 public final class PredicateInRightValue implements PredicateRightValue {
-
+    
     private final PredicateBracketValue predicateBracketValue;
-
+    
     private final Collection<ExpressionSegment> sqlExpressions;
 }

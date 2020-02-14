@@ -80,7 +80,7 @@ public final class EncryptConditionEngine {
         }
         return result;
     }
-
+    
     private Collection<EncryptCondition> createEncryptConditions(final AndPredicate andPredicate, final TablesContext tablesContext) {
         Collection<EncryptCondition> result = new LinkedList<>();
         Collection<Integer> stopIndexes = new HashSet<>();
