@@ -31,7 +31,7 @@ import java.lang.reflect.Modifier;
 import static org.mockito.Mockito.inOrder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MetaDataLoggerTest {
+public final class MetaDataLoggerTest {
     
     @Mock
     private Logger log;
@@ -44,23 +44,23 @@ public class MetaDataLoggerTest {
     
     @Test
     public void assertLog() {
-        MetaDataLogger.log("load all tables MetaData.");
+        MetaDataLogger.log("Load all tables meta data.");
         InOrder inOrder = inOrder(log);
-        inOrder.verify(log).info("load all tables MetaData.", new Object[]{});
+        inOrder.verify(log).info("Load all tables meta data.", new Object[]{});
     }
     
     @Test
     public void assertLogTableMetaData() {
         MetaDataLogger.logTableMetaData("test", "schema", "table");
         InOrder inOrder = inOrder(log);
-        inOrder.verify(log).info("loading table MetaData catalog:{}, schema:{}, actualTableName:{}.", "test", "schema", "table");
+        inOrder.verify(log).info("Loading table meta data catalog: {}, schema: {}, table: {}.", "test", "schema", "table");
     }
     
     @Test
     public void assertLogTableMetaDataWithNullSchema() {
         MetaDataLogger.logTableMetaData("test", "table");
         InOrder inOrder = inOrder(log);
-        inOrder.verify(log).info("loading table MetaData catalog:{}, actualTableName:{}.", new Object[]{"test", "table"});
+        inOrder.verify(log).info("Loading table meta data catalog: {}, table: {}.", new Object[]{"test", "table"});
     }
     
     private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {
@@ -70,5 +70,4 @@ public class MetaDataLoggerTest {
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.set(null, newValue);
     }
-    
 }

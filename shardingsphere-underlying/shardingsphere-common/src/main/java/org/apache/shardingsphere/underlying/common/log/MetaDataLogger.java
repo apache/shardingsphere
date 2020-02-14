@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * meta data logger.
+ * Meta data logger.
  *
  * @author yuzel
  */
@@ -34,43 +34,40 @@ import java.util.List;
 public class MetaDataLogger {
     
     /**
-     * table MetaData log.
+     * Log table meta data loading information.
      *
      * @param catalog catalog
-     * @param tableName tableName
+     * @param table table
      */
-    public static void logTableMetaData(final String catalog, final String tableName) {
-        logTableMetaData(catalog, null, tableName);
+    public static void logTableMetaData(final String catalog, final String table) {
+        logTableMetaData(catalog, null, table);
     }
     
     /**
-     * table MetaData log.
+     * Log table meta data loading information.
      *
      * @param catalog catalog
      * @param schema schema
-     * @param tableName tableName
+     * @param table table
      */
-    public static void logTableMetaData(final String catalog, final String schema, final String tableName) {
-        StringBuilder logTemplate = new StringBuilder("loading table MetaData ");
+    public static void logTableMetaData(final String catalog, final String schema, final String table) {
+        StringBuilder logTemplate = new StringBuilder("Loading table meta data ");
         List<Object> arguments = new ArrayList<>(3);
-        if (null == tableName) {
-            return;
-        }
         if (null != catalog) {
-            logTemplate.append("catalog:{}, ");
+            logTemplate.append("catalog: {}, ");
             arguments.add(catalog);
         }
         if (null != schema) {
-            logTemplate.append("schema:{}, ");
+            logTemplate.append("schema: {}, ");
             arguments.add(schema);
         }
-        logTemplate.append("actualTableName:{}.");
-        arguments.add(tableName);
+        logTemplate.append("table: {}.");
+        arguments.add(table);
         log(logTemplate.toString(), arguments.toArray());
     }
     
     /**
-     * log.
+     * Log.
      *
      * @param pattern patten
      * @param arguments arguments
