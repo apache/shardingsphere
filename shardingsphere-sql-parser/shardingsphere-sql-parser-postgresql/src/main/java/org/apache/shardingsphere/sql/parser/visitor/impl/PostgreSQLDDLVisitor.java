@@ -139,9 +139,12 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
                     for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
                         result.getAddedColumnDefinitions().add(addColumnDefinition.getColumnDefinition());
                         Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
+                        // TODO refactor SQLStatement
+                        // CHECKSTYLE:OFF
                         if (columnPositionSegment.isPresent()) {
                             result.getChangedPositionColumns().add(columnPositionSegment.get());
                         }
+                        // CHECKSTYLE:ON
                     }
                     result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
                 }
@@ -154,9 +157,12 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
                 ModifyColumnSpecificationContext modifyColumnSpecification = each.modifyColumnSpecification();
                 if (null != modifyColumnSpecification) {
                     Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
+                    // TODO refactor SQLStatement
+                    // CHECKSTYLE:OFF
                     if (columnPositionSegment.isPresent()) {
                         result.getChangedPositionColumns().add(columnPositionSegment.get());
                     }
+                    // CHECKSTYLE:ON
                 }
                 DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
                 if (null != dropColumnSpecification) {
