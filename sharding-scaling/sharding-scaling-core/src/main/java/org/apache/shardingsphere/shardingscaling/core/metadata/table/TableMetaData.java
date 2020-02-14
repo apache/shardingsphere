@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingscaling.core.metadata.table;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Getter;
@@ -29,11 +30,11 @@ import lombok.Getter;
  *
  * @author yangyi
  */
-@Getter
 public final class TableMetaData {
 
     private final List<ColumnMetaData> columnMetaDatas = new ArrayList<>();
     
+    @Getter
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     /**
@@ -65,6 +66,19 @@ public final class TableMetaData {
     }
     
     /**
+     * Get column names.
+     *
+     * @return column names
+     */
+    public Collection<String> getColumnNames() {
+        Collection<String> result = new LinkedList<>();
+        for (ColumnMetaData each : columnMetaDatas) {
+            result.add(each.getColumnName());
+        }
+        return result;
+    }
+    
+    /**
      * Find index of column.
      *
      * @param columnName column name
@@ -86,15 +100,5 @@ public final class TableMetaData {
      */
     public void addAllPrimaryKey(final Collection<String> primaryKeyColumnName) {
         primaryKeyColumns.addAll(primaryKeyColumnName);
-    }
-    
-    /**
-     * Get primary key column name.
-     *
-     * @param primaryKeyIndex primary key index
-     * @return primary key column name
-     */
-    public String getPrimaryKeyColumnName(final int primaryKeyIndex) {
-        return primaryKeyColumns.get(primaryKeyIndex);
     }
 }

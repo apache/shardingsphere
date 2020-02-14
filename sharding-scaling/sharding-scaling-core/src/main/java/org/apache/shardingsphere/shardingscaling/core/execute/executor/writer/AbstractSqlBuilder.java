@@ -126,11 +126,10 @@ public abstract class AbstractSqlBuilder {
     }
     
     private String buildInsertSqlInternal(final String tableName) {
-        List<ColumnMetaData> metaData = metaDataManager.getColumnNames(tableName);
         StringBuilder columns = new StringBuilder();
         StringBuilder holder = new StringBuilder();
-        for (ColumnMetaData each : metaData) {
-            columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each.getColumnName(), getRightIdentifierQuoteString()));
+        for (String each : metaDataManager.getTableMetaData(tableName).getColumnNames()) {
+            columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
             holder.append("?,");
         }
         columns.setLength(columns.length() - 1);

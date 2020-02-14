@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +41,8 @@ public class AbstractSqlBuilderTest {
     
     @Mock
     private MetaDataManager metaDataManager;
+    
+    private TableMetaData tableMetaData;
     
     private AbstractSqlBuilder sqlBuilder;
     
@@ -63,7 +66,8 @@ public class AbstractSqlBuilderTest {
     
     @Test
     public void assertBuildInsertSql() {
-        when(metaDataManager.getColumnNames("t1")).thenReturn(mockInsertColumn());
+        mockMetaData();
+        when(metaDataManager.getTableMetaData("t1")).thenReturn(tableMetaData);
         String actual = sqlBuilder.buildInsertSql("t1");
         assertThat(actual, Matchers.is("INSERT INTO `t1`(`id`,`c1`,`c2`,`c3`) VALUES(?,?,?,?)"));
     }
@@ -86,21 +90,21 @@ public class AbstractSqlBuilderTest {
         return Collections.singletonList("id");
     }
     
-    private List<ColumnMetaData> mockInsertColumn() {
-        List<ColumnMetaData> result = new ArrayList<>(4);
+    private void mockMetaData() {
+        List<ColumnMetaData> columnMetaDataList = new ArrayList<>(4);
         ColumnMetaData id = new ColumnMetaData();
         id.setColumnName("id");
-        result.add(id);
+        columnMetaDataList.add(id);
         ColumnMetaData c1 = new ColumnMetaData();
         c1.setColumnName("c1");
-        result.add(c1);
+        columnMetaDataList.add(c1);
         ColumnMetaData c2 = new ColumnMetaData();
         c2.setColumnName("c2");
-        result.add(c2);
+        columnMetaDataList.add(c2);
         ColumnMetaData c3 = new ColumnMetaData();
         c3.setColumnName("c3");
-        result.add(c3);
-        return result;
+        columnMetaDataList.add(c3);
+        tableMetaData.addAllColumnMetaData(columnMetaDataList);
     }
     
     private List<ColumnMetaData> mockUpdateColumn() {

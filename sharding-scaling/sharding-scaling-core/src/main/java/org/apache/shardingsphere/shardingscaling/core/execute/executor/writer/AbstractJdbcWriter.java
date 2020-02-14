@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Da
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 
@@ -135,18 +136,18 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        List<ColumnMetaData> metaData = metaDataManager.getColumnNames(record.getTableName());
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(record.getTableName());
         List<String> primaryKeys = metaDataManager.getPrimaryKeys(record.getTableName());
         List<ColumnMetaData> updatedColumns = new LinkedList<>();
         List<Column> values = new LinkedList<>();
-        for (int i = 0; i < metaData.size(); i++) {
+        for (int i = 0; i < tableMetaData.getColumnsSize(); i++) {
             if (record.getColumn(i).isUpdated()) {
-                updatedColumns.add(metaData.get(i));
+                updatedColumns.add(tableMetaData.getColumnMetaData(i));
                 values.add(record.getColumn(i));
             }
         }
         for (String primaryKey : primaryKeys) {
-            int index = metaDataManager.findColumnIndex(metaData, primaryKey);
+            int index = tableMetaData.findColumnIndex(primaryKey);
             values.add(record.getColumn(index));
         }
         String updateSql = sqlBuilder.buildUpdateSql(record.getTableName(), updatedColumns);
@@ -158,12 +159,12 @@ public abstract class AbstractJdbcWriter extends AbstractSyncRunner implements W
     }
     
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
-        List<ColumnMetaData> metaData = metaDataManager.getColumnNames(record.getTableName());
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(record.getTableName());
         List<String> primaryKeys = metaDataManager.getPrimaryKeys(record.getTableName());
         String deleteSql = sqlBuilder.buildDeleteSql(record.getTableName());
         PreparedStatement ps = connection.prepareStatement(deleteSql);
         for (int i = 0; i < primaryKeys.size(); i++) {
-            int index = metaDataManager.findColumnIndex(metaData, primaryKeys.get(i));
+            int index = tableMetaData.findColumnIndex(primaryKeys.get(i));
             ps.setObject(i + 1, record.getColumn(index).getValue());
         }
         ps.execute();

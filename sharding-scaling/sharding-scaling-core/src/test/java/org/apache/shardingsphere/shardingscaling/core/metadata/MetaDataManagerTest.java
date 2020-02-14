@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.core.metadata;
 
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Types;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -89,34 +89,21 @@ public final class MetaDataManagerTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertGetColumnNames() {
+    public void assertGetTableMetaData() {
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
-        List<ColumnMetaData> actual = metaDataManager.getColumnNames(TEST_TABLE);
-        assertThat(actual.size(), is(3));
-        assertColumnMetaData(actual.get(0), "id", Types.BIGINT, "BIGINT");
-        assertColumnMetaData(actual.get(1), "name", Types.VARCHAR, "VARCHAR");
-        assertColumnMetaData(actual.get(2), "age", Types.INTEGER, "INTEGER");
+        assertColumnMetaData(metaDataManager.getTableMetaData(TEST_TABLE));
+    }
+    
+    public void assertColumnMetaData(final TableMetaData actual) {
+        assertThat(actual.getColumnsSize(), is(3));
+        assertColumnMetaData(actual.getColumnMetaData(0), "id", Types.BIGINT, "BIGINT");
+        assertColumnMetaData(actual.getColumnMetaData(1), "name", Types.VARCHAR, "VARCHAR");
+        assertColumnMetaData(actual.getColumnMetaData(2), "age", Types.INTEGER, "INTEGER");
     }
     
     private void assertColumnMetaData(final ColumnMetaData actual, final String expectedName, final int expectedType, final String expectedTypeName) {
         assertThat(actual.getColumnName(), is(expectedName));
         assertThat(actual.getColumnType(), is(expectedType));
         assertThat(actual.getColumnTypeName(), is(expectedTypeName));
-    }
-    
-    @Test
-    public void assertFindColumnIndex() {
-        List<ColumnMetaData> columnMetaDataList = new LinkedList<>();
-        ColumnMetaData columnMetaData = new ColumnMetaData();
-        columnMetaData.setColumnName("id");
-        columnMetaDataList.add(columnMetaData);
-        columnMetaData = new ColumnMetaData();
-        columnMetaData.setColumnName("name");
-        columnMetaDataList.add(columnMetaData);
-        MetaDataManager metaDataManager = new MetaDataManager(dataSource);
-        assertThat(metaDataManager.findColumnIndex(columnMetaDataList, "id"), is(0));
-        assertThat(metaDataManager.findColumnIndex(columnMetaDataList, "name"), is(1));
-        assertThat(metaDataManager.findColumnIndex(columnMetaDataList, "age"), is(-1));
     }
 }

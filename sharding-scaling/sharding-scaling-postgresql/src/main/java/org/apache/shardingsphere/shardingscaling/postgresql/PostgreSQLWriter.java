@@ -61,11 +61,10 @@ public final class PostgreSQLWriter extends AbstractJdbcWriter {
         
         @Override
         public String buildInsertSql(final String tableName) {
-            List<ColumnMetaData> metaData = this.getMetaDataManager().getColumnNames(tableName);
             StringBuilder columns = new StringBuilder();
             StringBuilder holder = new StringBuilder();
-            for (ColumnMetaData each : metaData) {
-                columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each.getColumnName(), getRightIdentifierQuoteString()));
+            for (String each : this.getMetaDataManager().getTableMetaData(tableName).getColumnNames()) {
+                columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
                 holder.append("?,");
             }
             columns.setLength(columns.length() - 1);

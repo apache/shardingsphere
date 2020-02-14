@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.core.metadata;
 
-import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaDataLoader;
 
@@ -41,7 +40,20 @@ public final class MetaDataManager {
     public MetaDataManager(final DataSource dataSource) {
         this.tableMetaDataLoader = new TableMetaDataLoader(dataSource);
     }
-
+    
+    /**
+     * Get table meta data by table name.
+     *
+     * @param tableName table name
+     * @return table meta data
+     */
+    public TableMetaData getTableMetaData(final String tableName) {
+        if (!tableMetaDataMap.containsKey(tableName)) {
+            tableMetaDataMap.put(tableName, tableMetaDataLoader.load(tableName));
+        }
+        return tableMetaDataMap.get(tableName);
+    }
+    
     /**
      * Get primary key column name by table name.
      *
@@ -53,34 +65,5 @@ public final class MetaDataManager {
             tableMetaDataMap.put(tableName, tableMetaDataLoader.load(tableName));
         }
         return tableMetaDataMap.get(tableName).getPrimaryKeyColumns();
-    }
-
-    /**
-     * Get all column meta data by table name.
-     *
-     * @param tableName table name
-     * @return list of column meta data
-     */
-    public List<ColumnMetaData> getColumnNames(final String tableName) {
-        if (!tableMetaDataMap.containsKey(tableName)) {
-            tableMetaDataMap.put(tableName, tableMetaDataLoader.load(tableName));
-        }
-        return tableMetaDataMap.get(tableName).getColumnMetaDatas();
-    }
-
-    /**
-     * Find column index by column name.
-     *
-     * @param metaData   meta data list
-     * @param columnName table name
-     * @return index
-     */
-    public int findColumnIndex(final List<ColumnMetaData> metaData, final String columnName) {
-        for (int i = 0; i < metaData.size(); i++) {
-            if (metaData.get(i).getColumnName().equals(columnName)) {
-                return i;
-            }
-        }
-        return -1;
     }
 }

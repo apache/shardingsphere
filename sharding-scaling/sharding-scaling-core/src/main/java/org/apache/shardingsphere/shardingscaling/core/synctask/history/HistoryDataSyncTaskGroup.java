@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCall
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
-import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
@@ -67,7 +67,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     }
 
     @Override
-    public final void prepare() {
+    public void prepare() {
         List<SyncConfiguration> tableSliceConfigurations = split(syncConfiguration);
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         for (SyncConfiguration each : tableSliceConfigurations) {
@@ -112,9 +112,9 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
             log.warn("Can't split range for table {}, reason: primary key is union primary", rdbmsConfiguration.getTableName());
             return false;
         }
-        List<ColumnMetaData> metaData = metaDataManager.getColumnNames(rdbmsConfiguration.getTableName());
-        int index = metaDataManager.findColumnIndex(metaData, primaryKeys.get(0));
-        if (isNotIntegerPrimary(metaData.get(index).getColumnType())) {
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
+        int index = tableMetaData.findColumnIndex(primaryKeys.get(0));
+        if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(index).getColumnType())) {
             log.warn("Can't split range for table {}, reason: primary key is not integer number", rdbmsConfiguration.getTableName());
             return false;
         }
@@ -156,7 +156,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     }
 
     @Override
-    public final void start(final ReportCallback callback) {
+    public void start(final ReportCallback callback) {
         final List<Event> finishedEvents = new LinkedList<>();
         for (final SyncTask each : syncTasks) {
             each.start(new ReportCallback() {
@@ -177,14 +177,14 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     }
 
     @Override
-    public final void stop() {
+    public void stop() {
         for (SyncTask each : syncTasks) {
             each.stop();
         }
     }
 
     @Override
-    public final SyncProgress getProgress() {
+    public SyncProgress getProgress() {
         HistoryDataSyncTaskProgressGroup result = new HistoryDataSyncTaskProgressGroup();
         for (SyncTask each : syncTasks) {
             result.addSyncProgress(each.getProgress());
