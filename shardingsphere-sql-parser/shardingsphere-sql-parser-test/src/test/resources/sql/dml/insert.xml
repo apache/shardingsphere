@@ -233,6 +233,27 @@
         </values>
     </insert>
     
+<!--    Here is correct result.-->
+<!--    <insert sql-case-id="insert_without_columns_with_all_placeholders" parameters="1, 1, 'init'">-->
+<!--        <table name="t_order" start-index="12" stop-index="18" />-->
+<!--        <values>-->
+<!--            <value>-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="0" />-->
+<!--                    <literal-expression value="1" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="1" />-->
+<!--                    <literal-expression value="1" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="2" />-->
+<!--                    <literal-expression value="init" />-->
+<!--                </assignment-value>-->
+<!--            </value>-->
+<!--        </values>-->
+<!--    </insert>-->
+    
     <insert sql-case-id="insert_set_with_all_placeholders" parameters="1, 1, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <set start-index="20" stop-index="60" literal-stop-index="65">
@@ -766,6 +787,33 @@
         </values>
     </insert>
     
+<!--    Here is correct result.-->
+<!--    <insert sql-case-id="insert_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">-->
+<!--        <table name="t_order_item" start-index="12" stop-index="23" />-->
+<!--        <values>-->
+<!--            <value>-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="0" />-->
+<!--                    <literal-expression value="10000" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="1" />-->
+<!--                    <literal-expression value="1000" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="2" />-->
+<!--                    <literal-expression value="10" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <literal-expression value="insert" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <literal-expression value="2017-08-08" />-->
+<!--                </assignment-value>-->
+<!--            </value>-->
+<!--        </values>-->
+<!--    </insert>-->
+    
     <insert sql-case-id="insert_without_columns_and_without_generate_key_column" parameters="1000, 10">
         <table name="t_order_item" start-index="12" stop-index="23" />
         <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
@@ -790,6 +838,29 @@
         </values>
     </insert>
     
+<!--    Here is correct result.-->
+<!--    <insert sql-case-id="insert_without_columns_and_without_generate_key_column" parameters="1000, 10">-->
+<!--        <table name="t_order_item" start-index="12" stop-index="23" />-->
+<!--        <values>-->
+<!--            <value>-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="0" />-->
+<!--                    <literal-expression value="1000" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="1" />-->
+<!--                    <literal-expression value="10" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <literal-expression value="insert" />-->
+<!--                </assignment-value>-->
+<!--                <assignment-value>-->
+<!--                    <literal-expression value="2017-08-08" />-->
+<!--                </assignment-value>-->
+<!--            </value>-->
+<!--        </values>-->
+<!--    </insert>-->
+    
     <!-- // TODO
     <insert sql-case-id="assertInsertSelect" sql="INSERT INTO `order` ('order_id', 'state') (SELECT 1, 'RUNNING' FROM dual UNION ALL SELECT 2, 'RUNNING' FROM dual )"">
         <table name="order" />
@@ -807,6 +878,14 @@
             <value />
         </values>
     </insert>
+    
+<!--    Here is correct result.-->
+<!--    <insert sql-case-id="insert_with_one_auto_increment_column">-->
+<!--        <table name="t_auto_increment_table" start-index="12" stop-index="33" />-->
+<!--        <values>-->
+<!--            <value />-->
+<!--        </values>-->
+<!--    </insert>-->
 
     <insert sql-case-id="insert_with_double_value">
         <table name="t_double_test" start-index="12" stop-index="24" />
@@ -1010,6 +1089,33 @@
             </assignment>
         </set>
     </insert>
+    
+<!--    Here is correct result.-->
+<!--    <insert sql-case-id="insert_on_duplicate_key_update_with_base64_aes_encrypt" parameters="1, 1, 'init'">-->
+<!--        <table name="t_order" start-index="12" stop-index="18" />-->
+<!--        <set start-index="20" stop-index="111" literal-stop-index="116">-->
+<!--            <assignment start-index="24" stop-index="35">-->
+<!--                <column name="order_id" start-index="24" stop-index="31" />-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="0" />-->
+<!--                    <literal-expression value="1" />-->
+<!--                </assignment-value>-->
+<!--            </assignment>-->
+<!--            <assignment start-index="38" stop-index="48">-->
+<!--                <column name="user_id" start-index="38" stop-index="44" />-->
+<!--                <assignment-value>-->
+<!--                    <parameter-marker-expression value="1" />-->
+<!--                    <literal-expression value="1" />-->
+<!--                </assignment-value>-->
+<!--            </assignment>-->
+<!--            <assignment start-index="51" stop-index="111" literal-stop-index="116">-->
+<!--                <column name="status" start-index="51" stop-index="56" />-->
+<!--                <assignment-value>-->
+<!--                    <common-expression text="convert(to_base64(aes_encrypt(?,'key'))USINGutf8)" literal-text="convert(to_base64(aes_encrypt('init','key'))USINGutf8)" />-->
+<!--                </assignment-value>-->
+<!--            </assignment>-->
+<!--        </set>-->
+<!--    </insert>-->
     
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 1, 1, 'init', 1, 1, 'init'">
         <table name="t_order" start-index="16" stop-index="22" />
