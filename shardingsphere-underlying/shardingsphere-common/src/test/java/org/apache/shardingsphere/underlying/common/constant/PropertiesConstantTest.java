@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.underlying.common.constant;
 
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -26,15 +29,17 @@ import static org.junit.Assert.assertThat;
 
 public final class PropertiesConstantTest {
     
+    private ShardingSphereProperties shardingSphereProperties = new ShardingSphereProperties(new Properties());
+    
     @Test
     public void assertFindByKey() {
-        assertThat(PropertiesConstant.findByKey("sql.show"), is(PropertiesConstant.SQL_SHOW));
-        assertThat(PropertiesConstant.findByKey("sql.simple"), is(PropertiesConstant.SQL_SIMPLE));
-        assertThat(PropertiesConstant.findByKey("executor.size"), is(PropertiesConstant.EXECUTOR_SIZE));
+        assertThat(shardingSphereProperties.findByKey("sql.show"), is(PropertiesConstant.SQL_SHOW));
+        assertThat(shardingSphereProperties.findByKey("sql.simple"), is(PropertiesConstant.SQL_SIMPLE));
+        assertThat(shardingSphereProperties.findByKey("executor.size"), is(PropertiesConstant.EXECUTOR_SIZE));
     }
     
     @Test
     public void assertFindByKeyWhenNotFound() {
-        assertNull(PropertiesConstant.findByKey("empty"));
+        assertNull(shardingSphereProperties.findByKey("empty"));
     }
 }

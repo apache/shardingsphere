@@ -119,6 +119,13 @@ public class TypedProperties<E extends Enum> {
      * @return value enum, return {@code null} if not found
      */
     public E findByKey(final String key) {
-        return Enums.getIfPresent(this.enumClass, key).orNull();
+        E[] enumConstants = this.enumClass.getEnumConstants();
+        for (E e : enumConstants) {
+            TypedInterface typedEnum = (TypedInterface)e;
+            if(typedEnum.getKey().equals(key)) {
+                return e;
+            }
+        }
+        return null;
     }
 }

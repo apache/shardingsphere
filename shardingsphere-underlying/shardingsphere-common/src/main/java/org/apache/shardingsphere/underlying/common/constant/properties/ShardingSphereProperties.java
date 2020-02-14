@@ -27,7 +27,7 @@ import java.util.Properties;
  * @author panjuan
  * @author kimmking
  */
-public final class ShardingSphereProperties extends TypedProperties {
+public final class ShardingSphereProperties extends TypedProperties<PropertiesConstant> {
     
     public ShardingSphereProperties(final Properties props) {
         super(PropertiesConstant.class, props);
