@@ -146,7 +146,8 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
                     result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
                 }
                 AddConstraintSpecificationContext addConstraintSpecification = each.addConstraintSpecification();
-                TableConstraintOptionContext tableConstraintOption = null == addConstraintSpecification ? null : addConstraintSpecification.tableConstraint().tableConstraintOption();
+                TableConstraintOptionContext tableConstraintOption = null == addConstraintSpecification || null == addConstraintSpecification.tableConstraint()
+                        ? null : addConstraintSpecification.tableConstraint().tableConstraintOption();
                 if (null != tableConstraintOption && null != tableConstraintOption.tableName()) {
                     result.getAllSQLSegments().add((TableSegment) visit(tableConstraintOption.tableName()));
                 }
