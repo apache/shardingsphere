@@ -76,8 +76,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrde
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -285,9 +288,16 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         for (ExprContext each : ctx.expr()) {
             segments.add((ExpressionSegment) visit(each));
         }
-        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
+        PredicateBracketValue predicateBracketValue = createBracketValue(ctx);
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(predicateBracketValue, segments));
     }
-    
+
+    private PredicateBracketValue createBracketValue(final PredicateContext ctx) {
+        PredicateLeftBracketValue predicateLeftBracketValue = new PredicateLeftBracketValue(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex());
+        PredicateRightBracketValue predicateRightBracketValue = new PredicateRightBracketValue(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+        return new PredicateBracketValue(predicateLeftBracketValue, predicateRightBracketValue);
+    }
+
     private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
         ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));

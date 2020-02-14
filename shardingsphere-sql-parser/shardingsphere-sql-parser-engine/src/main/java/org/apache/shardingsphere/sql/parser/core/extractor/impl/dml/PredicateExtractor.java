@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sql.parser.core.extractor.impl.dml;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.sql.parser.core.constant.Bracket;
 import org.apache.shardingsphere.sql.parser.core.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.core.constant.Paren;
 import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmentExtractor;
@@ -33,8 +36,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -184,13 +190,32 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
                         predicateNode.getStart().getStartIndex(), predicateNode.getStop().getStopIndex(), column, new PredicateBetweenRightValue(betweenSQLExpression.get(), andSQLExpression.get())))
                 : Optional.<PredicateSegment>absent();
     }
-    
+
     private Optional<PredicateSegment> extractInPredicate(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes, final ColumnSegment column) {
+        Optional<PredicateBracketValue> predicateBracketValue = extractBracketValue(predicateNode);
         Collection<ExpressionSegment> sqlExpressions = extractInExpressionSegments(predicateNode, parameterMarkerIndexes);
-        return sqlExpressions.isEmpty() ? Optional.<PredicateSegment>absent()
-                : Optional.of(new PredicateSegment(predicateNode.getStart().getStartIndex(), predicateNode.getStop().getStopIndex(), column, new PredicateInRightValue(sqlExpressions)));
+        PredicateSegment predicateSegment = new PredicateSegment(predicateNode.getStart().getStartIndex(), predicateNode.getStop().getStopIndex(), column,
+                new PredicateInRightValue(predicateBracketValue.get(), sqlExpressions));
+        return sqlExpressions.isEmpty() ? Optional.<PredicateSegment>absent() : Optional.of(predicateSegment);
     }
-    
+
+    private Optional<PredicateBracketValue> extractBracketValue(final ParserRuleContext predicateNode) {
+        PredicateLeftBracketValue predicateLeftBracketValue = null;
+        PredicateRightBracketValue predicateRightBracketValue = null;
+        for (ParseTree each : predicateNode.children) {
+            if (each instanceof TerminalNode && Bracket.LEFT.getValue().equals(each.getText())) {
+                predicateLeftBracketValue = new PredicateLeftBracketValue(((TerminalNode) each).getSymbol().getStartIndex(), ((TerminalNode) each).getSymbol().getStopIndex());
+            }
+            if (each instanceof TerminalNode && Bracket.RIGHT.getValue().equals(each.getText())) {
+                predicateRightBracketValue = new PredicateRightBracketValue(((TerminalNode) each).getSymbol().getStartIndex(), ((TerminalNode) each).getSymbol().getStopIndex());
+            }
+        }
+        if (null != predicateLeftBracketValue && null != predicateRightBracketValue) {
+            return Optional.of(new PredicateBracketValue(predicateLeftBracketValue, predicateRightBracketValue));
+        }
+        return Optional.absent();
+    }
+
     private Collection<ExpressionSegment> extractInExpressionSegments(final ParserRuleContext predicateNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         List<ExpressionSegment> result = new LinkedList<>();
         for (int i = 3; i < predicateNode.getChildCount(); i++) {
