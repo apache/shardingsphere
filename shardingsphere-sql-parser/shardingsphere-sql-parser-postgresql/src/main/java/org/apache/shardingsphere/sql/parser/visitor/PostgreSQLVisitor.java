@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Bi
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CaseExpression_Context;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
@@ -362,7 +363,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return visitRemainSimpleExpr(ctx);
     }
     
     @Override
@@ -436,6 +437,24 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
+        if (null != ctx.caseExpression_()) {
+            return visit(ctx.caseExpression_());
+        }
+        for (ExprContext each : ctx.expr()) {
+            visit(each);
+        }
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            visit(each);
+        }
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitCaseExpression_(final CaseExpression_Context ctx) {
+        return visit(ctx.simpleExpr());
     }
     
     @Override

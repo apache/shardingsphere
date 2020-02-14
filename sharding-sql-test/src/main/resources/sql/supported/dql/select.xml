@@ -41,12 +41,9 @@
     <sql-case id="select_keyword_table_name_with_square_brackets" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN [select] c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="SQLServer" />
     <sql-case id="select_alias_as_keyword" value="SELECT length.item_id password FROM t_order_item length where length.item_id = ? " db-types="MySQL,H2,SQLServer,Oracle" />
     <sql-case id="select_with_force_index_join" value="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id = ?" db-types="MySQL" />
-    <!-- FIXME cannot parse multiple parameter-marker from one expr -->
-    <!-- 
     <sql-case id="select_equal_with_geography" value="SELECT * FROM t_order WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL" />
     <sql-case id="select_in_with_geography" value="SELECT * FROM t_order WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL" />
     <sql-case id="select_between_with_geography" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL" />
-    -->
     <sql-case id="select_with_schema" value="SELECT * FROM db1.t_order" />
     <sql-case id="select_special_function_nested" value="SELECT sum(if(status=0, 1, 0)) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_row_subquery_without_row_keyword" value="SELECT * FROM t_order WHERE (user_id,order_id) = (SELECT user_id,order_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
