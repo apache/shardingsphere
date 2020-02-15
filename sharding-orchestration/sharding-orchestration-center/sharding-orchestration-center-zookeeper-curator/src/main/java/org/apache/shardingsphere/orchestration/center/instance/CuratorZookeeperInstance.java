@@ -19,15 +19,6 @@ package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import java.io.UnsupportedEncodingException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -53,6 +44,16 @@ import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Distributed lock center for zookeeper with curator.
  *
@@ -69,22 +70,25 @@ public final class CuratorZookeeperInstance implements ConfigCenter, Distributed
     
     private InterProcessMutex leafLock;
     
+    private ZookeeperProperties zookeeperProperties;
+    
     @Getter
     @Setter
     private Properties properties = new Properties();
     
     @Override
     public void init(final InstanceConfiguration config) {
+        zookeeperProperties = new ZookeeperProperties(properties);
         client = buildCuratorClient(config);
         initCuratorClient(config);
     }
     
     private CuratorFramework buildCuratorClient(final InstanceConfiguration config) {
-        int retryIntervalMilliseconds = Integer.parseInt(config.getProperties().getProperty("retryIntervalMilliseconds", "500"));
-        int maxRetries = Integer.parseInt(config.getProperties().getProperty("maxRetries", "3"));
-        int timeToLiveSeconds = Integer.parseInt(config.getProperties().getProperty("timeToLiveSeconds", "60"));
-        int operationTimeoutMilliseconds = Integer.parseInt(config.getProperties().getProperty("operationTimeoutMilliseconds", "500"));
-        String digest = config.getProperties().getProperty("digest");
+        int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS);
+        int maxRetries = zookeeperProperties.getValue(ZookeeperPropertiesEnum.MAX_RETRIES);
+        int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS);
+        int operationTimeoutMilliseconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.OPERATION_TIMEOUT_MILLISECONDS);
+        String digest = zookeeperProperties.getValue(ZookeeperPropertiesEnum.DIGEST);
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
             .connectString(config.getServerLists())
             .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
