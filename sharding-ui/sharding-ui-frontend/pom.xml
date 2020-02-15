@@ -46,6 +46,7 @@
                         <configuration>
                             <nodeVersion>${node.version}</nodeVersion>
                             <npmVersion>${npm.version}</npmVersion>
+                            <downloadRoot>http://npm.taobao.org/mirrors/node/</downloadRoot>
                         </configuration>
                     </execution>
                     <execution>
