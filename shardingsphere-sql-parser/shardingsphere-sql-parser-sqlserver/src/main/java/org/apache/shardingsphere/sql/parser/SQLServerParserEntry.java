@@ -22,6 +22,11 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerTCLVisitor;
 
 /**
  * SQL parser entry for SQLServer.
@@ -48,6 +53,18 @@ public final class SQLServerParserEntry implements SQLParserEntry {
     
     @Override
     public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        return SQLServerVisitor.class;
+        if (SQLServerDMLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQLServerDMLVisitor.class;
+        }
+        if (SQLServerDDLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQLServerDDLVisitor.class;
+        }
+        if (SQLServerTCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQLServerTCLVisitor.class;
+        }
+        if (SQLServerDCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQLServerDCLVisitor.class;
+        }
+        return SQLServerDALVisitor.class;
     }
 }

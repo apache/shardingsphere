@@ -219,6 +219,12 @@ public enum RuleName {
     
     DROP_ROLE("DropRole"),
     
+    CREATE_LOGIN("CreateLogin"),
+    
+    ALTER_LOGIN("AlterLogin"),
+    
+    DROP_LOGIN("DropLogin"),
+    
     SET_DEFAULT_ROLE("SetDefaultRole"),
     
     SET_ROLE("SetRole"),
