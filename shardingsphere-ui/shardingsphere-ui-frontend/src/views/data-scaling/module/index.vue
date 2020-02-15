@@ -23,6 +23,10 @@
         type="primary"
         icon="el-icon-plus"
         @click="add">{{ $t('dataScaling.btnTxt') }}</el-button>
+      <span style="margin-left: 20px;">
+        server: <samp style="color: #E17425;">{{ serverHost }}</samp>
+        <i class="el-icon-edit" @click="showServerDialog"></i>
+      </span>
     </div>
     <div class="table-wrap">
       <el-table :data="tableData" border style="width: 100%">
@@ -328,12 +332,23 @@
       title="Data Scaling Seting"
       width="480px"
       center>
-      <el-form :inline="true">
-        <el-form-item label="Data Scaling Server:">
-          <el-input v-model="serverInput" placeholder="Example 127.0.0.1"/>
+      <el-form label-width="110px">
+        <el-form-item label="Service Name:">
+          <el-input v-model="serviceForm.serviceName" :placeholder="$t('dataScaling.serviceDialog.serviceName')"/>
+        </el-form-item>
+        <el-form-item label="Service Type:">
+          <el-input v-model="serviceForm.serviceType" :placeholder="$t('dataScaling.serviceDialog.serviceType')"/>
+        </el-form-item>
+        <el-form-item label="Service Url:">
+          <el-input v-model="serviceForm.serviceUrl" :placeholder="$t('dataScaling.serviceDialog.serviceUrl')"/>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="setServer">确 定</el-button>
+          <el-button @click="serverDialogVisible = false">{{
+            $t('dataScaling.registDialog.btnCancelTxt')
+          }}</el-button>
+          <el-button type="primary" @click="setServer">
+            {{ $t('dataScaling.registDialog.btnConfirmTxt') }}
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -389,12 +404,17 @@ export default {
       DataScalingDialogProgressVisible: false,
       DataScalingDialogSyncTaskProgressDetailVisible: false,
       DatasourceVisible: false,
-      serverDialogVisible: true,
+      serverDialogVisible: false,
       RuleVisible: false,
-      serverInput: '',
+      serviceForm: {
+        serviceName: '',
+        serviceType: '',
+        serviceUrl: ''
+      },
       schemaData: [],
       textareaDatasource: ``,
       textareaRule: ``,
+      serverHost: '',
       column: [
         {
           label: this.$t('dataScaling').tableList.jobId,
@@ -507,14 +527,36 @@ export default {
     }
   },
   created() {
-    this.getJobList()
+    this.getJobServer()
   },
   methods: {
+    showServerDialog() {
+      this.serverDialogVisible = true
+    },
     setServer() {
-      this.$notify({
-        title: this.$t('dataScaling').notify.title,
-        message: 'Set up successfully！',
-        type: 'success'
+      API.postJobServer(this.serviceForm).then(res => {
+        this.$notify({
+          title: this.$t('dataScaling').notify.title,
+          message: 'Set up successfully！',
+          type: 'success'
+        })
+        this.serverDialogVisible = false
+      }, () => {
+        this.$notify({
+          title: this.$t('dataScaling').notify.title,
+          message: 'Setup failed！',
+          type: 'error'
+        })
+      })
+    },
+    getJobServer() {
+      API.getJobServer().then(res => {
+        if (res) {
+          this.serverHost = res.serverUrl
+          this.getJobList()
+        } else {
+          this.serverDialogVisible = true
+        }
       })
     },
     getPercentage(arr) {
@@ -690,6 +732,9 @@ export default {
 }
 </script>
 <style lang="scss">
+  .el-icon-edit {
+    cursor: pointer;
+  }
   .btn-group {
     margin-bottom: 20px;
   }

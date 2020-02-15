@@ -21,16 +21,16 @@ import ruleConfigApi from '@/views/rule-config/api'
 const { getSchema, getSchemaDataSource, getSchemaRule } = ruleConfigApi
 
 export default {
+  getJobServer: (params = {}) => API.get(`/api/shardingscaling`, params),
+  postJobServer: (params = {}) => API.post(`/api/shardingscaling`, params),
   getJobStart: (params = {}) =>
-    API.post(`/shardingscaling/job/start`, params, { host: 'OTHERHOST' }),
+    API.post(`/api/shardingscaling/job/start`, params),
   getJobList: (params = {}) =>
-    API.get(`/shardingscaling/job/list`, params, { host: 'OTHERHOST' }),
+    API.get(`/api/shardingscaling/job/list`, params),
   getJobProgress: jobId =>
-    API.get(`/shardingscaling/job/progress/${jobId}`, '', {
-      host: 'OTHERHOST'
-    }),
+    API.get(`/api/shardingscaling/job/progress/${jobId}`),
   postJobStop: (params = {}) =>
-    API.post(`/shardingscaling/job/stop`, params, { host: 'OTHERHOST' }),
+    API.post(`/api/shardingscaling/job/stop`, params),
   getSchema,
   getSchemaDataSource,
   getSchemaRule
