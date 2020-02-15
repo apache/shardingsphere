@@ -31,6 +31,6 @@ public final class DropColumnDefinitionFiller implements SQLSegmentFiller<DropCo
     
     @Override
     public void fill(final DropColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((AlterTableStatement) sqlStatement).getDroppedColumnNames().add(sqlSegment.getColumnName());
+        ((AlterTableStatement) sqlStatement).getDroppedColumnNames().addAll(sqlSegment.getColumnNames());
     }
 }

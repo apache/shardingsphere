@@ -82,10 +82,27 @@ public final class VisitorParameterizedParsingTest {
     public static Collection<Object[]> getTestParameters() {
         // TODO resume me after all test cases passed
         //        checkTestCases();
-        // TODO remove me after all test cases passed
-        return getSQLTestParameters(SQL_CASES_LOADER.getSQLTestParameters());
+        return getSQLTestParameters();
+    }
+    
+    private static void checkTestCases() {
+        Collection<String> allSQLCaseIDs = new HashSet<>(SQL_CASES_LOADER.getAllSQLCaseIDs());
+        if (allSQLCaseIDs.size() != SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs().size()) {
+            allSQLCaseIDs.removeAll(SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs());
+            fail(String.format("The count of SQL cases and SQL parser cases are mismatched, missing cases are: %s", allSQLCaseIDs));
+        }
+    }
+    
+    private static Collection<Object[]> getSQLTestParameters() {
+        Collection<Object[]> result = new LinkedList<>();
         // TODO resume me after all test cases passed 
-//        return SQL_CASES_LOADER.getSQLTestParameters();
+//        for (Object[] each : SQL_CASES_LOADER.getSQLTestParameters()) {
+        for (Object[] each : getSQLTestParameters(SQL_CASES_LOADER.getSQLTestParameters())) {
+            if (!isPlaceholderWithoutParameter(each)) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     // TODO remove me after all test cases passed
@@ -98,8 +115,8 @@ public final class VisitorParameterizedParsingTest {
             if (isPassedSqlCase(sqlCaseId)) {
                 continue;
             }
-//            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType) && !"Oracle".contains(databaseType) && !"SQLServer".contains(databaseType)) {
-            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType) && !"Oracle".contains(databaseType)) {
+            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType) && !"Oracle".contains(databaseType) && !"SQLServer".contains(databaseType)) {
+                //            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType) && !"Oracle".contains(databaseType)) {
                 continue;
             }
             try {
@@ -112,12 +129,8 @@ public final class VisitorParameterizedParsingTest {
         return result;
     }
     
-    private static void checkTestCases() {
-        Collection<String> allSQLCaseIDs = new HashSet<>(SQL_CASES_LOADER.getAllSQLCaseIDs());
-        if (allSQLCaseIDs.size() != SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs().size()) {
-            allSQLCaseIDs.removeAll(SQL_PARSER_TEST_CASES_REGISTRY.getAllSQLCaseIDs());
-            fail(String.format("The count of SQL cases and SQL parser cases are mismatched, missing cases are: %s", allSQLCaseIDs));
-        }
+    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParameter) {
+        return SQLCaseType.Placeholder == sqlTestParameter[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParameter[0].toString()).getParameters().isEmpty();
     }
     
     private static boolean isPassedSqlCase(final String sqlCaseId) {
@@ -155,6 +168,7 @@ public final class VisitorParameterizedParsingTest {
         sqlCases.add("select_pagination_with_top_and_diff_group_by_and_order_by_and_parentheses");
         sqlCases.add("alter_table_add_foreign_key");
         sqlCases.add("alter_table_add_primary_foreign_key");
+        sqlCases.add("alter_table_add_constraints_sqlserver");
         // TODO no rule in SQLServer's g4
         sqlCases.add("beginTransaction");
         // TODO no rule in SQLServer's g4

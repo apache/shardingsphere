@@ -282,9 +282,12 @@ createIndexSpecification_
     ;
 
 alterDefinitionClause
-    : modifyColumnSpecification | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
+    : addColumnSpecification | modifyColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
     ;
 
+addColumnSpecification
+    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOptions | generatedColumnNamesClause)
+    ;
 
 modifyColumnSpecification
     : alterColumnOperation dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
@@ -292,10 +295,6 @@ modifyColumnSpecification
 
 alterColumnOperation
     : ALTER COLUMN columnName
-    ;
-
-addColumnSpecification
-    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOptions | generatedColumnNamesClause)
     ;
 
 alterColumnAddOptions
