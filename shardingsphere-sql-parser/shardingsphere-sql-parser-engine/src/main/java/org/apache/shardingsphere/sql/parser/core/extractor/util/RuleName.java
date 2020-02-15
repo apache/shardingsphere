@@ -191,6 +191,8 @@ public enum RuleName {
     
     SET_TRANSACTION("SetTransaction"),
     
+    SET_IMPLICIT_TRANSACTIONS("SetImplicitTransactions"),
+    
     BEGIN_TRANSACTION("BeginTransaction"),
     
     SET_AUTOCOMMIT("SetAutoCommit"),

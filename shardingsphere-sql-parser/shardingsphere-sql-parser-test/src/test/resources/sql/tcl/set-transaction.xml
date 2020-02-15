@@ -23,4 +23,6 @@
     <set-transaction sql-case-id="setTransactionReadOnly" />
     <set-transaction sql-case-id="setTransactionWithName" />
     <set-transaction sql-case-id="setTransactionSnapshot" />
+    <set-transaction sql-case-id="setImplicitTransactionsOn" />
+    <set-transaction sql-case-id="setImplicitTransactionsOff" />
 </sql-parser-test-cases>
