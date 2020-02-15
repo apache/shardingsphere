@@ -21,7 +21,7 @@ public enum ZookeeperPropertiesEnum implements TypedPropertiesKey {
     
     OPERATION_TIMEOUT_MILLISECONDS("operationTimeoutMilliseconds", String.valueOf(500), int.class),
     
-    DIGEST("digest", null, String.class);
+    DIGEST("digest", "", String.class);
     
     private final String key;
     

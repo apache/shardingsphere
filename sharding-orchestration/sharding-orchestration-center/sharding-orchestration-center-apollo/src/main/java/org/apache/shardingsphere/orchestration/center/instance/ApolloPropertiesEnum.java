@@ -21,11 +21,11 @@ public enum ApolloPropertiesEnum implements TypedPropertiesKey {
     
     CLUSTER_NAME("clusterName", ConfigConsts.CLUSTER_NAME_DEFAULT, String.class),
     
-    ADMINISTRATOR("administrator", null, String.class),
+    ADMINISTRATOR("administrator", "", String.class),
     
-    TOKEN("token", null, String.class),
+    TOKEN("token", "", String.class),
     
-    PORTAL_URL("portalUrl", null, String.class),
+    PORTAL_URL("portalUrl", "", String.class),
     
     CONNECT_TIMEOUT("connectTimeout", String.valueOf(ApolloOpenApiConstants.DEFAULT_CONNECT_TIMEOUT), int.class),
     
