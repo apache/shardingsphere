@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
+import java.util.Collection;
+
 /**
  * Drop column definition segment.
  *
@@ -36,5 +38,5 @@ public final class DropColumnDefinitionSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final String columnName;
+    private final Collection<String> columnNames;
 }

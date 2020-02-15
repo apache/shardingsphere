@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.visitor.SQLServerVisitor;
 
@@ -43,7 +44,9 @@ public final class SQLServerTCLVisitor extends SQLServerVisitor {
     
     @Override
     public ASTNode visitSetImplicitTransactions(final SetImplicitTransactionsContext ctx) {
-        return new SetTransactionStatement();
+        SetAutoCommitStatement result = new SetAutoCommitStatement();
+        result.setAutoCommit("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
+        return result;
     }
     
     @Override

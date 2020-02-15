@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterD
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnOrVirtualDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
@@ -218,7 +219,7 @@ public final class OracleDDLVisitor extends OracleVisitor {
                 }
                 DropColumnClauseContext dropColumnClause = each.dropColumnClause();
                 if (null != dropColumnClause) {
-                    result.getDroppedColumnNames().add(((DropColumnDefinitionSegment) visit(dropColumnClause)).getColumnName());
+                    result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(dropColumnClause)).getColumnNames());
                 }
             }
         }
@@ -252,9 +253,11 @@ public final class OracleDDLVisitor extends OracleVisitor {
 
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-        // TODO can drop multiple columns
-        return new DropColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ColumnSegment) visit(ctx.columnOrColumnList().columnName(0))).getIdentifier().getValue());
+        Collection<String> columnNames = new LinkedList<>();
+        for (ColumnNameContext each : ctx.columnOrColumnList().columnName()) {
+            columnNames.add(((ColumnSegment) visit(each)).getIdentifier().getValue());
+        }
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnNames);
     }
     
     @SuppressWarnings("unchecked")

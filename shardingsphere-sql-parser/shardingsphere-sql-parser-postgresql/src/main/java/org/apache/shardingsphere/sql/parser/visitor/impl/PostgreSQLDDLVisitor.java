@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -166,7 +167,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
                 }
                 DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
                 if (null != dropColumnSpecification) {
-                    result.getDroppedColumnNames().add(((DropColumnDefinitionSegment) visit(dropColumnSpecification)).getColumnName());
+                    result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(dropColumnSpecification)).getColumnNames());
                 }
             }
         }
@@ -216,8 +217,8 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
     
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
+        return new DropColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue()));
     }
     
     @Override
