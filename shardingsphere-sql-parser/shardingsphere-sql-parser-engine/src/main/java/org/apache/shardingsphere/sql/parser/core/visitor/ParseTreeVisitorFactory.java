@@ -48,11 +48,11 @@ public final class ParseTreeVisitorFactory {
                 RuleName.DELETE.getName(), RuleName.UPDATE.getName(), RuleName.INSERT.getName(), RuleName.REPLACE.getName()));
         SQL_VISITOR_RULES.put("DDLVisitor", Lists.newArrayList(RuleName.CREATE_TABLE.getName(), RuleName.ALTER_TABLE.getName(), 
                 RuleName.DROP_TABLE.getName(), RuleName.TRUNCATE_TABLE.getName(), RuleName.CREATE_INDEX.getName(), RuleName.ALTER_INDEX.getName(), RuleName.DROP_INDEX.getName()));
-        SQL_VISITOR_RULES.put("TCLVisitor", Lists.newArrayList(RuleName.SET_TRANSACTION.getName(), RuleName.BEGIN_TRANSACTION.getName(), 
+        SQL_VISITOR_RULES.put("TCLVisitor", Lists.newArrayList(RuleName.SET_TRANSACTION.getName(), RuleName.SET_IMPLICIT_TRANSACTIONS.getName(), RuleName.BEGIN_TRANSACTION.getName(), 
                 RuleName.SET_AUTOCOMMIT.getName(), RuleName.COMMIT.getName(), RuleName.ROLLBACK.getName(), RuleName.SAVE_POINT.getName()));
         SQL_VISITOR_RULES.put("DCLVisitor", Lists.newArrayList(RuleName.GRANT.getName(), RuleName.REVOKE.getName(), RuleName.CREATE_USER.getName(), 
-                RuleName.DROP_USER.getName(), RuleName.ALTER_USER.getName(), RuleName.RENAME_USER.getName(), RuleName.CREATE_ROLE.getName(), RuleName.ALTER_ROLE.getName(),
-                RuleName.DROP_ROLE.getName(), RuleName.CREATE_LOGIN.getName(), RuleName.ALTER_LOGIN.getName(),
+                RuleName.DROP_USER.getName(), RuleName.ALTER_USER.getName(), RuleName.DENY_USER.getName(), RuleName.RENAME_USER.getName(), 
+                RuleName.CREATE_ROLE.getName(), RuleName.ALTER_ROLE.getName(), RuleName.DROP_ROLE.getName(), RuleName.CREATE_LOGIN.getName(), RuleName.ALTER_LOGIN.getName(),
                 RuleName.DROP_LOGIN.getName(), RuleName.SET_DEFAULT_ROLE.getName(), RuleName.SET_ROLE.getName(), RuleName.SET_PASSWORD.getName()));
         SQL_VISITOR_RULES.put("DALVisitor", Lists.newArrayList(RuleName.USE.getName(), RuleName.DESC.getName(), RuleName.SHOW_DATABASES.getName(),
                 RuleName.SHOW_TABLES.getName(), RuleName.SHOW_TABLE_STATUS.getName(), RuleName.SHOW_COLUMNS.getName(), RuleName.SHOW_INDEX.getName(),

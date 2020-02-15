@@ -191,6 +191,8 @@ public enum RuleName {
     
     SET_TRANSACTION("SetTransaction"),
     
+    SET_IMPLICIT_TRANSACTIONS("SetImplicitTransactions"),
+    
     BEGIN_TRANSACTION("BeginTransaction"),
     
     SET_AUTOCOMMIT("SetAutoCommit"),
@@ -207,9 +209,11 @@ public enum RuleName {
     
     CREATE_USER("CreateUser"),
     
+    ALTER_USER("AlterUser"),
+    
     DROP_USER("DropUser"),
     
-    ALTER_USER("AlterUser"),
+    DENY_USER("Deny"),
     
     RENAME_USER("RenameUser"),
     

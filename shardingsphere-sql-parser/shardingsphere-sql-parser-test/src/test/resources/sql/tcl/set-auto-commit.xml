@@ -21,6 +21,4 @@
     <set-auto-commit sql-case-id="setAutoCommitOnWithScope" auto-commit="true" />
     <set-auto-commit sql-case-id="setAutoCommitOff" auto-commit="false" />
     <set-auto-commit sql-case-id="setAutoCommitOffWithScope" auto-commit="false" />
-    <set-auto-commit sql-case-id="setImplicitTransactionsOn" auto-commit="true" />
-    <set-auto-commit sql-case-id="setImplicitTransactionsOff" auto-commit="false" />
 </sql-parser-test-cases>

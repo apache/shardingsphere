@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cla
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DenyContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropUserContext;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DenyUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropLoginStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
@@ -105,13 +107,31 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor {
     }
     
     @Override
-    public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement();
+    public ASTNode visitAlterUser(final AlterUserContext ctx) {
+        return new AlterUserStatement();
     }
     
     @Override
-    public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement();
+    public ASTNode visitDeny(final DenyContext ctx) {
+        DenyUserStatement result = new DenyUserStatement();
+        if (null != ctx.classPrivilegesClause_()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause_())) {
+                result.getAllSQLSegments().add(each);
+                result.setTable(each);
+            }
+        }
+        if (null != ctx.classTypePrivilegesClause_()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause_())) {
+                result.getAllSQLSegments().add(each);
+                result.setTable(each);
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropUser(final DropUserContext ctx) {
+        return new DropUserStatement();
     }
     
     @Override
