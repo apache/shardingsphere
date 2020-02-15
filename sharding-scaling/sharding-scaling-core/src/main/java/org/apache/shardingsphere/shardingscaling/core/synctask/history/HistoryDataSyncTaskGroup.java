@@ -23,12 +23,12 @@ import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCall
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
-import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
-import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ import java.util.List;
  * @author avalon566
  */
 @Slf4j
-public class HistoryDataSyncTaskGroup implements SyncTask {
+public final class HistoryDataSyncTaskGroup implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
     
@@ -67,7 +67,7 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
     }
 
     @Override
-    public final void prepare() {
+    public void prepare() {
         List<SyncConfiguration> tableSliceConfigurations = split(syncConfiguration);
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         for (SyncConfiguration each : tableSliceConfigurations) {
@@ -80,10 +80,10 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
     private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
         List<SyncConfiguration> result = new LinkedList<>();
         DataSource dataSource = dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
-        DbMetaDataUtil dbMetaDataUtil = new DbMetaDataUtil(dataSource);
+        MetaDataManager metaDataManager = new MetaDataManager(dataSource);
         for (SyncConfiguration each : splitByTable(syncConfiguration)) {
-            if (isSpiltByPrimaryKeyRange(each.getReaderConfiguration(), dbMetaDataUtil)) {
-                result.addAll(splitByPrimaryKeyRange(each, dbMetaDataUtil, dataSource));
+            if (isSpiltByPrimaryKeyRange(each.getReaderConfiguration(), metaDataManager)) {
+                result.addAll(splitByPrimaryKeyRange(each, metaDataManager, dataSource));
             } else {
                 result.add(each);
             }
@@ -102,8 +102,8 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
         return result;
     }
     
-    private boolean isSpiltByPrimaryKeyRange(final RdbmsConfiguration rdbmsConfiguration, final DbMetaDataUtil dbMetaDataUtil) {
-        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(rdbmsConfiguration.getTableName());
+    private boolean isSpiltByPrimaryKeyRange(final RdbmsConfiguration rdbmsConfiguration, final MetaDataManager metaDataManager) {
+        List<String> primaryKeys = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName()).getPrimaryKeyColumns();
         if (null == primaryKeys || 0 == primaryKeys.size()) {
             log.warn("Can't split range for table {}, reason: no primary key", rdbmsConfiguration.getTableName());
             return false;
@@ -112,9 +112,9 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
             log.warn("Can't split range for table {}, reason: primary key is union primary", rdbmsConfiguration.getTableName());
             return false;
         }
-        List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(rdbmsConfiguration.getTableName());
-        int index = DbMetaDataUtil.findColumnIndex(metaData, primaryKeys.get(0));
-        if (isNotIntegerPrimary(metaData.get(index).getColumnType())) {
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
+        int index = tableMetaData.findColumnIndex(primaryKeys.get(0));
+        if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(index).getColumnType())) {
             log.warn("Can't split range for table {}, reason: primary key is not integer number", rdbmsConfiguration.getTableName());
             return false;
         }
@@ -125,11 +125,11 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
         return Types.INTEGER != columnType && Types.BIGINT != columnType && Types.SMALLINT != columnType && Types.TINYINT != columnType;
     }
     
-    private Collection<SyncConfiguration> splitByPrimaryKeyRange(final SyncConfiguration syncConfiguration, final DbMetaDataUtil dbMetaDataUtil, final DataSource dataSource) {
+    private Collection<SyncConfiguration> splitByPrimaryKeyRange(final SyncConfiguration syncConfiguration, final MetaDataManager metaDataManager, final DataSource dataSource) {
         int concurrency = syncConfiguration.getConcurrency();
         Collection<SyncConfiguration> result = new LinkedList<>();
         RdbmsConfiguration readerConfiguration = syncConfiguration.getReaderConfiguration();
-        String primaryKey = dbMetaDataUtil.getPrimaryKeys(readerConfiguration.getTableName()).get(0);
+        String primaryKey = metaDataManager.getTableMetaData(readerConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement ps = connection.prepareStatement(String.format("select min(%s),max(%s) from %s limit 1", primaryKey, primaryKey, readerConfiguration.getTableName()));
             ResultSet rs = ps.executeQuery();
@@ -156,7 +156,7 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
     }
 
     @Override
-    public final void start(final ReportCallback callback) {
+    public void start(final ReportCallback callback) {
         final List<Event> finishedEvents = new LinkedList<>();
         for (final SyncTask each : syncTasks) {
             each.start(new ReportCallback() {
@@ -177,14 +177,14 @@ public class HistoryDataSyncTaskGroup implements SyncTask {
     }
 
     @Override
-    public final void stop() {
+    public void stop() {
         for (SyncTask each : syncTasks) {
             each.stop();
         }
     }
 
     @Override
-    public final SyncProgress getProgress() {
+    public SyncProgress getProgress() {
         HistoryDataSyncTaskProgressGroup result = new HistoryDataSyncTaskProgressGroup();
         for (SyncTask each : syncTasks) {
             result.addSyncProgress(each.getProgress());

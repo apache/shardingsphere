@@ -22,8 +22,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
-import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -44,10 +44,10 @@ public abstract class AbstractSqlBuilder {
     private final LoadingCache<String, String> sqlCache;
     
     @Getter(value = AccessLevel.PROTECTED)
-    private final DbMetaDataUtil dbMetaDataUtil;
+    private final MetaDataManager metaDataManager;
     
-    public AbstractSqlBuilder(final DbMetaDataUtil dbMetaDataUtil) {
-        this.dbMetaDataUtil = dbMetaDataUtil;
+    public AbstractSqlBuilder(final MetaDataManager metaDataManager) {
+        this.metaDataManager = metaDataManager;
         sqlCache = CacheBuilder.newBuilder()
                 .maximumSize(64)
                 .build(new CacheLoader<String, String>() {
@@ -126,11 +126,10 @@ public abstract class AbstractSqlBuilder {
     }
     
     private String buildInsertSqlInternal(final String tableName) {
-        List<ColumnMetaData> metaData = dbMetaDataUtil.getColumnNames(tableName);
         StringBuilder columns = new StringBuilder();
         StringBuilder holder = new StringBuilder();
-        for (ColumnMetaData each : metaData) {
-            columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each.getColumnName(), getRightIdentifierQuoteString()));
+        for (String each : metaDataManager.getTableMetaData(tableName).getColumnNames()) {
+            columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
             holder.append("?,");
         }
         columns.setLength(columns.length() - 1);
@@ -139,9 +138,8 @@ public abstract class AbstractSqlBuilder {
     }
     
     private String buildDeleteSqlInternal(final String tableName) {
-        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
-        for (String each : primaryKeys) {
+        for (String each : metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns()) {
             where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
         }
         where.setLength(where.length() - 1);
@@ -149,9 +147,8 @@ public abstract class AbstractSqlBuilder {
     }
     
     private String buildUpdateSqlInternal(final String tableName) {
-        List<String> primaryKeys = dbMetaDataUtil.getPrimaryKeys(tableName);
         StringBuilder where = new StringBuilder();
-        for (String each : primaryKeys) {
+        for (String each : metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns()) {
             where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
         }
         where.setLength(where.length() - 1);

@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingscaling.core.metadata.ColumnMetaData;
-import org.apache.shardingsphere.shardingscaling.core.util.DbMetaDataUtil;
+import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,13 +40,16 @@ import static org.mockito.Mockito.when;
 public class AbstractSqlBuilderTest {
     
     @Mock
-    private DbMetaDataUtil dbMetaDataUtil;
+    private MetaDataManager metaDataManager;
+    
+    private TableMetaData tableMetaData;
     
     private AbstractSqlBuilder sqlBuilder;
     
     @Before
     @SneakyThrows
     public void setUp() {
+        tableMetaData = new TableMetaData();
         sqlBuilder = new AbstractSqlBuilder(null) {
             
             @Override
@@ -58,49 +62,52 @@ public class AbstractSqlBuilderTest {
                 return "`";
             }
         };
-        FieldSetter.setField(sqlBuilder, AbstractSqlBuilder.class.getDeclaredField("dbMetaDataUtil"), dbMetaDataUtil);
+        FieldSetter.setField(sqlBuilder, AbstractSqlBuilder.class.getDeclaredField("metaDataManager"), metaDataManager);
     }
     
     @Test
     public void assertBuildInsertSql() {
-        when(dbMetaDataUtil.getColumnNames("t1")).thenReturn(mockInsertColumn());
+        mockMetaData();
+        when(metaDataManager.getTableMetaData("t1")).thenReturn(tableMetaData);
         String actual = sqlBuilder.buildInsertSql("t1");
         assertThat(actual, Matchers.is("INSERT INTO `t1`(`id`,`c1`,`c2`,`c3`) VALUES(?,?,?,?)"));
     }
     
     @Test
     public void assertBuildUpdateSql() {
-        when(dbMetaDataUtil.getPrimaryKeys("t2")).thenReturn(mockPrimaryKeys());
+        mockPrimaryKeys();
+        when(metaDataManager.getTableMetaData("t2")).thenReturn(tableMetaData);
         String actual = sqlBuilder.buildUpdateSql("t2", mockUpdateColumn());
         assertThat(actual, Matchers.is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
     }
     
     @Test
     public void assertBuildDeleteSql() {
-        when(dbMetaDataUtil.getPrimaryKeys("t3")).thenReturn(mockPrimaryKeys());
+        mockPrimaryKeys();
+        when(metaDataManager.getTableMetaData("t3")).thenReturn(tableMetaData);
         String actual = sqlBuilder.buildDeleteSql("t3");
         assertThat(actual, Matchers.is("DELETE FROM `t3` WHERE `id` = ?"));
     }
     
-    private List<String> mockPrimaryKeys() {
-        return Collections.singletonList("id");
+    private void mockPrimaryKeys() {
+        tableMetaData.addAllPrimaryKey(Collections.singletonList("id"));
     }
     
-    private List<ColumnMetaData> mockInsertColumn() {
-        List<ColumnMetaData> result = new ArrayList<>(4);
+    private void mockMetaData() {
+        List<ColumnMetaData> columnMetaDataList = new ArrayList<>(4);
         ColumnMetaData id = new ColumnMetaData();
         id.setColumnName("id");
-        result.add(id);
+        columnMetaDataList.add(id);
         ColumnMetaData c1 = new ColumnMetaData();
         c1.setColumnName("c1");
-        result.add(c1);
+        columnMetaDataList.add(c1);
         ColumnMetaData c2 = new ColumnMetaData();
         c2.setColumnName("c2");
-        result.add(c2);
+        columnMetaDataList.add(c2);
         ColumnMetaData c3 = new ColumnMetaData();
         c3.setColumnName("c3");
-        result.add(c3);
-        return result;
+        columnMetaDataList.add(c3);
+        tableMetaData.addAllColumnMetaData(columnMetaDataList);
     }
     
     private List<ColumnMetaData> mockUpdateColumn() {

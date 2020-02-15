@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.shardingscaling.core.metadata;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
- * Column meta data.
+ * Meta data loader.
  *
- * @author avalon566
+ * @author yangyi
  */
-@Setter
-@Getter
-public class ColumnMetaData {
-
-    private String columnName;
-
-    private int columnType;
-
-    private String columnTypeName;
+public interface MetaDataLoader<T> {
+    
+    /**
+     * load meta data.
+     *
+     * @param tableName table name of meta data
+     * @return meta data
+     */
+    T load(String tableName);
 }
