@@ -180,6 +180,11 @@ export default {
       conFailMessage: 'Add Failed',
       delSucMessage: 'Delete Succeeded',
       delFailMessage: 'Delete Failed'
+    },
+    serviceDialog: {
+      serviceName: 'Please enter serviceName',
+      serviceType: 'Please enter serviceType',
+      serviceUrl: 'Please enter serviceUrl'
     }
   }
 }
