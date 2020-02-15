@@ -32,20 +32,44 @@ import org.apache.shardingsphere.underlying.common.constant.properties.TypedProp
 @Getter
 public enum ApolloPropertiesEnum implements TypedPropertiesKey {
     
+    /**
+     * Apollo config client app id param.
+     */
     APP_ID("appId", "APOLLO_SHARDING_SPHERE", String.class),
     
+    /**
+     * Apollo system environment param.
+     */
     ENV("env", "DEV", String.class),
     
+    /**
+     * Apollo system cluster name.
+     */
     CLUSTER_NAME("clusterName", ConfigConsts.CLUSTER_NAME_DEFAULT, String.class),
     
+    /**
+     * The administrator's name within the right of modify data for apollo open api client.
+     */
     ADMINISTRATOR("administrator", "", String.class),
     
+    /**
+     * The token value for apollo open api client.
+     */
     TOKEN("token", "", String.class),
     
+    /**
+     * The portal url for apollo open api client.
+     */
     PORTAL_URL("portalUrl", "", String.class),
     
+    /**
+     * The connection timeout value for apollo open api client.
+     */
     CONNECT_TIMEOUT("connectTimeout", String.valueOf(ApolloOpenApiConstants.DEFAULT_CONNECT_TIMEOUT), int.class),
     
+    /**
+     * The read timeout value for apollo open api client.
+     */
     READ_TIMEOUT("readTimeout", String.valueOf(ApolloOpenApiConstants.DEFAULT_READ_TIMEOUT), int.class);
     
     private final String key;

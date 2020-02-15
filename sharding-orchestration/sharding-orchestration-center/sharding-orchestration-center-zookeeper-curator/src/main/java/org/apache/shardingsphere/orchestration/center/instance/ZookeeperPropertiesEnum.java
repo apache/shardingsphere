@@ -30,14 +30,29 @@ import org.apache.shardingsphere.underlying.common.constant.properties.TypedProp
 @Getter
 public enum ZookeeperPropertiesEnum implements TypedPropertiesKey {
     
+    /**
+     * Retry interval milliseconds when connect with zookeeper curator client.
+     */
     RETRY_INTERVAL_MILLISECONDS("retryIntervalMilliseconds", String.valueOf(500), int.class),
     
+    /**
+     * Max Retry times when connect with zookeeper curator client.
+     */
     MAX_RETRIES("maxRetries", String.valueOf(3), int.class),
     
+    /**
+     * Zookeeper curator client session timeout value.
+     */
     TIME_TO_LIVE_SECONDS("timeToLiveSeconds", String.valueOf(60), int.class),
     
+    /**
+     * Zookeeper curator client operation timeout value.
+     */
     OPERATION_TIMEOUT_MILLISECONDS("operationTimeoutMilliseconds", String.valueOf(500), int.class),
     
+    /**
+     * Zookeeper curator client connection authorization schema name.
+     */
     DIGEST("digest", "", String.class);
     
     private final String key;

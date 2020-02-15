@@ -30,8 +30,14 @@ import org.apache.shardingsphere.underlying.common.constant.properties.TypedProp
 @Getter
 public enum NacosPropertiesEnum implements TypedPropertiesKey {
     
+    /**
+     * Nacos config service group name.
+     */
     GROUP("group", "SHARDING_SPHERE_DEFAULT_GROUP", String.class),
     
+    /**
+     * Nacos get config data timeout value.
+     */
     TIMEOUT("timeout", String.valueOf(3000), long.class);
     
     private final String key;

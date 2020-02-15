@@ -29,6 +29,14 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum OrchestrationPropertiesEnum implements TypedPropertiesKey {
     
+    /**
+     * Enable or Disable to overwrite orchestration config center data.
+     *
+     * <p>
+     * If this properties is true, yaml file config properties will overwrite orchestration config center data.
+     * Default: false
+     * </p>
+     */
     OVERWRITE("overwrite", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
