@@ -53,14 +53,17 @@ public final class ApolloInstance implements ConfigCenter {
     
     private ApolloOpenApiWrapper openApiWrapper;
     
+    private ApolloProperties apolloProperties;
+    
     @Getter
     @Setter
     private Properties properties = new Properties();
     
     @Override
     public void init(final InstanceConfiguration config) {
-        configWrapper = new ApolloConfigWrapper(config, properties);
-        openApiWrapper = new ApolloOpenApiWrapper(config, properties);
+        apolloProperties = new ApolloProperties(properties);
+        configWrapper = new ApolloConfigWrapper(config, apolloProperties);
+        openApiWrapper = new ApolloOpenApiWrapper(config, apolloProperties);
     }
     
     @Override

@@ -56,7 +56,7 @@ public final class ApolloInstanceTest {
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         Properties properties = new Properties();
-        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, properties);
+        ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
         FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("configWrapper"), configWrapper);
     }
     

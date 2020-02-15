@@ -22,8 +22,9 @@ import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.instance.ApolloProperties;
+import org.apache.shardingsphere.orchestration.center.instance.ApolloPropertiesEnum;
 
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -39,10 +40,10 @@ public final class ApolloConfigWrapper {
     
     private Config apolloConfig;
     
-    public ApolloConfigWrapper(final InstanceConfiguration config, final Properties properties) {
-        String appId = properties.getProperty("appId", "APOLLO_SHARDING_SPHERE");
-        String env = properties.getProperty("env", "DEV");
-        String clusterName = properties.getProperty("clusterName", ConfigConsts.CLUSTER_NAME_DEFAULT);
+    public ApolloConfigWrapper(final InstanceConfiguration config, final ApolloProperties properties) {
+        String appId = properties.getValue(ApolloPropertiesEnum.APP_ID);
+        String env = properties.getValue(ApolloPropertiesEnum.ENV);
+        String clusterName = properties.getValue(ApolloPropertiesEnum.CLUSTER_NAME);
         System.setProperty(APOLLO_KEY_APP_ID, appId);
         System.setProperty(APOLLO_KEY_ENV, env);
         System.setProperty(ConfigConsts.APOLLO_CLUSTER_KEY, clusterName);
