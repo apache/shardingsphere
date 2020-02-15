@@ -20,10 +20,15 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.service
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
+import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
@@ -31,12 +36,8 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfi
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +46,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -95,7 +95,7 @@ public final class ConfigurationServiceTest {
     private static final String PROPS_YAML = "sql.show: false\n";
     
     @Mock
-    private RegistryCenter regCenter;
+    private ConfigCenter regCenter;
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
@@ -267,7 +267,7 @@ public final class ConfigurationServiceTest {
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
-        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(SHARDING_RULE_YAML, YamlShardingRuleConfiguration.class));
+        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(SHARDING_RULE_YAML, YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
     }
     
     private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {
@@ -290,7 +290,7 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertLoadDataSourceConfigurations() {
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(regCenter.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Map<String, DataSourceConfiguration> actual = configurationService.loadDataSourceConfigurations("sharding_db");
         assertThat(actual.size(), is(2));
@@ -307,28 +307,28 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertIsShardingRule() {
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         assertTrue(configurationService.isShardingRule("sharding_db"));
     }
     
     @Test
     public void assertIsEncryptRule() {
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         assertTrue(configurationService.isEncryptRule("sharding_db"));
     }
     
     @Test
     public void assertIsNotShardingRule() {
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         assertFalse(configurationService.isShardingRule("sharding_db"));
     }
     
     @Test
     public void assertLoadShardingRuleConfiguration() {
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         ShardingRuleConfiguration actual = configurationService.loadShardingRuleConfiguration("sharding_db");
         assertThat(actual.getTableRuleConfigs().size(), is(1));
@@ -337,7 +337,7 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertLoadMasterSlaveRuleConfiguration() {
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         MasterSlaveRuleConfiguration actual = configurationService.loadMasterSlaveRuleConfiguration("sharding_db");
         assertThat(actual.getName(), is("ms_ds"));
@@ -345,7 +345,7 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertLoadEncryptRuleConfiguration() {
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(ENCRYPT_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         EncryptRuleConfiguration actual = configurationService.loadEncryptRuleConfiguration("sharding_db");
         assertThat(actual.getEncryptors().size(), is(1));
@@ -357,7 +357,7 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertLoadAuthentication() {
-        when(regCenter.getDirectly("/test/config/authentication")).thenReturn(AUTHENTICATION_YAML);
+        when(regCenter.get("/test/config/authentication")).thenReturn(AUTHENTICATION_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Authentication actual = configurationService.loadAuthentication();
         assertThat(actual.getUsers().size(), is(2));
@@ -366,7 +366,7 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertLoadProperties() {
-        when(regCenter.getDirectly("/test/config/props")).thenReturn(PROPS_YAML);
+        when(regCenter.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Properties actual = configurationService.loadProperties();
         assertThat(actual.get(PropertiesConstant.SQL_SHOW.getKey()), CoreMatchers.<Object>is(Boolean.FALSE));
@@ -374,7 +374,7 @@ public final class ConfigurationServiceTest {
     
     @Test
     public void assertGetAllShardingSchemaNames() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Arrays.asList("sharding_db", "masterslave_db"));
+        when(regCenter.get("/test/config/schema")).thenReturn("sharding_db,masterslave_db");
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Collection<String> actual = configurationService.getAllShardingSchemaNames();
         assertThat(actual.size(), is(2));

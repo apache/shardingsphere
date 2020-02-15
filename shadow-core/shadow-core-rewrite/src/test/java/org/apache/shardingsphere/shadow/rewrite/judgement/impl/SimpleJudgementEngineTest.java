@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShadowRule;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
@@ -65,9 +66,9 @@ public class SimpleJudgementEngineTest {
     public void judgeForInsert() {
         InsertStatement insertStatement = new InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
-        insertColumnsSegment.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id"),
-                new ColumnSegment(0, 0, "name"),
-                new ColumnSegment(0, 0, "shadow")));
+        insertColumnsSegment.getColumns().addAll(Arrays.asList(new ColumnSegment(0, 0, "id", QuoteCharacter.NONE),
+                new ColumnSegment(0, 0, "name", QuoteCharacter.NONE),
+                new ColumnSegment(0, 0, "shadow", QuoteCharacter.NONE)));
         insertStatement.setColumns(insertColumnsSegment);
         insertStatement.getValues()
                 .addAll(Collections.singletonList(new InsertValuesSegment(0, 0, new ArrayList<ExpressionSegment>() {
@@ -98,14 +99,15 @@ public class SimpleJudgementEngineTest {
     @Test
     public void judgeForWhereSegment() {
         SelectStatement selectStatement = new SelectStatement();
-        WhereSegment whereSegment = new WhereSegment(0, 0, 0);
+        WhereSegment whereSegment = new WhereSegment(0, 0);
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().addAll(Collections.singletonList(new PredicateSegment(0, 0,
-                new ColumnSegment(0, 0, "shadow"),
+                new ColumnSegment(0, 0, "shadow", QuoteCharacter.NONE),
                 new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, "true")))));
         whereSegment.getAndPredicates().addAll(Collections.singletonList(andPredicate));
         selectStatement.setWhere(whereSegment);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0, true);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections()
                 .addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);
@@ -115,7 +117,7 @@ public class SimpleJudgementEngineTest {
 
         andPredicate.getPredicates().clear();
         andPredicate.getPredicates().addAll(Collections.singletonList(new PredicateSegment(0, 0,
-                new ColumnSegment(0, 0, "shadow"),
+                new ColumnSegment(0, 0, "shadow", QuoteCharacter.NONE),
                 new PredicateCompareRightValue("=", new LiteralExpressionSegment(0, 0, "false")))));
         projectionsSegment.getProjections().clear();
         projectionsSegment.getProjections()

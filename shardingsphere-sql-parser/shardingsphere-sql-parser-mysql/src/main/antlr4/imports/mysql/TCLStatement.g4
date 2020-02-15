@@ -27,6 +27,11 @@ setAutoCommit
     : SET scope_? AUTOCOMMIT EQ_ autoCommitValue
     ;
 
+scope_
+    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
+    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
+    ;
+
 autoCommitValue
     : NUMBER_ | ON | OFF
     ;

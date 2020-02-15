@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sharding-JDBC on ShardingSphere</title>
+    <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/</link>
+    <description>Recent content in Sharding-JDBC on ShardingSphere</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>JDBC不支持项</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/unsupported-items/</guid>
+      <description>DataSource接口  不支持timeout相关操作  Connection接口  不支持存储过程，函数，游标的操作 不支持执行native的SQL 不支持savepoint相关操作 不支持Schema/Catalog的操作 不支持自定义类型映射  Statement和PreparedStatement接口  不支持返回多结果集的语句（即存储过程，非SELECT多条数据） 不支持国际化字符的操作  对于ResultSet接口  不支持对于结果集指针位置判断 不支持通过非next方法改变结果指针位置 不支持修改结果集内容 不支持获取国际化字符 不支持获取Array  JDBC 4.1  不支持JDBC 4.1接口新功能  查询所有未支持方法，请阅读io.shardingsphere.core.jdbc.unsupported包。</description>
+    </item>
+    
+    <item>
+      <title>性能测试报告</title>
+      <link>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://shardingsphere.apache.org/document/legacy/3.x/document/cn/manual/sharding-jdbc/stress-test/</guid>
+      <description>测试结果概述  性能损耗测试：服务器资源充足、并发数相同，比较JDBC和Sharding-JDBC性能损耗，Sharding-JDBC相对JDBC损耗不超过7%。 性能对比测试：服务器资源使用到极限，相同的场景JDBC与Sharding-JDBC的吞吐量相当。 性能对比测试：服务器资源使用到极限，Sharding-JDBC采用分库分表后，Sharding-JDBC吞吐量较JDBC不分表有接近2倍的提升。 性能对比测试：服务器资源使用到极限，Sharding-JDBC V1.5.2与V1.4.2对比，性能比较稳定。  基准测试性能对比    业务场景 JDBC Sharding-JDBC1.5.2 Sharding-JDBC1.5.2/JDBC损耗     单库单表查询 493 470 4.7%   单库单表更新 6682 6303 5.7%   单库单表插入 6855 6375 7%    JDBC单库两库表与Sharding-JDBC两库各两表对比    业务场景 JDBC单库两表 Sharding-JDBC两库各两表 性能提升至     查询 1736 3331 192%   更新 9170 17997 196%   插入 11574 23043 199%    JDBC单库单表与Sharding-JDBC两库各一表对比    业务场景 JDBC单库单表 Sharding-JDBC两库各一表 性能提升至     查询 1586 2944 185%   更新 9548 18561 194%   插入 11182 21414 192%    Sharding-JDBC v1.</description>
+    </item>
+    
+  </channel>
+</rss>

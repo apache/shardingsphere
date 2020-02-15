@@ -22,9 +22,8 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.internal.registry.RegistryCenterServiceLoader;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.api.DistributedLockManagement;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 import java.util.Calendar;
@@ -79,8 +78,8 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     @Getter
     @Setter
     private Properties properties = new Properties();
-    
-    private RegistryCenter leafRegistryCenter;
+
+    private DistributedLockManagement distributedLockManagement;
     
     private int sequenceOffset = -1;
     
@@ -122,11 +121,11 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         if (needToBeInitialized()) {
             maxTolerateTimeDifference = initializeMaxTolerateTimeDifference();
             maxVibrationOffset = initializeMaxVibrationOffset();
-            leafRegistryCenter = initializeRegistryCenter();
-            initializeTimeNodeIfNeed(maxTolerateTimeDifference, leafRegistryCenter);
-            initializeCurrentMaxWorkIdNodeIfNeed(leafRegistryCenter);
-            workId = initializeWorkIdNodeIfNeed(leafRegistryCenter);
-            scheduledUpdateTimeNode(leafRegistryCenter);
+            distributedLockManagement = initializeDistributedLockManagement();
+            initializeTimeNodeIfNeed(maxTolerateTimeDifference, distributedLockManagement);
+            initializeCurrentMaxWorkIdNodeIfNeed(distributedLockManagement);
+            workId = initializeWorkIdNodeIfNeed(distributedLockManagement);
+            scheduledUpdateTimeNode(distributedLockManagement);
         }
     }
     
@@ -176,12 +175,12 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     private boolean needToBeInitialized() {
-        return null == leafRegistryCenter || workId <= 0;
+        return null == distributedLockManagement || workId <= 0;
     }
     
-    private RegistryCenter initializeRegistryCenter() {
-        RegistryCenterConfiguration leafConfiguration = getRegistryCenterConfiguration();
-        return new RegistryCenterServiceLoader().load(leafConfiguration);
+    private DistributedLockManagement initializeDistributedLockManagement() {
+        InstanceConfiguration leafConfiguration = getDistributedLockManagementConfiguration();
+        return new DistributedLockManagementServiceLoader().load(leafConfiguration);
     }
     
     private String getTimeDirectoryWithServiceId() {
@@ -199,57 +198,58 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     }
     
     @SneakyThrows
-    private void initializeTimeNodeIfNeed(final long maxTolerateTimeDifference, final RegistryCenter leafRegistryCenter) {
+    private void initializeTimeNodeIfNeed(final long maxTolerateTimeDifference, final DistributedLockManagement distributedLockManagement) {
         String timeDirectory = getTimeDirectoryWithServiceId();
-        if (leafRegistryCenter.isExisted(timeDirectory)) {
-            String lastTimeInRegistryCenter = leafRegistryCenter.getDirectly(timeDirectory);
+        String lastTimeInDistributedLockManagement = distributedLockManagement.get(timeDirectory);
+        if (!Strings.isNullOrEmpty(lastTimeInDistributedLockManagement)) {
             long currentTime = timeService.getCurrentMillis();
-            long timeDifference = Long.parseLong(lastTimeInRegistryCenter) - currentTime;
+            long timeDifference = Long.parseLong(lastTimeInDistributedLockManagement) - currentTime;
             if (timeDifference > 0) {
                 Preconditions.checkState(timeDifference < maxTolerateTimeDifference,
-                        "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTimeInRegistryCenter, currentTime);
+                        "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTimeInDistributedLockManagement, currentTime);
                 Thread.sleep(timeDifference);
             }
         } else {
             long currentTime = timeService.getCurrentMillis();
-            leafRegistryCenter.persist(timeDirectory, String.valueOf(currentTime));
+            distributedLockManagement.persist(timeDirectory, String.valueOf(currentTime));
         }
     }
     
     @SneakyThrows
-    private void initializeCurrentMaxWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
-        if (!leafRegistryCenter.isExisted(CURRENT_MAX_WORK_ID_DIRECTORY)) {
-            leafRegistryCenter.persist(CURRENT_MAX_WORK_ID_DIRECTORY, "0");
+    private void initializeCurrentMaxWorkIdNodeIfNeed(final DistributedLockManagement distributedLockManagement) {
+        String value = distributedLockManagement.get(CURRENT_MAX_WORK_ID_DIRECTORY);
+        if (Strings.isNullOrEmpty(value)) {
+            distributedLockManagement.persist(CURRENT_MAX_WORK_ID_DIRECTORY, "0");
         }
     }
     
     @SneakyThrows
-    private Long initializeWorkIdNodeIfNeed(final RegistryCenter leafRegistryCenter) {
+    private Long initializeWorkIdNodeIfNeed(final DistributedLockManagement distributedLockManagement) {
         String workIdDirectory = getWorkIdDirectoryWithServiceId();
-        if (leafRegistryCenter.isExisted(workIdDirectory)) {
-            String workIdInString = leafRegistryCenter.getDirectly(workIdDirectory);
+        String workIdInString = distributedLockManagement.get(workIdDirectory);
+        if (!Strings.isNullOrEmpty(workIdInString)) {
             return Long.parseLong(workIdInString);
         } else {
             Long result = updateCurrentMaxWorkIdInRegisterCenter();
-            leafRegistryCenter.persist(workIdDirectory, String.valueOf(result));
+            distributedLockManagement.persist(workIdDirectory, String.valueOf(result));
             return result;
         }
     }
     
     @SneakyThrows
     private long updateCurrentMaxWorkIdInRegisterCenter() {
-        leafRegistryCenter.initLock(CURRENT_MAX_WORK_ID_DIRECTORY);
-        boolean lockIsAcquired = leafRegistryCenter.tryLock();
+        distributedLockManagement.initLock(CURRENT_MAX_WORK_ID_DIRECTORY);
+        boolean lockIsAcquired = distributedLockManagement.tryLock();
         Preconditions.checkState(lockIsAcquired, "Try lock fail");
-        String id = leafRegistryCenter.getDirectly(CURRENT_MAX_WORK_ID_DIRECTORY);
+        String id = distributedLockManagement.get(CURRENT_MAX_WORK_ID_DIRECTORY);
         long result = Long.parseLong(id);
-        leafRegistryCenter.persist(CURRENT_MAX_WORK_ID_DIRECTORY, String.valueOf(result++));
-        leafRegistryCenter.tryRelease();
+        distributedLockManagement.persist(CURRENT_MAX_WORK_ID_DIRECTORY, String.valueOf(result++));
+        distributedLockManagement.tryRelease();
         return result;
     }
     
     @SneakyThrows
-    private void scheduledUpdateTimeNode(final RegistryCenter leafRegistryCenter) {
+    private void scheduledUpdateTimeNode(final DistributedLockManagement distributedLockManagement) {
         final String timeDirectory = getTimeDirectoryWithServiceId();
         Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             
@@ -263,17 +263,17 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
 
             @Override
             public void run() {
-                updateNewData(leafRegistryCenter, timeDirectory);
+                updateNewData(distributedLockManagement, timeDirectory);
             }
         }, 1L, 3L, TimeUnit.SECONDS);
     }
     
     @SneakyThrows
-    private void updateNewData(final RegistryCenter leafRegistryCenter, final String path) {
+    private void updateNewData(final DistributedLockManagement distributedLockManagement, final String path) {
         if (timeService.getCurrentMillis() < lastUpdateTime) {
             return;
         }
-        leafRegistryCenter.persist(path, String.valueOf(timeService.getCurrentMillis()));
+        distributedLockManagement.persist(path, String.valueOf(timeService.getCurrentMillis()));
         lastUpdateTime = timeService.getCurrentMillis();
     }
     
@@ -294,15 +294,15 @@ public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
         return result;
     }
     
-    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration(getRegistryCenterType(), properties);
+    private InstanceConfiguration getDistributedLockManagementConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration(getDistributedLockManagementType(), properties);
         result.setNamespace(DEFAULT_NAMESPACE);
         result.setServerLists(getServerList());
         return result;
     }
     
-    private String getRegistryCenterType() {
-        return properties.getProperty("registry.center.type", DEFAULT_REGISTRY_CENTER);
+    private String getDistributedLockManagementType() {
+        return properties.getProperty("distributedLockManagementType", DEFAULT_REGISTRY_CENTER);
     }
     
     private String getServerList() {

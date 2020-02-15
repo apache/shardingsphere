@@ -1,0 +1,3310 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="https://shardingsphere.apache.org/document/legacy/3.x/document/img/favicon.png" type="image/x-icon" />
+
+    <title>Java :: ShardingSphere</title>
+    
+    
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/nucleus.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/font-awesome.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hybrid.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/featherlight.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/perfect-scrollbar.min.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/auto-complete.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme.css?1547543307" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/hugo-theme.css?1547543307" rel="stylesheet">
+    
+      <link href="https://shardingsphere.apache.org/document/legacy/3.x/document/css/theme-black.css?1547543307" rel="stylesheet">
+    
+
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery-2.x.min.js?1547543307"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+
+  </head>
+  <body class="" data-url="/en/manual/sharding-jdbc/configuration/config-java/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/logo_v2.png" />
+
+    </div>
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/overview/" title="Overview" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/overview/">
+          <b>1. </b>Overview
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/quick-start/" title="Quick Start" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/">
+          <b>2. </b>Quick Start
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/quick-start/sharding-jdbc-quick-start/" title="Sharding-JDBC" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/sharding-jdbc-quick-start/">
+        <b>2.1. </b>Sharding-JDBC
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/quick-start/sharding-proxy-quick-start/" title="Sharding-Proxy" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/quick-start/sharding-proxy-quick-start/">
+        <b>2.2. </b>Sharding-Proxy
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/" title="Concepts &amp; Features" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/">
+          <b>3. </b>Concepts &amp; Features
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/" title="Data sharding" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/">
+          <b>3.1. </b>Data sharding
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/concept/" title="Core Concept" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/">
+          <b>3.1.1. </b>Core Concept
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/sharding/" title="Sharding" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/sharding/">
+        Sharding
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/concept/configuration/" title="Configuration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/concept/configuration/">
+        Configuration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/principle/" title="Guide to Kernel" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/">
+          <b>3.1.1. </b>Guide to Kernel
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/parse/" title="Parse Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/parse/">
+        Parse Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/route/" title="Route Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/route/">
+        Route Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/rewrite/" title="Rewrite Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/rewrite/">
+        Rewrite Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/execute/" title="Execute Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/execute/">
+        Execute Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/principle/merge/" title="Merger Engine" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/principle/merge/">
+        Merger Engine
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/use-norms/" title="Use Norms" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/">
+          <b>3.1.3. </b>Use Norms
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/use-norms/sql/" title="SQL" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/sql/">
+        SQL
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/use-norms/pagination/" title="Pagination" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/use-norms/pagination/">
+        Pagination
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/sharding/other-features/" title="Other Features" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/">
+          <b>3.1.4. </b>Other Features
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/inline-expression/" title="Inline Expression" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/inline-expression/">
+        Inline Expression
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/key-generator/" title="Distributed Primary Key" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/key-generator/">
+        Distributed Primary Key
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/sharding/other-features/sharding-hint/" title="Sharding Hint" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/sharding-hint/">
+        Sharding Hint
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/read-write-split/" title="Read-write splitting" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/">
+          <b>3.2. </b>Read-write splitting
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/concept/" title="Core Concept" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/concept/">
+        <b>3.2.1. </b>Core Concept
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/core-features/" title="Core Features" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/core-features/">
+        <b>3.2.2. </b>Core Features
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/read-write-split/unsupported-items/" title="Unsupported Items" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/read-write-split/unsupported-items/">
+        <b>3.2.3. </b>Unsupported Items
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/orchestration/" title="Orchestration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/">
+          <b>3.3. </b>Orchestration
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/config-center/" title="Config Center" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/config-center/">
+        <b>3.3.1. </b>Config Center
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/orchestration/" title="Orchestration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/orchestration/">
+        <b>3.3.2. </b>Orchestration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/supported-registry-repo/" title="Available Registry Center" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/supported-registry-repo/">
+        <b>3.3.3. </b>Available Registry Center
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/orchestration/apm/" title="APM" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/orchestration/apm/">
+        <b>3.3.4. </b>APM
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/features/transaction/" title="Distributed Transaction" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/">
+          <b>3.4. </b>Distributed Transaction
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/local-transaction/" title="Local transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/local-transaction/">
+        <b>3.4.1. </b>Local transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/2pc-transaction/" title="2PC Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/2pc-transaction/">
+        <b>3.4.2. </b>2PC Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/features/transaction/base-transaction/" title="BASE Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/transaction/base-transaction/">
+        <b>3.4.3. </b>BASE Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/" title="User Manual" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/">
+          <b>4. </b>User Manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/" title="Sharding-JDBC" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/">
+          <b>4.1. </b>Sharding-JDBC
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/usage/" title="Manual" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/">
+          <b>4.1.1. </b>Manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/sharding/" title="Sharding" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/sharding/">
+        Sharding
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/read-write-splitting/" title="Read-write Splitting" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/read-write-splitting/">
+        Read-write Splitting
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/hint/" title="Hint" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/hint/">
+        Hint
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/orchestration/" title="Orchestration" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/orchestration/">
+        Orchestration
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/usage/transaction/" title="Distribute Transaction" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/usage/transaction/">
+        Distribute Transaction
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-jdbc/configuration/" title="Configuration manual" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/">
+          <b>4.1.2. </b>Configuration manual
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-java/" title="Java" class="dd-item active">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-java/">
+        Java
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-yaml/" title="Yaml" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-yaml/">
+        Yaml
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-spring-boot/" title="Spring Boot" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-boot/">
+        Spring Boot
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/configuration/config-spring-namespace/" title="Spring Namespace" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-spring-namespace/">
+        Spring Namespace
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/unsupported-items/" title="Unsupported JDBC Items" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/unsupported-items/">
+        <b>4.1.3. </b>Unsupported JDBC Items
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-jdbc/stress-test/" title="Performance Test" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/stress-test/">
+        <b>4.1.4. </b>Performance Test
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-proxy/" title="Sharding-Proxy" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/">
+          <b>4.2. </b>Sharding-Proxy
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/usage/" title="User Manual" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/usage/">
+        <b>4.2.1. </b>User Manual
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/configuration/" title="Configuration Manual" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/configuration/">
+        <b>4.2.2. </b>Configuration Manual
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/manual/sharding-proxy/docker/" title="Docker Image" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-proxy/docker/">
+        <b>4.2.3. </b>Docker Image
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/manual/sharding-sidecar/" title="Sharding-Sidecar" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-sidecar/">
+          <b>4.3. </b>Sharding-Sidecar
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/faq/" title="FAQ" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/faq/">
+          <b>5. </b>FAQ
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fa fa-fw fa-language"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+<option id="en" value="/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-java/" selected>English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+<option id="cn" value="/document/legacy/3.x/document/cn/manual/sharding-jdbc/configuration/config-java/">Chinese</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+       
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <p></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/en/'>ShardingSphere</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/'>User Manual</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/'>Sharding-JDBC</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/'>Configuration manual</a> > Java
+          
+         
+          
+         
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#example">Example</a>
+<ul>
+<li><a href="#sharding">Sharding</a></li>
+<li><a href="#read-write-splitting">Read-write splitting</a></li>
+<li><a href="#sharding-read-write-splitting">Sharding + Read-write splitting</a></li>
+<li><a href="#orchestration">Orchestration</a></li>
+</ul></li>
+<li><a href="#configuration-reference">Configuration reference</a>
+<ul>
+<li><a href="#sharding-1">Sharding</a>
+<ul>
+<li><a href="#shardingdatasourcefactory">ShardingDataSourceFactory</a></li>
+<li><a href="#shardingruleconfiguration">ShardingRuleConfiguration</a></li>
+<li><a href="#tableruleconfiguration">TableRuleConfiguration</a></li>
+<li><a href="#standardshardingstrategyconfiguration">StandardShardingStrategyConfiguration</a></li>
+<li><a href="#complexshardingstrategyconfiguration">ComplexShardingStrategyConfiguration</a></li>
+<li><a href="#inlineshardingstrategyconfiguration">InlineShardingStrategyConfiguration</a></li>
+<li><a href="#hintshardingstrategyconfiguration">HintShardingStrategyConfiguration</a></li>
+<li><a href="#noneshardingstrategyconfiguration">NoneShardingStrategyConfiguration</a></li>
+<li><a href="#shardingpropertiesconstant">ShardingPropertiesConstant</a></li>
+<li><a href="#configmap">configMap</a></li>
+</ul></li>
+<li><a href="#read-write-splitting-1">Read-write splitting</a>
+<ul>
+<li><a href="#masterslavedatasourcefactory">MasterSlaveDataSourceFactory</a></li>
+<li><a href="#masterslaveruleconfiguration">MasterSlaveRuleConfiguration</a></li>
+<li><a href="#configmap-1">configMap</a></li>
+<li><a href="#shardingpropertiesconstant-1">ShardingPropertiesConstant</a></li>
+</ul></li>
+<li><a href="#orchestration-1">Orchestration</a>
+<ul>
+<li><a href="#orchestrationshardingdatasourcefactory">OrchestrationShardingDataSourceFactory</a></li>
+<li><a href="#orchestrationmasterslavedatasourcefactory">OrchestrationMasterSlaveDataSourceFactory</a></li>
+<li><a href="#orchestrationconfiguration">OrchestrationConfiguration</a></li>
+<li><a href="#registrycenterconfiguration">RegistryCenterConfiguration</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>Java</h1>
+          
+
+        
+
+
+
+
+<h2 id="example">Example</h2>
+
+<h3 id="sharding">Sharding</h3>
+
+<pre><code class="language-java">     DataSource getShardingDataSource() throws SQLException {
+         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+         shardingRuleConfig.getBindingTableGroups().add(&quot;t_order, t_order_item&quot;);
+         shardingRuleConfig.getBroadcastTables().add(&quot;t_config&quot;);
+         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&quot;user_id&quot;, &quot;ds${user_id % 2}&quot;));
+         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration(&quot;order_id&quot;, new ModuloShardingTableAlgorithm()));
+         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
+     }
+     
+     TableRuleConfiguration getOrderTableRuleConfiguration() {
+         TableRuleConfiguration result = new TableRuleConfiguration();
+         result.setLogicTable(&quot;t_order&quot;);
+         result.setActualDataNodes(&quot;ds${0..1}.t_order${0..1}&quot;);
+         result.setKeyGeneratorColumnName(&quot;order_id&quot;);
+         return result;
+     }
+     
+     TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+         TableRuleConfiguration result = new TableRuleConfiguration();
+         result.setLogicTable(&quot;t_order_item&quot;);
+         result.setActualDataNodes(&quot;ds${0..1}.t_order_item${0..1}&quot;);
+         return result;
+     }
+     
+     Map&lt;String, DataSource&gt; createDataSourceMap() {
+         Map&lt;String, DataSource&gt; result = new HashMap&lt;&gt;();
+         result.put(&quot;ds0&quot;, DataSourceUtil.createDataSource(&quot;ds0&quot;));
+         result.put(&quot;ds1&quot;, DataSourceUtil.createDataSource(&quot;ds1&quot;));
+         return result;
+     }
+</code></pre>
+
+<h3 id="read-write-splitting">Read-write splitting</h3>
+
+<pre><code class="language-java">     DataSource getMasterSlaveDataSource() throws SQLException {
+         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration();
+         masterSlaveRuleConfig.setName(&quot;ds_master_slave&quot;);
+         masterSlaveRuleConfig.setMasterDataSourceName(&quot;ds_master&quot;);
+         masterSlaveRuleConfig.setSlaveDataSourceNames(Arrays.asList(&quot;ds_slave0&quot;, &quot;ds_slave1&quot;));
+         return MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new LinkedHashMap&lt;String, Object&gt;(), new Properties());
+     }
+     
+     Map&lt;String, DataSource&gt; createDataSourceMap() {
+         Map&lt;String, DataSource&gt; result = new HashMap&lt;&gt;();
+         result.put(&quot;ds_master&quot;, DataSourceUtil.createDataSource(&quot;ds_master&quot;));
+         result.put(&quot;ds_slave0&quot;, DataSourceUtil.createDataSource(&quot;ds_slave0&quot;));
+         result.put(&quot;ds_slave1&quot;, DataSourceUtil.createDataSource(&quot;ds_slave1&quot;));
+         return result;
+     }
+</code></pre>
+
+<h3 id="sharding-read-write-splitting">Sharding + Read-write splitting</h3>
+
+<pre><code class="language-java">    DataSource getDataSource() throws SQLException {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
+        shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add(&quot;t_order, t_order_item&quot;);
+        shardingRuleConfig.getBroadcastTables().add(&quot;t_config&quot;);
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration(&quot;user_id&quot;, new ModuloShardingDatabaseAlgorithm()));
+        shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration(&quot;order_id&quot;, new ModuloShardingTableAlgorithm()));
+        shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap&lt;String, Object&gt;(), new Properties());
+    }
+    
+    TableRuleConfiguration getOrderTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable(&quot;t_order&quot;);
+        result.setActualDataNodes(&quot;ds_${0..1}.t_order_${[0, 1]}&quot;);
+        result.setKeyGeneratorColumnName(&quot;order_id&quot;);
+        return result;
+    }
+    
+    TableRuleConfiguration getOrderItemTableRuleConfiguration() {
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable(&quot;t_order_item&quot;);
+        result.setActualDataNodes(&quot;ds_${0..1}.t_order_item_${[0, 1]}&quot;);
+        return result;
+    }
+    
+    List&lt;MasterSlaveRuleConfiguration&gt; getMasterSlaveRuleConfigurations() {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig1 = new MasterSlaveRuleConfiguration(&quot;ds_0&quot;, &quot;demo_ds_master_0&quot;, Arrays.asList(&quot;demo_ds_master_0_slave_0&quot;, &quot;demo_ds_master_0_slave_1&quot;));
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig2 = new MasterSlaveRuleConfiguration(&quot;ds_1&quot;, &quot;demo_ds_master_1&quot;, Arrays.asList(&quot;demo_ds_master_1_slave_0&quot;, &quot;demo_ds_master_1_slave_1&quot;));
+        return Lists.newArrayList(masterSlaveRuleConfig1, masterSlaveRuleConfig2);
+    }
+    
+    Map&lt;String, DataSource&gt; createDataSourceMap() {
+        final Map&lt;String, DataSource&gt; result = new HashMap&lt;&gt;();
+        result.put(&quot;demo_ds_master_0&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_master_0&quot;));
+        result.put(&quot;demo_ds_master_0_slave_0&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_master_0_slave_0&quot;));
+        result.put(&quot;demo_ds_master_0_slave_1&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_master_0_slave_1&quot;));
+        result.put(&quot;demo_ds_master_1&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_master_1&quot;));
+        result.put(&quot;demo_ds_master_1_slave_0&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_master_1_slave_0&quot;));
+        result.put(&quot;demo_ds_master_1_slave_1&quot;, DataSourceUtil.createDataSource(&quot;demo_ds_master_1_slave_1&quot;));
+        return result;
+    }
+</code></pre>
+
+<h3 id="orchestration">Orchestration</h3>
+
+<pre><code class="language-java">    DataSource getDataSource() throws SQLException {
+        return OrchestrationShardingDataSourceFactory.createDataSource(
+                createDataSourceMap(), createShardingRuleConfig(), new HashMap&lt;String, Object&gt;(), new Properties(), 
+                new OrchestrationConfiguration(&quot;orchestration-sharding-data-source&quot;, getRegistryCenterConfiguration(), false));
+    }
+    
+    private RegistryCenterConfiguration getRegistryCenterConfiguration() {
+        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+        regConfig.setServerLists(&quot;localhost:2181&quot;);
+        regConfig.setNamespace(&quot;sharding-sphere-orchestration&quot;);
+        return regConfig;
+    }
+</code></pre>
+
+<h2 id="configuration-reference">Configuration reference</h2>
+
+<h3 id="sharding-1">Sharding</h3>
+
+<h4 id="shardingdatasourcefactory">ShardingDataSourceFactory</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>dataSourceMap</td>
+<td>Map&lt;String, DataSource&gt;</td>
+<td>Data sources configuration</td>
+</tr>
+
+<tr>
+<td>shardingRuleConfig</td>
+<td>ShardingRuleConfiguration</td>
+<td>Sharding rule configuration</td>
+</tr>
+
+<tr>
+<td>configMap (?)</td>
+<td>Map&lt;String, Object&gt;</td>
+<td>Config map</td>
+</tr>
+
+<tr>
+<td>props (?)</td>
+<td>Properties</td>
+<td>Properties</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="shardingruleconfiguration">ShardingRuleConfiguration</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>tableRuleConfigs</td>
+<td>Collection&lt;TableRuleConfiguration&gt;</td>
+<td>Table rule configuration</td>
+</tr>
+
+<tr>
+<td>bindingTableGroups (?)</td>
+<td>Collection&lt;String&gt;</td>
+<td>Binding table groups</td>
+</tr>
+
+<tr>
+<td>broadcastTables (?)</td>
+<td>Collection&lt;String&gt;</td>
+<td>Broadcast table</td>
+</tr>
+
+<tr>
+<td>defaultDataSourceName (?)</td>
+<td>String</td>
+<td>If table not configure at table rule, will route to defaultDataSourceName</td>
+</tr>
+
+<tr>
+<td>defaultDatabaseShardingStrategyConfig (?)</td>
+<td>ShardingStrategyConfiguration</td>
+<td>Default strategy for sharding databases</td>
+</tr>
+
+<tr>
+<td>defaultTableShardingStrategyConfig (?)</td>
+<td>ShardingStrategyConfiguration</td>
+<td>Default strategy for sharding tables</td>
+</tr>
+
+<tr>
+<td>defaultKeyGenerator (?)</td>
+<td>KeyGenerator</td>
+<td>Default key generator, default value is <code>io.shardingsphere.core.keygen.DefaultKeyGenerator</code></td>
+</tr>
+
+<tr>
+<td>masterSlaveRuleConfigs (?)</td>
+<td>Collection&lt;MasterSlaveRuleConfiguration&gt;</td>
+<td>Read-write splitting rule configuration</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="tableruleconfiguration">TableRuleConfiguration</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>logicTable</td>
+<td>String</td>
+<td>Name of logic table</td>
+</tr>
+
+<tr>
+<td>actualDataNodes (?)</td>
+<td>String</td>
+<td>Describe data source names and actual tables, delimiter as point, multiple data nodes split by comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7}</td>
+</tr>
+
+<tr>
+<td>databaseShardingStrategyConfig (?)</td>
+<td>ShardingStrategyConfiguration</td>
+<td>Databases sharding strategy, use default databases sharding strategy if absent</td>
+</tr>
+
+<tr>
+<td>tableShardingStrategyConfig (?)</td>
+<td>ShardingStrategyConfiguration</td>
+<td>Tables sharding strategy, use default databases sharding strategy if absent</td>
+</tr>
+
+<tr>
+<td>logicIndex (?)</td>
+<td>String</td>
+<td>Name if logic index. If use <em>DROP INDEX XXX</em> SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables</td>
+</tr>
+
+<tr>
+<td>keyGeneratorColumnName (?)</td>
+<td>String</td>
+<td>Key generator column name, do not use Key generator if absent</td>
+</tr>
+
+<tr>
+<td>keyGenerator (?)</td>
+<td>KeyGenerator</td>
+<td>Key generator, use default key generator if absent</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="standardshardingstrategyconfiguration">StandardShardingStrategyConfiguration</h4>
+
+<p>Subclass of ShardingStrategyConfiguration.</p>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>shardingColumn</td>
+<td>String</td>
+<td>Name of sharding column</td>
+</tr>
+
+<tr>
+<td>preciseShardingAlgorithm</td>
+<td>PreciseShardingAlgorithm</td>
+<td>Precise sharding algorithm used for <code>=</code> and <code>IN</code></td>
+</tr>
+
+<tr>
+<td>rangeShardingAlgorithm (?)</td>
+<td>RangeShardingAlgorithm</td>
+<td>Range sharding algorithm used for <code>BETWEEN</code></td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="complexshardingstrategyconfiguration">ComplexShardingStrategyConfiguration</h4>
+
+<p>Subclass of ShardingStrategyConfiguration.</p>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>shardingColumns</td>
+<td>String</td>
+<td>Names of sharding columns. Multiple columns separated with comma</td>
+</tr>
+
+<tr>
+<td>shardingAlgorithm</td>
+<td>ComplexKeysShardingAlgorithm</td>
+<td>Complex sharding algorithm</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="inlineshardingstrategyconfiguration">InlineShardingStrategyConfiguration</h4>
+
+<p>Subclass of ShardingStrategyConfiguration.</p>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>shardingColumn</td>
+<td>String</td>
+<td>Name of sharding column</td>
+</tr>
+
+<tr>
+<td>algorithmExpression</td>
+<td>String</td>
+<td>Inline expression for sharding algorithm, more details please reference <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/features/sharding/other-features/inline-expression">Inline expression</a></td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="hintshardingstrategyconfiguration">HintShardingStrategyConfiguration</h4>
+
+<p>Subclass of ShardingStrategyConfiguration.</p>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>shardingAlgorithm</td>
+<td>HintShardingAlgorithm</td>
+<td>Hint sharding algorithm</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="noneshardingstrategyconfiguration">NoneShardingStrategyConfiguration</h4>
+
+<p>Subclass of ShardingStrategyConfiguration.</p>
+
+<h4 id="shardingpropertiesconstant">ShardingPropertiesConstant</h4>
+
+<p>Enumeration of properties.</p>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sql.show (?)</td>
+<td>boolean</td>
+<td>Print SQL parse and rewrite log, default value: false</td>
+</tr>
+
+<tr>
+<td>executor.size (?)</td>
+<td>int</td>
+<td>The number of SQL execution threads, zero means no limit. default value: 0</td>
+</tr>
+
+<tr>
+<td>max.connections.size.per.query (?)</td>
+<td>int</td>
+<td>Max connection size for every query to every actual database. default value: 1</td>
+</tr>
+
+<tr>
+<td>check.table.metadata.enabled (?)</td>
+<td>boolean</td>
+<td>Check the metadata consistency of all the tables, default value : false</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="configmap">configMap</h4>
+
+<p>User-defined arguments.</p>
+
+<h3 id="read-write-splitting-1">Read-write splitting</h3>
+
+<h4 id="masterslavedatasourcefactory">MasterSlaveDataSourceFactory</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>dataSourceMap</td>
+<td>Map&lt;String, DataSource&gt;</td>
+<td>Map of data sources and their names</td>
+</tr>
+
+<tr>
+<td>masterSlaveRuleConfig</td>
+<td>MasterSlaveRuleConfiguration</td>
+<td>Master slave rule configuration</td>
+</tr>
+
+<tr>
+<td>configMap (?)</td>
+<td>Map&lt;String, Object&gt;</td>
+<td>Config map</td>
+</tr>
+
+<tr>
+<td>props (?)</td>
+<td>Properties</td>
+<td>Properties</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="masterslaveruleconfiguration">MasterSlaveRuleConfiguration</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>Name of master slave data source</td>
+</tr>
+
+<tr>
+<td>masterDataSourceName</td>
+<td>String</td>
+<td>Name of master data source</td>
+</tr>
+
+<tr>
+<td>slaveDataSourceNames</td>
+<td>Collection&lt;String&gt;</td>
+<td>Names of Slave data sources</td>
+</tr>
+
+<tr>
+<td>loadBalanceAlgorithm (?)</td>
+<td>MasterSlaveLoadBalanceAlgorithm</td>
+<td>Load balance algorithm</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="configmap-1">configMap</h4>
+
+<p>User-defined arguments.</p>
+
+<h4 id="shardingpropertiesconstant-1">ShardingPropertiesConstant</h4>
+
+<p>Enumeration of properties.</p>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>sql.show (?)</td>
+<td>boolean</td>
+<td>To show SQLS or not, default value: false</td>
+</tr>
+
+<tr>
+<td>executor.size (?)</td>
+<td>int</td>
+<td>The number of working threads, default value: CPU count</td>
+</tr>
+
+<tr>
+<td>max.connections.size.per.query (?)</td>
+<td>int</td>
+<td>Max connection size for every query to every actual database. default value: 1</td>
+</tr>
+
+<tr>
+<td>check.table.metadata.enabled (?)</td>
+<td>boolean</td>
+<td>Check the metadata consistency of all the tables, default value : false</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="orchestration-1">Orchestration</h3>
+
+<h4 id="orchestrationshardingdatasourcefactory">OrchestrationShardingDataSourceFactory</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>dataSourceMap</td>
+<td>Map&lt;String, DataSource&gt;</td>
+<td>Same with ShardingDataSourceFactory</td>
+</tr>
+
+<tr>
+<td>shardingRuleConfig</td>
+<td>ShardingRuleConfiguration</td>
+<td>Same with ShardingDataSourceFactory</td>
+</tr>
+
+<tr>
+<td>configMap (?)</td>
+<td>Map&lt;String, Object&gt;</td>
+<td>Same with ShardingDataSourceFactory</td>
+</tr>
+
+<tr>
+<td>props (?)</td>
+<td>Properties</td>
+<td>Same with ShardingDataSourceFactory</td>
+</tr>
+
+<tr>
+<td>orchestrationConfig</td>
+<td>OrchestrationConfiguration</td>
+<td>Orchestration configuration</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="orchestrationmasterslavedatasourcefactory">OrchestrationMasterSlaveDataSourceFactory</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>dataSourceMap</td>
+<td>Map&lt;String, DataSource&gt;</td>
+<td>Same with MasterSlaveDataSourceFactory</td>
+</tr>
+
+<tr>
+<td>masterSlaveRuleConfig</td>
+<td>MasterSlaveRuleConfiguration</td>
+<td>Same with MasterSlaveDataSourceFactory</td>
+</tr>
+
+<tr>
+<td>configMap (?)</td>
+<td>Map&lt;String, Object&gt;</td>
+<td>Same with MasterSlaveDataSourceFactory</td>
+</tr>
+
+<tr>
+<td>props (?)</td>
+<td>Properties</td>
+<td>Same with ShardingDataSourceFactory</td>
+</tr>
+
+<tr>
+<td>orchestrationConfig</td>
+<td>OrchestrationConfiguration</td>
+<td>Orchestration configuration</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="orchestrationconfiguration">OrchestrationConfiguration</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>Name of orchestration instance</td>
+</tr>
+
+<tr>
+<td>overwrite</td>
+<td>boolean</td>
+<td>Use local configuration to overwrite registry center or not</td>
+</tr>
+
+<tr>
+<td>regCenterConfig</td>
+<td>RegistryCenterConfiguration</td>
+<td>Registry center configuration</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="registrycenterconfiguration">RegistryCenterConfiguration</h4>
+
+<table>
+<thead>
+<tr>
+<th><em>Name</em></th>
+<th><em>DataType</em></th>
+<th><em>Description</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>serverLists</td>
+<td>String</td>
+<td>Registry servers list, multiple split as comma. Example: host1:2181,host2:2181</td>
+</tr>
+
+<tr>
+<td>namespace (?)</td>
+<td>String</td>
+<td>Namespace of registry</td>
+</tr>
+
+<tr>
+<td>digest (?)</td>
+<td>String</td>
+<td>Digest for registry. Default is not need digest.</td>
+</tr>
+
+<tr>
+<td>operationTimeoutMilliseconds (?)</td>
+<td>int</td>
+<td>Operation timeout time in milliseconds. Default value is 500 milliseconds.</td>
+</tr>
+
+<tr>
+<td>maxRetries (?)</td>
+<td>int</td>
+<td>Max number of times to retry. Default value is 3</td>
+</tr>
+
+<tr>
+<td>retryIntervalMilliseconds (?)</td>
+<td>int</td>
+<td>Time interval in milliseconds on each retry. Default value is 500 milliseconds.</td>
+</tr>
+
+<tr>
+<td>timeToLiveSeconds (?)</td>
+<td>int</td>
+<td>Time to live in seconds of ephemeral keys. Default value is 60 seconds.</td>
+</tr>
+</tbody>
+</table>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/" title="Configuration manual"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="https://shardingsphere.apache.org/document/legacy/3.x/document/en/manual/sharding-jdbc/configuration/config-yaml/" title="Yaml" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/clipboard.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/perfect-scrollbar.jquery.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/jquery.sticky.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/featherlight.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/html5shiv-printshiv.min.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/highlight.pack.js?1547543307"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/modernizr.custom.71422.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/learn.js?1547543307"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/document/js/hugo-learn.js?1547543307"></script>
+
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.css?1547543307" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/mermaid/mermaid.js?1547543307"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

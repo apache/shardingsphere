@@ -34,8 +34,13 @@ public final class ColumnOrderByItemSegment extends TextOrderByItemSegment {
     
     private final ColumnSegment column;
     
-    public ColumnOrderByItemSegment(final int startIndex, final int stopIndex, final ColumnSegment column, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        super(startIndex, stopIndex, orderDirection, nullOrderDirection);
+    public ColumnOrderByItemSegment(final ColumnSegment column, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+        super(column.getStartIndex(), column.getStopIndex(), orderDirection, nullOrderDirection);
+        this.column = column;
+    }
+    
+    public ColumnOrderByItemSegment(final ColumnSegment column, final OrderDirection orderDirection) {
+        super(column.getStartIndex(), column.getStopIndex(), orderDirection, OrderDirection.ASC);
         this.column = column;
     }
     

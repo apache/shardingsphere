@@ -55,7 +55,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
             return;
         }
         int actualUpdateCount;
@@ -83,7 +83,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     @Test
     public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
         // TODO fix masterslave
-        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getShardingRuleType())) {
+        if (!getDatabaseTypeEnvironment().isEnabled() || "masterslave".equals(getRuleType())) {
             return;
         }
         int actualUpdateCount;

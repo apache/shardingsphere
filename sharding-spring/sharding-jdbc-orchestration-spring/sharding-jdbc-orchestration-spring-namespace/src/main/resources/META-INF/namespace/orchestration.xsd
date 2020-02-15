@@ -17,7 +17,6 @@
   -->
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:beans="http://www.springframework.org/schema/beans"
             xmlns="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/orchestration"
             elementFormDefault="qualified">
@@ -26,7 +25,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-ref" type="xsd:string" />
-            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="instance-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
@@ -34,7 +33,7 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-ref" type="xsd:string" />
-            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="instance-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
@@ -42,25 +41,18 @@
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="data-source-ref" type="xsd:string" />
-            <xsd:attribute name="registry-center-ref" type="xsd:string" use="required" />
+            <xsd:attribute name="instance-ref" type="xsd:string" use="required" />
             <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="registry-center">
+    <xsd:element name="instance">
         <xsd:complexType>
-            <xsd:complexContent>
-                <xsd:extension base="beans:identifiedType">
-                    <xsd:attribute name="type" type="xsd:string" use="required" />
-                    <xsd:attribute name="server-lists" type="xsd:string" use="required" />
-                    <xsd:attribute name="namespace" type="xsd:string" />
-                    <xsd:attribute name="digest" type="xsd:string" />
-                    <xsd:attribute name="operation-timeout-milliseconds" type="xsd:string" />
-                    <xsd:attribute name="max-retries" type="xsd:string" />
-                    <xsd:attribute name="retry-interval-milliseconds" type="xsd:string" />
-                    <xsd:attribute name="time-to-live-seconds" type="xsd:string" />
-                    <xsd:attribute name="props-ref" type="xsd:string" />
-                </xsd:extension>
-            </xsd:complexContent>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="orchestration-type" type="xsd:string" use="required" />
+            <xsd:attribute name="instance-type" type="xsd:string" use="required" />
+            <xsd:attribute name="server-lists" type="xsd:string" use="required"/>
+            <xsd:attribute name="namespace" type="xsd:string"/>
+            <xsd:attribute name="props-ref" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

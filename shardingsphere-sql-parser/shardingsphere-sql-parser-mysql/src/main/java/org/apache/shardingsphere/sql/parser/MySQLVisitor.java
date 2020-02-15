@@ -17,42 +17,56 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
+import lombok.AccessLevel;
+import lombok.Getter;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DateTimeLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExtractFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FunctionCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HexadecimalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IntervalExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ParameterMarkerContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PositionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SimpleExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubstringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWord_Context;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -60,223 +74,300 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonE
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationDistinctProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.value.BooleanValue;
-import org.apache.shardingsphere.sql.parser.sql.value.LiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.value.NumberValue;
-import org.apache.shardingsphere.sql.parser.sql.value.ParameterValue;
+import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.OtherLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * MySQL visitor.
  *
  * @author panjuan
  */
-public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+@Getter(AccessLevel.PROTECTED)
+public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
     
-    // DALStatement.g4
     @Override
-    public ASTNode visitUse(final UseContext ctx) {
-        LiteralValue schema = (LiteralValue) visit(ctx.schemaName());
-        UseStatement useStatement = new UseStatement();
-        useStatement.setSchema(schema.getLiteral());
-        return useStatement;
+    public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
+        return new ParameterMarkerValue(currentParameterIndex++);
     }
     
     @Override
-    public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
-        ShowTableStatusStatement showTableStatusStatement = new ShowTableStatusStatement();
-        FromSchemaContext fromSchemaContext = ctx.fromSchema();
-        ShowLikeContext showLikeContext = ctx.showLike();
-        if (null != fromSchemaContext) {
-            FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
-            showTableStatusStatement.getAllSQLSegments().add(fromSchemaSegment);
+    public final ASTNode visitLiterals(final LiteralsContext ctx) {
+        if (null != ctx.stringLiterals()) {
+            return visit(ctx.stringLiterals());
         }
-        if (null != showLikeContext) {
-            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            showTableStatusStatement.getAllSQLSegments().add(showLikeSegment);
+        if (null != ctx.numberLiterals()) {
+            return visit(ctx.numberLiterals());
         }
-        return showTableStatusStatement;
-    }
-    
-    @Override
-    public ASTNode visitFromSchema(final FromSchemaContext ctx) {
-        return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-    }
-    
-    @Override
-    public ASTNode visitShowLike(final ShowLikeContext ctx) {
-        LiteralValue literalValue = (LiteralValue) visit(ctx.stringLiterals());
-        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getLiteral());
-    }
-    
-    // DCLStatement.g4
-    // DDLStatement.g4
-    // DMLStatement.g4
-    
-    @Override
-    public ASTNode visitInsert(final InsertContext ctx) {
-        // TODO :Since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        InsertStatement result = null != ctx.insertValuesClause() ? (InsertStatement) visit(ctx.insertValuesClause()) : (InsertStatement) visit(ctx.setAssignmentsClause());
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.setTable(table);
-        result.getAllSQLSegments().add(table);
-        result.setParametersCount(currentParameterIndex);
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
-        InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
-        Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
-        result.setColumns(insertColumnsSegment);
-        result.getValues().addAll(insertValuesSegments);
-        result.getAllSQLSegments().add(insertColumnsSegment);
-        result.getAllSQLSegments().addAll(insertValuesSegments);
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
-        Collection<AssignmentSegment> assignments = new LinkedList<>();
-        for (AssignmentContext each : ctx.assignment()) {
-            assignments.add((AssignmentSegment) visit(each));
+        if (null != ctx.dateTimeLiterals()) {
+            return visit(ctx.dateTimeLiterals());
         }
-        SetAssignmentsSegment segment = new SetAssignmentsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), assignments);
-        result.setSetAssignment(segment);
-        result.getAllSQLSegments().add(segment);
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitAssignmentValues(final AssignmentValuesContext ctx) {
-        List<ExpressionSegment> segments = new LinkedList<>();
-        for (AssignmentValueContext each : ctx.assignmentValue()) {
-            segments.add((ExpressionSegment) visit(each));
+        if (null != ctx.hexadecimalLiterals()) {
+            return visit(ctx.hexadecimalLiterals());
         }
-        return new InsertValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segments);
-    }
-    
-    @Override
-    public ASTNode visitAssignment(final AssignmentContext ctx) {
-        ColumnSegment column = (ColumnSegment) visitColumnName(ctx.columnName());
-        ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        return new AssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), column, value);
-    }
-    
-    @Override
-    public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
-        ExprContext expr = ctx.expr();
-        if (null != expr) {
-            ASTNode value = visit(expr);
-            return createExpressionSegment(value, expr);
+        if (null != ctx.bitValueLiterals()) {
+            return visit(ctx.bitValueLiterals());
         }
-        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+        if (null != ctx.booleanLiterals()) {
+            return visit(ctx.booleanLiterals());
+        }
+        if (null != ctx.nullValueLiterals()) {
+            return visit(ctx.nullValueLiterals());
+        }
+        throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
     }
     
     @Override
-    public ASTNode visitBlobValue(final BlobValueContext ctx) {
-        return new LiteralValue(ctx.STRING_().getText());
+    public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
+        return new StringLiteralValue(ctx.getText());
     }
     
-    // TCLStatement.g4
-    // StoreProcedure.g4
-    
-    // BaseRule.g4
     @Override
-    public ASTNode visitSchemaName(final SchemaNameContext ctx) {
+    public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
+        return new NumberLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitDateTimeLiterals(final DateTimeLiteralsContext ctx) {
+        // TODO deal with dateTimeLiterals
+        return new OtherLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitHexadecimalLiterals(final HexadecimalLiteralsContext ctx) {
+        // TODO deal with hexadecimalLiterals
+        return new OtherLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitBitValueLiterals(final BitValueLiteralsContext ctx) {
+        // TODO deal with bitValueLiterals
+        return new OtherLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
+        return new BooleanLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitNullValueLiterals(final NullValueLiteralsContext ctx) {
+        // TODO deal with nullValueLiterals
+        return new OtherLiteralValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitIdentifier(final IdentifierContext ctx) {
+        UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
+        return null != unreservedWord ? visit(unreservedWord) : new IdentifierValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
+        return new IdentifierValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
     
     @Override
-    public ASTNode visitTableName(final TableNameContext ctx) {
-        LiteralValue tableName = (LiteralValue) visit(ctx.name());
-        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getLiteral());
+    public final ASTNode visitTableName(final TableNameContext ctx) {
+        IdentifierValue tableName = (IdentifierValue) visit(ctx.name());
+        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), tableName.getValue(), tableName.getQuoteCharacter());
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(createSchemaSegment(owner));
+            IdentifierValue ownerIdentifier = (IdentifierValue) visit(owner.identifier());
+            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
         }
         return result;
     }
     
     @Override
-    public ASTNode visitColumnNames(final ColumnNamesContext ctx) {
+    public final ASTNode visitColumnName(final ColumnNameContext ctx) {
+        IdentifierValue columnName = (IdentifierValue) visit(ctx.name());
+        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getValue(), columnName.getQuoteCharacter());
+        OwnerContext owner = ctx.owner();
+        if (null != owner) {
+            IdentifierValue ownerIdentifier = (IdentifierValue) visit(owner.identifier());
+            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), ownerIdentifier.getValue(), ownerIdentifier.getQuoteCharacter()));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitIndexName(final IndexNameContext ctx) {
+        IdentifierValue indexName = (IdentifierValue) visit(ctx.identifier());
+        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexName.getValue(), indexName.getQuoteCharacter());
+    }
+    
+    @Override
+    public final ASTNode visitTableNames(final TableNamesContext ctx) {
+        CollectionValue<TableSegment> result = new CollectionValue<>();
+        for (TableNameContext each : ctx.tableName()) {
+            result.getValue().add((TableSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
         Collection<ColumnSegment> segments = new LinkedList<>();
         for (ColumnNameContext each : ctx.columnName()) {
             segments.add((ColumnSegment) visit(each));
         }
-        InsertColumnsSegment result = new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        InsertColumnsSegment result = new InsertColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         result.getColumns().addAll(segments);
         return result;
     }
     
     @Override
-    public ASTNode visitColumnName(final ColumnNameContext ctx) {
-        LiteralValue columnName = (LiteralValue) visit(ctx.name());
-        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName.getLiteral());
-        OwnerContext owner = ctx.owner();
-        if (null != owner) {
-            result.setOwner(createTableSegment(owner));
-        }
-        return result;
+    public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
+        return visit(ctx.identifier(0));
     }
     
     @Override
-    public ASTNode visitExpr(final ExprContext ctx) {
-        BooleanPrimaryContext bool = ctx.booleanPrimary();
-        if (null != bool) {
-            return visit(bool);
+    public final ASTNode visitExpr(final ExprContext ctx) {
+        if (null != ctx.booleanPrimary()) {
+            return visit(ctx.booleanPrimary());
         }
-        return new LiteralValue(ctx.getText());
+        if (null != ctx.logicalOperator()) {
+            return new PredicateBuilder(visit(ctx.expr(0)), visit(ctx.expr(1)), ctx.logicalOperator().getText()).mergePredicate();
+        }
+        // TODO deal with XOR
+        return visit(ctx.expr().get(0));
     }
     
     @Override
-    public ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
+    public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.subquery()) {
-            return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
+            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.subquery().getText());
+        }
+        if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
+            return createCompareSegment(ctx);
         }
         if (null != ctx.predicate()) {
             return visit(ctx.predicate());
         }
-        return new LiteralValue(ctx.getText());
+        //TODO deal with IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
+        ASTNode leftValue = visit(ctx.booleanPrimary());
+        ASTNode rightValue = visit(ctx.predicate());
+        if (!(leftValue instanceof ColumnSegment)) {
+            return leftValue;
+        }
+        PredicateRightValue predicateRightValue = rightValue instanceof ColumnSegment
+                ? (ColumnSegment) rightValue : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnSegment) leftValue, predicateRightValue);
     }
     
     @Override
-    public ASTNode visitPredicate(final PredicateContext ctx) {
+    public final ASTNode visitPredicate(final PredicateContext ctx) {
         if (null != ctx.subquery()) {
-            return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
+            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.subquery().getText());
         }
-        BitExprContext bitExpr = ctx.bitExpr(0);
-        if (null != bitExpr) {
-            return visit(bitExpr);
+        if (null != ctx.IN() && null == ctx.NOT()) {
+            return createInSegment(ctx);
         }
-        return new LiteralValue(ctx.getText());
+        if (null != ctx.BETWEEN() && null == ctx.NOT()) {
+            return createBetweenSegment(ctx);
+        }
+        if (1 == ctx.children.size()) {
+            return visit(ctx.bitExpr(0));
+        }
+        return visitRemainPredicate(ctx);
+    }
+    
+    private PredicateSegment createInSegment(final PredicateContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
+        Collection<ExpressionSegment> segments = new LinkedList<>();
+        for (ExprContext each : ctx.expr()) {
+            segments.add((ExpressionSegment) visit(each));
+        }
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(segments));
+    }
+    
+    private PredicateSegment createBetweenSegment(final PredicateContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.bitExpr(0));
+        ExpressionSegment between = (ExpressionSegment) visit(ctx.bitExpr(1));
+        ExpressionSegment and = (ExpressionSegment) visit(ctx.predicate());
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateBetweenRightValue(between, and));
+    }
+    
+    private ASTNode visitRemainPredicate(final PredicateContext ctx) {
+        for (BitExprContext each : ctx.bitExpr()) {
+            visit(each);
+        }
+        for (ExprContext each : ctx.expr()) {
+            visit(each);
+        }
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            visit(each);
+        }
+        if (null != ctx.predicate()) {
+            visit(ctx.predicate());
+        }
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitBitExpr(final BitExprContext ctx) {
-        SimpleExprContext simple = ctx.simpleExpr();
-        if (null != simple) {
-            return visit(simple);
+    public final ASTNode visitBitExpr(final BitExprContext ctx) {
+        if (null != ctx.simpleExpr()) {
+            return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
-        return new LiteralValue(ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    private ASTNode createExpressionSegment(final ASTNode astNode, final ParserRuleContext context) {
+        if (astNode instanceof StringLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((StringLiteralValue) astNode).getValue());
+        }
+        if (astNode instanceof NumberLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberLiteralValue) astNode).getValue());
+        }
+        if (astNode instanceof ParameterMarkerValue) {
+            return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
+        }
+        if (astNode instanceof OtherLiteralValue) {
+            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText());
+        }
+        return astNode;
     }
     
     @Override
-    public ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
+    public final ASTNode visitSimpleExpr(final SimpleExprContext ctx) {
         if (null != ctx.subquery()) {
-            return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.subquery().getText());
+            return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.subquery().getText());
         }
         if (null != ctx.parameterMarker()) {
             return visit(ctx.parameterMarker());
@@ -284,86 +375,181 @@ public final class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> imple
         if (null != ctx.literals()) {
             return visit(ctx.literals());
         }
-        return new LiteralValue(ctx.getText());
+        if (null != ctx.intervalExpression()) {
+            return visit(ctx.intervalExpression());
+        }
+        if (null != ctx.functionCall()) {
+            return visit(ctx.functionCall());
+        }
+        if (null != ctx.columnName()) {
+            return visit(ctx.columnName());
+        }
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterValue(currentParameterIndex++);
+    public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override
-    public ASTNode visitLiterals(final LiteralsContext ctx) {
-        if (null != ctx.stringLiterals()) {
-            return visit(ctx.stringLiterals());
+    public final ASTNode visitFunctionCall(final FunctionCallContext ctx) {
+        if (null != ctx.aggregationFunction()) {
+            return visit(ctx.aggregationFunction());
+        }
+        if (null != ctx.specialFunction()) {
+            return visit(ctx.specialFunction());
+        }
+        if (null != ctx.regularFunction()) {
+            return visit(ctx.regularFunction());
+        }
+        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
+    }
+    
+    @Override
+    public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
+        String aggregationType = ctx.aggregationFunctionName_().getText();
+        return AggregationType.isAggregationType(aggregationType)
+                ? createAggregationSegment(ctx, aggregationType) : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
+        AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
+        int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
+        if (null == ctx.distinct()) {
+            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex);
+        }
+        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
+    }
+    
+    private String getDistinctExpression(final AggregationFunctionContext ctx) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 3; i < ctx.getChildCount() - 1; i++) {
+            result.append(ctx.getChild(i).getText());
+        }
+        return result.toString();
+    }
+    
+    @Override
+    public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
+        if (null != ctx.groupConcatFunction()) {
+            return visit(ctx.groupConcatFunction());
+        }
+        if (null != ctx.windowFunction()) {
+            return visit(ctx.windowFunction());
+        }
+        if (null != ctx.castFunction()) {
+            return visit(ctx.castFunction());
+        }
+        if (null != ctx.convertFunction()) {
+            return visit(ctx.convertFunction());
+        }
+        if (null != ctx.positionFunction()) {
+            return visit(ctx.positionFunction());
+        }
+        if (null != ctx.substringFunction()) {
+            return visit(ctx.substringFunction());
+        }
+        if (null != ctx.extractFunction()) {
+            return visit(ctx.extractFunction());
+        }
+        if (null != ctx.charFunction()) {
+            return visit(ctx.charFunction());
+        }
+        if (null != ctx.weightStringFunction()) {
+            return visit(ctx.weightStringFunction());
+        }
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitWeightStringFunction(final WeightStringFunctionContext ctx) {
+        calculateParameterCount(Collections.singleton(ctx.expr()));
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
+        calculateParameterCount(ctx.expr());
+        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    // TODO :FIXME, sql case id: insert_with_str_to_date
+    private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
+        for (ExprContext each : exprContexts) {
+            visit(each);
+        }
+    }
+    
+    @Override
+    public final ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
+        Collection<OrderByItemSegment> items = new LinkedList<>();
+        for (OrderByItemContext each : ctx.orderByItem()) {
+            items.add((OrderByItemSegment) visit(each));
+        }
+        return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+    }
+    
+    @Override
+    public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
+        OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
+        if (null != ctx.columnName()) {
+            ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+            return new ColumnOrderByItemSegment(column, orderDirection);
         }
         if (null != ctx.numberLiterals()) {
-            return visit(ctx.numberLiterals());
+            return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
+                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
         }
-        if (null != ctx.booleanLiterals()) {
-            return visit(ctx.booleanLiterals());
-        }
-        return new LiteralValue(ctx.getText());
-    }
-    
-    @Override
-    public ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        return new LiteralValue(ctx.getText());
-    }
-    
-    @Override
-    public ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
-        return new NumberValue(ctx.getText());
-    }
-    
-    @Override
-    public ASTNode visitBooleanLiterals(final BooleanLiteralsContext ctx) {
-        return new BooleanValue(ctx.getText());
-    }
-    
-    @Override
-    public ASTNode visitIdentifier(final IdentifierContext ctx) {
-        UnreservedWord_Context unreservedWord = ctx.unreservedWord_();
-        if (null != unreservedWord) {
-            return visit(unreservedWord);
-        }
-        return new LiteralValue(ctx.getText());
-    }
-    
-    @Override
-    public ASTNode visitUnreservedWord_(final UnreservedWord_Context ctx) {
-        return new LiteralValue(ctx.getText());
-    }
-    
-    // Segments
-    private SchemaSegment createSchemaSegment(final OwnerContext ownerContext) {
-        LiteralValue literalValue = (LiteralValue) visit(ownerContext.identifier());
-        return new SchemaSegment(ownerContext.getStart().getStartIndex(), ownerContext.getStop().getStopIndex(), literalValue.getLiteral());
-    }
-    
-    private TableSegment createTableSegment(final OwnerContext ownerContext) {
-        LiteralValue literalValue = (LiteralValue) visit(ownerContext.identifier());
-        return new TableSegment(ownerContext.getStart().getStartIndex(), ownerContext.getStop().getStopIndex(), literalValue.getLiteral());
-    }
-    
-    private ExpressionSegment createExpressionSegment(final ASTNode astNode, final ExprContext expr) {
-        if (astNode instanceof SubquerySegment) {
-            return (SubquerySegment) astNode;
-        }
-        if (astNode instanceof LiteralValue) {
-            return new LiteralExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((LiteralValue) astNode).getLiteral());
-        }
-        if (astNode instanceof NumberValue) {
-            return new LiteralExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((NumberValue) astNode).getNumber());
-        }
-        return new ParameterMarkerExpressionSegment(expr.start.getStartIndex(), expr.stop.getStopIndex(), ((ParameterValue) astNode).getParameterIndex());
-    }
-    
-    private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
-        Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (AssignmentValuesContext each : assignmentValuesContexts) {
-            result.add((InsertValuesSegment) visit(each));
-        }
-        return result;
+        return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), ctx.expr().getText(), orderDirection);
     }
 }

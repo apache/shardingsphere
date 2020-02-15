@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
@@ -156,7 +157,7 @@ public final class TablesContextTest {
         selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 10, "table_1")));
+        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 10, "table_1", QuoteCharacter.NONE)));
         assertTrue(tablesContext.findTableName(columnSegment, null).isPresent());
     }
     
@@ -195,7 +196,7 @@ public final class TablesContextTest {
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         SQLStatement sqlStatement = mock(SQLStatement.class);
-        TableSegment tableSegment = new TableSegment(0, 10, "TableSegmentName");
+        TableSegment tableSegment = new TableSegment(0, 10, "TableSegmentName", QuoteCharacter.NONE);
         SchemaSegment schemaSegment = mock(SchemaSegment.class);
         when(schemaSegment.getName()).thenReturn("SchemaSegmentName");
         tableSegment.setOwner(schemaSegment);
@@ -204,7 +205,7 @@ public final class TablesContextTest {
     }
     
     private TableSegment createTableSegment(final String tableName, final String alias) {
-        TableSegment result = new TableSegment(0, 0, tableName);
+        TableSegment result = new TableSegment(0, 0, tableName, QuoteCharacter.NONE);
         result.setAlias(alias);
         return result;
     }

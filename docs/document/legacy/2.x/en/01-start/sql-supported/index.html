@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.20.7" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="http://shardingsphere.apache.org/document/legacy/2.x/en/img/favicon.png" type="image/x-icon" />
+
+    
+    <title>The list of available SQL syntax</title>
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/en/css/nucleus.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/en/css/theme.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/en/css/hugo-theme.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <style type="text/css">:root #header + #content > #left > #rlblock_left
+    {display:none !important;}</style>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/highlight.js/9.8.0/styles/monokai-sublime.min.css">
+<link rel="stylesheet" href="http://shardingsphere.apache.org/document/legacy/2.x/en/css/style.css">
+  </head>
+  <body class="" data-url="/01-start/sql-supported/">
+    
+    <nav id="sidebar">
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="http://shardingsphere.apache.org/document/legacy/2.x/en/img/sharding-jdbc.png" />
+    </div>
+</div>
+  <div class="highlightable">
+    <ul class="topics">
+      
+        
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/00-overview/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/">
+          <span>
+            
+              <b>0. </b>
+            
+             Overview
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/00-overview/intro/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/intro/">
+                <span>Brief Introduction     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/news/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/news/">
+                <span>News     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/contribution/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/00-overview/contribution/">
+                <span>Contribute Code     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  parent" data-nav-id="/01-start/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/">
+          <span>
+            
+              <b>1. </b>
+            
+             Introduction
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/01-start/quick-start/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/quick-start/">
+                <span>Quick Start     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/code-demo/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/code-demo/">
+                <span>Usage Example     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/faq/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/faq/">
+                <span>FAQ     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/features/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/features/">
+                <span>Feature List     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/limitations/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/limitations/">
+                <span>Use Limits     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item active" data-nav-id="/01-start/sql-supported/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/sql-supported/">
+                <span>The list of available SQL syntax     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/stress-test/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/stress-test/">
+                <span>The performance-test report     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/02-guide/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/">
+          <span>
+            
+              <b>2. </b>
+            
+             User Manual
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/02-guide/concepts/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/concepts/">
+                <span>Basic Concepts      </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/sharding/">
+                <span>Sharding     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/master-slave/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/master-slave/">
+                <span>Read-write splitting     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/config_domain/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/config_domain/">
+                <span>Domain Model Configuration     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/configuration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/configuration/">
+                <span>Configuration     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/orchestration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/orchestration/">
+                <span>Orchestration     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/hint-sharding-value/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/hint-sharding-value/">
+                <span>Mandatory Routing     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/key-generator/">
+                <span>Distributed Primary key     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/transaction/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/transaction/">
+                <span>Transaction Support     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/subquery/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/subquery/">
+                <span>The Pagination and subquery     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/test-framework/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/test-framework/">
+                <span>Test Engine     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/apm/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/apm/">
+                <span>APM     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding-jdbc-server/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/sharding-jdbc-server/">
+                <span>Sharding-JDBC-Server     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/03-design/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/">
+          <span>
+            
+              <b>3. </b>
+            
+             Design Plan
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/03-design/architecture/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/architecture/">
+                <span>Architecture Design     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/module/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/module/">
+                <span>Module Declaration     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/roadmap/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/03-design/roadmap/">
+                <span>Roadmap     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+    </ul>
+    <hr>
+     
+  </div>
+</nav>
+
+        <section id="body">
+        <div id="overlay"></div>
+
+        <div class="padding highlightable">
+
+            <div id="top-bar">
+              
+              <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                  <span id="sidebar-toggle-span">
+                      <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                  </span>
+                
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                
+                
+                  
+                  
+                  
+                    
+                    
+                <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/" itemprop="url"><span itemprop="title">Introduction</span></a> <i class="fa fa-angle-right"></i>
+                    
+                  
+                
+                <span itemprop="title"> The list of available SQL syntax</span>
+              </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#the-global-unsupported-items">The global unsupported items</a>
+<ul>
+<li><a href="#support-some-kinds-of-subqueries">Support some kinds of subqueries</a></li>
+<li><a href="#does-not-support-sql-that-contains-redundant-parentheses">Does not support SQL that contains redundant parentheses</a></li>
+<li><a href="#does-not-support-or">Does not support OR</a></li>
+<li><a href="#does-not-support-case-when">Does not support CASE WHEN</a></li>
+</ul></li>
+<li><a href="#the-global-supported-items">The global supported items</a>
+<ul>
+<li><a href="#dql">DQL</a>
+<ul>
+<li><a href="#basic-select">Basic SELECT</a></li>
+<li><a href="#select-expr">select_expr</a></li>
+<li><a href="#table-reference">table_reference</a></li>
+<li><a href="#the-examples">The examples</a></li>
+</ul></li>
+<li><a href="#dql-1">DQL</a></li>
+<li><a href="#dml">DML</a></li>
+<li><a href="#ddl">DDL</a></li>
+</ul></li>
+<li><a href="#the-unsupported-sql">The unsupported SQL</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+              
+
+            </div>
+            
+              <div id="body-inner">
+                
+                <h1>The list of available SQL syntax</h1>
+                
+
+
+
+<p>Because of the flexibility and complexity of SQL syntax and the different handling for SQL queries for distributed databases and single database, not all of the SQLs can be used in Sharding-JDBC.</p>
+
+<p>This section lists the supported SQL syntax and the unsupported SQL syntax for user to look up. In the future, more and more SQL syntaxes will be supported in Sharding-JDBC.</p>
+
+<h2 id="the-global-unsupported-items">The global unsupported items</h2>
+
+<h3 id="support-some-kinds-of-subqueries">Support some kinds of subqueries</h3>
+
+<p>Please refer to <a href="http://shardingsphere.apache.org/document/legacy/2.x/en/02-guide/subquery/">The Pagination and subquery</a>。</p>
+
+<h3 id="does-not-support-sql-that-contains-redundant-parentheses">Does not support SQL that contains redundant parentheses</h3>
+
+<h3 id="does-not-support-or">Does not support OR</h3>
+
+<h3 id="does-not-support-case-when">Does not support CASE WHEN</h3>
+
+<h2 id="the-global-supported-items">The global supported items</h2>
+
+<h3 id="dql">DQL</h3>
+
+<h4 id="basic-select">Basic SELECT</h4>
+
+<pre><code class="language-sql">SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference ...]
+[WHERE where_condition] 
+[GROUP BY {col_name | position} [ASC | DESC]] 
+[ORDER BY {col_name | position} [ASC | DESC], ...] 
+[LIMIT {[offset,] row_count | row_count OFFSET offset}]
+</code></pre>
+
+<h4 id="select-expr">select_expr</h4>
+
+<pre><code class="language-sql">* | 
+COLUMN_NAME [AS] [alias] | 
+(MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
+COUNT(* | COLUMN_NAME | alias) [AS] [alias]
+</code></pre>
+
+<h4 id="table-reference">table_reference</h4>
+
+<pre><code class="language-sql">tbl_name [AS] alias] [index_hint_list] | 
+table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
+</code></pre>
+
+<h4 id="the-examples">The examples</h4>
+
+<h3 id="dql-1">DQL</h3>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>Unconditional</th>
+<th>Condition</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>SELECT * FROM tbl_name</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name WHERE col1 = val1 ORDER BY col2 DESC LIMIT limit</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = val1</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(col1) FROM tbl_name WHERE col2 = val2 GROUP BY col1 ORDER BY col3 DESC LIMIT offset, limit</td>
+<td>Y</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="dml">DML</h3>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>Unconditional</th>
+<th>Condition</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>INSERT INTO tbl_name (col1, col2,&hellip;) VALUES (val1, val2,&hellip;.)</td>
+<td>N</td>
+<td>Add Sharding columns into insert columns.</td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name VALUES (val1, val2,&hellip;.)</td>
+<td>N</td>
+<td>Inject Sharding columns by Hint.</td>
+</tr>
+
+<tr>
+<td>UPDATE tbl_name SET col1 = val1 WHERE col2 = val2</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>DELETE FROM tbl_name WHERE col1 = val1</td>
+<td>Y</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ddl">DDL</h3>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>Unconditional</th>
+<th>Condition</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>CREATE TABLE tbl_name (col1 int,&hellip;)</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>ALTER TABLE tbl_name ADD col1 varchar(10)</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>DROP TABLE tbl_name</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>TRUNCATE TABLE tbl_name</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>CREATE INDEX idx_name ON tbl_name</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>DROP INDEX idx_name ON tbl_name</td>
+<td>Y</td>
+<td></td>
+</tr>
+
+<tr>
+<td>DROP INDEX idx_name</td>
+<td>Y</td>
+<td>Configure logic-index in tableRule.</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="the-unsupported-sql">The unsupported SQL</h2>
+
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>INSERT INTO tbl_name (col1, col2, &hellip;) VALUES (val1, val2,&hellip;.), (val3, val4,&hellip;.)</td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name (col1, col2, &hellip;) SELECT col1, col2, &hellip; FROM tbl_name WHERE col3 = val3</td>
+</tr>
+
+<tr>
+<td>INSERT INTO tbl_name SET col1 = val1</td>
+</tr>
+
+<tr>
+<td>SELECT DISTINCT * FROM tbl_name WHERE column1 = value1</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name WHERE column1 = value1 OR column1 = value2</td>
+</tr>
+
+<tr>
+<td>SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias &gt; val1</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2</td>
+</tr>
+
+<tr>
+<td>SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)</td>
+</tr>
+</tbody>
+</table>
+
+
+      
+      
+      </div>
+    </div>
+
+    
+
+    <div id="navigation">
+        
+        <a class="nav nav-prev" href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/limitations/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="http://shardingsphere.apache.org/document/legacy/2.x/en/01-start/stress-test/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/clipboard.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/perfect-scrollbar.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/jquery.sticky-kit.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/featherlight.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/html5shiv-printshiv.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/learn.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/en/js/hugo-learn.js"></script>
+    <script src="http://cdn.bootcss.com/highlight.js/9.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
+

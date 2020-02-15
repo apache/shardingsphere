@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.core.extractor.api.OptionalSQLSegmen
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,7 +39,7 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
     private final AssignmentExtractor assignmentExtractor = new AssignmentExtractor();
     
     @Override
-    public Optional<SetAssignmentsSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
+    public Optional<SetAssignmentSegment> extract(final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> parameterMarkerIndexes) {
         Optional<ParserRuleContext> setAssignmentsClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_ASSIGNMENTS_CLAUSE);
         if (!setAssignmentsClauseNode.isPresent()) {
             return Optional.absent();
@@ -51,6 +51,6 @@ public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtracto
                 assignmentSegments.add(assignmentSegment.get());
             }
         }
-        return Optional.of(new SetAssignmentsSegment(setAssignmentsClauseNode.get().getStart().getStartIndex(), setAssignmentsClauseNode.get().getStop().getStopIndex(), assignmentSegments));
+        return Optional.of(new SetAssignmentSegment(setAssignmentsClauseNode.get().getStart().getStartIndex(), setAssignmentsClauseNode.get().getStop().getStopIndex(), assignmentSegments));
     }
 }

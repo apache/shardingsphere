@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
+
+import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -49,9 +51,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -75,7 +78,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
         SQLParseEngine parseEngine = SQLParseEngineFactory.getSQLParseEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
-        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, createShardingSphereMetaData(), parseEngine);
+        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, new ShardingSphereProperties(new Properties()), createShardingSphereMetaData(), parseEngine);
         ShardingRouteContext shardingRouteContext = shardingRouter.route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
         ShardingSphereProperties properties = new ShardingSphereProperties(ruleConfiguration.getProps());
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(
@@ -93,7 +96,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
         URL url = MixSQLRewriterParameterizedTest.class.getClassLoader().getResource(getTestParameters().getRuleFile());
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
+        return YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class, new YamlRootShardingConfigurationConstructor());
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {

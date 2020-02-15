@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+            <artifactId>sharding-orchestration-center-zookeeper-curator</artifactId>
             <version>${project.version}</version>
         </dependency>
         
@@ -74,6 +74,10 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
         
         <dependency>

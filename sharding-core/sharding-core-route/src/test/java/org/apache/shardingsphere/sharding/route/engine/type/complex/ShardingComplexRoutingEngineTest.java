@@ -27,15 +27,17 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
+import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,7 +52,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
-        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_order_item"), selectSQLStatementContext, createShardingConditions("t_order"));
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_order_item"), selectSQLStatementContext,
+                createShardingConditions("t_order"), new ShardingSphereProperties(new Properties()));
         RouteResult routeResult = complexRoutingEngine.route(createBindingShardingRule());
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
@@ -67,7 +70,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
-        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_config"), selectSQLStatementContext, createShardingConditions("t_order"));
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_config"), selectSQLStatementContext,
+                createShardingConditions("t_order"), new ShardingSphereProperties(new Properties()));
         RouteResult routeResult = complexRoutingEngine.route(createBroadcastShardingRule());
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
@@ -80,7 +84,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     
     @Test(expected = ShardingSphereException.class)
     public void assertRoutingForNonLogicTable() {
-        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Collections.<String>emptyList(), null, createShardingConditions("t_order"));
+        ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Collections.<String>emptyList(), null,
+                createShardingConditions("t_order"), new ShardingSphereProperties(new Properties()));
         complexRoutingEngine.route(mock(ShardingRule.class));
     }
 }

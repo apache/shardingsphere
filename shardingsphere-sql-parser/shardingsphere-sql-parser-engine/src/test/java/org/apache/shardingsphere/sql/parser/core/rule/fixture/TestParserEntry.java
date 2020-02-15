@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.core.rule.fixture;
 
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
 public final class TestParserEntry implements SQLParserEntry {
@@ -40,7 +40,7 @@ public final class TestParserEntry implements SQLParserEntry {
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
+    public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
         return null;
     }
 }

@@ -211,7 +211,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_ 
+    : aggregationFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -226,19 +226,19 @@ distinct
     : DISTINCT
     ;
 
-specialFunction_
-    : castFunction_  | charFunction_
+specialFunction
+    : castFunction  | charFunction
     ;
 
-castFunction_
+castFunction
     : CAST LP_ expr AS dataType RP_
     ;
 
-charFunction_
+charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
-regularFunction_
+regularFunction
     : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 

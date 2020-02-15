@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.20.7" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/favicon.png" type="image/x-icon" />
+
+    
+    <title>性能测试报告</title>
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/nucleus.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/theme.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/hugo-theme.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <style type="text/css">:root #header + #content > #left > #rlblock_left
+    {display:none !important;}</style>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/highlight.js/9.8.0/styles/monokai-sublime.min.css">
+<link rel="stylesheet" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/css/style.css">
+  </head>
+  <body class="" data-url="/01-start/stress-test/">
+    
+    <nav id="sidebar">
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/sharding-jdbc.png" />
+    </div>
+</div>
+  <div class="highlightable">
+    <ul class="topics">
+      
+        
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/00-overview/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/">
+          <span>
+            
+              <b>0. </b>
+            
+             概览
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/00-overview/intro/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/intro/">
+                <span>简介     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/news/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/news/">
+                <span>新闻     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/contribution/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/00-overview/contribution/">
+                <span>贡献代码     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  parent" data-nav-id="/01-start/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/">
+          <span>
+            
+              <b>1. </b>
+            
+             起航
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/01-start/quick-start/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/quick-start/">
+                <span>快速入门     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/code-demo/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/code-demo/">
+                <span>使用示例     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/faq/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/faq/">
+                <span>FAQ     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/features/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/features/">
+                <span>详细功能列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/limitations/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/limitations/">
+                <span>使用限制     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/sql-supported/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/sql-supported/">
+                <span>SQL支持详细列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item active" data-nav-id="/01-start/stress-test/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/stress-test/">
+                <span>性能测试报告     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/02-guide/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/">
+          <span>
+            
+              <b>2. </b>
+            
+             使用指南
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/02-guide/concepts/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/concepts/">
+                <span>核心概念     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/sharding/">
+                <span>分库分表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/master-slave/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/master-slave/">
+                <span>读写分离     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/config_domain/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/config_domain/">
+                <span>配置域模型     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/configuration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/configuration/">
+                <span>配置手册     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/orchestration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/orchestration/">
+                <span>编排治理     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/hint-sharding-value/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/hint-sharding-value/">
+                <span>强制路由     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/key-generator/">
+                <span>分布式主键     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/transaction/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/transaction/">
+                <span>事务支持     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/subquery/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/subquery/">
+                <span>分页及子查询     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/test-framework/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/test-framework/">
+                <span>测试引擎     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/apm/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/apm/">
+                <span>应用性能监控     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding-jdbc-server/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/sharding-jdbc-server/">
+                <span>Sharding-JDBC-Server     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/03-design/">
+        <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/">
+          <span>
+            
+              <b>3. </b>
+            
+             设计规划
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/03-design/architecture/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/architecture/">
+                <span>架构设计     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/module/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/module/">
+                <span>模块说明     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/roadmap/">
+              <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/03-design/roadmap/">
+                <span>未来线路规划     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+    </ul>
+    <hr>
+     
+  </div>
+</nav>
+
+        <section id="body">
+        <div id="overlay"></div>
+
+        <div class="padding highlightable">
+
+            <div id="top-bar">
+              
+              <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                  <span id="sidebar-toggle-span">
+                      <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                  </span>
+                
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                
+                
+                  
+                  
+                  
+                    
+                    
+                <a href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/" itemprop="url"><span itemprop="title">起航</span></a> <i class="fa fa-angle-right"></i>
+                    
+                  
+                
+                <span itemprop="title"> 性能测试报告</span>
+              </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li><a href="#sharding-jdbc性能测试报告">Sharding-JDBC性能测试报告</a>
+<ul>
+<li><a href="#测试结果概述">测试结果概述</a>
+<ul>
+<li><a href="#基准测试性能对比">基准测试性能对比</a></li>
+<li><a href="#jdbc单库两库表与sharding-jdbc两库各两表对比">JDBC单库两库表与Sharding-JDBC两库各两表对比</a></li>
+<li><a href="#jdbc单库单表与sharding-jdbc两库各一表对比">JDBC单库单表与Sharding-JDBC两库各一表对比</a></li>
+<li><a href="#sharding-jdbc-v1-4-2与v1-5-2版本对">Sharding-JDBC v1.4.2与v1.5.2版本对</a></li>
+</ul></li>
+<li><a href="#测试目的">测试目的</a></li>
+<li><a href="#测试场景">测试场景</a>
+<ul>
+<li><a href="#jdbc业务场景">JDBC业务场景</a></li>
+<li><a href="#sharding-jdbc业务场景">Sharding-JDBC业务场景</a></li>
+</ul></li>
+<li><a href="#测试方法">测试方法</a></li>
+<li><a href="#测试环境配置">测试环境配置</a></li>
+<li><a href="#测试过程数据">测试过程数据</a></li>
+<li><a href="#基准测试">基准测试</a>
+<ul>
+<li><a href="#单库单表查询">单库单表查询</a></li>
+<li><a href="#单库单表更新">单库单表更新</a></li>
+<li><a href="#单库单表插入">单库单表插入</a></li>
+</ul></li>
+<li><a href="#极限测试">极限测试</a>
+<ul>
+<li><a href="#单库单表与两库各一表查询">单库单表与两库各一表查询</a></li>
+<li><a href="#单库两表与两库各两表查询">单库两表与两库各两表查询</a></li>
+<li><a href="#单库单表更新与两库各一表更新">单库单表更新与两库各一表更新</a></li>
+<li><a href="#单库两表与两库各2表更新">单库两表与两库各2表更新</a></li>
+<li><a href="#单库单表插入与两库各一表插入">单库单表插入与两库各一表插入</a></li>
+<li><a href="#单库两表与两库各2表插入">单库两表与两库各2表插入</a></li>
+<li><a href="#sharding-jdbc-1-4-2与1-5-2两库各一表对比">Sharding-JDBC 1.4.2与1.5.2两库各一表对比</a></li>
+</ul></li>
+<li><a href="#附录">附录</a>
+<ul>
+<li><a href="#建表语句说明">建表语句说明</a></li>
+<li><a href="#sql语句说明">SQL语句说明</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+              
+
+            </div>
+            
+              <div id="body-inner">
+                
+                <h1>性能测试报告</h1>
+                
+
+
+
+<h1 id="sharding-jdbc性能测试报告">Sharding-JDBC性能测试报告</h1>
+
+<h2 id="测试结果概述">测试结果概述</h2>
+
+<p>1、性能损耗测试：服务器资源充足、并发数相同，比较JDBC和Sharding-JDBC性能损耗，Sharding-JDBC相对JDBC损耗不超过7%<br>
+2、性能对比测试：服务器资源使用到极限，相同的场景JDBC与Sharding-JDBC的吞吐量相当<br>
+3、性能对比测试：服务器资源使用到极限，Sharding-JDBC采用分库分表后，Sharding-JDBC吞吐量较JDBC不分表有接近2倍的提升<br>
+4、性能对比测试：服务器资源使用到极限，Sharding-JDBC V1.5.2与V1.4.2对比，性能比较稳定<br></p>
+
+<h3 id="基准测试性能对比">基准测试性能对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">JDBC</th>
+<th align="left">Sharding-JDBC1.5.2</th>
+<th align="left">Sharding-JDBC1.5.2/JDBC损耗</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">493</td>
+<td align="left">470</td>
+<td align="left">4.7%</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">6682</td>
+<td align="left">6303</td>
+<td align="left">5.7%</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">6855</td>
+<td align="left">6375</td>
+<td align="left">7%</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="jdbc单库两库表与sharding-jdbc两库各两表对比">JDBC单库两库表与Sharding-JDBC两库各两表对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">JDBC单库两表</th>
+<th align="left">Sharding-JDBC两库各两表</th>
+<th align="left">性能提升至</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">查询</td>
+<td align="left">1736</td>
+<td align="left">3331</td>
+<td align="left">192%</td>
+</tr>
+
+<tr>
+<td align="left">更新</td>
+<td align="left">9170</td>
+<td align="left">17997</td>
+<td align="left">196%</td>
+</tr>
+
+<tr>
+<td align="left">插入</td>
+<td align="left">11574</td>
+<td align="left">23043</td>
+<td align="left">199%</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="jdbc单库单表与sharding-jdbc两库各一表对比">JDBC单库单表与Sharding-JDBC两库各一表对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">JDBC单库单表</th>
+<th align="left">Sharding-JDBC两库各一表</th>
+<th align="left">性能提升至</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">查询</td>
+<td align="left">1586</td>
+<td align="left">2944</td>
+<td align="left">185%</td>
+</tr>
+
+<tr>
+<td align="left">更新</td>
+<td align="left">9548</td>
+<td align="left">18561</td>
+<td align="left">194%</td>
+</tr>
+
+<tr>
+<td align="left">插入</td>
+<td align="left">11182</td>
+<td align="left">21414</td>
+<td align="left">192%</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="sharding-jdbc-v1-4-2与v1-5-2版本对">Sharding-JDBC v1.4.2与v1.5.2版本对</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">Sharding-JDBC 1.4.2&emsp;</th>
+<th align="left">Sharding-JDBC 1.5.2&emsp;&emsp;&emsp;</th>
+<th align="left">1.5.<sup>2</sup>&frasl;<sub>1</sub>.4.2</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">查询</td>
+<td align="left">2934</td>
+<td align="left">2944</td>
+<td align="left">100.34%</td>
+</tr>
+
+<tr>
+<td align="left">更新</td>
+<td align="left">18454</td>
+<td align="left">18561</td>
+<td align="left">100.58%</td>
+</tr>
+
+<tr>
+<td align="left">插入</td>
+<td align="left">21045</td>
+<td align="left">21414</td>
+<td align="left">101.75%</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="测试目的">测试目的</h2>
+
+<ul>
+<li>对比Sharding-JDBC 1.5.2与JDBC性能是否有较大损耗;</li>
+<li>Sharding-JDBC 1.52与1.4.2版本对比，性能是否有损耗;</li>
+<li>Sharding-JDBC 1.5.2是否存在非功能问题，为优化提供依据;</li>
+</ul>
+
+<h2 id="测试场景">测试场景</h2>
+
+<h3 id="jdbc业务场景">JDBC业务场景</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景&emsp;&emsp;&emsp;</th>
+<th align="left">场景缩写&emsp;&emsp;&emsp;&emsp;</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">JSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">JSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">JSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">单库两表查询</td>
+<td align="left">JSdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库两表插入</td>
+<td align="left">JSdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库两表更新</td>
+<td align="left">JSdbMtUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="sharding-jdbc业务场景">Sharding-JDBC业务场景</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景&emsp;&emsp;&emsp;</th>
+<th align="left">场景缩写&emsp;&emsp;&emsp;&emsp;</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">SJSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">SJSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">SJSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">单库两表查询</td>
+<td align="left">SJSdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库两表插入</td>
+<td align="left">SJSdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库两表更新</td>
+<td align="left">SJSdbMtUpdate</td>
+</tr>
+
+<tr>
+<td align="left">两库各一表查询</td>
+<td align="left">SJMdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">两库各一表插入</td>
+<td align="left">SJMdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">两库各一表更新</td>
+<td align="left">SJMdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">两库各两表查询</td>
+<td align="left">SJMdbMtSelect</td>
+</tr>
+
+<tr>
+<td align="left">两库各两表插入</td>
+<td align="left">SJMdbMtInsert</td>
+</tr>
+
+<tr>
+<td align="left">两库各两表更新</td>
+<td align="left">SJMdbMtUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<p>所有测试场景共分为以下两大类，其中极限测试测试范围是全部场景，基准测试范围是以下场景：</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景&emsp;&emsp;&emsp;</th>
+<th align="left">场景缩写&emsp;&emsp;&emsp;&emsp;</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">JSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">JSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">JSdbStUpdate</td>
+</tr>
+
+<tr>
+<td align="left">单库单表查询</td>
+<td align="left">SJSdbStSelect</td>
+</tr>
+
+<tr>
+<td align="left">单库单表插入</td>
+<td align="left">SJSdbStInsert</td>
+</tr>
+
+<tr>
+<td align="left">单库单表更新</td>
+<td align="left">SJSdbStUpdate</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="测试方法">测试方法</h2>
+
+<p>基准测试：服务器资源充足，使用同样的并发线程数量，对比同样的业务场景<br>
+极限测试：服务器资源使用达到极限、TPS不再上升，对比JDBC和Sharding-JDBC分库分表</p>
+
+<h2 id="测试环境配置">测试环境配置</h2>
+
+<p>服务器配置</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">名称</th>
+<th align="left">硬件配置</th>
+<th align="left">软件配置</th>
+<th align="left">混合应用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">DB0</td>
+<td align="left">OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G*2_RAID1+600G*4_RAID10<br/>网卡：1000mbps</td>
+<td align="left">Mysql 5.7.13</td>
+<td align="left">否</td>
+</tr>
+
+<tr>
+<td align="left">DB1</td>
+<td align="left">OS：CentOS 6.6 64bit<br/>处理器：2C四核<br/>内存：32G<br/>存储：250G*2_RAID1+600G*4_RAID10<br/>网卡：1000mbps</td>
+<td align="left">Mysql 5.7.13</td>
+<td align="left">否</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="测试过程数据">测试过程数据</h2>
+
+<h2 id="基准测试">基准测试</h2>
+
+<h3 id="单库单表查询">单库单表查询</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表查询</td>
+<td align="left">7</td>
+<td align="left">493</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表查询</td>
+<td align="left">8</td>
+<td align="left">470</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/b-SdbSt-query-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/b-SdbSt-query-rt.png" alt="RT" /></p>
+
+<h3 id="单库单表更新">单库单表更新</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表更新</td>
+<td align="left">2</td>
+<td align="left">6682</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表更新</td>
+<td align="left">3</td>
+<td align="left">6303</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/b-SdbSt-update-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/b-SdbSt-update-rt.png" alt="RT" /></p>
+
+<h3 id="单库单表插入">单库单表插入</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表插入</td>
+<td align="left">2</td>
+<td align="left">6855</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表插入</td>
+<td align="left">2</td>
+<td align="left">6375</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/b-SdbSt-insert-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/b-SdbSt-insert-rt.png" alt="RT" /></p>
+
+<h2 id="极限测试">极限测试</h2>
+
+<h3 id="单库单表与两库各一表查询">单库单表与两库各一表查询</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表查询</td>
+<td align="left">7</td>
+<td align="left">1586</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表查询</td>
+<td align="left">7</td>
+<td align="left">1600</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各1表查询</td>
+<td align="left">13</td>
+<td align="left">2944</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbSt-MdbSt-query-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbSt-MdbSt-query-rt.png" alt="RT" /></p>
+
+<h3 id="单库两表与两库各两表查询">单库两表与两库各两表查询</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库两表查询</td>
+<td align="left">6</td>
+<td align="left">1736</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库两表查询</td>
+<td align="left">7</td>
+<td align="left">1732</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各两表查询</td>
+<td align="left">10</td>
+<td align="left">3331</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbMt-MdbMt-query-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbMt-MdbMt-query-rt.png" alt="RT" /></p>
+
+<h3 id="单库单表更新与两库各一表更新">单库单表更新与两库各一表更新</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间（ms）</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表更新</td>
+<td align="left">7</td>
+<td align="left">9548</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单更新</td>
+<td align="left">7</td>
+<td align="left">9263</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各1表更新</td>
+<td align="left">4</td>
+<td align="left">18561</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbSt-MdbSt-update-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbSt-MdbSt-update-rt.png" alt="RT" /></p>
+
+<h3 id="单库两表与两库各2表更新">单库两表与两库各2表更新</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库两表更新</td>
+<td align="left">7</td>
+<td align="left">9170</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库两表更新</td>
+<td align="left">7</td>
+<td align="left">8941</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各两表更新</td>
+<td align="left">5</td>
+<td align="left">17997</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbMt-MdbMt-update-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbMt-MdbMt-update-rt.png" alt="RT" /></p>
+
+<h3 id="单库单表插入与两库各一表插入">单库单表插入与两库各一表插入</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库单表插入</td>
+<td align="left">5</td>
+<td align="left">11182</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库单表插入</td>
+<td align="left">5</td>
+<td align="left">10882</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各1表插入</td>
+<td align="left">4</td>
+<td align="left">21414</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbSt-MdbSt-insert-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbSt-MdbSt-insert-rt.png" alt="RT" /></p>
+
+<h3 id="单库两表与两库各2表插入">单库两表与两库各2表插入</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">业务平均响应时间(ms)</th>
+<th align="left">业务TPS</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">JDBC单库两表插入</td>
+<td align="left">4</td>
+<td align="left">11574</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2单库两表插入</td>
+<td align="left">5</td>
+<td align="left">10849</td>
+</tr>
+
+<tr>
+<td align="left">Sharding-JDBC 1.5.2两库各两表插入</td>
+<td align="left">4</td>
+<td align="left">23043</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbMt-MdbMt-insert-tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/l-SdbMt-MdbMt-insert-rt.png" alt="RT" /></p>
+
+<h3 id="sharding-jdbc-1-4-2与1-5-2两库各一表对比">Sharding-JDBC 1.4.2与1.5.2两库各一表对比</h3>
+
+<table>
+<thead>
+<tr>
+<th align="left">业务场景</th>
+<th align="left">Sharding-JDBC 1.4.2&emsp;</th>
+<th align="left">Sharding-JDBC 1.5.2&emsp;&emsp;&emsp;</th>
+<th align="left">1.5.<sup>2</sup>&frasl;<sub>1</sub>.4.2&emsp;</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">查询</td>
+<td align="left">2934</td>
+<td align="left">2944</td>
+<td align="left">100.34%</td>
+</tr>
+
+<tr>
+<td align="left">更新</td>
+<td align="left">18454</td>
+<td align="left">18561</td>
+<td align="left">100.58%</td>
+</tr>
+
+<tr>
+<td align="left">插入</td>
+<td align="left">21045</td>
+<td align="left">21414</td>
+<td align="left">101.75%</td>
+</tr>
+</tbody>
+</table>
+
+<p>TPS展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/152vs142tps.png" alt="TPS" /></p>
+
+<p>RT展示</p>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/2.x/cn/img/152vs142rt.png" alt="RT" /></p>
+
+<h2 id="附录">附录</h2>
+
+<p>本次测试，共使用两台数据库服务器，每台服务器上分别有1库，每个库中分别有2个主表，2个子表</p>
+
+<h3 id="建表语句说明">建表语句说明</h3>
+
+<p>主表结构如下：</p>
+
+<pre><code class="language-sql">order_0 | CREATE TABLE `order_0` (
+  `id` bigint(50) NOT NULL AUTO_INCREMENT,
+  `order_id` varchar(50) NOT NULL,
+  `order_type` int(11) DEFAULT NULL,
+  `cust_id` int(11) DEFAULT NULL,
+  `cust_type` int(11) DEFAULT NULL,
+  `cust_email` varchar(50) DEFAULT NULL,
+  `payment_method_type` int(11) DEFAULT NULL,
+  `payment_provider_id` int(11) DEFAULT NULL,
+  `shipping_method_type` int(11) DEFAULT NULL,
+  `packing_type` int(11) DEFAULT NULL,
+  `preferred_shipping_time_type` int(11) DEFAULT NULL,
+  `receiver_name` varchar(100) DEFAULT NULL,
+  `receiver_address` varchar(200) DEFAULT NULL,
+  `receiver_country_id` int(11) DEFAULT NULL,
+  `receiver_province_id` int(11) DEFAULT NULL,
+  `receiver_city_id` int(11) DEFAULT NULL,
+  `receiver_zip` varchar(20) DEFAULT NULL,
+  `receiver_tel` varchar(50) DEFAULT NULL,
+  `receiver_mobile_tel` varchar(50) DEFAULT NULL,
+  `cust_message` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `index_id` (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5189307 DEFAULT CHARSET=gbk 
+</code></pre>
+
+<p>子表结构如下</p>
+
+<pre><code class="language-sql">ordert_0 | CREATE TABLE `ordert_0` (
+  `idm` bigint(50) NOT NULL,
+  `id` int(10) DEFAULT NULL,
+  `order_idm` varchar(50) DEFAULT NULL,
+  `order_typem` int(11) DEFAULT NULL,
+  `cust_idm` int(11) DEFAULT NULL,
+  `cust_typem` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=gbk ROW_FORMAT=DYNAMIC
+</code></pre>
+
+<h3 id="sql语句说明">SQL语句说明</h3>
+
+<p>JDBC 插入</p>
+
+<pre><code class="language-sql">insert 
+into order_?(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
+</code></pre>
+
+<p>JDBC 查询</p>
+
+<pre><code class="language-sql">select a.id,order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order_? a,ordert_? b where a.id=? and a.id%100=b.idm%100;
+</code></pre>
+
+<p>JDBC 更新</p>
+
+<pre><code class="language-sql">Update order_? SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
+</code></pre>
+
+<p>Sharding-JDBC 插入</p>
+
+<pre><code class="language-sql">INSERT INTO `order`(order_id,order_type,cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message) VALUES (?, 0, 10, 1, 'dtest002@dangdang.com', 1, 6, 1, 0, 3, 'ttt ttt', 'beijingshijinganzhongxin', 9000, 111, 1, '100011', '51236117', ' ', ' ');
+</code></pre>
+
+<p>Sharding-JDBC 查询</p>
+
+<pre><code class="language-sql">select cust_id,cust_type,cust_email,payment_method_type,payment_provider_id,shipping_method_type,packing_type,preferred_shipping_time_type,receiver_name,receiver_address,receiver_country_id,receiver_province_id,receiver_city_id,receiver_zip,receiver_tel,receiver_mobile_tel,cust_message from order a,order_item b where a.id=? and a.id%100=b.idm%100;
+</code></pre>
+
+<p>Sharding-JDBC 更新</p>
+
+<pre><code class="language-sql">update order SET order_id=?,order_type=0,cust_id=10,cust_type=1,cust_email='dtest002@dangdang.com' where id=?;
+</code></pre>
+
+
+      
+      
+      </div>
+    </div>
+
+    
+
+    <div id="navigation">
+        
+        <a class="nav nav-prev" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/01-start/sql-supported/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="http://shardingsphere.apache.org/document/legacy/2.x/cn/02-guide/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/clipboard.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/perfect-scrollbar.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/jquery.sticky-kit.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/featherlight.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/html5shiv-printshiv.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/learn.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/2.x/cn/js/hugo-learn.js"></script>
+    <script src="http://cdn.bootcss.com/highlight.js/9.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
+

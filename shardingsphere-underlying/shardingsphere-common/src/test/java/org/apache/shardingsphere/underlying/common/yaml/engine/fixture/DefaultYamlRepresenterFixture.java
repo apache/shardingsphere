@@ -32,4 +32,6 @@ public final class DefaultYamlRepresenterFixture {
     private Collection<String> collection;
     
     private Map<String, String> map;
+    
+    private FixtureCustomClass customClass;
 }

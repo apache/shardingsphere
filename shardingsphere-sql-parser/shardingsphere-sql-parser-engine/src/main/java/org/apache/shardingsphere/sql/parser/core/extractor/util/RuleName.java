@@ -121,6 +121,8 @@ public enum RuleName {
     
     BOOLEAN_LITERALS("BooleanLiterals"),
     
+    NULL_LITERALS("NullValueLiterals"),
+    
     EXPR("Expr"),
     
     SIMPLE_EXPR("SimpleExpr"),
@@ -161,7 +163,85 @@ public enum RuleName {
 
     LOCK_CLAUSE("LockClause"),
     
-    TOP("Top");
+    TOP("Top"),
+    
+    SELECT("Select"),
+    
+    INSERT("Insert"),
+    
+    UPDATE("Update"),
+    
+    DELETE("Delete"),
+    
+    REPLACE("Replace"),
+    
+    CREATE_TABLE("CreateTable"),
+    
+    ALTER_TABLE("AlterTable"),
+    
+    DROP_TABLE("DropTable"),
+    
+    TRUNCATE_TABLE("TruncateTable"),
+    
+    CREATE_INDEX("CreateIndex"),
+    
+    DROP_INDEX("DropIndex"),
+    
+    SET_TRANSACTION("SetTransaction"),
+    
+    BEGIN_TRANSACTION("BeginTransaction"),
+    
+    SET_AUTOCOMMIT("SetAutoCommit"),
+    
+    COMMIT("Commit"),
+    
+    ROLLBACK("Rollback"),
+    
+    SAVE_POINT("Savepoint"),
+    
+    GRANT("Grant"),
+    
+    REVOKE("Revoke"),
+    
+    CREATE_USER("CreateUser"),
+    
+    DROP_USER("DropUser"),
+    
+    ALTER_USER("AlterUser"),
+    
+    RENAME_USER("RenameUser"),
+    
+    CREATE_ROLE("CreateRole"),
+    
+    DROP_ROLE("DropRole"),
+    
+    SET_DEFAULT_ROLE("SetDefaultRole"),
+    
+    SET_ROLE("SetRole"),
+    
+    SET_PASSWORD("SetPassword"),
+    
+    USE("Use"),
+    
+    DESC("Desc"),
+    
+    SHOW_DATABASES("ShowDatabases"),
+    
+    SHOW_TABLES("ShowTables"),
+    
+    SHOW_TABLE_STATUS("ShowTableStatus"),
+    
+    SHOW_COLUMNS("ShowColumns"),
+    
+    SHOW_INDEX("ShowIndex"),
+    
+    SHOW_CREATE_TABLE("ShowCreateTable"),
+    
+    SHOW_OTHER("ShowOther"),
+    
+    SET_VARIABLE("SetVariable"),
+    
+    CALL("Call");
     
     private final String name;
     

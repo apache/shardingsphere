@@ -32,7 +32,5 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String DATA_SOURCE_REF_TAG = "data-source-ref";
     
-    public static final String REG_REF_TAG = "registry-center-ref";
-    
-    public static final String OVERWRITE_TAG = "overwrite";
+    public static final String INSTANCE_REF_TAG = "instance-ref";
 }

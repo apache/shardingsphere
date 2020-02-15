@@ -53,7 +53,7 @@ hexadecimalLiterals
 bitValueLiterals
     : characterSetName_? BIT_NUM_ collateClause_?
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -62,17 +62,16 @@ nullValueLiterals
     : NULL
     ;
 
+characterSetName_
+    : IDENTIFIER_
+    ;
+
+collationName_
+   : IDENTIFIER_
+   ;
+
 identifier
     : IDENTIFIER_ | unreservedWord_
-    ;
-
-variable_
-    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
-    ;
-
-scope_
-    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
-    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
     ;
 
 unreservedWord_
@@ -107,8 +106,11 @@ unreservedWord_
     | IMPORT | CONCURRENT | XML | POSITION | SHARE | DUMPFILE | CLONE | AGGREGATE | INSTALL | UNINSTALL
     | RESOURCE | FLUSH | RESET | RESTART | HOSTS | RELAY | EXPORT | USER_RESOURCES | SLOW | GENERAL | CACHE
     | SUBJECT | ISSUER | OLD | RANDOM | RETAIN | MAX_USER_CONNECTIONS | MAX_CONNECTIONS_PER_HOUR | MAX_UPDATES_PER_HOUR
-    | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | UNIX_TIMESTAMP | LOWER | UPPER | CONTEXT
-    | CODE | CHANNEL | SOURCE
+    | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | CONTEXT | CODE | CHANNEL | SOURCE
+    ;
+
+variable_
+    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
     ;
 
 schemaName
@@ -121,6 +123,10 @@ tableName
 
 columnName
     : (owner DOT_)? name
+    ;
+
+indexName
+    : identifier
     ;
 
 userName
@@ -163,25 +169,13 @@ name
     : identifier
     ;
 
-columnNames
-    : LP_? columnName (COMMA_ columnName)* RP_?
-    ;
-
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
     ;
 
-indexName
-    : identifier
+columnNames
+    : LP_? columnName (COMMA_ columnName)* RP_?
     ;
-
-characterSetName_
-    : IDENTIFIER_
-    ;
-
-collationName_
-   : IDENTIFIER_
-   ;
 
 groupName
     : IDENTIFIER_
@@ -306,8 +300,8 @@ bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | bitExpr PLUS_ intervalExpression_
-    | bitExpr MINUS_ intervalExpression_
+    | bitExpr PLUS_ intervalExpression
+    | bitExpr MINUS_ intervalExpression
     | simpleExpr
     ;
 
@@ -325,11 +319,11 @@ simpleExpr
     | LBE_ identifier expr RBE_
     | matchExpression_
     | caseExpression_
-    | intervalExpression_
+    | intervalExpression
     ;
 
 functionCall
-    : aggregationFunction | specialFunction_ | regularFunction_ 
+    : aggregationFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -374,41 +368,41 @@ frameBetween_
     : BETWEEN frameStart_ AND frameEnd_
     ;
 
-specialFunction_
-    : groupConcatFunction_ | windowFunction_ | castFunction_ | convertFunction_ | positionFunction_ | substringFunction_ | extractFunction_ 
-    | charFunction_ | trimFunction_ | weightStringFunction_ | valuesFunction_
+specialFunction
+    : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
+    | charFunction | trimFunction_ | weightStringFunction | valuesFunction_
     ;
 
-groupConcatFunction_
+groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
 
-windowFunction_
+windowFunction
     : identifier LP_ expr (COMMA_ expr)* RP_ overClause_
     ;
 
-castFunction_
+castFunction
     : CAST LP_ expr AS dataType RP_
     ;
 
-convertFunction_
+convertFunction
     : CONVERT LP_ expr COMMA_ dataType RP_
     | CONVERT LP_ expr USING identifier RP_ 
     ;
 
-positionFunction_
+positionFunction
     : POSITION LP_ expr IN expr RP_
     ;
 
-substringFunction_
+substringFunction
     :  (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
     ;
 
-extractFunction_
+extractFunction
     : EXTRACT LP_ identifier FROM expr RP_
     ;
 
-charFunction_
+charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier_)? RP_
     ;
 
@@ -420,7 +414,7 @@ valuesFunction_
     : VALUES LP_ columnName RP_
     ;
 
-weightStringFunction_
+weightStringFunction
     : WEIGHT_STRING LP_ expr (AS dataType)? levelClause_? RP_
     ;
 
@@ -432,7 +426,7 @@ levelInWeightListElement_
     : NUMBER_ (ASC | DESC)? REVERSE?
     ;
 
-regularFunction_
+regularFunction
     : regularFunctionName_ LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
@@ -451,8 +445,8 @@ regularFunctionName_
     | ST_MULTIPOLYGONFROMWKB | ST_NUMGEOMETRIES | ST_NUMINTERIORRING | ST_NUMINTERIORRINGS | ST_NUMPOINTS | ST_OVERLAPS | ST_POINTFROMGEOHASH
     | ST_POINTFROMTEXT | ST_POINTFROMWKB | ST_POINTN | ST_POLYFROMTEXT | ST_POLYFROMWKB | ST_POLYGONFROMTEXT | ST_POLYGONFROMWKB | ST_SIMPLIFY
     | ST_SRID | ST_STARTPOINT | ST_SWAPXY | ST_SYMDIFFERENCE | ST_TOUCHES | ST_TRANSFORM | ST_UNION | ST_VALIDATE | ST_WITHIN | ST_X | ST_Y
-    | TIME | TIMEDIFF | TIMESTAMP | TIMESTAMPADD | TIMESTAMPDIFF | TIME_FORMAT | TIME_TO_SEC
-    | AES_DECRYPT | AES_ENCRYPT | FROM_BASE64 | TO_BASE64
+    | TIME | TIMEDIFF | TIMESTAMP | TIMESTAMPADD | TIMESTAMPDIFF | TIME_FORMAT | TIME_TO_SEC | AES_DECRYPT | AES_ENCRYPT | FROM_BASE64 | TO_BASE64
+    | ADDDATE | ADDTIME | DATE | DATE_ADD | DATE_SUB |
     ;
 
 matchExpression_
@@ -475,7 +469,7 @@ caseElse_
     : ELSE expr
     ;
 
-intervalExpression_
+intervalExpression
     : INTERVAL expr intervalUnit_
     ;
 
@@ -498,10 +492,10 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-dataTypeName_
+dataTypeName
     : identifier identifier?
     ;
 

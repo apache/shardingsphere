@@ -70,23 +70,21 @@
     <sql-case id="alter_index_with_quota" value="ALTER INDEX &quot;order_index&quot; REBUILD PARALLEL" db-types="Oracle" />
     <sql-case id="alter_table_with_row_level" value="ALTER TABLE t_order FORCE ROW LEVEL SECURITY" db-types="PostgreSQL" />
     <sql-case id="alter_table_with_double_quota" value="ALTER TABLE &quot;t_order&quot; FORCE ROW LEVEL SECURITY" db-types="PostgreSQL" />
-    <sql-case id="alter_table_alter_column" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20)" db-types="PostgreSQL" />
     <sql-case id="alter_table_alter_columns" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20), ALTER column5 TYPE VARCHAR(20), ALTER column6 TYPE VARCHAR(20)" db-types="PostgreSQL" />    
     <sql-case id="alter_table_add_foreign_key_with_cascade" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="PostgreSQL" />
     <sql-case id="alter_table_drop_constraints_postgresql" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, DROP CONSTRAINT uk_order_id, DROP CONSTRAINT order_index" db-types="PostgreSQL" />
     <sql-case id="alter_table_rename_constraints" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="PostgreSQL" />
     <sql-case id="alter_table_rename_table" value="ALTER TABLE t_order RENAME to t_order1" db-types="PostgreSQL" />
     <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME COLUMN user_id to user_id1" db-types="PostgreSQL" />
-    <!--  
-    <sql-case id="create_table_with_exist_index" value="ALTER TABLE t_order ADD PRIMARY KEY USING INDEX order_index" db-types="PostgreSQL" />
-    -->
+    <sql-case id="alter_table_with_exist_index" value="ALTER TABLE t_order ADD PRIMARY KEY USING INDEX order_index" db-types="PostgreSQL" />
     <sql-case id="alter_table_with_bracket" value="ALTER TABLE [t_order] REBUILD" db-types="SQLServer" />
     <sql-case id="alter_table_add_columns_sqlserver" value="ALTER TABLE t_order ADD column4 VARCHAR(10), column5 VARCHAR(10), column6 VARCHAR(10)" db-types="SQLServer" />
-    <sql-case id="alter_table_alter_column" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
     <sql-case id="alter_table_drop_columns_sqlserver" value="ALTER TABLE t_order DROP COLUMN user_id, column5" db-types="SQLServer" />
     <sql-case id="alter_table_add_composite_primary_key_sqlserver" value="ALTER TABLE t_order ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="SQLServer" />    
     <sql-case id="alter_table_add_constraints_sqlserver" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id), UNIQUE (order_id), CHECK (order_id > 0), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="SQLServer" />
     <sql-case id="alter_table_drop_constraints_sqlserver" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, uk_order_id, order_index" db-types="SQLServer" />    
     <sql-case id="alter_index_rebuild" value="ALTER INDEX order_index ON t_order REBUILD" db-types="SQLServer" />
     <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [order_index] ON [t_order] REBUILD" db-types="SQLServer" />
+    <sql-case id="alter_table_alter_column_for_postgresql" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
 </sql-cases>

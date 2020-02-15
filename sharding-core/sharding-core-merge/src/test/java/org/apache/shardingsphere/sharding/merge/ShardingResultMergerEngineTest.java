@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge;
 
 import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -32,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
@@ -60,16 +61,16 @@ public final class ShardingResultMergerEngineTest {
     @Test
     public void assertNewInstanceWithDALStatement() {
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new DALStatement());
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new ShowStatement());
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
     @Test
     public void assertNewInstanceWithOtherStatement() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
+        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl", QuoteCharacter.NONE));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
-        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, "col"));
+        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, "col", QuoteCharacter.NONE));
         insertStatement.setColumns(insertColumnsSegment);
         SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.generic;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -59,8 +60,8 @@ public final class AbstractSQLStatementTest {
     
     private SQLStatement createSQLStatement() {
         SQLStatement result = new SelectStatement();
-        result.getAllSQLSegments().add(new TableSegment(0, 0, "tbl1"));
-        result.getAllSQLSegments().add(new TableSegment(0, 0, "tbl2"));
+        result.getAllSQLSegments().add(new TableSegment(0, 0, "tbl1", QuoteCharacter.NONE));
+        result.getAllSQLSegments().add(new TableSegment(0, 0, "tbl2", QuoteCharacter.NONE));
         return result;
     }
 }

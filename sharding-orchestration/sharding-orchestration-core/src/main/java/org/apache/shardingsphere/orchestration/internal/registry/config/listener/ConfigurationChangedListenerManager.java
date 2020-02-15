@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 
 import java.util.Collection;
 
@@ -27,6 +27,7 @@ import java.util.Collection;
  *
  * @author zhangliang
  * @author panjuan
+ * @author wangguangyuan
  */
 public final class ConfigurationChangedListenerManager {
     
@@ -36,10 +37,10 @@ public final class ConfigurationChangedListenerManager {
     
     private final AuthenticationChangedListener authenticationChangedListener;
     
-    public ConfigurationChangedListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
-        schemaChangedListener = new SchemaChangedListener(name, regCenter, shardingSchemaNames);
-        propertiesChangedListener = new PropertiesChangedListener(name, regCenter);
-        authenticationChangedListener = new AuthenticationChangedListener(name, regCenter);
+    public ConfigurationChangedListenerManager(final String name, final ConfigCenter configCenter, final Collection<String> shardingSchemaNames) {
+        schemaChangedListener = new SchemaChangedListener(name, configCenter, shardingSchemaNames);
+        propertiesChangedListener = new PropertiesChangedListener(name, configCenter);
+        authenticationChangedListener = new AuthenticationChangedListener(name, configCenter);
     }
     
     /**

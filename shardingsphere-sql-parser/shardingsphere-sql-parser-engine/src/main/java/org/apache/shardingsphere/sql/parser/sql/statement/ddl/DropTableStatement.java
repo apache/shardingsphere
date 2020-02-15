@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
@@ -30,6 +31,7 @@ import java.util.LinkedList;
  * @author zhangliang
  */
 @Getter
+@Setter
 public final class DropTableStatement extends DDLStatement implements TableSegmentsAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();

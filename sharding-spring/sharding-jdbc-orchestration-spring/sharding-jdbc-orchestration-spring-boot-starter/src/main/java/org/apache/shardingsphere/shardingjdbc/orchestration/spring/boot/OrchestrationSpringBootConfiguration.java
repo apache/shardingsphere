@@ -19,36 +19,43 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.swapper.InstanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootPropertiesConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.common.SpringBootRootConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.LocalEncryptRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.encrypt.SpringBootEncryptRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.LocalMasterSlaveRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave.SpringBootMasterSlaveRuleConfigurationProperties;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.orchestration.SpringBootOrchestrationConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.LocalShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetter;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
@@ -63,14 +70,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Orchestration spring boot configuration.
@@ -83,8 +84,7 @@ import java.util.Map;
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, SpringBootMasterSlaveRuleConfigurationProperties.class,
-        SpringBootPropertiesConfigurationProperties.class, SpringBootOrchestrationConfigurationProperties.class,
-        SpringBootEncryptRuleConfigurationProperties.class})
+        SpringBootRootConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
@@ -97,11 +97,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final SpringBootEncryptRuleConfigurationProperties encryptRule;
     
-    private final SpringBootPropertiesConfigurationProperties props;
+    private final SpringBootRootConfigurationProperties root;
     
-    private final SpringBootOrchestrationConfigurationProperties orchestrationRule;
-    
-    private final OrchestrationConfigurationYamlSwapper orchestrationSwapper = new OrchestrationConfigurationYamlSwapper();
+    private final InstanceConfigurationYamlSwapper instanceConfigurationYamlSwapper = new InstanceConfigurationYamlSwapper();
     
     /**
      * Get orchestration configuration.
@@ -110,12 +108,16 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
      */
     @Bean
     public OrchestrationConfiguration orchestrationConfiguration() {
-        Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration name");
-        return orchestrationSwapper.swap(orchestrationRule);
+        Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
+        Map<String, InstanceConfiguration> instanceConfigurationMap = Maps.newHashMapWithExpectedSize(root.getOrchestration().size());
+        for (Map.Entry<String, YamlInstanceConfiguration> entry : root.getOrchestration().entrySet()) {
+            instanceConfigurationMap.put(entry.getKey(), instanceConfigurationYamlSwapper.swap(entry.getValue()));
+        }
+        return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
     private boolean isValidOrchestrationConfiguration() {
-        return !Strings.isNullOrEmpty(orchestrationRule.getName());
+        return !CollectionUtils.isEmpty(root.getOrchestration());
     }
     
     /**
@@ -129,7 +131,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Conditional(LocalShardingRuleCondition.class)
     public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(this.shardingRule), dataSourceMap.keySet());
-        return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, shardingRule, props.getProps()), orchestrationConfiguration);
+        return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, shardingRule, root.getProps()), orchestrationConfiguration);
     }
     
     /**
@@ -143,7 +145,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Conditional(LocalMasterSlaveRuleCondition.class)
     public DataSource masterSlaveDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule);
-        return new OrchestrationMasterSlaveDataSource(new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), props.getProps()), orchestrationConfiguration);
+        return new OrchestrationMasterSlaveDataSource(new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), root.getProps()), orchestrationConfiguration);
     }
     
     /**
@@ -158,7 +160,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     public DataSource encryptDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swap(encryptRule);
         return new OrchestrationEncryptDataSource(
-                new EncryptDataSource(dataSourceMap.values().iterator().next(), new EncryptRule(encryptRuleConfig), props.getProps()), orchestrationConfiguration);
+                new EncryptDataSource(dataSourceMap.values().iterator().next(), new EncryptRule(encryptRuleConfig), root.getProps()), orchestrationConfiguration);
     }
     
     /**

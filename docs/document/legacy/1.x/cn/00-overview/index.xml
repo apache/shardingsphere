@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>00-overviews on </title>
+    <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</link>
+    <description>Recent content in 00-overviews on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	<atom:link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>概览</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/</guid>
+      <description>概述 &amp;nbsp; &amp;nbsp; &amp;nbsp; 
+Sharding-JDBC是一个开源的适用于微服务的分布式数据访问基础类库，它始终以云原生的基础开发套件为目标。
+Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式，可理解为增强版的JDBC驱动，旧代码迁移成本几乎为零。
+Sharding-JDBC完整的实现了分库分表，读写分离和分布式主键功能，并初步实现了柔性事务。从2016年开源至今，在经历了整体架构的数次精炼以及稳定性打磨后，如今它已积累了足够的底蕴，相信可以成为开发者选择技术组件时的一个参考。
+   
+功能列表 1. 分库分表  SQL解析功能完善，支持聚合，分组，排序，LIMIT，TOP等查询，并且支持级联表以及笛卡尔积的表查询 支持内、外连接查询 分片策略灵活，可支持=，BETWEEN，IN等多维度分片，也可支持多分片键共用，以及自定义分片策略 基于Hint的强制分库分表路由  2. 读写分离  一主多从的读写分离配置，可配合分库分表使用 基于Hint的强制主库路由  3. 柔性事务  最大努力送达型事务 TCC型事务(TBD)  4. 分布式主键  统一的分布式基于时间序列的ID生成器  5. 兼容性  可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL  6. 灵活多样的配置  Java Spring命名空间 YAML Inline表达式  交流与参与  官方群： 532576663（仅限于讨论与Sharding-JDBC相关的话题。我们希望您在入群前仔细阅读文档。并在入群后阅读公告以及修改群名片。谢谢合作。） 源码交流群： 659205143（仅限于讨论与Sharding-JDBC源码实现相关的话题。我们欢迎您在这里与我们交流Sharding-JDBC的架构设计、代码实现以及未来线路规划。此群需要对Sharding-JDBC有先期了解。入群资格：请发布一篇关于Sharding-JDBC的源码分析的文章并将链接通过官方交流群发送给我们。） 报告确定的bug，提交增强功能建议和提交补丁等，请阅读如何进行贡献。  使用Sharding-JDBC的公司如果方便请留下公司+网址 https://github.</description>
+    </item>
+    
+    <item>
+      <title>简介</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/</guid>
+      <description>Sharding-JDBC直接封装JDBC API，可以理解为增强版的JDBC驱动，旧代码迁移成本几乎为零：
+ 可适用于任何基于java的ORM框架，如：JPA, Hibernate, Mybatis, Spring JDBC Template或直接使用JDBC。 可基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid等。 理论上可支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。  Sharding-JDBC定位为轻量级java框架，使用客户端直连数据库，以jar包形式提供服务，未使用中间层，无需额外部署，无其他依赖，DBA也无需改变原有的运维方式。采用&amp;rdquo;半理解&amp;rdquo;理念的SQL解析引擎，以达到性能与兼容性的最大平衡。
+Sharding-JDBC功能灵活且全面：
+ 分片策略灵活，可支持=，BETWEEN，IN等多维度分片，也可支持多分片键共用。 SQL解析功能完善，支持聚合，分组，排序，Limit，TOP等查询，并且支持Binding Table以及笛卡尔积的表查询。 支持柔性事务(目前仅最大努力送达型)。 支持读写分离。 支持分布式生成全局主键。  Sharding-JDBC配置多样：
+ 可支持YAML和Spring命名空间配置 灵活多样的inline方式  整体架构图 快速入门 引入maven依赖 &amp;lt;!-- 引入sharding-jdbc核心模块 --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.dangdang&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${latest.release.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  规则配置 Sharding-JDBC的分库分表通过规则配置描述，请简单浏览配置全貌：
+ShardingRule shardingRule = ShardingRule.builder() .dataSourceRule(dataSourceRule) .tableRules(tableRuleList) .databaseShardingStrategy(new DatabaseShardingStrategy(&amp;quot;sharding_column&amp;quot;, new XXXShardingAlgorithm())) .tableShardingStrategy(new TableShardingStrategy(&amp;quot;sharding_column&amp;quot;, new XXXShardingAlgorithm()))) .build();  规则配置包括数据源配置、表规则配置、分库策略和分表策略组成。这只是最简单的配置方式，实际使用可更加灵活，如：多分片键，分片策略直接和表规则配置绑定等。
+使用原生JDBC接口 通过ShardingDataSourceFactory工厂和规则配置对象获取ShardingDataSource，ShardingDataSource实现自JDBC的标准接口DataSource。然后可通过DataSource选择使用原生JDBC开发，或者使用JPA, MyBatis等ORM工具。 以JDBC原生实现为例：
+DataSource dataSource = ShardingDataSourceFactory.createDataSource(shardingRule); String sql = &amp;quot;SELECT i.</description>
+    </item>
+    
+    <item>
+      <title>新闻</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/</guid>
+      <description> 新闻  2017-07 InfoQ新闻：分布式数据库中间件Sharding-JDBC 1.5.0发布——自研SQL解析引擎+全数据库支持里程碑版本 2017-07 芋艿V的博客：Sharding-JDBC 源码分析 2017-07 DBAPlus分享：轻量级数据库中间件利器Sharding-JDBC深度解析 2017-03 开源中国高手问答：高手问答第144期—轻量级数据库中间层 Sharding-JDBC 深度解析 2016-06 InfoQ文章：Sharding-JDBC 1.3.0发布——支持读写分离 2016-02 CSDN文章：解读分库分表中间件Sharding-JDBC 2016-01 InfoQ新闻：当当开源sharding-jdbc，轻量级数据库分库分表中间件  </description>
+    </item>
+    
+    <item>
+      <title>采用公司</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/</guid>
+      <description> 采用公司（统计中） 公司排名不分先后，按拼音顺序排名
+佰昌科技 当当 东方车联 非凡之星 凤凰汽车 欢聚时代YY 家视天下 客如云 男衣库 Q堡直播 权大师 视觉中国 食蚁兽 搜好货 搜狐资讯 TCL 特微智能 唯品会 小牛在线 义乌购 御馔企业 中策车空间 转转公司 真信认知科技 足记 </description>
+    </item>
+    
+    <item>
+      <title>贡献代码</title>
+      <link>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/</guid>
+      <description>您可以报告bug，提交一个新的功能增强建议或者直接对以上内容提交改进补丁。
+报告bug 本章节介绍如何提交一个bug。
+报告一个新bug之前  确定在最新版本中该bug存在。我们将不会持续维护所有的发布版本，所有的修改仅根据当前版本。 确认该bug是可以复现的。请尽量提供完整的重现步骤。 请确定这不是一个重复的bug。 查看Issue Page列表，搜索您要提交的bug是否已经被报告过。  如何提交一个有质量的bug 请在Issue Page页面中提交bug。
+ 使用一个清晰并有描述性的标题来定义bug。 详细的描述复现bug的步骤。包括您使用的SQL，配置情况，预计产生的结果，实际产生的结果。并附加详细的TRACE日志。 如果程序抛出异常，请附加完整的堆栈日志。 如有可能，请附上屏幕截图或动态的GIF图，这些图片能帮助演示整个问题的产生过程。 如果涉及性能问题，请附加上CPU，内存或网络磁盘IO的Profile截图。 说明适用的版本，只有release版本的bug才可以提交，并且应该是当前最新版本。 说明适用的操作系统，及其版本。 使用bug标签(Label)来标记这个issue。  以下是bug的Markdown模板，请按照该模板填写issue。
+[问题简单描述] **问题复现步骤:** 1. [第一步] 2. [第二步] 3. [其他步骤...] **期望的表现:** [在这里描述期望的表现] **观察到的表现:** [在这里描述观察到的表现] **屏幕截图和动态GIF图** ![复现步骤的屏幕截图和动态GIF图](图片的url) **Sharding-JDBC版本:** [输入Sharding-JDBC的版本] **操作系统及版本:** [输入操作系统及版本]  提交功能增强建议 本章节介绍如何提交一个功能增强建议。
+提交一个功能增强建议之前  请先检查详细功能列表。 请确定这不是一个重复的功能增强建议。 查看Issue Page列表，搜索您要提交的功能增强建议是否已经被提交过。  如何提交一个好的功能增强建议 请在Issue Page页面中提交功能增强建议。
+ 使用一个清晰并有描述性的标题来定义增强建议。 详细描述增强功能的行为模式。 解释说明为什么该功能是对大多数用户是有用的。新功能应该具有广泛的适用性。 如有可能，可以列出其他数据库中间已经具备的类似功能。商用与开源软件均可。 使用enhancement标签(Label)来标记这个issue。  以下是功能增强建议的Markdown模板，请按照该模板填写issue。
+[简单的建议描述] **建议的新功能行为** [描述新功能应表现的行为模式] **为什么这个新功能是对大多数用户有用的** [解释这个功能为什么对大多数用户是有用的] [列出其他的数据库中间件是否包含该功能，且如何实现的]  贡献补丁(patch) 本章节向贡献者介绍开发规范、环境、示例和文档。</description>
+    </item>
+    
+  </channel>
+</rss>

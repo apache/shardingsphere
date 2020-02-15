@@ -24,5 +24,5 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLSta
  *
  * @author panjuan
  */
-public final class DCLStatement extends AbstractSQLStatement {
+public abstract class DCLStatement extends AbstractSQLStatement {
 }

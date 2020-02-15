@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="cn" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="https://shardingsphere.apache.org/document/legacy/3.x/document/img/favicon.png" type="image/x-icon" />
+
+    <title>测试引擎 :: ShardingSphere</title>
+    
+    
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/nucleus.css?1547543308" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/font-awesome.min.css?1547543308" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/hybrid.css?1547543308" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/featherlight.min.css?1547543308" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/perfect-scrollbar.min.css?1547543308" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/auto-complete.css?1547543308" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/theme.css?1547543308" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/hugo-theme.css?1547543308" rel="stylesheet">
+    
+      <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/css/theme-black.css?1547543308" rel="stylesheet">
+    
+
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/jquery-2.x.min.js?1547543308"></script>
+    
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{ 
+          display:none !important;
+      }
+      
+    </style>
+    
+
+  </head>
+  <body class="" data-url="/cn/contribute/test-engine/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="https://shardingsphere.apache.org/document/legacy/3.x/document/img/logo_v2.png" />
+
+    </div>
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/contribute/" title="参与和贡献" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/">
+          <b>1. </b>参与和贡献
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/contribute/subscribe/" title="订阅指南" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/subscribe/">
+        订阅指南
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/contribute/contributor/" title="贡献者指南" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/contributor/">
+        贡献者指南
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/contribute/committer/" title="提交者指南" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/committer/">
+        提交者指南
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/contribute/2fa/" title="2FA" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/2fa/">
+        2FA
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/contribute/code-conduct/" title="开发规范" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/code-conduct/">
+        开发规范
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/contribute/external-dependency/" title="外部依赖" class="dd-item ">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/external-dependency/">
+        外部依赖
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/cn/contribute/test-engine/" title="测试引擎" class="dd-item active">
+        <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/test-engine/">
+        测试引擎
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/cn/company/" title="采用公司" class="dd-item 
+        
+        
+        
+        ">
+      <a href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/company/">
+          <b>2. </b>采用公司
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fa fa-fw fa-language"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+<option id="en" value="/community/en/contribute/test-engine/">English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+<option id="cn" value="/community/cn/contribute/test-engine/" selected>Chinese</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+       
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <p></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fa fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='https://shardingsphere.apache.org/document/legacy/3.x/community/cn/'>ShardingSphere</a> > <a href='https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/'>参与和贡献</a> > 测试引擎
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li><a href="#整合测试">整合测试</a>
+<ul>
+<li><a href="#测试环境">测试环境</a></li>
+<li><a href="#注意事项">注意事项</a></li>
+</ul></li>
+<li><a href="#sql解析引擎测试">SQL解析引擎测试</a>
+<ul>
+<li><a href="#测试环境-1">测试环境</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>测试引擎</h1>
+          
+
+        
+
+
+
+
+<p>ShardingSphere提供了完善的测试引擎。它以XML方式定义SQL，每条SQL由SQL解析单元测试引擎和整合测试引擎驱动，每个引擎分别为H2、MySQL、PostgreSQL、SQLServer和Oracle数据库运行测试用例。</p>
+
+<p>SQL解析单元测试全面覆盖SQL占位符和字面量维度。整合测试进一步拆分为策略和JDBC两个维度，策略维度包括分库分表、仅分表、仅分库、读写分离等策略，JDBC维度包括Statement、PreparedStatement。</p>
+
+<p>因此，1条SQL会驱动5种数据库的解析 * 2种参数传递类型 + 5种数据库 * 5种分片策略 * 2种JDBC运行方式 = 60个测试用例，以达到ShardingSphere对于高质量的追求。</p>
+
+<h1 id="整合测试">整合测试</h1>
+
+<h2 id="测试环境">测试环境</h2>
+
+<p>整合测试由于涉及到真实数据库环境，需要先完成以下准备工作并测试：</p>
+
+<ol>
+<li><p>在准备测试的数据库上运行<code>resources/integrate/schema/manual_schema_create.sql</code>创建数据库(MySQL、PostgreSQL、SQLServer)及Schema（仅Oracle）。</p></li>
+
+<li><p>修改<code>sharding-jdbc/src/test/resources/integrate/env.properties中的databases</code>，指定需要测试的数据库。</p></li>
+
+<li><p>运行<code>AllIntegrateTests</code>，检查测试结果。</p></li>
+</ol>
+
+<h2 id="注意事项">注意事项</h2>
+
+<ol>
+<li><p>如需测试Oracle，请在pom.xml中增加Oracle驱动依赖。</p></li>
+
+<li><p>为了保证测试数据的完整性，整合测试中的分库分表采用了10库10表的方式，因此运行测试用例的时间会比较长。</p></li>
+</ol>
+
+<h1 id="sql解析引擎测试">SQL解析引擎测试</h1>
+
+<h2 id="测试环境-1">测试环境</h2>
+
+<p>SQL解析引擎测试是基于SQL本身的解析，因此无需连接数据库，直接运行<code>AllParsingTests</code>即可。</p>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+        
+            <a class="nav nav-prev" href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/contribute/external-dependency/" title="外部依赖"> <i class="fa fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="https://shardingsphere.apache.org/document/legacy/3.x/community/cn/company/" title="采用公司" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/clipboard.min.js?1547543308"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/perfect-scrollbar.min.js?1547543308"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/perfect-scrollbar.jquery.min.js?1547543308"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/jquery.sticky.js?1547543308"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/featherlight.min.js?1547543308"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/html5shiv-printshiv.min.js?1547543308"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/highlight.pack.js?1547543308"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/modernizr.custom.71422.js?1547543308"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/learn.js?1547543308"></script>
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/js/hugo-learn.js?1547543308"></script>
+
+    <link href="https://shardingsphere.apache.org/document/legacy/3.x/community/mermaid/mermaid.css?1547543308" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/document/legacy/3.x/community/mermaid/mermaid.js?1547543308"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+
+  </body>
+</html>
+

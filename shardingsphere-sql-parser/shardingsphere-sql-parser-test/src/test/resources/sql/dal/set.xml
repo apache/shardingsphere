@@ -16,18 +16,18 @@
   ~ limitations under the License.
   -->
 
-<parser-result-sets>
-    <parser-result sql-case-id="set_param_equals" />
-    <parser-result sql-case-id="set_param_to" />
-    <parser-result sql-case-id="set_param_session" />
-    <parser-result sql-case-id="set_param_local" />
-    <parser-result sql-case-id="set_param_default" />
-    <parser-result sql-case-id="set_timezone_zero" />
-    <parser-result sql-case-id="set_timezone_positive" />
-    <parser-result sql-case-id="set_timezone_negative" />
-    <parser-result sql-case-id="set_timezone_double" />
-    <parser-result sql-case-id="set_timezone_default" />
-    <parser-result sql-case-id="set_timezone_local" />
-    <parser-result sql-case-id="set_timezone_session" />
-    <parser-result sql-case-id="set_timezone_local" />
-</parser-result-sets>
+<sql-parser-test-cases>
+    <common sql-case-id="set_parameter_equal" />
+    <common sql-case-id="set_parameter_to" />
+    <common sql-case-id="set_parameter_for_session_scope" />
+    <common sql-case-id="set_parameter_for_local_scope" />
+    <common sql-case-id="set_parameter_for_default_scope" />
+    <common sql-case-id="set_timezone_with_zero_value" />
+    <common sql-case-id="set_timezone_with_positive_value" />
+    <common sql-case-id="set_timezone_with_negative_value" />
+    <common sql-case-id="set_timezone_with_double_value" />
+    <common sql-case-id="set_timezone_for_default_scope" />
+    <common sql-case-id="set_timezone_for_local_scope" />
+    <common sql-case-id="set_timezone_for_session_scope" />
+    <common sql-case-id="set_timezone_for_local_scope_with_double_value" />
+</sql-parser-test-cases>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.20.7" />
+    <meta name="description" content="">
+
+
+    <link rel="shortcut icon" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/img/favicon.png" type="image/x-icon" />
+
+    
+    <title>性能测试报告</title>
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/nucleus.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/theme.css" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/hugo-theme.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <style type="text/css">:root #header + #content > #left > #rlblock_left
+    {display:none !important;}</style>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/highlight.js/9.8.0/styles/monokai-sublime.min.css">
+<link rel="stylesheet" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/css/style.css">
+  </head>
+  <body class="" data-url="/01-start/stress-test/">
+    
+    <nav id="sidebar">
+  <div id="header-wrapper">
+    <div id="header">
+      <img src="http://shardingsphere.apache.org/document/legacy/1.x/cn/img/sharding-jdbc.png" />
+    </div>
+</div>
+  <div class="highlightable">
+    <ul class="topics">
+      
+        
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+          
+          
+            
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/00-overview/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/">
+          <span>
+            
+              <b>0. </b>
+            
+             概览
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/00-overview/intro/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/intro/">
+                <span>简介     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/news/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/news/">
+                <span>新闻     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/company/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/company/">
+                <span>采用公司     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/00-overview/contribution/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/00-overview/contribution/">
+                <span>贡献代码     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  parent" data-nav-id="/01-start/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/">
+          <span>
+            
+              <b>1. </b>
+            
+             起航
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/01-start/quick-start/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/quick-start/">
+                <span>快速入门     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/faq/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/faq/">
+                <span>FAQ     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/features/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/features/">
+                <span>详细功能列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/limitations/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/limitations/">
+                <span>使用限制     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/01-start/sql-supported/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported/">
+                <span>SQL支持详细列表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item active" data-nav-id="/01-start/stress-test/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/stress-test/">
+                <span>性能测试报告     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/02-guide/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/">
+          <span>
+            
+              <b>2. </b>
+            
+             使用指南
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/02-guide/concepts/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/concepts/">
+                <span>核心概念     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/sharding/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/sharding/">
+                <span>分库分表     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/master-slave/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/master-slave/">
+                <span>读写分离     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/configuration/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/configuration/">
+                <span>配置手册     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/hint-sharding-value/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/hint-sharding-value/">
+                <span>强制路由     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/key-generator/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/key-generator/">
+                <span>分布式主键     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/transaction/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/transaction/">
+                <span>事务支持     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/subquery/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/subquery/">
+                <span>分页及子查询     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/02-guide/test-framework/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide/test-framework/">
+                <span>测试引擎     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+
+      
+      
+      
+        
+          
+          
+            
+          
+        
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/03-design/">
+        <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/">
+          <span>
+            
+              <b>3. </b>
+            
+             设计规划
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+            <li class="dd-item " data-nav-id="/03-design/architecture/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/architecture/">
+                <span>架构设计     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/module/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/module/">
+                <span>目录结构说明     </i></span>
+              </a>
+            </li>
+          
+            <li class="dd-item " data-nav-id="/03-design/roadmap/">
+              <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/03-design/roadmap/">
+                <span>未来线路规划     </i></span>
+              </a>
+            </li>
+          
+        </ul>
+        
+      </li>
+      
+      
+    </ul>
+    <hr>
+     
+  </div>
+</nav>
+
+        <section id="body">
+        <div id="overlay"></div>
+
+        <div class="padding highlightable">
+
+            <div id="top-bar">
+              
+              <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                  <span id="sidebar-toggle-span">
+                      <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                  </span>
+                
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                
+                
+                  
+                  
+                  
+                    
+                    
+                <a href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/" itemprop="url"><span itemprop="title">起航</span></a> <i class="fa fa-angle-right"></i>
+                    
+                  
+                
+                <span itemprop="title"> 性能测试报告</span>
+              </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#测试目的">测试目的</a></li>
+<li><a href="#测试数据库配置">测试数据库配置</a></li>
+<li><a href="#网络拓扑">网络拓扑</a></li>
+<li><a href="#单库情况下sharding-jdbc与jdbc性能对比">单库情况下Sharding-JDBC与JDBC性能对比</a>
+<ul>
+<li><a href="#查询">查询</a></li>
+<li><a href="#插入">插入</a></li>
+<li><a href="#更新">更新</a></li>
+</ul></li>
+<li><a href="#sharding-jdbc单库与双库性能对比">Sharding-JDBC单库与双库性能对比</a>
+<ul>
+<li><a href="#查询-1">查询</a></li>
+<li><a href="#插入-1">插入</a></li>
+<li><a href="#更新-1">更新</a></li>
+</ul></li>
+<li><a href="#sharding-jdbc疲劳测试">Sharding-JDBC疲劳测试</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+              
+
+            </div>
+            
+              <div id="body-inner">
+                
+                <h1>性能测试报告</h1>
+                
+
+
+
+<h2 id="测试目的">测试目的</h2>
+
+<p>对Sharding-JDBC进行性能测试，客观、公正评估系统的性能，目的有三:</p>
+
+<ol>
+<li>对比Sharding-JDBC和JDBC的性能。</li>
+<li>Sharding-JDBC是否通过扩展数据库解决JDBC吞吐量不足的问题。</li>
+<li>Sharding-JDBC的稳定性。</li>
+</ol>
+
+<h2 id="测试数据库配置">测试数据库配置</h2>
+
+<table>
+<thead>
+<tr>
+<th>数据库实例</th>
+<th align="center">DB1</th>
+<th align="center">DB2</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>操作系统</td>
+<td align="center">centOS5.4</td>
+<td align="center">centOS5.4</td>
+</tr>
+
+<tr>
+<td>CPU</td>
+<td align="center">2C四核</td>
+<td align="center">2C四核</td>
+</tr>
+
+<tr>
+<td>内存</td>
+<td align="center">32GB</td>
+<td align="center">32GB</td>
+</tr>
+
+<tr>
+<td>硬盘</td>
+<td align="center">250G*2_RAID1+600G*4_RAID10</td>
+<td align="center">250G*2_RAID1+600G*4_RAID10</td>
+</tr>
+
+<tr>
+<td>Mysql版本</td>
+<td align="center">5.5.19</td>
+<td align="center">5.5.19</td>
+</tr>
+
+<tr>
+<td>数据表字段数量</td>
+<td align="center">70</td>
+<td align="center">70</td>
+</tr>
+
+<tr>
+<td>数据表行数</td>
+<td align="center">1000万</td>
+<td align="center">1000万</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="网络拓扑">网络拓扑</h2>
+
+<p><img src="http://shardingsphere.apache.org/document/legacy/1.x/cn/img/stress_test_arch.png" alt="网络拓扑图" /></p>
+
+<h2 id="单库情况下sharding-jdbc与jdbc性能对比">单库情况下Sharding-JDBC与JDBC性能对比</h2>
+
+<p>测试结论：</p>
+
+<ul>
+<li>查询操作，Sharding-JDBC的TPS为JDBC的TPS的99.8%</li>
+<li>插入操作，Sharding-JDBC的TPS为JDBC的TPS的90.2%</li>
+<li>更新操作，Sharding-JDBC的TPS为JDBC的TPS的93.1%</li>
+</ul>
+
+<h3 id="查询">查询</h3>
+
+<ul>
+<li>横坐标：并发用户数</li>
+<li>纵坐标：TPS</li>
+</ul>
+
+<canvas id="compareQuery" width="400" height="150"></canvas>
+
+<h3 id="插入">插入</h3>
+
+<ul>
+<li>横坐标：并发用户数</li>
+<li>纵坐标：TPS</li>
+</ul>
+
+<canvas id="compareInsert" width="400" height="150"></canvas>
+
+<h3 id="更新">更新</h3>
+
+<ul>
+<li>横坐标：并发用户数</li>
+<li>纵坐标：TPS</li>
+</ul>
+
+<canvas id="compareUpdate" width="400" height="150"></canvas>
+
+<h2 id="sharding-jdbc单库与双库性能对比">Sharding-JDBC单库与双库性能对比</h2>
+
+<p>对比测试：</p>
+
+<ul>
+<li>单库用例中所有数据全部在DB1中</li>
+<li>双库用例中所有数据均匀分布在DB1与DB2中</li>
+</ul>
+
+<p>结论：</p>
+
+<ul>
+<li>查询操作，TPS双库比单库可以增加大约94%的性能</li>
+<li>插入操作，TPS双库比单库可以增加大约60%的性能</li>
+<li>更新操作，TPS双库比单库可以增加大约89%的性能</li>
+</ul>
+
+<h3 id="查询-1">查询</h3>
+
+<ul>
+<li>横坐标：并发用户数</li>
+<li>纵坐标：TPS</li>
+</ul>
+
+<canvas id="singleAndDubbleQuery" width="400" height="150"></canvas>
+
+<h3 id="插入-1">插入</h3>
+
+<ul>
+<li>横坐标：并发用户数</li>
+<li>纵坐标：TPS</li>
+</ul>
+
+<canvas id="singleAndDubbleInsert" width="400" height="150"></canvas>
+
+<h3 id="更新-1">更新</h3>
+
+<ul>
+<li>横坐标：并发用户数</li>
+<li>纵坐标：TPS</li>
+</ul>
+
+<canvas id="singleAndDubbleUpdate" width="400" height="150"></canvas>
+
+<h2 id="sharding-jdbc疲劳测试">Sharding-JDBC疲劳测试</h2>
+
+<p>经过8个小时的疲劳测试，jvm的堆大约占用不到600MB的内存，且使用量比较稳定。没有发生Full GC。
+<canvas id="fatigueTest" width="400" height="150"></canvas></p>
+
+<script src="//cdn.bootcss.com/moment.js/2.11.1/moment.min.js"></script>
+<script src="//cdn.bootcss.com/Chart.js/2.0.0-beta2/Chart.min.js"></script>
+<script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/data/chart.js"></script>
+<script>
+    $("canvas").each(function(){
+        var data =  chartData[$(this).attr("id")];
+        $(data.datasets).each(function(index, obj){
+            $.extend(obj, charStyle[index])
+        });
+        new Chart(this.getContext("2d"),{
+            type: 'line',
+            data: data
+        });
+    })
+</script>
+
+
+      
+      
+      </div>
+    </div>
+
+    
+
+    <div id="navigation">
+        
+        <a class="nav nav-prev" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/01-start/sql-supported"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="http://shardingsphere.apache.org/document/legacy/1.x/cn/02-guide" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/clipboard.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/perfect-scrollbar.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/jquery.sticky-kit.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/featherlight.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/html5shiv-printshiv.min.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/learn.js"></script>
+    <script src="http://shardingsphere.apache.org/document/legacy/1.x/cn/js/hugo-learn.js"></script>
+    <script src="http://cdn.bootcss.com/highlight.js/9.8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
+
