@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.core.rule.jaxb.entity;
 
 /**
  * Rule definition entity for JAXB.
- *
- * @author zhangliang
  */
 public interface RuleDefinitionEntity {
 }

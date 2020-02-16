@@ -31,8 +31,6 @@ import java.util.LinkedList;
 
 /**
  * Aggregation distinct token generator.
- *
- * @author panjuan
  */
 public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator, IgnoreForSingleRoute {
     

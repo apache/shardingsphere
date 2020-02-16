@@ -29,9 +29,6 @@ import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Authentication changed listener.
- *
- * @author panjuan
- * @author wangguangyuan
  */
 public final class AuthenticationChangedListener extends PostShardingConfigCenterEventListener {
     

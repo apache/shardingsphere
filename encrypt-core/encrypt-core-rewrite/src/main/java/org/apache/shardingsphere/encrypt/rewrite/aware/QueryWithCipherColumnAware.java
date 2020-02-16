@@ -19,8 +19,6 @@ package org.apache.shardingsphere.encrypt.rewrite.aware;
 
 /**
  * Query with cipher column aware.
- *
- * @author zhangliang
  */
 public interface QueryWithCipherColumnAware {
     

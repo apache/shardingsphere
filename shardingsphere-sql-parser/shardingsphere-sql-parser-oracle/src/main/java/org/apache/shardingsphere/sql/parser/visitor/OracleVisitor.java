@@ -98,8 +98,6 @@ import java.util.LinkedList;
 
 /**
  * Oracle visitor.
- *
- * @author zhangliang
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> {

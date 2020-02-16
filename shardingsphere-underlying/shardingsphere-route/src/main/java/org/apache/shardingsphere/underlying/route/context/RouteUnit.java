@@ -30,10 +30,6 @@ import java.util.Set;
 
 /**
  * Route unit.
- * 
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

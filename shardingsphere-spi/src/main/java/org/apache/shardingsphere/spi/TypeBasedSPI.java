@@ -21,8 +21,6 @@ import java.util.Properties;
 
 /**
  * Base algorithm SPI.
- *
- * @author zhangliang
  */
 public interface TypeBasedSPI {
     

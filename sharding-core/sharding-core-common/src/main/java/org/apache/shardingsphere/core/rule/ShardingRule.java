@@ -45,10 +45,6 @@ import java.util.TreeSet;
 
 /**
  * Databases and tables sharding rule.
- *
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @Getter
 public class ShardingRule implements BaseRule {

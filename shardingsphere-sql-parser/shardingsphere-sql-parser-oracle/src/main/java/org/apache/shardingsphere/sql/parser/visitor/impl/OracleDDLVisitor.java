@@ -63,8 +63,6 @@ import java.util.LinkedList;
 
 /**
  * Oracle DDL visitor.
- *
- * @author zhangliang
  */
 public final class OracleDDLVisitor extends OracleVisitor {
     

@@ -35,8 +35,6 @@ import java.util.List;
  *       for MyQL is COM_QUERY; 
  *       for PostgreSQL is Simple Query;
  * </pre>
- *
- * @author zhangliang
  */
 public final class SimpleQueryShardingEngine extends BaseShardingEngine {
     

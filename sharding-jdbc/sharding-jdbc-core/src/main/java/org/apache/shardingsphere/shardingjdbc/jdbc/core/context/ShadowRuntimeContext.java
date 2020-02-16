@@ -38,9 +38,6 @@ import java.util.Properties;
 
 /**
  * Runtime context for shadow.
- *
- * @author zhyee
- * @author xiayan
  */
 @Getter
 public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<ShadowRule> {

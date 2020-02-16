@@ -25,9 +25,6 @@ import java.util.LinkedList;
 
 /**
  * And predicate.
- * 
- * @author duhongjun
- * @author panjuan
  */
 @Getter
 public final class AndPredicate implements SQLSegment {

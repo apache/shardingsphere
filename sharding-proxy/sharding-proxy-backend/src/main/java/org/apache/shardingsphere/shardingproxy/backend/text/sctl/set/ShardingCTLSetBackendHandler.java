@@ -30,8 +30,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
  * Sharding CTL backend handler.
- *
- * @author zhaojun
  */
 public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHandler {
     

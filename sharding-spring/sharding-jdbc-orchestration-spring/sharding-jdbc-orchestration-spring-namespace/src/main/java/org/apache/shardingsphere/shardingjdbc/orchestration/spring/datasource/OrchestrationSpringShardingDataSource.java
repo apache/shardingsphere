@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 
 /**
  * Orchestration sharding datasource for spring namespace.
- *
- * @author panjuan
  */
 public final class OrchestrationSpringShardingDataSource extends OrchestrationShardingDataSource {
     

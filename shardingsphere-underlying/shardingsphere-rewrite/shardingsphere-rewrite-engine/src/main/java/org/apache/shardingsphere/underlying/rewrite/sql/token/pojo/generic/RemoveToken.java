@@ -23,9 +23,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable
 
 /**
  * Remove token.
- *
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 public final class RemoveToken extends SQLToken implements Substitutable {

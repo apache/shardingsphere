@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * Change column definition extractor for MySQL.
- * 
- * @author duhongjun
  */
 public final class MySQLChangeColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     

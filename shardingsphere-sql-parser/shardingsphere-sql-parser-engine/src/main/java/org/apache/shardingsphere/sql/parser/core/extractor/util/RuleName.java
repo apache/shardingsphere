@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Rule name.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public enum RuleName {

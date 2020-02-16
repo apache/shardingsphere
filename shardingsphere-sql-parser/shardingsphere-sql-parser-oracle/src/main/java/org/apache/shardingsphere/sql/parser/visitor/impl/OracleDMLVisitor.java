@@ -84,8 +84,6 @@ import java.util.List;
 
 /**
  * Oracle DML visitor.
- *
- * @author zhangliang
  */
 public final class OracleDMLVisitor extends OracleVisitor {
     

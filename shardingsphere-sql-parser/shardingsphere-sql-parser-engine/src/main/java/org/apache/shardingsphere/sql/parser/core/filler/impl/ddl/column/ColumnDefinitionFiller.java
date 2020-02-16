@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
 
 /**
  * Column definition filler.
- *
- * @author duhongjun
  */
 public final class ColumnDefinitionFiller implements SQLSegmentFiller<ColumnDefinitionSegment> {
     

@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Predicate in bracket.
- *
- * @author chun.yang
  */
 @RequiredArgsConstructor
 @Getter

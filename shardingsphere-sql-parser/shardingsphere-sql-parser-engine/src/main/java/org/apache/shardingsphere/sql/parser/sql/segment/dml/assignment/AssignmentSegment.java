@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 
 /**
  * Assignment segment.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

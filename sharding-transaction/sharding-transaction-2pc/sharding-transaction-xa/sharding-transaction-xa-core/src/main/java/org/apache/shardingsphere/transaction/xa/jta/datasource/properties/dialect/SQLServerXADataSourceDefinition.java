@@ -28,8 +28,6 @@ import java.util.Properties;
 
 /**
  * XA data source definition for SQLServer.
- *
- * @author zhaojun
  */
 public final class SQLServerXADataSourceDefinition implements XADataSourceDefinition {
     

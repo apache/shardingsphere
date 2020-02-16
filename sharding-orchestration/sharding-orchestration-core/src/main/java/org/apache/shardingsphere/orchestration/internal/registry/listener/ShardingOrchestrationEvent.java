@@ -19,8 +19,6 @@ package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
 /**
  * Sharding orchestration event.
- *
- * @author zhangliang
  */
 public interface ShardingOrchestrationEvent {
 }

@@ -24,8 +24,6 @@ import java.util.Collection;
 /**
  * Precise sharding algorithm.
  * 
- * @author zhangliang
- * 
  * @param <T> class type of sharding value
  */
 public interface PreciseShardingAlgorithm<T extends Comparable<?>> extends ShardingAlgorithm {

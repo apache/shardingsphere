@@ -25,8 +25,6 @@ import java.util.List;
 /**
  * Sharding statement validator.
  *
- * @author zhangliang
- * 
  * @param <T> type of SQL statement
  */
 public interface ShardingStatementValidator<T extends SQLStatement> {

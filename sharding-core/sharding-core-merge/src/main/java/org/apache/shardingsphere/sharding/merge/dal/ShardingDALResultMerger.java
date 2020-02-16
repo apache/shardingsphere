@@ -42,9 +42,6 @@ import java.util.List;
 
 /**
  * DAL result merger for Sharding.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShardingDALResultMerger implements ResultMerger {

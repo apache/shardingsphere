@@ -35,8 +35,6 @@ import java.util.List;
 
 /**
  * SQL execute prepare callback for Sharding-Proxy.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ProxyJDBCExecutePrepareCallback implements SQLExecutePrepareCallback {

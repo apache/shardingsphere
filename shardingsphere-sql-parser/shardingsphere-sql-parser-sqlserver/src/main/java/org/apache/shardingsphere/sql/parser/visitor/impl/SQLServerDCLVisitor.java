@@ -52,8 +52,6 @@ import java.util.Collections;
 
 /**
  * SQLServer DCL visitor.
- *
- * @author zhangliang
  */
 public final class SQLServerDCLVisitor extends SQLServerVisitor {
     

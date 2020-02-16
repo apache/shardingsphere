@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatemen
 
 /**
  * Modify column definition filler.
- *
- * @author duhongjun
  */
 public final class ModifyColumnDefinitionFiller implements SQLSegmentFiller<ModifyColumnDefinitionSegment> {
     

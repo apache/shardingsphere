@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Filler rule definition.
- *
- * @author zhangliang
  */
 public final class FillerRuleDefinition {
     

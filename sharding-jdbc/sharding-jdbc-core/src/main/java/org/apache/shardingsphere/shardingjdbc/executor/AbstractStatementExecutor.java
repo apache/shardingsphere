@@ -64,9 +64,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Abstract statement executor.
- *
- * @author panjuan
- * @author maxiaoguang
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractStatementExecutor {

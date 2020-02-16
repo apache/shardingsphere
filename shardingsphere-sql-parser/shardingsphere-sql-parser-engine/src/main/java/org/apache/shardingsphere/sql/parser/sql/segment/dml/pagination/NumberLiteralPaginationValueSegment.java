@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination;
 
 /**
  * Pagination value segment for number literal.
- * 
- * @author zhangliang
  */
 public interface NumberLiteralPaginationValueSegment extends PaginationValueSegment {
     

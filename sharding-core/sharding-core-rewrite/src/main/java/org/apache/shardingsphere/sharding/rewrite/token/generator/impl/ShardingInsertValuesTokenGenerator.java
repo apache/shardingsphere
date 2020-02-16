@@ -40,9 +40,6 @@ import java.util.List;
 
 /**
  * Insert values token generator for sharding.
- *
- * @author panjuan
- * @author zhangliang
  */
 @Setter
 public final class ShardingInsertValuesTokenGenerator implements OptionalSQLTokenGenerator, ShardingRouteContextAware {

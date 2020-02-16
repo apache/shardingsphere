@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Expected order by clause.
- * 
- * @author zhangliang 
  */
 @Getter
 public final class ExpectedOrderByClause extends AbstractExpectedSQLSegment {

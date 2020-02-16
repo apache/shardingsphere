@@ -23,9 +23,6 @@ import java.util.Calendar;
 
 /**
  * Query result form SQL.
- *
- * @author zhangliang
- * @author yangyi
  */
 public interface QueryResult {
     

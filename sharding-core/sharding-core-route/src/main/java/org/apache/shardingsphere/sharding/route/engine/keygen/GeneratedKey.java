@@ -34,10 +34,6 @@ import java.util.List;
 
 /**
  * Generated key.
- *
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

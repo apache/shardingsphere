@@ -28,9 +28,6 @@ import org.apache.shardingsphere.shardingproxy.transport.codec.PacketCodec;
 
 /**
  * Channel initializer.
- * 
- * @author xiaoyu
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {

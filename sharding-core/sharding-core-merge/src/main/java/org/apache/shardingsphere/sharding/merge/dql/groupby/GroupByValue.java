@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Group by value.
- * 
- * @author zhangliang
  */
 @Getter
 @EqualsAndHashCode

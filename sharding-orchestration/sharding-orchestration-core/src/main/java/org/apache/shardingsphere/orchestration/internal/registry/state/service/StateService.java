@@ -23,10 +23,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.node.Stat
 
 /**
  * Instance state service.
- * 
- * @author caohao
- * @author panjuan
- * @author wangguangyuan
  */
 public final class StateService {
     

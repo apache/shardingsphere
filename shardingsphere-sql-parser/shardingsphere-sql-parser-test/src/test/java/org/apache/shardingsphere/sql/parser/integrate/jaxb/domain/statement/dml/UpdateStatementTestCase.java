@@ -30,8 +30,6 @@ import java.util.List;
 
 /**
  * Update statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

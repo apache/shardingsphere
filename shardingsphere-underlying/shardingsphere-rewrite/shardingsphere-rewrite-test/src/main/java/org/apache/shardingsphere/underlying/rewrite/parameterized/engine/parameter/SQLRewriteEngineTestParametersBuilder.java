@@ -41,8 +41,6 @@ import java.util.Objects;
 
 /**
  * Test parameters for SQL rewrite engine builder.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLRewriteEngineTestParametersBuilder {

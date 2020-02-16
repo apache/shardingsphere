@@ -23,8 +23,6 @@ import org.yaml.snakeyaml.nodes.Node;
 
 /**
  * YAML none sharding strategy configuration construct.
- *
- * @author yangyi
  */
 public final class YamlNoneShardingStrategyConfigurationConstruct implements Construct {
     

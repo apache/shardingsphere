@@ -99,8 +99,6 @@ import java.util.LinkedList;
 
 /**
  * SQLServer visitor.
- *
- * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<ASTNode> {

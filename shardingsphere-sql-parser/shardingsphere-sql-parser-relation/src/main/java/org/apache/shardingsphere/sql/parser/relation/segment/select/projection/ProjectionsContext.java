@@ -31,9 +31,6 @@ import java.util.List;
 
 /**
  * Projections context.
- *
- * @author zhangliang
- * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter

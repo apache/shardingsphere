@@ -28,8 +28,6 @@ import java.util.Properties;
 
 /**
  * Root rule configuration for YAML.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 
 /**
  * Hint error parameter command executor.
- *
- * @author liya
  */
 @RequiredArgsConstructor
 public final class HintErrorParameterExecutor extends AbstractHintUpdateExecutor<HintErrorParameterCommand> {

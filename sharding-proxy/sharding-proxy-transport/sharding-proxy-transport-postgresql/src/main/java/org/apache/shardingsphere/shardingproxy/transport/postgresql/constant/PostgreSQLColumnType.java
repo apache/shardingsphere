@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Column types for PostgreSQL.
- * 
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

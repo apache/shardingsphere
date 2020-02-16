@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal;
 
 /**
  * Hint command.
- *
- * @author liya
  */
 public interface HintCommand {
 }

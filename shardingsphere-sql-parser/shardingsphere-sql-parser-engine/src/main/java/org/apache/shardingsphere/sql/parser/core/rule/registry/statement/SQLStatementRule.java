@@ -31,8 +31,6 @@ import java.util.LinkedList;
 
 /**
  * SQL statement rule.
- *
- * @author zhangliang
  */
 @Getter
 public final class SQLStatementRule {

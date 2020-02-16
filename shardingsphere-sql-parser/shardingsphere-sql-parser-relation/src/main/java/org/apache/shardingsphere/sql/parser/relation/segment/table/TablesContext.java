@@ -36,8 +36,6 @@ import java.util.TreeSet;
 
 /**
  * Tables context.
- * 
- * @author zhangliang
  */
 @ToString
 public final class TablesContext {

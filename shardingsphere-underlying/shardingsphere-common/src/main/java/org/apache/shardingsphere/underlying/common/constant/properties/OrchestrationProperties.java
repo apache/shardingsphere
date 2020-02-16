@@ -21,8 +21,6 @@ import java.util.Properties;
 
 /**
  * Orchestration properties.
- *
- * @author dongzonglei
  */
 public final class OrchestrationProperties extends TypedProperties<OrchestrationPropertiesEnum> {
     

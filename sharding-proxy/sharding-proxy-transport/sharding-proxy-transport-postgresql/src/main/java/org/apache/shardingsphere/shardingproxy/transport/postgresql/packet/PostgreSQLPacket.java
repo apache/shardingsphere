@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Database packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public interface PostgreSQLPacket extends DatabasePacket<PostgreSQLPacketPayload> {
     

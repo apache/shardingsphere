@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * Sharding data source factory for YAML.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlShardingDataSourceFactory {

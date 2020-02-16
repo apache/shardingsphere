@@ -37,10 +37,6 @@ import java.util.List;
 
 /**
  * Query result for memory loading.
- *
- * @author zhangliang
- * @author panjuan
- * @author yangyi
  */
 public final class MemoryQueryResult implements QueryResult {
     

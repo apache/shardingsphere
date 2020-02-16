@@ -26,10 +26,6 @@ import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
 
 /**
  * Registry center loader from SPI.
- *
- * @author zhangliang
- * @author zhaojun
- * @author wangguangyuan
  */
 @Slf4j
 public final class RegistryCenterServiceLoader extends TypeBasedSPIServiceLoader<RegistryCenter> {

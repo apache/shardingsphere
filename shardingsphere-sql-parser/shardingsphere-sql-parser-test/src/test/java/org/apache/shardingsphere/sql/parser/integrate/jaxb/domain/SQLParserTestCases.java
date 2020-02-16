@@ -76,8 +76,6 @@ import java.util.Map;
 
 /**
  * SQL parser test cases.
- * 
- * @author zhangliang 
  */
 @XmlRootElement(name = "sql-parser-test-cases")
 @Getter

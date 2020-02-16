@@ -28,9 +28,6 @@ import java.util.Map;
 
 /**
  * Table token.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class TableToken extends SQLToken implements Substitutable, LogicAndActualTablesAware {
     

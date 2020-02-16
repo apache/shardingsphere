@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Identifier value.
- *
- * @author panjuan
  */
 @Getter
 public final class IdentifierValue implements ValueASTNode<String> {

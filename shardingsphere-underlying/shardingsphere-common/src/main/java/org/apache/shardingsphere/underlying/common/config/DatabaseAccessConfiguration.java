@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Database access configuration.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

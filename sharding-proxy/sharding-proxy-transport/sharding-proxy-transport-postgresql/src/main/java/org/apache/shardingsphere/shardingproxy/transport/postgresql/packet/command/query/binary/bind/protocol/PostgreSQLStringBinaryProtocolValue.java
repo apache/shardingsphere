@@ -21,8 +21,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Binary protocol value for string for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLStringBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     

@@ -31,8 +31,6 @@ import java.util.Queue;
 
 /**
  * Stream merged result for order by.
- *
- * @author zhangliang
  */
 public class OrderByStreamMergedResult extends StreamMergedResult {
     

@@ -23,8 +23,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Response result utility.
- *
- * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResponseResultUtil {

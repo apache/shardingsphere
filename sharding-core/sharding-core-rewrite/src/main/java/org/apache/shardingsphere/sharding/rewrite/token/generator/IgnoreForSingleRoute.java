@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator;
 
 /**
  * Ignore for single route.
- *
- * @author zhangliang
  */
 public interface IgnoreForSingleRoute {
 }

@@ -22,10 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Properties constant.
- * 
- * @author gaohongtao
- * @author caohao
- * @author cookie
  */
 @RequiredArgsConstructor
 @Getter

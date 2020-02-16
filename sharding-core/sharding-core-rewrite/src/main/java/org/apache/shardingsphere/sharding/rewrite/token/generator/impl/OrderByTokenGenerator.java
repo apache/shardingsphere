@@ -29,8 +29,6 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.OrderByToken;
 
 /**
  * Order by token generator.
- *
- * @author zhangliang
  */
 public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     

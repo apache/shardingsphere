@@ -29,8 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProje
 
 /**
  * Assignment value assert.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AssignmentValueAssert {

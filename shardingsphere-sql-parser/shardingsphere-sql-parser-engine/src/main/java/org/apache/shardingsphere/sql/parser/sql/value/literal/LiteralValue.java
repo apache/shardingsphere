@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 /**
  * Literal value.
  *
- * @author zhangliang
- * 
  * @param <T> type of value
  */
 public interface LiteralValue<T> extends ValueASTNode<T> {

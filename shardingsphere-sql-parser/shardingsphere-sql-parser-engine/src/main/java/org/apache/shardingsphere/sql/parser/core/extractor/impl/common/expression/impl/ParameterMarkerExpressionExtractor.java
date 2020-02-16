@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Parameter marker expression extractor.
- *
- * @author zhangliang
  */
 public final class ParameterMarkerExpressionExtractor implements OptionalSQLSegmentExtractor {
     

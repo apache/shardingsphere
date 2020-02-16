@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Command termination packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLComTerminationPacket extends PostgreSQLCommandPacket {
     

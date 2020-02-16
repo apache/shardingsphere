@@ -35,9 +35,6 @@ import java.util.LinkedList;
 
 /**
  * COM_STMT_PREPARE command executor for MySQL.
- * 
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     

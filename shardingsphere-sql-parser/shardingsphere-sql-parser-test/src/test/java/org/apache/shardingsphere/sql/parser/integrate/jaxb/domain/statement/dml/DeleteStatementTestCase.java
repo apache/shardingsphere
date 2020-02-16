@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Delete statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.Postg
 
 /**
  * Command packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public abstract class PostgreSQLCommandPacket implements PostgreSQLPacket, CommandPacket {
 }

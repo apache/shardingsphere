@@ -21,8 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * predicate bracket value for in.
- * @author chun.yang
+ * Predicate bracket value for in.
  */
 @RequiredArgsConstructor
 @Getter

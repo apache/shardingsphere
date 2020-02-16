@@ -26,8 +26,6 @@ import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
 
 /**
  * Config center loader from SPI.
- *
- * @author wangguangyuan
  */
 @Slf4j
 public final class ConfigCenterServiceLoader extends TypeBasedSPIServiceLoader<ConfigCenter> {

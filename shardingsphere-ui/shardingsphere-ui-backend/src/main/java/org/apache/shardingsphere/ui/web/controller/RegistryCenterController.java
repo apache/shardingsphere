@@ -32,8 +32,6 @@ import java.util.List;
 
 /**
  * RESTful API of registry center configuration.
- *
- * @author chenqingyang
  */
 @RestController
 @RequestMapping("/api/reg-center")

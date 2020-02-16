@@ -27,8 +27,6 @@ import java.util.regex.Pattern;
 
 /**
  * Data source meta data for PostgreSQL.
- *
- * @author panjuan
  */
 @Getter
 public final class PostgreSQLDataSourceMetaData implements DataSourceMetaData {

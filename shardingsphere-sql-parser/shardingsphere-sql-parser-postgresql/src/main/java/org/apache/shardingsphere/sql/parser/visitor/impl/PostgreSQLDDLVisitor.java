@@ -64,8 +64,6 @@ import java.util.LinkedList;
 
 /**
  * PostgreSQL DDL visitor.
- *
- * @author zhangliang
  */
 public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
     

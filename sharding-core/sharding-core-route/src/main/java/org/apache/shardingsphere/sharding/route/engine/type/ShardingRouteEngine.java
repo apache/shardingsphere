@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
 /**
  * Sharding route engine.
- *
- * @author zhangliang
  */
 public interface ShardingRouteEngine {
     

@@ -26,10 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * MySQL binary prepared statement registry.
- *
- * @author zhangliang
- * @author zhangyonglun
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class MySQLBinaryStatementRegistry {

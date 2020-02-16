@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Database packet codec for MySQL.
- * 
- * @author zhangliang 
  */
 public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<MySQLPacket> {
     

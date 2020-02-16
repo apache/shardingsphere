@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 
 /**
  * Data source meta data for SQL92.
- *
- * @author zhangyonglun
  */
 @Getter
 public final class SQL92DataSourceMetaData implements DataSourceMetaData {

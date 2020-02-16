@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAv
 
 /**
  * Show columns statement.
- *
- * @author zhangliang
  */
 @Setter
 @Getter

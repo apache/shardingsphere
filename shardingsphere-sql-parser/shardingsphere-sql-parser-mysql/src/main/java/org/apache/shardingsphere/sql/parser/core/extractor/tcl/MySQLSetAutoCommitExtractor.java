@@ -29,9 +29,6 @@ import java.util.Map;
 
 /**
  * Set auto commit extractor for MySQL.
- *
- * @author maxiaoguang
- * @author zhangliang
  */
 public final class MySQLSetAutoCommitExtractor implements OptionalSQLSegmentExtractor {
     

@@ -47,8 +47,6 @@ import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
  * Text protocol backend handler factory.
- *
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextProtocolBackendHandlerFactory {

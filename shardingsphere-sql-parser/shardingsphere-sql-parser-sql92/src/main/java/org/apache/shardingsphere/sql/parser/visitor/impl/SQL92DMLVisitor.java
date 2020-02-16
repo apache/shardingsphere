@@ -83,8 +83,6 @@ import java.util.List;
 
 /**
  * SQL92 DML visitor.
- *
- * @author zhangliang
  */
 public final class SQL92DMLVisitor extends SQL92Visitor {
     

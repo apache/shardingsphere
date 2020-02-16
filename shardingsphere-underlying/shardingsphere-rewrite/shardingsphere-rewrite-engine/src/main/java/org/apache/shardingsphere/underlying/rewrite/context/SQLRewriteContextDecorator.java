@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 /**
  * SQL rewrite context decorator.
  *
- * @author zhangliang
- * 
  * @param <T> type of rule
  */
 public interface SQLRewriteContextDecorator<T extends BaseRule> {

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Alter user statement.
- *
- * @author zhangliang
  */
 public final class AlterUserStatement extends DCLStatement {
 }

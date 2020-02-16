@@ -24,8 +24,6 @@ import java.util.Collections;
 
 /**
  * JDBC URL recognizer for Oracle.
- *
- * @author zhangliang
  */
 public final class OracleRecognizer implements JDBCDriverURLRecognizer {
     

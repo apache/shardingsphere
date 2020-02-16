@@ -25,8 +25,6 @@ import javax.transaction.xa.XAResource;
 
 /**
  * Atomikos XA recoverable resource.
- *
- * @author zhaojun
  */
 public final class AtomikosXARecoverableResource extends JdbcTransactionalResource {
     

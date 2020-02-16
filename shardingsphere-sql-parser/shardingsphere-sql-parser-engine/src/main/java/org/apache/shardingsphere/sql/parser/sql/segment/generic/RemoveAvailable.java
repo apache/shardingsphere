@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Remove available.
- *
- * @author zhangliang
  */
 public interface RemoveAvailable extends SQLSegment {
 }

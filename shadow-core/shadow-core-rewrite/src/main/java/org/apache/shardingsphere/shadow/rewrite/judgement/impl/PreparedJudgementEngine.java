@@ -37,8 +37,6 @@ import java.util.List;
 
 /**
  * Shadow judgement engine for prepared.
- *
- * @author zhyee
  */
 @RequiredArgsConstructor
 public final class PreparedJudgementEngine implements ShadowJudgementEngine {

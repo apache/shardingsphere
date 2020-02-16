@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Unsupported {@code ResultSet} methods.
- * 
- * @author zhangliang
  */
 public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsupportedUpdateOperationResultSet {
     

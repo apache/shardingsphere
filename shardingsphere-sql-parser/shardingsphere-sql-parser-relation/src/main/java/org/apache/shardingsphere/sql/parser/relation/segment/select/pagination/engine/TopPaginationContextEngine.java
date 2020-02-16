@@ -36,8 +36,6 @@ import java.util.List;
 
 /**
  * Pagination context engine for top.
- *
- * @author zhangliang
  */
 public final class TopPaginationContextEngine {
     

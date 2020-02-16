@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
  * Table meta data decorator.
- *
- * @author zhangliang
  */
 public interface TableMetaDataDecorator<T extends BaseRule> extends TableMetaDataInitializer {
     

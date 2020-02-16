@@ -33,8 +33,6 @@ import java.util.regex.Pattern;
 
 /**
  * Sharding CTL hint parser.
- *
- * @author liya
  */
 public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCTLHintStatement> {
     

@@ -31,8 +31,6 @@ import java.sql.SQLException;
 
 /**
  * Backend handler with query.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class QueryBackendHandler implements TextProtocolBackendHandler {

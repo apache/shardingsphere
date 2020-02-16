@@ -32,9 +32,6 @@ import java.util.Collections;
 
 /**
  * PostgreSQL command parse executor.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComParseExecutor implements CommandExecutor {
     

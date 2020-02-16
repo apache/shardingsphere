@@ -38,9 +38,6 @@ import java.util.TreeSet;
 
 /**
  * Sharding complex routing engine.
- * 
- * @author gaohongtao
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {

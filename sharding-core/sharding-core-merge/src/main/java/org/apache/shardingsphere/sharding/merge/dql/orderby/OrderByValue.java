@@ -31,9 +31,6 @@ import java.util.List;
 
 /**
  * Order by value.
- * 
- * @author zhangliang
- * @author yangyi
  */
 public final class OrderByValue implements Comparable<OrderByValue> {
     

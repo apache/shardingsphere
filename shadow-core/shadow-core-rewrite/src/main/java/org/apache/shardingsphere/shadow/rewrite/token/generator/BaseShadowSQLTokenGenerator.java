@@ -26,8 +26,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.SQLToken
 
 /**
  * Base SQL token generator for shadow.
- *
- * @author zhyee
  */
 @Getter
 @Setter

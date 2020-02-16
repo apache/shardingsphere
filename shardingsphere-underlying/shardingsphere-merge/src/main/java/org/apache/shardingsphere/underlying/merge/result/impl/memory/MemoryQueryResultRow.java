@@ -24,8 +24,6 @@ import java.sql.SQLException;
 
 /**
  * Memory query result row.
- * 
- * @author zhangliang
  */
 public final class MemoryQueryResultRow {
     

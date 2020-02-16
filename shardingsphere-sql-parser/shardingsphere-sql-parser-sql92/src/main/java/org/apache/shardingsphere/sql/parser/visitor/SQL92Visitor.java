@@ -94,8 +94,6 @@ import java.util.LinkedList;
 
 /**
  * SQL92 visitor.
- *
- * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {

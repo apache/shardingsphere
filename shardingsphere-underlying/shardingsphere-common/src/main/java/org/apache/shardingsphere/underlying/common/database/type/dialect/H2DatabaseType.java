@@ -27,8 +27,6 @@ import java.util.Collections;
 
 /**
  * Database type of H2.
- *
- * @author zhangliang
  */
 public final class H2DatabaseType implements BranchDatabaseType {
     

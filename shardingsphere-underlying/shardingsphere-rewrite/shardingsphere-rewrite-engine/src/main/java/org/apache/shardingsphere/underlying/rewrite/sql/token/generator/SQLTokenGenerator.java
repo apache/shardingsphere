@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 
 /**
  * SQL token generator.
- *
- * @author zhangliang
  */
 public interface SQLTokenGenerator {
     

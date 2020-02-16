@@ -24,8 +24,6 @@ import java.util.Collections;
 
 /**
  * JDBC URL recognizer for PostgreSQL.
- *
- * @author zhangliang
  */
 public final class PostgreSQLRecognizer implements JDBCDriverURLRecognizer {
     

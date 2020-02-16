@@ -21,8 +21,6 @@ import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 /**
  * Route unit aware.
- *
- * @author zhangliang
  */
 public interface RouteUnitAware {
     

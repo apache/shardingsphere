@@ -29,8 +29,6 @@ import java.util.TreeSet;
 
 /**
  * Alter table statement.
- * 
- * @author duhongjun
  */
 @Getter
 public final class AlterTableStatement extends DDLStatement implements TableSegmentsAvailable {

@@ -24,8 +24,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Abstract expected delimiter SQL segment.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

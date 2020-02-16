@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.SetS
 
 /**
  * Set variable statement assert.
- *
- * @author lujingshang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SetVariableStatementAssert {

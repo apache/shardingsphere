@@ -31,9 +31,6 @@ import java.util.Map;
 
 /**
  * SQL parse kernel.
- *
- * @author duhongjun
- * @author zhangliang
  */
 public final class SQLParseKernel {
     

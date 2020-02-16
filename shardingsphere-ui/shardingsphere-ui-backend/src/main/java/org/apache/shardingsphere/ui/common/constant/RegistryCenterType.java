@@ -21,8 +21,6 @@ import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
 
 /**
  * Registry center type.
- *
- * @author chenqingyang
  */
 public enum RegistryCenterType {
     

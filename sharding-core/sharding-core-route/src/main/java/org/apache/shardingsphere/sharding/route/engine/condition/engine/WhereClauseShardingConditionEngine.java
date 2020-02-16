@@ -50,8 +50,6 @@ import java.util.Map.Entry;
 
 /**
  * Sharding condition engine for where clause.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class WhereClauseShardingConditionEngine {

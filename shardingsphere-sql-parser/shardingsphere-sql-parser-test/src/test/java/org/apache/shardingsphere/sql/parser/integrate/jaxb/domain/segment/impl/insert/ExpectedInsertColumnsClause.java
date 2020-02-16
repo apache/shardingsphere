@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Expected insert columns clause.
- *
- * @author zhangliang
  */
 @Getter
 public final class ExpectedInsertColumnsClause extends AbstractExpectedSQLSegment {

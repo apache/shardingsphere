@@ -23,8 +23,6 @@ import java.util.Collection;
 
 /**
  * Table segments available.
- *
- * @author zhangliang
  */
 public interface TableSegmentsAvailable {
     

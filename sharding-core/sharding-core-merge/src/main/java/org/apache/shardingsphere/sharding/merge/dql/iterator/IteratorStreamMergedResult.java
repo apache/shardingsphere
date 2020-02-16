@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Stream merged result for iterator.
- *
- * @author zhangliang
  */
 public final class IteratorStreamMergedResult extends StreamMergedResult {
     

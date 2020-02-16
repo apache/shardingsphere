@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Row description packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {

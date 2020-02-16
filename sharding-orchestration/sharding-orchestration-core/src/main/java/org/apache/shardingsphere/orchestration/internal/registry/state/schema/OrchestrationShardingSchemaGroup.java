@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Orchestration sharding schema group.
- *
- * @author zhangliang
  */
 public final class OrchestrationShardingSchemaGroup {
     

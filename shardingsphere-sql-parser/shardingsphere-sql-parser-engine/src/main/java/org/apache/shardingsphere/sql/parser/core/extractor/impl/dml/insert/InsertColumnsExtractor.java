@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * Insert columns extractor.
- *
- * @author zhangliang
  */
 public final class InsertColumnsExtractor implements OptionalSQLSegmentExtractor {
     

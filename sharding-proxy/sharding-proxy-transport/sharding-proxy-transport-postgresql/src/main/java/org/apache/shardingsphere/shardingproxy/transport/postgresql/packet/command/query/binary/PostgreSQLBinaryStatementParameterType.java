@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.Pos
 
 /**
  * Bind parameter type for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

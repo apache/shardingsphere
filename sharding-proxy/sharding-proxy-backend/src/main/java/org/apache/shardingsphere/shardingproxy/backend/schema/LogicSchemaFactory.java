@@ -34,8 +34,6 @@ import java.util.Map;
 
 /**
  * Logic schema factory.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LogicSchemaFactory {

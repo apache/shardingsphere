@@ -26,8 +26,6 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
 
 /**
  * Parameter rewriter for encrypt.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

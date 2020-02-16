@@ -23,8 +23,6 @@ import java.util.Properties;
 
 /**
  * Zookeeper properties.
- *
- * @author dongzonglei
  */
 public final class ZookeeperProperties extends TypedProperties<ZookeeperPropertiesEnum> {
     

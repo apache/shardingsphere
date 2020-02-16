@@ -32,8 +32,6 @@ import java.util.Map.Entry;
 
 /**
  * Sharding rule configuration YAML swapper.
- *
- * @author zhangliang
  */
 public final class ShardingRuleConfigurationYamlSwapper implements YamlSwapper<YamlShardingRuleConfiguration, ShardingRuleConfiguration> {
     

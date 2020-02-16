@@ -26,8 +26,6 @@ import java.util.LinkedList;
 
 /**
  * Truncate table statement.
- *
- * @author zhangliang
  */
 @Getter
 public final class TruncateStatement extends DDLStatement implements TableSegmentsAvailable {

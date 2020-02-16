@@ -51,9 +51,6 @@ import java.util.List;
 
 /**
  * Command bind executor for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     

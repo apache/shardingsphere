@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterLoginStatemen
 
 /**
  * Alter login statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterLoginStatementAssert {

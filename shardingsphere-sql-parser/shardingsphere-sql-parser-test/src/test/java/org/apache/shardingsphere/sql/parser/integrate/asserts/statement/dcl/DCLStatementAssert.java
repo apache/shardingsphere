@@ -73,8 +73,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 
 /**
  * DCL statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DCLStatementAssert {

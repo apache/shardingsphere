@@ -39,8 +39,6 @@ import java.util.Properties;
 /**
  * Runtime context for multiple data sources.
  *
- * @author zhangliang
- * 
  * @param <T> type of rule
  */
 @Getter

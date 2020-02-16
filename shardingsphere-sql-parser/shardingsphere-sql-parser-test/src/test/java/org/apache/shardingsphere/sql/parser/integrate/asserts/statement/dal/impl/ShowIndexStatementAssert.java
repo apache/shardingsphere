@@ -32,8 +32,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Show index statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowIndexStatementAssert {

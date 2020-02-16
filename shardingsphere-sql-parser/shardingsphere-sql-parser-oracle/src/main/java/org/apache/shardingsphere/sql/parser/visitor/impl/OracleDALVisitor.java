@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
 
 /**
  * Oracle DAL visitor.
- *
- * @author zhangliang
  */
 public final class OracleDALVisitor extends OracleVisitor {
 }

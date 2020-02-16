@@ -23,8 +23,6 @@ import lombok.ToString;
 
 /**
  * Common expression segment.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

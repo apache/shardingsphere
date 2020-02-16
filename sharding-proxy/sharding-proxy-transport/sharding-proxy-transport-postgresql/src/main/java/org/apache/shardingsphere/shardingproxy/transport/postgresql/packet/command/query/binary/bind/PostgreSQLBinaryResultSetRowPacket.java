@@ -30,8 +30,6 @@ import java.util.List;
 
 /**
  * Binary result set row packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacket {

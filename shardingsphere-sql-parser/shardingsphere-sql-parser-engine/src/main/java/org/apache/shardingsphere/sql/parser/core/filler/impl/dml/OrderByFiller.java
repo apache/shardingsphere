@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 /**
  * Order by filler.
- *
- * @author zhangliang
  */
 public final class OrderByFiller implements SQLSegmentFiller<OrderBySegment> {
     

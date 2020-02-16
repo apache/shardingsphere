@@ -27,8 +27,6 @@ import java.util.regex.Pattern;
 
 /**
  * Data source meta data for SQLServer.
- *
- * @author panjuan
  */
 @Getter
 public final class SQLServerDataSourceMetaData implements DataSourceMetaData {

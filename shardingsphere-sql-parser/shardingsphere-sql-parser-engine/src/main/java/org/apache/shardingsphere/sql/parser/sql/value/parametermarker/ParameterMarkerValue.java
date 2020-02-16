@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
  * Parameter marker value.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

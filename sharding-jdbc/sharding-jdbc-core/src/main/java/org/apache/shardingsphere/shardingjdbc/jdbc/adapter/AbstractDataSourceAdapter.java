@@ -37,10 +37,6 @@ import java.util.logging.Logger;
 
 /**
  * Adapter for {@code Datasource}.
- * 
- * @author zhangliang
- * @author panjuan
- * @author zhaojun
  */
 @Getter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {

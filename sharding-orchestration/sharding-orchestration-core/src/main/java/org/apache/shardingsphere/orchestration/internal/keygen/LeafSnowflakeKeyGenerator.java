@@ -34,8 +34,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Key generator implemented by leaf snowflake algorithms.
- *
- * @author wangguangyuan
  */
 public final class LeafSnowflakeKeyGenerator implements ShardingKeyGenerator {
     

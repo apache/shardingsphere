@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 /**
  * lock filler.
- *
- * @author zhyee
  */
 public final class LockFiller implements SQLSegmentFiller<LockSegment> {
 

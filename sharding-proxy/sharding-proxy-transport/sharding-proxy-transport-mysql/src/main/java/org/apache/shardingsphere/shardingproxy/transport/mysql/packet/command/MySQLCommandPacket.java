@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
 
 /**
  * Command packet for MySQL.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public abstract class MySQLCommandPacket implements MySQLPacket, CommandPacket {

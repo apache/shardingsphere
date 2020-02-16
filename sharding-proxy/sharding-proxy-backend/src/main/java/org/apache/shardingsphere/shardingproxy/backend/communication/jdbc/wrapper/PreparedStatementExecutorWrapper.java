@@ -55,9 +55,6 @@ import java.util.Map;
 
 /**
  * Executor wrapper for prepared statement.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {

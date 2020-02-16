@@ -27,8 +27,6 @@ import java.util.Collections;
 
 /**
  * COM_STMT_CLOSE command executor for MySQL.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MySQLComStmtCloseExecutor implements CommandExecutor {

@@ -41,9 +41,6 @@ import java.util.Map;
 
 /**
  * Adapter for {@code ResultSet}.
- * 
- * @author zhangliang
- * @author panjuan
  */
 public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperationResultSet {
     

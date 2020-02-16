@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Paren of SQL.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

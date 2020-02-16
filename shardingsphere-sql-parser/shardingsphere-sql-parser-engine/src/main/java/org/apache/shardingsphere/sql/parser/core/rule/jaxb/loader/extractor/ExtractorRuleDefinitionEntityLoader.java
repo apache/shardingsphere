@@ -26,8 +26,6 @@ import java.io.InputStream;
 
 /**
  * Extractor rule definition entity loader for JAXB.
- *
- * @author zhangliang
  */
 public final class ExtractorRuleDefinitionEntityLoader implements RuleDefinitionEntityLoader {
     

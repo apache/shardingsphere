@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Drop role statement.
- *
- * @author zhangliang
  */
 public final class DropRoleStatement extends DCLStatement {
 }

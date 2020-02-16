@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * {@code ResultSet} returned database meta data.
- *
- * @author yangyi
  */
 public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter implements DatabaseMetaData {
     

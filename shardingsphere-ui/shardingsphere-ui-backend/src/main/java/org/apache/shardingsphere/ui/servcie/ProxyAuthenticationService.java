@@ -19,8 +19,6 @@ package org.apache.shardingsphere.ui.servcie;
 
 /**
  * Sharding proxy Authentication service.
- * 
- * @author chenqingyang
  */
 public interface ProxyAuthenticationService {
     

@@ -30,8 +30,6 @@ import java.util.Queue;
 
 /**
  * Extractor utility.
- * 
- * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExtractorUtils {

@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * Column position extractor for MySQL.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExtractor {

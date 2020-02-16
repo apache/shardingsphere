@@ -41,8 +41,6 @@ import java.util.List;
 
 /**
  * Sharding condition engine for insert clause.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class InsertClauseShardingConditionEngine {

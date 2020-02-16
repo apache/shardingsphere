@@ -25,9 +25,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Local encrypt rule condition.
- *
- * @author yangyi
- * @author panjuan
  */
 public final class LocalEncryptRuleCondition extends SpringBootCondition {
     

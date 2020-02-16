@@ -33,8 +33,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Alter table statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterTableStatementAssert {

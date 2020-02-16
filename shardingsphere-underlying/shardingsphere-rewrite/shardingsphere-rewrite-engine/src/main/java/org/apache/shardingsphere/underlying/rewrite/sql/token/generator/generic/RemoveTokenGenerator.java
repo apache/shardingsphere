@@ -28,8 +28,6 @@ import java.util.LinkedList;
 
 /**
  * Remove token generator.
- *
- * @author zhangliang
  */
 public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator {
     

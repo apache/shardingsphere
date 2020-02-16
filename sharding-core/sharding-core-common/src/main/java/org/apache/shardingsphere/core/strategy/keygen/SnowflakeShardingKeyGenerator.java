@@ -47,9 +47,6 @@ import java.util.Properties;
  * <p>
  * Call @{@code SnowflakeShardingKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
  * </p>
- * 
- * @author gaohongtao
- * @author panjuan
  */
 public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator {
     

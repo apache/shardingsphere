@@ -61,13 +61,6 @@ import java.util.Map;
 
 /**
  * Sharding schema.
- *
- * @author zhangliang
- * @author zhangyonglun
- * @author panjuan
- * @author zhaojun
- * @author wangkai
- * @author sunbufu
  */
 @Getter
 public final class ShardingSchema extends LogicSchema {

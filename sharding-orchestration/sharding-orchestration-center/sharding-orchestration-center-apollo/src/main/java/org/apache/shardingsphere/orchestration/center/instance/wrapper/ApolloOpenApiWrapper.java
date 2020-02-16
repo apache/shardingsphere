@@ -26,8 +26,6 @@ import org.apache.shardingsphere.orchestration.center.instance.ApolloPropertiesE
 
 /**
  * Apollo open api client wrapper.
- *
- * @author dongzonglei
  */
 public final class ApolloOpenApiWrapper {
     

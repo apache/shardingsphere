@@ -38,8 +38,6 @@ import java.util.TreeSet;
 
 /**
  * Complex sharding strategy.
- * 
- * @author zhangliang
  */
 public final class ComplexShardingStrategy implements ShardingStrategy {
     

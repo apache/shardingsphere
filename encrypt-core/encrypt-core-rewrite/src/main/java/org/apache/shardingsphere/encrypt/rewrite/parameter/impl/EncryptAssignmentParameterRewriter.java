@@ -39,8 +39,6 @@ import java.util.List;
 
 /**
  * Assignment parameter rewriter for encrypt.
- *
- * @author zhangliang
  */
 public final class EncryptAssignmentParameterRewriter extends EncryptParameterRewriter {
     

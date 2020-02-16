@@ -25,9 +25,6 @@ import java.util.List;
 
 /**
  * Master-slave rule configuration.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 public class MasterSlaveRuleConfiguration implements RuleConfiguration {

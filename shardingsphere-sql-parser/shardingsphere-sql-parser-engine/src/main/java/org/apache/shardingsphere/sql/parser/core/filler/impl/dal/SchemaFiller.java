@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseS
 
 /**
  * Schema filler.
- *
- * @author zhangliang
  */
 public final class SchemaFiller implements SQLSegmentFiller<SchemaSegment> {
     

@@ -28,9 +28,6 @@ import java.util.List;
 
 /**
  * Sharding condition.
- * 
- * @author maxiaoguang
- * @author zhangliang
  */
 @Getter
 @ToString

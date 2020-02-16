@@ -44,9 +44,6 @@ import java.util.Map;
 
 /**
  * Encrypt schema.
- *
- * @author panjuan
- * @author sunbufu
  */
 @Getter
 public final class EncryptSchema extends LogicSchema {

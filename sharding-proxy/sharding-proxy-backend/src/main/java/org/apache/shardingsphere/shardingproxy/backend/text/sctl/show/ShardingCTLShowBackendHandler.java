@@ -37,8 +37,6 @@ import java.util.Collections;
 
 /**
  * Sharding CTL show backend handler.
- *
- * @author zhaojun
  */
 public final class ShardingCTLShowBackendHandler implements TextProtocolBackendHandler {
     

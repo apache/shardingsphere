@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Drop table statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 public final class DropTableStatementTestCase extends SQLParserTestCase {

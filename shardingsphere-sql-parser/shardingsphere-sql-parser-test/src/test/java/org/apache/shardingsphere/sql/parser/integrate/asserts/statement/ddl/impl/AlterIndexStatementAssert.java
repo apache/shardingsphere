@@ -29,8 +29,6 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Alter index statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterIndexStatementAssert {

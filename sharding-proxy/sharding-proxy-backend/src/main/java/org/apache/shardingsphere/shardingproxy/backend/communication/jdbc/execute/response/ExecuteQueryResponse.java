@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Execute query response.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

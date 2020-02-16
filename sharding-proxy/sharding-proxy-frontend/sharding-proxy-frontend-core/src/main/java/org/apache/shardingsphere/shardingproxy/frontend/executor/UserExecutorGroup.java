@@ -25,9 +25,6 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 /**
  * Command execute engine.
- *
- * @author wuxu
- * @author zhaojun
  */
 public final class UserExecutorGroup implements AutoCloseable {
     

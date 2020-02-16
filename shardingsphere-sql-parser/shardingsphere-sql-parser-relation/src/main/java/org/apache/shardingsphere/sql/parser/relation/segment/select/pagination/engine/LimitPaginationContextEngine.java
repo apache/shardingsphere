@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Pagination context engine for limit.
- *
- * @author zhangliang
  */
 public final class LimitPaginationContextEngine {
     

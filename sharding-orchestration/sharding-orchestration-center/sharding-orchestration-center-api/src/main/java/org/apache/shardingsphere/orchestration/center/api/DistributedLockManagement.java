@@ -22,11 +22,6 @@ import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
  * Distributed Lock center.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 public interface DistributedLockManagement extends TypeBasedSPI {
     

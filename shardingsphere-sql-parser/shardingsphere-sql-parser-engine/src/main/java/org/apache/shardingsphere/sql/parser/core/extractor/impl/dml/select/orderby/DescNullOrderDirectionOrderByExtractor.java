@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 
 /**
  * Order by extractor for DESC null order direction.
- *
- * @author zhangliang
  */
 public final class DescNullOrderDirectionOrderByExtractor extends OrderByExtractor {
     

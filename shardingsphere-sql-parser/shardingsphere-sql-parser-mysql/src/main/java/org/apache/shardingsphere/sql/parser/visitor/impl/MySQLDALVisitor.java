@@ -55,8 +55,6 @@ import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
  * MySQL DAL visitor.
- *
- * @author panjuan
  */
 public final class MySQLDALVisitor extends MySQLVisitor {
     

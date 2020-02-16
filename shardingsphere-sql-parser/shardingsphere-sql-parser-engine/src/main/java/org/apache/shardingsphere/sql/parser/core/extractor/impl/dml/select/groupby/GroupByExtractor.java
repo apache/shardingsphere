@@ -30,10 +30,6 @@ import java.util.Map;
 
 /**
  * Group by extractor.
- *
- * @author duhongjun
- * @author panjuan
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public abstract class GroupByExtractor implements OptionalSQLSegmentExtractor {

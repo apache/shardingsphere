@@ -215,7 +215,7 @@
         
         <!-- Javadoc Comments -->
         <module name="AtclauseOrder">
-            <property name="tagOrder" value="@author, @param, @return, @throws, @deprecated"/>
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
         </module>
         <module name="NonEmptyAtclauseDescription"/>
         <module name="JavadocParagraph"/>

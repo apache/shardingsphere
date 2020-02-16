@@ -27,8 +27,6 @@ import java.util.LinkedList;
 
 /**
  * Filler rule definition entity for JAXB.
- *
- * @author zhangliang
  */
 @XmlRootElement(name = "filler-rule-definition")
 @Getter

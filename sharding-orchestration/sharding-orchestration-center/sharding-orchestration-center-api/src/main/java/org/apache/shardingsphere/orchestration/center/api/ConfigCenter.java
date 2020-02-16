@@ -25,11 +25,6 @@ import java.util.List;
 
 /**
  * Config center.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 public interface ConfigCenter extends TypeBasedSPI {
     

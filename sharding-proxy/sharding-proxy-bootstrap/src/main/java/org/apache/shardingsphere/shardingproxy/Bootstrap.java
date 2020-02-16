@@ -56,11 +56,6 @@ import java.util.Properties;
 
 /**
  * Sharding-Proxy Bootstrap.
- *
- * @author zhangliang
- * @author wangkai
- * @author panjuan
- * @author sunbufu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {

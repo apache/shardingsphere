@@ -30,9 +30,6 @@ import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92TCLVisitor;
 
 /**
  * SQL parser entry for SQL92.
- *
- * @author zhangyonglun
- * @author panjuan
  */
 public final class SQL92ParserEntry implements SQLParserEntry {
     

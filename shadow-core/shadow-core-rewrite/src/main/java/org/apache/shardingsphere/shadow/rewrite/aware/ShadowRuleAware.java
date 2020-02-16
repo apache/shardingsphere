@@ -21,8 +21,6 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 
 /**
  * Shadow rule aware.
- *
- * @author zhyee
  */
 public interface ShadowRuleAware {
     

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * SQL statement context.
- *
- * @author zhangliang
  */
 public interface SQLStatementContext {
     

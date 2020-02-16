@@ -29,8 +29,6 @@ import javax.transaction.TransactionManager;
 
 /**
  * Bitronix sharding transaction manager.
- *
- * @author zhaojun
  */
 public final class BitronixXATransactionManager implements XATransactionManager {
     

@@ -19,9 +19,6 @@ package org.apache.shardingsphere.spi.database.metadata;
 
 /**
  * Data source meta data.
- *
- * @author panjuan
- * @author zhangliang
  */
 public interface DataSourceMetaData {
     

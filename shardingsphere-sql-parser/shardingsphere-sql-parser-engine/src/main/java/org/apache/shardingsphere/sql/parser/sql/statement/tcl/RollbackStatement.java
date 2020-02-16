@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.tcl;
 
 /**
  * Rollback statement.
- *
- * @author maxiaoguang
  */
 public final class RollbackStatement extends TCLStatement {
 }

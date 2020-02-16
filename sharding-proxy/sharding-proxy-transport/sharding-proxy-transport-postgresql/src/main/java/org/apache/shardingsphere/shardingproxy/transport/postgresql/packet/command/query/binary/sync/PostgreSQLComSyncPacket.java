@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Command sync packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLComSyncPacket extends PostgreSQLCommandPacket {
     

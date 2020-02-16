@@ -24,9 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 /**
  * Insert columns filler.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumnsSegment> {
     

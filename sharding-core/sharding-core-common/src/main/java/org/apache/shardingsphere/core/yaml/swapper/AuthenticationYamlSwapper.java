@@ -27,8 +27,6 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Authentication YAML swapper.
- *
- * @author zhangliang
  */
 public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, Authentication> {
     

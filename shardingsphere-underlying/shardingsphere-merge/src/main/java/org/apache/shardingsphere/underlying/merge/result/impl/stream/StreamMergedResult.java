@@ -27,8 +27,6 @@ import java.util.Calendar;
 
 /**
  * Stream merged result.
- *
- * @author zhangliang
  */
 @Setter
 public abstract class StreamMergedResult implements MergedResult {

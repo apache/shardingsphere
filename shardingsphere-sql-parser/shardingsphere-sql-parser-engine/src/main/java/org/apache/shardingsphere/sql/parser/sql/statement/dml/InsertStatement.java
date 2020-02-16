@@ -37,10 +37,6 @@ import java.util.List;
 
 /**
  * Insert statement.
- *
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @Getter
 @Setter

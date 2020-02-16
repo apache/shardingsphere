@@ -36,19 +36,17 @@ import java.util.List;
 
 /**
  * Insert on duplicate key update parameter rewriter for encrypt.
- *
- * @author chun.yang
  */
 @Setter
 public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter extends EncryptParameterRewriter implements QueryWithCipherColumnAware {
-
+    
     private boolean queryWithCipherColumn;
-
+    
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(OnDuplicateKeyColumnsSegment.class).isPresent();
     }
-
+    
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 /**
  * Value AST node.
  *
- * @author zhangliang
- * 
  * @param <T> type of value
  */
 public interface ValueASTNode<T> extends ASTNode {

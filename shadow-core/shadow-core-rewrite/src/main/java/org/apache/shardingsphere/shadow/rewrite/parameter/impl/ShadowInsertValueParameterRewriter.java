@@ -30,8 +30,6 @@ import java.util.List;
 
 /**
  * Insert value parameter rewriter for shadow.
- *
- * @author zhyee
  */
 public final class ShadowInsertValueParameterRewriter extends ShadowParameterRewriter {
     

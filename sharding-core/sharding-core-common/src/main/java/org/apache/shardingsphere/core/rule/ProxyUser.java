@@ -24,8 +24,6 @@ import java.util.Collection;
 
 /**
  * Proxy user.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

@@ -50,9 +50,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- *  Projection assert.
- *
- * @author zhaoyanan
+ * Projection assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProjectionAssert {

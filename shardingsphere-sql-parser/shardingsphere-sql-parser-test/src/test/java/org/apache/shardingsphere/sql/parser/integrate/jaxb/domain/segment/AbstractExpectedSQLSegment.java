@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Abstract expected SQL segment.
- * 
- * @author zhangliang 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter

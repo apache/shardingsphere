@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractType
 
 /**
  * YAML orchestration sharding rule configuration constructor.
- *
- * @author yangyi
  */
 public class YamlOrchestrationShardingRuleConfigurationConstructor extends AbstractTypeConstructor {
     

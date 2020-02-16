@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * Subquery predicate extractor.
- *
- * @author duhongjun
  */
 public final class SubqueryPredicateExtractor implements CollectionSQLSegmentExtractor {
     

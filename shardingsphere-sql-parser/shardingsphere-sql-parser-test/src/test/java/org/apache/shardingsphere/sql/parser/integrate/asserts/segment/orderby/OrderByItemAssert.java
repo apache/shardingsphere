@@ -40,8 +40,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Order by item assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderByItemAssert {

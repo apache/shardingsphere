@@ -37,8 +37,6 @@ import java.util.Map;
 
 /**
  * Sharding transaction manager for XA.
- *
- * @author zhaojun
  */
 public final class XAShardingTransactionManager implements ShardingTransactionManager {
     

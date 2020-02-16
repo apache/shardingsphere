@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * Open tracing SQL execution hook.
- *
- * @author zhangliang
  */
 public final class OpenTracingSQLExecutionHook implements SQLExecutionHook {
     

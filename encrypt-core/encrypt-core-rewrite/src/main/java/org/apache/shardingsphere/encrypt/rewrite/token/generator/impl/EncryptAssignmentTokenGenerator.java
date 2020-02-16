@@ -40,8 +40,6 @@ import java.util.LinkedList;
 
 /**
  * Assignment generator for encrypt.
- *
- * @author panjuan
  */
 public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
     

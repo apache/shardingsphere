@@ -35,10 +35,6 @@ import java.util.Map;
 
 /**
  * Limit extractor.
- *
- * @author duhongjun
- * @author panjuan
- * @author zhangliang
  */
 public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     

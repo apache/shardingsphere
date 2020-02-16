@@ -23,8 +23,6 @@ import lombok.ToString;
 
 /**
  * Parameter marker expression segment.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

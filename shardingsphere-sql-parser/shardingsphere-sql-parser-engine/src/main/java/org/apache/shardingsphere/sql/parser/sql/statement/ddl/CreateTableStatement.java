@@ -29,8 +29,6 @@ import java.util.LinkedList;
 
 /**
  * Create table statement.
- *
- * @author zhangliang
  */
 @Getter
 public final class CreateTableStatement extends DDLStatement implements TableSegmentsAvailable, IndexSegmentsAvailable {

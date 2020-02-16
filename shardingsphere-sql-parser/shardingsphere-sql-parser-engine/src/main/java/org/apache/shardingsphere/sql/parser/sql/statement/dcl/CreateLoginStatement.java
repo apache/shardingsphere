@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Create login statement.
- *
- * @author zhangliang
  */
 public final class CreateLoginStatement extends DCLStatement {
 }

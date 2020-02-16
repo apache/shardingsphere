@@ -28,8 +28,6 @@ import java.util.Properties;
 
 /**
  * Implementation of sharding properties service.
- *
- * @author chenqingyang
  */
 @Service
 public final class ShardingPropertiesServiceImpl implements ShardingPropertiesService {

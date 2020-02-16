@@ -29,8 +29,6 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
 
 /**
  * SQL rewrite context decorator for sharding.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {

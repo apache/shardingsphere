@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Bind complete packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLBindCompletePacket implements PostgreSQLPacket {
     

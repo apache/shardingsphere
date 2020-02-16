@@ -38,8 +38,6 @@ import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Orchestration encrypt data source factory for YAML.
- *
- * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationEncryptDataSourceFactory {

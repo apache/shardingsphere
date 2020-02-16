@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * SQL rewrite result.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

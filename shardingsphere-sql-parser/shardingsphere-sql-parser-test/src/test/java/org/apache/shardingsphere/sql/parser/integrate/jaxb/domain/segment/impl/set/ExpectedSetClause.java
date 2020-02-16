@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Expected set clause.
- * 
- * @author zhangliang 
  */
 @Getter
 public final class ExpectedSetClause extends AbstractExpectedSQLSegment {

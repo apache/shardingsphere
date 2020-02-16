@@ -25,8 +25,6 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Binary statement registry.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BinaryStatementRegistry {

@@ -27,8 +27,6 @@ import java.util.Map;
 
 /**
  * Binary protocol value factory for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLBinaryProtocolValueFactory {

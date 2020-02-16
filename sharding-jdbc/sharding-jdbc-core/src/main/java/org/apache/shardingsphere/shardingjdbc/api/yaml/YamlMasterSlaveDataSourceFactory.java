@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * Master-slave data source factory for YAML.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlMasterSlaveDataSourceFactory {

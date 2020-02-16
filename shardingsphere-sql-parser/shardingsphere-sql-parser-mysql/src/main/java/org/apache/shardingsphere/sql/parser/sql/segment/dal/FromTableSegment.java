@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
  * From table segment.
- * 
- * @author zhangliang 
  */
 @Setter
 @Getter

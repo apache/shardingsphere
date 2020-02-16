@@ -28,8 +28,6 @@ import java.util.Collections;
 
 /**
  * Abstract SQL builder.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

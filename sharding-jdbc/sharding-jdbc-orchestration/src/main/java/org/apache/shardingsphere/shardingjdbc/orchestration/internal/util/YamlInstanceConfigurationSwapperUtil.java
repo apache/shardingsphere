@@ -25,8 +25,6 @@ import org.apache.shardingsphere.orchestration.center.yaml.swapper.InstanceConfi
 
 /**
  * YamlInstanceConfiguration swapper util.
- *
- * @author sunbufu
  */
 public class YamlInstanceConfigurationSwapperUtil {
     

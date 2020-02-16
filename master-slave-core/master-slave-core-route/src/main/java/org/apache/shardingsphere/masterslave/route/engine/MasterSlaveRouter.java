@@ -31,9 +31,6 @@ import java.util.List;
 
 /**
  * Master slave router interface.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class MasterSlaveRouter implements DateNodeRouter {

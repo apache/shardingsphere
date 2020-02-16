@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.visitor.SQL92Visitor;
 
 /**
  * SQL92 DAL visitor.
- *
- * @author zhangliang
  */
 public final class SQL92DALVisitor extends SQL92Visitor {
 }

@@ -30,9 +30,6 @@ import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLTCLVisitor;
 
 /**
  * SQL parser entry for MySQL.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class MySQLParserEntry implements SQLParserEntry {
     

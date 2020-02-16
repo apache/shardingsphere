@@ -33,8 +33,6 @@ import java.util.List;
 
 /**
  * Sharding generated key insert value parameter rewriter.
- *
- * @author zhangliang
  */
 @Setter
 public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter, ShardingRouteContextAware {

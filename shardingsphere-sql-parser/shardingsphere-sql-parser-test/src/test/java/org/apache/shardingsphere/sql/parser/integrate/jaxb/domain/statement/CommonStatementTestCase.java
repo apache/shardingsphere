@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Common statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 public final class CommonStatementTestCase extends SQLParserTestCase {

@@ -41,8 +41,6 @@ import java.util.Properties;
 
 /**
  * Config center for Apollo.
- *
- * @author dongzonglei
  */
 @Slf4j
 public final class ApolloInstance implements ConfigCenter {

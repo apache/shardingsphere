@@ -27,8 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Global exception handler.
- * 
- * @author chenqingyang
  */
 @Slf4j
 @ControllerAdvice

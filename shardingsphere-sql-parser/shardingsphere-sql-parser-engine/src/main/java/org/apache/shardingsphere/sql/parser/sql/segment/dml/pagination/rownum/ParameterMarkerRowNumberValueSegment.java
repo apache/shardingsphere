@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.Parameter
 
 /**
  * Row number value segment for parameter marker.
- * 
- * @author zhangliang
  */
 @Getter
 public final class ParameterMarkerRowNumberValueSegment extends RowNumberValueSegment implements ParameterMarkerPaginationValueSegment {

@@ -21,8 +21,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * SQL parser.
- *
- * @author zhangliang
  */
 public interface SQLParser {
     

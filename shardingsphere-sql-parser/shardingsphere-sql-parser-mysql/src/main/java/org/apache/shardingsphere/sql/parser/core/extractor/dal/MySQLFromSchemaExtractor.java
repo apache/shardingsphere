@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * From schema extractor for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLFromSchemaExtractor implements OptionalSQLSegmentExtractor {
     

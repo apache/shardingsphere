@@ -52,8 +52,6 @@ import java.util.LinkedList;
 
 /**
  * SQL92 DDL visitor.
- *
- * @author zhangliang
  */
 public final class SQL92DDLVisitor extends SQL92Visitor {
     

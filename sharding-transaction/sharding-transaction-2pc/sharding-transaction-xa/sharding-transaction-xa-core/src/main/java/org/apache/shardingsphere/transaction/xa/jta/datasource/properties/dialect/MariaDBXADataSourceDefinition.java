@@ -28,8 +28,6 @@ import java.util.Properties;
 
 /**
  * XA data source definition for MariaDB.
- *
- * @author yanqiufang
  */
 public final class MariaDBXADataSourceDefinition implements XADataSourceDefinition {
 

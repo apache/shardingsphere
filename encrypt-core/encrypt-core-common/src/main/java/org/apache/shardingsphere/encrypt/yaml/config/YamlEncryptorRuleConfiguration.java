@@ -25,8 +25,6 @@ import java.util.Properties;
 
 /**
  * Encryptor configuration.
- *
- * @author panjuan
  */
 @Getter
 @Setter

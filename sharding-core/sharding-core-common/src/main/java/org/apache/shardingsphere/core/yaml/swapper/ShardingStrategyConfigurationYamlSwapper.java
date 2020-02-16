@@ -39,8 +39,6 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Sharding strategy configuration YAML swapper.
- *
- * @author zhangliang
  */
 public final class ShardingStrategyConfigurationYamlSwapper implements YamlSwapper<YamlShardingStrategyConfiguration, ShardingStrategyConfiguration> {
     

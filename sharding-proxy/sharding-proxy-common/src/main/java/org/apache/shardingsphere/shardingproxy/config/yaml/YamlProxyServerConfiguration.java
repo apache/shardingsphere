@@ -28,9 +28,6 @@ import java.util.Properties;
 
 /**
  * Server configuration for YAML.
- * 
- * @author chenqingyang
- * @author panjuan
  */
 @Getter
 @Setter

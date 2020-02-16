@@ -45,12 +45,6 @@ import java.util.Properties;
 
 /**
  * Sharding orchestration facade.
- *
- * @author zhangliang
- * @author caohao
- * @author panjuan
- * @author wangguangyuan
- * @author sunbufu
  */
 @Slf4j
 public final class ShardingOrchestrationFacade implements AutoCloseable {

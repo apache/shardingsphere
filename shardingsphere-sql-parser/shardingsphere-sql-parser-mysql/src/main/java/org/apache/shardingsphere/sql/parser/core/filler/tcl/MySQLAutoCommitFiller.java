@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitState
 
 /**
  * Auto commit filler for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLAutoCommitFiller implements SQLSegmentFiller<AutoCommitSegment> {
     

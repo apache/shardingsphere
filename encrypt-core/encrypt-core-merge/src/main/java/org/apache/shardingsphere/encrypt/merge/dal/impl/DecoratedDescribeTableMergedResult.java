@@ -25,8 +25,6 @@ import java.sql.SQLException;
 
 /**
  * Decorated merged result for describe table.
- *
- * @author zhangliang
  */
 public final class DecoratedDescribeTableMergedResult extends DescribeTableMergedResult {
     

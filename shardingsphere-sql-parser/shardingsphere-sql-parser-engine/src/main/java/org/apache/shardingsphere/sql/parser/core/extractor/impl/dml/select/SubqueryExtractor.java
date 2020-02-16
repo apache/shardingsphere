@@ -27,8 +27,6 @@ import java.util.Map;
 
 /**
  * Subquery extractor.
- *
- * @author duhongjun
  */
 public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     

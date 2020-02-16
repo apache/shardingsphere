@@ -22,8 +22,6 @@ import lombok.Setter;
 
 /**
  * Set auto commit statement.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

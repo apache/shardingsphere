@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 
 /**
  * Data source meta data for H2.
- *
- * @author panjuan
  */
 @Getter
 public final class H2DataSourceMetaData implements MemorizedDataSourceMetaData {

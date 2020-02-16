@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.common.metadata.table.init;
 
 /**
  * Table meta data initializer.
- *
- * @author zhangliang
  */
 public interface TableMetaDataInitializer {
 }

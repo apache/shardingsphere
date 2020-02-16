@@ -24,8 +24,6 @@ import lombok.ToString;
 
 /**
  * Table unit.
- * 
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter

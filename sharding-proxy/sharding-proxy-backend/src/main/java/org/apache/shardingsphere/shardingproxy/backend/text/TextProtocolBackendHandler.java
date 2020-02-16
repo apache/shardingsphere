@@ -24,8 +24,6 @@ import java.sql.SQLException;
 
 /**
  * Text protocol backend handler.
- *
- * @author zhangliang
  */
 public interface TextProtocolBackendHandler {
     

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 
 /**
  * Set role statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SetRoleStatementAssert {

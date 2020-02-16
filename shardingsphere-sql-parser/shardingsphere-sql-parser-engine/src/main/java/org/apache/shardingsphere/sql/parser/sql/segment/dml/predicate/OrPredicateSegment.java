@@ -26,8 +26,6 @@ import java.util.LinkedList;
 
 /**
  * Or predicate segment.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

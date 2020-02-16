@@ -23,9 +23,6 @@ import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 
 /**
  * Compare util.
- *
- * @author zhangliang
- * @author yangyi
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CompareUtil {

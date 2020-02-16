@@ -31,9 +31,6 @@ import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMergerEngi
 
 /**
  * Result merger engine for sharding.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class ShardingResultMergerEngine implements ResultMergerEngine<ShardingRule> {
     

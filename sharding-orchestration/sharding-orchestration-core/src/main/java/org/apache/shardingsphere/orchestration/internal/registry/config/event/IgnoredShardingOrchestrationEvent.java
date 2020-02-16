@@ -21,8 +21,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 
 /**
  * Ignored sharding orchestration event.
- *
- * @author panjuan
  */
 public final class IgnoredShardingOrchestrationEvent implements ShardingOrchestrationEvent {
 }

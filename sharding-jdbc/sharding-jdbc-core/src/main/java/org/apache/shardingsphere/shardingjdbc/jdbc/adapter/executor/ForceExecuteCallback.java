@@ -22,8 +22,6 @@ import java.sql.SQLException;
 /**
  * Force execute callback.
  *
- * @author zhangliang
- * 
  * @param <T> type of target to be executed
  */
 public interface ForceExecuteCallback<T> {

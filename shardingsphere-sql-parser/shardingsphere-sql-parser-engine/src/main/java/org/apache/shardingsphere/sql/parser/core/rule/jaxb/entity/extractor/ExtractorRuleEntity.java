@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Extractor rule entity for JAXB.
- *
- * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter

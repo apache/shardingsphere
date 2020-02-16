@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatemen
 
 /**
  * Drop column definition filler.
- *
- * @author duhongjun
  */
 public final class DropColumnDefinitionFiller implements SQLSegmentFiller<DropColumnDefinitionSegment> {
     

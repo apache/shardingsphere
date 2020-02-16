@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * Generated key insert column token.
- *
- * @author zhangliang
  */
 public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
     

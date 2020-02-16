@@ -24,10 +24,6 @@ import java.util.Collection;
 
 /**
  * Configuration changed listener manager.
- *
- * @author zhangliang
- * @author panjuan
- * @author wangguangyuan
  */
 public final class ConfigurationChangedListenerManager {
     

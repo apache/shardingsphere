@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * Command parse packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @Getter
 @ToString

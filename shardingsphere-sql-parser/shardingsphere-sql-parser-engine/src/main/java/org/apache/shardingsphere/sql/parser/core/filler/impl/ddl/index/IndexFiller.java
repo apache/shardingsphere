@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsA
 
 /**
  * Index filler.
- *
- * @author zhangliang
  */
 public final class IndexFiller implements SQLSegmentFiller<IndexSegment> {
     

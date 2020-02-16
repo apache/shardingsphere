@@ -23,9 +23,6 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
  * Databases shadow rule.
- *
- * @author zhyee
- * @author xiayan
  */
 @Getter
 public class ShadowRule implements BaseRule {

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Binary protocol value for int2 for PostgreSQL.
- * 
- * @author zhangyonglun
  */
 public final class PostgreSQLInt2BinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     

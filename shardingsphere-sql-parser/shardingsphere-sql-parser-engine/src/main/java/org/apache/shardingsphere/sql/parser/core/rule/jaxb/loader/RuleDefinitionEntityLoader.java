@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.core.rule.jaxb.entity.RuleDefinition
 
 /**
  * Rule definition entity loader for JAXB.
- *
- * @author zhangliang
  */
 public interface RuleDefinitionEntityLoader {
     

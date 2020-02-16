@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 /**
  * Group by filler.
- *
- * @author zhangliang
  */
 public final class GroupByFiller implements SQLSegmentFiller<GroupBySegment> {
     

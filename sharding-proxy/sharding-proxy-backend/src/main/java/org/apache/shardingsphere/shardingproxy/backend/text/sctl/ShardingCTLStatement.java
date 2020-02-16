@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl;
 
 /**
  * Sharding CTL statement.
- *
- * @author zhangliang
  */
 public interface ShardingCTLStatement {
 }

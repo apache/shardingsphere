@@ -27,9 +27,6 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.GeneratedKeyIn
 
 /**
  * Generated key insert column token generator.
- *
- * @author panjuan
- * @author zhangliang
  */
 public final class GeneratedKeyInsertColumnTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     

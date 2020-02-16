@@ -28,9 +28,6 @@ import java.util.List;
 
 /**
  * Grouped parameter builder.
- *
- * @author panjuan
- * @author zhangliang
  */
 public final class GroupedParameterBuilder implements ParameterBuilder {
     

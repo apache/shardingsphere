@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStat
 
 /**
  * Set transaction statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SetTransactionStatementAssert {

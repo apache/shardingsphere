@@ -28,8 +28,6 @@ import java.util.Properties;
 
 /**
  * XA data source definition for PostgreSQL.
- *
- * @author zhaojun
  */
 public final class PostgreSQLXADataSourceDefinition implements XADataSourceDefinition {
     

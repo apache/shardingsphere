@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.exception;
 
 /**
  * Throw exception when SQL parsing error.
- * 
- * @author zhangliang 
  */
 public final class SQLParsingException extends RuntimeException {
     

@@ -32,9 +32,6 @@ import java.util.Map.Entry;
 
 /**
  * Sharding result set meta data.
- * 
- * @author zhangliang
- * @author panjuan
  */
 public final class ShardingResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     

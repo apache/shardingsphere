@@ -23,8 +23,6 @@ import java.util.Properties;
 
 /**
  * Nacos properties.
- *
- * @author dongzonglei
  */
 public final class NacosProperties extends TypedProperties<NacosPropertiesEnum> {
     

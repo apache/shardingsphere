@@ -31,8 +31,6 @@ import java.util.Map.Entry;
 
 /**
  * SQL rewrite entry.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class SQLRewriteEntry {

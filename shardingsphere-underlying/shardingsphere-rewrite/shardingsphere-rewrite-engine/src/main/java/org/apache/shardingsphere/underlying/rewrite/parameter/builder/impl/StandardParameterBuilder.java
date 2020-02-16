@@ -32,8 +32,6 @@ import java.util.TreeMap;
 
 /**
  * Standard parameter builder.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class StandardParameterBuilder implements ParameterBuilder {

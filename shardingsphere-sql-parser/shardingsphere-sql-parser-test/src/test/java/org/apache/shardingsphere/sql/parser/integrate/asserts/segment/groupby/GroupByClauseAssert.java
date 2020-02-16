@@ -26,8 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment
 
 /**
  * Group by clause assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GroupByClauseAssert {

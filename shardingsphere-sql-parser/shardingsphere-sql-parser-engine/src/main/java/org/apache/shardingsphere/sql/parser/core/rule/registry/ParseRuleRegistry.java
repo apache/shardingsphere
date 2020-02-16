@@ -38,9 +38,6 @@ import java.util.Map;
 
 /**
  * Parse rule registry.
- *
- * @author zhangliang
- * @author duhongjun
  */
 public final class ParseRuleRegistry {
     

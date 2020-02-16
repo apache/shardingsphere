@@ -29,8 +29,6 @@ import java.util.Collections;
 
 /**
  * SQL case assert context.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class SQLCaseAssertContext {

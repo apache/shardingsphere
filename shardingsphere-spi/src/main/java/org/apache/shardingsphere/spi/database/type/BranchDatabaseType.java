@@ -19,8 +19,6 @@ package org.apache.shardingsphere.spi.database.type;
 
 /**
  * Branch database type.
- *
- * @author zhangliang
  */
 public interface BranchDatabaseType extends DatabaseType {
     

@@ -25,8 +25,6 @@ import java.util.List;
 
 /**
  * Binary prepared statement for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

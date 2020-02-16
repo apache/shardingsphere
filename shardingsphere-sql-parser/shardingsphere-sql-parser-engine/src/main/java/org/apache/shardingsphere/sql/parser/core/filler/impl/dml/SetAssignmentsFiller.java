@@ -25,9 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
 /**
  * Set assignments filler.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class SetAssignmentsFiller implements SQLSegmentFiller<SetAssignmentSegment> {
     

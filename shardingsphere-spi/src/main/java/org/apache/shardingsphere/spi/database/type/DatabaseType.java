@@ -23,8 +23,6 @@ import java.util.Collection;
 
 /**
  * Database type.
- *
- * @author zhangliang
  */
 public interface DatabaseType {
     

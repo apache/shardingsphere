@@ -30,8 +30,6 @@ import java.util.Map.Entry;
 
 /**
  * Table meta data initializer entry.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class TableMetaDataInitializerEntry {

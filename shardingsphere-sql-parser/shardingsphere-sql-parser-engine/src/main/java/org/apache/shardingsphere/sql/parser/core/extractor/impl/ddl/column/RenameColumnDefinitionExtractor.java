@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * Rename column definition extractor.
- * 
- * @author duhongjun
  */
 public final class RenameColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     

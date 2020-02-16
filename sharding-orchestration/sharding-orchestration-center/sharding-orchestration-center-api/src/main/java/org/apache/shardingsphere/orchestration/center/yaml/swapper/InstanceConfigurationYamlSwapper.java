@@ -23,11 +23,6 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceCo
 
 /**
  * Orchestration instance configuration YAML swapper.
- *
- * @author zhangliang
- * @author dongzonglei
- * @author wangguangyuan
- * @author sunbufu
  */
 public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlInstanceConfiguration, InstanceConfiguration> {
     

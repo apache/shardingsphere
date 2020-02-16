@@ -25,8 +25,6 @@ import java.sql.SQLException;
 
 /**
  * Decorator merged result for top and row number pagination.
- *
- * @author zhangliang
  */
 public final class TopAndRowNumberDecoratorMergedResult extends DecoratorMergedResult {
     

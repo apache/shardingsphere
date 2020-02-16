@@ -35,8 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Mock seata server for unit test.
- *
- * @author zhaojun
  */
 @Slf4j
 public final class MockSeataServer {

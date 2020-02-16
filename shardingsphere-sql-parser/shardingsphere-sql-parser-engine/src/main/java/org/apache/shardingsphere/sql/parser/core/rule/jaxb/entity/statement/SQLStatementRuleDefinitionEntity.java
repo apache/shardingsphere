@@ -27,8 +27,6 @@ import java.util.LinkedList;
 
 /**
  * SQL statement rule definition entity for JAXB.
- *
- * @author zhangliang
  */
 @XmlRootElement(name = "sql-statement-rule-definition")
 @Getter

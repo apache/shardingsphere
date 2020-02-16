@@ -33,8 +33,6 @@ import java.util.Calendar;
 
 /**
  * Unsupported {@code ResultSet} methods for generated keys.
- * 
- * @author gaohongtao
  */
 public abstract class AbstractUnsupportedGeneratedKeysResultSet extends AbstractUnsupportedOperationResultSet {
     

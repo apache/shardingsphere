@@ -61,11 +61,6 @@ import java.util.Map;
 
 /**
  * PreparedStatement that support sharding.
- *
- * @author zhangliang
- * @author caohao
- * @author maxiaoguang
- * @author panjuan
  */
 public final class ShardingPreparedStatement extends AbstractShardingPreparedStatementAdapter {
     

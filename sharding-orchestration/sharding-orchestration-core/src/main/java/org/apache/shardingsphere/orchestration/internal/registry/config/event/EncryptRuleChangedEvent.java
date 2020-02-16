@@ -24,8 +24,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 
 /**
  * Encrypt rule changed event.
- *
- * @author yangyi
  */
 @RequiredArgsConstructor
 @Getter

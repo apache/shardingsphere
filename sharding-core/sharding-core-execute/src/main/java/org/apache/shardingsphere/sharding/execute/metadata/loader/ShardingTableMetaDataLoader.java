@@ -55,9 +55,6 @@ import java.util.Map.Entry;
 
 /**
  * Table meta data loader for sharding.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<ShardingRule> {

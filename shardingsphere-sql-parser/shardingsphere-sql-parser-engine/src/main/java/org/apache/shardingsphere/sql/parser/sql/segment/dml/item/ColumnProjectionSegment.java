@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Column projection segment.
- * 
- * @author zhangliang
  */
 public final class ColumnProjectionSegment extends ColumnSegment implements ProjectionSegment, AliasAvailable {
     

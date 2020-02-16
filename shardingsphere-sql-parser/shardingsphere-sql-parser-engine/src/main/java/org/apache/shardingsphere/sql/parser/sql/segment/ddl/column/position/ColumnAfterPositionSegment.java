@@ -21,8 +21,6 @@ import lombok.Getter;
 
 /**
  * Column after position segment.
- * 
- * @author zhangliang
  */
 @Getter
 public final class ColumnAfterPositionSegment extends ColumnPositionSegment {

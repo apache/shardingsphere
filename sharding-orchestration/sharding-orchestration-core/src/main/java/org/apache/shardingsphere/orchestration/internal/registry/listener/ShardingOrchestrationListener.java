@@ -21,9 +21,6 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.
 
 /**
  * Sharding orchestration listener.
- *
- * @author caohao
- * @author panjuan
  */
 public interface ShardingOrchestrationListener {
     

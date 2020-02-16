@@ -21,8 +21,6 @@ import java.sql.ResultSetMetaData;
 
 /**
  * Circuit breaker result set metadata.
- * 
- * @author caohao
  */
 public final class CircuitBreakerResultSetMetaData implements ResultSetMetaData {
     

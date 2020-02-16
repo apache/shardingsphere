@@ -25,10 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsA
 
 /**
  * Table filler.
- *
- * @author duhongjun
- * @author zhangliang
- * @author panjuan
  */
 public final class TableFiller implements SQLSegmentFiller<TableSegment> {
     

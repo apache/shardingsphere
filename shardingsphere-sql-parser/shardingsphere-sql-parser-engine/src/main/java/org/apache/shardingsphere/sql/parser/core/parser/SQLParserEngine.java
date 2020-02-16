@@ -39,8 +39,6 @@ import java.util.Map;
 
 /**
  * SQL parser engine.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class SQLParserEngine {

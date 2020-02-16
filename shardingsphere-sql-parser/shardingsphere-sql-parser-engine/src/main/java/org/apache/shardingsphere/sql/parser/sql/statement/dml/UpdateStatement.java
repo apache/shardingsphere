@@ -31,9 +31,6 @@ import java.util.LinkedList;
 
 /**
  * Update statement.
- *
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 @Setter

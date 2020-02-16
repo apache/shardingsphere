@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Orchestration properties enum.
- *
- * @author dongzonglei
  */
 @RequiredArgsConstructor
 @Getter

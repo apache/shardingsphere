@@ -27,10 +27,6 @@ import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
  * MySQL payload operation for MySQL packet data types.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/describing-packets.html">describing packets</a>
- * 
- * @author zhangliang
- * @author zhangyonglun
- * @author wangkai
  */
 @RequiredArgsConstructor
 @Getter

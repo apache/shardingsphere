@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Expected insert value.
- *
- * @author zhangliang
  */
 @Getter
 public final class ExpectedInsertValue extends AbstractExpectedSQLSegment {

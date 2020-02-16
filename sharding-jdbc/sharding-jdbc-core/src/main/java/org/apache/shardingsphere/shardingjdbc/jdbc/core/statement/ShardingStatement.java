@@ -57,12 +57,6 @@ import java.util.Map;
 
 /**
  * Statement that support sharding.
- *
- * @author gaohongtao
- * @author caohao
- * @author zhangliang
- * @author zhaojun
- * @author panjuan
  */
 public final class ShardingStatement extends AbstractStatementAdapter {
     

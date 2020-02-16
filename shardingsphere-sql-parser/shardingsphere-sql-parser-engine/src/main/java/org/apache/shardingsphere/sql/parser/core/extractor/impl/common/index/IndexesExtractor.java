@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * Indexes extractor.
- *
- * @author duhongjun
  */
 public final class IndexesExtractor implements CollectionSQLSegmentExtractor {
     

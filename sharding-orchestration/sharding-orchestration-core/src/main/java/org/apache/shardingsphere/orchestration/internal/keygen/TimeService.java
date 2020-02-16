@@ -19,8 +19,6 @@ package org.apache.shardingsphere.orchestration.internal.keygen;
 
 /**
  * Time service.
- * 
- * @author wangguangyaun
  */
 public class TimeService {
     

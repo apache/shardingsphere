@@ -25,8 +25,6 @@ import java.io.InputStream;
 
 /**
  * Rewrite assertions root entity loader for JAXB.
- *
- * @author zhangliang
  */
 public final class RewriteAssertionsRootEntityLoader {
     

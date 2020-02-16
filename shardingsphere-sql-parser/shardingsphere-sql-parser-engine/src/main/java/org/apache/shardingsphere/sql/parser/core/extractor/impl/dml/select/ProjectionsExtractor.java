@@ -32,9 +32,6 @@ import java.util.TreeSet;
 
 /**
  * Projections extractor.
- *
- * @author duhongjun
- * @author panjuan
  */
 public final class ProjectionsExtractor implements OptionalSQLSegmentExtractor {
     

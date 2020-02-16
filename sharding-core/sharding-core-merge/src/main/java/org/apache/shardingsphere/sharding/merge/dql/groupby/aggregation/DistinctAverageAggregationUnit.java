@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Distinct average aggregation unit.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class DistinctAverageAggregationUnit implements AggregationUnit {

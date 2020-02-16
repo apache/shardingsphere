@@ -38,8 +38,6 @@ import java.sql.Timestamp;
 
 /**
  * Unsupported {@code ResultSet} methods.
- * 
- * @author zhangliang
  */
 public abstract class AbstractUnsupportedUpdateOperationResultSet extends WrapperAdapter implements ResultSet {
     

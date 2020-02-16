@@ -37,8 +37,6 @@ import java.util.regex.Pattern;
 
 /**
  * Sharding configuration loader.
- *
- * @author chenqingyang
  */
 public final class ShardingConfigurationLoader {
     

@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 /**
  * projections filler.
- *
- * @author duhongjun
  */
 public final class ProjectionsFiller implements SQLSegmentFiller<ProjectionsSegment> {
     

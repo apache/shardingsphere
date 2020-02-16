@@ -29,8 +29,6 @@ import java.util.LinkedList;
 
 /**
  * SQL segments extractor engine.
- * 
- * @author zhangliang
  */
 public final class SQLSegmentsExtractorEngine {
     

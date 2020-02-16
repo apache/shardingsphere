@@ -28,8 +28,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Implementation of Registry center config service.
- *
- * @author chenqingyang
  */
 @Service
 public final class RegistryCenterConfigServiceImpl implements RegistryCenterConfigService {

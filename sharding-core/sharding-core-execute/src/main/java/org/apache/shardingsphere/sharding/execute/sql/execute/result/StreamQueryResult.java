@@ -33,10 +33,6 @@ import java.util.Calendar;
 
 /**
  * Query result for stream loading.
- *
- * @author zhangliang
- * @author panjuan
- * @author yangyi
  */
 public final class StreamQueryResult implements QueryResult {
     

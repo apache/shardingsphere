@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 
 /**
  * Aggregation unit factory.
- * 
- * @author gaohongtao
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AggregationUnitFactory {

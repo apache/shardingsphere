@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * Modify column definition extractor for Oracle.
- *
- * @author duhongjun
  */
 public final class OracleModifyColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     

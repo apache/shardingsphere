@@ -29,9 +29,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 
 /**
  * Frontend engine for PostgreSQL protocol.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 @Getter
 public final class PostgreSQLProtocolFrontendEngine implements DatabaseProtocolFrontendEngine {

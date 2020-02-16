@@ -38,8 +38,6 @@ import java.util.Map;
 
 /**
  * Order by item extractor.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor {

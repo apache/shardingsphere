@@ -27,8 +27,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * COM_INIT_DB command packet for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-init-db.html#packet-COM_INIT_DB">COM_INIT_DB</a>
- * 
- * @author zhangliang
  */
 @Getter
 @ToString

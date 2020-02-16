@@ -28,9 +28,6 @@ import java.util.LinkedList;
 
 /**
  * SQL statement abstract class.
- *
- * @author zhangliang
- * @author panjuan
  */
 public abstract class AbstractSQLStatement implements SQLStatement {
     

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable
 
 /**
  * Assignment token for encrypt.
- *
- * @author panjuan
  */
 @Getter
 public abstract class EncryptAssignmentToken extends SQLToken implements Substitutable {

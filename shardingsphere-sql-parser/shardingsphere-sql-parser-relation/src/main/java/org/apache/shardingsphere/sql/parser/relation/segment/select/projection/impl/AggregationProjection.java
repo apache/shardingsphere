@@ -32,8 +32,6 @@ import java.util.List;
 
 /**
  * Aggregation projection.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

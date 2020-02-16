@@ -25,8 +25,6 @@ import java.util.Collection;
 
 /**
  * Routing hook for SPI.
- *
- * @author zhaojun
  */
 public final class SPIRoutingHook implements RoutingHook {
     

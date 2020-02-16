@@ -35,8 +35,6 @@ import java.util.List;
 
 /**
  * Condition value generator for compare operator.
- *
- * @author zhangliang
  */
 public final class ConditionValueCompareOperatorGenerator implements ConditionValueGenerator<PredicateCompareRightValue> {
 

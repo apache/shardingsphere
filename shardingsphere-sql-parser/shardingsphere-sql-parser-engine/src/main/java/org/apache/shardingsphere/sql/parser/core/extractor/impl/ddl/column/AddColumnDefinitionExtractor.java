@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * Add column definition extractor.
- *
- * @author duhongjun
  */
 public class AddColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.tcl;
 
 /**
  * Set transaction statement.
- *
- * @author maxiaoguang
  */
 public final class SetTransactionStatement extends TCLStatement {
 }

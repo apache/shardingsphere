@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Lock segment.
- *
- * @author zhyee
  */
 
 @RequiredArgsConstructor

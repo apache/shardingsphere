@@ -29,9 +29,6 @@ import javax.sql.DataSource;
 
 /**
  * Backend data source factory using {@code HikariDataSource} for JDBC raw.
- *
- * @author zhaojun
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSourceFactory {

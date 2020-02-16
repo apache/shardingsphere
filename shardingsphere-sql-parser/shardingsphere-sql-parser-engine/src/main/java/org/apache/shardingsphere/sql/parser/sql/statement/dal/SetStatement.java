@@ -19,9 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dal;
 
 /**
  * Set statement.
- * 
- * @author chenqingyang
- * @author maxiaoguang
  */
 public final class SetStatement extends DALStatement {
 }

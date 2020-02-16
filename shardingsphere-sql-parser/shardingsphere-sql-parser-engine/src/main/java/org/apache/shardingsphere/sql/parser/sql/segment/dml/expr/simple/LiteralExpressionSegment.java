@@ -23,10 +23,6 @@ import lombok.ToString;
 
 /**
  * Literal expression segment.
- * 
- * @author duhongjun
- * @author panjuan
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

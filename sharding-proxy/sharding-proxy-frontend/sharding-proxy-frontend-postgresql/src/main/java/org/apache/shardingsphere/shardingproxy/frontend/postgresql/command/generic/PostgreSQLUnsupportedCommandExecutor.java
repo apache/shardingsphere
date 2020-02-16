@@ -26,9 +26,6 @@ import java.util.Collections;
 
 /**
  * Unsupported command executor for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLUnsupportedCommandExecutor implements CommandExecutor {
     

@@ -56,9 +56,6 @@ import java.util.Set;
 
 /**
  * Schema changed listener.
- *
- * @author panjuan
- * @author wangguangyuan
  */
 public final class SchemaChangedListener extends PostShardingConfigCenterEventListener {
     

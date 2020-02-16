@@ -37,9 +37,6 @@ import java.util.LinkedList;
 
 /**
  * Statement that support master-slave.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 public final class MasterSlaveStatement extends AbstractStatementAdapter {

@@ -23,8 +23,6 @@ import java.util.Collection;
 
 /**
  * JDBC driver URL recognizer.
- *
- * @author zhangliang
  */
 public interface JDBCDriverURLRecognizer extends DatabaseTypeAwareSPI {
     

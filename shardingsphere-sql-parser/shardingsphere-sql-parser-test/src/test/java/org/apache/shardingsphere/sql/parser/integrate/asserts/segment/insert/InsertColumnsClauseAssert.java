@@ -31,8 +31,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Insert column clause assert.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InsertColumnsClauseAssert {

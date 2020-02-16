@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment
 
 /**
  * Order by clause assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderByClauseAssert {

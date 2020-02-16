@@ -27,8 +27,6 @@ import java.util.ArrayList;
 
 /**
  * Data source router for master-slave.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MasterSlaveDataSourceRouter {

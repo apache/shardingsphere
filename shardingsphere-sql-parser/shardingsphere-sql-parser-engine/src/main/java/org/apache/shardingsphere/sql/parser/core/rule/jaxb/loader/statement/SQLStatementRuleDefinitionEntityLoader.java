@@ -27,8 +27,6 @@ import java.io.InputStream;
 
 /**
  * SQL statement rule definition entity loader for JAXB.
- *
- * @author zhangliang
  */
 public final class SQLStatementRuleDefinitionEntityLoader implements RuleDefinitionEntityLoader {
     

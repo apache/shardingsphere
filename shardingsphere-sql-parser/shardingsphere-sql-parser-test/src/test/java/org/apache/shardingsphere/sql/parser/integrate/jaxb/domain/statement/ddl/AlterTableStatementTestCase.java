@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * Alter table statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

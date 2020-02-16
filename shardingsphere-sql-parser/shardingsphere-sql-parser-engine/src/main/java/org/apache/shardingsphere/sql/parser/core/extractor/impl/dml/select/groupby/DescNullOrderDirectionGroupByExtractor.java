@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.core.extractor.impl.dml.select.order
 
 /**
  * Group by extractor for DESC null order direction.
- *
- * @author zhangliang
  */
 public final class DescNullOrderDirectionGroupByExtractor extends GroupByExtractor {
     

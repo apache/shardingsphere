@@ -48,9 +48,6 @@ import java.util.List;
 
 /**
  * Projections context engine.
- *
- * @author zhangliang
- * @author sunbufu
  */
 @RequiredArgsConstructor
 public final class ProjectionsContextEngine {

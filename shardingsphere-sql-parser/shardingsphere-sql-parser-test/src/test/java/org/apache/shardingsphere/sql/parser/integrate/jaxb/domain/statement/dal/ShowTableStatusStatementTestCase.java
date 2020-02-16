@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLP
 
 /**
  * Show table status statement test case.
- * 
- * @author zhangliang 
  */
 public final class ShowTableStatusStatementTestCase extends SQLParserTestCase {
 }

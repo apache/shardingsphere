@@ -76,8 +76,6 @@ import java.util.List;
 
 /**
  * MySQL DDL visitor.
- *
- * @author panjuan
  */
 public final class MySQLDDLVisitor extends MySQLVisitor {
     

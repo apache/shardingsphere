@@ -26,8 +26,6 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
 
 /**
  * Parameter rewriter for shadow.
- *
- * @author zhyee
  */
 @Getter
 @Setter

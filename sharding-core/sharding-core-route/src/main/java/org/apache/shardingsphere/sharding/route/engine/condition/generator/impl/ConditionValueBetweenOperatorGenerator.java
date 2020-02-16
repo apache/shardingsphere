@@ -33,8 +33,6 @@ import java.util.List;
 
 /**
  * Condition value generator for between operator.
- *
- * @author zhangliang
  */
 public final class ConditionValueBetweenOperatorGenerator implements ConditionValueGenerator<PredicateBetweenRightValue> {
     

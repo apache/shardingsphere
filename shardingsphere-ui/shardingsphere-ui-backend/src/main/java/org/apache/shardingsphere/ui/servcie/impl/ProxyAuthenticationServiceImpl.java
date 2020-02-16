@@ -25,8 +25,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Implementation of sharding proxy authentication service.
- *
- * @author chenqingyang
  */
 @Service
 public final class ProxyAuthenticationServiceImpl implements ProxyAuthenticationService {

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceCo
 
 /**
  * Orchestration sharding configuration for YAML.
- *
- * @author caohao
  */
 @Getter
 @Setter

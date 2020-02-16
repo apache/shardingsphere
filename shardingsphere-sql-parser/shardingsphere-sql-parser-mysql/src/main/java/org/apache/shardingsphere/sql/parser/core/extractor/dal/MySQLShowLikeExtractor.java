@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * Show like extractor for MySQL.
- * 
- * @author zhangliang
  */
 public final class MySQLShowLikeExtractor implements OptionalSQLSegmentExtractor {
     

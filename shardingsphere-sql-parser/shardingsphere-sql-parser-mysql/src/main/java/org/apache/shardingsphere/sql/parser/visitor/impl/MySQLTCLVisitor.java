@@ -36,8 +36,6 @@ import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
  * MySQL TCL visitor.
- *
- * @author panjuan
  */
 public final class MySQLTCLVisitor extends MySQLVisitor {
     

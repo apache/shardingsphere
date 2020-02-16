@@ -48,8 +48,6 @@ import java.util.logging.Logger;
 
 /**
  * Abstract orchestration data source.
- *
- * @author panjuan
  */
 public abstract class AbstractOrchestrationDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     

@@ -36,8 +36,6 @@ import java.util.LinkedList;
 
 /**
  * Insert on update values token generator for encrypt.
- *
- * @author chun.yang
  */
 public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
 

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.orchestration.internal.keygen.TimeService;
 
 /**
  * Previous time service.
- *
- * @author wangguangyuan
  */
 @RequiredArgsConstructor
 public final class PreviousTimeService extends TimeService {

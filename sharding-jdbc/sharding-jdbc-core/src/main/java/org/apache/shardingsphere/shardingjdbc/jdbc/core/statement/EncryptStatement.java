@@ -51,8 +51,6 @@ import java.util.Map;
 
 /**
  * Encrypt statement.
- *
- * @author panjuan
  */
 @Slf4j
 public final class EncryptStatement extends AbstractUnsupportedOperationStatement {

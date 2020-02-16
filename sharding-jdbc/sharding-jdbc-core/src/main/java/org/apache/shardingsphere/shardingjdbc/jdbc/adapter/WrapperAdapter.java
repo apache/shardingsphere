@@ -27,8 +27,6 @@ import java.util.Collection;
 
 /**
  * Adapter for {@code java.sql.Wrapper}.
- * 
- * @author zhangliang
  */
 public abstract class WrapperAdapter implements Wrapper {
     

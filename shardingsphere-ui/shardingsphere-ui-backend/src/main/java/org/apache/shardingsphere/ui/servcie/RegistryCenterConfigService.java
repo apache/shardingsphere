@@ -23,8 +23,6 @@ import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
 
 /**
  * Registry center config service.
- *
- * @author chenqingyang
  */
 public interface RegistryCenterConfigService {
     

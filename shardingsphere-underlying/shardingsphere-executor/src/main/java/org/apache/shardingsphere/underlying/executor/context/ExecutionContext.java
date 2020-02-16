@@ -26,8 +26,6 @@ import java.util.LinkedHashSet;
 
 /**
  * Execution context.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

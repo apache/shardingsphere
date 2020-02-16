@@ -27,9 +27,6 @@ import java.util.Properties;
 /**
  * Type based SPI service loader.
  * 
- * @author panjuan
- * @author zhangliang
- * 
  * @param <T> type of algorithm class
  */
 @RequiredArgsConstructor

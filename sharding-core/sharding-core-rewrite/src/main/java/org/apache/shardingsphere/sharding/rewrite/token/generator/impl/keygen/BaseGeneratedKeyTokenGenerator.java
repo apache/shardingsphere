@@ -30,8 +30,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * Base generated key token generator.
- *
- * @author zhangliang
  */
 @Setter
 public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator, ShardingRouteContextAware {
