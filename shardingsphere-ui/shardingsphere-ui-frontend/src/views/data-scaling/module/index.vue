@@ -24,7 +24,7 @@
         icon="el-icon-plus"
         @click="add">{{ $t('dataScaling.btnTxt') }}</el-button>
       <span style="margin-left: 20px;">
-        server: <samp style="color: #E17425;">{{ serverHost }}</samp>
+        server: <samp style="color: #E17425;">{{ serviceForm.serviceUrl }}</samp>
         <i class="el-icon-edit" @click="showServerDialog"></i>
       </span>
     </div>
@@ -552,7 +552,7 @@ export default {
     getJobServer() {
       API.getJobServer().then(res => {
         if (res) {
-          this.serverHost = res.serverUrl
+          this.serviceForm = res
           this.getJobList()
         } else {
           this.serverDialogVisible = true
