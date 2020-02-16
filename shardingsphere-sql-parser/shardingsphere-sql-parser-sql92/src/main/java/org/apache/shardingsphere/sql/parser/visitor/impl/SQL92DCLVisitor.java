@@ -61,6 +61,6 @@ public final class SQL92DCLVisitor extends SQL92Visitor {
     }
     
     private Collection<TableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
-        return Collections.singletonList((TableSegment) visit(ctx.onObjectClause().privilegeLevel_().tableName()));
+        return Collections.singletonList((TableSegment) visit(ctx.onObjectClause().privilegeLevel().tableName()));
     }
 }

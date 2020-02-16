@@ -50,13 +50,13 @@ grantee_
     ;
 
 onObjectClause
-    : objectType_? privilegeLevel_
+    : objectType_? privilegeLevel
     ;
 
 objectType_
     : TABLE
     ;
 
-privilegeLevel_
+privilegeLevel
     : tableName
     ;
