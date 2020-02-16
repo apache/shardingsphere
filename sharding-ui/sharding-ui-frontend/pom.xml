@@ -29,6 +29,7 @@
     <properties>
         <node.version>v6.10.0</node.version>
         <npm.version>3.10.10</npm.version>
+        <node-repo-mirror>https://nodejs.org/dist</node-repo-mirror>
     </properties>
 
     <build>
@@ -46,7 +47,7 @@
                         <configuration>
                             <nodeVersion>${node.version}</nodeVersion>
                             <npmVersion>${npm.version}</npmVersion>
-                            <downloadRoot>http://npm.taobao.org/mirrors/node/</downloadRoot>
+                            <downloadRoot>${node-repo-mirror}</downloadRoot>
                         </configuration>
                     </execution>
                     <execution>
@@ -82,4 +83,13 @@
             </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>node-cn</id>
+            <properties>
+                <node-repo-mirror>http://npm.taobao.org/mirrors/node/</node-repo-mirror>
+            </properties>
+        </profile>
+    </profiles>
 </project>
