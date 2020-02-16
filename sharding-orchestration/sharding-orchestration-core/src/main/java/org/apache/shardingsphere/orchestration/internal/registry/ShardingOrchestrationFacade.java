@@ -23,8 +23,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
@@ -35,11 +33,14 @@ import org.apache.shardingsphere.orchestration.internal.configcenter.ConfigCente
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.internal.registry.state.service.StateService;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.properties.OrchestrationProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.OrchestrationPropertiesEnum;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -77,7 +78,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
         InstanceConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
         configCenter = new ConfigCenterServiceLoader().load(configCenterConfiguration);
-        isOverwrite = Boolean.parseBoolean(Objects.toString(configCenterConfiguration.getProperties().get("overwrite")));
+        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertiesEnum.OVERWRITE);
         configService = new ConfigurationService(configCenterName.get(), configCenter);
         listenerManager = shardingSchemaNames.isEmpty()
                 ? new ShardingOrchestrationListenerManager(registryCenterName.get(), regCenter, configCenterName.get(), configCenter, configService.getAllShardingSchemaNames())

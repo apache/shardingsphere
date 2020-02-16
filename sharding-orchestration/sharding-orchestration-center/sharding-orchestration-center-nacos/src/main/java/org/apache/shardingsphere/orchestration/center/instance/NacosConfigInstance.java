@@ -19,7 +19,6 @@ package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.PropertyKeyConst;
-import com.alibaba.nacos.api.common.Constants;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -45,9 +44,9 @@ import java.util.concurrent.Executor;
 @Slf4j
 public class NacosConfigInstance implements ConfigCenter {
     
-    private static final String SHARDING_SPHERE_DEFAULT_GROUP = "SHARDING_SPHERE_DEFAULT_GROUP";
-    
     private ConfigService configService;
+    
+    private NacosProperties nacosProperties;
     
     @Getter
     @Setter
@@ -61,6 +60,7 @@ public class NacosConfigInstance implements ConfigCenter {
     @Override
     public void init(final InstanceConfiguration config) {
         try {
+            nacosProperties = new NacosProperties(properties);
             Properties properties = new Properties();
             properties.put(PropertyKeyConst.SERVER_ADDR, config.getServerLists());
             properties.put(PropertyKeyConst.NAMESPACE, null == config.getNamespace() ? "" : config.getNamespace());
@@ -80,8 +80,8 @@ public class NacosConfigInstance implements ConfigCenter {
     public String get(final String key) {
         try {
             String dataId = ConfigKeyUtils.path2Key(key);
-            String group = properties.getProperty(Constants.GROUP, SHARDING_SPHERE_DEFAULT_GROUP);
-            long timeoutMs = Long.parseLong(properties.getProperty("timeout", "3000"));
+            String group = nacosProperties.getValue(NacosPropertiesEnum.GROUP);
+            long timeoutMs = nacosProperties.getValue(NacosPropertiesEnum.TIMEOUT);
             return configService.getConfig(dataId, group, timeoutMs);
         } catch (final NacosException ex) {
             log.debug("Nacos get config value exception for: {}", ex.toString());
@@ -110,7 +110,7 @@ public class NacosConfigInstance implements ConfigCenter {
     public void persist(final String key, final String value) {
         try {
             String dataId = ConfigKeyUtils.path2Key(key);
-            String group = properties.getProperty(Constants.GROUP, SHARDING_SPHERE_DEFAULT_GROUP);
+            String group = nacosProperties.getValue(NacosPropertiesEnum.GROUP);
             configService.publishConfig(dataId, group, value);
         } catch (final NacosException ex) {
             log.debug("Nacos persist config exception for: {}", ex.toString());
@@ -127,7 +127,7 @@ public class NacosConfigInstance implements ConfigCenter {
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         try {
             String dataId = ConfigKeyUtils.path2Key(key);
-            String group = properties.getProperty(Constants.GROUP, SHARDING_SPHERE_DEFAULT_GROUP);
+            String group = nacosProperties.getValue(NacosPropertiesEnum.GROUP);
             configService.addListener(dataId, group, new Listener() {
                 
                 @Override

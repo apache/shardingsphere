@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.orchestration.center.instance.wrapper;
 
-import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.openapi.client.ApolloOpenApiClient;
-import com.ctrip.framework.apollo.openapi.client.constant.ApolloOpenApiConstants;
 import com.ctrip.framework.apollo.openapi.dto.NamespaceReleaseDTO;
 import com.ctrip.framework.apollo.openapi.dto.OpenItemDTO;
-import com.google.common.primitives.Ints;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-
-import java.util.Objects;
-import java.util.Properties;
+import org.apache.shardingsphere.orchestration.center.instance.ApolloProperties;
+import org.apache.shardingsphere.orchestration.center.instance.ApolloPropertiesEnum;
 
 /**
  * Apollo open api client wrapper.
@@ -47,20 +43,18 @@ public final class ApolloOpenApiWrapper {
     
     private String administrator;
     
-    public ApolloOpenApiWrapper(final InstanceConfiguration config, final Properties properties) {
+    public ApolloOpenApiWrapper(final InstanceConfiguration config, final ApolloProperties properties) {
         namespace = config.getNamespace();
-        appId = properties.getProperty("appId", "APOLLO_SHARDING_SPHERE");
-        env = properties.getProperty("env", "DEV");
-        clusterName = properties.getProperty("clusterName", ConfigConsts.CLUSTER_NAME_DEFAULT);
-        administrator = properties.getProperty("administrator");
-        String apolloToken = properties.getProperty("token");
-        String portalUrl = properties.getProperty("portalUrl");
-        Integer connectTimeout = Ints.tryParse(Objects.toString(properties.get("connectTimeout")));
-        Integer readTimeout = Ints.tryParse(Objects.toString(properties.get("readTimeout")));
-        client = ApolloOpenApiClient.newBuilder().withPortalUrl(portalUrl)
-                .withConnectTimeout(connectTimeout == null ? ApolloOpenApiConstants.DEFAULT_CONNECT_TIMEOUT : connectTimeout)
-                .withReadTimeout(readTimeout == null ? ApolloOpenApiConstants.DEFAULT_READ_TIMEOUT : readTimeout)
-                .withToken(apolloToken).build();
+        appId = properties.getValue(ApolloPropertiesEnum.APP_ID);
+        env = properties.getValue(ApolloPropertiesEnum.ENV);
+        clusterName = properties.getValue(ApolloPropertiesEnum.CLUSTER_NAME);
+        administrator = properties.getValue(ApolloPropertiesEnum.ADMINISTRATOR);
+        String apolloToken = properties.getValue(ApolloPropertiesEnum.TOKEN);
+        String portalUrl = properties.getValue(ApolloPropertiesEnum.PORTAL_URL);
+        Integer connectTimeout = properties.getValue(ApolloPropertiesEnum.CONNECT_TIMEOUT);
+        Integer readTimeout = properties.getValue(ApolloPropertiesEnum.READ_TIMEOUT);
+        client = ApolloOpenApiClient.newBuilder().withPortalUrl(portalUrl).withConnectTimeout(connectTimeout)
+                .withReadTimeout(readTimeout).withToken(apolloToken).build();
     }
     
     /**

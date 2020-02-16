@@ -24,6 +24,7 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.SettableFuture;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.instance.ApolloProperties;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public final class ApolloConfigWrapperTest {
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         Properties properties = new Properties();
-        configWrapper = new ApolloConfigWrapper(configuration, properties);
+        configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
     }
     
     @Test
