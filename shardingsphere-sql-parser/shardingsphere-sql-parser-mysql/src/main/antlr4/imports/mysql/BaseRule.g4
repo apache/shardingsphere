@@ -318,7 +318,7 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | matchExpression_
-    | caseExpression_
+    | caseExpression
     | intervalExpression
     ;
 
@@ -457,7 +457,7 @@ matchSearchModifier_
     : IN NATURAL LANGUAGE MODE | IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION | IN BOOLEAN MODE | WITH QUERY EXPANSION
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_? END
     ;
 

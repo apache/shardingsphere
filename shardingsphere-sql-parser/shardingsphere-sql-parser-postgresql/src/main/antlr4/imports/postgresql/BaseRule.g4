@@ -202,7 +202,7 @@ simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | caseExpression_
+    | caseExpression
     | CURRENT_USER
     ;
 
@@ -274,7 +274,7 @@ regularFunctionName_
     : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_?
     ;
 

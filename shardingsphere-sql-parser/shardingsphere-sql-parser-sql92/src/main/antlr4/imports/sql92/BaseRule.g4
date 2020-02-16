@@ -188,7 +188,7 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | matchExpression_
-    | caseExpression_
+    | caseExpression
     | intervalExpression
     ;
 
@@ -248,7 +248,7 @@ matchExpression_
     : literals MATCH UNIQUE? (PARTIAL | FULL)  subquery
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_? END
     ;
 
