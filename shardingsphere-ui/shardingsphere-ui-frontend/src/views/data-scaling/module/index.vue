@@ -414,6 +414,7 @@ export default {
       schemaData: [],
       textareaDatasource: ``,
       textareaRule: ``,
+      serverHost: '',
       column: [
         {
           label: this.$t('dataScaling').tableList.jobId,
