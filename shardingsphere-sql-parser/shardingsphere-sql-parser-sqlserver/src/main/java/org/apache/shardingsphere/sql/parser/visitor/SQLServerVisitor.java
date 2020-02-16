@@ -103,7 +103,7 @@ import java.util.LinkedList;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public class SQLServerVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
+public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
     

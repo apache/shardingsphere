@@ -18,24 +18,18 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AddColumnSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterColumnAddOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterDefinitionClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterIndexContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnConstraintContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnDefinitionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnDefinitionOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDefinitionClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateIndexContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinition_Context;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropColumnSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropIndexContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ModifyColumnSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AddColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateDefinition_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DropColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GeneratedDataType_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.InlineDataType_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
@@ -43,29 +37,25 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColu
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.visitor.SQLServerVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.SQL92Visitor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * SQLServer DDL visitor.
+ * SQL92 DDL visitor.
  *
  * @author zhangliang
  */
-public final class SQLServerDDLVisitor extends SQLServerVisitor {
+public final class SQL92DDLVisitor extends SQL92Visitor {
     
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
@@ -89,7 +79,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        for (CreateTableDefinition_Context each : ctx.createTableDefinitions_().createTableDefinition_()) {
+        for (CreateDefinition_Context each : ctx.createDefinitions_().createDefinition_()) {
             ColumnDefinitionContext columnDefinition = each.columnDefinition();
             if (null != columnDefinition) {
                 result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
@@ -97,8 +87,8 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
                 result.getTables().addAll(tableSegments);
                 result.getAllSQLSegments().addAll(tableSegments);
             }
-            if (null != each.tableConstraint() && null != each.tableConstraint().tableForeignKeyConstraint()) {
-                TableSegment tableSegment = (TableSegment) visit(each.tableConstraint().tableForeignKeyConstraint().tableName());
+            if (null != each.constraintDefinition_() && null != each.constraintDefinition_().foreignKeyOption_()) {
+                TableSegment tableSegment = (TableSegment) visit(each.constraintDefinition_().foreignKeyOption_().referenceDefinition_().tableName());
                 result.getTables().add(tableSegment);
                 result.getAllSQLSegments().add(tableSegment);
             }
@@ -118,17 +108,8 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
     }
     
     private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
-        // CHECKSTYLE:OFF
-        for (ColumnDefinitionOptionContext each : ctx.columnDefinitionOption()) {
-            // CHECKSTYLE:ON
-            for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
-                if (null != columnConstraint.primaryKeyConstraint() && null != columnConstraint.primaryKeyConstraint().primaryKey()) {
-                    return true;
-                }
-            }
-        }
-        for (ColumnConstraintContext each : ctx.columnConstraints().columnConstraint()) {
-            if (null != each.primaryKeyConstraint() && null != each.primaryKeyConstraint().primaryKey()) {
+        for (InlineDataType_Context each : ctx.inlineDataType_()) {
+            if (null != each.commonDataTypeOption_() && null != each.commonDataTypeOption_().primaryKey()) {
                 return true;
             }
         }
@@ -137,16 +118,14 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
     
     private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
         Collection<TableSegment> result = new LinkedList<>();
-        for (ColumnDefinitionOptionContext each : columnDefinition.columnDefinitionOption()) {
-            for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
-                if (null != columnConstraint.columnForeignKeyConstraint()) {
-                    result.add((TableSegment) visit(columnConstraint.columnForeignKeyConstraint().tableName()));
-                }
+        for (InlineDataType_Context each : columnDefinition.inlineDataType_()) {
+            if (null != each.commonDataTypeOption_() && null != each.commonDataTypeOption_().referenceDefinition_()) {
+                result.add((TableSegment) visit(each.commonDataTypeOption_().referenceDefinition_().tableName()));
             }
         }
-        for (ColumnConstraintContext each : columnDefinition.columnConstraints().columnConstraint()) {
-            if (null != each.columnForeignKeyConstraint()) {
-                result.add((TableSegment) visit(each.columnForeignKeyConstraint().tableName()));
+        for (GeneratedDataType_Context each : columnDefinition.generatedDataType_()) {
+            if (null != each.commonDataTypeOption_().referenceDefinition_()) {
+                result.add((TableSegment) visit(each.commonDataTypeOption_().referenceDefinition_().tableName()));
             }
         }
         return result;
@@ -177,7 +156,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         final AlterTableStatement result = new AlterTableStatement();
-        AddColumnSpecificationContext addColumnSpecification = ctx.addColumnSpecification();
+        AddColumnSpecificationContext addColumnSpecification = ctx.alterSpecification_().addColumnSpecification();
         if (null != addColumnSpecification) {
             CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
             for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
@@ -188,15 +167,15 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
                 }
             }
         }
-        ModifyColumnSpecificationContext modifyColumnSpecification = ctx.modifyColumnSpecification();
+        ModifyColumnSpecificationContext modifyColumnSpecification = ctx.alterSpecification_().modifyColumnSpecification();
         if (null != modifyColumnSpecification) {
             Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
             if (columnPositionSegment.isPresent()) {
                 result.getChangedPositionColumns().add(columnPositionSegment.get());
             }
         }
-        if (null != ctx.alterDrop() && null != ctx.alterDrop().dropColumnSpecification()) {
-            result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(ctx.alterDrop().dropColumnSpecification())).getColumnNames());
+        if (null != ctx.alterSpecification_().dropColumnSpecification()) {
+            result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(ctx.alterSpecification_().dropColumnSpecification())).getColumnNames());
         }
         if (result.getAddedColumnDefinitions().isEmpty()) {
             result.getAllSQLSegments().addAll(result.getAddedColumnDefinitions());
@@ -210,15 +189,9 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
     @Override
     public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
         CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
-        if (null != ctx.alterColumnAddOptions()) {
-            for (AlterColumnAddOptionContext each : ctx.alterColumnAddOptions().alterColumnAddOption()) {
-                if (null != each.columnDefinition()) {
-                    AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
-                            each.columnDefinition().getStart().getStartIndex(), each.columnDefinition().getStop().getStopIndex(), (ColumnDefinitionSegment) visit(each.columnDefinition()));
-                    result.getValue().add(addColumnDefinition);
-                }
-            }
-        }
+        AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
+                ctx.columnDefinition().getStart().getStartIndex(), ctx.columnDefinition().getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+        result.getValue().add(addColumnDefinition);
         return result;
     }
     
@@ -230,11 +203,8 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
     
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-        Collection<String> columnNames = new LinkedList<>();
-        for (ColumnNameContext each : ctx.columnName()) {
-            columnNames.add(((ColumnSegment) visit(each)).getIdentifier().getValue());
-        }
-        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnNames);
+        return new DropColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue()));
     }
 
     @SuppressWarnings("unchecked")
@@ -244,43 +214,6 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
         Collection<TableSegment> tables = ((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue();
         result.getTables().addAll(tables);
         result.getAllSQLSegments().addAll(tables);
-        return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        TruncateStatement result = new TruncateStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.setTable(table);
-        result.getAllSQLSegments().add(table);
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement();
-        if (null != ctx.indexName()) {
-            result.setIndex((IndexSegment) visit(ctx.indexName()));
-        }
-        result.setTable((TableSegment) visit(ctx.tableName()));
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement();
-        result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
-        result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
 }
