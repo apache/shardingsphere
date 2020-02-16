@@ -40,9 +40,6 @@ import java.util.LinkedList;
 
 /**
  * Table token generator.
- *
- * @author zhangliang
- * @author panjuan
  */
 @Setter
 public final class TableTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware {

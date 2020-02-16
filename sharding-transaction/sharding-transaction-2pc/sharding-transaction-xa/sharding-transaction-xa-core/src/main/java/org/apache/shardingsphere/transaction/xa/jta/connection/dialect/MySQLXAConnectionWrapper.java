@@ -28,8 +28,6 @@ import java.sql.Connection;
 
 /**
  * XA connection wrapper for MySQL.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {

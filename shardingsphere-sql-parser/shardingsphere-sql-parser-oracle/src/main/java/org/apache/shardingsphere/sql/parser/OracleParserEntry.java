@@ -30,9 +30,6 @@ import org.apache.shardingsphere.sql.parser.visitor.impl.OracleTCLVisitor;
 
 /**
  * SQL parser entry for Oracle.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class OracleParserEntry implements SQLParserEntry {
     

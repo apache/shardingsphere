@@ -31,8 +31,6 @@ import java.util.List;
  * Text result set row packet for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MySQLTextResultSetRowPacket implements MySQLPacket {

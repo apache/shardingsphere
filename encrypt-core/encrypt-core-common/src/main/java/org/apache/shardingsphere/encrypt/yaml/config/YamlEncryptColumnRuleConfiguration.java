@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
 
 /**
  * Encrypt column rule configuration.
- *
- * @author panjuan
  */
 @Getter
 @Setter

@@ -37,9 +37,6 @@ import java.util.LinkedList;
 
 /**
  * PreparedStatement that support master-slave.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 public final class MasterSlavePreparedStatement extends AbstractMasterSlavePreparedStatementAdapter {

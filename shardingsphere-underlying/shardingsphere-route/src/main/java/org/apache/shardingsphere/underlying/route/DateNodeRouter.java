@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * Data node router.
- *
- * @author zhangliang
  */
 public interface DateNodeRouter {
     

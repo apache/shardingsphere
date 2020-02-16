@@ -29,8 +29,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * xx: logicTable.
  * yy: sharding value.
  * </p>
- *
- * @author liya
  */
 @RequiredArgsConstructor
 @Getter

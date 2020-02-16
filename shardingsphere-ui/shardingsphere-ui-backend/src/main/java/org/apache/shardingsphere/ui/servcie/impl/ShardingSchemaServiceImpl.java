@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * Implementation of sharding schema service.
- *
- * @author chenqingyang
  */
 @Service
 public final class ShardingSchemaServiceImpl implements ShardingSchemaService {

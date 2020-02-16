@@ -39,8 +39,6 @@ import java.util.Properties;
 
 /**
  * Encrypt rule parser for spring namespace.
- * 
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptRuleBeanDefinitionParser {

@@ -29,8 +29,6 @@ import java.util.Date;
 
 /**
  * Database time service.
- *
- * @author chenchuangliu
  */
 @RequiredArgsConstructor
 public final class DatabaseTimeService implements TimeService {

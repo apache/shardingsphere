@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * SQL exception constant.
- *
- * @author RaigorJiang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLExceptionConstant {

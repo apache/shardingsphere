@@ -34,8 +34,6 @@ import java.util.Iterator;
 
 /**
  * Insert values token generator for shadow.
- *
- * @author zhyee
  */
 @Setter
 public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGenerator implements OptionalSQLTokenGenerator {

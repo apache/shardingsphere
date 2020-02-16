@@ -25,8 +25,6 @@ import java.util.TreeSet;
 
 /**
  * Logical operator.
- *
- * @author zhangliang
  */
 public enum LogicalOperator {
     

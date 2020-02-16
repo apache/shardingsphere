@@ -21,11 +21,6 @@ import java.util.Properties;
 
 /**
  * ShardingSphere properties for configuration.
- *
- * @author gaohongtao
- * @author zhangliang
- * @author panjuan
- * @author kimmking
  */
 public final class ShardingSphereProperties extends TypedProperties<PropertiesConstant> {
     

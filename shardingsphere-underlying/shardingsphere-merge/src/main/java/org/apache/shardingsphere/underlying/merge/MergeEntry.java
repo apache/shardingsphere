@@ -40,8 +40,6 @@ import java.util.Map.Entry;
 
 /**
  * Merge entry.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MergeEntry {

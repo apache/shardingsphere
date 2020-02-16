@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Set variable statement test case.
- * 
- * @author lujingshang
  */
 @Getter
 public final class SetVariableStatementTestCase extends SQLParserTestCase {

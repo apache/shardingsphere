@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * SQL test case for xml tag.
- *
- * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter

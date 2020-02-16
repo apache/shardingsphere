@@ -25,8 +25,6 @@ import java.sql.SQLException;
 
 /**
  * Decorator merged result for limit pagination.
- *
- * @author zhangliang
  */
 public final class LimitDecoratorMergedResult extends DecoratorMergedResult {
     

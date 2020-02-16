@@ -22,9 +22,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * SQL token generator for optional.
- *
- * @author zhangliang
- * @author panjuan
  */
 public interface OptionalSQLTokenGenerator extends SQLTokenGenerator {
     

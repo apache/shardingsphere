@@ -37,8 +37,6 @@ import java.util.HashSet;
 
 /**
  * Shadow condition engine.
- *
- * @author zhyee
  */
 @RequiredArgsConstructor
 public final class ShadowConditionEngine {

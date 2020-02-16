@@ -25,8 +25,6 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
  * Spring namespace handler for master-slave.
- * 
- * @author zhangliang
  */
 public final class MasterSlaveNamespaceHandler extends NamespaceHandlerSupport {
     

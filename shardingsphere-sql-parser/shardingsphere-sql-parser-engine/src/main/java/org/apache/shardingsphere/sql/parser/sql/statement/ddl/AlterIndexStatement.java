@@ -26,8 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAv
 
 /**
  * Alter index statement.
- *
- * @author panjuan
  */
 @Getter
 @Setter

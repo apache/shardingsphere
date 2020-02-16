@@ -33,8 +33,6 @@ import java.util.concurrent.SynchronousQueue;
 
 /**
  * Key generator implemented by leaf segment algorithms.
- *
- * @author wangguangyuan
  */
 public final class LeafSegmentKeyGenerator implements ShardingKeyGenerator {
     

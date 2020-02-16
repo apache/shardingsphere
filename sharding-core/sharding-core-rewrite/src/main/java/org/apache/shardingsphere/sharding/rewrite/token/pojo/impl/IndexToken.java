@@ -27,9 +27,6 @@ import java.util.Map;
 
 /**
  * Index token.
- *
- * @author caohao
- * @author panjuan
  */
 public final class IndexToken extends SQLToken implements Substitutable, LogicAndActualTablesAware {
     

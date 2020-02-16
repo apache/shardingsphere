@@ -52,9 +52,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- *  Where clause assert.
- *
- * @author zhaoyanan
+ * Where clause assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WhereClauseAssert {

@@ -28,10 +28,6 @@ import java.util.Collections;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
- *
- * @author gaohongtao
- * @author zhangliang
- * @author panjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {

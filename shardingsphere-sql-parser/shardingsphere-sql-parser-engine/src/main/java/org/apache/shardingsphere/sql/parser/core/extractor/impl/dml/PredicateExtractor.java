@@ -50,9 +50,6 @@ import java.util.Map;
 
 /**
  * Predicate extractor.
- *
- * @author duhongjun
- * @author zhangliang
  */
 public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     

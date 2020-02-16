@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sql.parser.visitor.SQL92Visitor;
 
 /**
  * SQL92 TCL visitor.
- *
- * @author zhangliang
  */
 public final class SQL92TCLVisitor extends SQL92Visitor {
     

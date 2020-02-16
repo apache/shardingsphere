@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Create table statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 public final class CreateTableStatementTestCase extends SQLParserTestCase {

@@ -35,8 +35,6 @@ import java.util.List;
 
 /**
  * Simple shadow judgement engine.
- *
- * @author zhyee
  */
 @RequiredArgsConstructor
 public final class SimpleJudgementEngine implements ShadowJudgementEngine {

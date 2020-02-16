@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * Assignment extractor.
- *
- * @author zhangliang
  */
 public final class AssignmentExtractor implements OptionalSQLSegmentExtractor {
     

@@ -25,8 +25,6 @@ import java.util.Properties;
 
 /**
  * Key generator configuration for YAML.
- *
- * @author panjuan
  */
 @Getter
 @Setter

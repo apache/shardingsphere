@@ -22,7 +22,6 @@ import com.google.common.base.Optional;
 /**
  * Sharding CTL parser interface.
  *
- * @author zhaojun
  * @param <T> type of sharding CTL statement
  */
 public interface ShardingCTLParser<T extends ShardingCTLStatement> {

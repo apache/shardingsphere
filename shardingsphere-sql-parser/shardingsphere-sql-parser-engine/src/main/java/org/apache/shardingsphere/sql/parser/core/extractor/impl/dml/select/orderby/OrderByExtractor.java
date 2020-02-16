@@ -29,9 +29,6 @@ import java.util.Map;
 
 /**
  * Order by extractor.
- *
- * @author duhongjun
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public abstract class OrderByExtractor implements OptionalSQLSegmentExtractor {

@@ -22,9 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Orchestration instance parser tag constants.
- *
- * @author caohao
- * @author sunbufu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InstanceBeanDefinitionParserTag {

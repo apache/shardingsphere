@@ -27,8 +27,6 @@ import java.util.LinkedList;
 
 /**
  * Extractor rule definition entity for JAXB.
- *
- * @author zhangliang
  */
 @XmlRootElement(name = "extractor-rule-definition")
 @Getter

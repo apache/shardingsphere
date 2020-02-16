@@ -27,9 +27,6 @@ import java.util.Collection;
 
 /**
  * Sharding transaction manager.
- *
- * @author zhaojun
- * 
  */
 public interface ShardingTransactionManager extends AutoCloseable {
     

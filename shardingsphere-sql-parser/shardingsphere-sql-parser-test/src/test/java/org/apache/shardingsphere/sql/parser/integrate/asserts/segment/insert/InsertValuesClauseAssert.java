@@ -33,8 +33,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Insert values clause assert.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InsertValuesClauseAssert {

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLP
 
 /**
  * Alter login statement test case.
- * 
- * @author zhangliang 
  */
 public final class AlterLoginStatementTestCase extends SQLParserTestCase {
 }

@@ -24,8 +24,6 @@ import java.util.LinkedList;
 /**
  * Force execute template.
  *
- * @author zhangliang
- * 
  * @param <T> type of targets to be executed
  */
 public final class ForceExecuteTemplate<T> {

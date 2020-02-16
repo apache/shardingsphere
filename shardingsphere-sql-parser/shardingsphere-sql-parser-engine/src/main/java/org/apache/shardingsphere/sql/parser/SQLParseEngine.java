@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * SQL parse engine.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class SQLParseEngine {

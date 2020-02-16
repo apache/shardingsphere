@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.common.hook;
 
 /**
  * Root invoke hook.
- *
- * @author zhangliang
  */
 public interface RootInvokeHook {
     

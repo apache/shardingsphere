@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAv
 
 /**
  * Deny user statement.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

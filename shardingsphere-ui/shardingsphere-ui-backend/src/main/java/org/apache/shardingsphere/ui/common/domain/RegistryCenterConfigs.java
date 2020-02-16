@@ -25,8 +25,6 @@ import java.util.List;
 
 /**
  * Registry center configs.
- *
- * @author chenqingyang
  */
 @Getter
 @Setter

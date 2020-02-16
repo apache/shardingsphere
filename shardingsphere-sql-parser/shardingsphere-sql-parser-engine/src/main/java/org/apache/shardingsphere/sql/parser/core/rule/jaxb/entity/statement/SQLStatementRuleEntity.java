@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * SQL statement rule entity for JAXB.
- *
- * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter

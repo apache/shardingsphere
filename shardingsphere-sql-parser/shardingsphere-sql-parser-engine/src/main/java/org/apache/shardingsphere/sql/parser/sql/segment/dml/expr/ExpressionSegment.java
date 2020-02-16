@@ -21,9 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Expression segment.
- *
- * @author duhongjun
- * @author panjuan
  */
 public interface ExpressionSegment extends SQLSegment {
 }

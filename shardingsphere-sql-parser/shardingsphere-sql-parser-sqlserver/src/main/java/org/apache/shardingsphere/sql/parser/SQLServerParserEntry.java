@@ -30,9 +30,6 @@ import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerTCLVisitor;
 
 /**
  * SQL parser entry for SQLServer.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class SQLServerParserEntry implements SQLParserEntry {
     

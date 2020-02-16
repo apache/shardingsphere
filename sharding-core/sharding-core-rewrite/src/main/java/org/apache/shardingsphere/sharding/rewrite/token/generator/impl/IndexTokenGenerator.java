@@ -28,9 +28,6 @@ import java.util.LinkedList;
 
 /**
  * Index token generator.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
     

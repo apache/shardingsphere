@@ -37,8 +37,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 
 /**
  * DML statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DMLStatementAssert {

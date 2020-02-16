@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.Colu
 
 /**
  * Modify column definition segment.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

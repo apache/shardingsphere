@@ -47,8 +47,6 @@ import java.util.Map;
 
 /**
  * Select SQL statement context.
- *
- * @author zhangliang
  */
 @Getter
 @ToString(callSuper = true)

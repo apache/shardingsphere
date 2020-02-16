@@ -30,9 +30,6 @@ import java.util.regex.Pattern;
 
 /**
  * Configuration node.
- *
- * @author caohao
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ConfigurationNode {

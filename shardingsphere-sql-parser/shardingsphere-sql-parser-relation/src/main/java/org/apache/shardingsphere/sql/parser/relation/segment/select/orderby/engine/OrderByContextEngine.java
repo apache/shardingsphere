@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Order by context engine.
- *
- * @author zhangliang
  */
 public final class OrderByContextEngine {
     

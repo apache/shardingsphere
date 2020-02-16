@@ -30,8 +30,6 @@ import java.util.LinkedList;
 
 /**
  * Delete statement.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

@@ -21,8 +21,6 @@ import com.google.common.base.Optional;
 
 /**
  * Projection interface.
- *
- * @author zhangliang
  */
 public interface Projection {
     

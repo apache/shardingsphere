@@ -26,8 +26,6 @@ import java.util.LinkedList;
 
 /**
  * Grant statement.
- *
- * @author zhangliang
  */
 @Getter
 public final class GrantStatement extends DCLStatement implements TableSegmentsAvailable {

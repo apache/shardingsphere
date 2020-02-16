@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Average aggregation unit.
- * 
- * @author gaohongtao
  */
 @RequiredArgsConstructor
 public final class AverageAggregationUnit implements AggregationUnit {

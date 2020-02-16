@@ -26,8 +26,6 @@ import org.yaml.snakeyaml.nodes.Node;
 
 /**
  * Abstract type constructor.
- *
- * @author yangyi
  */
 public abstract class AbstractTypeConstructor extends Constructor {
     

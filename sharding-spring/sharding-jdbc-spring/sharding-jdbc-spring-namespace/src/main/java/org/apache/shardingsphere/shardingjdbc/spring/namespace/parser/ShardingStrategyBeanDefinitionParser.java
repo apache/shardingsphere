@@ -24,8 +24,6 @@ import org.w3c.dom.Element;
 
 /**
  * Sharding strategy bean parser for spring namespace.
- *®
- * @author caohao
  */
 public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

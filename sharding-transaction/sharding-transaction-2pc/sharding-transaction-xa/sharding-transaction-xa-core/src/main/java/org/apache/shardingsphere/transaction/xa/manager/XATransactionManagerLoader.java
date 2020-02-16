@@ -27,9 +27,6 @@ import java.util.ServiceLoader;
 
 /**
  * XA transaction manager loader.
- *
- * @author zhangliang
- * @author zhaojun
  */
 @Getter
 @Slf4j

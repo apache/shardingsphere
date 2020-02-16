@@ -39,8 +39,6 @@ import java.util.Map.Entry;
 
 /**
  * Logic schema.
- *
- * @author panjuan
  */
 @Getter
 public abstract class LogicSchema {

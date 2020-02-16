@@ -31,8 +31,6 @@ import java.io.IOException;
 
 /**
  * CORS filter.
- *
- * @author chenqingyang
  */
 public final class CORSFilter implements Filter {
     

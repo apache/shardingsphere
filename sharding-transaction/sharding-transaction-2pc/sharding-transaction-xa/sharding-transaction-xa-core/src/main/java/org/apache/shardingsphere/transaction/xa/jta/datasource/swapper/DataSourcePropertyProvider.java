@@ -19,8 +19,6 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 /**
  * Data source property provider.
- *
- * @author zhangliang
  */
 public interface DataSourcePropertyProvider {
     

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 
 /**
  * Abstract hint update command.
- *
- * @author liya
  */
 public abstract class AbstractHintUpdateExecutor<T extends HintCommand> implements HintCommandExecutor<T> {
     

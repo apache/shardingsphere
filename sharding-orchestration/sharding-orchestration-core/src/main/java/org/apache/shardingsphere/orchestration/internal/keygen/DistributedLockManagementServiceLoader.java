@@ -26,10 +26,6 @@ import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
 
 /**
  * Distributed lock management loader from SPI.
- *
- * @author zhangliang
- * @author zhaojun
- * @author wangguangyuan
  */
 @Slf4j
 public final class DistributedLockManagementServiceLoader extends TypeBasedSPIServiceLoader<DistributedLockManagement> {

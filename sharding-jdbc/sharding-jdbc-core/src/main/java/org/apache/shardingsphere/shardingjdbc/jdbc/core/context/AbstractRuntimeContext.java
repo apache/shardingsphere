@@ -34,8 +34,6 @@ import java.util.Properties;
 /**
  * Abstract runtime context.
  *
- * @author zhangliang
- * 
  * @param <T> type of rule
  */
 @Getter

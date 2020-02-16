@@ -38,8 +38,6 @@ import java.net.SocketAddress;
 
 /**
  * Authentication engine for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     

@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Command complete packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
     

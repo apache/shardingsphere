@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * Projection extractor.
- *
- * @author zhangliang
  */
 public final class ProjectionExtractor implements OptionalSQLSegmentExtractor {
     

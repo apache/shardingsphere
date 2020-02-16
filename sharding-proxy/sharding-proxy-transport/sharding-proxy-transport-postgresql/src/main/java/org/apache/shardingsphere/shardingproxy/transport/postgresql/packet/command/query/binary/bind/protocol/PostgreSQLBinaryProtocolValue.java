@@ -23,8 +23,6 @@ import java.sql.SQLException;
 
 /**
  * Binary protocol value for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public interface PostgreSQLBinaryProtocolValue {
     

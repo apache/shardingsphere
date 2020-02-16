@@ -34,8 +34,6 @@ import java.util.Properties;
 
 /**
  * Data source utility.
- *
- * @author zhaojun
  */
 @NoArgsConstructor
 public final class DataSourceUtils {

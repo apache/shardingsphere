@@ -25,8 +25,6 @@ import java.util.List;
 
 /**
  * Relation meta data.
- *
- * @author zhangliang
  */
 @Getter
 public final class RelationMetaData {

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.common.constant.properties.TypedProp
 
 /**
  * Zookeeper properties enum.
- *
- * @author dongzonglei
  */
 @RequiredArgsConstructor
 @Getter

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
  * Rule for test.
- *
- * @author zhangliang
  */
 public final class TestRule implements BaseRule {
     

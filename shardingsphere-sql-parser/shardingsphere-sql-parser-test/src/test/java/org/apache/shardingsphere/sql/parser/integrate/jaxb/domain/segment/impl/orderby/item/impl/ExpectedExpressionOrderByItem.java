@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected expression order by item.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

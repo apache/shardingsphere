@@ -28,10 +28,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 
 /**
  * Data source state changed listener.
- *
- * @author caohao
- * @author panjuan
- * @author wangguangyuan
  */
 public final class DataSourceStateChangedListener extends PostShardingRegistryCenterEventListener {
     

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
 /**
  * Sharding ignore routing engine.
- * 
- * @author zhangliang
  */
 public final class ShardingIgnoreRoutingEngine implements ShardingRouteEngine {
     

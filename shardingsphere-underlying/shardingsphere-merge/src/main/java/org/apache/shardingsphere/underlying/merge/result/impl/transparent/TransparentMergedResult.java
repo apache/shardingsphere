@@ -27,8 +27,6 @@ import java.util.Calendar;
 
 /**
  * Transparent merged result.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class TransparentMergedResult implements MergedResult {

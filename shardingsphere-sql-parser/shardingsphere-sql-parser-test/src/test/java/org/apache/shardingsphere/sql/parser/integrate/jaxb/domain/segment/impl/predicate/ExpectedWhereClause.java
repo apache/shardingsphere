@@ -29,9 +29,6 @@ import java.util.List;
 
 /**
  * Expected where clause.
- * 
- * @author zhangliang 
- * @author panjuan
  */
 @Getter
 @Setter

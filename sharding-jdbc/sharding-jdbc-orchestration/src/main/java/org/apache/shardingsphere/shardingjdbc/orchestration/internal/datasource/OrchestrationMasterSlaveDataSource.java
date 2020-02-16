@@ -48,8 +48,6 @@ import java.util.Map;
 
 /**
  * Orchestration master-slave datasource.
- *
- * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDataSource {

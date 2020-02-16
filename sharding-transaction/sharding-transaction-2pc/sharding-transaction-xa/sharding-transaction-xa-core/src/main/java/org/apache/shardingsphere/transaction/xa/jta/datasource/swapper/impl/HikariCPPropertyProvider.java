@@ -21,8 +21,6 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourc
 
 /**
  * HikariCP property provider.
- *
- * @author zhangliang
  */
 public final class HikariCPPropertyProvider implements DataSourcePropertyProvider {
     

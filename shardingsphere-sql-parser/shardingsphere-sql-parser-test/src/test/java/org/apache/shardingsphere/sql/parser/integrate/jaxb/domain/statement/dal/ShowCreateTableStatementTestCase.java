@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Show create table statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

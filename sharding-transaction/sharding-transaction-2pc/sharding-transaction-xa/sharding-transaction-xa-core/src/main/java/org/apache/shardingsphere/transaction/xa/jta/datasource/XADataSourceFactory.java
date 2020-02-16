@@ -35,8 +35,6 @@ import java.util.Properties;
 
 /**
  * XA data source factory.
- *
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XADataSourceFactory {

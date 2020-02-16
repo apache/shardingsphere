@@ -35,8 +35,6 @@ import java.util.Map;
 
 /**
  * Insert values extractor.
- *
- * @author zhangliang
  */
 public final class InsertValuesExtractor implements CollectionSQLSegmentExtractor {
     

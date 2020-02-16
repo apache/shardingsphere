@@ -38,9 +38,6 @@ import java.util.LinkedList;
 
 /**
  * Integrate test parameters.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IntegrateTestParameters {

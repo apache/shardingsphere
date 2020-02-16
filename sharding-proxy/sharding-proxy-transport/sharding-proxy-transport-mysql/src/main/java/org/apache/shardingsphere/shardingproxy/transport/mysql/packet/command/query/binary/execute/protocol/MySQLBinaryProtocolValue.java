@@ -25,9 +25,6 @@ import java.sql.SQLException;
  * Binary protocol value for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html">Binary Protocol Value</a>
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public interface MySQLBinaryProtocolValue {
     

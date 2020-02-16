@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.executor.constant;
 
 /**
  * Connection Mode.
- *
- * @author zhangyonglun
  */
 public enum ConnectionMode {
     

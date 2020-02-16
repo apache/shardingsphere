@@ -56,11 +56,6 @@ import java.util.List;
 
 /**
  * Sharding router.
- *
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 public final class ShardingRouter implements DateNodeRouter {

@@ -31,10 +31,6 @@ import java.util.Collection;
 
 /**
  * SQL statement filler engine.
- *
- * @author zhangliang
- * @author panjuan
- * @author duhongjun
  */
 @RequiredArgsConstructor
 public final class SQLStatementFillerEngine {

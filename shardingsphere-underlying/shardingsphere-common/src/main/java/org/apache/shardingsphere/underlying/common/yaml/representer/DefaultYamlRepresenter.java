@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.yaml.representer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.shardingsphere.underlying.common.yaml.representer.processor.SkipUnsetTupleProcessor;
 import org.apache.shardingsphere.underlying.common.yaml.representer.processor.TupleProcessor;
 import org.yaml.snakeyaml.introspector.Property;
@@ -27,12 +24,11 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Default YAML representer.
- *
- * @author panjuan
- * @author zhangliang
- * @author yangyi
  */
 public final class DefaultYamlRepresenter extends Representer {
     

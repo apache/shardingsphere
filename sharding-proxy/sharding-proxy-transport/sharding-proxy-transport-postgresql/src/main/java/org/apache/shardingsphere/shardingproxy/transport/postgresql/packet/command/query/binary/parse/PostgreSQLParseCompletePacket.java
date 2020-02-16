@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Parse complete packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @Getter
 public final class PostgreSQLParseCompletePacket implements PostgreSQLPacket {

@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Collection SQL segment extractor.
- * 
- * @author zhangliang
  */
 public interface CollectionSQLSegmentExtractor extends SQLSegmentExtractor {
     

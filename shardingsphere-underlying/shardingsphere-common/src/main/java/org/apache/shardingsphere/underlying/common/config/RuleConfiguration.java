@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.common.config;
 
 /**
  * Rule configuration.
- * 
- * @author panjuan
  */
 public interface RuleConfiguration {
 }

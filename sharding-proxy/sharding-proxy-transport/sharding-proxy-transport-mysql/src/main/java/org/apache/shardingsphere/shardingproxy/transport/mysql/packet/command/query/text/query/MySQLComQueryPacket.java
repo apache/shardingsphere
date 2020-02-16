@@ -27,10 +27,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * COM_QUERY command packet for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
- * 
- * @author zhangliang
- * @author linjiaqi
- * @author zhaojun
  */
 @Getter
 @ToString

@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * SQL statement rule definition.
- *
- * @author zhangliang
  */
 public final class SQLStatementRuleDefinition {
     

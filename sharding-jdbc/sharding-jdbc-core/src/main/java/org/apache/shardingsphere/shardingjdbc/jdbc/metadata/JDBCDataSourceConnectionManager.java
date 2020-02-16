@@ -26,8 +26,6 @@ import java.sql.SQLException;
 
 /**
  * JDBC connection manager with data source.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class JDBCDataSourceConnectionManager implements ConnectionManager {

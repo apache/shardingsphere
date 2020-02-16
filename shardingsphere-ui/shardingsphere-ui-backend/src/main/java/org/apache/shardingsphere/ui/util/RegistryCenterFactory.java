@@ -28,8 +28,6 @@ import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
 
 /**
  * Registry center factory.
- *
- * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenterFactory {

@@ -29,8 +29,6 @@ import java.util.Iterator;
 
 /**
  * ResultSet for generated keys.
- * 
- * @author gaohongtao
  */
 @RequiredArgsConstructor
 public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResultSet {

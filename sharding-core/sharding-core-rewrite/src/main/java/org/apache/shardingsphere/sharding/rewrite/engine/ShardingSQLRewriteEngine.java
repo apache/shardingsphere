@@ -36,8 +36,6 @@ import java.util.List;
 
 /**
  * SQL rewrite engine for sharding.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {

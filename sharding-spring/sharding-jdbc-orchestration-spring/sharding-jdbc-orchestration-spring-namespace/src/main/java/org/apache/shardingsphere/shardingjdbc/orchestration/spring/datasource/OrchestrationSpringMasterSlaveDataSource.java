@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 
 /**
  * Orchestration master slave datasource for spring namespace.
- *
- * @author panjuan
  */
 public final class OrchestrationSpringMasterSlaveDataSource extends OrchestrationMasterSlaveDataSource {
     

@@ -28,8 +28,6 @@ import java.util.Map.Entry;
 
 /**
  * Data source converter.
- *
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceConverter {

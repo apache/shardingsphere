@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 
 /**
  * Show create table statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowCreateTableStatementAssert {

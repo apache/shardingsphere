@@ -26,8 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 
 /**
  * Grant statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GrantStatementAssert {

@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Drop index statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

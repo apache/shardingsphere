@@ -37,9 +37,6 @@ import java.util.concurrent.Executor;
 
 /**
  * The nacos instance for ConfigCenter.
- *
- * @author huangjian
- * @author sunbufu
  */
 @Slf4j
 public class NacosConfigInstance implements ConfigCenter {

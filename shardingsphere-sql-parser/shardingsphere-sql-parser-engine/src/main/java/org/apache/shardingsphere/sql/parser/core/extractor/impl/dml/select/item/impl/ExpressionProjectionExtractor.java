@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Expression projection extractor.
- *
- * @author zhangliang
  */
 public final class ExpressionProjectionExtractor implements OptionalSQLSegmentExtractor {
     

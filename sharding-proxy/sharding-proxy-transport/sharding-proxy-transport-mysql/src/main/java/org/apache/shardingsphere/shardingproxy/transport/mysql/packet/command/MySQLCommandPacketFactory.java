@@ -35,10 +35,6 @@ import java.sql.SQLException;
 
 /**
  * Command packet factory for MySQL.
- *
- * @author zhangliang
- * @author wangkai
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLCommandPacketFactory {

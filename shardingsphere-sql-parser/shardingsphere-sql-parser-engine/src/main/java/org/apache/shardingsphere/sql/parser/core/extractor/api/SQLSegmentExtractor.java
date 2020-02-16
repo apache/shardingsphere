@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.core.extractor.api;
 
 /**
  * SQL segment extractor.
- * 
- * @author duhongjun
  */
 public interface SQLSegmentExtractor {
 }

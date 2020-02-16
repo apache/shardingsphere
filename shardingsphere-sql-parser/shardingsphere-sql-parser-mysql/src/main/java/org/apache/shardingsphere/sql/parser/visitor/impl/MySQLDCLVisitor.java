@@ -48,8 +48,6 @@ import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
  * MySQL DCL visitor.
- *
- * @author panjuan
  */
 public final class MySQLDCLVisitor extends MySQLVisitor {
     

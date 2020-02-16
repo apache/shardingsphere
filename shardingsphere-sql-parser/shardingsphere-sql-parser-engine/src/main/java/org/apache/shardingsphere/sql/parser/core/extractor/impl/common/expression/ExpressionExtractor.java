@@ -37,9 +37,6 @@ import java.util.Map;
 
 /**
  * Expression extractor.
- *
- * @author duhongjun
- * @author zhangliang
  */
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     

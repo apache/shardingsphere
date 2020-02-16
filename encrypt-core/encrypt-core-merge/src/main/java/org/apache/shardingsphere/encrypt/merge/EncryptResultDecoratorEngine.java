@@ -33,9 +33,6 @@ import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorat
 
 /**
  * Result decorator engine for encrypt.
- *
- * @author zhangliang
- * @author panjuan
  */
 public abstract class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     

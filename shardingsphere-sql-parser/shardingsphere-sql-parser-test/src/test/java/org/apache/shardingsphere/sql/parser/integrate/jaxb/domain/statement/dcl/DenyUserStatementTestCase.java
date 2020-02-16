@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Deny user statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

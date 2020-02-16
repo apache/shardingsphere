@@ -24,9 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 
 /**
  * Order by item segment for column.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 @ToString(callSuper = true)

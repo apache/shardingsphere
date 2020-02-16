@@ -25,8 +25,6 @@ import java.util.UUID;
 
 /**
  * Orchestration instance.
- * 
- * @author zhangliang
  */
 @Getter
 public final class OrchestrationInstance {

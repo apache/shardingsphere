@@ -23,9 +23,6 @@ import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 
 /**
  * Order by item segment for index.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 @ToString(callSuper = true)

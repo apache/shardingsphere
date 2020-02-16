@@ -35,8 +35,6 @@ import java.util.List;
  *       for MyQL is COM_STMT; 
  *       for PostgreSQL is Extended Query;
  * </pre>
- * 
- * @author zhangliang
  */
 public final class PreparedQueryShardingEngine extends BaseShardingEngine {
     

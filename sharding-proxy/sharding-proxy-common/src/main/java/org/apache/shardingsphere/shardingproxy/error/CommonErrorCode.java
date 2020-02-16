@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Common error code.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

@@ -35,8 +35,6 @@ import java.util.Map;
 
 /**
  * SQL builder for sharding.
- *
- * @author zhangliang
  */
 public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     

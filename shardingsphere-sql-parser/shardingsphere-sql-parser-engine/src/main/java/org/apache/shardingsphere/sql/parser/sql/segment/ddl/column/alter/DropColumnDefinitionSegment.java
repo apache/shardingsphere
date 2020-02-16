@@ -26,8 +26,6 @@ import java.util.Collection;
 
 /**
  * Drop column definition segment.
- *
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

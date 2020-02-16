@@ -26,8 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
 
 /**
  * Revoke statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RevokeStatementAssert {

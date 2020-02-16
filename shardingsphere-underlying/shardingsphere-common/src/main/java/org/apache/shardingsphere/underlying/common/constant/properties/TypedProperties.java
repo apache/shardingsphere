@@ -31,11 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Typed properties with a specified enum.
- *
- * @author gaohongtao
- * @author zhangliang
- * @author panjuan
- * @author kimmking
  */
 public class TypedProperties<E extends Enum & TypedPropertiesKey> {
     

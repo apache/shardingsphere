@@ -27,9 +27,6 @@ import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Properties changed listener.
- *
- * @author panjuan
- * @author wangguangyuan
  */
 public final class PropertiesChangedListener extends PostShardingConfigCenterEventListener {
     

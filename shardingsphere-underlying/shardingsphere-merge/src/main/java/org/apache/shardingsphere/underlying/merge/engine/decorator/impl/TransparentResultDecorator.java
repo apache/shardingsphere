@@ -26,8 +26,6 @@ import org.apache.shardingsphere.underlying.merge.result.impl.transparent.Transp
 
 /**
  * Transparent result decorator.
- *
- * @author zhangliang
  */
 public final class TransparentResultDecorator implements ResultDecorator {
     

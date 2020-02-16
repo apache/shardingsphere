@@ -24,8 +24,6 @@ import java.util.Date;
 
 /**
  * Time service for SPI.
- *
- * @author chenchuangliu
  */
 public final class SPITimeService implements TimeService {
     

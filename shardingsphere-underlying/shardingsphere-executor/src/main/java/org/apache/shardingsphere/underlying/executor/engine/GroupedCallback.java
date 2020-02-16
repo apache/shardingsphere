@@ -24,8 +24,6 @@ import java.util.Map;
 /**
  * Grouped callback.
  * 
- * @author zhangliang
- * 
  * @param <I> type of inputs value
  * @param <O> type of outputs value
  */

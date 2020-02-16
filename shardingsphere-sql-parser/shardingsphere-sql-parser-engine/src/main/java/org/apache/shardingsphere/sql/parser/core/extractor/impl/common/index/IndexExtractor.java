@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * Index extractor.
- * 
- * @author duhongjun
  */
 public final class IndexExtractor implements OptionalSQLSegmentExtractor {
     

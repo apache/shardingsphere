@@ -93,8 +93,6 @@ import java.util.List;
 
 /**
  * PostgreSQL DML visitor.
- *
- * @author zhangliang
  */
 public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
     

@@ -47,8 +47,6 @@ import java.util.Map;
 
 /**
  * Orchestration sharding datasource.
- *
- * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSource {

@@ -24,8 +24,6 @@ import java.sql.SQLException;
 
 /**
  * Encryptor meta data.
- *
- * @author zhangliang
  */
 public interface EncryptorMetaData {
     

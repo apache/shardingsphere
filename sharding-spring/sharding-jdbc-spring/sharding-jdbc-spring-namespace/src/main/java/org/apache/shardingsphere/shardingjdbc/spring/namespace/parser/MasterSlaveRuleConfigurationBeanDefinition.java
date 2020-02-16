@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * Master slave rule configuration bean definition.
- *
- * @author zhaojun
  */
 @Getter
 public final class MasterSlaveRuleConfigurationBeanDefinition {

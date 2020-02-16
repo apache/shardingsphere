@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * On duplicate key columns extractor.
- *
- * @author zhangliang
  */
 public final class OnDuplicateKeyColumnsExtractor implements OptionalSQLSegmentExtractor {
     

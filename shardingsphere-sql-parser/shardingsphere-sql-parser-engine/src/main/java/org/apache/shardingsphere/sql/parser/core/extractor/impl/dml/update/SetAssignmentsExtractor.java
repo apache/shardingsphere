@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * Set assignments extractor.
- *
- * @author zhangliang
  */
 public final class SetAssignmentsExtractor implements OptionalSQLSegmentExtractor {
     

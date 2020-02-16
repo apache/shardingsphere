@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception;
 
 /**
  * Unsupported sharding CTL type exception.
- *
- * @author zhangliang
  */
 public final class UnsupportedShardingCTLTypeException extends ShardingCTLException {
     

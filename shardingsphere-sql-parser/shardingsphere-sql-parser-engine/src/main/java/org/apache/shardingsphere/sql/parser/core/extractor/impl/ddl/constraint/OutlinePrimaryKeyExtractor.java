@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * Outline primary key extractor.
- *
- * @author duhongjun
  */
 public final class OutlinePrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     

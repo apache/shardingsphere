@@ -38,8 +38,6 @@ import java.util.Properties;
 /**
  * Runtime context for single data source.
  *
- * @author zhangliang
- * 
  * @param <T> type of rule
  */
 @Getter

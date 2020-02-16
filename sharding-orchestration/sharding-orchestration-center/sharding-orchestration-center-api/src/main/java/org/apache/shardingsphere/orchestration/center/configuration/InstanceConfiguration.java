@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.center.configuration;
 
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.underlying.common.config.TypeBasedSPIConfiguration;
 
+import java.util.Properties;
+
 /**
  * Orchestration Instance Configuration.
- *
- * @author zhangliang
- * @author dongzonglei
- * @author wangguangyuan
- * @author sunbufu
  */
 @Getter
 @Setter

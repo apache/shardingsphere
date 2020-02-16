@@ -32,8 +32,6 @@ import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 /**
  * PostgreSQL TCL visitor.
- *
- * @author zhangliang
  */
 public final class PostgreSQLTCLVisitor extends PostgreSQLVisitor {
     

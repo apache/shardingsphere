@@ -30,8 +30,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Delete statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DeleteStatementAssert {

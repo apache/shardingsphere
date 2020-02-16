@@ -25,8 +25,6 @@ import java.util.Collection;
 
 /**
  * SQL statement.
- *
- * @author zhangliang
  */
 public interface SQLStatement extends ASTNode {
     

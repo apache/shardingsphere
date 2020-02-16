@@ -28,9 +28,6 @@ import java.util.Map;
 
 /**
  * Column definition extractor.
- * 
- * @author duhongjun
- * @author zhangliang
  */
 public final class ColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     

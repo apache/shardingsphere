@@ -26,9 +26,6 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Environment path.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentPath {

@@ -37,10 +37,6 @@ import java.util.LinkedList;
 
 /**
  * Sharding broadcast routing engine for tables.
- * 
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteEngine {

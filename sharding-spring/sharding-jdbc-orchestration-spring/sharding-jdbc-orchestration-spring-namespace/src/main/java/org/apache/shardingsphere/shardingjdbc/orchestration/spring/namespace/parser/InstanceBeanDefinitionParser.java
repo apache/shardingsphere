@@ -28,9 +28,6 @@ import org.w3c.dom.Element;
 
 /**
  * Orchestration instance parser for spring namespace.
- *
- * @author panjuan
- * @author sunbufu
  */
 public final class InstanceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

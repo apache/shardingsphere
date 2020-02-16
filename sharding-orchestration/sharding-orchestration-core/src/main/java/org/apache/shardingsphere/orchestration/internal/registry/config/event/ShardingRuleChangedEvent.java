@@ -24,9 +24,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 
 /**
  * Sharding rule changed event.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

@@ -28,8 +28,6 @@ import java.util.Collections;
 
 /**
  * Proxy user YAML swapper.
- *
- * @author zhangliang
  */
 public final class ProxyUserYamlSwapper implements YamlSwapper<YamlProxyUserConfiguration, ProxyUser> {
     

@@ -34,8 +34,6 @@ import java.util.Map;
 
 /**
  * Shadow data source factory for YAML.
- *
- * @author xiayan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlShadowDataSourceFactory {

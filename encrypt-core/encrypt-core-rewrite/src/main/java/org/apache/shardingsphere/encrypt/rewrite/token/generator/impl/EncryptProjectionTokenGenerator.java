@@ -37,8 +37,6 @@ import java.util.LinkedList;
 
 /**
  * Projection token generator for encrypt.
- *
- * @author panjuan
  */
 @Setter
 public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, QueryWithCipherColumnAware {

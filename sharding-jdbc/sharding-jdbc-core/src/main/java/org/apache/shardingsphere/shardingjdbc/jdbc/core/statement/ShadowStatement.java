@@ -51,8 +51,6 @@ import java.util.Map;
 
 /**
  * Shadow statement.
- *
- * @author zhyee
  */
 @Slf4j
 public final class ShadowStatement extends AbstractStatementAdapter {

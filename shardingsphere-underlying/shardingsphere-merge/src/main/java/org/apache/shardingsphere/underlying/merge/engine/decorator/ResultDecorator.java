@@ -26,8 +26,6 @@ import java.sql.SQLException;
 
 /**
  * Result decorator.
- *
- * @author zhangliang
  */
 public interface ResultDecorator {
     

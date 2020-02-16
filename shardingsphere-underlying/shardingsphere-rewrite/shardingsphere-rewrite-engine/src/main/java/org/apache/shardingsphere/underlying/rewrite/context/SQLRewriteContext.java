@@ -36,8 +36,6 @@ import java.util.List;
 
 /**
  * SQL rewrite context.
- * 
- * @author zhangliang
  */
 @Getter
 public final class SQLRewriteContext {

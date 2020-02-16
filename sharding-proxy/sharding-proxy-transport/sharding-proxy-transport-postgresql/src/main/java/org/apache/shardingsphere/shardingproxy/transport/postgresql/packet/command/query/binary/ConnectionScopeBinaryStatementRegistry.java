@@ -23,8 +23,6 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Connection scope binary statement registry.
- *
- * @author zhangyonglun
  */
 public final class ConnectionScopeBinaryStatementRegistry {
     

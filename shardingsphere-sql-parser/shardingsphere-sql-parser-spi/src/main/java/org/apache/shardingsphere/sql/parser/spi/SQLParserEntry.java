@@ -23,9 +23,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 
 /**
  * SQL parser entry.
- *
- * @author zhangliang
- * @author panjuan
  */
 public interface SQLParserEntry {
     

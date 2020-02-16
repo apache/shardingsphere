@@ -24,8 +24,6 @@ import java.sql.Timestamp;
 
 /**
  * Binary protocol value for date for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLDateBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     

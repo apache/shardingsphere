@@ -21,8 +21,6 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 
 /**
  * YAML tuple processor.
- *
- * @author yangyi
  */
 public interface TupleProcessor {
     

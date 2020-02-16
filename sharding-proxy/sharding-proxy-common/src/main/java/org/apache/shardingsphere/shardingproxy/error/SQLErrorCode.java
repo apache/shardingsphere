@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.error;
 
 /**
  * SQL error code.
- *
- * @author zhangliang
  */
 public interface SQLErrorCode {
     

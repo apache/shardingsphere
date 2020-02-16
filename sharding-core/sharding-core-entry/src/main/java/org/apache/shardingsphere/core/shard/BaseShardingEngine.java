@@ -53,9 +53,6 @@ import java.util.Map;
 
 /**
  * Base sharding engine.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public abstract class BaseShardingEngine {

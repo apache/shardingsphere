@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Revoke statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 public final class RevokeStatementTestCase extends SQLParserTestCase {

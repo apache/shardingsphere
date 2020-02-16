@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * Drop column definition extractor.
- *
- * @author duhongjun
  */
 public final class DropColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     

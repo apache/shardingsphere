@@ -38,8 +38,6 @@ import java.util.Set;
 
 /**
  * XA transaction data source.
- *
- * @author zhaojun
  */
 public final class XATransactionDataSource implements AutoCloseable {
     

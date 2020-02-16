@@ -29,9 +29,6 @@ import java.util.Map;
 
 /**
  * Where extractor.
- *
- * @author duhongjun
- * @author zhangliang
  */
 public final class WhereExtractor implements OptionalSQLSegmentExtractor {
     

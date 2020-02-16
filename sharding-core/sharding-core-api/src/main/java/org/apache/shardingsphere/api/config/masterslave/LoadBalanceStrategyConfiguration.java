@@ -24,8 +24,6 @@ import java.util.Properties;
 
 /**
  * Master-slave load balance strategy configuration.
- *
- * @author zhangliang
  */
 @Getter
 public final class LoadBalanceStrategyConfiguration extends TypeBasedSPIConfiguration {

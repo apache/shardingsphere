@@ -41,8 +41,6 @@ import java.util.Map;
 
 /**
  * Seata AT sharding transaction manager.
- *
- * @author zhaojun
  */
 public final class SeataATShardingTransactionManager implements ShardingTransactionManager {
     

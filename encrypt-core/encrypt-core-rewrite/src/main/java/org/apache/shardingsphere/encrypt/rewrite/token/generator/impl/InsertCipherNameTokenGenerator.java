@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * Insert cipher column name token generator.
- *
- * @author panjuan
  */
 public final class InsertCipherNameTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
     

@@ -32,8 +32,6 @@ import java.util.Properties;
 
 /**
  * Shadow data source factory.
- *
- * @author xiayan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowDataSourceFactory {

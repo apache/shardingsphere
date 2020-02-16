@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Abstract syntax tree of SQL.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

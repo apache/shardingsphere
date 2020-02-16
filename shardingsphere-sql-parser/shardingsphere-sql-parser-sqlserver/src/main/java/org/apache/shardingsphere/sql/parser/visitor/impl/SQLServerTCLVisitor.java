@@ -32,8 +32,6 @@ import org.apache.shardingsphere.sql.parser.visitor.SQLServerVisitor;
 
 /**
  * SQLServer TCL visitor.
- *
- * @author zhangliang
  */
 public final class SQLServerTCLVisitor extends SQLServerVisitor {
     

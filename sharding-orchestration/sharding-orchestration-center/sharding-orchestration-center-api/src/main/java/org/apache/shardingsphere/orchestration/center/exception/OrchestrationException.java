@@ -19,11 +19,6 @@ package org.apache.shardingsphere.orchestration.center.exception;
 
 /**
  * Config center exception.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 public final class OrchestrationException extends RuntimeException {
     

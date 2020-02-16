@@ -28,8 +28,6 @@ import lombok.RequiredArgsConstructor;
  *     The auth-plugin-data is the concatenation of strings auth-plugin-data-part-1 and auth-plugin-data-part-2.
  *     The auth-plugin-data-part-1's length is 8; The auth-plugin-data-part-2's length is 12.
  * </p>
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

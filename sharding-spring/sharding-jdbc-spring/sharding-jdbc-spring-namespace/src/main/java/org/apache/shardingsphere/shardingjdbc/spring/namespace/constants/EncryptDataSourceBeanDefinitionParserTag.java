@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Encrypt data source parser tag constants.
- * 
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptDataSourceBeanDefinitionParserTag {

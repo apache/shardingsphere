@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * Previous SQL tokens aware.
- *
- * @author zhangliang
  */
 public interface PreviousSQLTokensAware {
     

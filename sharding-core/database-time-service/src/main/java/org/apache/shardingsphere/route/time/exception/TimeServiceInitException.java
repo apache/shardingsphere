@@ -19,8 +19,6 @@ package org.apache.shardingsphere.route.time.exception;
 
 /**
  * Time service init exception.
- *
- * @author chenchuangliu
  */
 public final class TimeServiceInitException extends RuntimeException {
     

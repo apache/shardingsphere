@@ -35,8 +35,6 @@ import java.util.Map.Entry;
 
 /**
  * Parse tree visitor factory.
- * 
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParseTreeVisitorFactory {

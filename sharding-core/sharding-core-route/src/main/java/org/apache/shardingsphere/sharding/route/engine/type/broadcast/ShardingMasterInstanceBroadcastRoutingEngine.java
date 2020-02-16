@@ -28,8 +28,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Sharding broadcast routing engine for master instance of databases.
- * 
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShardingMasterInstanceBroadcastRoutingEngine implements ShardingRouteEngine {

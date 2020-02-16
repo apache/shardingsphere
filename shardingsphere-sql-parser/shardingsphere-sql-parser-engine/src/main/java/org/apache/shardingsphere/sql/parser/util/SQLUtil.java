@@ -28,9 +28,6 @@ import java.math.BigInteger;
 
 /**
  * SQL utility class.
- * 
- * @author gaohongtao
- * @author panjuan
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLUtil {

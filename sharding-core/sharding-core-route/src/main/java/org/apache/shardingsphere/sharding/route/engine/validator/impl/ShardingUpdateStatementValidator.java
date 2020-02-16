@@ -39,8 +39,6 @@ import java.util.List;
 
 /**
  * Sharding update statement validator.
- *
- * @author zhangliang
  */
 public final class ShardingUpdateStatementValidator implements ShardingStatementValidator<UpdateStatement> {
     

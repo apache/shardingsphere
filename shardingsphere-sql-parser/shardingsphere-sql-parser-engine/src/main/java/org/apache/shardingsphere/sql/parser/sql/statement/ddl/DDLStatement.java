@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLSta
 
 /**
  * DDL statement.
- *
- * @author zhangliang
  */
 public abstract class DDLStatement extends AbstractSQLStatement {
 }

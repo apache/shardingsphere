@@ -29,8 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 
 /**
  * SQL Type.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

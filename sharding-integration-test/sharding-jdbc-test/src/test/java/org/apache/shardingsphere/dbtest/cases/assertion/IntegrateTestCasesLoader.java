@@ -50,9 +50,6 @@ import java.util.Map;
 
 /**
  * Integrate test cases loader.
- *
- * @author zhangliang
- * @author panjuan
  */
 @Slf4j
 public final class IntegrateTestCasesLoader {

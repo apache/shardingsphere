@@ -30,8 +30,6 @@ import java.util.Calendar;
 
 /**
  * Merged result for describe table.
- *
- * @author liya
  */
 public abstract class DescribeTableMergedResult implements MergedResult {
     

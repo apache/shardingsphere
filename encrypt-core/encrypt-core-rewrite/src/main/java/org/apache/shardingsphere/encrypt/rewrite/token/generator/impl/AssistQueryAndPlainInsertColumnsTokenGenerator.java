@@ -35,9 +35,6 @@ import java.util.List;
 
 /**
  * Assist query and plain insert columns token generator.
- *
- * @author panjuan
- * @author zhangliang
  */
 public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
     

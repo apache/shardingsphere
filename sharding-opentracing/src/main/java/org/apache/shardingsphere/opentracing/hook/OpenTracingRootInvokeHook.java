@@ -26,8 +26,6 @@ import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 
 /**
  * Open tracing root invoke hook.
- *
- * @author zhangliang
  */
 public final class OpenTracingRootInvokeHook implements RootInvokeHook {
     

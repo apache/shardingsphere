@@ -27,9 +27,6 @@ import java.util.Properties;
 
 /**
  * Master-slave rule configuration for YAML.
- *
- * @author caohao
- * @author panjuan
  */
 @Getter
 @Setter

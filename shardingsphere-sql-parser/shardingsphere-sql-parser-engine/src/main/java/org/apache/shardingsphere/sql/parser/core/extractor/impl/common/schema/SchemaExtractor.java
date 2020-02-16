@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * Schema extractor.
- *
- * @author zhangliang
  */
 public final class SchemaExtractor implements OptionalSQLSegmentExtractor {
     

@@ -28,8 +28,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
  * example: sctl:hint set DatabaseShardingValue=yy.
  * yy: sharding value.
  * </p>
- *
- * @author liya
  */
 @RequiredArgsConstructor
 @Getter

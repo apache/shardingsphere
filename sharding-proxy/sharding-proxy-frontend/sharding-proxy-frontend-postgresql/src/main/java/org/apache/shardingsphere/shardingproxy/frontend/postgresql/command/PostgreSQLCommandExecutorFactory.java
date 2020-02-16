@@ -38,8 +38,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 
 /**
  * Command executor factory for PostgreSQL.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j

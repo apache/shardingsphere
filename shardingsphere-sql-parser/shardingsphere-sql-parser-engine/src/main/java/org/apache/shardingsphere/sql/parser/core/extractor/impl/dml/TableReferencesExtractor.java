@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * Table references extractor.
- *
- * @author zhangliang
  */
 public final class TableReferencesExtractor implements CollectionSQLSegmentExtractor {
     

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 
 /**
  * SQL parser for SQL92.
- * 
- * @author zhangyonglun
  */
 public final class SQL92Parser extends SQL92StatementParser implements SQLParser {
     

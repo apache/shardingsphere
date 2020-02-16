@@ -40,9 +40,6 @@ import java.util.Set;
 
 /**
  * Sharding cartesian routing engine.
- * 
- * @author zhangliang
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine {

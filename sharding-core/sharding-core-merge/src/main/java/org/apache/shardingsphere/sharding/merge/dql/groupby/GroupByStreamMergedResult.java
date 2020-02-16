@@ -38,8 +38,6 @@ import java.util.Map.Entry;
 
 /**
  * Stream merged result for group by.
- *
- * @author zhangliang
  */
 public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     

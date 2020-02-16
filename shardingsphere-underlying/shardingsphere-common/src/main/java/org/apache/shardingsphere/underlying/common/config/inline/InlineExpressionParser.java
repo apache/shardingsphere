@@ -37,9 +37,6 @@ import java.util.Set;
 
 /**
  * Inline expression parser.
- * 
- * @author gaohongtao
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class InlineExpressionParser {

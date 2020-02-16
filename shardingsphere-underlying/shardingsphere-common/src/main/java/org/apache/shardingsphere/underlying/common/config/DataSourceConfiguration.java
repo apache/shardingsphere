@@ -36,9 +36,6 @@ import java.util.Map.Entry;
 
 /**
  * Data source configuration.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.common.yaml.config;
 
 /**
  * YAML configuration.
- *
- * @author zhangliang
  */
 public interface YamlConfiguration {
 }

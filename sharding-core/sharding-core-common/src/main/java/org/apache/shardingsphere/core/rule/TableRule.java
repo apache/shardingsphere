@@ -45,8 +45,6 @@ import java.util.Set;
 
 /**
  * Table rule.
- *
- * @author zhangliang
  */
 @Getter
 @ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDatasourceNames", "datasourceToTablesMap"})

@@ -32,10 +32,6 @@ import java.util.List;
 
 /**
  * SQL statement context factory.
- *
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementContextFactory {

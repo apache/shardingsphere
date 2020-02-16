@@ -36,8 +36,6 @@ import java.util.Map;
 
 /**
  * Top projection extractor.
- *
- * @author zhangliang
  */
 public final class TopProjectionExtractor implements OptionalSQLSegmentExtractor {
     

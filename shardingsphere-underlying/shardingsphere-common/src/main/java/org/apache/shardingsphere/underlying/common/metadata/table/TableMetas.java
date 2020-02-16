@@ -26,10 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Table metas.
- *
- * @author panjuan
- * @author zhaojun
- * @author zhangliang
  */
 public final class TableMetas {
     

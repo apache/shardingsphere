@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Data source configuration for yaml.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

@@ -40,8 +40,6 @@ import java.util.List;
 
 /**
  * Insert values token generator for sharding.
- *
- * @author panjuan
  */
 @Setter
 public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator, PreviousSQLTokensAware {

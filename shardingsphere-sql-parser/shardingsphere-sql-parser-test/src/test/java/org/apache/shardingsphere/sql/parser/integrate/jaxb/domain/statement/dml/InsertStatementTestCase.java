@@ -29,8 +29,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Insert statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

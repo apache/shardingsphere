@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * Shorthand projection extractor.
- *
- * @author zhangliang
  */
 public final class ShorthandProjectionExtractor implements OptionalSQLSegmentExtractor {
     

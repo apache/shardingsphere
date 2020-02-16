@@ -29,10 +29,6 @@ import java.util.Collection;
 
 /**
  * Adapter for {@code Statement}.
- * 
- * @author zhangliang
- * @author gaohongtao
- * @author yangyi
  */
 @RequiredArgsConstructor
 public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {

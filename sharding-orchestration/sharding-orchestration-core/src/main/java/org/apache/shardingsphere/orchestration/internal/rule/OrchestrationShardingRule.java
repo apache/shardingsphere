@@ -28,8 +28,6 @@ import java.util.LinkedList;
 
 /**
  * Orchestration sharding rule.
- *
- * @author panjuan
  */
 @Getter
 public final class OrchestrationShardingRule extends ShardingRule {

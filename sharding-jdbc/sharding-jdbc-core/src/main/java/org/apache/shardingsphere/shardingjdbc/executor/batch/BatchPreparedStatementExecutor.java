@@ -50,10 +50,6 @@ import java.util.Map.Entry;
 
 /**
  * Prepared statement executor to process add batch.
- * 
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 public final class BatchPreparedStatementExecutor extends AbstractStatementExecutor {
     

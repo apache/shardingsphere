@@ -31,8 +31,6 @@ import java.util.Collections;
 
 /**
  * SQL92 DCL visitor.
- *
- * @author zhangliang
  */
 public final class SQL92DCLVisitor extends SQL92Visitor {
     

@@ -32,8 +32,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Set clause assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SetClauseAssert {

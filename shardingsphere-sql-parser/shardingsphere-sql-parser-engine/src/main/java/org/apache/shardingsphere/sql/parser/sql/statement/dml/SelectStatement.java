@@ -34,9 +34,6 @@ import java.util.LinkedList;
 
 /**
  * Select statement.
- *
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 @Setter

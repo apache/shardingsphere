@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Cached database meta data.
- *
- * @author zhangliang
  */
 public final class CachedDatabaseMetaData extends AdaptedDatabaseMetaData {
     

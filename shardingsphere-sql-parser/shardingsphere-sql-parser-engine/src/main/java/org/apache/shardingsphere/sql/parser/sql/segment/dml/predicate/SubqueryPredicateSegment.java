@@ -25,8 +25,6 @@ import java.util.Collection;
 
 /**
  * Subquery predicate segment.
- *
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfigurati
 
 /**
  * Root sharding configuration for YAML.
- *
- * @author caohao
  */
 @Getter
 @Setter

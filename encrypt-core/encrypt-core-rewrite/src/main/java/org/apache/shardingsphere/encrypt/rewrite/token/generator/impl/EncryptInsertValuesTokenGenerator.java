@@ -46,8 +46,6 @@ import java.util.List;
 
 /**
  * Insert values token generator for encrypt.
- *
- * @author panjuan
  */
 @Setter
 public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLTokenGenerator implements OptionalSQLTokenGenerator, PreviousSQLTokensAware {

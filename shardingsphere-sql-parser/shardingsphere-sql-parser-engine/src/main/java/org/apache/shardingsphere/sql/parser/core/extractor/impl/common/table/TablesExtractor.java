@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * Tables extractor.
- *
- * @author duhongjun
  */
 public final class TablesExtractor implements CollectionSQLSegmentExtractor {
     

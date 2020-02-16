@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.impl.DefaultSQLBuilder;
 
 /**
  * Default SQL rewrite engine.
- * 
- * @author zhangliang
  */
 public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
     

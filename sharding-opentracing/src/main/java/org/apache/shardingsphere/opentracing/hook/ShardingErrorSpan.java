@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Sharding error span.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingErrorSpan {

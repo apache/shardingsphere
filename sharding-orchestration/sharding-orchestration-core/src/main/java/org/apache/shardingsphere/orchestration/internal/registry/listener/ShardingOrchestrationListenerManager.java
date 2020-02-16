@@ -26,10 +26,6 @@ import java.util.Collection;
 
 /**
  * Sharding orchestration listener manager.
- *
- * @author caohao
- * @author panjuan
- * @author wangguangyuan
  */
 public final class ShardingOrchestrationListenerManager {
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.exception;
 
 /**
  * Backend exception.
- *
- * @author zhangliang
  */
 public abstract class BackendException extends RuntimeException {
     

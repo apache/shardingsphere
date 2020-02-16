@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.common.config.exception;
 
 /**
  * Configuration exception.
- *
- * @author zhangliang
  */
 public final class ShardingSphereConfigurationException extends RuntimeException {
     

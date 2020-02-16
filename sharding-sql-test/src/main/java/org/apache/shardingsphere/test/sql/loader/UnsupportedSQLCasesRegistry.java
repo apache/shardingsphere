@@ -21,8 +21,6 @@ import lombok.Getter;
 
 /**
  * Unsupported SQL cases registry.
- * 
- * @author zhangliang 
  */
 public final class UnsupportedSQLCasesRegistry {
     

@@ -30,8 +30,6 @@ import java.util.Properties;
 
 /**
  * Sharding data source factory.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingDataSourceFactory {

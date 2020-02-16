@@ -23,8 +23,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Rule definition file constant.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuleDefinitionFileConstant {

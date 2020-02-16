@@ -26,8 +26,6 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 /**
  * Runtime context.
  *
- * @author zhangliang
- * 
  * @param <T> type of rule
  */
 public interface RuntimeContext<T extends BaseRule> extends AutoCloseable {

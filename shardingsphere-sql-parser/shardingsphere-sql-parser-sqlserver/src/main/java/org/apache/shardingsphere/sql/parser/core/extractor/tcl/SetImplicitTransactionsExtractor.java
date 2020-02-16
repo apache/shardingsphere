@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * Set implicit transactions extractor.
- *
- * @author zhangliang
  */
 public final class SetImplicitTransactionsExtractor implements OptionalSQLSegmentExtractor {
     

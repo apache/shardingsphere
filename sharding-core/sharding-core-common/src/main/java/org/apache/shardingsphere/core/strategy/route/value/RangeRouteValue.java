@@ -24,8 +24,6 @@ import lombok.ToString;
 
 /**
  * Route value for range.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

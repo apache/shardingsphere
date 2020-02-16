@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment;
 
 /**
  * Expected SQL segment.
- * 
- * @author zhangliang 
  */
 public interface ExpectedSQLSegment {
     

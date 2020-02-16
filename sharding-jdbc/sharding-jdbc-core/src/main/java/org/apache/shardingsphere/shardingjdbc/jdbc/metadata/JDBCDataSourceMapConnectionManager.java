@@ -27,8 +27,6 @@ import java.util.Map;
 
 /**
  * JDBC connection manager with data source map.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class JDBCDataSourceMapConnectionManager implements ConnectionManager {

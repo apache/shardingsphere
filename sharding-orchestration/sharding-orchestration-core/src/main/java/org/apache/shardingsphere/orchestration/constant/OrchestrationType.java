@@ -22,11 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Orchestration type.
- *
- * @author zhangliang
- * @author dongzonglei
- * @author wangguangyuan
- * @author sunbufu
  */
 @Getter
 @RequiredArgsConstructor

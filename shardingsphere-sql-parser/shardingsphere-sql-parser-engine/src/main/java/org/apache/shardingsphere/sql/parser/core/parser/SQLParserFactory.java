@@ -31,9 +31,6 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 
 /**
  * SQL parser factory.
- * 
- * @author duhongjun
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {

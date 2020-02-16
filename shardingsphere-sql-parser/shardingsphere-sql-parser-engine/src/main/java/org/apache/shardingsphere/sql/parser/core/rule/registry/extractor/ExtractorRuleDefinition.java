@@ -27,9 +27,6 @@ import java.util.Map;
 
 /**
  * Extractor rule definition.
- *
- * @author zhangliang
- * @author duhongjun
  */
 public final class ExtractorRuleDefinition {
     

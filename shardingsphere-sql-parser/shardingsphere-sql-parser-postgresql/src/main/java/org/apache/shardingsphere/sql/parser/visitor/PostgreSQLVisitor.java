@@ -100,8 +100,6 @@ import java.util.LinkedList;
 
 /**
  * PostgreSQL visitor.
- *
- * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<ASTNode> {

@@ -108,8 +108,6 @@ import java.util.LinkedList;
 
 /**
  * MySQL visitor.
- *
- * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {

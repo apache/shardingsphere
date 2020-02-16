@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Sharding configuration.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

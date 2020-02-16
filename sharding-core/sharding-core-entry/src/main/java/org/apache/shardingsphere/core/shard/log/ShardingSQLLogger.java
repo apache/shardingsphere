@@ -29,9 +29,6 @@ import java.util.Set;
 
 /**
  * SQL logger for sharding.
- * 
- * @author zhangliang
- * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-SQL")

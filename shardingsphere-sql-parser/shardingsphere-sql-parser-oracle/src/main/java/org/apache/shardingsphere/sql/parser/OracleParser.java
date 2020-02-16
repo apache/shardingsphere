@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 
 /**
  * SQL parser for Oracle.
- * 
- * @author duhongjun
  */
 public final class OracleParser extends OracleStatementParser implements SQLParser {
     

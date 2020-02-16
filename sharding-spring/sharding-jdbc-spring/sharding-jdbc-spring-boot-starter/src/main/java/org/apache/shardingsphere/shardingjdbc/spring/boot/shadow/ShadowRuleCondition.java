@@ -25,8 +25,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Local shadow rule condition.
- *
- * @author xiayan
  */
 public final class ShadowRuleCondition extends SpringBootCondition {
     

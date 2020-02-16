@@ -25,8 +25,6 @@ import java.util.Collection;
 
 /**
  * Predicate right value for IN operator.
- *
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

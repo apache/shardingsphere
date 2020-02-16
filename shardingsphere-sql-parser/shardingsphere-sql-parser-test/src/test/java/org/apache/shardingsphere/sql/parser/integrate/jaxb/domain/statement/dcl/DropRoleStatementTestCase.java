@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLP
 
 /**
  * Drop role statement test case.
- * 
- * @author zhangliang 
  */
 public final class DropRoleStatementTestCase extends SQLParserTestCase {
 }

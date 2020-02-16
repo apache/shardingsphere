@@ -32,8 +32,6 @@ import java.util.LinkedList;
 
 /**
  * Predicate builder.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class PredicateBuilder {

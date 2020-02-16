@@ -33,8 +33,6 @@ import java.util.List;
 
 /**
  * Select statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.Paginatio
 
 /**
  * Limit segment.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

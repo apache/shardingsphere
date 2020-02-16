@@ -26,8 +26,6 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceCo
 
 /**
  * Orchestration encrypt configuration for YAML.
- *
- * @author yangyi
  */
 @Getter
 @Setter

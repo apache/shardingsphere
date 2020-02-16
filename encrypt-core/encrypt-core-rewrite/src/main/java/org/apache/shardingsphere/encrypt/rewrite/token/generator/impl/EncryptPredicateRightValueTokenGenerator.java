@@ -43,9 +43,6 @@ import java.util.Map;
 
 /**
  * Predicate right value token generator for encrypt.
- *
- * @author panjuan
- * @author zhangliang
  */
 @Setter
 public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator 

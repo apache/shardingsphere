@@ -27,8 +27,6 @@ import java.util.regex.Pattern;
 
 /**
  * Data source meta data for MariaDB.
- *
- * @author yanqiufang
  */
 @Getter
 public final class MariaDBDataSourceMetaData implements DataSourceMetaData {

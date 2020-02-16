@@ -43,8 +43,6 @@ import java.util.Properties;
 
 /**
  * YAML converter for configuration.
- *
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigurationYamlConverter {

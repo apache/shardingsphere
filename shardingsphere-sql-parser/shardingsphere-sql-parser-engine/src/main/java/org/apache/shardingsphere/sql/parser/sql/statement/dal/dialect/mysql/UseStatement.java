@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
  * Use statement.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

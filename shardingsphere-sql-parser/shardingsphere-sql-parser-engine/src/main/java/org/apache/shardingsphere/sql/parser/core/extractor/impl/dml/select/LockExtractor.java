@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Lock extractor.
- *
- * @author zhyee
  */
 public final class LockExtractor implements OptionalSQLSegmentExtractor {
 

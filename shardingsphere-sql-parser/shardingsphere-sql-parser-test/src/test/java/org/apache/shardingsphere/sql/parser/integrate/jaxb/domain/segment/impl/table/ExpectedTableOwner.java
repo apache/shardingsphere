@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected table owner.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

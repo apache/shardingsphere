@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Meta data logger.
- *
- * @author yuzel
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-MetaData")

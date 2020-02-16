@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Unsupported command packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 public final class PostgreSQLUnsupportedCommandPacket extends PostgreSQLCommandPacket {

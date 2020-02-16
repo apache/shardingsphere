@@ -24,8 +24,6 @@ import org.apache.shardingsphere.api.sharding.complex.ComplexKeysShardingAlgorit
 
 /**
  * Complex sharding strategy configuration.
- * 
- * @author zhangliang
  */
 @Getter
 public final class ComplexShardingStrategyConfiguration implements ShardingStrategyConfiguration {

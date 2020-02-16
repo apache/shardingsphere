@@ -27,8 +27,6 @@ import java.util.Properties;
 
 /**
  * XA data source definition for MySQL.
- *
- * @author zhaojun
  */
 public final class MySQLXADataSourceDefinition implements XADataSourceDefinition {
     

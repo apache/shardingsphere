@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 
 /**
  * SQL parser for SQLServer.
- * 
- * @author duhongjun
  */
 public final class SQLServerParser extends SQLServerStatementParser implements SQLParser {
     

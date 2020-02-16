@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Authentication configuration for YAML.
- * 
- * @author panjuan
  */
 @Getter
 @Setter

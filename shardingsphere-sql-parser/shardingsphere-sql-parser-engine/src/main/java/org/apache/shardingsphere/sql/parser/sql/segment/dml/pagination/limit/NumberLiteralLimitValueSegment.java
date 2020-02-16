@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLit
 
 /**
  * Limit value segment for number literal.
- * 
- * @author zhangliang
  */
 @Getter
 public final class NumberLiteralLimitValueSegment extends LimitValueSegment implements NumberLiteralPaginationValueSegment {

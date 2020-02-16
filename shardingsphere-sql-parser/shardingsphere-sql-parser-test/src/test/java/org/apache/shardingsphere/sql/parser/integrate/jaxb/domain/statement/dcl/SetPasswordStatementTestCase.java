@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLP
 
 /**
  * Set password statement test case.
- * 
- * @author zhangliang 
  */
 public final class SetPasswordStatementTestCase extends SQLParserTestCase {
 }

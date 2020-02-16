@@ -39,8 +39,6 @@ import java.util.List;
 
 /**
  * SQL execute callback for Sharding-Proxy.
- *
- * @author zhangliang
  */
 public final class ProxySQLExecuteCallback extends SQLExecuteCallback<ExecuteResponse> {
     

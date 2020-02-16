@@ -23,8 +23,6 @@ import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 /**
  * Encryptor service loader.
- * 
- * @author panjuan
  */
 public final class EncryptorServiceLoader extends TypeBasedSPIServiceLoader<Encryptor> {
     

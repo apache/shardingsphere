@@ -23,8 +23,6 @@ import java.util.Properties;
 
 /**
  * Apollo properties.
- *
- * @author dongzonglei
  */
 public final class ApolloProperties extends TypedProperties<ApolloPropertiesEnum> {
     

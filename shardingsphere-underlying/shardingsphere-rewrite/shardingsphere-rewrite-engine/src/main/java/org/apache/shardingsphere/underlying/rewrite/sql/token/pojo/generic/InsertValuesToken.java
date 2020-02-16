@@ -26,9 +26,6 @@ import java.util.List;
 
 /**
  * Insert values token.
- *
- * @author maxiaoguang
- * @author panjuan
  */
 @Getter
 public abstract class InsertValuesToken extends SQLToken implements Substitutable {

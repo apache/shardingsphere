@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLSta
 
 /**
  * DAL statement.
- *
- * @author zhangliang
  */
 public abstract class DALStatement extends AbstractSQLStatement {
 }

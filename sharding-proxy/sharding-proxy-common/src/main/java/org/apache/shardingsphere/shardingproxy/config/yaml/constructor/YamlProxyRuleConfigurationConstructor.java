@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.common.yaml.constructor.AbstractType
 
 /**
  * YAML proxy rule configuration constructor.
- *
- * @author yangyi
  */
 public final class YamlProxyRuleConfigurationConstructor extends AbstractTypeConstructor {
     

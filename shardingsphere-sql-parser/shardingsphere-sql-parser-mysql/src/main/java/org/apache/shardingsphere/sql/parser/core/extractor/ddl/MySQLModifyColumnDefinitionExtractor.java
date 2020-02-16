@@ -27,8 +27,6 @@ import java.util.Map;
 
 /**
  * Modify column definition extractor for MySQL.
- * 
- * @author duhongjun
  */
 public final class MySQLModifyColumnDefinitionExtractor extends ModifyColumnDefinitionExtractor {
     

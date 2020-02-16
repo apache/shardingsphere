@@ -19,8 +19,6 @@ package org.apache.shardingsphere.orchestration.center.util;
 
 /**
  * Config key utils.
- *
- * @author dongzonglei
  */
 public final class ConfigKeyUtils {
     

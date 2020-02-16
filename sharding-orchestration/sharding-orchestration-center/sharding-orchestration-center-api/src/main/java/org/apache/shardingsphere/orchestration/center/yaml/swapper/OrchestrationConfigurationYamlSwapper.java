@@ -29,11 +29,6 @@ import java.util.Map.Entry;
 
 /**
  * Orchestration instance configuration YAML swapper.
- *
- * @author zhangliang
- * @author dongzonglei
- * @author wangguangyuan
- * @author sunbufu
  */
 public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationConfiguration, OrchestrationConfiguration> {
     

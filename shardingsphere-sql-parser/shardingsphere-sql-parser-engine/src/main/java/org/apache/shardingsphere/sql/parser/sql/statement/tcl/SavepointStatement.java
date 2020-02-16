@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.tcl;
 
 /**
  * Savepoint statement.
- *
- * @author maxiaoguang
  */
 public final class SavepointStatement extends TCLStatement {
 }

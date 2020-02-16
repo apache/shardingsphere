@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * Pagination context engine.
- *
- * @author zhangliang
  */
 public final class PaginationContextEngine {
     

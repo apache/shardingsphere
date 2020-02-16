@@ -46,10 +46,6 @@ import java.util.List;
 
 /**
  * SQL Execute engine for JDBC.
- *
- * @author zhaojun
- * @author zhangliang
- * @author panjuan
  */
 public final class JDBCExecuteEngine implements SQLExecuteEngine {
     

@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Drop primary key extractor for MySQL.
- *
- * @author duhongjun
  */
 public final class MySQLDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     

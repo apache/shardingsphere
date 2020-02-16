@@ -23,9 +23,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 
 /**
  * SQL parser for PostgreSQL.
- * 
- * @author duhongjun
- * @author panjuan
  */
 public final class PostgreSQLParser extends PostgreSQLStatementParser implements SQLParser {
     

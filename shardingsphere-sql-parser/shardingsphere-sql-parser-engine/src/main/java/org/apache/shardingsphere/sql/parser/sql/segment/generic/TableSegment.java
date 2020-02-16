@@ -27,10 +27,6 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Table segment.
- * 
- * @author duhongjun
- * @author panjuan
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

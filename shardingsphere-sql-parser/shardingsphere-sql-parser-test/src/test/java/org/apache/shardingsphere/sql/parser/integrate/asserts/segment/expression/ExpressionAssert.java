@@ -35,8 +35,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  *  Expression assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExpressionAssert {

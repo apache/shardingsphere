@@ -37,8 +37,6 @@ import java.util.List;
 
 /**
  * Insert value parameter rewriter for encrypt.
- *
- * @author zhangliang
  */
 public final class EncryptInsertValueParameterRewriter extends EncryptParameterRewriter {
     

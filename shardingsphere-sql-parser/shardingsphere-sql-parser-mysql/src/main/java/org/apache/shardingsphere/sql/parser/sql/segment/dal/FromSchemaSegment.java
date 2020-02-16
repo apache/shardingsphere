@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
 
 /**
  * From schema segment.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

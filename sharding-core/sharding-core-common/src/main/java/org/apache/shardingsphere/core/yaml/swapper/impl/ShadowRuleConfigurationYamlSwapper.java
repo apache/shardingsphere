@@ -26,8 +26,6 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Shadow rule configuration yaml swapper.
- *
- * @author xiayan
  */
 public final class ShadowRuleConfigurationYamlSwapper implements YamlSwapper<YamlShadowRuleConfiguration, ShadowRuleConfiguration> {
     

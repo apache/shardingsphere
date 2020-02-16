@@ -30,8 +30,6 @@ import java.util.Properties;
 
 /**
  * Key generator bean parser for spring namespace.
- *®
- * @author panjuan
  */
 public final class KeyGeneratorBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

@@ -28,8 +28,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected assignment value.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

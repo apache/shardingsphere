@@ -19,9 +19,6 @@ package org.apache.shardingsphere.transaction.core;
 
 /**
  * Hold transaction type for current thread.
- *
- * @author zhaojun
- * @author zhangliang
  */
 public final class TransactionTypeHolder {
     

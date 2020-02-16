@@ -23,10 +23,6 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 
 /**
  * Route context.
- * 
- * @author gaohongtao
- * @author zhangliang
- * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter

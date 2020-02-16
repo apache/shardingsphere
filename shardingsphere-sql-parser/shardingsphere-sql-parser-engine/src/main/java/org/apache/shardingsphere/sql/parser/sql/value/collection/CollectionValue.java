@@ -25,8 +25,6 @@ import java.util.LinkedList;
 
 /**
  * Collection value.
- *
- * @author panjuan
  */
 @Getter
 public final class CollectionValue<T> implements ValueASTNode<Collection> {

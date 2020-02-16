@@ -28,9 +28,6 @@ import java.util.List;
 
 /**
  * Databases and tables master-slave rule.
- * 
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 public class MasterSlaveRule implements BaseRule {

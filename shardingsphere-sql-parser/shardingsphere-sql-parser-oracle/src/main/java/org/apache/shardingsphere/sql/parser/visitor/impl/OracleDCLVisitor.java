@@ -43,8 +43,6 @@ import java.util.Collections;
 
 /**
  * Oracle DCL visitor.
- *
- * @author zhangliang
  */
 public final class OracleDCLVisitor extends OracleVisitor {
     

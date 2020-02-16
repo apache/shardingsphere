@@ -36,8 +36,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Table assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableAssert {

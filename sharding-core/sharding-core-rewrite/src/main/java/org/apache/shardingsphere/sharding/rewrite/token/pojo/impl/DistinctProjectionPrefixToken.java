@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * Distinct projection prefix token.
- *
- * @author panjuan
  */
 public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
     

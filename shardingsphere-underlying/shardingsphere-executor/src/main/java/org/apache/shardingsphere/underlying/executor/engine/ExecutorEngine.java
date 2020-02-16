@@ -34,8 +34,6 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Executor engine.
- *
- * @author zhangliang
  */
 public final class ExecutorEngine implements AutoCloseable {
     

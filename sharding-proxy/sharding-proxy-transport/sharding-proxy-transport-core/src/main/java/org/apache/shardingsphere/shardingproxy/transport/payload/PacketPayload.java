@@ -21,8 +21,6 @@ import io.netty.buffer.ByteBuf;
 
 /**
  * Packet payload.
- *
- * @author zhangliang
  */
 public interface PacketPayload extends AutoCloseable {
     

@@ -25,8 +25,6 @@ import java.math.BigInteger;
 
 /**
  * Number literal value.
- *
- * @author panjuan
  */
 @Getter
 public final class NumberLiteralValue implements LiteralValue<Number> {

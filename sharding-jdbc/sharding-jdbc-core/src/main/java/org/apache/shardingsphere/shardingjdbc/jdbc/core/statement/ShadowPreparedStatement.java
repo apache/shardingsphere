@@ -53,8 +53,6 @@ import java.util.Map;
 
 /**
  * Shadow prepared statement.
- *
- * @author zhyee
  */
 @Slf4j
 public final class ShadowPreparedStatement extends AbstractShardingPreparedStatementAdapter {

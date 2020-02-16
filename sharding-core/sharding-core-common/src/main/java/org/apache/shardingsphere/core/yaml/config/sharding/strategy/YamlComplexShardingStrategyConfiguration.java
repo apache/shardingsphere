@@ -22,8 +22,6 @@ import lombok.Setter;
 
 /**
  * Complex sharding strategy configuration for YAML.
- * 
- * @author zhangliang
  */
 @Getter
 @Setter

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.common.constant.properties;
 
 /**
  * Typed properties key interface.
- *
- * @author kimmking
  */
 public interface TypedPropertiesKey {
     

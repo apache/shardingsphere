@@ -33,9 +33,6 @@ import java.util.Map.Entry;
 
 /**
  * Encrypt condition for equal.
- *
- * @author zhangliang
- * @author maxiaoguang
  */
 @Getter
 @EqualsAndHashCode

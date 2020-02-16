@@ -40,9 +40,6 @@ import java.util.Map;
 
 /**
  * Default table meta data loader.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {

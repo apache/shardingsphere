@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStateme
 
 /**
  * Set password statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SetPasswordStatementAssert {

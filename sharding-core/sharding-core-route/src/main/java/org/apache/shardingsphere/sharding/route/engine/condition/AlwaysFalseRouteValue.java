@@ -21,8 +21,6 @@ import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 /**
  * Always false route value.
- *
- * @author zhangliang
  */
 public final class AlwaysFalseRouteValue implements RouteValue {
     

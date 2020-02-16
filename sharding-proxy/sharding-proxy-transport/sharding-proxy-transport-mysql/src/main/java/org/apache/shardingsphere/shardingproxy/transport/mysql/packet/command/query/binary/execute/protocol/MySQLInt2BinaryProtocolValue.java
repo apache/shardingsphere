@@ -21,9 +21,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
 
 /**
  * Binary protocol value for int2 for MySQL.
- * 
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class MySQLInt2BinaryProtocolValue implements MySQLBinaryProtocolValue {
     

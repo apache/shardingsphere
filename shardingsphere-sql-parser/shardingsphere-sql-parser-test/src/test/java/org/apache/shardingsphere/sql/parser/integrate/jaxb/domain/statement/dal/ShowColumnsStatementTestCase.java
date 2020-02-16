@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Show columns statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

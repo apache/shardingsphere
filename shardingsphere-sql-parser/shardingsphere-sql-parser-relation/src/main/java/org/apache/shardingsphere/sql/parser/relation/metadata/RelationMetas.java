@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Relation metas.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class RelationMetas {

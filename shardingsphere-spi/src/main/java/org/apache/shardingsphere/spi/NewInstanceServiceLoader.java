@@ -30,9 +30,6 @@ import java.util.ServiceLoader;
 
 /**
  * SPI service loader for new instance for every call.
- *
- * @author zhangliang
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NewInstanceServiceLoader {

@@ -26,8 +26,6 @@ import java.util.Collection;
 
 /**
  * On duplicate key columns segment.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

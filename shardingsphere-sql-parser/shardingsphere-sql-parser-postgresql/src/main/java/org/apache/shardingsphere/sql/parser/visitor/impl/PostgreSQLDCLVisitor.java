@@ -44,8 +44,6 @@ import java.util.Collections;
 
 /**
  * PostgreSQL DCL visitor.
- *
- * @author zhangliang
  */
 public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor {
     

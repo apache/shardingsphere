@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Encrypt rule configuration.
- *
- * @author panjuan
  */
 @Getter
 @Setter

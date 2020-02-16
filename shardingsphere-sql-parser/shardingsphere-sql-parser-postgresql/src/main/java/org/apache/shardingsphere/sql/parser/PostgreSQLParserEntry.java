@@ -30,8 +30,6 @@ import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLTCLVisitor;
 
 /**
  * SQL parser entry for PostgreSQL.
- *
- * @author zhangliang
  */
 public final class PostgreSQLParserEntry implements SQLParserEntry {
     

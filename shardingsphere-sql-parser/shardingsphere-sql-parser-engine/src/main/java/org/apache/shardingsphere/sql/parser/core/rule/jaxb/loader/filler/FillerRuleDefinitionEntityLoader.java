@@ -26,8 +26,6 @@ import java.io.InputStream;
 
 /**
  * Filler rule definition entity loader for JAXB.
- *
- * @author zhangliang
  */
 public final class FillerRuleDefinitionEntityLoader implements RuleDefinitionEntityLoader {
     

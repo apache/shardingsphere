@@ -25,12 +25,6 @@ import java.util.List;
 
 /**
  * Registry center.
- *
- * @author zhangliang
- * @author zhaojun
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 public interface RegistryCenter extends TypeBasedSPI {
     

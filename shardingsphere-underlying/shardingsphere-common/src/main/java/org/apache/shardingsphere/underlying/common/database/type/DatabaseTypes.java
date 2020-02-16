@@ -27,8 +27,6 @@ import java.util.ServiceLoader;
 
 /**
  * Database types.
- * 
- * @author zhangliang
  */
 public final class DatabaseTypes {
     

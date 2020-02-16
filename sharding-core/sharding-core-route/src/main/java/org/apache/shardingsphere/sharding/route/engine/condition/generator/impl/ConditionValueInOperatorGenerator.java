@@ -33,8 +33,6 @@ import java.util.List;
 
 /**
  * Condition value generator for in operator.
- *
- * @author zhangliang
  */
 public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<PredicateInRightValue> {
     

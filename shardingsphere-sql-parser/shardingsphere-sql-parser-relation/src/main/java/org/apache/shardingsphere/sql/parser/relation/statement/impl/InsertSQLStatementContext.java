@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * Insert SQL statement context.
- *
- * @author zhangliang
  */
 @Getter
 @ToString(callSuper = true)

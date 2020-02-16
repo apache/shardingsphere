@@ -28,8 +28,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Use statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UseStatementAssert {

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 /**
  * Owner available.
  *
- * @author zhangliang
- * 
  * @param <T> type of SQL segment
  */
 public interface OwnerAvailable<T extends SQLSegment> extends SQLSegment {

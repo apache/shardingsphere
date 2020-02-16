@@ -32,9 +32,6 @@ import java.sql.SQLException;
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41">ColumnDefinition41</a>
  * @see <a href="https://mariadb.com/kb/en/library/resultset/#column-definition-packet">Column definition packet</a>
- *
- * @author zhangliang
- * @author zhangyonglun
  */
 public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     

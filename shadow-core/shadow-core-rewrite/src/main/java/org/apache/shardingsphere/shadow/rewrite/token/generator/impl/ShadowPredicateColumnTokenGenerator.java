@@ -33,8 +33,6 @@ import java.util.LinkedList;
 
 /**
  * Predicate column token generator for shadow.
- *
- * @author zhyee
  */
 @Setter
 public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLTokenGenerator implements CollectionSQLTokenGenerator {

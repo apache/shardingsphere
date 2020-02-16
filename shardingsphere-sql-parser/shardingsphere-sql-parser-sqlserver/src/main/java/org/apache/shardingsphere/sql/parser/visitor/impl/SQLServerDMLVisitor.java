@@ -84,8 +84,6 @@ import java.util.List;
 
 /**
  * SQLServer DML visitor.
- *
- * @author zhangliang
  */
 public final class SQLServerDMLVisitor extends SQLServerVisitor {
     

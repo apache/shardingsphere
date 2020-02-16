@@ -55,8 +55,6 @@ import java.util.Map;
 
 /**
  * Encrypt prepared statement.
- *
- * @author panjuan
  */
 @Slf4j
 public final class EncryptPreparedStatement extends AbstractShardingPreparedStatementAdapter {

@@ -30,10 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 
 /**
  * Column segment.
- *
- * @author duhongjun
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

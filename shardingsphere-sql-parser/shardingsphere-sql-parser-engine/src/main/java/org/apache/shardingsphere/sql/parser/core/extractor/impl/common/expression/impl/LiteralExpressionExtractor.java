@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * Literal expression extractor.
- *
- * @author zhangliang
  */
 public final class LiteralExpressionExtractor implements OptionalSQLSegmentExtractor {
     

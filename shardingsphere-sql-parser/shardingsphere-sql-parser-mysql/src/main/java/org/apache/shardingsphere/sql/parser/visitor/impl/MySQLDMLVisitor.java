@@ -98,8 +98,6 @@ import java.util.List;
 
 /**
  * MySQL DML visitor.
- *
- * @author panjuan
  */
 public final class MySQLDMLVisitor extends MySQLVisitor {
     

@@ -21,8 +21,6 @@ import java.util.List;
 
 /**
  * Parameter builder.
- *
- * @author panjuan
  */
 public interface ParameterBuilder {
     

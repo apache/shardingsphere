@@ -27,8 +27,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * User authentication service.
- *
- * @author chenqingyang
  */
 @Component
 @ConfigurationProperties(prefix = "user.admin")

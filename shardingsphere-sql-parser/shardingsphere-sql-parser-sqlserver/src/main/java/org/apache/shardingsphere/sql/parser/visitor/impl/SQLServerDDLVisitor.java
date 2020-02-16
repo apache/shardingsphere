@@ -62,8 +62,6 @@ import java.util.LinkedList;
 
 /**
  * SQLServer DDL visitor.
- *
- * @author zhangliang
  */
 public final class SQLServerDDLVisitor extends SQLServerVisitor {
     

@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 /**
  * PostgreSQL DAL visitor.
- *
- * @author zhangliang
  */
 public final class PostgreSQLDALVisitor extends PostgreSQLVisitor {
     

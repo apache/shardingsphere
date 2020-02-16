@@ -56,11 +56,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Distributed lock center for zookeeper with curator.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 public final class CuratorZookeeperInstance implements ConfigCenter, DistributedLockManagement, RegistryCenter {
     

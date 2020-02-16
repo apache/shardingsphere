@@ -27,8 +27,6 @@ import java.util.LinkedList;
 
 /**
  * Rewrite assertions root entity for JAXB.
- *
- * @author zhangliang
  */
 @XmlRootElement(name = "rewrite-assertions")
 @Getter

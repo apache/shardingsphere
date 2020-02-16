@@ -23,8 +23,6 @@ import java.sql.Timestamp;
 
 /**
  * Binary protocol value for time for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     

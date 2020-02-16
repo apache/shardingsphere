@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Variable expression segment.
- *
- * @author lujingshang
  */
 @RequiredArgsConstructor
 @Getter

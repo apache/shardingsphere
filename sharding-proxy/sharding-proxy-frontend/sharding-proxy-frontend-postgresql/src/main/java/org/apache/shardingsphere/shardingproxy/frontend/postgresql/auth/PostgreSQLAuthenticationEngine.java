@@ -35,9 +35,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Authentication engine for PostgreSQL.
- *
- * @author zhangliang
- * @author avalon566
  */
 public final class PostgreSQLAuthenticationEngine implements AuthenticationEngine {
     

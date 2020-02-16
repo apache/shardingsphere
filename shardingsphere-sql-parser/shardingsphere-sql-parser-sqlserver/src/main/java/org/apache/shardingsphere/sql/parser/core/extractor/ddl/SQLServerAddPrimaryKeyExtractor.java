@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * Add primary key extractor for SQLServer.
- *
- * @author duhongjun
  */
 public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     

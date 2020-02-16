@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * Table meta data decorator for encrypt.
- *
- * @author zhangliang
  */
 public final class EncryptTableMetaDataDecorator implements TableMetaDataDecorator<EncryptRule> {
     

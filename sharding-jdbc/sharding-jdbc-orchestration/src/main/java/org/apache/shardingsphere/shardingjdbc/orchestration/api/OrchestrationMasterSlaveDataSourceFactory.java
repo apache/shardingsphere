@@ -32,8 +32,6 @@ import java.util.Properties;
 
 /**
  * Orchestration sharding data source factory.
- *
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrchestrationMasterSlaveDataSourceFactory {

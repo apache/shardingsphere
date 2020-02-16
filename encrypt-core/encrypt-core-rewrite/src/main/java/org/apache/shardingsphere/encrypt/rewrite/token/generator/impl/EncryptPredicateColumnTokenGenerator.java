@@ -38,9 +38,6 @@ import java.util.LinkedList;
 
 /**
  * Predicate column token generator for encrypt.
- *
- * @author panjuan
- * @author zhangliang
  */
 @Setter
 public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, RelationMetasAware, QueryWithCipherColumnAware {

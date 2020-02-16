@@ -24,9 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAv
 
 /**
  * Where filler.
- *
- * @author duhongjun
- * @author zhangliang
  */
 public final class WhereFiller implements SQLSegmentFiller<WhereSegment> {
     

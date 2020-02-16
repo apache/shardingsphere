@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitState
 
 /**
  * Implicit transactions filler for SQLServer.
- *
- * @author zhangliang
  */
 public final class SQLServerImplicitTransactionsFiller implements SQLSegmentFiller {
     

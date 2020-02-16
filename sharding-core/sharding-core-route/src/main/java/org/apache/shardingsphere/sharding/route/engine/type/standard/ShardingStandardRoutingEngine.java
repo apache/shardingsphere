@@ -52,10 +52,6 @@ import java.util.List;
 
 /**
  * Sharding standard routing engine.
- * 
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShardingStandardRoutingEngine implements ShardingRouteEngine {

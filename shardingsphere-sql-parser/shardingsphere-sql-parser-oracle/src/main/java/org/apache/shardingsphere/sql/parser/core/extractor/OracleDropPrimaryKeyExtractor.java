@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Drop primary key extractor for Oracle.
- *
- * @author duhongjun
  */
 public final class OracleDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     

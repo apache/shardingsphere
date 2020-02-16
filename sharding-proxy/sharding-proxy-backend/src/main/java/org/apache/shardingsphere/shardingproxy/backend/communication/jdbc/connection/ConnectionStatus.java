@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.conne
 
 /**
  * Connection status.
- *
- * @author zhaojun
  */
 public enum ConnectionStatus {
     

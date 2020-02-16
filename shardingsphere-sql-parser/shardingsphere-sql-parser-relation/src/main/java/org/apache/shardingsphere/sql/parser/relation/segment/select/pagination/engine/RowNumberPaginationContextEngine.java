@@ -37,8 +37,6 @@ import java.util.List;
 
 /**
  * Pagination context engine for row number.
- *
- * @author zhangliang
  */
 public final class RowNumberPaginationContextEngine {
     

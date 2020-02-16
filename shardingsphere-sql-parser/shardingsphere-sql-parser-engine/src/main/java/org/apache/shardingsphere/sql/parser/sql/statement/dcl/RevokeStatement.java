@@ -26,8 +26,6 @@ import java.util.LinkedList;
 
 /**
  * Revoke statement.
- *
- * @author zhangliang
  */
 @Getter
 public final class RevokeStatement extends DCLStatement implements TableSegmentsAvailable {

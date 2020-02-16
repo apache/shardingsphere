@@ -23,8 +23,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.node.Stat
 
 /**
  * Registry center service.
- *
- * @author chenqingyang
  */
 public interface RegistryCenterService {
     

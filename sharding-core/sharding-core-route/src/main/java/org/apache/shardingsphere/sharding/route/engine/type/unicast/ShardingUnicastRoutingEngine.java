@@ -36,9 +36,6 @@ import java.util.Set;
 
 /**
  * Sharding unicast routing engine.
- *
- * @author zhangliang
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {

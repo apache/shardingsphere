@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 
 /**
  * Predicate segment.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Sharding insert statement validator.
- *
- * @author zhangliang
  */
 public final class ShardingInsertStatementValidator implements ShardingStatementValidator<InsertStatement> {
     

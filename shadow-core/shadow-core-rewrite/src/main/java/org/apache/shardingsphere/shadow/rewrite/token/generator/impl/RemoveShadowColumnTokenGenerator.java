@@ -32,8 +32,6 @@ import java.util.LinkedList;
 
 /**
  * Remove shadow column token generator.
- *
- * @author zhyee
  */
 public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGenerator implements CollectionSQLTokenGenerator {
     

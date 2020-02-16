@@ -23,8 +23,6 @@ import lombok.ToString;
 
 /**
  * Predicate left bracket value for IN operator.
- *
- * @author chun.yang
  */
 @RequiredArgsConstructor
 @Getter

@@ -39,8 +39,6 @@ import java.util.Set;
 
 /**
  * Database meta data result set.
- *
- * @author yangyi
  */
 public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabaseMetaDataResultSet {
     

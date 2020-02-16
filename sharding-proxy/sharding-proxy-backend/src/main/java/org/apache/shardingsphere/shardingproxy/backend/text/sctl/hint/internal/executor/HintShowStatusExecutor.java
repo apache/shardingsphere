@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * Hint show status command executor.
- *
- * @author liya
  */
 public final class HintShowStatusExecutor extends AbstractHintQueryExecutor<HintShowStatusCommand> {
     

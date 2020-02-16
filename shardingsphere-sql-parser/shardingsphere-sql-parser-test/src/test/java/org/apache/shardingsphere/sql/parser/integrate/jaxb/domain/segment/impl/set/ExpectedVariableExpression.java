@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected variable expression.
- * 
- * @author lujingshang
  */
 @Getter
 @Setter

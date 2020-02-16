@@ -24,9 +24,6 @@ import lombok.ToString;
 
 /**
  * Execution unit.
- * 
- * @author gaohongtao
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter

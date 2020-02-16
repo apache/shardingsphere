@@ -28,8 +28,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Column definition assert.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnDefinitionAssert {

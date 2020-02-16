@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Common expression extractor.
- *
- * @author zhangliang
  */
 public final class CommonExpressionExtractor implements OptionalSQLSegmentExtractor {
     

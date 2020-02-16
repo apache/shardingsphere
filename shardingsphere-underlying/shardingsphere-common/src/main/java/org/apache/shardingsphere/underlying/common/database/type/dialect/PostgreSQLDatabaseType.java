@@ -25,8 +25,6 @@ import java.util.Collections;
 
 /**
  * Database type of PostgreSQL.
- *
- * @author zhangliang
  */
 public final class PostgreSQLDatabaseType implements DatabaseType {
     

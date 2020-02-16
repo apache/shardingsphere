@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAv
 
 /**
  * Show create table statement.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

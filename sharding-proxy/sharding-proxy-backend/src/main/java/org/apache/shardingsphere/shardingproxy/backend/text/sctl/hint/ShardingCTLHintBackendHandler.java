@@ -33,8 +33,6 @@ import java.sql.SQLException;
 
 /**
  * Sharding CTL hint backend handler.
- *
- * @author liya
  */
 public final class ShardingCTLHintBackendHandler implements TextProtocolBackendHandler {
     

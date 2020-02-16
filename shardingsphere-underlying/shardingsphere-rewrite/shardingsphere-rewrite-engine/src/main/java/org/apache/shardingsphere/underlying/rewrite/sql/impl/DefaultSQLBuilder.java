@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * Default SQL builder.
- *
- * @author zhangliang
  */
 public final class DefaultSQLBuilder extends AbstractSQLBuilder {
     

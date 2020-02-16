@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.
 
 /**
  * Orchestration encrypt datasource for spring namespace.
- *
- * @author yangyi
  */
 public final class OrchestrationSpringEncryptDataSource extends OrchestrationEncryptDataSource {
     

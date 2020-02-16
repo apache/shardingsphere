@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.Pos
 
 /**
  * Column description for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @Getter
 public final class PostgreSQLColumnDescription {

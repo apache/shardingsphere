@@ -30,8 +30,6 @@ import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
 
 /**
  * Oracle TCL visitor.
- *
- * @author zhangliang
  */
 public final class OracleTCLVisitor extends OracleVisitor {
     

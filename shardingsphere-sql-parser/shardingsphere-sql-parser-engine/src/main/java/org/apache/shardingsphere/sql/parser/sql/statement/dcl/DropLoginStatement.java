@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Drop login statement.
- *
- * @author zhangliang
  */
 public final class DropLoginStatement extends DCLStatement {
 }

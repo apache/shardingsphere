@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 
 /**
  * Show databases statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowDatabasesStatementAssert {

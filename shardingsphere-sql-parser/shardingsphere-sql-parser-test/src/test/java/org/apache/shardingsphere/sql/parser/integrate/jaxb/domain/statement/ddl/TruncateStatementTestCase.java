@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Truncate statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 public final class TruncateStatementTestCase extends SQLParserTestCase {

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
  * Show table status statement.
- *
- * @author zhangliang
  */
 public final class ShowTableStatusStatement extends DALStatement {
 }

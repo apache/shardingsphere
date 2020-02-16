@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Command query packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @Getter
 @ToString

@@ -36,8 +36,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
  * Projection engine.
- *
- * @author zhangliang
  */
 public final class ProjectionEngine {
     

@@ -26,8 +26,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected column position.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

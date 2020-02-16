@@ -38,9 +38,6 @@ import java.util.LinkedList;
 
 /**
  * SQL token generator builder for encrypt.
- *
- * @author panjuan
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuilder {

@@ -32,8 +32,6 @@ import java.util.Collection;
 
 /**
  * RESTful API of orchestration operation.
- *
- * @author chenqingyang
  */
 @RestController
 @RequestMapping("/api/orchestration")

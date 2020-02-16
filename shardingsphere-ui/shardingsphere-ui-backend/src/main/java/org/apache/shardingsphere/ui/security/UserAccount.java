@@ -22,8 +22,6 @@ import lombok.Setter;
 
 /**
  * User account.
- *
- * @author chenqingyang
  */
 @Getter
 @Setter

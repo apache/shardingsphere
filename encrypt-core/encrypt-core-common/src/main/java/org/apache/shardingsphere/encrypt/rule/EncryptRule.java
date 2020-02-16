@@ -43,8 +43,6 @@ import java.util.Map.Entry;
 
 /**
  * Encrypt rule.
- *
- * @author panjuan
  */
 public final class EncryptRule implements BaseRule {
     

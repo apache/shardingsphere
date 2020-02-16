@@ -29,8 +29,6 @@ import java.util.Set;
 
 /**
  * Apollo config wrapper.
- *
- * @author dongzonglei
  */
 public final class ApolloConfigWrapper {
     

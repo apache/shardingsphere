@@ -23,9 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 /**
  * SQL segment filler.
  *
- * @author zhangliang
- * @author duhongjun
- * 
  * @param <T> type of SQL segment
  */
 public interface SQLSegmentFiller<T extends SQLSegment> {

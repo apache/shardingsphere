@@ -27,11 +27,6 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 
 /**
  * Curator zookeeper exception handler.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j

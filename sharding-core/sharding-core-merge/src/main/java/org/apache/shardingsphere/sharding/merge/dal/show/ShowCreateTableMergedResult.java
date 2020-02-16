@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * Merged result for show create table.
- *
- * @author zhangliang
  */
 public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
     

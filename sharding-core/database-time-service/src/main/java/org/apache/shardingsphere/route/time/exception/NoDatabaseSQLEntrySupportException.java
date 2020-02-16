@@ -19,8 +19,6 @@ package org.apache.shardingsphere.route.time.exception;
 
 /**
  * No database SQL entry support.
- *
- * @author chenchuangliu
  */
 public final class NoDatabaseSQLEntrySupportException extends RuntimeException {
     

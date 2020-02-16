@@ -45,8 +45,6 @@ import java.util.List;
 
 /**
  * Encrypt condition engine.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class EncryptConditionEngine {

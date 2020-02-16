@@ -24,8 +24,6 @@ import java.util.Properties;
 
 /**
  * Registry center config.
- *
- * @author chenqingyang
  */
 @Getter
 @Setter
@@ -44,6 +42,6 @@ public class RegistryCenterConfig {
     private String digest;
     
     private boolean activated;
-
+    
     private Properties props = new Properties();
 }

@@ -24,8 +24,6 @@ import java.util.Collection;
 
 /**
  * Command executor.
- *
- * @author zhangliang
  */
 public interface CommandExecutor {
     

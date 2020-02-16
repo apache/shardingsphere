@@ -47,8 +47,6 @@ import java.util.Map.Entry;
 
 /**
  * Data set environment manager.
- *
- * @author zhangliang
  */
 public final class DataSetEnvironmentManager {
     
