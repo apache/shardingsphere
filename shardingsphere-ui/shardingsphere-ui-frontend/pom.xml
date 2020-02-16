@@ -34,7 +34,7 @@
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>node</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -99,9 +99,12 @@
             </build>
         </profile>
         <profile>
-            <id>releaseCN</id>
+            <id>node-cn</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>node</name>
+                    <value>cn</value>
+                </property>
             </activation>
             <build>
                 <plugins>
