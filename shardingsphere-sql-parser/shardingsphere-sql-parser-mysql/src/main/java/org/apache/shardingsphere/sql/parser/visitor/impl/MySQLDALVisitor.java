@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Variable_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
@@ -169,7 +169,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        Variable_Context variableContext = ctx.variable_();
+        VariableContext variableContext = ctx.variable();
         if (null != variableContext) {
             VariableExpressionSegment variable = new VariableExpressionSegment(variableContext.getStart().getStartIndex(), variableContext.getStop().getStopIndex(), variableContext.getText());
             result.getAllSQLSegments().add(variable);

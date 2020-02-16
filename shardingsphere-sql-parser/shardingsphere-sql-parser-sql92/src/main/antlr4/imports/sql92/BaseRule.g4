@@ -84,7 +84,7 @@ unreservedWord
     | UNCOMMITTED | UNNAMED
     ;
 
-variable_
+variable
     : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
     ;
 
@@ -182,7 +182,7 @@ simpleExpr
     | literals
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier)
-    | variable_
+    | variable
     | (PLUS_ | MINUS_ | TILDE_ | NOT_) simpleExpr
     | LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery

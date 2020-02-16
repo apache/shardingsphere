@@ -109,7 +109,7 @@ unreservedWord
     | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | CONTEXT | CODE | CHANNEL | SOURCE
     ;
 
-variable_
+variable
     : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
     ;
 
@@ -311,7 +311,7 @@ simpleExpr
     | literals
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier)
-    | variable_
+    | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
