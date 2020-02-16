@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.visitor.SQL92Visitor;
 
 /**
- * SQL92 visitor.
+ * SQL92 DAL visitor.
  *
- * @author panjuan
+ * @author zhangliang
  */
-public final class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
-    
-    // DALStatement.g4
-    // DCLStatement.g4
-    // DDLStatement.g4
-    // DMLStatement.g4
-    // TCLStatement.g4
-    // StoreProcedure.g4
-    // BaseRule.g4
+public final class SQL92DALVisitor extends SQL92Visitor {
 }

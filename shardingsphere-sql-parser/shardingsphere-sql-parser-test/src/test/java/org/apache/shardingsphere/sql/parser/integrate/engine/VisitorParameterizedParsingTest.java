@@ -109,22 +109,9 @@ public final class VisitorParameterizedParsingTest {
     private static Collection<Object[]> getSQLTestParameters(final Collection<Object[]> sqlTestParameters) {
         Collection<Object[]> result = new LinkedList<>();
         for (Object[] each : sqlTestParameters) {
-            String sqlCaseId = each[0].toString();
-            String databaseType = each[1].toString();
-            SQLCaseType sqlCaseType = (SQLCaseType) each[2];
-            if (isPassedSqlCase(sqlCaseId)) {
-                continue;
+            if (!isPassedSqlCase(each[0].toString())) {
+                result.add(each);
             }
-            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType) && !"Oracle".contains(databaseType) && !"SQLServer".contains(databaseType)) {
-                //            if (!"MySQL".contains(databaseType) && !"PostgreSQL".contains(databaseType) && !"Oracle".contains(databaseType)) {
-                continue;
-            }
-            try {
-                SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-            } catch (final IllegalStateException ex) {
-                continue;
-            }
-            result.add(each);
         }
         return result;
     }

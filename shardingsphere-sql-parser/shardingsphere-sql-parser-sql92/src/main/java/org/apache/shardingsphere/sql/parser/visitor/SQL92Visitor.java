@@ -21,43 +21,40 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitValueLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanPrimaryContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CastFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CharFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionCallContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HexadecimalLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NullValueLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NumberLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByItemContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OwnerContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterMarkerContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PredicateContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RegularFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SimpleExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SpecialFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.StringLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AggregationFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.BitExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.BitValueLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.BooleanLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CastFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.FunctionCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.HexadecimalLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.IdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.LiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.NullValueLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.OrderByClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.OwnerContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ParameterMarkerContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.PredicateContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RegularFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SimpleExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SpecialFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -70,7 +67,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProj
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
@@ -97,12 +93,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Oracle visitor.
+ * SQL92 visitor.
  *
- * @author zhangliang
+ * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> {
+public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
     
@@ -201,11 +197,6 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
             result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
-    }
-    
-    @Override
-    public final ASTNode visitIndexName(final IndexNameContext ctx) {
-        return new IndexSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @Override
@@ -417,12 +408,6 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
     }
     
     @Override
-    public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
-    }
-    
-    @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
         return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
@@ -430,7 +415,7 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        return new IdentifierValue(ctx.IDENTIFIER_(0).getText());
+        return new IdentifierValue(ctx.identifier(0).getText());
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
@@ -456,10 +441,7 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
             return new ColumnOrderByItemSegment(column, orderDirection);
         }
-        if (null != ctx.numberLiterals()) {
-            return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
-        }
-        return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), ctx.expr().getText(), orderDirection);
+        return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
+                SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
     }
 }
