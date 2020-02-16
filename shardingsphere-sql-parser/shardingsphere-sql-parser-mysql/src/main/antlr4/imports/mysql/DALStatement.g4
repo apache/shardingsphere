@@ -84,7 +84,7 @@ showProfileType
     ;
 
 setVariable
-    : SET variable_?
+    : SET variable?
     ;
 
 showBinaryLogs

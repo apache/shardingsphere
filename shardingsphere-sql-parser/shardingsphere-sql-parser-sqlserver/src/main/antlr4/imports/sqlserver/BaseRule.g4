@@ -206,7 +206,7 @@ simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | caseExpression_
+    | caseExpression
     | privateExprOfDb
     ;
 
@@ -246,7 +246,7 @@ regularFunctionName_
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_?
     ;
 

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitExpr
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BooleanPrimaryContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseExpression_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
@@ -523,8 +523,8 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
-        if (null != ctx.caseExpression_()) {
-            return visit(ctx.caseExpression_());
+        if (null != ctx.caseExpression()) {
+            return visit(ctx.caseExpression());
         }
         for (ExprContext each : ctx.expr()) {
             visit(each);
@@ -536,7 +536,7 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     }
     
     @Override
-    public ASTNode visitCaseExpression_(final CaseExpression_Context ctx) {
+    public final ASTNode visitCaseExpression(final CaseExpressionContext ctx) {
         return visit(ctx.simpleExpr());
     }
     

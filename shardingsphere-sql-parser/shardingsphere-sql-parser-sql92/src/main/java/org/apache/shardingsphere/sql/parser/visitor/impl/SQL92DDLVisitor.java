@@ -23,12 +23,12 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterDe
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateDefinitionClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateDefinition_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DropTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GeneratedDataType_Context;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.InlineDataType_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GeneratedDataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.InlineDataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
@@ -79,7 +79,7 @@ public final class SQL92DDLVisitor extends SQL92Visitor {
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        for (CreateDefinition_Context each : ctx.createDefinitions_().createDefinition_()) {
+        for (CreateDefinitionContext each : ctx.createDefinition()) {
             ColumnDefinitionContext columnDefinition = each.columnDefinition();
             if (null != columnDefinition) {
                 result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
@@ -87,8 +87,8 @@ public final class SQL92DDLVisitor extends SQL92Visitor {
                 result.getTables().addAll(tableSegments);
                 result.getAllSQLSegments().addAll(tableSegments);
             }
-            if (null != each.constraintDefinition_() && null != each.constraintDefinition_().foreignKeyOption_()) {
-                TableSegment tableSegment = (TableSegment) visit(each.constraintDefinition_().foreignKeyOption_().referenceDefinition_().tableName());
+            if (null != each.constraintDefinition() && null != each.constraintDefinition().foreignKeyOption()) {
+                TableSegment tableSegment = (TableSegment) visit(each.constraintDefinition().foreignKeyOption().referenceDefinition().tableName());
                 result.getTables().add(tableSegment);
                 result.getAllSQLSegments().add(tableSegment);
             }
@@ -108,8 +108,8 @@ public final class SQL92DDLVisitor extends SQL92Visitor {
     }
     
     private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
-        for (InlineDataType_Context each : ctx.inlineDataType_()) {
-            if (null != each.commonDataTypeOption_() && null != each.commonDataTypeOption_().primaryKey()) {
+        for (InlineDataTypeContext each : ctx.inlineDataType()) {
+            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().primaryKey()) {
                 return true;
             }
         }
@@ -118,14 +118,14 @@ public final class SQL92DDLVisitor extends SQL92Visitor {
     
     private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
         Collection<TableSegment> result = new LinkedList<>();
-        for (InlineDataType_Context each : columnDefinition.inlineDataType_()) {
-            if (null != each.commonDataTypeOption_() && null != each.commonDataTypeOption_().referenceDefinition_()) {
-                result.add((TableSegment) visit(each.commonDataTypeOption_().referenceDefinition_().tableName()));
+        for (InlineDataTypeContext each : columnDefinition.inlineDataType()) {
+            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.commonDataTypeOption().referenceDefinition().tableName()));
             }
         }
-        for (GeneratedDataType_Context each : columnDefinition.generatedDataType_()) {
-            if (null != each.commonDataTypeOption_().referenceDefinition_()) {
-                result.add((TableSegment) visit(each.commonDataTypeOption_().referenceDefinition_().tableName()));
+        for (GeneratedDataTypeContext each : columnDefinition.generatedDataType()) {
+            if (null != each.commonDataTypeOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.commonDataTypeOption().referenceDefinition().tableName()));
             }
         }
         return result;
@@ -156,7 +156,7 @@ public final class SQL92DDLVisitor extends SQL92Visitor {
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         final AlterTableStatement result = new AlterTableStatement();
-        AddColumnSpecificationContext addColumnSpecification = ctx.alterSpecification_().addColumnSpecification();
+        AddColumnSpecificationContext addColumnSpecification = ctx.addColumnSpecification();
         if (null != addColumnSpecification) {
             CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
             for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
@@ -167,15 +167,15 @@ public final class SQL92DDLVisitor extends SQL92Visitor {
                 }
             }
         }
-        ModifyColumnSpecificationContext modifyColumnSpecification = ctx.alterSpecification_().modifyColumnSpecification();
+        ModifyColumnSpecificationContext modifyColumnSpecification = ctx.modifyColumnSpecification();
         if (null != modifyColumnSpecification) {
             Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
             if (columnPositionSegment.isPresent()) {
                 result.getChangedPositionColumns().add(columnPositionSegment.get());
             }
         }
-        if (null != ctx.alterSpecification_().dropColumnSpecification()) {
-            result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(ctx.alterSpecification_().dropColumnSpecification())).getColumnNames());
+        if (null != ctx.dropColumnSpecification()) {
+            result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(ctx.dropColumnSpecification())).getColumnNames());
         }
         if (result.getAddedColumnDefinitions().isEmpty()) {
             result.getAllSQLSegments().addAll(result.getAddedColumnDefinitions());

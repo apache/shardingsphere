@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Bi
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BooleanPrimaryContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CaseExpression_Context;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CaseExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
@@ -440,8 +440,8 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
-        if (null != ctx.caseExpression_()) {
-            return visit(ctx.caseExpression_());
+        if (null != ctx.caseExpression()) {
+            return visit(ctx.caseExpression());
         }
         for (ExprContext each : ctx.expr()) {
             visit(each);
@@ -453,7 +453,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     }
     
     @Override
-    public ASTNode visitCaseExpression_(final CaseExpression_Context ctx) {
+    public final ASTNode visitCaseExpression(final CaseExpressionContext ctx) {
         return visit(ctx.simpleExpr());
     }
     

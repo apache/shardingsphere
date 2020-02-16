@@ -283,8 +283,8 @@ public final class OracleDDLVisitor extends OracleVisitor {
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
-        if (null != ctx.createIndexDefinitionClause_().tableIndexClause_()) {
-            TableSegment table = (TableSegment) visit(ctx.createIndexDefinitionClause_().tableIndexClause_().tableName());
+        if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
+            TableSegment table = (TableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName());
             result.setTable(table);
             result.getAllSQLSegments().add(table);
         }

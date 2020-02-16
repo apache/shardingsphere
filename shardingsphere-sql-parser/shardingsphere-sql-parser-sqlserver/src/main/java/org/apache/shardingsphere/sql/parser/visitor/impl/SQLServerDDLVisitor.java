@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinition_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropTableContext;
@@ -89,7 +89,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor {
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        for (CreateTableDefinition_Context each : ctx.createTableDefinitions_().createTableDefinition_()) {
+        for (CreateTableDefinitionContext each : ctx.createTableDefinitions().createTableDefinition()) {
             ColumnDefinitionContext columnDefinition = each.columnDefinition();
             if (null != columnDefinition) {
                 result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));

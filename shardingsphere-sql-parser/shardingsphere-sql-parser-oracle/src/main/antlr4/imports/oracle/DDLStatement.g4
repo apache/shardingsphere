@@ -24,7 +24,7 @@ createTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX indexName ON createIndexDefinitionClause_
+    : CREATE createIndexSpecification_ INDEX indexName ON createIndexDefinitionClause
     ;
 
 alterTable
@@ -180,7 +180,7 @@ createIndexSpecification_
     : (UNIQUE | BITMAP)?
     ;
 
-tableIndexClause_
+tableIndexClause
     : tableName alias? indexExpressions_
     ;
 
@@ -204,8 +204,8 @@ columnSortClause_
     : (tableName | alias)? columnName (ASC | DESC)?
     ;
 
-createIndexDefinitionClause_
-    : tableIndexClause_ | bitmapJoinIndexClause_
+createIndexDefinitionClause
+    : tableIndexClause | bitmapJoinIndexClause_
     ;
 
 tableAlias

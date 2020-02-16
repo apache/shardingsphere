@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.visitor.impl;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterUserContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ClassPrivilegesClause_Context;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ClassTypePrivilegesClause_Context;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ClassPrivilegesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ClassTypePrivilegesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateUserContext;
@@ -60,14 +60,14 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor {
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
-        if (null != ctx.classPrivilegesClause_()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause_())) {
+        if (null != ctx.classPrivilegesClause()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
                 result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
         }
-        if (null != ctx.classTypePrivilegesClause_()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause_())) {
+        if (null != ctx.classTypePrivilegesClause()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
                 result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
@@ -78,14 +78,14 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor {
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
-        if (null != ctx.classPrivilegesClause_()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause_())) {
+        if (null != ctx.classPrivilegesClause()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
                 result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
         }
-        if (null != ctx.classTypePrivilegesClause_()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause_())) {
+        if (null != ctx.classTypePrivilegesClause()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
                 result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
@@ -93,12 +93,12 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor {
         return result;
     }
     
-    private Collection<TableSegment> getTableFromPrivilegeClause(final ClassPrivilegesClause_Context ctx) {
-        return null == ctx.onClassClause_().tableName() ? Collections.<TableSegment>emptyList() : Collections.singletonList((TableSegment) visit(ctx.onClassClause_().tableName()));
+    private Collection<TableSegment> getTableFromPrivilegeClause(final ClassPrivilegesClauseContext ctx) {
+        return null == ctx.onClassClause().tableName() ? Collections.<TableSegment>emptyList() : Collections.singletonList((TableSegment) visit(ctx.onClassClause().tableName()));
     }
     
-    private Collection<TableSegment> getTableFromPrivilegeClause(final ClassTypePrivilegesClause_Context ctx) {
-        return null == ctx.onClassTypeClause_().tableName() ? Collections.<TableSegment>emptyList() : Collections.singletonList((TableSegment) visit(ctx.onClassTypeClause_().tableName()));
+    private Collection<TableSegment> getTableFromPrivilegeClause(final ClassTypePrivilegesClauseContext ctx) {
+        return null == ctx.onClassTypeClause().tableName() ? Collections.<TableSegment>emptyList() : Collections.singletonList((TableSegment) visit(ctx.onClassTypeClause().tableName()));
     }
     
     @Override
@@ -114,14 +114,14 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor {
     @Override
     public ASTNode visitDeny(final DenyContext ctx) {
         DenyUserStatement result = new DenyUserStatement();
-        if (null != ctx.classPrivilegesClause_()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause_())) {
+        if (null != ctx.classPrivilegesClause()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
                 result.getAllSQLSegments().add(each);
                 result.setTable(each);
             }
         }
-        if (null != ctx.classTypePrivilegesClause_()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause_())) {
+        if (null != ctx.classTypePrivilegesClause()) {
+            for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
                 result.getAllSQLSegments().add(each);
                 result.setTable(each);
             }

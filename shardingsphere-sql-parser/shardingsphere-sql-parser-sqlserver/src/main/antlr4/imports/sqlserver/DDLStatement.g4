@@ -52,14 +52,14 @@ fileTableClause_
     ;
 
 createDefinitionClause
-    : createTableDefinitions_ partitionScheme_ fileGroup_
+    : createTableDefinitions partitionScheme_ fileGroup_
     ;
 
-createTableDefinitions_
-    : LP_ createTableDefinition_ (COMMA_ createTableDefinition_)* (COMMA_ periodClause)? RP_
+createTableDefinitions
+    : LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_
     ;
 
-createTableDefinition_
+createTableDefinition
     : columnDefinition | computedColumnDefinition | columnSetDefinition | tableConstraint | tableIndex
     ;
 
