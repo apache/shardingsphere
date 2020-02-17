@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public final class SyncTaskController implements Runnable {
 
     private final SyncTask realtimeDataSyncTask;
     
-    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
+    private final DataSourceManager dataSourceManager = new DataSourceManager();
     
     private final String syncTaskId;
     
@@ -51,8 +51,8 @@ public final class SyncTaskController implements Runnable {
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
-        this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
-        this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration, dataSourceFactory);
+        this.historyDataSyncTaskGroup = syncTaskFactory.createHistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
+        this.realtimeDataSyncTask = syncTaskFactory.createRealtimeDataSyncTask(syncConfiguration, dataSourceManager);
         syncTaskControlStatus = SyncTaskControlStatus.PREPARING;
     }
     
@@ -116,7 +116,7 @@ public final class SyncTaskController implements Runnable {
             @Override
             public void report(final Event event) {
                 syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
-                dataSourceFactory.close();
+                dataSourceManager.close();
             }
         });
         syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA;

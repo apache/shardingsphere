@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Co
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,17 +51,17 @@ public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
     
-    private final DataSourceFactory dataSourceFactory;
+    private final DataSourceManager dataSourceManager;
     
     @Setter
     private Channel channel;
     
-    public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+    public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJdbcReader only support JdbcDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
-        this.dataSourceFactory = dataSourceFactory;
+        this.dataSourceManager = dataSourceManager;
     }
     
     @Override
@@ -72,7 +72,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements
     
     @Override
     public final void read(final Channel channel) {
-        try (Connection conn = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
+        try (Connection conn = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
             String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();

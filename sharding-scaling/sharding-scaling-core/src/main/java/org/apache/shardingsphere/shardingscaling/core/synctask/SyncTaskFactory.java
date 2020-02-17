@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTaskGroup;
 import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.RealtimeDataSyncTask;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
  * Sync task factory.
@@ -34,26 +34,26 @@ public interface SyncTaskFactory {
      * Create history data sync task group.
      *
      * @param syncConfiguration sync configuration
-     * @param dataSourceFactory  data source factory
+     * @param dataSourceManager  data source factory
      * @return history data sync task group
      */
-    HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, DataSourceFactory dataSourceFactory);
+    HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
 
     /**
      * Create history data sync task.
      *
      * @param syncConfiguration sync configuration
-     * @param dataSourceFactory  data source factory
+     * @param dataSourceManager  data source factory
      * @return history data sync task
      */
-    HistoryDataSyncTask createHistoryDataSyncTask(SyncConfiguration syncConfiguration, DataSourceFactory dataSourceFactory);
+    HistoryDataSyncTask createHistoryDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
 
     /**
      * Create realtime data sync task.
      *
      * @param syncConfiguration sync configuration
-     * @param dataSourceFactory  data source factory
+     * @param dataSourceManager  data source factory
      * @return realtime data sync task
      */
-    RealtimeDataSyncTask createRealtimeDataSyncTask(SyncConfiguration syncConfiguration, DataSourceFactory dataSourceFactory);
+    RealtimeDataSyncTask createRealtimeDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
 }

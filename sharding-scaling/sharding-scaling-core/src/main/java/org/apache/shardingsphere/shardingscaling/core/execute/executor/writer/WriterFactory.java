@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
  * Write factory.
@@ -34,11 +34,11 @@ public final class WriterFactory {
      * New instance of writer.
      *
      * @param rdbmsConfiguration rdbms configuration
-     * @param dataSourceFactory data source factory
+     * @param dataSourceManager data source factory
      * @return writer
      */
-    public static Writer newInstance(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
-        return newInstance(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceFactory);
+    public static Writer newInstance(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+        return newInstance(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceManager);
     }
     
     /**
@@ -46,12 +46,12 @@ public final class WriterFactory {
      *
      * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
-     * @param dataSourceFactory data source factory
+     * @param dataSourceManager data source factory
      * @return writer
      */
     @SneakyThrows
-    public static Writer newInstance(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+    public static Writer newInstance(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getWriterClass().getConstructor(RdbmsConfiguration.class, DataSourceFactory.class).newInstance(rdbmsConfiguration, dataSourceFactory);
+        return scalingEntry.getWriterClass().getConstructor(RdbmsConfiguration.class, DataSourceManager.class).newInstance(rdbmsConfiguration, dataSourceManager);
     }
 }

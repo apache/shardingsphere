@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.core.fixture;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,8 +27,8 @@ import java.sql.SQLException;
 
 public final class FixtureH2JdbcReader extends AbstractJdbcReader {
     
-    public FixtureH2JdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
-        super(rdbmsConfiguration, dataSourceFactory);
+    public FixtureH2JdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+        super(rdbmsConfiguration, dataSourceManager);
     }
     
     @Override

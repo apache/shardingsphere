@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.util;
+package org.apache.shardingsphere.shardingscaling.core.datasource;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.shardingscaling.core.web.HttpServerHandlerTest;
 import org.apache.shardingsphere.shardingscaling.core.web.util.SyncConfigurationUtil;
 import org.junit.Before;
@@ -34,7 +35,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class DataSourceFactoryTest {
+public class DataSourceManagerTest {
 
     private static final Gson GSON = new Gson();
 
@@ -47,17 +48,17 @@ public class DataSourceFactoryTest {
 
     @Test
     public void assertCreateWithConfiguration() throws NoSuchFieldException, IllegalAccessException {
-        DataSourceFactory dataSourceFactory = new DataSourceFactory(syncConfigurations);
-        Map cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceFactory, "cachedDataSources", Map.class);
+        DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
+        Map cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
         assertNotNull(cachedDataSources);
         assertThat(cachedDataSources.size(), is(2));
     }
 
     @Test
     public void assertClose() throws NoSuchFieldException, IllegalAccessException {
-        DataSourceFactory dataSourceFactory = new DataSourceFactory(syncConfigurations);
-        dataSourceFactory.close();
-        Map cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceFactory, "cachedDataSources", Map.class);
+        DataSourceManager dataSourceManager = new DataSourceManager(syncConfigurations);
+        dataSourceManager.close();
+        Map cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
         assertNotNull(cachedDataSources);
         assertThat(cachedDataSources.size(), is(0));
     }

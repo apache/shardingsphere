@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Fi
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 
 import javax.sql.DataSource;
@@ -51,7 +51,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
     
     private final RdbmsConfiguration rdbmsConfiguration;
     
-    private final DataSourceFactory dataSourceFactory;
+    private final DataSourceManager dataSourceManager;
     
     private final AbstractSqlBuilder sqlBuilder;
     
@@ -60,10 +60,10 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
     @Setter
     private Channel channel;
     
-    public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+    public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         this.rdbmsConfiguration = rdbmsConfiguration;
-        this.dataSourceFactory = dataSourceFactory;
-        DataSource dataSource = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
+        this.dataSourceManager = dataSourceManager;
+        DataSource dataSource = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
         metaDataManager = new MetaDataManager(dataSource);
         sqlBuilder = createSqlBuilder(metaDataManager);
     }
@@ -88,7 +88,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
             while (isRunning()) {
                 List<Record> records = channel.fetchRecords(100, 3);
                 if (null != records && 0 < records.size()) {
-                    flush(dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
+                    flush(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
                     if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                         channel.ack();
                         break;

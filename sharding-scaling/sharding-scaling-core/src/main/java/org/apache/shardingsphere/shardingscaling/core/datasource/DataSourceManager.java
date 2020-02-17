@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.util;
+package org.apache.shardingsphere.shardingscaling.core.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ssxlulu
  */
 @NoArgsConstructor
-public final class DataSourceFactory {
+public final class DataSourceManager {
 
     @Getter
     private final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> cachedDataSources = new ConcurrentHashMap<>();
@@ -43,7 +43,7 @@ public final class DataSourceFactory {
     @Getter
     private final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> sourceDatasources = new ConcurrentHashMap<>();
 
-    public DataSourceFactory(final List<SyncConfiguration> syncConfigurations) {
+    public DataSourceManager(final List<SyncConfiguration> syncConfigurations) {
         createDatasources(syncConfigurations);
     }
 

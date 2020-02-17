@@ -34,7 +34,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
     
-    private final DataSourceFactory dataSourceFactory;
+    private final DataSourceManager dataSourceManager;
     
     private final String syncTaskId;
 
@@ -61,9 +61,9 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     private long delayMillisecond;
     
-    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
+    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
-        this.dataSourceFactory = dataSourceFactory;
+        this.dataSourceManager = dataSourceManager;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("realtime-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
@@ -77,7 +77,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
     private LogPositionManager instanceLogPositionManager() {
         return LogPositionManagerFactory.newInstanceLogManager(
                 syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
-                dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration()));
+                dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration()));
     }
     
     @Override
@@ -104,7 +104,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
     private List<Writer> instanceWriters() {
         List<Writer> result = new ArrayList<>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-            result.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory));
+            result.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceManager));
         }
         return result;
     }
