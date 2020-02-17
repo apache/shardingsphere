@@ -428,7 +428,7 @@
         <row-count value="3" parameter-index="0" />
     </select>
     
-    <select sql-case-id="c" parameters="1, 2, 9, 10, 3">
+    <select sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
         <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
         <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
         <projections start-index="58" stop-index="139">

@@ -367,7 +367,6 @@
         <table name="t_order" start-index="128" stop-index="134" />
     </alter-table>
     
-    
     <alter-table sql-case-id="alter_table_drop_constraints_sqlserver">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
