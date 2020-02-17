@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.registry;
+package org.apache.shardingsphere.sql.parser.core.filler.impl.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.junit.Test;
+import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-public final class ParseRuleRegistryTest {
+/**
+ * On duplicate key columns filler.
+ */
+public final class OnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDuplicateKeyColumnsSegment> {
     
-    private static ParseRuleRegistry parseRuleRegistry = ParseRuleRegistry.getInstance();
-    
-    @Test
-    public void assertShardingParseRuleRegistry() {
-        assertNotNull(parseRuleRegistry.getSQLStatementRule("MySQL", "SelectContext"));
-        assertTrue(parseRuleRegistry.findSQLSegmentFiller("MySQL", ColumnDefinitionSegment.class).isPresent());
+    @Override
+    public void fill(final OnDuplicateKeyColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof InsertStatement) {
+            ((InsertStatement) sqlStatement).setOnDuplicateKeyColumns(sqlSegment);
+        }
     }
 }

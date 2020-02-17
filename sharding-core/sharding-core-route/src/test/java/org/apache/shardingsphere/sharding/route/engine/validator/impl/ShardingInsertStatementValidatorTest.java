@@ -58,7 +58,7 @@ public final class ShardingInsertStatementValidatorTest {
         result.setTable(new TableSegment(0, 0, new IdentifierValue("user")));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         AssignmentSegment assignmentSegment = new AssignmentSegment(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 1));
-        result.getAllSQLSegments().add(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
+        result.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
         return result;
     }
 }

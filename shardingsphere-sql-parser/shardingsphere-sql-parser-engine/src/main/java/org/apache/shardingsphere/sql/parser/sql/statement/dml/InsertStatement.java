@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
@@ -47,6 +48,8 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     private InsertColumnsSegment columns;
     
     private SetAssignmentSegment setAssignment;
+    
+    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
@@ -75,6 +78,15 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      */
     public Optional<SetAssignmentSegment> getSetAssignment() {
         return Optional.fromNullable(setAssignment);
+    }
+    
+    /**
+     * Get on duplicate key columns segment.
+     *
+     * @return on duplicate key columns segment
+     */
+    public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
+        return Optional.fromNullable(onDuplicateKeyColumns);
     }
     
     /**

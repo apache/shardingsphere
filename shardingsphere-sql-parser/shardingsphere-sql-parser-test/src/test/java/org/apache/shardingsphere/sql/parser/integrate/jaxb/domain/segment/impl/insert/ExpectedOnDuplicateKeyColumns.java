@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.fixture;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.insert;
 
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.assignment.ExpectedAssignment;
 
-public final class TestParserEntry implements SQLParserEntry {
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Expected on duplicate key columns.
+ */
+@Getter
+public final class ExpectedOnDuplicateKeyColumns extends AbstractExpectedSQLSegment {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        return null;
-    }
+    @XmlElement(name = "assignment")
+    private List<ExpectedAssignment> assignments = new LinkedList<>();
 }
