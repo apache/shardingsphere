@@ -21,14 +21,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.Collection;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -40,13 +41,13 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     @Test
     public void assertRewrite() throws IOException {
         Collection<SQLRewriteResult> actual = createSQLRewriteResults();
-        Assert.assertThat(actual.size(), CoreMatchers.is(testParameters.getOutputSQLs().size()));
+        assertThat(actual.size(), is(testParameters.getOutputSQLs().size()));
         int count = 0;
         for (SQLRewriteResult each : actual) {
-            Assert.assertThat(each.getSql(), CoreMatchers.is(testParameters.getOutputSQLs().get(count)));
-            Assert.assertThat(each.getParameters().size(), CoreMatchers.is(testParameters.getOutputGroupedParameters().get(count).size()));
+            assertThat(each.getSql(), is(testParameters.getOutputSQLs().get(count)));
+            assertThat(each.getParameters().size(), is(testParameters.getOutputGroupedParameters().get(count).size()));
             for (int i = 0; i < each.getParameters().size(); i++) {
-                Assert.assertThat(each.getParameters().get(i).toString(), CoreMatchers.is(testParameters.getOutputGroupedParameters().get(count).get(i)));
+                assertThat(each.getParameters().get(i).toString(), is(testParameters.getOutputGroupedParameters().get(count).get(i)));
             }
             count++;
         }
