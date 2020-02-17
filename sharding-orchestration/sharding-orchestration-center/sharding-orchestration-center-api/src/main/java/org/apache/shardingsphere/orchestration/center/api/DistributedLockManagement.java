@@ -17,58 +17,25 @@
 
 package org.apache.shardingsphere.orchestration.center.api;
 
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.spi.TypeBasedSPI;
-
 /**
  * Distributed Lock center.
  */
-public interface DistributedLockManagement extends TypeBasedSPI {
+public interface DistributedLockManagement extends CenterRepository {
     
-    /**
-     * Initialize distributed lock center.
-     *
-     * @param config distributed lock center configuration
-     */
-    void init(InstanceConfiguration config);
-
-    /**
-     * Get data from distributed lock center.
-     *
-     * <p>Maybe use cache if existed.</p>
-     *
-     * @param key key of data
-     * @return value of data
-     */
-    String get(String key);
-    
-    /**
-     * Persist data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    void persist(String key, String value);
-    
-    /**
-     * Close.
-     */
-    void close();
-
     /**
      * Initialize the lock of the key.
      *
      * @param key key of data
      */
     void initLock(String key);
-
+    
     /**
      * Try to get the lock of the key.
      *
      * @return get the lock or not
      */
     boolean tryLock();
-
+    
     /**
      * Try to release the lock of the key.
      *

@@ -17,33 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.center.api;
 
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 import java.util.List;
 
 /**
  * Registry center.
  */
-public interface RegistryCenter extends TypeBasedSPI {
-    
-    /**
-     * Initialize registry center.
-     * 
-     * @param config registry center configuration
-     */
-    void init(InstanceConfiguration config);
-    
-    /**
-     * Get data from registry center.
-     * 
-     * <p>Maybe use cache if existed.</p>
-     * 
-     * @param key key of data
-     * @return value of data
-     */
-    String get(String key);
+public interface RegistryCenter extends CenterRepository {
     
     /**
      * Get node's sub-nodes list.
@@ -54,12 +35,12 @@ public interface RegistryCenter extends TypeBasedSPI {
     List<String> getChildrenKeys(String key);
     
     /**
-     * Persist data.
-     * 
+     * Watch key or path of the config server.
+     *
      * @param key key of data
-     * @param value value of data
+     * @param dataChangedEventListener data changed event listener
      */
-    void persist(String key, String value);
+    void watch(String key, DataChangedEventListener dataChangedEventListener);
     
     /**
      * Persist ephemeral data.
@@ -68,17 +49,4 @@ public interface RegistryCenter extends TypeBasedSPI {
      * @param value value of data
      */
     void persistEphemeral(String key, String value);
-    
-    /**
-     * Watch key or path of the registry.
-     *
-     * @param key key of data
-     * @param dataChangedEventListener data changed event listener
-     */
-    void watch(String key, DataChangedEventListener dataChangedEventListener);
-    
-    /**
-     * Close.
-      */
-    void close();
 }
