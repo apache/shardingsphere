@@ -992,6 +992,13 @@
                     <common-expression text="convert(to_base64(aes_encrypt(?,'key'))USINGutf8)" literal-text="convert(to_base64(aes_encrypt('init','key'))USINGutf8)" />
                 </assignment-value>
             </assignment>
+            <!-- FIXME split generic SET assignment and ON DUPLICATE KEY UPDATE  -->
+<!--            <assignment start-index="137" stop-index="159" literal-start-index="142" literal-stop-index="164">-->
+<!--                <column name="status" start-index="137" stop-index="142" literal-start-index="142" literal-stop-index="147" />-->
+<!--                <assignment-value>-->
+<!--                    <common-expression text="VALUES(status)" />-->
+<!--                </assignment-value>-->
+<!--            </assignment>-->
         </set>
     </insert>
     
