@@ -21,7 +21,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 
 import javax.sql.DataSource;
@@ -29,49 +28,44 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Data source factory.
+ * Data source manager.
  *
  * @author avalon566
  * @author ssxlulu
  */
 @NoArgsConstructor
 public final class DataSourceManager {
+    
+    private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
 
     @Getter
-    private final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> cachedDataSources = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<DataSourceConfiguration, HikariDataSource> cachedDataSources = new ConcurrentHashMap<>();
 
     @Getter
-    private final ConcurrentHashMap<JdbcDataSourceConfiguration, HikariDataSource> sourceDatasources = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<DataSourceConfiguration, HikariDataSource> sourceDatasources = new ConcurrentHashMap<>();
 
     public DataSourceManager(final List<SyncConfiguration> syncConfigurations) {
         createDatasources(syncConfigurations);
     }
-
-    /**
-     * Use for check datasources, close after check.
-     *
-     * @param syncConfigurations syncConfigurations
-     */
+    
     private void createDatasources(final List<SyncConfiguration> syncConfigurations) {
-        //create reader datasources
-        for (SyncConfiguration syncConfiguration : syncConfigurations) {
-            JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) syncConfiguration.getReaderConfiguration().getDataSourceConfiguration();
-            HikariDataSource hikariDataSource = new HikariDataSource();
-            hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
-            hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
-            hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
-            cachedDataSources.put(jdbcDataSourceConfiguration, hikariDataSource);
-            sourceDatasources.put(jdbcDataSourceConfiguration, hikariDataSource);
-        }
-        //create writer datasource
-        JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) syncConfigurations.get(0).getWriterConfiguration().getDataSourceConfiguration();
-        HikariDataSource hikariDataSource = new HikariDataSource();
-        hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
-        hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
-        hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
-        cachedDataSources.put(jdbcDataSourceConfiguration, hikariDataSource);
+        createSourceDatasources(syncConfigurations);
+        createTargetDatasources(syncConfigurations.iterator().next().getWriterConfiguration().getDataSourceConfiguration());
     }
-
+    
+    private void createSourceDatasources(final List<SyncConfiguration> syncConfigurations) {
+        for (SyncConfiguration syncConfiguration : syncConfigurations) {
+            DataSourceConfiguration dataSourceConfiguration = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration();
+            HikariDataSource hikariDataSource = dataSourceFactory.newInstance(dataSourceConfiguration);
+            cachedDataSources.put(dataSourceConfiguration, hikariDataSource);
+            sourceDatasources.put(dataSourceConfiguration, hikariDataSource);
+        }
+    }
+    
+    private void createTargetDatasources(final DataSourceConfiguration dataSourceConfiguration) {
+        cachedDataSources.put(dataSourceConfiguration, dataSourceFactory.newInstance(dataSourceConfiguration));
+    }
+    
     /**
      * Get data source by {@code DataSourceConfiguration}.
      *
@@ -79,24 +73,17 @@ public final class DataSourceManager {
      * @return data source
      */
     public DataSource getDataSource(final DataSourceConfiguration dataSourceConfiguration) {
-        if (JdbcDataSourceConfiguration.class.equals(dataSourceConfiguration.getClass())) {
-            JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) dataSourceConfiguration;
-            if (cachedDataSources.containsKey(jdbcDataSourceConfiguration)) {
-                return cachedDataSources.get(jdbcDataSourceConfiguration);
-            }
-            synchronized (cachedDataSources) {
-                if (cachedDataSources.containsKey(jdbcDataSourceConfiguration)) {
-                    return cachedDataSources.get(jdbcDataSourceConfiguration);
-                }
-                HikariDataSource hikariDataSource = new HikariDataSource();
-                hikariDataSource.setJdbcUrl(jdbcDataSourceConfiguration.getJdbcUrl());
-                hikariDataSource.setUsername(jdbcDataSourceConfiguration.getUsername());
-                hikariDataSource.setPassword(jdbcDataSourceConfiguration.getPassword());
-                cachedDataSources.put(jdbcDataSourceConfiguration, hikariDataSource);
-                return hikariDataSource;
-            }
+        if (cachedDataSources.containsKey(dataSourceConfiguration)) {
+            return cachedDataSources.get(dataSourceConfiguration);
         }
-        throw new UnsupportedOperationException();
+        synchronized (cachedDataSources) {
+            if (cachedDataSources.containsKey(dataSourceConfiguration)) {
+                return cachedDataSources.get(dataSourceConfiguration);
+            }
+            HikariDataSource result = dataSourceFactory.newInstance(dataSourceConfiguration);
+            cachedDataSources.put(dataSourceConfiguration, result);
+            return result;
+        }
     }
     
     /**

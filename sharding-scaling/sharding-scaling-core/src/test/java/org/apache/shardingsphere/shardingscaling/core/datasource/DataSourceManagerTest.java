@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.core.datasource;
 
 import com.google.gson.Gson;
+import com.zaxxer.hikari.HikariDataSource;
+
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
@@ -30,7 +32,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -52,6 +56,13 @@ public class DataSourceManagerTest {
         Map cachedDataSources = ReflectionUtil.getFieldValueFromClass(dataSourceManager, "cachedDataSources", Map.class);
         assertNotNull(cachedDataSources);
         assertThat(cachedDataSources.size(), is(2));
+    }
+    
+    @Test
+    public void assertGetDataSource() {
+        DataSourceManager dataSourceManager = new DataSourceManager();
+        DataSource actual = dataSourceManager.getDataSource(syncConfigurations.get(0).getReaderConfiguration().getDataSourceConfiguration());
+        assertThat(actual, instanceOf(HikariDataSource.class));
     }
 
     @Test
