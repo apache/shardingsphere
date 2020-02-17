@@ -23,8 +23,7 @@
     
     <show-index sql-case-id="show_index_with_indexes_with_table_and_database">
         <table name="t_order" start-index="18" stop-index="24" />
-        <!-- FIXME assert schema -->
-        <!--<schema name="sharding_db" />-->
+        <schema name="sharding_db" />
     </show-index>
     
     <show-index sql-case-id="show_index_with_keys_with_database_and_table">
@@ -35,14 +34,12 @@
     
     <show-index sql-case-id="show_index_with_table_back_quotes">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26" />
-        <!-- FIXME assert schema -->
-        <!--<schema name="sharding_db" />-->
+        <schema name="sharding_db" />
     </show-index>
     
     <show-index sql-case-id="show_index_with_database_back_quotes">
         <table name="t_order" start-index="18" stop-index="24" />
-        <!-- FIXME assert schema -->
-        <!--<schema name="sharding_db" />-->
+        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" />
     </show-index>
     
     <show-index sql-case-id="show_index_with_back_quotes">
