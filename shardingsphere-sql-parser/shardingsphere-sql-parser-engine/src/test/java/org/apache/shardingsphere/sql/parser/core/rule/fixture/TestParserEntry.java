@@ -41,6 +41,6 @@ public final class TestParserEntry implements SQLParserEntry {
     
     @Override
     public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        return null;
+        return ParseTreeVisitor.class;
     }
 }

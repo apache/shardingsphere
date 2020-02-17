@@ -19,13 +19,10 @@ package org.apache.shardingsphere.sql.parser.core;
 
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.sql.parser.core.extractor.SQLSegmentsExtractorEngine;
-import org.apache.shardingsphere.sql.parser.core.filler.SQLStatementFillerEngine;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLAST;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.statement.SQLStatementRule;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,10 +30,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,36 +40,21 @@ public final class SQLParseKernelTest {
     private SQLParseKernel parseKernel;
     
     @Mock
-    private SQLStatementFillerEngine fillerEngine;
-    
-    @Mock
-    private SQLStatementRule sqlStatementRule;
+    private SQLParserEngine parserEngine;
     
     @Before
-    public void setUp() {
-        parseKernel = new SQLParseKernel(ParseRuleRegistry.getInstance(), "MySQL", "SELECT 1");
-        SQLAST ast = mock(SQLAST.class);
-        when(ast.getParameterMarkerIndexes()).thenReturn(Collections.<ParserRuleContext, Integer>emptyMap());
-        when(ast.getSqlStatementRule()).thenReturn(sqlStatementRule);
-        SQLParserEngine parserEngine = mock(SQLParserEngine.class);
-        when(parserEngine.parse()).thenReturn(ast);
-        setField("parserEngine", parserEngine);
-        SQLSegmentsExtractorEngine extractorEngine = mock(SQLSegmentsExtractorEngine.class);
-        when(extractorEngine.extract(ast)).thenReturn(Collections.<SQLSegment>emptyList());
-        setField("extractorEngine", extractorEngine);
-        setField("fillerEngine", fillerEngine);
-    }
-    
     @SneakyThrows
-    private void setField(final String fieldName, final Object value) {
-        Field field = SQLParseKernel.class.getDeclaredField(fieldName);
+    public void setUp() {
+        NewInstanceServiceLoader.register(SQLParserEntry.class);
+        parseKernel = new SQLParseKernel("MySQL", "SELECT 1");
+        when(parserEngine.parse()).thenReturn(mock(ParserRuleContext.class));
+        Field field = SQLParseKernel.class.getDeclaredField("parserEngine");
         field.setAccessible(true);
-        field.set(parseKernel, value);
+        field.set(parseKernel, parserEngine);
     }
     
-    @Test
+    @Test(expected = SQLParsingException.class)
     public void assertParse() {
         parseKernel.parse();
-        verify(fillerEngine).fill(Collections.<SQLSegment>emptyList(), 0, sqlStatementRule);
     }
 }
