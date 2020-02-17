@@ -29,7 +29,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class Column {
     
+    private final String name;
+    
     private final Object value;
 
     private final boolean updated;
+    
+    private final boolean primaryKey;
 }

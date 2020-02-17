@@ -56,14 +56,14 @@ public final class DataSourceManager {
     private void createSourceDatasources(final List<SyncConfiguration> syncConfigurations) {
         for (SyncConfiguration syncConfiguration : syncConfigurations) {
             DataSourceConfiguration dataSourceConfiguration = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration();
-            HikariDataSource hikariDataSource = dataSourceFactory.newInstance(dataSourceConfiguration);
+            HikariDataSource hikariDataSource = (HikariDataSource) dataSourceFactory.newInstance(dataSourceConfiguration);
             cachedDataSources.put(dataSourceConfiguration, hikariDataSource);
             sourceDatasources.put(dataSourceConfiguration, hikariDataSource);
         }
     }
     
     private void createTargetDatasources(final DataSourceConfiguration dataSourceConfiguration) {
-        cachedDataSources.put(dataSourceConfiguration, dataSourceFactory.newInstance(dataSourceConfiguration));
+        cachedDataSources.put(dataSourceConfiguration, (HikariDataSource) dataSourceFactory.newInstance(dataSourceConfiguration));
     }
     
     /**
@@ -80,7 +80,7 @@ public final class DataSourceManager {
             if (cachedDataSources.containsKey(dataSourceConfiguration)) {
                 return cachedDataSources.get(dataSourceConfiguration);
             }
-            HikariDataSource result = dataSourceFactory.newInstance(dataSourceConfiguration);
+            HikariDataSource result = (HikariDataSource) dataSourceFactory.newInstance(dataSourceConfiguration);
             cachedDataSources.put(dataSourceConfiguration, result);
             return result;
         }

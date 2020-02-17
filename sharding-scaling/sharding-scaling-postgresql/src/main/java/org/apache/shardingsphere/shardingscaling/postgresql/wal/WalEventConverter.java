@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql.wal;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.postgresql.WalPosition;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.AbstractWalEvent;
@@ -32,16 +34,23 @@ import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.DeleteRowE
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.WriteRowEvent;
+import java.util.List;
 
 /**
  * Convert wal event to {@code Record}.
  *
  * @author avalon566
  */
-@RequiredArgsConstructor
 public final class WalEventConverter {
     
     private final RdbmsConfiguration rdbmsConfiguration;
+    
+    private final MetaDataManager metaDataManager;
+    
+    public WalEventConverter(final RdbmsConfiguration rdbmsConfiguration) {
+        this.rdbmsConfiguration = rdbmsConfiguration;
+        this.metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
+    }
     
     /**
      * Convert wal event to {@code Record}.
@@ -79,30 +88,31 @@ public final class WalEventConverter {
                 || event instanceof DeleteRowEvent;
     }
     
-    private DataRecord handleWriteRowsEvent(final WriteRowEvent event) {
-        DataRecord record = createDataRecord(event, event.getAfterRows().size());
+    private PlaceholderRecord createPlaceholderRecord(final AbstractWalEvent event) {
+        return new PlaceholderRecord(new WalPosition(event.getLogSequenceNumber()));
+    }
+    
+    private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
+        DataRecord record = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
         record.setType("insert");
-        for (Object eachColumnValue : event.getAfterRows()) {
-            record.addColumn(new Column(eachColumnValue, true));
-        }
+        putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
         return record;
     }
     
-    private DataRecord handleUpdateRowsEvent(final UpdateRowEvent event) {
-        DataRecord record = createDataRecord(event, event.getAfterRows().size());
+    private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
+        DataRecord record = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
         record.setType("update");
-        for (Object eachColumnValue : event.getAfterRows()) {
-            record.addColumn(new Column(eachColumnValue, true));
-        }
+        putColumnsIntoDataRecord(record, metaDataManager.getTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
         return record;
     }
     
     private DataRecord handleDeleteRowsEvent(final DeleteRowEvent event) {
         //TODO completion columns
-        DataRecord record = createDataRecord(event, event.getPrimaryKeyRows().size());
+        DataRecord record = createDataRecord(event, event.getPrimaryKeys().size());
         record.setType("delete");
-        for (Object eachColumnValue : event.getPrimaryKeyRows()) {
-            record.addColumn(new Column(eachColumnValue, true));
+        List<String> primaryKeyColumns = metaDataManager.getTableMetaData(event.getTableName()).getPrimaryKeyColumns();
+        for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
+            record.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
         }
         return record;
     }
@@ -112,8 +122,10 @@ public final class WalEventConverter {
         result.setTableName(rdbmsConfiguration.getTableNameMap().get(rowsEvent.getTableName()));
         return result;
     }
-
-    private PlaceholderRecord createPlaceholderRecord(final AbstractWalEvent event) {
-        return new PlaceholderRecord(new WalPosition(event.getLogSequenceNumber()));
+    
+    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final TableMetaData tableMetaData, final List<Object> values) {
+        for (int i = 0; i < values.size(); i++) {
+            dataRecord.addColumn(new Column(tableMetaData.getColumnMetaData(i).getColumnName(), values.get(i), true, tableMetaData.isPrimaryKey(i)));
+        }
     }
 }

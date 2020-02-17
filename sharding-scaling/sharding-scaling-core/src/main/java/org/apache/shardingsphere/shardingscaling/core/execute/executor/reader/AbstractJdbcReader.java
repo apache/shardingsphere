@@ -32,6 +32,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Da
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,6 +55,8 @@ public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements
     
     private final DataSourceManager dataSourceManager;
     
+    private final TableMetaData tableMetaData;
+    
     @Setter
     private Channel channel;
     
@@ -62,6 +66,12 @@ public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceManager = dataSourceManager;
+        this.tableMetaData = createTableMetaData();
+    }
+    
+    private TableMetaData createTableMetaData() {
+        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
+        return metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
     }
     
     @Override
@@ -82,7 +92,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements
                 record.setType("bootstrap-insert");
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    record.addColumn(new Column(readValue(rs, i), true));
+                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i)));
                 }
                 pushRecord(record);
             }
@@ -93,7 +103,15 @@ public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements
         }
     }
     
-    protected abstract PreparedStatement createPreparedStatement(Connection conn, String sql) throws SQLException;
+    /**
+     * Create prepared statement.
+     *
+     * @param connection connection
+     * @param sql prepared sql
+     * @return prepared statement
+     * @throws SQLException SQL exception
+     */
+    protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;
     
     /**
      * Read value from {@code ResultSet}.
