@@ -18,9 +18,8 @@
 
 <sql-parser-test-cases>
     <begin-transaction sql-case-id="begin" />
-<!--    FIXME: NEW PARSER-->
-<!--    <begin-transaction sql-case-id="beginTransaction" />-->
-<!--    <begin-transaction sql-case-id="beginWithName" />-->
+    <begin-transaction sql-case-id="beginTransaction" />
+    <begin-transaction sql-case-id="beginWithName" />
     <begin-transaction sql-case-id="beginReadCommitted" />
     <begin-transaction sql-case-id="beginReadOnly" />
 </sql-parser-test-cases>
