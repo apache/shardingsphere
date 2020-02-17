@@ -28,37 +28,37 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Sync runner group.
+ * Sync executor group.
  *
  * @author yangyi
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class SyncRunnerGroup {
+public final class SyncExecutorGroup {
     
     private final ExecuteCallback executeCallback;
     
-    private final Collection<SyncRunner> syncRunners = new LinkedList<>();
+    private final Collection<SyncExecutor> syncExecutors = new LinkedList<>();
     
     private Channel channel;
     
     /**
-     * Add {@code SyncRunner}.
+     * Add {@code SyncExecutor}.
      *
-     * @param syncRunner sync runner
+     * @param syncExecutor sync executor
      */
-    public void addSyncRunner(final SyncRunner syncRunner) {
-        syncRunners.add(syncRunner);
+    public void addSyncExecutor(final SyncExecutor syncExecutor) {
+        syncExecutors.add(syncExecutor);
     }
     
     /**
-     * Add all {@code SyncRunner}.
+     * Add all {@code SyncExecutor}.
      *
-     * @param syncRunners collection of sync runners
+     * @param syncExecutors collection of sync executors
      */
-    public void addAllSyncRunner(final Collection<? extends SyncRunner> syncRunners) {
-        this.syncRunners.addAll(syncRunners);
+    public void addAllSyncExecutor(final Collection<? extends SyncExecutor> syncExecutors) {
+        this.syncExecutors.addAll(syncExecutors);
     }
     
     /**
@@ -75,7 +75,7 @@ public final class SyncRunnerGroup {
      * @param throwable throwable
      */
     public void onFailure(final Throwable throwable) {
-        for (SyncRunner each : syncRunners) {
+        for (SyncExecutor each : syncExecutors) {
             each.stop();
         }
         channel.close();

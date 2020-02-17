@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunner;
 
 /**
  * Writer.
  *
  * @author avalon566
  */
-public interface Writer extends SyncRunner {
+public interface Writer extends SyncExecutor {
 
     /**
      * Set channel.

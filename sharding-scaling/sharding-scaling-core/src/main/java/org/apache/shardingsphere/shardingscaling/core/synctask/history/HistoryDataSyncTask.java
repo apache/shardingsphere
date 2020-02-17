@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCall
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunnerGroup;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
@@ -86,9 +86,9 @@ public final class HistoryDataSyncTask implements SyncTask {
     @Override
     public void start(final ReportCallback callback) {
         getEstimatedRows();
-        SyncRunnerGroup syncRunnerGroup = new SyncRunnerGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
-        instanceSyncRunners(syncRunnerGroup);
-        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(syncRunnerGroup);
+        SyncExecutorGroup syncExecutorGroup = new SyncExecutorGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
+        instanceSyncExecutors(syncExecutorGroup);
+        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(syncExecutorGroup);
     }
     
     private void getEstimatedRows() {
@@ -105,16 +105,16 @@ public final class HistoryDataSyncTask implements SyncTask {
         }
     }
     
-    private void instanceSyncRunners(final SyncRunnerGroup syncRunnerGroup) {
+    private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
         syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
         reader = ReaderFactory.newInstanceJdbcReader(syncConfiguration.getReaderConfiguration(), dataSourceFactory);
         Writer writer = WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory);
         MemoryChannel channel = instanceChannel();
         reader.setChannel(channel);
         writer.setChannel(channel);
-        syncRunnerGroup.setChannel(channel);
-        syncRunnerGroup.addSyncRunner(reader);
-        syncRunnerGroup.addSyncRunner(writer);
+        syncExecutorGroup.setChannel(channel);
+        syncExecutorGroup.addSyncExecutor(reader);
+        syncExecutorGroup.addSyncExecutor(writer);
     }
     
     private MemoryChannel instanceChannel() {

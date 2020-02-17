@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncRunner;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
@@ -42,7 +42,7 @@ import java.sql.SQLException;
  *
  * @author avalon566
  */
-public final class PostgreSQLWalReader extends AbstractSyncRunner implements LogReader {
+public final class PostgreSQLWalReader extends AbstractSyncExecutor implements LogReader {
     
     private final WalPosition walPosition;
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncRunner;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
@@ -48,7 +48,7 @@ import java.io.Serializable;
  * @author yangyi
  */
 @Slf4j
-public final class MySQLBinlogReader extends AbstractSyncRunner implements LogReader {
+public final class MySQLBinlogReader extends AbstractSyncExecutor implements LogReader {
 
     private final BinlogPosition binlogPosition;
 
