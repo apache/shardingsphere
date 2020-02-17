@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.shardingsphere.orchestration.reg.etcd;
+package io.opensharding.orchestration.reg.etcd;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;

@@ -32,4 +32,4 @@
 # limitations under the License.
 #
 
-io.shardingsphere.orchestration.reg.etcd.EtcdRegistryCenter
+io.opensharding.orchestration.reg.etcd.EtcdRegistryCenter
