@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.sql.parser.core.extractor.SQLSegmentsExtractorEngine;
 import org.apache.shardingsphere.sql.parser.core.filler.SQLStatementFillerEngine;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLAST;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * SQL parse kernel.
@@ -57,11 +52,6 @@ public final class SQLParseKernel {
      */
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
-        if ("MySQL".equals(databaseTypeName)) {
-            return (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, ast.getParserRuleContext()).visit(ast.getParserRuleContext());
-        }
-        Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
-        Map<ParserRuleContext, Integer> parameterMarkerIndexes = ast.getParameterMarkerIndexes();
-        return fillerEngine.fill(sqlSegments, parameterMarkerIndexes.size(), ast.getSqlStatementRule());
+        return (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, ast.getParserRuleContext()).visit(ast.getParserRuleContext());
     }
 }
