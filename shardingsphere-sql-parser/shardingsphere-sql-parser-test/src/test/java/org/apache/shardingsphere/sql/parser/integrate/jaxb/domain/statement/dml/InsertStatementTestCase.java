@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.insert.ExpectedInsertColumnsClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.insert.ExpectedInsertValuesClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
@@ -45,4 +46,7 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "set")
     private ExpectedSetClause setClause;
+    
+    @XmlElement(name = "on-duplicate-key-columns")
+    private ExpectedOnDuplicateKeyColumns onDuplicateKeyColumns;
 }

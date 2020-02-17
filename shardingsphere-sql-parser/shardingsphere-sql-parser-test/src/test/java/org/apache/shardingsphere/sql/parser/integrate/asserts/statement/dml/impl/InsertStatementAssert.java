@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertColumnsClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.InsertValuesClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.insert.OnDuplicateKeyColumnsAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml.InsertStatementTestCase;
@@ -48,6 +49,7 @@ public final class InsertStatementAssert {
         assertInsertColumnsClause(assertContext, actual, expected);
         assertInsertValuesClause(assertContext, actual, expected);
         assertSetClause(assertContext, actual, expected);
+        assertOnDuplicateKeyColumns(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
@@ -78,6 +80,15 @@ public final class InsertStatementAssert {
             SetClauseAssert.assertIs(assertContext, actual.getSetAssignment().get(), expected.getSetClause());
         } else {
             assertFalse(assertContext.getText("Actual set assignment segment should not exist."), actual.getSetAssignment().isPresent());
+        }
+    }
+    
+    private static void assertOnDuplicateKeyColumns(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
+        if (null != expected.getOnDuplicateKeyColumns()) {
+            assertTrue(assertContext.getText("Actual on duplicate key columns segment should exist."), actual.getOnDuplicateKeyColumns().isPresent());
+            OnDuplicateKeyColumnsAssert.assertIs(assertContext, actual.getOnDuplicateKeyColumns().get(), expected.getOnDuplicateKeyColumns());
+        } else {
+            assertFalse(assertContext.getText("Actual on duplicate key columns segment should not exist."), actual.getOnDuplicateKeyColumns().isPresent());
         }
     }
 }
