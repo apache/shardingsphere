@@ -17,28 +17,41 @@
 
 package org.apache.shardingsphere.orchestration.center.api;
 
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-
-import java.util.List;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
- * Config center.
+ * An interface for center to get/persist data.
  */
-public interface ConfigCenter extends CenterRepository {
+public interface CenterRepository extends TypeBasedSPI {
     
     /**
-     * Get node's sub-nodes list.
+     * Initialize config center.
      *
-     * @param key key of data
-     * @return sub-nodes name list
+     * @param config config center configuration
      */
-    List<String> getChildrenKeys(String key);
+    void init(InstanceConfiguration config);
     
     /**
-     * Watch key or path of the config server.
+     * Get data from config center.
+     *
+     * <p>Maybe use cache if existed.</p>
      *
      * @param key key of data
-     * @param dataChangedEventListener data changed event listener
+     * @return value of data
      */
-    void watch(String key, DataChangedEventListener dataChangedEventListener);
+    String get(String key);
+    
+    /**
+     * Persist data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void persist(String key, String value);
+    
+    /**
+     * Close.
+     */
+    void close();
 }
