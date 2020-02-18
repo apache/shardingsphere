@@ -353,6 +353,7 @@ DELETE FROM tbl1 WHERE id=?
 
 ```shell
 See: https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/shardingsphere-benchmark
+Notes: the notes in incubator-shardingsphere-benchmark/README.md should be taken attention to
 ```
 
 #### Compile & Build

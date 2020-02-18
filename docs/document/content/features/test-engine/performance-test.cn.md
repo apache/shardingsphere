@@ -348,6 +348,7 @@ DELETE FROM tbl1 WHERE id=?
 
 ```shell
 参考https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/shardingsphere-benchmark
+注意阅读incubator-shardingsphere-benchmark/README.md中的Notes
 ```
 
 #### 编译
