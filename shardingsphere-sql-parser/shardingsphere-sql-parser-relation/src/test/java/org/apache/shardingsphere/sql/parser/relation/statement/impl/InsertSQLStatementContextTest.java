@@ -44,7 +44,7 @@ public final class InsertSQLStatementContextTest {
         insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
-        insertStatement.setColumns(insertColumnsSegment);
+        insertStatement.setInsertColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
         InsertSQLStatementContext actual = new InsertSQLStatementContext(mock(RelationMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertSQLStatementContext(actual);
