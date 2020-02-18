@@ -83,7 +83,7 @@ public final class ConfigurationServiceTest {
             + "        shardingColumn: order_id\n";
     
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
-    
+
     private static final String ENCRYPT_RULE_YAML = "encryptors:\n" + "  order_encryptor:\n"
             + "    props:\n" + "      aes.key.value: 123456\n" + "    type: aes\n" + "tables:\n" + "  t_order:\n" + "    columns:\n" 
             + "      order_id:\n"
@@ -93,6 +93,8 @@ public final class ConfigurationServiceTest {
             + "  root2:\n" + "    authorizedSchemas: sharding_db,ms_db\n" + "    password: root2\n";
     
     private static final String PROPS_YAML = "sql.show: false\n";
+
+    private static final String SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE = "defaultTableStrategy:\n" + "  none: ''\n";
     
     @Mock
     private ConfigCenter regCenter;
@@ -308,6 +310,13 @@ public final class ConfigurationServiceTest {
     @Test
     public void assertIsShardingRule() {
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        assertTrue(configurationService.isShardingRule("sharding_db"));
+    }
+
+    @Test
+    public void assertIsShardingRuleWithDefaultTableStragetyNone() {
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         assertTrue(configurationService.isShardingRule("sharding_db"));
     }

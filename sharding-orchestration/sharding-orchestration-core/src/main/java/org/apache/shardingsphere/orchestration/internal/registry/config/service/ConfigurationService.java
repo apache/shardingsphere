@@ -133,7 +133,8 @@ public final class ConfigurationService {
     }
     
     private void persistShardingRuleConfiguration(final String shardingSchemaName, final ShardingRuleConfiguration shardingRuleConfiguration) {
-        Preconditions.checkState(null != shardingRuleConfiguration && !shardingRuleConfiguration.getTableRuleConfigs().isEmpty(),
+        Preconditions.checkState(null != shardingRuleConfiguration
+                        && (!shardingRuleConfiguration.getTableRuleConfigs().isEmpty() || shardingRuleConfiguration.getDefaultTableShardingStrategyConfig() != null),
                 "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
         configCenter.persist(configNode.getRulePath(shardingSchemaName),
             YamlEngine.marshal(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration), ShardingTupleProcessorFactory.newInstance()));
@@ -198,6 +199,9 @@ public final class ConfigurationService {
         }
         if (configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("tables:\n")
             && !configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("encryptors:\n")) {
+            return true;
+        }
+        if (configCenter.get(configNode.getRulePath(shardingSchemaName)).contains("defaultTableStrategy:\n")) {
             return true;
         }
         return false;
