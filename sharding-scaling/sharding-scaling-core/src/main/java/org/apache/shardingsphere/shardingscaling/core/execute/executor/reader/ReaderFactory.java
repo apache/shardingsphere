@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
  * reader factory.
@@ -35,12 +35,12 @@ public final class ReaderFactory {
      * New instance of JDBC reader.
      *
      * @param rdbmsConfiguration rdbms configuration
-     * @param dataSourceFactory data source factory
+     * @param dataSourceManager data source factory
      * @return JDBC reader
      */
     @SneakyThrows
-    public static JdbcReader newInstanceJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
-        return newInstanceJdbcReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceFactory);
+    public static JdbcReader newInstanceJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+        return newInstanceJdbcReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceManager);
     }
     
     /**
@@ -48,13 +48,13 @@ public final class ReaderFactory {
      *
      * @param databaseType database type
      * @param rdbmsConfiguration rdbms configuration
-     * @param dataSourceFactory data source factory
+     * @param dataSourceManager data source factory
      * @return JDBC reader
      */
     @SneakyThrows
-    public static JdbcReader newInstanceJdbcReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+    public static JdbcReader newInstanceJdbcReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getJdbcReaderClass().getConstructor(RdbmsConfiguration.class, DataSourceFactory.class).newInstance(rdbmsConfiguration, dataSourceFactory);
+        return scalingEntry.getJdbcReaderClass().getConstructor(RdbmsConfiguration.class, DataSourceManager.class).newInstance(rdbmsConfiguration, dataSourceManager);
     }
     
     /**

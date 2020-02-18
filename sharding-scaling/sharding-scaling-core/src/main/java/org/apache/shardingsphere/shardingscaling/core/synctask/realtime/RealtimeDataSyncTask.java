@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunnerGroup;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.DistributionChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
     
-    private final DataSourceFactory dataSourceFactory;
+    private final DataSourceManager dataSourceManager;
     
     private final String syncTaskId;
 
@@ -61,9 +61,9 @@ public final class RealtimeDataSyncTask implements SyncTask {
     
     private long delayMillisecond;
     
-    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
+    public RealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
-        this.dataSourceFactory = dataSourceFactory;
+        this.dataSourceManager = dataSourceManager;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("realtime-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
@@ -77,18 +77,18 @@ public final class RealtimeDataSyncTask implements SyncTask {
     private LogPositionManager instanceLogPositionManager() {
         return LogPositionManagerFactory.newInstanceLogManager(
                 syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName(),
-                dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration()));
+                dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration()));
     }
     
     @Override
     public void start(final ReportCallback callback) {
         syncConfiguration.getReaderConfiguration().setTableNameMap(syncConfiguration.getTableNameMap());
-        SyncRunnerGroup syncRunnerGroup = new SyncRunnerGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
-        instanceSyncRunners(syncRunnerGroup);
-        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(syncRunnerGroup);
+        SyncExecutorGroup syncExecutorGroup = new SyncExecutorGroup(new SyncTaskExecuteCallback(this.getClass().getSimpleName(), syncTaskId, callback));
+        instanceSyncExecutors(syncExecutorGroup);
+        ScalingContext.getInstance().getSyncTaskExecuteEngine().submitGroup(syncExecutorGroup);
     }
     
-    private void instanceSyncRunners(final SyncRunnerGroup syncRunnerGroup) {
+    private void instanceSyncExecutors(final SyncExecutorGroup syncExecutorGroup) {
         reader = ReaderFactory.newInstanceLogReader(syncConfiguration.getReaderConfiguration(), logPositionManager.getCurrentPosition());
         List<Writer> writers = instanceWriters();
         DistributionChannel channel = instanceChannel(writers);
@@ -96,15 +96,15 @@ public final class RealtimeDataSyncTask implements SyncTask {
         for (Writer each : writers) {
             each.setChannel(channel);
         }
-        syncRunnerGroup.setChannel(channel);
-        syncRunnerGroup.addSyncRunner(reader);
-        syncRunnerGroup.addAllSyncRunner(writers);
+        syncExecutorGroup.setChannel(channel);
+        syncExecutorGroup.addSyncExecutor(reader);
+        syncExecutorGroup.addAllSyncExecutor(writers);
     }
     
     private List<Writer> instanceWriters() {
         List<Writer> result = new ArrayList<>(syncConfiguration.getConcurrency());
         for (int i = 0; i < syncConfiguration.getConcurrency(); i++) {
-            result.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceFactory));
+            result.add(WriterFactory.newInstance(syncConfiguration.getWriterConfiguration(), dataSourceManager));
         }
         return result;
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.engine;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunner;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,14 +31,14 @@ import java.util.concurrent.RejectedExecutionException;
 public class DefaultSyncTaskExecuteEngineTest {
 
     @Mock
-    private SyncRunner syncRunner;
+    private SyncExecutor syncExecutor;
 
     @Test(expected = RejectedExecutionException.class)
     public void assertSubmitThrowRejectedExecutionException() {
-        List<SyncRunner> runners = new ArrayList<>(11);
+        List<SyncExecutor> executors = new ArrayList<>(11);
         for (int i = 0; i < 11; i++) {
-            runners.add(syncRunner);
+            executors.add(syncExecutor);
         }
-        new DefaultSyncTaskExecuteEngine(10).submit(runners);
+        new DefaultSyncTaskExecuteEngine(10).submit(executors);
     }
 }

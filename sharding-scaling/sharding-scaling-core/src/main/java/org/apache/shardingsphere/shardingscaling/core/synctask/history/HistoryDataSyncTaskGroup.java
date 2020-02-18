@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaDa
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
@@ -53,15 +53,15 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
 
     private final SyncConfiguration syncConfiguration;
     
-    private final DataSourceFactory dataSourceFactory;
+    private final DataSourceManager dataSourceManager;
 
     private final List<SyncTask> syncTasks = new LinkedList<>();
     
     private final String syncTaskId;
 
-    public HistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
+    public HistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
-        this.dataSourceFactory = dataSourceFactory;
+        this.dataSourceManager = dataSourceManager;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("historyGroup-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
@@ -71,7 +71,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
         List<SyncConfiguration> tableSliceConfigurations = split(syncConfiguration);
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         for (SyncConfiguration each : tableSliceConfigurations) {
-            SyncTask syncTask = syncTaskFactory.createHistoryDataSyncTask(each, dataSourceFactory);
+            SyncTask syncTask = syncTaskFactory.createHistoryDataSyncTask(each, dataSourceManager);
             syncTask.prepare();
             syncTasks.add(syncTask);
         }
@@ -79,7 +79,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
 
     private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
         List<SyncConfiguration> result = new LinkedList<>();
-        DataSource dataSource = dataSourceFactory.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
         for (SyncConfiguration each : splitByTable(syncConfiguration)) {
             if (isSpiltByPrimaryKeyRange(each.getReaderConfiguration(), metaDataManager)) {

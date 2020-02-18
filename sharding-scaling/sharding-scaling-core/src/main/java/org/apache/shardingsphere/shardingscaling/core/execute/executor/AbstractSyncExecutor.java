@@ -17,20 +17,34 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * execute runner.
+ * Abstract executor.
  *
  * @author avalon566
  */
-public interface SyncRunner extends Runnable {
+public abstract class AbstractSyncExecutor implements SyncExecutor {
+
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private boolean running;
 
     /**
-     * Start run execute.
+     * generic start implement.
      */
-    void start();
+    @Override
+    public void start() {
+        running = true;
+    }
 
     /**
-     * Stop running execute.
+     * generic stop implement.
      */
-    void stop();
+    @Override
+    public void stop() {
+        running = false;
+    }
 }

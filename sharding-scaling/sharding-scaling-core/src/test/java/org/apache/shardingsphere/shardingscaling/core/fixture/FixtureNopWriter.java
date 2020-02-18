@@ -22,7 +22,7 @@ package org.apache.shardingsphere.shardingscaling.core.fixture;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 public final class FixtureNopWriter implements Writer {
 
@@ -30,7 +30,7 @@ public final class FixtureNopWriter implements Writer {
 
     private Channel channel;
 
-    public FixtureNopWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+    public FixtureNopWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
 
     }
 

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.engine;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunner;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunnerGroup;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutor;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,17 +32,17 @@ import java.util.List;
 public interface SyncTaskExecuteEngine {
     
     /**
-     * Submit a group syncRunner.
+     * Submit a group sync executor.
      *
-     * @param syncRunnerGroup sync runner group
+     * @param syncExecutorGroup sync executor group
      */
-    void submitGroup(SyncRunnerGroup syncRunnerGroup);
+    void submitGroup(SyncExecutorGroup syncExecutorGroup);
 
     /**
-     * Submit sync runner to execute.
+     * Submit sync executor to execute.
      *
-     * @param syncRunners sync runner list
+     * @param syncExecutors sync executor list
      * @return listenable future
      */
-    List<ListenableFuture<Object>> submit(Collection<SyncRunner> syncRunners);
+    List<ListenableFuture<Object>> submit(Collection<SyncExecutor> syncExecutors);
 }

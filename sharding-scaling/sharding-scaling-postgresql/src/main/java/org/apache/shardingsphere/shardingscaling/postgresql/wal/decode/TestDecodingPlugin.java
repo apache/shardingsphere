@@ -92,7 +92,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         while (data.hasRemaining()) {
             afterColumns.add(readColumn(data));
         }
-        writeRowEvent.setAfterRows(afterColumns);
+        writeRowEvent.setAfterRow(afterColumns);
         return writeRowEvent;
     }
     
@@ -103,7 +103,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         while (data.hasRemaining()) {
             afterColumns.add(readColumn(data));
         }
-        updateRowEvent.setAfterRows(afterColumns);
+        updateRowEvent.setAfterRow(afterColumns);
         return updateRowEvent;
     }
     
@@ -114,7 +114,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         while (data.hasRemaining()) {
             afterColumns.add(readColumn(data));
         }
-        deleteRowEvent.setPrimaryKeyRows(afterColumns);
+        deleteRowEvent.setPrimaryKeys(afterColumns);
         return deleteRowEvent;
     }
     

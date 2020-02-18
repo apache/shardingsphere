@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCall
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -58,7 +58,7 @@ public class HistoryDataSyncTaskGroupTest {
     
     private SyncConfiguration syncConfiguration;
     
-    private DataSourceFactory dataSourceFactory;
+    private DataSourceManager dataSourceManager;
     
     @Before
     public void setUp() {
@@ -68,18 +68,18 @@ public class HistoryDataSyncTaskGroupTest {
         tableMap.put("t_order", "t_order");
         syncConfiguration = new SyncConfiguration(3, tableMap,
                 readerConfig, writerConfig);
-        dataSourceFactory = new DataSourceFactory();
+        dataSourceManager = new DataSourceManager();
     }
     
     @After
     public void tearDown() {
-        dataSourceFactory.close();
+        dataSourceManager.close();
     }
     
     @Test
     public void assertPrepareWithIntPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
         initIntPrimaryEnvironment(syncConfiguration.getReaderConfiguration());
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         historyDataSyncTaskGroup.prepare();
         List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
         assertNotNull(syncTasks);
@@ -89,7 +89,7 @@ public class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertPrepareWithCharPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
         initCharPrimaryEnvironment(syncConfiguration.getReaderConfiguration());
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         historyDataSyncTaskGroup.prepare();
         List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
         assertNotNull(syncTasks);
@@ -99,7 +99,7 @@ public class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertPrepareWithUnionPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
         initUnionPrimaryEnvironment(syncConfiguration.getReaderConfiguration());
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         historyDataSyncTaskGroup.prepare();
         List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
         assertNotNull(syncTasks);
@@ -109,7 +109,7 @@ public class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertPrepareWithoutPrimaryRangeSplit() throws NoSuchFieldException, IllegalAccessException {
         initNoPrimaryEnvironment(syncConfiguration.getReaderConfiguration());
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         historyDataSyncTaskGroup.prepare();
         List<SyncTask> syncTasks = ReflectionUtil.getFieldValueFromClass(historyDataSyncTaskGroup, "syncTasks", List.class);
         assertNotNull(syncTasks);
@@ -119,7 +119,7 @@ public class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertStart() throws NoSuchFieldException, IllegalAccessException {
         SyncTask syncTask = mock(SyncTask.class);
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         List<SyncTask> syncTasks = new LinkedList<>();
         syncTasks.add(syncTask);
         ReflectionUtil.setFieldValueToClass(historyDataSyncTaskGroup, "syncTasks", syncTasks);
@@ -135,7 +135,7 @@ public class HistoryDataSyncTaskGroupTest {
     @Test
     public void assertStop() throws NoSuchFieldException, IllegalAccessException {
         SyncTask syncTask = mock(SyncTask.class);
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         List<SyncTask> syncTasks = new LinkedList<>();
         syncTasks.add(syncTask);
         ReflectionUtil.setFieldValueToClass(historyDataSyncTaskGroup, "syncTasks", syncTasks);
@@ -145,13 +145,13 @@ public class HistoryDataSyncTaskGroupTest {
     
     @Test
     public void assertGetProgress() {
-        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+        HistoryDataSyncTaskGroup historyDataSyncTaskGroup = new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
         assertThat(historyDataSyncTaskGroup.getProgress(), instanceOf(SyncProgress.class));
     }
     
     @SneakyThrows
     private void initIntPrimaryEnvironment(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceFactory.getDataSource(readerConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -162,7 +162,7 @@ public class HistoryDataSyncTaskGroupTest {
     
     @SneakyThrows
     private void initCharPrimaryEnvironment(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceFactory.getDataSource(readerConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -173,7 +173,7 @@ public class HistoryDataSyncTaskGroupTest {
     
     @SneakyThrows
     private void initUnionPrimaryEnvironment(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceFactory.getDataSource(readerConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -184,7 +184,7 @@ public class HistoryDataSyncTaskGroupTest {
     
     @SneakyThrows
     private void initNoPrimaryEnvironment(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceFactory.getDataSource(readerConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

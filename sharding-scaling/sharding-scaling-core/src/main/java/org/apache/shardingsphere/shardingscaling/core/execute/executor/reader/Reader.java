@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncRunner;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutor;
 
 /**
  * Reader interface.
  *
  * @author avalon566
  */
-public interface Reader extends SyncRunner {
+public interface Reader extends SyncExecutor {
 
     /**
      * Set channel.

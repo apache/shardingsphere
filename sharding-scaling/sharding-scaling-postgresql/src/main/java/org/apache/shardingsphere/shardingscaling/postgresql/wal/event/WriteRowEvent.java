@@ -31,5 +31,5 @@ import java.util.List;
 @Getter
 public final class WriteRowEvent extends AbstractRowEvent {
     
-    private List<Object> afterRows;
+    private List<Object> afterRow;
 }

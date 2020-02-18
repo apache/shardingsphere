@@ -36,7 +36,7 @@ public class TestDecodingPluginTest {
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin().decode(data, lsn);
         Assert.assertThat(actual.getLogSequenceNumber(), Matchers.is(lsn));
         Assert.assertThat(actual.getTableName(), Matchers.is("test"));
-        Assert.assertThat((String) actual.getAfterRows().get(0), Matchers.is("1 2 3'"));
+        Assert.assertThat((String) actual.getAfterRow().get(0), Matchers.is("1 2 3'"));
     }
     
     @Test
@@ -46,7 +46,7 @@ public class TestDecodingPluginTest {
         UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin().decode(data, lsn);
         Assert.assertThat(actual.getLogSequenceNumber(), Matchers.is(lsn));
         Assert.assertThat(actual.getTableName(), Matchers.is("test"));
-        Assert.assertThat((String) actual.getAfterRows().get(0), Matchers.is("1 2 3'"));
+        Assert.assertThat((String) actual.getAfterRow().get(0), Matchers.is("1 2 3'"));
     }
     
     @Test
@@ -56,6 +56,6 @@ public class TestDecodingPluginTest {
         DeleteRowEvent actual = (DeleteRowEvent) new TestDecodingPlugin().decode(data, lsn);
         Assert.assertThat(actual.getLogSequenceNumber(), Matchers.is(lsn));
         Assert.assertThat(actual.getTableName(), Matchers.is("test"));
-        Assert.assertThat((Integer) actual.getPrimaryKeyRows().get(0), Matchers.is(1));
+        Assert.assertThat((Integer) actual.getPrimaryKeys().get(0), Matchers.is(1));
     }
 }

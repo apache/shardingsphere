@@ -20,8 +20,10 @@ package org.apache.shardingsphere.shardingscaling.core.metadata.table;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import lombok.Getter;
 
@@ -32,10 +34,12 @@ import lombok.Getter;
  */
 public final class TableMetaData {
 
-    private final List<ColumnMetaData> columnMetaDatas = new ArrayList<>();
+    private final List<ColumnMetaData> columnMetaData = new ArrayList<>();
     
     @Getter
     private final List<String> primaryKeyColumns = new ArrayList<>();
+    
+    private final Set<String> primaryKeyColumnsSet = new HashSet<>();
     
     /**
      * Get size of columns.
@@ -43,7 +47,7 @@ public final class TableMetaData {
      * @return size of columns
      */
     public int getColumnsSize() {
-        return columnMetaDatas.size();
+        return columnMetaData.size();
     }
     
     /**
@@ -52,7 +56,7 @@ public final class TableMetaData {
      * @param columnMetaData column meta data
      */
     public void addAllColumnMetaData(final Collection<ColumnMetaData> columnMetaData) {
-        columnMetaDatas.addAll(columnMetaData);
+        this.columnMetaData.addAll(columnMetaData);
     }
     
     /**
@@ -62,7 +66,7 @@ public final class TableMetaData {
      * @return column meta data
      */
     public ColumnMetaData getColumnMetaData(final int columnIndex) {
-        return columnMetaDatas.get(columnIndex);
+        return columnMetaData.get(columnIndex);
     }
     
     /**
@@ -72,7 +76,7 @@ public final class TableMetaData {
      */
     public Collection<String> getColumnNames() {
         Collection<String> result = new LinkedList<>();
-        for (ColumnMetaData each : columnMetaDatas) {
+        for (ColumnMetaData each : columnMetaData) {
             result.add(each.getColumnName());
         }
         return result;
@@ -85,8 +89,8 @@ public final class TableMetaData {
      * @return index of column
      */
     public int findColumnIndex(final String columnName) {
-        for (int i = 0; i < columnMetaDatas.size(); i++) {
-            if (columnMetaDatas.get(i).getColumnName().equals(columnName)) {
+        for (int i = 0; i < columnMetaData.size(); i++) {
+            if (columnMetaData.get(i).getColumnName().equals(columnName)) {
                 return i;
             }
         }
@@ -100,5 +104,19 @@ public final class TableMetaData {
      */
     public void addAllPrimaryKey(final Collection<String> primaryKeyColumnName) {
         primaryKeyColumns.addAll(primaryKeyColumnName);
+        primaryKeyColumnsSet.addAll(primaryKeyColumnName);
+    }
+    
+    /**
+     * Judge column whether primary key.
+     *
+     * @param columnIndex column index
+     * @return true if the column is primary key, otherwise false
+     */
+    public boolean isPrimaryKey(final int columnIndex) {
+        if (columnIndex >= columnMetaData.size()) {
+            return false;
+        }
+        return primaryKeyColumnsSet.contains(columnMetaData.get(columnIndex).getColumnName());
     }
 }

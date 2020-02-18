@@ -42,7 +42,7 @@ import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckF
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.CheckerFactory;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.web.util.ResponseContentUtil;
 import org.apache.shardingsphere.shardingscaling.core.web.util.SyncConfigurationUtil;
 
@@ -102,9 +102,9 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         ScalingConfiguration scalingConfiguration = GSON.fromJson(requestBody, ScalingConfiguration.class);
         ShardingScalingJob shardingScalingJob = new ShardingScalingJob("Local Sharding Scaling Job");
         shardingScalingJob.getSyncConfigurations().addAll(SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration));
-        DataSourceFactory dataSourceFactory = new DataSourceFactory(shardingScalingJob.getSyncConfigurations());
+        DataSourceManager dataSourceManager = new DataSourceManager(shardingScalingJob.getSyncConfigurations());
         try {
-            checkDatasources(shardingScalingJob.getSyncConfigurations(), dataSourceFactory);
+            checkDatasources(shardingScalingJob.getSyncConfigurations(), dataSourceManager);
         } catch (DatasourceCheckFailedException e) {
             log.warn("Datasources check failed!", e);
             response(GSON.toJson(ResponseContentUtil.handleBadRequest(e.getMessage())), channelHandlerContext, HttpResponseStatus.BAD_REQUEST);
@@ -115,18 +115,18 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         response(GSON.toJson(ResponseContentUtil.success()), channelHandlerContext, HttpResponseStatus.OK);
     }
 
-    private void checkDatasources(final List<SyncConfiguration> syncConfigurations, final DataSourceFactory dataSourceFactory) {
+    private void checkDatasources(final List<SyncConfiguration> syncConfigurations, final DataSourceManager dataSourceManager) {
         try {
             DatasourceChecker datasourceChecker = CheckerFactory.newInstanceDatasourceChecker(
                     syncConfigurations.get(0).getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName());
             Collection<DataSource> dataSourceCollection = new ArrayList<>();
-            dataSourceCollection.addAll(dataSourceFactory.getCachedDataSources().values());
+            dataSourceCollection.addAll(dataSourceManager.getCachedDataSources().values());
             datasourceChecker.checkConnection(dataSourceCollection);
             Collection<DataSource> sourcesDatasourceCollection = new ArrayList<>();
-            sourcesDatasourceCollection.addAll(dataSourceFactory.getSourceDatasources().values());
+            sourcesDatasourceCollection.addAll(dataSourceManager.getSourceDatasources().values());
             datasourceChecker.checkPrivilege(sourcesDatasourceCollection);
         } finally {
-            dataSourceFactory.close();
+            dataSourceManager.close();
         }
     }
 

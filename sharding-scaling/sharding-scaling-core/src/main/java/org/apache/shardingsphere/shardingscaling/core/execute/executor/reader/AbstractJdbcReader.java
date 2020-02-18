@@ -24,14 +24,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncRunner;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,22 +48,30 @@ import java.sql.SQLException;
  * @author yangyi
  */
 @Slf4j
-public abstract class AbstractJdbcReader extends AbstractSyncRunner implements JdbcReader {
+public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements JdbcReader {
     
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
     
-    private final DataSourceFactory dataSourceFactory;
+    private final DataSourceManager dataSourceManager;
+    
+    private final TableMetaData tableMetaData;
     
     @Setter
     private Channel channel;
     
-    public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceFactory dataSourceFactory) {
+    public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
             throw new UnsupportedOperationException("AbstractJdbcReader only support JdbcDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
-        this.dataSourceFactory = dataSourceFactory;
+        this.dataSourceManager = dataSourceManager;
+        this.tableMetaData = createTableMetaData();
+    }
+    
+    private TableMetaData createTableMetaData() {
+        MetaDataManager metaDataManager = new MetaDataManager(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()));
+        return metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
     }
     
     @Override
@@ -72,7 +82,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
     
     @Override
     public final void read(final Channel channel) {
-        try (Connection conn = dataSourceFactory.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
+        try (Connection conn = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
             String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();
@@ -82,7 +92,7 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
                 record.setType("bootstrap-insert");
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    record.addColumn(new Column(readValue(rs, i), true));
+                    record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i)));
                 }
                 pushRecord(record);
             }
@@ -93,7 +103,15 @@ public abstract class AbstractJdbcReader extends AbstractSyncRunner implements J
         }
     }
     
-    protected abstract PreparedStatement createPreparedStatement(Connection conn, String sql) throws SQLException;
+    /**
+     * Create prepared statement.
+     *
+     * @param connection connection
+     * @param sql prepared sql
+     * @return prepared statement
+     * @throws SQLException SQL exception
+     */
+    protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;
     
     /**
      * Read value from {@code ResultSet}.

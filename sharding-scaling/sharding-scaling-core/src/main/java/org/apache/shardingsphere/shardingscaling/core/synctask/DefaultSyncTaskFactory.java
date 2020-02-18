@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.history.HistoryDataSyncTaskGroup;
 import org.apache.shardingsphere.shardingscaling.core.synctask.realtime.RealtimeDataSyncTask;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
  * Default sync task factory.
@@ -31,17 +31,17 @@ import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
 public final class DefaultSyncTaskFactory implements SyncTaskFactory {
 
     @Override
-    public HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
-        return new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceFactory);
+    public HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        return new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
     }
 
     @Override
-    public HistoryDataSyncTask createHistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
-        return new HistoryDataSyncTask(syncConfiguration, dataSourceFactory);
+    public HistoryDataSyncTask createHistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        return new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
     }
 
     @Override
-    public RealtimeDataSyncTask createRealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceFactory dataSourceFactory) {
-        return new RealtimeDataSyncTask(syncConfiguration, dataSourceFactory);
+    public RealtimeDataSyncTask createRealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
+        return new RealtimeDataSyncTask(syncConfiguration, dataSourceManager);
     }
 }

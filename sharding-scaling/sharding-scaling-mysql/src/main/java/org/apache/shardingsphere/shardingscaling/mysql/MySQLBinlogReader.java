@@ -19,7 +19,8 @@ package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncRunner;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Fi
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
+import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.MySQLConnector;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractRowsEvent;
@@ -48,11 +51,13 @@ import java.io.Serializable;
  * @author yangyi
  */
 @Slf4j
-public final class MySQLBinlogReader extends AbstractSyncRunner implements LogReader {
+public final class MySQLBinlogReader extends AbstractSyncExecutor implements LogReader {
 
     private final BinlogPosition binlogPosition;
 
     private final RdbmsConfiguration rdbmsConfiguration;
+    
+    private final MetaDataManager metaDataManager;
 
     @Setter
     private Channel channel;
@@ -63,6 +68,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             throw new UnsupportedOperationException("MySQLBinlogReader only support JdbcDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
+        this.metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
     }
 
     @Override
@@ -105,11 +111,12 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             createPlaceholderRecord(channel, event);
             return;
         }
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType("insert");
-            for (Serializable eachColumnValue : each) {
-                record.addColumn(new Column(eachColumnValue, true));
+            for (int i = 0; i < each.length; i++) {
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getColumnName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }
             pushRecord(channel, record);
         }
@@ -120,6 +127,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             createPlaceholderRecord(channel, event);
             return;
         }
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
@@ -128,7 +136,7 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = beforeValues[j];
                 Object newValue = afterValues[j];
-                record.addColumn(new Column(newValue, !newValue.equals(oldValue)));
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getColumnName(), newValue, !newValue.equals(oldValue), tableMetaData.isPrimaryKey(j)));
             }
             pushRecord(channel, record);
         }
@@ -139,11 +147,12 @@ public final class MySQLBinlogReader extends AbstractSyncRunner implements LogRe
             createPlaceholderRecord(channel, event);
             return;
         }
+        TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType("delete");
-            for (Serializable eachColumnValue : each) {
-                record.addColumn(new Column(eachColumnValue, true));
+            for (int i = 0; i < each.length; i++) {
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getColumnName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }
             pushRecord(channel, record);
         }

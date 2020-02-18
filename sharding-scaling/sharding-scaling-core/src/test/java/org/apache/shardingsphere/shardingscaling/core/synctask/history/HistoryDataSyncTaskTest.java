@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
-import org.apache.shardingsphere.shardingscaling.core.util.DataSourceFactory;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class HistoryDataSyncTaskTest {
 
     private SyncConfiguration syncConfiguration;
     
-    private DataSourceFactory dataSourceFactory;
+    private DataSourceManager dataSourceManager;
 
     @Before
     public void setUp() {
@@ -57,18 +57,18 @@ public class HistoryDataSyncTaskTest {
         ScalingContext.getInstance().init(new ServerConfiguration());
         syncConfiguration = new SyncConfiguration(3, null,
                 readerConfig, writerConfig);
-        dataSourceFactory = new DataSourceFactory();
+        dataSourceManager = new DataSourceManager();
     }
     
     @After
     public void tearDown() {
-        dataSourceFactory.close();
+        dataSourceManager.close();
     }
 
     @Test
     public void assertGetProgress() {
         initTableData(syncConfiguration.getReaderConfiguration());
-        HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration, dataSourceFactory);
+        HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
         historyDataSyncTask.start(new ReportCallback() {
 
             @Override
@@ -81,7 +81,7 @@ public class HistoryDataSyncTaskTest {
 
     @SneakyThrows
     private void initTableData(final RdbmsConfiguration readerConfig) {
-        DataSource dataSource = dataSourceFactory.getDataSource(readerConfig.getDataSourceConfiguration());
+        DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
