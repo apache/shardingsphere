@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.prepare;
 
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -44,12 +43,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private final LogicSchema logicSchema;
     
-    private final String schemaName;
-    
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         logicSchema = backendConnection.getLogicSchema();
-        schemaName = backendConnection.getSchemaName();
     }
     
     @Override
@@ -59,11 +55,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(packet.getSql(), true);
         int parametersCount = sqlStatement.getParametersCount();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(), parametersCount, 0));
-        TablesContext tablesContext = new TablesContext(sqlStatement);
         for (int i = 0; i < parametersCount; i++) {
             // TODO add column name
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName,
-                    tablesContext.isSingleTable() ? tablesContext.getSingleTableName() : "", "", "", "", 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
         }
         if (parametersCount > 0) {
             result.add(new MySQLEofPacket(++currentSequenceId));
