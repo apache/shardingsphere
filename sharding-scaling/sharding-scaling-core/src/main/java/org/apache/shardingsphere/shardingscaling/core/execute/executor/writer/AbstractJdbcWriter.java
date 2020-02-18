@@ -27,17 +27,17 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Co
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -55,26 +55,21 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
     
     private final AbstractSqlBuilder sqlBuilder;
     
-    private MetaDataManager metaDataManager;
-    
     @Setter
     private Channel channel;
     
     public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceManager = dataSourceManager;
-        DataSource dataSource = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration());
-        metaDataManager = new MetaDataManager(dataSource);
-        sqlBuilder = createSqlBuilder(metaDataManager);
+        sqlBuilder = createSqlBuilder();
     }
     
     /**
      * Create sql builder.
      *
-     * @param metaDataManager database metadata util
      * @return sql builder
      */
-    protected abstract AbstractSqlBuilder createSqlBuilder(MetaDataManager metaDataManager);
+    protected abstract AbstractSqlBuilder createSqlBuilder();
     
     @Override
     public final void run() {
@@ -87,7 +82,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
         try {
             while (isRunning()) {
                 List<Record> records = channel.fetchRecords(100, 3);
-                if (null != records && 0 < records.size()) {
+                if (null != records && records.size() > 0) {
                     flush(dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()), records);
                     if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                         channel.ack();
@@ -122,7 +117,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
     }
     
     private void executeInsert(final Connection connection, final DataRecord record) throws SQLException {
-        String insertSql = sqlBuilder.buildInsertSql(record.getTableName());
+        String insertSql = sqlBuilder.buildInsertSQL(record);
         PreparedStatement ps = connection.prepareStatement(insertSql);
         ps.setQueryTimeout(30);
         try {
@@ -130,26 +125,15 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
                 ps.setObject(i + 1, record.getColumn(i).getValue());
             }
             ps.execute();
-        } catch (SQLIntegrityConstraintViolationException ex) {
-            // ignore
+        } catch (SQLIntegrityConstraintViolationException ignored) {
         }
     }
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(record.getTableName());
-        List<ColumnMetaData> updatedColumns = new LinkedList<>();
-        List<Column> values = new LinkedList<>();
-        for (int i = 0; i < tableMetaData.getColumnsSize(); i++) {
-            if (record.getColumn(i).isUpdated()) {
-                updatedColumns.add(tableMetaData.getColumnMetaData(i));
-                values.add(record.getColumn(i));
-            }
-        }
-        for (String primaryKey : tableMetaData.getPrimaryKeyColumns()) {
-            int index = tableMetaData.findColumnIndex(primaryKey);
-            values.add(record.getColumn(index));
-        }
-        String updateSql = sqlBuilder.buildUpdateSql(record.getTableName(), updatedColumns);
+        List<Column> values = new ArrayList<>();
+        values.addAll(extractUpdatedColumns(record));
+        values.addAll(extractPrimaryColumns(record));
+        String updateSql = sqlBuilder.buildUpdateSQL(record);
         PreparedStatement ps = connection.prepareStatement(updateSql);
         for (int i = 0; i < values.size(); i++) {
             ps.setObject(i + 1, values.get(i).getValue());
@@ -157,15 +141,33 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
         ps.execute();
     }
     
+    private Collection<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return Collections2.filter(dataRecord.getColumns(), new Predicate<Column>() {
+            
+            @Override
+            public boolean apply(final Column column) {
+                return column.isUpdated();
+            }
+        });
+    }
+    
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
-        TableMetaData tableMetaData = metaDataManager.getTableMetaData(record.getTableName());
-        List<String> primaryKeys = metaDataManager.getTableMetaData(record.getTableName()).getPrimaryKeyColumns();
-        String deleteSql = sqlBuilder.buildDeleteSql(record.getTableName());
+        String deleteSql = sqlBuilder.buildDeleteSQL(record);
+        List<Column> primaryKeys = extractPrimaryColumns(record);
         PreparedStatement ps = connection.prepareStatement(deleteSql);
         for (int i = 0; i < primaryKeys.size(); i++) {
-            int index = tableMetaData.findColumnIndex(primaryKeys.get(i));
-            ps.setObject(i + 1, record.getColumn(index).getValue());
+            ps.setObject(i + 1, primaryKeys.get(i).getValue());
         }
         ps.execute();
+    }
+    
+    private List<Column> extractPrimaryColumns(final DataRecord record) {
+        List<Column> result = new ArrayList<>();
+        for (Column each : record.getColumns()) {
+            if (each.isPrimaryKey()) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }
