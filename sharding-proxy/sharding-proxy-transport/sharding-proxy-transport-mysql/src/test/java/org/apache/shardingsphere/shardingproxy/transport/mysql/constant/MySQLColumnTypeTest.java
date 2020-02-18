@@ -38,15 +38,15 @@ public final class MySQLColumnTypeTest {
         assertThat(MySQLColumnType.valueOfJDBCType(Types.DOUBLE), is(MySQLColumnType.MYSQL_TYPE_DOUBLE));
         assertThat(MySQLColumnType.valueOfJDBCType(Types.NUMERIC), is(MySQLColumnType.MYSQL_TYPE_NEWDECIMAL));
         assertThat(MySQLColumnType.valueOfJDBCType(Types.DECIMAL), is(MySQLColumnType.MYSQL_TYPE_NEWDECIMAL));
-        assertThat(MySQLColumnType.valueOfJDBCType(Types.CHAR), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
-        assertThat(MySQLColumnType.valueOfJDBCType(Types.VARCHAR), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
-        assertThat(MySQLColumnType.valueOfJDBCType(Types.LONGVARCHAR), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(MySQLColumnType.valueOfJDBCType(Types.CHAR), is(MySQLColumnType.MYSQL_TYPE_STRING));
+        assertThat(MySQLColumnType.valueOfJDBCType(Types.VARCHAR), is(MySQLColumnType.MYSQL_TYPE_VAR_STRING));
+        assertThat(MySQLColumnType.valueOfJDBCType(Types.LONGVARCHAR), is(MySQLColumnType.MYSQL_TYPE_VAR_STRING));
         assertThat(MySQLColumnType.valueOfJDBCType(Types.DATE), is(MySQLColumnType.MYSQL_TYPE_DATE));
         assertThat(MySQLColumnType.valueOfJDBCType(Types.TIME), is(MySQLColumnType.MYSQL_TYPE_TIME));
         assertThat(MySQLColumnType.valueOfJDBCType(Types.TIMESTAMP), is(MySQLColumnType.MYSQL_TYPE_TIMESTAMP));
-        assertThat(MySQLColumnType.valueOfJDBCType(Types.BINARY), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
-        assertThat(MySQLColumnType.valueOfJDBCType(Types.VARBINARY), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
-        assertThat(MySQLColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(MySQLColumnType.valueOfJDBCType(Types.BINARY), is(MySQLColumnType.MYSQL_TYPE_STRING));
+        assertThat(MySQLColumnType.valueOfJDBCType(Types.VARBINARY), is(MySQLColumnType.MYSQL_TYPE_VAR_STRING));
+        assertThat(MySQLColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(MySQLColumnType.MYSQL_TYPE_VAR_STRING));
         assertThat(MySQLColumnType.valueOfJDBCType(Types.NULL), is(MySQLColumnType.MYSQL_TYPE_NULL));
         assertThat(MySQLColumnType.valueOfJDBCType(Types.BLOB), is(MySQLColumnType.MYSQL_TYPE_BLOB));
     }

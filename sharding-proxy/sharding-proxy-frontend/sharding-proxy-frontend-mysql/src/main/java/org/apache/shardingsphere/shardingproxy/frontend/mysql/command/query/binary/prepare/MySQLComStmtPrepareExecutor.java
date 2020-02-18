@@ -62,8 +62,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         TablesContext tablesContext = new TablesContext(sqlStatement);
         for (int i = 0; i < parametersCount; i++) {
             // TODO add column name
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, schemaName,
-                    tablesContext.isSingleTable() ? tablesContext.getSingleTableName() : "", "", "", "", 100, MySQLColumnType.MYSQL_TYPE_VARCHAR, 0));
+            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
         }
         if (parametersCount > 0) {
             result.add(new MySQLEofPacket(++currentSequenceId));
