@@ -288,6 +288,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         result.setProjections(projections);
         result.getAllSQLSegments().add(projections);
+        result.getAllSQLSegments().addAll(getTableSegments(projections));
         if (null != ctx.selectSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
@@ -313,6 +314,19 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         }
         if (null != ctx.limitClause()) {
             result.getAllSQLSegments().add((LimitSegment) visit(ctx.limitClause()));
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projections.getProjections()) {
+            if (each instanceof ShorthandProjectionSegment && ((ShorthandProjectionSegment) each).getOwner().isPresent()) {
+                result.add(((ShorthandProjectionSegment) each).getOwner().get());
+            }
+            if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
+                result.add(((ColumnProjectionSegment) each).getOwner().get());
+            }
         }
         return result;
     }

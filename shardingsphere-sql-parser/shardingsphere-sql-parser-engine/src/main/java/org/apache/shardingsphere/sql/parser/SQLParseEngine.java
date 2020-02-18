@@ -19,10 +19,13 @@ package org.apache.shardingsphere.sql.parser;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
 import org.apache.shardingsphere.sql.parser.core.SQLParseKernel;
+import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
@@ -34,6 +37,10 @@ public final class SQLParseEngine {
     private final String databaseTypeName;
     
     private final SQLParseResultCache cache = new SQLParseResultCache();
+    
+    static {
+        NewInstanceServiceLoader.register(SQLParserEntry.class);
+    }
     
     /**
      * Parse SQL.
@@ -64,7 +71,7 @@ public final class SQLParseEngine {
                 return cachedSQLStatement.get();
             }
         }
-        SQLStatement result = new SQLParseKernel(databaseTypeName, sql).parse();
+        SQLStatement result = new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseTypeName, sql).parse();
         if (useCache) {
             cache.put(sql, result);
         }
