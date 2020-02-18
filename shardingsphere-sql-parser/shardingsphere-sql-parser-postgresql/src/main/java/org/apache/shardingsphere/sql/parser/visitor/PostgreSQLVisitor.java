@@ -335,6 +335,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
         if (astNode instanceof NumberLiteralValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberLiteralValue) astNode).getValue());
         }
+        if (astNode instanceof BooleanLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((BooleanLiteralValue) astNode).getValue());
+        }
         if (astNode instanceof ParameterMarkerValue) {
             return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
         }
