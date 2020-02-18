@@ -44,12 +44,10 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private final LogicSchema logicSchema;
     
-    private final String schemaName;
     
     public MySQLComStmtPrepareExecutor(final MySQLComStmtPreparePacket packet, final BackendConnection backendConnection) {
         this.packet = packet;
         logicSchema = backendConnection.getLogicSchema();
-        schemaName = backendConnection.getSchemaName();
     }
     
     @Override
@@ -59,7 +57,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         SQLStatement sqlStatement = logicSchema.getParseEngine().parse(packet.getSql(), true);
         int parametersCount = sqlStatement.getParametersCount();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(), parametersCount, 0));
-        TablesContext tablesContext = new TablesContext(sqlStatement);
         for (int i = 0; i < parametersCount; i++) {
             // TODO add column name
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
