@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.registry;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.insert;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.junit.Test;
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.assignment.ExpectedAssignment;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
-public final class ParseRuleRegistryTest {
+/**
+ * Expected on duplicate key columns.
+ */
+@Getter
+public final class ExpectedOnDuplicateKeyColumns extends AbstractExpectedSQLSegment {
     
-    private static ParseRuleRegistry parseRuleRegistry = ParseRuleRegistry.getInstance();
-    
-    @Test
-    public void assertShardingParseRuleRegistry() {
-        assertNotNull(parseRuleRegistry.getSQLStatementRule("MySQL", "SelectContext"));
-        assertTrue(parseRuleRegistry.findSQLSegmentFiller("MySQL", ColumnDefinitionSegment.class).isPresent());
-    }
+    @XmlElement(name = "assignment")
+    private List<ExpectedAssignment> assignments = new LinkedList<>();
 }

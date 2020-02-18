@@ -60,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
@@ -117,8 +118,9 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.getAllSQLSegments().add(segment);
         }
         if (null != ctx.onDuplicateKeyClause()) {
-            CollectionValue<AssignmentSegment> segments = (CollectionValue<AssignmentSegment>) visit(ctx.onDuplicateKeyClause());
-            result.getAllSQLSegments().addAll(segments.getValue());
+            OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = (OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause());
+            result.getAllSQLSegments().add(onDuplicateKeyColumnsSegment);
+            result.setOnDuplicateKeyColumns(onDuplicateKeyColumnsSegment);
         }
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
@@ -132,7 +134,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         InsertStatement result = new InsertStatement();
         if (null != ctx.columnNames()) { 
             InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
-            result.setColumns(insertColumnsSegment);
+            result.setInsertColumns(insertColumnsSegment);
             result.getAllSQLSegments().add(insertColumnsSegment);
         }
         Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
@@ -151,11 +153,11 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
-        CollectionValue<AssignmentSegment> result = new CollectionValue<>();
+        Collection<AssignmentSegment> columns = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {
-            result.getValue().add((AssignmentSegment) visit(each));
+            columns.add((AssignmentSegment) visit(each));
         }
-        return result;
+        return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
     
     @SuppressWarnings("unchecked")

@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.fixture;
+package org.apache.shardingsphere.sql.parser.core.filler.impl.dml;
 
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
-public final class TestParserEntry implements SQLParserEntry {
+/**
+ * On duplicate key columns filler.
+ */
+public final class OnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDuplicateKeyColumnsSegment> {
     
     @Override
-    public String getDatabaseTypeName() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return null;
-    }
-    
-    @Override
-    public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        return ParseTreeVisitor.class;
+    public void fill(final OnDuplicateKeyColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof InsertStatement) {
+            ((InsertStatement) sqlStatement).setOnDuplicateKeyColumns(sqlSegment);
+        }
     }
 }

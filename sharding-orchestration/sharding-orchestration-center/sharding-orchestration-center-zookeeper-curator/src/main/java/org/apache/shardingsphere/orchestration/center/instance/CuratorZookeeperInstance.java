@@ -65,20 +65,18 @@ public final class CuratorZookeeperInstance implements ConfigCenter, Distributed
     
     private InterProcessMutex leafLock;
     
-    private ZookeeperProperties zookeeperProperties;
-    
     @Getter
     @Setter
     private Properties properties = new Properties();
     
     @Override
     public void init(final InstanceConfiguration config) {
-        zookeeperProperties = new ZookeeperProperties(properties);
-        client = buildCuratorClient(config);
-        initCuratorClient(config);
+        ZookeeperProperties zookeeperProperties = new ZookeeperProperties(properties);
+        client = buildCuratorClient(config, zookeeperProperties);
+        initCuratorClient(zookeeperProperties);
     }
     
-    private CuratorFramework buildCuratorClient(final InstanceConfiguration config) {
+    private CuratorFramework buildCuratorClient(final InstanceConfiguration config, final ZookeeperProperties zookeeperProperties) {
         int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS);
         int maxRetries = zookeeperProperties.getValue(ZookeeperPropertiesEnum.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS);
@@ -112,11 +110,11 @@ public final class CuratorZookeeperInstance implements ConfigCenter, Distributed
         return builder.build();
     }
     
-    private void initCuratorClient(final InstanceConfiguration config) {
+    private void initCuratorClient(final ZookeeperProperties zookeeperProperties) {
         client.start();
         try {
-            int retryIntervalMilliseconds = Integer.parseInt(config.getProperties().getProperty("retryIntervalMilliseconds", "500"));
-            int maxRetries = Integer.parseInt(config.getProperties().getProperty("maxRetries", "3"));
+            int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS);
+            int maxRetries = zookeeperProperties.getValue(ZookeeperPropertiesEnum.MAX_RETRIES);
             if (!client.blockUntilConnected(retryIntervalMilliseconds * maxRetries, TimeUnit.MILLISECONDS)) {
                 client.close();
                 throw new OperationTimeoutException();

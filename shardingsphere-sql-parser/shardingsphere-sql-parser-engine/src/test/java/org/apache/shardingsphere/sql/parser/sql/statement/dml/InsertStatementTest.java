@@ -45,7 +45,7 @@ public final class InsertStatementTest {
     public void assertNotUseDefaultColumnsWithColumns() {
         InsertStatement insertStatement = new InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
-        insertStatement.setColumns(insertColumnsSegment);
+        insertStatement.setInsertColumns(insertColumnsSegment);
         assertFalse(insertStatement.useDefaultColumns());
     }
     
@@ -53,7 +53,7 @@ public final class InsertStatementTest {
     public void assertNotUseDefaultColumnsWithSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.<AssignmentSegment>emptyList()));
-        insertStatement.setColumns(new InsertColumnsSegment(0, 0, Collections.<ColumnSegment>emptyList()));
+        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.<ColumnSegment>emptyList()));
         assertFalse(insertStatement.useDefaultColumns());
     }
     
@@ -61,7 +61,7 @@ public final class InsertStatementTest {
     public void assertGetColumnNamesForInsertColumns() {
         InsertStatement insertStatement = new InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
-        insertStatement.setColumns(insertColumnsSegment);
+        insertStatement.setInsertColumns(insertColumnsSegment);
         assertThat(insertStatement.getColumnNames().size(), is(1));
         assertThat(insertStatement.getColumnNames().iterator().next(), is("col"));
     }

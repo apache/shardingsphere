@@ -145,6 +145,7 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("beginTransaction");
         // TODO no rule in SQLServer's g4
         sqlCases.add("beginWithName");
+        sqlCases.add("insert_on_duplicate_key_update_with_complicated_expression");
         return sqlCases.contains(sqlCaseId);
     }
     
