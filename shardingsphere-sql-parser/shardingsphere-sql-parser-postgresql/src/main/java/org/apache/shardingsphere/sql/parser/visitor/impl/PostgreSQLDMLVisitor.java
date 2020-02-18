@@ -277,7 +277,9 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
             result.getAllSQLSegments().add(orderBy);
         }
         if (null != ctx.limitClause()) {
-            result.getAllSQLSegments().add((LimitSegment) visit(ctx.limitClause()));
+            LimitSegment limitSegment = (LimitSegment) visit(ctx.limitClause());
+            result.getAllSQLSegments().add(limitSegment);
+            result.setLimit(limitSegment);
         }
         return result;
     }
