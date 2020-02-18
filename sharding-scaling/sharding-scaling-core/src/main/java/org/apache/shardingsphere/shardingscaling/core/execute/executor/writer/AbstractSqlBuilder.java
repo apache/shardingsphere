@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import lombok.AccessLevel;
-import lombok.Getter;
-import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
- * Abstract sql builder.
+ * Abstract SQL builder.
  *
  * @author avalon566
  */
@@ -41,28 +41,7 @@ public abstract class AbstractSqlBuilder {
     
     private static final String DELETE_SQL_CACHE_KEY_PREFIX = "DELETE_";
     
-    private final LoadingCache<String, String> sqlCache;
-    
-    @Getter(value = AccessLevel.PROTECTED)
-    private final MetaDataManager metaDataManager;
-    
-    public AbstractSqlBuilder(final MetaDataManager metaDataManager) {
-        this.metaDataManager = metaDataManager;
-        sqlCache = CacheBuilder.newBuilder()
-                .maximumSize(64)
-                .build(new CacheLoader<String, String>() {
-                    @Override
-                    public String load(final String key) {
-                        if (key.startsWith(INSERT_SQL_CACHE_KEY_PREFIX)) {
-                            return buildInsertSqlInternal(key.replaceFirst(INSERT_SQL_CACHE_KEY_PREFIX, ""));
-                        } else if (key.startsWith(UPDATE_SQL_CACHE_KEY_PREFIX)) {
-                            return buildUpdateSqlInternal(key.replaceFirst(UPDATE_SQL_CACHE_KEY_PREFIX, ""));
-                        } else {
-                            return buildDeleteSqlInternal(key.replaceFirst(DELETE_SQL_CACHE_KEY_PREFIX, ""));
-                        }
-                    }
-                });
-    }
+    private final ConcurrentMap<String, String> sqlCacheMap = new ConcurrentHashMap<>();
     
     /**
      * Get left identifier quote string.
@@ -79,79 +58,99 @@ public abstract class AbstractSqlBuilder {
     protected abstract String getRightIdentifierQuoteString();
     
     /**
-     * Build insert sql.
+     * Build insert SQL.
      *
-     * @param tableName table name
-     * @return sql
+     * @param dataRecord data record
+     * @return insert SQL
      */
-    public String buildInsertSql(final String tableName) {
-        try {
-            return sqlCache.get(INSERT_SQL_CACHE_KEY_PREFIX + tableName);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+    public String buildInsertSQL(final DataRecord dataRecord) {
+        String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
+        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
+            sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(dataRecord.getTableName(), dataRecord.getColumns()));
         }
+        return sqlCacheMap.get(sqlCacheKey);
     }
     
-    /**
-     * Build update sql.
-     *
-     * @param tableName table name
-     * @param updatedColumns of updated
-     * @return sql
-     */
-    public String buildUpdateSql(final String tableName, final List<ColumnMetaData> updatedColumns) {
-        try {
-            StringBuilder updatedColumnString = new StringBuilder();
-            for (ColumnMetaData columnMetaData : updatedColumns) {
-                updatedColumnString.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), columnMetaData.getColumnName(), getRightIdentifierQuoteString()));
-            }
-            return String.format(sqlCache.get(UPDATE_SQL_CACHE_KEY_PREFIX + tableName), updatedColumnString.substring(0, updatedColumnString.length() - 1));
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    /**
-     * Build delete sql.
-     *
-     * @param tableName table name
-     * @return sql
-     */
-    public String buildDeleteSql(final String tableName) {
-        try {
-            return sqlCache.get(DELETE_SQL_CACHE_KEY_PREFIX + tableName);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    private String buildInsertSqlInternal(final String tableName) {
-        StringBuilder columns = new StringBuilder();
+    private String buildInsertSQLInternal(final String tableName, final List<Column> columns) {
+        StringBuilder columnsLiteral = new StringBuilder();
         StringBuilder holder = new StringBuilder();
-        for (String each : metaDataManager.getTableMetaData(tableName).getColumnNames()) {
-            columns.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
+        for (Column each : columns) {
+            columnsLiteral.append(String.format("%s%s%s,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
             holder.append("?,");
         }
-        columns.setLength(columns.length() - 1);
+        columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columns.toString(), holder.toString());
+        return String.format("INSERT INTO %s%s%s(%s) VALUES(%s)", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), columnsLiteral.toString(), holder.toString());
     }
     
-    private String buildDeleteSqlInternal(final String tableName) {
+    /**
+     * Build update SQL.
+     *
+     * @param dataRecord data record
+     * @return update SQL
+     */
+    public String buildUpdateSQL(final DataRecord dataRecord) {
+        String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
+        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
+            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), extractPrimaryColumns(dataRecord.getColumns())));
+        }
+        StringBuilder updatedColumnString = new StringBuilder();
+        for (Column each : extractUpdatedColumns(dataRecord.getColumns())) {
+            updatedColumnString.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
+        }
+        updatedColumnString.setLength(updatedColumnString.length() - 1);
+        return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString.toString());
+    }
+    
+    private String buildUpdateSQLInternal(final String tableName, final Collection<Column> extractPrimaryColumns) {
         StringBuilder where = new StringBuilder();
-        for (String each : metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns()) {
-            where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
+        for (Column each : extractPrimaryColumns) {
+            where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
+        }
+        where.setLength(where.length() - 1);
+        return String.format("UPDATE %s%s%s SET %%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
+    }
+    
+    private Collection<Column> extractUpdatedColumns(final Collection<Column> columns) {
+        return Collections2.filter(columns, new Predicate<Column>() {
+            
+            @Override
+            public boolean apply(final Column column) {
+                return column.isUpdated();
+            }
+        });
+    }
+    
+    /**
+     * Build delete SQL.
+     *
+     * @param dataRecord data record
+     * @return delete SQL
+     */
+    public String buildDeleteSQL(final DataRecord dataRecord) {
+        String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
+        if (!sqlCacheMap.containsKey(sqlCacheKey)) {
+            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord.getTableName(), extractPrimaryColumns(dataRecord.getColumns())));
+        }
+        return sqlCacheMap.get(sqlCacheKey);
+    }
+    
+    private String buildDeleteSQLInternal(final String tableName, final Collection<Column> primaryColumns) {
+        StringBuilder where = new StringBuilder();
+        for (Column each : primaryColumns) {
+            where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each.getName(), getRightIdentifierQuoteString()));
         }
         where.setLength(where.length() - 1);
         return String.format("DELETE FROM %s%s%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
     }
     
-    private String buildUpdateSqlInternal(final String tableName) {
-        StringBuilder where = new StringBuilder();
-        for (String each : metaDataManager.getTableMetaData(tableName).getPrimaryKeyColumns()) {
-            where.append(String.format("%s%s%s = ?,", getLeftIdentifierQuoteString(), each, getRightIdentifierQuoteString()));
+    private Collection<Column> extractPrimaryColumns(final Collection<Column> columns) {
+        Collection<Column> result = new LinkedList<>();
+        for (Column each : columns) {
+            if (each.isPrimaryKey()) {
+                result.add(each);
+            }
         }
-        where.setLength(where.length() - 1);
-        return String.format("UPDATE %s%s%s SET %%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
+        return result;
     }
 }

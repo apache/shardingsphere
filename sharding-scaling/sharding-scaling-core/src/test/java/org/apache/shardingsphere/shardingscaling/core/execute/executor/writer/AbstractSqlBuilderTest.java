@@ -18,39 +18,23 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
-import org.hamcrest.Matchers;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.internal.util.reflection.FieldSetter;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public class AbstractSqlBuilderTest {
-    
-    @Mock
-    private MetaDataManager metaDataManager;
-    
-    private TableMetaData tableMetaData;
     
     private AbstractSqlBuilder sqlBuilder;
     
     @Before
     @SneakyThrows
     public void setUp() {
-        tableMetaData = new TableMetaData();
-        sqlBuilder = new AbstractSqlBuilder(null) {
+        sqlBuilder = new AbstractSqlBuilder() {
             
             @Override
             protected String getLeftIdentifierQuoteString() {
@@ -62,65 +46,33 @@ public class AbstractSqlBuilderTest {
                 return "`";
             }
         };
-        FieldSetter.setField(sqlBuilder, AbstractSqlBuilder.class.getDeclaredField("metaDataManager"), metaDataManager);
     }
     
     @Test
     public void assertBuildInsertSql() {
-        mockMetaData();
-        when(metaDataManager.getTableMetaData("t1")).thenReturn(tableMetaData);
-        String actual = sqlBuilder.buildInsertSql("t1");
-        assertThat(actual, Matchers.is("INSERT INTO `t1`(`id`,`c1`,`c2`,`c3`) VALUES(?,?,?,?)"));
+        String actual = sqlBuilder.buildInsertSQL(mockDataRecord("t1"));
+        assertThat(actual, is("INSERT INTO `t1`(`id`,`c1`,`c2`,`c3`) VALUES(?,?,?,?)"));
     }
     
     @Test
     public void assertBuildUpdateSql() {
-        mockPrimaryKeys();
-        when(metaDataManager.getTableMetaData("t2")).thenReturn(tableMetaData);
-        String actual = sqlBuilder.buildUpdateSql("t2", mockUpdateColumn());
-        assertThat(actual, Matchers.is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
+        String actual = sqlBuilder.buildUpdateSQL(mockDataRecord("t2"));
+        assertThat(actual, is("UPDATE `t2` SET `c1` = ?,`c2` = ?,`c3` = ? WHERE `id` = ?"));
     }
     
     @Test
     public void assertBuildDeleteSql() {
-        mockPrimaryKeys();
-        when(metaDataManager.getTableMetaData("t3")).thenReturn(tableMetaData);
-        String actual = sqlBuilder.buildDeleteSql("t3");
-        assertThat(actual, Matchers.is("DELETE FROM `t3` WHERE `id` = ?"));
+        String actual = sqlBuilder.buildDeleteSQL(mockDataRecord("t3"));
+        assertThat(actual, is("DELETE FROM `t3` WHERE `id` = ?"));
     }
     
-    private void mockPrimaryKeys() {
-        tableMetaData.addAllPrimaryKey(Collections.singletonList("id"));
-    }
-    
-    private void mockMetaData() {
-        List<ColumnMetaData> columnMetaDataList = new ArrayList<>(4);
-        ColumnMetaData id = new ColumnMetaData();
-        id.setColumnName("id");
-        columnMetaDataList.add(id);
-        ColumnMetaData c1 = new ColumnMetaData();
-        c1.setColumnName("c1");
-        columnMetaDataList.add(c1);
-        ColumnMetaData c2 = new ColumnMetaData();
-        c2.setColumnName("c2");
-        columnMetaDataList.add(c2);
-        ColumnMetaData c3 = new ColumnMetaData();
-        c3.setColumnName("c3");
-        columnMetaDataList.add(c3);
-        tableMetaData.addAllColumnMetaData(columnMetaDataList);
-    }
-    
-    private List<ColumnMetaData> mockUpdateColumn() {
-        List<ColumnMetaData> result = new ArrayList<>(3);
-        ColumnMetaData c1 = new ColumnMetaData();
-        c1.setColumnName("c1");
-        result.add(c1);
-        ColumnMetaData c2 = new ColumnMetaData();
-        c2.setColumnName("c2");
-        result.add(c2);
-        ColumnMetaData c3 = new ColumnMetaData();
-        c3.setColumnName("c3");
-        result.add(c3);
+    private DataRecord mockDataRecord(final String tableName) {
+        DataRecord result = new DataRecord(new NopLogPosition(), 4);
+        result.setTableName(tableName);
+        result.addColumn(new Column("id", "", false, true));
+        result.addColumn(new Column("c1", "", true, false));
+        result.addColumn(new Column("c2", "", true, false));
+        result.addColumn(new Column("c3", "", true, false));
         return result;
     }
 }
