@@ -77,7 +77,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     }
     
     private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());

@@ -45,7 +45,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     
     private TableSegment table;
     
-    private InsertColumnsSegment columns;
+    private InsertColumnsSegment insertColumns;
     
     private SetAssignmentSegment setAssignment;
     
@@ -59,7 +59,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return insert columns segment
      */
     public Optional<InsertColumnsSegment> getInsertColumns() {
-        return Optional.fromNullable(columns);
+        return Optional.fromNullable(insertColumns);
     }
     
     /**
@@ -68,7 +68,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return columns
      */
     public Collection<ColumnSegment> getColumns() {
-        return null == columns ? Collections.<ColumnSegment>emptyList() : columns.getColumns();
+        return null == insertColumns ? Collections.<ColumnSegment>emptyList() : insertColumns.getColumns();
     }
     
     /**

@@ -113,7 +113,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
         InsertStatement result = new InsertStatement();
         if (null != ctx.columnNames()) { 
             InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
-            result.setColumns(insertColumnsSegment);
+            result.setInsertColumns(insertColumnsSegment);
             result.getAllSQLSegments().add(insertColumnsSegment);
         }
         Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());

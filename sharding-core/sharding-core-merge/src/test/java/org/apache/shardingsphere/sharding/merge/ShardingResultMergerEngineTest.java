@@ -70,7 +70,7 @@ public final class ShardingResultMergerEngineTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
-        insertStatement.setColumns(insertColumnsSegment);
+        insertStatement.setInsertColumns(insertColumnsSegment);
         SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentResultMerger.class));

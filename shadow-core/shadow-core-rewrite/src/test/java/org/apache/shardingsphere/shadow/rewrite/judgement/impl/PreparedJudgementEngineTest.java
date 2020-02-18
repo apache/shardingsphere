@@ -45,7 +45,7 @@ public final class PreparedJudgementEngineTest {
         InsertStatement insertStatement = new InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, 
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
-        insertStatement.setColumns(insertColumnsSegment);
+        insertStatement.setInsertColumns(insertColumnsSegment);
         InsertSQLStatementContext insertSQLStatementContext = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
         PreparedJudgementEngine preparedJudgementEngine = new PreparedJudgementEngine(shadowRule, insertSQLStatementContext, Arrays.<Object>asList(1, "Tom", true));
         Assert.assertTrue("should be shadow", preparedJudgementEngine.isShadowSQL());
