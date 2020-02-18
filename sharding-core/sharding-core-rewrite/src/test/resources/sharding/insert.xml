@@ -46,7 +46,7 @@
         <input sql="INSERT INTO t_account VALUES (100, 1000, 'OK')" />
         <output sql="INSERT INTO t_account_0 VALUES (100, 1000, 'OK')" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="insert_values_without_columns_without_id_for_parameters">
         <input sql="INSERT INTO t_account VALUES (?, ?)" parameters="1000, OK" />
         <output sql="INSERT INTO t_account_1(amount, status, account_id) VALUES (?, ?, ?)" parameters="1000, OK, 1" />

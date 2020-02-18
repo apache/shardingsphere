@@ -48,7 +48,7 @@
         <input sql="SELECT * FROM t_account o, t_account_detail i WHERE o.account_id=i.account_id AND o.account_id = 100" />
         <output sql="SELECT * FROM t_account_0 o, t_account_detail_0 i WHERE o.account_id=i.account_id AND o.account_id = 100" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="select_binding_table_without_sharding_value_for_parameters">
         <input sql="SELECT * FROM t_account JOIN t_account_detail ON account_id WHERE t_account.amount = ?" parameters="1000" />
         <output sql="SELECT * FROM t_account_0 JOIN t_account_detail_0 ON account_id WHERE t_account_0.amount = ?" parameters="1000" />
@@ -238,7 +238,7 @@
         <output sql="SELECT * FROM t_account_0 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 2147483647 OFFSET 0" />
         <output sql="SELECT * FROM t_account_1 WHERE account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC LIMIT 2147483647 OFFSET 0" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="select_row_number_with_single_route_for_parameters_for_oracle" db-type="Oracle">
         <input sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account o WHERE o.account_id = 100) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.account_id FROM t_account_0 o WHERE o.account_id = 100) row_ WHERE rownum &lt;= ?) t WHERE t.rownum_ &gt; ?" parameters="110, 100" />
@@ -282,7 +282,7 @@
         <!--<input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />-->
         <!--<output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />-->
     <!--</rewrite-assertion>-->
-
+    
     <rewrite-assertion id="select_top_with_single_route_for_parameters_for_sqlserver" db-type="SQLServer">
         <input sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />
         <output sql="SELECT * FROM (SELECT TOP(?) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id = 100) AS row_ WHERE row_.rownum_ &gt; ?" parameters="110, 100" />

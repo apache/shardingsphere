@@ -66,7 +66,7 @@
         <output sql="INSERT INTO t_account_1(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 3, encrypt_ccc, assisted_query_ccc, encrypt_3000, OK" />
         <output sql="INSERT INTO t_account_0(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'encrypt_2000', 'OK'), (4, 'encrypt_ddd', 'assisted_query_ddd', 'encrypt_4000', 'OK')" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="insert_values_without_columns_with_id_for_literals">
         <input sql="INSERT INTO t_account VALUES (1, 'aaa', 1000, 'OK'), (2, 'bbb', 2000, 'OK'), (3, 'ccc', 3000, 'OK'), (4, 'ddd', 4000, 'OK')" />
         <output sql="INSERT INTO t_account_1(account_id, cipher_password, assisted_query_password, cipher_amount, status) VALUES (1, 'encrypt_aaa', 'assisted_query_aaa', 'encrypt_1000', 'OK'), (3, 'encrypt_ccc', 'assisted_query_ccc', 'encrypt_3000', 'OK')" />
