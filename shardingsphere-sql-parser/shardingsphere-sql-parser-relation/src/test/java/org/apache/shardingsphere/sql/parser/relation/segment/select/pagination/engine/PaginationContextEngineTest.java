@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
@@ -52,8 +53,10 @@ public final class PaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenLimitSegmentAbsentAndTopSegmentPresent() {
         SelectStatement selectStatement = mock(SelectStatement.class);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new TopProjectionSegment(0, 10, "text", null, "rowNumberAlias"));
+        when(selectStatement.getProjections()).thenReturn(projections);
         when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.<LimitSegment>absent());
-        when(selectStatement.findSQLSegment(TopProjectionSegment.class)).thenReturn(Optional.of(new TopProjectionSegment(0, 10, "text", null, "rowNumberAlias")));
         when(selectStatement.findSQLSegment(WhereSegment.class)).thenReturn(Optional.<WhereSegment>absent());
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
@@ -63,8 +66,8 @@ public final class PaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenLimitSegmentTopSegmentAbsentAndWhereSegmentPresent() {
         SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.<LimitSegment>absent());
-        when(selectStatement.findSQLSegment(TopProjectionSegment.class)).thenReturn(Optional.<TopProjectionSegment>absent());
         WhereSegment whereSegment = new WhereSegment(0, 10);
         when(selectStatement.findSQLSegment(WhereSegment.class)).thenReturn(Optional.of(whereSegment));
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
@@ -77,8 +80,8 @@ public final class PaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenResultIsPaginationContext() {
         SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.<LimitSegment>absent());
-        when(selectStatement.findSQLSegment(TopProjectionSegment.class)).thenReturn(Optional.<TopProjectionSegment>absent());
         when(selectStatement.findSQLSegment(WhereSegment.class)).thenReturn(Optional.<WhereSegment>absent());
         assertThat(new PaginationContextEngine().createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList()), instanceOf(PaginationContext.class));
     }
