@@ -44,7 +44,7 @@ public final class PaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext, final List<Object> parameters) {
-        Optional<LimitSegment> limitSegment = selectStatement.findSQLSegment(LimitSegment.class);
+        Optional<LimitSegment> limitSegment = selectStatement.getLimit();
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }

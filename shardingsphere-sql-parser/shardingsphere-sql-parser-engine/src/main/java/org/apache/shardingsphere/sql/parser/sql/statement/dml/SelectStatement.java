@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -49,8 +50,10 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     
     private OrderBySegment orderBy;
     
+    private LimitSegment limit;
+    
     private SelectStatement parentStatement;
-
+    
     private LockSegment lockSegment;
     
     @Override
@@ -75,7 +78,16 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.fromNullable(orderBy);
     }
-
+    
+    /**
+     * Get order by segment.
+     *
+     * @return order by segment
+     */
+    public Optional<LimitSegment> getLimit() {
+        return Optional.fromNullable(limit);
+    }
+    
     /**
      * Get lock segment.
      *
