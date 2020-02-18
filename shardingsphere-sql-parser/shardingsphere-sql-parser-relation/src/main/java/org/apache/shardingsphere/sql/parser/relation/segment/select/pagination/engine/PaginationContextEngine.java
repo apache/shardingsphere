@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.engine;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
@@ -47,7 +48,7 @@ public final class PaginationContextEngine {
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }
-        Optional<TopProjectionSegment> topProjectionSegment = selectStatement.findSQLSegment(TopProjectionSegment.class);
+        Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
         Optional<WhereSegment> whereSegment = selectStatement.findSQLSegment(WhereSegment.class);
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(
@@ -57,5 +58,14 @@ public final class PaginationContextEngine {
             return new RowNumberPaginationContextEngine().createPaginationContext(whereSegment.get().getAndPredicates(), projectionsContext, parameters);
         }
         return new PaginationContext(null, null, parameters);
+    }
+    
+    private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
+        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
+            if (each instanceof TopProjectionSegment) {
+                return Optional.of((TopProjectionSegment) each);
+            }
+        }
+        return Optional.absent();
     }
 }
