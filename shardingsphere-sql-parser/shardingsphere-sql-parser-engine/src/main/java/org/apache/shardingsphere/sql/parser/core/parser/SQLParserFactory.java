@@ -35,10 +35,6 @@ import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
     
-    static {
-        NewInstanceServiceLoader.register(SQLParserEntry.class);
-    }
-    
     /** 
      * New instance of SQL parser.
      * 
