@@ -54,7 +54,6 @@ public final class ParseRuleRegistry {
     private final Map<String, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>();
     
     static {
-        NewInstanceServiceLoader.register(SQLParserEntry.class);
         instance = new ParseRuleRegistry();
     }
     

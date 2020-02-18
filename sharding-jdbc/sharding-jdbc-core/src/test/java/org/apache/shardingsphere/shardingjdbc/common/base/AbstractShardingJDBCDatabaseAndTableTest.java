@@ -51,7 +51,6 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     
     @BeforeClass
     public static void initShardingDataSources() throws SQLException {
-        
         if (null != shardingDataSource) {
             return;
         }

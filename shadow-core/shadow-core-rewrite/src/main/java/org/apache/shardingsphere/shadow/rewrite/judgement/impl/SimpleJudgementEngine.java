@@ -59,7 +59,7 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
                 return false;
             }
             List<Object> values = shadowCondition.get().getValues(Collections.emptyList());
-            return values.size() != 0 && "TRUE".equals(((String) values.get(0)).toUpperCase());
+            return values.size() != 0 && Boolean.valueOf("true").equals(values.get(0));
         }
         return false;
     }
@@ -71,7 +71,7 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
             if (shadowRule.getColumn().equals(columnName)) {
                 int columnIndex = insertSQLStatementContext.getColumnNames().indexOf(columnName);
                 Object value = insertValueContext.getValue(columnIndex);
-                return "TRUE".equals(((String) value).toUpperCase());
+                return Boolean.valueOf("true").equals(value);
             }
         }
         return false;
