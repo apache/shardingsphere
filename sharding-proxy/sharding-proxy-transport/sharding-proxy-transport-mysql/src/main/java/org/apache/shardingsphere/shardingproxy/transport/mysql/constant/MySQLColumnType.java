@@ -28,6 +28,7 @@ import java.util.Map;
  * Column types for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#column-type">Column Type</a>
+ * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4355"></a>
  */
 @RequiredArgsConstructor
 @Getter
