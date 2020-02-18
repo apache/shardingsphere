@@ -313,7 +313,7 @@
         <!--<output sql="SELECT * FROM (SELECT TOP(2147483647) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_0 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 0" />-->
         <!--<output sql="SELECT * FROM (SELECT TOP(2147483647) row_number() OVER (ORDER BY o.account_id) AS rownum_, o.account_id FROM t_account_1 o WHERE o.account_id IN (100, 101) GROUP BY account_id ORDER BY account_id DESC) AS row_ WHERE row_.rownum_ &gt; 0" />-->
     <!--</rewrite-assertion>-->
-
+    
     <rewrite-assertion id="select_with_table_as_qualified_name">
         <input sql="SELECT t_account.account_id, t_account.password, t_account.amount AS a, status AS s FROM t_account WHERE t_account.account_id = 1 AND t_account.password = 'aaa' AND t_account.amount = 1000 AND t_account.status = 'OK'" />
         <output sql="SELECT t_account_1.account_id, t_account_1.password, t_account_1.amount AS a, status AS s FROM t_account_1 WHERE t_account_1.account_id = 1 AND t_account_1.password = 'aaa' AND t_account_1.amount = 1000 AND t_account_1.status = 'OK'" />
