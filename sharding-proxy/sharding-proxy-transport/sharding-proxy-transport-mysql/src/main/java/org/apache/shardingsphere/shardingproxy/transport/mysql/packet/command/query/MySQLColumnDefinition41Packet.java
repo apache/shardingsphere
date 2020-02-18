@@ -29,10 +29,10 @@ import java.sql.SQLException;
 
 /**
  * Column definition above MySQL 4.1 packet protocol.
- * 
+ *
+ * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4358"></a>
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41">ColumnDefinition41</a>
  * @see <a href="https://mariadb.com/kb/en/library/resultset/#column-definition-packet">Column definition packet</a>
- * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4358"></a>
  */
 public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     
