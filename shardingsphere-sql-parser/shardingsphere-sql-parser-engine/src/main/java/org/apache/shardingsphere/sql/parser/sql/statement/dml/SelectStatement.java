@@ -54,7 +54,7 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     
     private SelectStatement parentStatement;
     
-    private LockSegment lockSegment;
+    private LockSegment lock;
     
     @Override
     public Optional<WhereSegment> getWhere() {
@@ -94,6 +94,6 @@ public final class SelectStatement extends DMLStatement implements TableSegments
      * @return lock segment
      */
     public Optional<LockSegment> getLock() {
-        return Optional.fromNullable(lockSegment);
+        return Optional.fromNullable(lock);
     }
 }
