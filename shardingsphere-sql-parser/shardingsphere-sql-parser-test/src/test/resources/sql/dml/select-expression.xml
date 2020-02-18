@@ -21,7 +21,7 @@
         <table name="t_order" alias="o" start-index="38" stop-index="44" />
         <projections start-index="7" stop-index="31">
             <!-- TODO check expression-projection's stop-index whether include alias --> 
-            <expression-projection alias="exp" start-index="7" stop-index="31" />
+            <expression-projection alias="exp" start-index="7" stop-index="24" />
         </projections>
         <order-by>
             <column-item name="order_id">

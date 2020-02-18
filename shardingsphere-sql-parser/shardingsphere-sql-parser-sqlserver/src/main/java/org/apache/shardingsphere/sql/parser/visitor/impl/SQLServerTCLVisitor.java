@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetImplicitTransactionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SavepointStatement;
@@ -45,6 +47,11 @@ public final class SQLServerTCLVisitor extends SQLServerVisitor {
         SetAutoCommitStatement result = new SetAutoCommitStatement();
         result.setAutoCommit("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
         return result;
+    }
+    
+    @Override
+    public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
+        return new BeginTransactionStatement();
     }
     
     @Override
