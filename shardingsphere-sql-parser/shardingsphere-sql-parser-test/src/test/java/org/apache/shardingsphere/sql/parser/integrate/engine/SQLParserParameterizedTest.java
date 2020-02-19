@@ -114,14 +114,11 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("show_index_with_indexes_with_table_and_database");
         sqlCases.add("show_index_with_database_back_quotes");
         sqlCases.add("show_index_with_table_back_quotes");
-        // TODO cannot support insert all
-        sqlCases.add("insert_all_with_all_placeholders");
-        // TODO cannot parse create index behind pk in create table statement
-        sqlCases.add("create_table_with_create_index");
-        // TODO cannot parse using index behind pk in create table statement
-        sqlCases.add("create_table_with_exist_index");
-        // On the one hand, visitor parser can not give the right stop index for any sql with alias, on the other hand,  the old parser can not handle all sql cases correctly.
+        // TODO Stop index is wrong
         sqlCases.add("select_with_expression");
+        // TODO No rule in SQLServer's g4
+        sqlCases.add("beginWithName");
+        // TODO Sub query is necessary
         sqlCases.add("select_pagination_with_row_number");
         sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
         sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
@@ -136,15 +133,19 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("select_pagination_with_top_and_group_by_and_order_by_and_parentheses");
         sqlCases.add("select_pagination_with_top_and_diff_group_by_and_order_by");
         sqlCases.add("select_pagination_with_top_and_diff_group_by_and_order_by_and_parentheses");
+        // TODO Alter statement needs new segment
         sqlCases.add("alter_table_add_foreign_key");
         sqlCases.add("alter_table_add_primary_foreign_key");
         sqlCases.add("alter_table_add_constraints_sqlserver");
-        // TODO no rule in SQLServer's g4
-        sqlCases.add("beginWithName");
-        sqlCases.add("insert_on_duplicate_key_update_with_complicated_expression");
-        // FIXME: Correct for new parser
+        // TODO cannot parse create index behind pk in create table statement, and new segment is necessary
+        sqlCases.add("create_table_with_create_index");
+        sqlCases.add("create_table_with_exist_index");
+        // TODO cannot support insert all
+        sqlCases.add("insert_all_with_all_placeholders");
+        // TODO Correct for new parser
         sqlCases.add("insert_on_duplicate_key_update_with_base64_aes_encrypt");
         sqlCases.add("insert_with_one_auto_increment_column");
+        sqlCases.add("insert_on_duplicate_key_update_with_complicated_expression");
         return sqlCases.contains(sqlCaseId);
     }
     
