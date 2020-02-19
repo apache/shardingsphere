@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.D
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
@@ -48,7 +47,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
-        return !insertStatement.findSQLSegments(InsertValuesSegment.class).isEmpty();
+        return !insertStatement.getValues().isEmpty();
     }
     
     @Override
