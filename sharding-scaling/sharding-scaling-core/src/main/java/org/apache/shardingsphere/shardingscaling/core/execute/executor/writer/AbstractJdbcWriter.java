@@ -28,8 +28,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Da
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.RecordUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,7 +36,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -131,8 +129,8 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         List<Column> values = new ArrayList<>();
-        values.addAll(extractUpdatedColumns(record));
-        values.addAll(extractPrimaryColumns(record));
+        values.addAll(RecordUtil.extractUpdatedColumns(record));
+        values.addAll(RecordUtil.extractPrimaryColumns(record));
         String updateSql = sqlBuilder.buildUpdateSQL(record);
         PreparedStatement ps = connection.prepareStatement(updateSql);
         for (int i = 0; i < values.size(); i++) {
@@ -141,33 +139,13 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
         ps.execute();
     }
     
-    private Collection<Column> extractUpdatedColumns(final DataRecord dataRecord) {
-        return Collections2.filter(dataRecord.getColumns(), new Predicate<Column>() {
-            
-            @Override
-            public boolean apply(final Column column) {
-                return column.isUpdated();
-            }
-        });
-    }
-    
     private void executeDelete(final Connection connection, final DataRecord record) throws SQLException {
         String deleteSql = sqlBuilder.buildDeleteSQL(record);
-        List<Column> primaryKeys = extractPrimaryColumns(record);
+        List<Column> primaryKeys = RecordUtil.extractPrimaryColumns(record);
         PreparedStatement ps = connection.prepareStatement(deleteSql);
         for (int i = 0; i < primaryKeys.size(); i++) {
             ps.setObject(i + 1, primaryKeys.get(i).getValue());
         }
         ps.execute();
-    }
-    
-    private List<Column> extractPrimaryColumns(final DataRecord record) {
-        List<Column> result = new ArrayList<>();
-        for (Column each : record.getColumns()) {
-            if (each.isPrimaryKey()) {
-                result.add(each);
-            }
-        }
-        return result;
     }
 }

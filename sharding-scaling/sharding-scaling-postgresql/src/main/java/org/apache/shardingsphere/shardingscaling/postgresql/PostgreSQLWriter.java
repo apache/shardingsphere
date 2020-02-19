@@ -37,18 +37,5 @@ public final class PostgreSQLWriter extends AbstractJdbcWriter {
     protected AbstractSqlBuilder createSqlBuilder() {
         return new PostgreSQLSqlBuilder();
     }
-    
-    private static final class PostgreSQLSqlBuilder extends AbstractSqlBuilder {
-        
-        @Override
-        public String getLeftIdentifierQuoteString() {
-            return "\"";
-        }
-        
-        @Override
-        public String getRightIdentifierQuoteString() {
-            return "\"";
-        }
-    }
 }
 

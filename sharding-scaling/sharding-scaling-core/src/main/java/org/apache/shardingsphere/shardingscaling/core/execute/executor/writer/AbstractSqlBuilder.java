@@ -21,9 +21,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.RecordUtil;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -92,7 +92,7 @@ public abstract class AbstractSqlBuilder {
     public String buildUpdateSQL(final DataRecord dataRecord) {
         String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), extractPrimaryColumns(dataRecord.getColumns())));
+            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(dataRecord.getTableName(), RecordUtil.extractPrimaryColumns(dataRecord)));
         }
         StringBuilder updatedColumnString = new StringBuilder();
         for (Column each : extractUpdatedColumns(dataRecord.getColumns())) {
@@ -130,7 +130,7 @@ public abstract class AbstractSqlBuilder {
     public String buildDeleteSQL(final DataRecord dataRecord) {
         String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + dataRecord.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord.getTableName(), extractPrimaryColumns(dataRecord.getColumns())));
+            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(dataRecord.getTableName(), RecordUtil.extractPrimaryColumns(dataRecord)));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
@@ -142,15 +142,5 @@ public abstract class AbstractSqlBuilder {
         }
         where.setLength(where.length() - 1);
         return String.format("DELETE FROM %s%s%s WHERE %s", getLeftIdentifierQuoteString(), tableName, getRightIdentifierQuoteString(), where.toString());
-    }
-    
-    private Collection<Column> extractPrimaryColumns(final Collection<Column> columns) {
-        Collection<Column> result = new LinkedList<>();
-        for (Column each : columns) {
-            if (each.isPrimaryKey()) {
-                result.add(each);
-            }
-        }
-        return result;
     }
 }
