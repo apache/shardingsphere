@@ -351,10 +351,8 @@ DELETE FROM tbl1 WHERE id=?
 
 #### Jmeter Class
 
-```shell
-See: https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/shardingsphere-benchmark
+Consider the implementation of [shardingsphere-benchmark](https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/shardingsphere-benchmark)
 Notes: the notes in incubator-shardingsphere-benchmark/README.md should be taken attention to
-```
 
 #### Compile & Build
 

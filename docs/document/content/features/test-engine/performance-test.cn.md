@@ -346,10 +346,7 @@ DELETE FROM tbl1 WHERE id=?
 
 #### 压测类
 
-```shell
-参考https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/shardingsphere-benchmark
-注意阅读incubator-shardingsphere-benchmark/README.md中的Notes
-```
+参考[shardingsphere-benchmark](https://github.com/apache/incubator-shardingsphere-benchmark/tree/master/shardingsphere-benchmark)实现，注意阅读其中的注释
 
 #### 编译
 
