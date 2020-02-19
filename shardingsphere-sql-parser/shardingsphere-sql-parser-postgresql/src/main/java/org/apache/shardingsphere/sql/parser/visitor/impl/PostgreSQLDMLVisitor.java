@@ -49,7 +49,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
@@ -359,7 +358,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
             return result;
         }
         if (projection instanceof SubquerySegment) {
-            throw new SQLParsingException("Can not support subquery as Select projection");
+            return new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText());
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = Strings.isNullOrEmpty(alias) ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
