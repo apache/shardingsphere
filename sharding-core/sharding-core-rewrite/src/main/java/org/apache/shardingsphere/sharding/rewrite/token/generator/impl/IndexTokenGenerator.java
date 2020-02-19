@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.IndexToken;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.IndexToken;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,15 +35,28 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return !sqlStatementContext.getSqlStatement().findSQLSegments(IndexSegment.class).isEmpty();
+        if (sqlStatementContext.getSqlStatement() instanceof IndexSegmentAvailable && null != ((IndexSegmentAvailable) sqlStatementContext.getSqlStatement()).getIndex()) {
+            return true;
+        }
+        if (sqlStatementContext.getSqlStatement() instanceof IndexSegmentsAvailable && !((IndexSegmentsAvailable) sqlStatementContext.getSqlStatement()).getIndexes().isEmpty()) {
+            return true;
+        }
+        return false;
     }
     
     @Override
     public Collection<IndexToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<IndexToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(IndexSegment.class)) {
-            result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier()));
+        if (sqlStatementContext.getSqlStatement() instanceof IndexSegmentAvailable) {
+            IndexSegment indexSegment = ((IndexSegmentAvailable) sqlStatementContext.getSqlStatement()).getIndex();
+            result.add(new IndexToken(indexSegment.getStartIndex(), indexSegment.getStopIndex(), indexSegment.getIdentifier()));
         }
+        if (sqlStatementContext.getSqlStatement() instanceof IndexSegmentsAvailable) {
+            for (SQLSegment each : ((IndexSegmentsAvailable) sqlStatementContext.getSqlStatement()).getIndexes()) {
+                result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier()));
+            }
+        }
+        
         return result;
     }
 }
