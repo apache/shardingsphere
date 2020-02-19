@@ -89,6 +89,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != ctx.fromSchema()) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
+            result.setFromSchema(fromSchemaSegment);
         }
         if (null != ctx.showLike()) {
             ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
@@ -103,6 +104,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != ctx.fromSchema()) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
+            result.setFromSchema(fromSchemaSegment);
         }
         if (null != ctx.showLike()) {
             ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
@@ -123,6 +125,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != ctx.fromSchema()) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
+            result.setFromSchema(fromSchemaSegment);
         }
         return result;
     }
