@@ -81,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLitera
 import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -109,6 +110,11 @@ public final class OracleDMLVisitor extends OracleVisitor {
         InsertStatement result = new InsertStatement();
         if (null != ctx.columnNames()) { 
             InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
+            result.setInsertColumns(insertColumnsSegment);
+            result.getAllSQLSegments().add(insertColumnsSegment);
+        } else {
+            InsertColumnsSegment insertColumnsSegment =
+                    new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList());
             result.setInsertColumns(insertColumnsSegment);
             result.getAllSQLSegments().add(insertColumnsSegment);
         }

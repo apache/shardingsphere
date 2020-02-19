@@ -812,6 +812,7 @@
     
     <insert sql-case-id="insert_with_one_auto_increment_column">
         <table name="t_auto_increment_table" start-index="12" stop-index="33" />
+        <columns start-index="34" stop-index="34" />
         <values>
             <value />
         </values>
