@@ -22,10 +22,10 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.HintShardingAlgorithmFixture;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParseEngine;
 import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
@@ -40,13 +40,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Arrays;
-import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

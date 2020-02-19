@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableRe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
@@ -62,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
@@ -286,6 +288,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         result.setProjections(projections);
         result.getAllSQLSegments().add(projections);
+        result.getAllSQLSegments().addAll(getTableSegments(projections));
         if (null != ctx.selectSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
@@ -310,7 +313,22 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.getAllSQLSegments().add(orderBy);
         }
         if (null != ctx.limitClause()) {
-            result.getAllSQLSegments().add((LimitSegment) visit(ctx.limitClause()));
+            LimitSegment limitSegment = (LimitSegment) visit(ctx.limitClause());
+            result.getAllSQLSegments().add(limitSegment);
+            result.setLimit(limitSegment);
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projections.getProjections()) {
+            if (each instanceof ShorthandProjectionSegment && ((ShorthandProjectionSegment) each).getOwner().isPresent()) {
+                result.add(((ShorthandProjectionSegment) each).getOwner().get());
+            }
+            if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
+                result.add(((ColumnProjectionSegment) each).getOwner().get());
+            }
         }
         return result;
     }
@@ -397,6 +415,9 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
             result.setAlias(alias);
             return result;
+        }
+        if (projection instanceof SubquerySegment) {
+            throw new SQLParsingException("Can not support subquery as Select projection");
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = Strings.isNullOrEmpty(alias) ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))

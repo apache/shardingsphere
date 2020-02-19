@@ -32,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintOptionContext;
@@ -46,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropCol
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
@@ -259,14 +262,31 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
+        IndexSegment index = (IndexSegment) visit(ctx.indexName()); 
         result.setTable(table);
+        result.setIndex(index);
         result.getAllSQLSegments().add(table);
+        result.getAllSQLSegments().add(index);
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitDropIndex(final DropIndexContext ctx) {
+        DropIndexStatement result = new DropIndexStatement();
+        CollectionValue<IndexSegment> indexes = (CollectionValue<IndexSegment>) visit(ctx.indexNames());
+        result.getIndexes().addAll(indexes.getValue());
+        result.getAllSQLSegments().addAll(indexes.getValue());
         return result;
     }
     
     @Override
-    public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        return new DropIndexStatement();
+    public ASTNode visitIndexNames(final IndexNamesContext ctx) {
+        CollectionValue<IndexSegment> result = new CollectionValue<>();
+        for (IndexNameContext each : ctx.indexName()) {
+            result.getValue().add((IndexSegment) visit(each));
+        }
+        return result;
     }
     
     @Override

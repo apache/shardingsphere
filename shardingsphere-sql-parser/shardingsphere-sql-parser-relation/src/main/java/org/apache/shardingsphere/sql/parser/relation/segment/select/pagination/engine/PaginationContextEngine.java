@@ -44,12 +44,12 @@ public final class PaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final SelectStatement selectStatement, final ProjectionsContext projectionsContext, final List<Object> parameters) {
-        Optional<LimitSegment> limitSegment = selectStatement.findSQLSegment(LimitSegment.class);
+        Optional<LimitSegment> limitSegment = selectStatement.getLimit();
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), parameters);
         }
         Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
-        Optional<WhereSegment> whereSegment = selectStatement.findSQLSegment(WhereSegment.class);
+        Optional<WhereSegment> whereSegment = selectStatement.getWhere();
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(
                     topProjectionSegment.get(), whereSegment.isPresent() ? whereSegment.get().getAndPredicates() : Collections.<AndPredicate>emptyList(), parameters);

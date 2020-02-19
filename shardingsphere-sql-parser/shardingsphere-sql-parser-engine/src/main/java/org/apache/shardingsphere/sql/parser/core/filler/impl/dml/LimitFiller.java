@@ -18,17 +18,19 @@
 package org.apache.shardingsphere.sql.parser.core.filler.impl.dml;
 
 import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 /**
- * Lock filler.
+ * Limit filler.
  */
-public final class LockFiller implements SQLSegmentFiller<LockSegment> {
+public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     
     @Override
-    public void fill(final LockSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setLock(sqlSegment);
+    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            ((SelectStatement) sqlStatement).setLimit(sqlSegment);
+        }
     }
 }

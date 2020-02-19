@@ -93,7 +93,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
+        Optional<LimitSegment> limitSegment = actual.getLimit();
         if (null != expected.getLimitClause()) {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
             LimitClauseAssert.assertOffset(assertContext, limitSegment.get().getOffset().orNull(), expected.getLimitClause().getOffset());

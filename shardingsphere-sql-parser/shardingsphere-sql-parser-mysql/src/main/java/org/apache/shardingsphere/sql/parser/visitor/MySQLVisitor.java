@@ -352,6 +352,9 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         if (astNode instanceof NumberLiteralValue) {
             return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((NumberLiteralValue) astNode).getValue());
         }
+        if (astNode instanceof BooleanLiteralValue) {
+            return new LiteralExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((BooleanLiteralValue) astNode).getValue());
+        }
         if (astNode instanceof ParameterMarkerValue) {
             return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
         }

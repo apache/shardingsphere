@@ -46,7 +46,7 @@ public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGe
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext.getSqlStatement() instanceof UpdateStatement
-                || sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(SetAssignmentSegment.class).isPresent();
+                || (sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent());
     }
     
     @Override
