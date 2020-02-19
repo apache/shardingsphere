@@ -107,10 +107,7 @@ public final class SQLParserParameterizedTest {
     }
     
     private static boolean isPassedSqlCase(final String sqlCaseId) {
-        // On the one hand, visitor parser can generate correct parsing results for them, on the other hand old parser can not.
         Collection<String> sqlCases = new LinkedList<>();
-        sqlCases.add("insert_on_duplicate_key_update_with_base64_aes_encrypt");
-        sqlCases.add("insert_with_one_auto_increment_column");
         sqlCases.add("insert_without_columns_and_with_generate_key_column");
         sqlCases.add("insert_without_columns_and_without_generate_key_column");
         sqlCases.add("insert_without_columns_with_all_placeholders");
@@ -142,8 +139,6 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("alter_table_add_foreign_key");
         sqlCases.add("alter_table_add_primary_foreign_key");
         sqlCases.add("alter_table_add_constraints_sqlserver");
-        // TODO no rule in SQLServer's g4
-        sqlCases.add("beginTransaction");
         // TODO no rule in SQLServer's g4
         sqlCases.add("beginWithName");
         sqlCases.add("insert_on_duplicate_key_update_with_complicated_expression");
