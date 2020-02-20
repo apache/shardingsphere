@@ -407,7 +407,7 @@
     <!--<assertion parameters="1000:int, 1001:int" expected-data-file="select_sub_query_with_multiple_tables.xml" />-->
     <!--</dql-test-case>-->
     
-    <!-- TODO do not support ORDER BY or ORDER BY in subquery for now, add later
+    <!-- TODO Can not support subquery at current
     <dql-test-case sql-case-id="select_sub_query_with_order_by">
         <assertion expected-data-file="select_sub_query_with_order_by.xml" />
     </dql-test-case>
