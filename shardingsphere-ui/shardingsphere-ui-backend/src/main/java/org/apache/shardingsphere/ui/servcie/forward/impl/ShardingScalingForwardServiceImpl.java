@@ -92,7 +92,7 @@ public final class ShardingScalingForwardServiceImpl implements ShardingScalingF
     private String getShardingScalingUrl() {
         Optional<ForwardServiceConfig> shardingScalingConfig = forwardServiceConfigsRepository.load().getForwardServiceConfig(ForwardServiceType.SHARDING_SCALING.getName());
         if (shardingScalingConfig.isPresent()) {
-            return shardingScalingConfig.get().getServerUrl();
+            return shardingScalingConfig.get().getServiceUrl();
         }
         throw new ShardingSphereUIException(ShardingSphereUIException.INVALID_PARAM, "No sharding scaling service configured");
     }

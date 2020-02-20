@@ -33,5 +33,5 @@ public final class ForwardServiceConfig {
     
     private String serviceType;
     
-    private String serverUrl;
+    private String serviceUrl;
 }

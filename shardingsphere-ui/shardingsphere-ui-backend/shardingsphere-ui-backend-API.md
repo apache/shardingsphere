@@ -692,7 +692,7 @@ curl -X GET http://localhost:8088/api/shardingscaling
 "model": {
 "serviceName": "scaling",
 "serviceType": "ShardingScaling",
-"serverUrl": "localhost:8084"
+"serviceUrl": "localhost:8084"
 }
 }
 
@@ -717,7 +717,7 @@ POST /api/shardingscaling
 | ----------- | ----------------------------- |
 | serviceName | user defined name of service  |
 | serviceType | Fixed value `ShardingScaling` |
-| serverUrl   | user defined url of service   |
+| serviceUrl   | user defined url of service   |
 
 #### Example
 
@@ -729,7 +729,7 @@ curl -X POST \
  -d '{
 "serviceName": "scaling",
 "serviceType": "ShardingScaling",
-"serverUrl": "localhost:8084"
+"serviceUrl": "localhost:8084"
 }'
 
 ```
