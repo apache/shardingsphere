@@ -260,7 +260,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
         ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         result.setProjections(projections);
         result.getAllSQLSegments().add(projections);
-        result.getAllSQLSegments().addAll(getTableSegments(projections));
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
@@ -269,11 +268,12 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
             result.getTables().addAll(tables.getValue());
             result.getAllSQLSegments().addAll(tables.getValue());
         }
+        result.getAllSQLSegments().addAll(getTableSegments(projections, result.getTables()));
         if (null != ctx.whereClause()) {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
-            result.getAllSQLSegments().addAll(getTableSegments(where));
+            result.getAllSQLSegments().addAll(getTableSegments(where, result.getTables()));
         }
         if (null != ctx.groupByClause()) {
             GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
@@ -293,35 +293,52 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
         return result;
     }
     
-    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections) {
+    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections, final Collection<TableSegment> tableSegments) {
         Collection<TableSegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections.getProjections()) {
-            if (each instanceof ShorthandProjectionSegment && ((ShorthandProjectionSegment) each).getOwner().isPresent()) {
-                result.add(((ShorthandProjectionSegment) each).getOwner().get());
+            if (each instanceof ShorthandProjectionSegment) {
+                ShorthandProjectionSegment shorthandProjection = (ShorthandProjectionSegment) each;
+                if (shorthandProjection.getOwner().isPresent() && isTable(shorthandProjection.getOwner().get(), tableSegments)) {
+                    result.add(shorthandProjection.getOwner().get());
+                }
             }
             if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
-                result.add(((ColumnProjectionSegment) each).getOwner().get());
+                ColumnProjectionSegment columnProjection = (ColumnProjectionSegment) each;
+                if (columnProjection.getOwner().isPresent() && isTable(columnProjection.getOwner().get(), tableSegments)) {
+                    result.add(columnProjection.getOwner().get());
+                }
             }
         }
         return result;
     }
     
-    private Collection<TableSegment> getTableSegments(final WhereSegment where) {
+    private Collection<TableSegment> getTableSegments(final WhereSegment where, final Collection<TableSegment> tableSegments) {
         Collection<TableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                if (predicate.getColumn().getOwner().isPresent()) {
+                if (predicate.getColumn().getOwner().isPresent() && isTable(predicate.getColumn().getOwner().get(), tableSegments)) {
                     result.add(predicate.getColumn().getOwner().get());
                 }
-                if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()
+                        && isTable(((ColumnSegment) predicate.getRightValue()).getOwner().get(), tableSegments)) {
                     result.add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
                 }
-                if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()
+                        && isTable(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get(), tableSegments)) {
                     result.add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
                 }
             }
         }
         return result;
+    }
+    
+    private boolean isTable(final TableSegment owner, final Collection<TableSegment> tableSegments) {
+        for (TableSegment each : tableSegments) {
+            if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private boolean isDistinct(final SelectClauseContext ctx) {
