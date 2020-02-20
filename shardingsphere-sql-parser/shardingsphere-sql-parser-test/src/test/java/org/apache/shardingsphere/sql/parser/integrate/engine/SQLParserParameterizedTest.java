@@ -108,16 +108,11 @@ public final class SQLParserParameterizedTest {
     
     private static boolean isPassedSqlCase(final String sqlCaseId) {
         Collection<String> sqlCases = new LinkedList<>();
-        sqlCases.add("insert_without_columns_and_with_generate_key_column");
-        sqlCases.add("insert_without_columns_and_without_generate_key_column");
-        sqlCases.add("insert_without_columns_with_all_placeholders");
         sqlCases.add("show_index_with_indexes_with_table_and_database");
         sqlCases.add("show_index_with_database_back_quotes");
         sqlCases.add("show_index_with_table_back_quotes");
         // TODO Stop index is wrong
         sqlCases.add("select_with_expression");
-        // TODO No rule in SQLServer's g4
-        sqlCases.add("beginWithName");
         // TODO Sub query is necessary
         sqlCases.add("select_pagination_with_row_number");
         sqlCases.add("select_pagination_with_row_number_and_diff_group_by_and_order_by");
@@ -142,10 +137,13 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("create_table_with_exist_index");
         // TODO cannot support insert all
         sqlCases.add("insert_all_with_all_placeholders");
-        // TODO Correct for new parser
+        // TODO Correct for new parser, please remove them after using new parser
         sqlCases.add("insert_on_duplicate_key_update_with_base64_aes_encrypt");
         sqlCases.add("insert_with_one_auto_increment_column");
         sqlCases.add("insert_on_duplicate_key_update_with_complicated_expression");
+        sqlCases.add("insert_without_columns_and_with_generate_key_column");
+        sqlCases.add("insert_without_columns_and_without_generate_key_column");
+        sqlCases.add("insert_without_columns_with_all_placeholders");
         return sqlCases.contains(sqlCaseId);
     }
     
