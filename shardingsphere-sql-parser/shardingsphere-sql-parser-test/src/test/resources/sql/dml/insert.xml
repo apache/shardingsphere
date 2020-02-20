@@ -213,6 +213,7 @@
     
     <insert sql-case-id="insert_without_columns_with_all_placeholders" parameters="1, 1, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
         <values>
             <value>
                 <assignment-value>
@@ -755,6 +756,7 @@
     
     <insert sql-case-id="insert_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
         <table name="t_order_item" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="24" />
         <values>
             <value>
                 <assignment-value>
@@ -781,6 +783,7 @@
     
     <insert sql-case-id="insert_without_columns_and_without_generate_key_column" parameters="1000, 10">
         <table name="t_order_item" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="24" />
         <values>
             <value>
                 <assignment-value>
