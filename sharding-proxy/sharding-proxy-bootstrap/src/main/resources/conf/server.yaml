@@ -55,4 +55,9 @@
 #  proxy.hint.enabled: false
 #  query.with.cipher.column: true
 #  sql.show: false
-#  allow.range.query.with.inline.sharding: false
+#  allow.range.query.with.inline.sharding: false#  proxy.transaction.type: LOCAL
+##  proxy.opentracing.enabled: false
+##  proxy.hint.enabled: false
+##  query.with.cipher.column: true
+##  sql.show: false
+##  allow.range.query.with.inline.sharding: false
