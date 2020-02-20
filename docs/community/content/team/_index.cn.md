@@ -19,10 +19,8 @@ chapter = true
 | 高洪涛         | hanahmily               |
 | 马晓光         | maxiaoguang64           |
 | 潘娟           | tristaZero              |
-| 彭勇升         | peng-yongsheng          |
 | 吴晟           | wu-sheng                |
 | 杨翊           | KomachiSion             |
-| 岳令           | yue530tom               |
 | 张亮           | terrymanu               |
 | 张永伦         | tuohai666, zhangyonglun |
 | 赵俊           | cherrylzhao             |
@@ -36,16 +34,16 @@ chapter = true
 | 王奇             | wqzwh                   |
 | 孙海生           | sunbufu                 |
 | 李亚             | betterjava              |
-| 颜志一           | yanyzy              |
+| 颜志一           | yanyzy                 |
 | 欧阳文           | avalon566              |
 | 董宗磊           | dongzl                 |
 | 蒋晓峰           | SteNicholas            |
+| 岳令             | yue530tom              |
 
 ## 导师
 
 | 名字              | GitHub ID          |
 | :--------------- | :------------------ |
-| Benjamin Hindman |                     |
 | Craig L Russell  | craiglrussell, clr |
 | 冯嘉             | vongosling          |
 | 姜宁             | WillemJiang         |
@@ -55,8 +53,6 @@ chapter = true
 您可以在ShardingSphere的贡献列表中找到全部的贡献者名单。
 
 - [incubator-shardingsphere](https://github.com/apache/incubator-shardingsphere/graphs/contributors)
-- [incubator-shardingsphere-example](https://github.com/apache/incubator-shardingsphere-example/graphs/contributors)
-- [incubator-shardingsphere-doc](https://github.com/apache/incubator-shardingsphere-doc)
 - [incubator-shardingsphere-benchmark](https://github.com/apache/incubator-shardingsphere-benchmark)
 
 ## 成为提交者

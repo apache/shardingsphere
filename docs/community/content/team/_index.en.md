@@ -19,13 +19,11 @@ The List in alphabet order.
 | Juan Pan        | tristaZero              |
 | Jun Zhao        | cherrylzhao             |
 | Liang Zhang     | terrymanu               |
-| Ling Yue        | yue530tom               |
 | QingYang Chen   | beckhampu               |
 | Sheng Wu        | wu-sheng                |
 | Xiaoguang Ma    | maxiaoguang64           |
 | Yang Yi         | KomachiSion             |
 | Yonglun Zhang   | tuohai666, zhangyonglun |
-| Yongsheng Peng  | peng-yongsheng          |
 
 ### Committer
 
@@ -40,12 +38,12 @@ The List in alphabet order.
 | YangWen Ou      | avalon566               |
 | Zonglei Dong    | dongzl                  |
 | Xiaofeng Jiang  | SteNicholas             |
+| Ling Yue        | yue530tom               |
 
 ## Mentors
 
 | Name              | GitHub ID             |
 | :---------------- | :-------------------- |
-| Benjamin Hindman  |                       |
 | Craig L Russell   | craiglrussell, clr    |
 | vongosling        | vongosling            |
 | Willem Ning Jiang | WillemJiang           |
@@ -55,8 +53,6 @@ The List in alphabet order.
 You can find all contributors of ShardingSphere from GitHub contribution list.
 
 - [incubator-shardingsphere](https://github.com/apache/incubator-shardingsphere/graphs/contributors)
-- [incubator-shardingsphere-example](https://github.com/apache/incubator-shardingsphere-example/graphs/contributors)
-- [incubator-shardingsphere-doc](https://github.com/apache/incubator-shardingsphere-doc)
 - [incubator-shardingsphere-benchmark](https://github.com/apache/incubator-shardingsphere-benchmark)
 
 ## Becoming a Committer
