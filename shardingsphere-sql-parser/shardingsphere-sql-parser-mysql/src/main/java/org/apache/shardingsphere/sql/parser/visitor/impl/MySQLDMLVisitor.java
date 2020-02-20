@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.JoinedT
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitOffsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LimitRowCountContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OnDuplicateKeyClauseContext;
@@ -78,6 +79,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.Lim
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
@@ -323,6 +325,11 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.getAllSQLSegments().add(limitSegment);
             result.setLimit(limitSegment);
         }
+        if (null != ctx.lockClause()) {
+            LockSegment lockSegment = (LockSegment) visit(ctx.lockClause());
+            result.getAllSQLSegments().add(lockSegment);
+            result.setLock(lockSegment);
+        }
         return result;
     }
     
@@ -561,5 +568,10 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitLockClause(final LockClauseContext ctx) {
+        return new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
 }
