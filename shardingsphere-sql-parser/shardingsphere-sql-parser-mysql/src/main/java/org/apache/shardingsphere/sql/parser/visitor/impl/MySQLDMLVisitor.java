@@ -59,8 +59,10 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
@@ -93,6 +95,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterM
 import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -115,8 +118,9 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.getAllSQLSegments().add(segment);
         }
         if (null != ctx.onDuplicateKeyClause()) {
-            CollectionValue<AssignmentSegment> segments = (CollectionValue<AssignmentSegment>) visit(ctx.onDuplicateKeyClause());
-            result.getAllSQLSegments().addAll(segments.getValue());
+            OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = (OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause());
+            result.getAllSQLSegments().add(onDuplicateKeyColumnsSegment);
+            result.setOnDuplicateKeyColumns(onDuplicateKeyColumnsSegment);
         }
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.setTable(table);
@@ -130,7 +134,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         InsertStatement result = new InsertStatement();
         if (null != ctx.columnNames()) { 
             InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
-            result.setColumns(insertColumnsSegment);
+            result.setInsertColumns(insertColumnsSegment);
+            result.getAllSQLSegments().add(insertColumnsSegment);
+        } else {
+            InsertColumnsSegment insertColumnsSegment = 
+                    new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList());
+            result.setInsertColumns(insertColumnsSegment);
             result.getAllSQLSegments().add(insertColumnsSegment);
         }
         Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
@@ -149,11 +158,11 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
-        CollectionValue<AssignmentSegment> result = new CollectionValue<>();
+        Collection<AssignmentSegment> columns = new LinkedList<>();
         for (AssignmentContext each : ctx.assignment()) {
-            result.getValue().add((AssignmentSegment) visit(each));
+            columns.add((AssignmentSegment) visit(each));
         }
-        return result;
+        return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
     
     @SuppressWarnings("unchecked")
@@ -284,6 +293,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         result.setProjections(projections);
         result.getAllSQLSegments().add(projections);
+        result.getAllSQLSegments().addAll(getTableSegments(projections));
         if (null != ctx.selectSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
@@ -296,6 +306,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
+            result.getAllSQLSegments().addAll(getTableSegments(where));
         }
         if (null != ctx.groupByClause()) {
             GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
@@ -308,7 +319,40 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.getAllSQLSegments().add(orderBy);
         }
         if (null != ctx.limitClause()) {
-            result.getAllSQLSegments().add((LimitSegment) visit(ctx.limitClause()));
+            LimitSegment limitSegment = (LimitSegment) visit(ctx.limitClause());
+            result.getAllSQLSegments().add(limitSegment);
+            result.setLimit(limitSegment);
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projections.getProjections()) {
+            if (each instanceof ShorthandProjectionSegment && ((ShorthandProjectionSegment) each).getOwner().isPresent()) {
+                result.add(((ShorthandProjectionSegment) each).getOwner().get());
+            }
+            if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
+                result.add(((ColumnProjectionSegment) each).getOwner().get());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final WhereSegment where) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (AndPredicate each : where.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                if (predicate.getColumn().getOwner().isPresent()) {
+                    result.add(predicate.getColumn().getOwner().get());
+                }
+                if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                    result.add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
+                }
+                if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                    result.add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
+                }
+            }
         }
         return result;
     }
@@ -396,6 +440,9 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.setAlias(alias);
             return result;
         }
+        if (projection instanceof SubquerySegment) {
+            return new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText());
+        }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = Strings.isNullOrEmpty(alias) ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
                 : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()));
@@ -427,7 +474,10 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
         if (null != ctx.tableFactor()) {
-            result.getValue().add((TableSegment) visit(ctx.tableFactor()));
+            ASTNode tableFactor = visit(ctx.tableFactor());
+            if (tableFactor instanceof TableSegment) {
+                result.getValue().add((TableSegment) tableFactor);
+            }
         }
         if (null != ctx.joinedTable()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
@@ -439,14 +489,17 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
+        if (null != ctx.tableName()) {
+            TableSegment result = (TableSegment) visit(ctx.tableName());
+            if (null != ctx.alias()) {
+                result.setAlias(ctx.alias().getText());
+            }
+            return result;
+        }
         if (null != ctx.tableReferences()) {
             return visit(ctx.tableReferences());
         }
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        if (null != ctx.alias()) {
-            table.setAlias(ctx.alias().getText());
-        }
-        return table;
+        return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override

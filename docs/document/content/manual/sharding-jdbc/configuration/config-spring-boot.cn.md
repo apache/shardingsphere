@@ -280,7 +280,7 @@ spring.shardingsphere.datasource.<data-source-name>.username= #数据库用户�
 spring.shardingsphere.datasource.<data-source-name>.password= #数据库密码
 spring.shardingsphere.datasource.<data-source-name>.xxx= #数据库连接池的其它属性
 
-spring.shardingsphere.sharding.tables.<logic-table-name>.actual-data-nodes= #由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
+spring.shardingsphere.sharding.tables.<logic-table-name>.actual-data-nodes= #由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
 
 #分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
 

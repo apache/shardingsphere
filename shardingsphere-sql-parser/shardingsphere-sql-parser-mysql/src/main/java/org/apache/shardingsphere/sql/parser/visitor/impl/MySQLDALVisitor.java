@@ -89,6 +89,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != ctx.fromSchema()) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
+            result.setFromSchema(fromSchemaSegment);
         }
         if (null != ctx.showLike()) {
             ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
@@ -103,6 +104,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != ctx.fromSchema()) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
+            result.setFromSchema(fromSchemaSegment);
         }
         if (null != ctx.showLike()) {
             ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
@@ -123,6 +125,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
         if (null != ctx.fromSchema()) {
             FromSchemaSegment fromSchemaSegment = (FromSchemaSegment) visit(ctx.fromSchema());
             result.getAllSQLSegments().add(fromSchemaSegment);
+            result.setFromSchema(fromSchemaSegment);
         }
         return result;
     }
@@ -134,6 +137,7 @@ public final class MySQLDALVisitor extends MySQLVisitor {
             SchemaNameContext schemaNameContext = ctx.fromSchema().schemaName();
             SchemaSegment schemaSegment = new SchemaSegment(schemaNameContext.getStart().getStartIndex(), schemaNameContext.getStop().getStopIndex(), (IdentifierValue) visit(schemaNameContext));
             result.getAllSQLSegments().add(schemaSegment);
+            result.setSchema(schemaSegment);
         }
         if (null != ctx.fromTable()) {
             FromTableSegment fromTableSegment = (FromTableSegment) visitFromTable(ctx.fromTable());

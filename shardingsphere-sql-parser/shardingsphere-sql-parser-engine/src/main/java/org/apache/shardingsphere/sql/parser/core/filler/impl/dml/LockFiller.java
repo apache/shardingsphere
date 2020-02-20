@@ -23,12 +23,12 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 /**
- * lock filler.
+ * Lock filler.
  */
 public final class LockFiller implements SQLSegmentFiller<LockSegment> {
-
+    
     @Override
     public void fill(final LockSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((SelectStatement) sqlStatement).setLockSegment(sqlSegment);
+        ((SelectStatement) sqlStatement).setLock(sqlSegment);
     }
 }

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
@@ -26,9 +28,20 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAv
 /**
  * Show columns statement.
  */
-@Setter
 @Getter
+@Setter
 public final class ShowColumnsStatement extends DALStatement implements TableSegmentAvailable {
     
     private TableSegment table;
+    
+    private RemoveAvailable fromSchema;
+    
+    /**
+     * Get from schema.
+     *
+     * @return from schema
+     */
+    public Optional<RemoveAvailable> getFromSchema() {
+        return Optional.fromNullable(fromSchema);
+    }
 }

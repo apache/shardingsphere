@@ -29,8 +29,10 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.WhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.GroupByFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.OrderByFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.LimitFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.LockFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.InsertColumnsFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.InsertValuesFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.SetAssignmentsFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment" filler-class="org.apache.shardingsphere.sql.parser.core.filler.impl.dml.OnDuplicateKeyColumnsFiller" />
 </filler-rule-definition>

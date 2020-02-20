@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -73,7 +74,8 @@ public final class ConfigurationYamlConverter {
      * @return sharding rule configuration
      */
     public static ShardingRuleConfiguration loadShardingRuleConfiguration(final String data) {
-        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(data, YamlShardingRuleConfiguration.class));
+        return new ShardingRuleConfigurationYamlSwapper().swap(
+                YamlEngine.unmarshal(data, YamlShardingRuleConfiguration.class, new YamlRootShardingConfigurationConstructor()));
     }
 
     /**

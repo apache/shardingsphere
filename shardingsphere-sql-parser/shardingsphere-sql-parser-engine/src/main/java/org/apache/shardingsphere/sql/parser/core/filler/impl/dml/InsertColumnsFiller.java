@@ -29,6 +29,6 @@ public final class InsertColumnsFiller implements SQLSegmentFiller<InsertColumns
     
     @Override
     public void fill(final InsertColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
-        ((InsertStatement) sqlStatement).setColumns(sqlSegment);
+        ((InsertStatement) sqlStatement).setInsertColumns(sqlSegment);
     }
 }

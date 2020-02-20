@@ -15,27 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
+package org.apache.shardingsphere.orchestration.center.api;
 
-import com.google.common.base.Optional;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
- * Show table status statement.
+ * An interface for center to get/persist data.
  */
-@Setter
-public final class ShowTableStatusStatement extends DALStatement {
-    
-    private RemoveAvailable fromSchema;
+public interface CenterRepository extends TypeBasedSPI {
     
     /**
-     * Get from schema.
+     * Initialize config center.
      *
-     * @return from schema
+     * @param config config center configuration
      */
-    public Optional<RemoveAvailable> getFromSchema() {
-        return Optional.fromNullable(fromSchema);
-    }
+    void init(InstanceConfiguration config);
+    
+    /**
+     * Get data from config center.
+     *
+     * <p>Maybe use cache if existed.</p>
+     *
+     * @param key key of data
+     * @return value of data
+     */
+    String get(String key);
+    
+    /**
+     * Persist data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void persist(String key, String value);
+    
+    /**
+     * Close.
+     */
+    void close();
 }

@@ -30,7 +30,7 @@
     </select>
     -->
     
-    <!-- TODO do not support ORDER BY or ORDER BY in subquery for now, add later
+    <!-- TODO Can not support subquery at current
     <select sql-case-id="select_sub_query_with_order_by">
         <table name="t_order" start-index="52" stop-index="58" />
         <projections start-index="45" stop-index="45">

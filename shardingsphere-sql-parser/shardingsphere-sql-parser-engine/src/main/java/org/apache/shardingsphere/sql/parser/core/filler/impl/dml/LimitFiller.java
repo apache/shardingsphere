@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.rule.registry;
+package org.apache.shardingsphere.sql.parser.core.filler.impl.dml;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.junit.Test;
+import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-public final class ParseRuleRegistryTest {
+/**
+ * Limit filler.
+ */
+public final class LimitFiller implements SQLSegmentFiller<LimitSegment> {
     
-    private static ParseRuleRegistry parseRuleRegistry = ParseRuleRegistry.getInstance();
-    
-    @Test
-    public void assertShardingParseRuleRegistry() {
-        assertNotNull(parseRuleRegistry.getSQLStatementRule("MySQL", "SelectContext"));
-        assertTrue(parseRuleRegistry.findSQLSegmentFiller("MySQL", ColumnDefinitionSegment.class).isPresent());
+    @Override
+    public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            ((SelectStatement) sqlStatement).setLimit(sqlSegment);
+        }
     }
 }

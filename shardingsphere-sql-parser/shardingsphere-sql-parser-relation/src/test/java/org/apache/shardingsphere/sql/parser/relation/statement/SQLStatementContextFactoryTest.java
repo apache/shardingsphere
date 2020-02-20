@@ -51,7 +51,7 @@ public final class SQLStatementContextFactoryTest {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getGroupBy()).thenReturn(Optional.<GroupBySegment>absent());
         when(selectStatement.getOrderBy()).thenReturn(Optional.<OrderBySegment>absent());
-        when(selectStatement.findSQLSegment(LimitSegment.class)).thenReturn(Optional.of(new LimitSegment(0, 10, null, null)));
+        when(selectStatement.getLimit()).thenReturn(Optional.of(new LimitSegment(0, 10, null, null)));
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Collections.<ProjectionSegment>emptyList());
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);

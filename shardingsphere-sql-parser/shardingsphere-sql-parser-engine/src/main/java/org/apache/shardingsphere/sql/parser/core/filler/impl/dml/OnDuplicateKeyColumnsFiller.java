@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
+package org.apache.shardingsphere.sql.parser.core.filler.impl.dml;
 
-import com.google.common.base.Optional;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.core.filler.SQLSegmentFiller;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 
 /**
- * Show tables statement.
+ * On duplicate key columns filler.
  */
-@Setter
-public final class ShowTablesStatement extends DALStatement {
+public final class OnDuplicateKeyColumnsFiller implements SQLSegmentFiller<OnDuplicateKeyColumnsSegment> {
     
-    private RemoveAvailable fromSchema;
-    
-    /**
-     * Get from schema.
-     * 
-     * @return from schema
-     */
-    public Optional<RemoveAvailable> getFromSchema() {
-        return Optional.fromNullable(fromSchema);
+    @Override
+    public void fill(final OnDuplicateKeyColumnsSegment sqlSegment, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof InsertStatement) {
+            ((InsertStatement) sqlStatement).setOnDuplicateKeyColumns(sqlSegment);
+        }
     }
 }

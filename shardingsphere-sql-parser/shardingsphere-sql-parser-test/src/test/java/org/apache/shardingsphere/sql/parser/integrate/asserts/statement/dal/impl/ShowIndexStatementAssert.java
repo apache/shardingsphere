@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowIndexStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 
 import static org.junit.Assert.assertFalse;
@@ -58,10 +57,10 @@ public final class ShowIndexStatementAssert {
     
     private static void assertSchema(final SQLCaseAssertContext assertContext, final ShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema segment should exist."), actual.findSQLSegment(SchemaSegment.class).isPresent());
-            SchemaAssert.assertIs(assertContext, actual.findSQLSegment(SchemaSegment.class).get(), expected.getSchema());
+            assertTrue(assertContext.getText("Actual schema segment should exist."), actual.getSchema().isPresent());
+            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
         } else {
-            assertFalse(assertContext.getText("Actual schema segment should not exist."), actual.findSQLSegment(SchemaSegment.class).isPresent());
+            assertFalse(assertContext.getText("Actual schema segment should not exist."), actual.getSchema().isPresent());
         }
     }
 }

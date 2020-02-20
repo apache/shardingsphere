@@ -49,7 +49,7 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     private InsertValuesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext) {
-        Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().findSQLSegments(InsertValuesSegment.class);
+        Collection<InsertValuesSegment> insertValuesSegments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getValues();
         InsertValuesToken result = new ShadowInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
