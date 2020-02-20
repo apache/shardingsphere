@@ -306,6 +306,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
+            result.getAllSQLSegments().addAll(getTableSegments(where));
         }
         if (null != ctx.groupByClause()) {
             GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
@@ -333,6 +334,24 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             }
             if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
                 result.add(((ColumnProjectionSegment) each).getOwner().get());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final WhereSegment where) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (AndPredicate each : where.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                if (predicate.getColumn().getOwner().isPresent()) {
+                    result.add(predicate.getColumn().getOwner().get());
+                }
+                if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                    result.add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
+                }
+                if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                    result.add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
+                }
             }
         }
         return result;

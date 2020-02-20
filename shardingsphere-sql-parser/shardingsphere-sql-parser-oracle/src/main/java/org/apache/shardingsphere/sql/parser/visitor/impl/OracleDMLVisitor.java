@@ -254,6 +254,7 @@ public final class OracleDMLVisitor extends OracleVisitor {
         ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         result.setProjections(projections);
         result.getAllSQLSegments().add(projections);
+        result.getAllSQLSegments().addAll(getTableSegments(projections));
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
@@ -266,6 +267,7 @@ public final class OracleDMLVisitor extends OracleVisitor {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
+            result.getAllSQLSegments().addAll(getTableSegments(where));
         }
         if (null != ctx.groupByClause()) {
             GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
@@ -276,6 +278,37 @@ public final class OracleDMLVisitor extends OracleVisitor {
             OrderBySegment orderBy = (OrderBySegment) visit(ctx.orderByClause());
             result.setOrderBy(orderBy);
             result.getAllSQLSegments().add(orderBy);
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projections.getProjections()) {
+            if (each instanceof ShorthandProjectionSegment && ((ShorthandProjectionSegment) each).getOwner().isPresent()) {
+                result.add(((ShorthandProjectionSegment) each).getOwner().get());
+            }
+            if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
+                result.add(((ColumnProjectionSegment) each).getOwner().get());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getTableSegments(final WhereSegment where) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (AndPredicate each : where.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                if (predicate.getColumn().getOwner().isPresent()) {
+                    result.add(predicate.getColumn().getOwner().get());
+                }
+                if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                    result.add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
+                }
+                if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                    result.add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
+                }
+            }
         }
         return result;
     }
