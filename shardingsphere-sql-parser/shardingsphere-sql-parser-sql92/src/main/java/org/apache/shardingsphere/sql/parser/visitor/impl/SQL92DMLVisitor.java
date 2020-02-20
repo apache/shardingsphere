@@ -378,7 +378,10 @@ public final class SQL92DMLVisitor extends SQL92Visitor {
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
         if (null != ctx.tableFactor()) {
-            result.getValue().add((TableSegment) visit(ctx.tableFactor()));
+            ASTNode tableFactor = visit(ctx.tableFactor());
+            if (tableFactor instanceof TableSegment) {
+                result.getValue().add((TableSegment) tableFactor);
+            }
         }
         if (null != ctx.joinedTable()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
@@ -390,14 +393,17 @@ public final class SQL92DMLVisitor extends SQL92Visitor {
     
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
+        if (null != ctx.tableName()) {
+            TableSegment result = (TableSegment) visit(ctx.tableName());
+            if (null != ctx.alias()) {
+                result.setAlias(ctx.alias().getText());
+            }
+            return result;
+        }
         if (null != ctx.tableReferences()) {
             return visit(ctx.tableReferences());
         }
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        if (null != ctx.alias()) {
-            table.setAlias(ctx.alias().getText());
-        }
-        return table;
+        return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override
