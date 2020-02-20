@@ -101,7 +101,7 @@ public final class OracleDMLVisitor extends OracleVisitor {
             result.setParametersCount(getCurrentParameterIndex());
             return result;
         }
-        throw new UnsupportedOperationException("Cannot support insert multi table");
+        return new InsertStatement();
     }
     
     @Override
