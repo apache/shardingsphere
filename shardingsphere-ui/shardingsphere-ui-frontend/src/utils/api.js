@@ -50,6 +50,10 @@ function ajax(url, type, options, config) {
             location.href = '#/login'
             return
           }
+          if (data.errorCode === 400) {
+            resolve(data)
+            return
+          }
           Message({
             message: data.errorMsg,
             type: 'error',

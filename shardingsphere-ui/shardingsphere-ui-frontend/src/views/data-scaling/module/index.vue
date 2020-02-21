@@ -279,7 +279,7 @@
               </el-col>
               <el-col :span="2"><div>History</div></el-col>
               <el-col :span="6" class="collapse-progress">
-                <el-progress :stroke-width="10" :percentage="getPercentage(syncTaskProgress.historySyncTaskProgress)"></el-progress>
+                <el-progress :stroke-width="10" :percentage="percentageComputed"></el-progress>
               </el-col>
             </el-row>
           </template>
@@ -521,6 +521,21 @@ export default {
         null,
         '\t'
       )
+    },
+    percentageComputed() {
+      const arr = this.syncTaskProgress.historySyncTaskProgress
+      if (!arr) return
+      let sumEstimatedRows = ''
+      let sumSyncedRows = ''
+      for (const v of arr) {
+        sumEstimatedRows += v.estimatedRows
+        sumSyncedRows += v.syncedRows
+      }
+      let res = 0
+      if (sumEstimatedRows) {
+        res = sumSyncedRows / sumEstimatedRows
+      }
+      return nDecimal(res, 2) * 100
     }
   },
   created() {
@@ -556,8 +571,9 @@ export default {
     },
     getJobServer() {
       API.getJobServer().then(res => {
-        if (res) {
-          const { serviceName, serviceType, serviceUrl } = res.model
+        const { model } = res
+        if (model) {
+          const { serviceName, serviceType, serviceUrl } = model
           this.serviceForm = {
             serviceName,
             serviceType,
