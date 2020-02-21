@@ -24,7 +24,7 @@
         icon="el-icon-plus"
         @click="add">{{ $t('dataScaling.btnTxt') }}</el-button>
       <span style="margin-left: 20px;">
-        server: <samp style="color: #E17425;">{{ serviceForm.serviceUrl }}</samp>
+        server: <samp style="color: #E17425;">{{ serviceForm.serviceName }}</samp>
         <i class="el-icon-edit" @click="showServerDialog"></i>
       </span>
     </div>
