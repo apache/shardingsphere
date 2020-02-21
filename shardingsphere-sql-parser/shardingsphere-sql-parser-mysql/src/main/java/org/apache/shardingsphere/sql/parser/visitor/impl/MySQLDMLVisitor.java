@@ -378,7 +378,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     }
     
     private boolean isTable(final OrderByItemSegment each, final Collection<TableSegment> tableSegments) {
-        return each instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent() && isTable(((ColumnOrderByItemSegment) each).getColumn().getOwner().get(), tableSegments);
+        return each instanceof ColumnOrderByItemSegment 
+                && ((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent() && isTable(((ColumnOrderByItemSegment) each).getColumn().getOwner().get(), tableSegments);
     }
     
     private boolean isDistinct(final SelectClauseContext ctx) {
