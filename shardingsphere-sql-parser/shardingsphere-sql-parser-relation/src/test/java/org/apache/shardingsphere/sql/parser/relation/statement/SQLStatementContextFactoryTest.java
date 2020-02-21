@@ -22,6 +22,9 @@ import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
@@ -59,9 +62,10 @@ public final class SQLStatementContextFactoryTest {
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement() {
-        InsertStatement insertStatement = mock(InsertStatement.class);
-        when(insertStatement.getTable()).thenReturn(new TableSegment(0, 0, new IdentifierValue("tbl")));
-        when(insertStatement.useDefaultColumns()).thenReturn(false);
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
+                Collections.singleton(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")), null))));
+        insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, insertStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof InsertSQLStatementContext);
