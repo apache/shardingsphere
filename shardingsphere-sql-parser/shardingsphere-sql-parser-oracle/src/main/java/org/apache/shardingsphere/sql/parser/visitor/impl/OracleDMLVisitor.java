@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromCl
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTablesClauseContext;
@@ -401,6 +402,7 @@ public final class OracleDMLVisitor extends OracleVisitor {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
@@ -412,7 +414,7 @@ public final class OracleDMLVisitor extends OracleVisitor {
         }
         if (null != ctx.joinedTable()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
-                result.getValue().add((TableSegment) visit(each));
+                result.getValue().addAll(((CollectionValue<TableSegment>) visit(each)).getValue());
             }
         }
         return result;
@@ -433,9 +435,37 @@ public final class OracleDMLVisitor extends OracleVisitor {
         return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
-        return visit(ctx.tableFactor());
+        CollectionValue<TableSegment> result = new CollectionValue<>();
+        result.getValue().add((TableSegment) visit(ctx.tableFactor()));
+        if (null != ctx.joinSpecification()) {
+            result.combine((CollectionValue<TableSegment>) visit(ctx.joinSpecification()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitJoinSpecification(final JoinSpecificationContext ctx) {
+        CollectionValue<TableSegment> result = new CollectionValue<>();
+        if (null == ctx.expr()) {
+            return result;
+        }
+        ASTNode expr = visit(ctx.expr());
+        if (expr instanceof PredicateSegment) {
+            PredicateSegment predicate = (PredicateSegment) expr;
+            if (predicate.getColumn().getOwner().isPresent()) {
+                result.getValue().add(predicate.getColumn().getOwner().get());
+            }
+            if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                result.getValue().add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
+            }
+            if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
+                result.getValue().add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
+            }
+        }
+        return result;
     }
     
     @Override
