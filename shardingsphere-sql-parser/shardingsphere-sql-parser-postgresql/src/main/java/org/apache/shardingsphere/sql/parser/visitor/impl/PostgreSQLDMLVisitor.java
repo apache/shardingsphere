@@ -268,7 +268,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
             result.getTables().addAll(tables.getValue());
             result.getAllSQLSegments().addAll(tables.getValue());
         }
-        result.getAllSQLSegments().addAll(getTableSegments(projections, result.getTables()));
         if (null != ctx.whereClause()) {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
@@ -289,25 +288,6 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
             LimitSegment limitSegment = (LimitSegment) visit(ctx.limitClause());
             result.getAllSQLSegments().add(limitSegment);
             result.setLimit(limitSegment);
-        }
-        return result;
-    }
-    
-    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections, final Collection<TableSegment> tableSegments) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ProjectionSegment each : projections.getProjections()) {
-            if (each instanceof ShorthandProjectionSegment) {
-                ShorthandProjectionSegment shorthandProjection = (ShorthandProjectionSegment) each;
-                if (shorthandProjection.getOwner().isPresent() && isTable(shorthandProjection.getOwner().get(), tableSegments)) {
-                    result.add(shorthandProjection.getOwner().get());
-                }
-            }
-            if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
-                ColumnProjectionSegment columnProjection = (ColumnProjectionSegment) each;
-                if (columnProjection.getOwner().isPresent() && isTable(columnProjection.getOwner().get(), tableSegments)) {
-                    result.add(columnProjection.getOwner().get());
-                }
-            }
         }
         return result;
     }

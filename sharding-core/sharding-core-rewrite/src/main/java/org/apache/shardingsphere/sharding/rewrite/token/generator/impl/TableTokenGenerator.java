@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.table.Table;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
@@ -77,6 +78,12 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
                 Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext, (ShorthandProjectionSegment) each);
+                if (tableToken.isPresent()) {
+                    result.add(tableToken.get());
+                }
+            }
+            if (each instanceof ColumnProjectionSegment) {
+                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext, (ColumnProjectionSegment) each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }

@@ -232,7 +232,6 @@ public final class SQL92DMLVisitor extends SQL92Visitor {
             result.getTables().addAll(tables.getValue());
             result.getAllSQLSegments().addAll(tables.getValue());
         }
-        result.getAllSQLSegments().addAll(getTableSegments(projections, result.getTables()));
         if (null != ctx.whereClause()) {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
@@ -248,25 +247,6 @@ public final class SQL92DMLVisitor extends SQL92Visitor {
             OrderBySegment orderBy = (OrderBySegment) visit(ctx.orderByClause());
             result.setOrderBy(orderBy);
             result.getAllSQLSegments().add(orderBy);
-        }
-        return result;
-    }
-    
-    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections, final Collection<TableSegment> tableSegments) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ProjectionSegment each : projections.getProjections()) {
-            if (each instanceof ShorthandProjectionSegment) {
-                ShorthandProjectionSegment shorthandProjection = (ShorthandProjectionSegment) each;
-                if (shorthandProjection.getOwner().isPresent() && isTable(shorthandProjection.getOwner().get(), tableSegments)) {
-                    result.add(shorthandProjection.getOwner().get());
-                }
-            }
-            if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
-                ColumnProjectionSegment columnProjection = (ColumnProjectionSegment) each;
-                if (columnProjection.getOwner().isPresent() && isTable(columnProjection.getOwner().get(), tableSegments)) {
-                    result.add(columnProjection.getOwner().get());
-                }
-            }
         }
         return result;
     }
