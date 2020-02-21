@@ -22,7 +22,6 @@ import org.apache.shardingsphere.orchestration.center.configuration.Orchestratio
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
