@@ -599,6 +599,8 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 
 https://shardingsphere.apache.org/document/current/cn/downloads/
 
+`最新版本`中保留两个最新的版本。历史版本会自动归档到[Archive incubating repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+
 ### 发布Docker
 
 #### 准备工作

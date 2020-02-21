@@ -608,6 +608,8 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 
 https://shardingsphere.apache.org/document/current/cn/downloads/
 
+Keep two latest versions in `Latest releases`. All old versions will be archived automatically in [Archive incubating repository](https://archive.apache.org/dist/incubator/shardingsphere/)
+
 ### Docker Release
 
 #### Preparation

@@ -5,7 +5,7 @@ weight = 5
 chapter = true
 +++
 
-## Latest release
+## Latest releases
 
 ShardingSphere is released as source code tarballs with corresponding binary tarballs for convenience. The downloads are distributed via mirror sites and should be checked for tampering using GPG or SHA-512.
 
