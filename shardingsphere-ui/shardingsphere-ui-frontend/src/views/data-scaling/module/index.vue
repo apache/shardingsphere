@@ -357,6 +357,7 @@ import Vue from 'vue'
 import ECharts from 'vue-echarts'
 import moment from 'moment'
 import clone from 'lodash/clone'
+import isEmpty from 'lodash/isEmpty'
 import 'echarts-liquidfill'
 import API from '../api'
 
@@ -405,7 +406,7 @@ export default {
       RuleVisible: false,
       serviceForm: {
         serviceName: '',
-        serviceType: '',
+        serviceType: 'ShardingScaling',
         serviceUrl: ''
       },
       schemaData: [],
@@ -525,8 +526,8 @@ export default {
     percentageComputed() {
       const arr = this.syncTaskProgress.historySyncTaskProgress
       if (!arr) return
-      let sumEstimatedRows = ''
-      let sumSyncedRows = ''
+      let sumEstimatedRows = 0
+      let sumSyncedRows = 0
       for (const v of arr) {
         sumEstimatedRows += v.estimatedRows
         sumSyncedRows += v.syncedRows
@@ -535,7 +536,7 @@ export default {
       if (sumEstimatedRows) {
         res = sumSyncedRows / sumEstimatedRows
       }
-      return nDecimal(res, 2) * 100
+      return nDecimal(res * 100, 0)
     }
   },
   created() {
@@ -678,7 +679,16 @@ export default {
     getJobProgress(row) {
       const { jobId, status } = row
       API.getJobProgress(jobId).then(res => {
-        this.progressRow = res.model
+        const { model } = res
+        this.progressRow = model
+        if (!isEmpty(this.syncTaskProgress)) {
+          for (const v of model.syncTaskProgress) {
+            if (v.id === this.syncTaskProgress.id) {
+              this.syncTaskProgress = v
+            }
+          }
+        }
+        clearTimeout(timer)
         if (status !== 'STOPPED') {
           timer = setTimeout(() => {
             this.getJobProgress(row)
