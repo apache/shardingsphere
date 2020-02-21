@@ -4,8 +4,6 @@ cd `dirname $0`
 rm -rf target
 mkdir -p target/document
 
-cp -rf homepage/. target
-
 cd document
 hugo
 
