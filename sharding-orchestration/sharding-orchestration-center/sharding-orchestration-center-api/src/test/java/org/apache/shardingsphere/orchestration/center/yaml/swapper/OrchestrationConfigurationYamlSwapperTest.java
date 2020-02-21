@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class OrchestrationConfigurationYamlSwapperTest {
+public final class OrchestrationConfigurationYamlSwapperTest {
     
     private static final String LOGIC_SCHEMA = "logic_schema";
     
