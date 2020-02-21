@@ -279,7 +279,7 @@
               </el-col>
               <el-col :span="2"><div>History</div></el-col>
               <el-col :span="6" class="collapse-progress">
-                <el-progress :stroke-width="10" :percentage="getPercentage(syncTaskProgress.historySyncTaskProgress)"></el-progress>
+                <el-progress :stroke-width="10" :percentage="percentageComputed"></el-progress>
               </el-col>
             </el-row>
           </template>
@@ -336,9 +336,6 @@
         <el-form-item label="Service Name:">
           <el-input v-model="serviceForm.serviceName" :placeholder="$t('dataScaling.serviceDialog.serviceName')"/>
         </el-form-item>
-        <el-form-item label="Service Type:">
-          <el-input v-model="serviceForm.serviceType" :placeholder="$t('dataScaling.serviceDialog.serviceType')"/>
-        </el-form-item>
         <el-form-item label="Service Url:">
           <el-input v-model="serviceForm.serviceUrl" :placeholder="$t('dataScaling.serviceDialog.serviceUrl')"/>
         </el-form-item>
@@ -360,6 +357,7 @@ import Vue from 'vue'
 import ECharts from 'vue-echarts'
 import moment from 'moment'
 import clone from 'lodash/clone'
+import isEmpty from 'lodash/isEmpty'
 import 'echarts-liquidfill'
 import API from '../api'
 
@@ -408,7 +406,7 @@ export default {
       RuleVisible: false,
       serviceForm: {
         serviceName: '',
-        serviceType: '',
+        serviceType: 'ShardingScaling',
         serviceUrl: ''
       },
       schemaData: [],
@@ -524,6 +522,21 @@ export default {
         null,
         '\t'
       )
+    },
+    percentageComputed() {
+      const arr = this.syncTaskProgress.historySyncTaskProgress
+      if (!arr) return
+      let sumEstimatedRows = 0
+      let sumSyncedRows = 0
+      for (const v of arr) {
+        sumEstimatedRows += v.estimatedRows
+        sumSyncedRows += v.syncedRows
+      }
+      let res = 0
+      if (sumEstimatedRows) {
+        res = sumSyncedRows / sumEstimatedRows
+      }
+      return nDecimal(res * 100, 0)
     }
   },
   created() {
@@ -534,25 +547,39 @@ export default {
       this.serverDialogVisible = true
     },
     setServer() {
-      API.postJobServer(this.serviceForm).then(res => {
-        this.$notify({
-          title: this.$t('dataScaling').notify.title,
-          message: 'Set up successfully！',
-          type: 'success'
+      if (this.serviceForm.serviceUrl) {
+        API.postJobServer(this.serviceForm).then(res => {
+          this.$notify({
+            title: this.$t('dataScaling').notify.title,
+            message: 'Set up successfully！',
+            type: 'success'
+          })
+          this.serverDialogVisible = false
+        }, () => {
+          this.$notify({
+            title: this.$t('dataScaling').notify.title,
+            message: 'Setup failed！',
+            type: 'error'
+          })
         })
-        this.serverDialogVisible = false
-      }, () => {
+      } else {
         this.$notify({
           title: this.$t('dataScaling').notify.title,
-          message: 'Setup failed！',
+          message: this.$t('dataScaling').rules.serviceUrl,
           type: 'error'
         })
-      })
+      }
     },
     getJobServer() {
       API.getJobServer().then(res => {
-        if (res) {
-          this.serviceForm = res
+        const { model } = res
+        if (model) {
+          const { serviceName, serviceType, serviceUrl } = model
+          this.serviceForm = {
+            serviceName,
+            serviceType,
+            serviceUrl
+          }
           this.getJobList()
         } else {
           this.serverDialogVisible = true
@@ -652,7 +679,16 @@ export default {
     getJobProgress(row) {
       const { jobId, status } = row
       API.getJobProgress(jobId).then(res => {
-        this.progressRow = res.model
+        const { model } = res
+        this.progressRow = model
+        if (!isEmpty(this.syncTaskProgress)) {
+          for (const v of model.syncTaskProgress) {
+            if (v.id === this.syncTaskProgress.id) {
+              this.syncTaskProgress = v
+            }
+          }
+        }
+        clearTimeout(timer)
         if (status !== 'STOPPED') {
           timer = setTimeout(() => {
             this.getJobProgress(row)
