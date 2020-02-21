@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const HOST = 'http://172.25.28.30'
+const HOST = ''
 const OTHERHOST = ''
 
 export default {
