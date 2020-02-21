@@ -336,9 +336,6 @@
         <el-form-item label="Service Name:">
           <el-input v-model="serviceForm.serviceName" :placeholder="$t('dataScaling.serviceDialog.serviceName')"/>
         </el-form-item>
-        <el-form-item label="Service Type:">
-          <el-input v-model="serviceForm.serviceType" :placeholder="$t('dataScaling.serviceDialog.serviceType')"/>
-        </el-form-item>
         <el-form-item label="Service Url:">
           <el-input v-model="serviceForm.serviceUrl" :placeholder="$t('dataScaling.serviceDialog.serviceUrl')"/>
         </el-form-item>
@@ -534,25 +531,38 @@ export default {
       this.serverDialogVisible = true
     },
     setServer() {
-      API.postJobServer(this.serviceForm).then(res => {
-        this.$notify({
-          title: this.$t('dataScaling').notify.title,
-          message: 'Set up successfully！',
-          type: 'success'
+      if (this.serviceForm.serviceUrl) {
+        API.postJobServer(this.serviceForm).then(res => {
+          this.$notify({
+            title: this.$t('dataScaling').notify.title,
+            message: 'Set up successfully！',
+            type: 'success'
+          })
+          this.serverDialogVisible = false
+        }, () => {
+          this.$notify({
+            title: this.$t('dataScaling').notify.title,
+            message: 'Setup failed！',
+            type: 'error'
+          })
         })
-        this.serverDialogVisible = false
-      }, () => {
+      } else {
         this.$notify({
           title: this.$t('dataScaling').notify.title,
-          message: 'Setup failed！',
+          message: this.$t('dataScaling').rules.serviceUrl,
           type: 'error'
         })
-      })
+      }
     },
     getJobServer() {
       API.getJobServer().then(res => {
         if (res) {
-          this.serviceForm = res
+          const { serviceName, serviceType, serviceUrl } = res.model
+          this.serviceForm = {
+            serviceName,
+            serviceType,
+            serviceUrl
+          }
           this.getJobList()
         } else {
           this.serverDialogVisible = true

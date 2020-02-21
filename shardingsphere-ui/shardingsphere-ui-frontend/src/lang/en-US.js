@@ -172,7 +172,8 @@ export default {
     },
     rules: {
       source: 'Please select the source of the registration center',
-      target: 'Please select a target'
+      target: 'Please select a target',
+      serviceUrl: 'ServiceUrl must fill'
     },
     notify: {
       title: 'Prompt',
