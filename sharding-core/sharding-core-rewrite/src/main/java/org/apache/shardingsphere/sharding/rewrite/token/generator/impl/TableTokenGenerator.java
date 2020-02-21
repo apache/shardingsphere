@@ -81,6 +81,13 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
                     result.add(tableToken.get());
                 }
             }
+            // FIXME: When new parser is online, please remove comments
+//            if (each instanceof ColumnProjectionSegment) {
+//                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext, (ColumnProjectionSegment) each);
+//                if (tableToken.isPresent()) {
+//                    result.add(tableToken.get());
+//                }
+//            }
         }
         return result;
     }

@@ -73,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegm
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
@@ -303,22 +304,26 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             result.getTables().addAll(tables.getValue());
             result.getAllSQLSegments().addAll(tables.getValue());
         }
-        result.getAllSQLSegments().addAll(getTableSegments(projections, result.getTables()));
         if (null != ctx.whereClause()) {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
+            // FIXME: getTableSegments() should be moved to TableTokenGenerator.
             result.getAllSQLSegments().addAll(getTableSegments(where, result.getTables()));
         }
         if (null != ctx.groupByClause()) {
             GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
             result.setGroupBy(groupBy);
             result.getAllSQLSegments().add(groupBy);
+            // FIXME: getTableSegments() should be moved to TableTokenGenerator.
+            result.getAllSQLSegments().addAll(getTableSegments(groupBy.getGroupByItems(), result.getTables()));
         }
         if (null != ctx.orderByClause()) {
             OrderBySegment orderBy = (OrderBySegment) visit(ctx.orderByClause());
             result.setOrderBy(orderBy);
             result.getAllSQLSegments().add(orderBy);
+            // FIXME: getTableSegments() should be moved to TableTokenGenerator.
+            result.getAllSQLSegments().addAll(getTableSegments(orderBy.getOrderByItems(), result.getTables()));
         }
         if (null != ctx.limitClause()) {
             LimitSegment limitSegment = (LimitSegment) visit(ctx.limitClause());
@@ -329,25 +334,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             LockSegment lockSegment = (LockSegment) visit(ctx.lockClause());
             result.getAllSQLSegments().add(lockSegment);
             result.setLock(lockSegment);
-        }
-        return result;
-    }
-    
-    private Collection<TableSegment> getTableSegments(final ProjectionsSegment projections, final Collection<TableSegment> tableSegments) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ProjectionSegment each : projections.getProjections()) {
-            if (each instanceof ShorthandProjectionSegment) {
-                ShorthandProjectionSegment shorthandProjection = (ShorthandProjectionSegment) each;
-                if (shorthandProjection.getOwner().isPresent() && isTable(shorthandProjection.getOwner().get(), tableSegments)) {
-                    result.add(shorthandProjection.getOwner().get());
-                }
-            }
-            if (each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getOwner().isPresent()) {
-                ColumnProjectionSegment columnProjection = (ColumnProjectionSegment) each;
-                if (columnProjection.getOwner().isPresent() && isTable(columnProjection.getOwner().get(), tableSegments)) {
-                    result.add(columnProjection.getOwner().get());
-                }
-            }
         }
         return result;
     }
@@ -372,6 +358,16 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
+    private Collection<TableSegment> getTableSegments(final Collection<OrderByItemSegment> orderBys, final Collection<TableSegment> tableSegments) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (OrderByItemSegment each : orderBys) {
+            if (isTable(each, tableSegments)) {
+                result.add(((ColumnOrderByItemSegment) each).getColumn().getOwner().get());
+            }
+        }
+        return result;
+    }
+    
     private boolean isTable(final TableSegment owner, final Collection<TableSegment> tableSegments) {
         for (TableSegment each : tableSegments) {
             if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
@@ -379,6 +375,11 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             }
         }
         return true;
+    }
+    
+    private boolean isTable(final OrderByItemSegment each, final Collection<TableSegment> tableSegments) {
+        return each instanceof ColumnOrderByItemSegment 
+                && ((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent() && isTable(((ColumnOrderByItemSegment) each).getColumn().getOwner().get(), tableSegments);
     }
     
     private boolean isDistinct(final SelectClauseContext ctx) {
