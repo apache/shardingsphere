@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.Map;
-
 /**
  * Abstract syntax tree of SQL.
  */
@@ -31,6 +29,4 @@ import java.util.Map;
 public final class SQLAST {
     
     private final ParserRuleContext parserRuleContext;
-    
-    private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
 }
