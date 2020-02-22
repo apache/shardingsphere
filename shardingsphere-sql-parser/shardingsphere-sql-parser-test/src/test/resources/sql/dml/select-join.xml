@@ -44,6 +44,9 @@
     <select sql-case-id="select_inner_join_related_with_name" parameters="1000">
         <table name="t_order" start-index="27" stop-index="33" />
         <table name="t_order_item" start-index="40" stop-index="51" />
+        <!-- FIXME should not has table segment for owner -->
+        <table name="t_order" start-index="56" stop-index="62" />
+        <table name="t_order_item" start-index="75" stop-index="86" />
         <projections start-index="7" stop-index="20">
             <shorthand-projection start-index="7" stop-index="20">
                 <owner name="t_order_item" start-index="7" stop-index="18" />
