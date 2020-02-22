@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.MySQLParserEntry
+org.apache.shardingsphere.sql.parser.SQLServerParserConfiguration

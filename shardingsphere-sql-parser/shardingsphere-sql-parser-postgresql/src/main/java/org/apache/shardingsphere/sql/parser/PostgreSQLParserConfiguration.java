@@ -20,48 +20,48 @@ package org.apache.shardingsphere.sql.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DALVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DCLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DDLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DMLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92TCLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLTCLVisitor;
 
 /**
- * SQL parser entry for SQL92.
+ * SQL parser configuration for PostgreSQL.
  */
-public final class SQL92ParserEntry implements SQLParserEntry {
+public final class PostgreSQLParserConfiguration implements SQLParserConfiguration {
     
     @Override
     public String getDatabaseTypeName() {
-        return "SQL92";
+        return "PostgreSQL";
     }
     
     @Override
     public Class<? extends Lexer> getLexerClass() {
-        return SQL92StatementLexer.class;
+        return PostgreSQLStatementLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return SQL92Parser.class;
+        return PostgreSQLParser.class;
     }
     
     @Override
     public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        if (SQL92DMLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQL92DMLVisitor.class;
+        if (PostgreSQLDMLVisitor.class.getSimpleName().contains(visitorName)) {
+            return PostgreSQLDMLVisitor.class;
         }
-        if (SQL92DDLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQL92DDLVisitor.class;
+        if (PostgreSQLDDLVisitor.class.getSimpleName().contains(visitorName)) {
+            return PostgreSQLDDLVisitor.class;
         }
-        if (SQL92TCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQL92TCLVisitor.class;
+        if (PostgreSQLTCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return PostgreSQLTCLVisitor.class;
         }
-        if (SQL92DCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQL92DCLVisitor.class;
+        if (PostgreSQLDCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return PostgreSQLDCLVisitor.class;
         }
-        return SQL92DALVisitor.class;
+        return PostgreSQLDALVisitor.class;
     }
 }

@@ -26,7 +26,7 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.constant.RuleName;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -66,7 +66,7 @@ public final class ParseTreeVisitorFactory {
      * @return parse tree visitor
      */
     public static ParseTreeVisitor newInstance(final String databaseTypeName, final ParseTree parseTree) {
-        for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
+        for (SQLParserConfiguration each : NewInstanceServiceLoader.newServiceInstances(SQLParserConfiguration.class)) {
             if (each.getDatabaseTypeName().equals(databaseTypeName)) {
                 return createParseTreeVisitor(each, getVisitorName(parseTree.getClass().getSimpleName()));
             }
@@ -75,8 +75,8 @@ public final class ParseTreeVisitorFactory {
     }
     
     @SneakyThrows
-    private static ParseTreeVisitor createParseTreeVisitor(final SQLParserEntry parserEntry, final String visitorName) {
-        return parserEntry.getVisitorClass(visitorName).getConstructor().newInstance();
+    private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration configuration, final String visitorName) {
+        return configuration.getVisitorClass(visitorName).getConstructor().newInstance();
     }
     
     private static String getVisitorName(final String visitorRuleName) {

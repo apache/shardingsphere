@@ -22,9 +22,9 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 
 /**
- * SQL parser entry.
+ * SQL parser configuration.
  */
-public interface SQLParserEntry {
+public interface SQLParserConfiguration {
     
     /**
      * Get name of database type.

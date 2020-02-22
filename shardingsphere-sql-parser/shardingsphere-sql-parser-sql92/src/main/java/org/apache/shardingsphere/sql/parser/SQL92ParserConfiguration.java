@@ -20,48 +20,48 @@ package org.apache.shardingsphere.sql.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementLexer;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDALVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDCLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDDLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDMLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerTCLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92TCLVisitor;
 
 /**
- * SQL parser entry for SQLServer.
+ * SQL parser configuration for SQL92.
  */
-public final class SQLServerParserEntry implements SQLParserEntry {
+public final class SQL92ParserConfiguration implements SQLParserConfiguration {
     
     @Override
     public String getDatabaseTypeName() {
-        return "SQLServer";
+        return "SQL92";
     }
     
     @Override
     public Class<? extends Lexer> getLexerClass() {
-        return SQLServerStatementLexer.class;
+        return SQL92StatementLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return SQLServerParser.class;
+        return SQL92Parser.class;
     }
     
     @Override
     public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        if (SQLServerDMLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQLServerDMLVisitor.class;
+        if (SQL92DMLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQL92DMLVisitor.class;
         }
-        if (SQLServerDDLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQLServerDDLVisitor.class;
+        if (SQL92DDLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQL92DDLVisitor.class;
         }
-        if (SQLServerTCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQLServerTCLVisitor.class;
+        if (SQL92TCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQL92TCLVisitor.class;
         }
-        if (SQLServerDCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQLServerDCLVisitor.class;
+        if (SQL92DCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQL92DCLVisitor.class;
         }
-        return SQLServerDALVisitor.class;
+        return SQL92DALVisitor.class;
     }
 }

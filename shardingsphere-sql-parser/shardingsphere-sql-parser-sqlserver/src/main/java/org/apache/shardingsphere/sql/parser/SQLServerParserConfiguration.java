@@ -20,48 +20,48 @@ package org.apache.shardingsphere.sql.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementLexer;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
-import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDALVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDCLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDDLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDMLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.OracleTCLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementLexer;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.SQLServerTCLVisitor;
 
 /**
- * SQL parser entry for Oracle.
+ * SQL parser configuration for SQLServer.
  */
-public final class OracleParserEntry implements SQLParserEntry {
+public final class SQLServerParserConfiguration implements SQLParserConfiguration {
     
     @Override
     public String getDatabaseTypeName() {
-        return "Oracle";
+        return "SQLServer";
     }
     
     @Override
     public Class<? extends Lexer> getLexerClass() {
-        return OracleStatementLexer.class;
+        return SQLServerStatementLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return OracleParser.class;
+        return SQLServerParser.class;
     }
     
     @Override
     public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        if (OracleDMLVisitor.class.getSimpleName().contains(visitorName)) {
-            return OracleDMLVisitor.class;
+        if (SQLServerDMLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQLServerDMLVisitor.class;
         }
-        if (OracleDDLVisitor.class.getSimpleName().contains(visitorName)) {
-            return OracleDDLVisitor.class;
+        if (SQLServerDDLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQLServerDDLVisitor.class;
         }
-        if (OracleTCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return OracleTCLVisitor.class;
+        if (SQLServerTCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQLServerTCLVisitor.class;
         }
-        if (OracleDCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return OracleDCLVisitor.class;
+        if (SQLServerDCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return SQLServerDCLVisitor.class;
         }
-        return OracleDALVisitor.class;
+        return SQLServerDALVisitor.class;
     }
 }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.SQLServerParserEntry
+org.apache.shardingsphere.sql.parser.PostgreSQLParserConfiguration

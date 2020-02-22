@@ -21,7 +21,7 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDALVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDCLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDDLVisitor;
@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDMLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLTCLVisitor;
 
 /**
- * SQL parser entry for MySQL.
+ * SQL parser configuration for MySQL.
  */
-public final class MySQLParserEntry implements SQLParserEntry {
+public final class MySQLParserConfiguration implements SQLParserConfiguration {
     
     @Override
     public String getDatabaseTypeName() {
