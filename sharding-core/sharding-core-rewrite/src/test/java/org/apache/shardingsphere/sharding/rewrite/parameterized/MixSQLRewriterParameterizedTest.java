@@ -30,7 +30,7 @@ import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContex
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -77,7 +77,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     protected Collection<SQLRewriteResult> createSQLRewriteResults() throws IOException {
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
-        SQLParserEngine sqlParserEngine = SQLParseEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
+        SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingRouter shardingRouter = new ShardingRouter(shardingRule, new ShardingSphereProperties(new Properties()), createShardingSphereMetaData(), sqlParserEngine);
         ShardingRouteContext shardingRouteContext = shardingRouter.route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
         ShardingSphereProperties properties = new ShardingSphereProperties(ruleConfiguration.getProps());

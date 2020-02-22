@@ -32,13 +32,13 @@ public final class SQLParseEngineFactoryTest {
     @Before
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field field = SQLParseEngineFactory.class.getDeclaredField("ENGINES");
+        Field field = SQLParserEngineFactory.class.getDeclaredField("ENGINES");
         field.setAccessible(true);
-        ((Map) field.get(SQLParseEngineFactory.class)).clear();
+        ((Map) field.get(SQLParserEngineFactory.class)).clear();
     }
     
     @Test
     public void assertGetSQLParseEngine() {
-        assertThat(SQLParseEngineFactory.getSQLParserEngine("MySQL"), is(SQLParseEngineFactory.getSQLParserEngine("MySQL")));
+        assertThat(SQLParserEngineFactory.getSQLParserEngine("MySQL"), is(SQLParserEngineFactory.getSQLParserEngine("MySQL")));
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
@@ -51,6 +51,6 @@ public final class UnsupportedSQLParserParameterizedTest {
     @Test(expected = SQLParsingException.class)
     public void assertUnsupportedSQL() {
         String sql = sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        SQLParseEngineFactory.getSQLParserEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
+        SQLParserEngineFactory.getSQLParserEngine("H2".equals(databaseType) ? "MySQL" : databaseType).parse(sql, false);
     }
 }

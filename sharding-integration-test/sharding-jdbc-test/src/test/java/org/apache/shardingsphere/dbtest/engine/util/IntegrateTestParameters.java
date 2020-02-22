@@ -27,7 +27,7 @@ import org.apache.shardingsphere.dbtest.engine.SQLType;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesLoader;
 import org.apache.shardingsphere.test.sql.loader.SQLCasesRegistry;
@@ -62,7 +62,7 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            Class<?> sqlStatementClass = SQLParseEngineFactory.getSQLParserEngine(
+            Class<?> sqlStatementClass = SQLParserEngineFactory.getSQLParserEngine(
                     DatabaseTypes.getTrunkDatabaseType(databaseType).getName()).parse(sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), false).getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
@@ -115,7 +115,7 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            Class<?> sqlStatementClass = SQLParseEngineFactory.getSQLParserEngine(
+            Class<?> sqlStatementClass = SQLParserEngineFactory.getSQLParserEngine(
                     DatabaseTypes.getTrunkDatabaseType(databaseType).getName()).parse(sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), false).getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;

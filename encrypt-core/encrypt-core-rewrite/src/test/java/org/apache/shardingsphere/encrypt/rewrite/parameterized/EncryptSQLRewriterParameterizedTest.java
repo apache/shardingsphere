@@ -24,7 +24,7 @@ import org.apache.shardingsphere.underlying.common.constant.properties.ShardingS
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.sql.parser.SQLParseEngineFactory;
+import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -77,7 +77,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     }
     
     private SQLRewriteContext createSQLRewriteContext() {
-        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParserEngine(
+        SQLStatement sqlStatement = SQLParserEngineFactory.getSQLParserEngine(
                 null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType()).parse(getTestParameters().getInputSQL(), false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
                 createRelationMetas(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
