@@ -44,14 +44,15 @@ public final class SQLParserEngine {
      * @return parse tree
      */
     public ParseTree parse() {
-        ParseTree result = towPhaseParse(SQLParserFactory.newInstance(databaseTypeName, sql));
+        ParseTree result = towPhaseParse();
         if (result instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
         return result;
     }
     
-    private ParseTree towPhaseParse(final SQLParser sqlParser) {
+    private ParseTree towPhaseParse() {
+        SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
         try {
             ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
