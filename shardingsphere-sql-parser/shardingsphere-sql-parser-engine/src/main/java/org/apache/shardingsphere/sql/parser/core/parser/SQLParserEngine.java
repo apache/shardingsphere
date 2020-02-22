@@ -44,22 +44,22 @@ public final class SQLParserEngine {
      *
      * @return abstract syntax tree of SQL
      */
-    public SQLAST parse() {
+    public ParserRuleContext parse() {
         SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
-        ParseTree parseTree;
+        ParseTree result;
         try {
             ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
-            parseTree = sqlParser.execute().getChild(0);
+            result = sqlParser.execute().getChild(0);
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
             ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
-            parseTree = sqlParser.execute().getChild(0);
+            result = sqlParser.execute().getChild(0);
         }
-        if (parseTree instanceof ErrorNode) {
+        if (result instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        return new SQLAST((ParserRuleContext) parseTree);
+        return (ParserRuleContext) result;
     }
 }

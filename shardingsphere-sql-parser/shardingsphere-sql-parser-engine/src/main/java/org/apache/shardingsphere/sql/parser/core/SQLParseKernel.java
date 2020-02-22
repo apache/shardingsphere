@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLAST;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
@@ -48,7 +48,7 @@ public final class SQLParseKernel {
      * @return SQL statement
      */
     public SQLStatement parse() {
-        SQLAST ast = parserEngine.parse();
-        return (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, ast.getParserRuleContext()).visit(ast.getParserRuleContext());
+        ParserRuleContext parserRuleContext = parserEngine.parse();
+        return (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, parserRuleContext).visit(parserRuleContext);
     }
 }
