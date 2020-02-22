@@ -19,15 +19,15 @@ package org.apache.shardingsphere.sql.parser.core;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserKernel;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
- * SQL parse kernel.
+ * SQL parse engine.
  */
 @RequiredArgsConstructor
-public final class SQLParseKernel {
+public final class SQLParserEngine {
     
     private final String databaseTypeName;
     
@@ -39,7 +39,7 @@ public final class SQLParseKernel {
      * @return SQL statement
      */
     public SQLStatement parse() {
-        ParseTree parseTree = new SQLParserEngine(databaseTypeName, sql).parse();
+        ParseTree parseTree = new SQLParserKernel(databaseTypeName, sql).parse();
         return (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, parseTree).visit(parseTree);
     }
 }

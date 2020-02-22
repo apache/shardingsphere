@@ -29,10 +29,10 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 /**
- * SQL parser engine.
+ * SQL parser kernel.
  */
 @RequiredArgsConstructor
-public final class SQLParserEngine {
+public final class SQLParserKernel {
     
     private final String databaseTypeName;
     
