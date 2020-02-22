@@ -62,7 +62,7 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            Class<?> sqlStatementClass = SQLParseEngineFactory.getSQLParseEngine(
+            Class<?> sqlStatementClass = SQLParseEngineFactory.getSQLParserEngine(
                     DatabaseTypes.getTrunkDatabaseType(databaseType).getName()).parse(sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), false).getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;
@@ -115,7 +115,7 @@ public final class IntegrateTestParameters {
             String sqlCaseId = each[0].toString();
             String databaseType = each[1].toString();
             SQLCaseType caseType = (SQLCaseType) each[2];
-            Class<?> sqlStatementClass = SQLParseEngineFactory.getSQLParseEngine(
+            Class<?> sqlStatementClass = SQLParseEngineFactory.getSQLParserEngine(
                     DatabaseTypes.getTrunkDatabaseType(databaseType).getName()).parse(sqlCasesLoader.getSQL(sqlCaseId, SQLCaseType.Placeholder, Collections.emptyList()), false).getClass();
             if (!sqlType.getSqlStatementClass().isAssignableFrom(sqlStatementClass)) {
                 continue;

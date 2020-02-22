@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
- * SQL parse engine.
+ * SQL parser engine.
  */
 @RequiredArgsConstructor
-public final class SQLParseEngine {
+public final class SQLParserEngine {
     
     private final String databaseTypeName;
     

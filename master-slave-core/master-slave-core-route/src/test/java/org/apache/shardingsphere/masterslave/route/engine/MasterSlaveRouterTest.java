@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -54,7 +54,7 @@ public final class MasterSlaveRouterTest {
     private static final String SLAVE_DATASOURCE = "query";
     
     @Mock
-    private SQLParseEngine sqlParseEngine;
+    private SQLParserEngine sqlParserEngine;
     
     @Mock
     private InsertStatement insertStatement;
@@ -69,9 +69,9 @@ public final class MasterSlaveRouterTest {
     
     @Before
     public void setUp() {
-        masterSlaveRouter = new MasterSlaveRouter(masterSlaveRule, sqlParseEngine, true);
-        when(sqlParseEngine.parse(QUERY_SQL, false)).thenReturn(selectStatement);
-        when(sqlParseEngine.parse(INSERT_SQL, false)).thenReturn(insertStatement);
+        masterSlaveRouter = new MasterSlaveRouter(masterSlaveRule, sqlParserEngine, true);
+        when(sqlParserEngine.parse(QUERY_SQL, false)).thenReturn(selectStatement);
+        when(sqlParserEngine.parse(INSERT_SQL, false)).thenReturn(insertStatement);
         when(selectStatement.getLock()).thenReturn(Optional.<LockSegment>absent());
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getLoadBalanceAlgorithm()).thenReturn(new RandomMasterSlaveLoadBalanceAlgorithm());

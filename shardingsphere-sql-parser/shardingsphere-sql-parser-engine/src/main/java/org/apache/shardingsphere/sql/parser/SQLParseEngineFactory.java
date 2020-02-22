@@ -24,20 +24,20 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * SQL parse engine factory.
+ * SQL parser engine factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParseEngineFactory {
     
-    private static final Map<String, SQLParseEngine> ENGINES = new ConcurrentHashMap<>();
+    private static final Map<String, SQLParserEngine> ENGINES = new ConcurrentHashMap<>();
     
     /**
-     * Get SQL parse engine.
+     * Get SQL parser engine.
      *
      * @param databaseTypeName name of database type
-     * @return SQL parse engine
+     * @return SQL parser engine
      */
-    public static SQLParseEngine getSQLParseEngine(final String databaseTypeName) {
+    public static SQLParserEngine getSQLParserEngine(final String databaseTypeName) {
         if (ENGINES.containsKey(databaseTypeName)) {
             return ENGINES.get(databaseTypeName);
         }
@@ -45,7 +45,7 @@ public final class SQLParseEngineFactory {
             if (ENGINES.containsKey(databaseTypeName)) {
                 return ENGINES.get(databaseTypeName);
             }
-            SQLParseEngine result = new SQLParseEngine(databaseTypeName);
+            SQLParserEngine result = new SQLParserEngine(databaseTypeName);
             ENGINES.put(databaseTypeName, result);
             return result;
         }

@@ -159,7 +159,7 @@ public final class SQLParserParameterizedTest {
         }
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
-        SQLStatement actual = SQLParseEngineFactory.getSQLParseEngine(databaseType).parse(sql, false);
+        SQLStatement actual = SQLParseEngineFactory.getSQLParserEngine(databaseType).parse(sql, false);
         if (!expected.isLongSQL()) {
             SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sqlCaseType), actual, expected);
         }

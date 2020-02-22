@@ -39,6 +39,6 @@ public final class SQLParseEngineFactoryTest {
     
     @Test
     public void assertGetSQLParseEngine() {
-        assertThat(SQLParseEngineFactory.getSQLParseEngine("MySQL"), is(SQLParseEngineFactory.getSQLParseEngine("MySQL")));
+        assertThat(SQLParseEngineFactory.getSQLParserEngine("MySQL"), is(SQLParseEngineFactory.getSQLParserEngine("MySQL")));
     }
 }

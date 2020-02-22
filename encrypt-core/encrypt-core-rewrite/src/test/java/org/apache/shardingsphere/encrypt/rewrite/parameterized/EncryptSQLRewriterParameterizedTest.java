@@ -77,7 +77,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     }
     
     private SQLRewriteContext createSQLRewriteContext() {
-        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParseEngine(
+        SQLStatement sqlStatement = SQLParseEngineFactory.getSQLParserEngine(
                 null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType()).parse(getTestParameters().getInputSQL(), false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
                 createRelationMetas(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
