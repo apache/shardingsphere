@@ -17,25 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
-import org.apache.shardingsphere.sql.parser.core.parser.SQLAST;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * SQL parse kernel.
  */
+@RequiredArgsConstructor
 public final class SQLParseKernel {
-    
-    private final SQLParserEngine parserEngine;
     
     private final String databaseTypeName;
     
-    public SQLParseKernel(final ParseRuleRegistry parseRuleRegistry, final String databaseTypeName, final String sql) {
-        parserEngine = new SQLParserEngine(parseRuleRegistry, databaseTypeName, sql);
-        this.databaseTypeName = databaseTypeName;
-    }
+    private final String sql;
     
     /**
      * Parse SQL.
@@ -43,7 +39,7 @@ public final class SQLParseKernel {
      * @return SQL statement
      */
     public SQLStatement parse() {
-        SQLAST ast = parserEngine.parse();
-        return (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, ast.getParserRuleContext()).visit(ast.getParserRuleContext());
+        ParseTree parseTree = new SQLParserEngine(databaseTypeName, sql).parse();
+        return (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, parseTree).visit(parseTree);
     }
 }

@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
+import org.apache.shardingsphere.sql.parser.core.constant.RuleName;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 

@@ -21,21 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
-import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * SQL parser engine.
@@ -43,46 +34,30 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class SQLParserEngine {
     
-    private final ParseRuleRegistry parseRuleRegistry;
-    
     private final String databaseTypeName;
     
     private final String sql;
     
     /**
-     * Parse SQL to abstract syntax tree.
+     * Parse SQL.
      *
-     * @return abstract syntax tree of SQL
+     * @return parse tree
      */
-    public SQLAST parse() {
+    public ParseTree parse() {
         SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
-        ParseTree parseTree;
+        ParseTree result;
         try {
             ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
-            parseTree = sqlParser.execute().getChild(0);
+            result = sqlParser.execute().getChild(0);
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
             ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
-            parseTree = sqlParser.execute().getChild(0);
+            result = sqlParser.execute().getChild(0);
         }
-        if (parseTree instanceof ErrorNode) {
+        if (result instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
-        }
-        SQLStatementRule rule = parseRuleRegistry.getSQLStatementRule(databaseTypeName, parseTree.getClass().getSimpleName());
-        if (null == rule) {
-            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
-        }
-        return new SQLAST((ParserRuleContext) parseTree, getParameterMarkerIndexes((ParserRuleContext) parseTree), rule);
-    }
-    
-    private Map<ParserRuleContext, Integer> getParameterMarkerIndexes(final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.PARAMETER_MARKER);
-        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
-        int index = 0;
-        for (ParserRuleContext each : placeholderNodes) {
-            result.put(each, index++);
         }
         return result;
     }
