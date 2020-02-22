@@ -339,6 +339,17 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
+    private Collection<TableSegment> getTableSegments(final Collection<TableSegment> tableSegments, final JoinedTableContext joinedTable) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (TableSegment tableSegment : ((CollectionValue<TableSegment>) visit(joinedTable)).getValue()) {
+            if (isTable(tableSegment, tableSegments)) {
+                result.add(tableSegment);
+            }
+        }
+        return result;
+    }
+    
     private Collection<TableSegment> getTableSegments(final WhereSegment where, final Collection<TableSegment> tableSegments) {
         Collection<TableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
@@ -496,7 +507,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return visit(ctx.tableReference());
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
@@ -508,7 +518,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         }
         if (null != ctx.joinedTable()) {
             for (JoinedTableContext each : ctx.joinedTable()) {
-                result.getValue().addAll(((CollectionValue<TableSegment>) visit(each)).getValue());
+                result.getValue().addAll(getTableSegments(result.getValue(), each));
             }
         }
         return result;
@@ -533,9 +543,16 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
         CollectionValue<TableSegment> result = new CollectionValue<>();
-        result.getValue().add((TableSegment) visit(ctx.tableFactor()));
+        TableSegment tableSegment = (TableSegment) visit(ctx.tableFactor());
+        result.getValue().add(tableSegment);
         if (null != ctx.joinSpecification()) {
-            result.combine((CollectionValue<TableSegment>) visit(ctx.joinSpecification()));
+            Collection<TableSegment> tableSegments = new LinkedList<>();
+            for (TableSegment each : ((CollectionValue<TableSegment>) visit(ctx.joinSpecification())).getValue()) {
+                if (isTable(each, Collections.singleton(tableSegment))) {
+                    tableSegments.add(each);
+                }
+            }
+            result.getValue().addAll(tableSegments);
         }
         return result;
     }
