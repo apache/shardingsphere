@@ -44,21 +44,23 @@ public final class SQLParserEngine {
      * @return parse tree
      */
     public ParseTree parse() {
-        SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
-        ParseTree result;
-        try {
-            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
-            result = sqlParser.execute().getChild(0);
-        } catch (final ParseCancellationException ex) {
-            ((Parser) sqlParser).reset();
-            ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
-            result = sqlParser.execute().getChild(0);
-        }
+        ParseTree result = towPhaseParse(SQLParserFactory.newInstance(databaseTypeName, sql));
         if (result instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
         return result;
+    }
+    
+    private ParseTree towPhaseParse(final SQLParser sqlParser) {
+        try {
+            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
+            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
+            return sqlParser.execute().getChild(0);
+        } catch (final ParseCancellationException ex) {
+            ((Parser) sqlParser).reset();
+            ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
+            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
+            return sqlParser.execute().getChild(0);
+        }
     }
 }
