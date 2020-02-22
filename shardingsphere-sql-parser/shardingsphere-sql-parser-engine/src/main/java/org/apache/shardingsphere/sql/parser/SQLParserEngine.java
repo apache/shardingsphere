@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
-import org.apache.shardingsphere.sql.parser.core.parser.SQLParserKernel;
+import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
@@ -66,7 +66,7 @@ public final class SQLParserEngine {
                 return cachedSQLStatement.get();
             }
         }
-        ParseTree parseTree = new SQLParserKernel(databaseTypeName, sql).parse();
+        ParseTree parseTree = new SQLParserExecutor(databaseTypeName, sql).execute();
         SQLStatement result = (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, parseTree).visit(parseTree);
         if (useCache) {
             cache.put(sql, result);

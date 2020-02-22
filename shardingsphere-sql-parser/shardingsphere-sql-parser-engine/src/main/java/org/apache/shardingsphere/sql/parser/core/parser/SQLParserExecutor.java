@@ -29,21 +29,21 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 /**
- * SQL parser kernel.
+ * SQL parser executor.
  */
 @RequiredArgsConstructor
-public final class SQLParserKernel {
+public final class SQLParserExecutor {
     
     private final String databaseTypeName;
     
     private final String sql;
     
     /**
-     * Parse SQL.
+     * Execute to parse SQL.
      *
      * @return parse tree
      */
-    public ParseTree parse() {
+    public ParseTree execute() {
         ParseTree result = towPhaseParse();
         if (result instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
