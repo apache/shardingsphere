@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLAST;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
@@ -32,8 +33,12 @@ public final class SQLParseKernel {
     
     private final String databaseTypeName;
     
-    public SQLParseKernel(final ParseRuleRegistry parseRuleRegistry, final String databaseTypeName, final String sql) {
-        parserEngine = new SQLParserEngine(parseRuleRegistry, databaseTypeName, sql);
+    static {
+        NewInstanceServiceLoader.register(SQLParserEntry.class);
+    }
+    
+    public SQLParseKernel(final String databaseTypeName, final String sql) {
+        parserEngine = new SQLParserEngine(databaseTypeName, sql);
         this.databaseTypeName = databaseTypeName;
     }
     

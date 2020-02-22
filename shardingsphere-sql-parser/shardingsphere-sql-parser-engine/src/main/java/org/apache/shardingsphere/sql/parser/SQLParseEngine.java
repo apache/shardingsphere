@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
 import org.apache.shardingsphere.sql.parser.core.SQLParseKernel;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -65,7 +64,7 @@ public final class SQLParseEngine {
                 return cachedSQLStatement.get();
             }
         }
-        SQLStatement result = new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseTypeName, sql).parse();
+        SQLStatement result = new SQLParseKernel(databaseTypeName, sql).parse();
         if (useCache) {
             cache.put(sql, result);
         }

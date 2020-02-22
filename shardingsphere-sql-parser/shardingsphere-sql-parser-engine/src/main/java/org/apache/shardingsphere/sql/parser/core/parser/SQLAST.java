@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.core.parser;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.statement.SQLStatementRule;
 
 import java.util.Map;
 
@@ -34,6 +33,4 @@ public final class SQLAST {
     private final ParserRuleContext parserRuleContext;
     
     private final Map<ParserRuleContext, Integer> parameterMarkerIndexes;
-    
-    private final SQLStatementRule sqlStatementRule;
 }

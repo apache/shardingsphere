@@ -29,8 +29,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.sql.parser.core.extractor.util.RuleName;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.util.Collection;
@@ -42,8 +40,6 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class SQLParserEngine {
-    
-    private final ParseRuleRegistry parseRuleRegistry;
     
     private final String databaseTypeName;
     
@@ -70,11 +66,7 @@ public final class SQLParserEngine {
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        SQLStatementRule rule = parseRuleRegistry.getSQLStatementRule(databaseTypeName, parseTree.getClass().getSimpleName());
-        if (null == rule) {
-            throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
-        }
-        return new SQLAST((ParserRuleContext) parseTree, getParameterMarkerIndexes((ParserRuleContext) parseTree), rule);
+        return new SQLAST((ParserRuleContext) parseTree, getParameterMarkerIndexes((ParserRuleContext) parseTree));
     }
     
     private Map<ParserRuleContext, Integer> getParameterMarkerIndexes(final ParserRuleContext rootNode) {
