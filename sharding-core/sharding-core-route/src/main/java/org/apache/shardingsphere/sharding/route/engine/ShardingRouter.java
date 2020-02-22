@@ -40,7 +40,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -66,7 +66,7 @@ public final class ShardingRouter implements DateNodeRouter {
     
     private final ShardingSphereMetaData metaData;
     
-    private final SQLParseEngine parseEngine;
+    private final SQLParserEngine sqlParserEngine;
     
     @Override
     @SuppressWarnings("unchecked")
@@ -101,7 +101,7 @@ public final class ShardingRouter implements DateNodeRouter {
      *
      */
     private SQLStatement parse(final String sql, final boolean useCache) {
-        return parseEngine.parse(sql, useCache);
+        return sqlParserEngine.parse(sql, useCache);
     }
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey, final RelationMetas relationMetas) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.shard;
 
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
@@ -38,8 +38,8 @@ import java.util.List;
  */
 public final class PreparedQueryShardingEngine extends BaseShardingEngine {
     
-    public PreparedQueryShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
-        super(shardingRule, properties, metaData, sqlParseEngine);
+    public PreparedQueryShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+        super(shardingRule, properties, metaData, sqlParserEngine);
     }
     
     @Override

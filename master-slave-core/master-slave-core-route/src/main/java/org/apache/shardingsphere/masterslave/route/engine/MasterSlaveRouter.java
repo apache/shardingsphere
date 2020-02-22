@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
 import org.apache.shardingsphere.masterslave.route.log.MasterSlaveSQLLogger;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
@@ -37,13 +37,13 @@ public final class MasterSlaveRouter implements DateNodeRouter {
     
     private final MasterSlaveRule masterSlaveRule;
     
-    private final SQLParseEngine parseEngine;
+    private final SQLParserEngine sqlParserEngine;
     
     private final boolean showSQL;
     
     @Override
     public RouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
-        String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(parseEngine.parse(sql, useCache));
+        String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(sqlParserEngine.parse(sql, useCache));
         if (showSQL) {
             MasterSlaveSQLLogger.logSQL(sql, dataSourceName);
         }

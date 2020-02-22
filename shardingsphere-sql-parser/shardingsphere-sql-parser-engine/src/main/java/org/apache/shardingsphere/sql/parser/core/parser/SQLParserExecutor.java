@@ -29,36 +29,39 @@ import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 /**
- * SQL parser engine.
+ * SQL parser executor.
  */
 @RequiredArgsConstructor
-public final class SQLParserEngine {
+public final class SQLParserExecutor {
     
     private final String databaseTypeName;
     
     private final String sql;
     
     /**
-     * Parse SQL.
+     * Execute to parse SQL.
      *
      * @return parse tree
      */
-    public ParseTree parse() {
-        SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
-        ParseTree result;
-        try {
-            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
-            result = sqlParser.execute().getChild(0);
-        } catch (final ParseCancellationException ex) {
-            ((Parser) sqlParser).reset();
-            ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
-            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
-            result = sqlParser.execute().getChild(0);
-        }
+    public ParseTree execute() {
+        ParseTree result = towPhaseParse();
         if (result instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
         return result;
+    }
+    
+    private ParseTree towPhaseParse() {
+        SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
+        try {
+            ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
+            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
+            return sqlParser.execute().getChild(0);
+        } catch (final ParseCancellationException ex) {
+            ((Parser) sqlParser).reset();
+            ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
+            ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
+            return sqlParser.execute().getChild(0);
+        }
     }
 }

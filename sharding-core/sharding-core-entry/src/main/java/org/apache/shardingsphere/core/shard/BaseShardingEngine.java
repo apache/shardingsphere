@@ -31,7 +31,7 @@ import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContex
 import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -68,11 +68,11 @@ public abstract class BaseShardingEngine {
     
     private final SPIRoutingHook routingHook;
     
-    public BaseShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
+    public BaseShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         this.shardingRule = shardingRule;
         this.properties = properties;
         this.metaData = metaData;
-        shardingRouter = new ShardingRouter(shardingRule, properties, metaData, sqlParseEngine);
+        shardingRouter = new ShardingRouter(shardingRule, properties, metaData, sqlParserEngine);
         routingHook = new SPIRoutingHook();
     }
     

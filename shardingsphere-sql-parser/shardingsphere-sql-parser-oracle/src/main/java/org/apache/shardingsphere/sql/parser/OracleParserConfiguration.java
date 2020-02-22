@@ -20,48 +20,48 @@ package org.apache.shardingsphere.sql.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
-import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDALVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDCLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDDLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDMLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLTCLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementLexer;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDALVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDDLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.OracleTCLVisitor;
 
 /**
- * SQL parser entry for PostgreSQL.
+ * SQL parser configuration for Oracle.
  */
-public final class PostgreSQLParserEntry implements SQLParserEntry {
+public final class OracleParserConfiguration implements SQLParserConfiguration {
     
     @Override
     public String getDatabaseTypeName() {
-        return "PostgreSQL";
+        return "Oracle";
     }
     
     @Override
     public Class<? extends Lexer> getLexerClass() {
-        return PostgreSQLStatementLexer.class;
+        return OracleStatementLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return PostgreSQLParser.class;
+        return OracleParser.class;
     }
     
     @Override
     public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        if (PostgreSQLDMLVisitor.class.getSimpleName().contains(visitorName)) {
-            return PostgreSQLDMLVisitor.class;
+        if (OracleDMLVisitor.class.getSimpleName().contains(visitorName)) {
+            return OracleDMLVisitor.class;
         }
-        if (PostgreSQLDDLVisitor.class.getSimpleName().contains(visitorName)) {
-            return PostgreSQLDDLVisitor.class;
+        if (OracleDDLVisitor.class.getSimpleName().contains(visitorName)) {
+            return OracleDDLVisitor.class;
         }
-        if (PostgreSQLTCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return PostgreSQLTCLVisitor.class;
+        if (OracleTCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return OracleTCLVisitor.class;
         }
-        if (PostgreSQLDCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return PostgreSQLDCLVisitor.class;
+        if (OracleDCLVisitor.class.getSimpleName().contains(visitorName)) {
+            return OracleDCLVisitor.class;
         }
-        return PostgreSQLDALVisitor.class;
+        return OracleDALVisitor.class;
     }
 }
