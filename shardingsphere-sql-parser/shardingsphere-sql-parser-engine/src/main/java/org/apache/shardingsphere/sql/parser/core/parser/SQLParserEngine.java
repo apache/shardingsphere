@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -40,11 +39,11 @@ public final class SQLParserEngine {
     private final String sql;
     
     /**
-     * Parse SQL to abstract syntax tree.
+     * Parse SQL.
      *
-     * @return abstract syntax tree of SQL
+     * @return parse tree
      */
-    public ParserRuleContext parse() {
+    public ParseTree parse() {
         SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
         ParseTree result;
         try {
@@ -60,6 +59,6 @@ public final class SQLParserEngine {
         if (result instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
-        return (ParserRuleContext) result;
+        return result;
     }
 }
