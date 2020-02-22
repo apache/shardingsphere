@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
-import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * SQL parser.
@@ -25,9 +25,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public interface SQLParser {
     
     /**
-     * Execute to parse SQL to AST.
+     * Execute to parse SQL.
      * 
-     * @return AST
+     * @return parse tree
      */
-    ParserRuleContext execute();
+    ParseTree execute();
 }
