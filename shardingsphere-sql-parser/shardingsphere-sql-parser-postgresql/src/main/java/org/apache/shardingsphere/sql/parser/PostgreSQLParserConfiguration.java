@@ -21,6 +21,7 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDALVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.PostgreSQLDCLVisitor;
@@ -49,19 +50,20 @@ public final class PostgreSQLParserConfiguration implements SQLParserConfigurati
     }
     
     @Override
-    public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        if (PostgreSQLDMLVisitor.class.getSimpleName().contains(visitorName)) {
-            return PostgreSQLDMLVisitor.class;
+    public Class<? extends ParseTreeVisitor> getVisitorClass(final String sqlStatementType) {
+        switch (sqlStatementType) {
+            case "DML":
+                return PostgreSQLDMLVisitor.class;
+            case "DDL":
+                return PostgreSQLDDLVisitor.class;
+            case "TCL":
+                return PostgreSQLTCLVisitor.class;
+            case "DCL":
+                return PostgreSQLDCLVisitor.class;
+            case "DAL":
+                return PostgreSQLDALVisitor.class;
+            default:
+                throw new SQLParsingException("Can not support SQL statement type: `%s`", sqlStatementType);
         }
-        if (PostgreSQLDDLVisitor.class.getSimpleName().contains(visitorName)) {
-            return PostgreSQLDDLVisitor.class;
-        }
-        if (PostgreSQLTCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return PostgreSQLTCLVisitor.class;
-        }
-        if (PostgreSQLDCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return PostgreSQLDCLVisitor.class;
-        }
-        return PostgreSQLDALVisitor.class;
     }
 }

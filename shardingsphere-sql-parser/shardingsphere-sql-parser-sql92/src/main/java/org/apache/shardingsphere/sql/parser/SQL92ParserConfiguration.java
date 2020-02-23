@@ -21,6 +21,7 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DALVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DCLVisitor;
@@ -49,19 +50,20 @@ public final class SQL92ParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        if (SQL92DMLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQL92DMLVisitor.class;
+    public Class<? extends ParseTreeVisitor> getVisitorClass(final String sqlStatementType) {
+        switch (sqlStatementType) {
+            case "DML":
+                return SQL92DMLVisitor.class;
+            case "DDL":
+                return SQL92DDLVisitor.class;
+            case "TCL":
+                return SQL92TCLVisitor.class;
+            case "DCL":
+                return SQL92DCLVisitor.class;
+            case "DAL":
+                return SQL92DALVisitor.class;
+            default:
+                throw new SQLParsingException("Can not support SQL statement type: `%s`", sqlStatementType);
         }
-        if (SQL92DDLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQL92DDLVisitor.class;
-        }
-        if (SQL92TCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQL92TCLVisitor.class;
-        }
-        if (SQL92DCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return SQL92DCLVisitor.class;
-        }
-        return SQL92DALVisitor.class;
     }
 }
