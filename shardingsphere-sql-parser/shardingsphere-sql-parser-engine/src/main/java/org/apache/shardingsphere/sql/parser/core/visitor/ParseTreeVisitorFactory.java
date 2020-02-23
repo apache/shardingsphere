@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.core.constant.RuleName;
@@ -39,36 +38,35 @@ import java.util.Map.Entry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParseTreeVisitorFactory {
     
-    private static final Map<String, Collection<String>> SQL_VISITOR_RULES = new LinkedHashMap<>();
+    private static final Map<String, Collection<RuleName>> SQL_VISITOR_RULES = new LinkedHashMap<>();
     
     static {
-        SQL_VISITOR_RULES.put("DMLVisitor", Lists.newArrayList(RuleName.SELECT.getName(), 
-                RuleName.DELETE.getName(), RuleName.UPDATE.getName(), RuleName.INSERT.getName(), RuleName.REPLACE.getName()));
-        SQL_VISITOR_RULES.put("DDLVisitor", Lists.newArrayList(RuleName.CREATE_TABLE.getName(), RuleName.ALTER_TABLE.getName(), 
-                RuleName.DROP_TABLE.getName(), RuleName.TRUNCATE_TABLE.getName(), RuleName.CREATE_INDEX.getName(), RuleName.ALTER_INDEX.getName(), RuleName.DROP_INDEX.getName()));
-        SQL_VISITOR_RULES.put("TCLVisitor", Lists.newArrayList(RuleName.SET_TRANSACTION.getName(), RuleName.SET_IMPLICIT_TRANSACTIONS.getName(), RuleName.BEGIN_TRANSACTION.getName(), 
-                RuleName.SET_AUTOCOMMIT.getName(), RuleName.COMMIT.getName(), RuleName.ROLLBACK.getName(), RuleName.SAVE_POINT.getName()));
-        SQL_VISITOR_RULES.put("DCLVisitor", Lists.newArrayList(RuleName.GRANT.getName(), RuleName.REVOKE.getName(), RuleName.CREATE_USER.getName(), 
-                RuleName.DROP_USER.getName(), RuleName.ALTER_USER.getName(), RuleName.DENY_USER.getName(), RuleName.RENAME_USER.getName(), 
-                RuleName.CREATE_ROLE.getName(), RuleName.ALTER_ROLE.getName(), RuleName.DROP_ROLE.getName(), RuleName.CREATE_LOGIN.getName(), RuleName.ALTER_LOGIN.getName(),
-                RuleName.DROP_LOGIN.getName(), RuleName.SET_DEFAULT_ROLE.getName(), RuleName.SET_ROLE.getName(), RuleName.SET_PASSWORD.getName()));
-        SQL_VISITOR_RULES.put("DALVisitor", Lists.newArrayList(RuleName.USE.getName(), RuleName.DESC.getName(), RuleName.SHOW_DATABASES.getName(),
-                RuleName.SHOW_TABLES.getName(), RuleName.SHOW_TABLE_STATUS.getName(), RuleName.SHOW_COLUMNS.getName(), RuleName.SHOW_INDEX.getName(),
-                RuleName.SHOW_CREATE_TABLE.getName(), RuleName.SHOW_OTHER.getName(), RuleName.SHOW.getName(), RuleName.SET_VARIABLE.getName(), RuleName.SET.getName(), 
-                RuleName.RESET_PARAMETER.getName(), RuleName.CALL.getName()));
+        SQL_VISITOR_RULES.put("DMLVisitor", Lists.newArrayList(RuleName.SELECT, RuleName.DELETE, RuleName.UPDATE, RuleName.INSERT, RuleName.REPLACE));
+        SQL_VISITOR_RULES.put("DDLVisitor", Lists.newArrayList(RuleName.CREATE_TABLE, RuleName.ALTER_TABLE, 
+                RuleName.DROP_TABLE, RuleName.TRUNCATE_TABLE, RuleName.CREATE_INDEX, RuleName.ALTER_INDEX, RuleName.DROP_INDEX));
+        SQL_VISITOR_RULES.put("TCLVisitor", Lists.newArrayList(RuleName.SET_TRANSACTION, RuleName.SET_IMPLICIT_TRANSACTIONS, RuleName.BEGIN_TRANSACTION, 
+                RuleName.SET_AUTOCOMMIT, RuleName.COMMIT, RuleName.ROLLBACK, RuleName.SAVE_POINT));
+        SQL_VISITOR_RULES.put("DCLVisitor", Lists.newArrayList(RuleName.GRANT, RuleName.REVOKE, RuleName.CREATE_USER, 
+                RuleName.DROP_USER, RuleName.ALTER_USER, RuleName.DENY_USER, RuleName.RENAME_USER, 
+                RuleName.CREATE_ROLE, RuleName.ALTER_ROLE, RuleName.DROP_ROLE, RuleName.CREATE_LOGIN, RuleName.ALTER_LOGIN,
+                RuleName.DROP_LOGIN, RuleName.SET_DEFAULT_ROLE, RuleName.SET_ROLE, RuleName.SET_PASSWORD));
+        SQL_VISITOR_RULES.put("DALVisitor", Lists.newArrayList(RuleName.USE, RuleName.DESC, RuleName.SHOW_DATABASES,
+                RuleName.SHOW_TABLES, RuleName.SHOW_TABLE_STATUS, RuleName.SHOW_COLUMNS, RuleName.SHOW_INDEX,
+                RuleName.SHOW_CREATE_TABLE, RuleName.SHOW_OTHER, RuleName.SHOW, RuleName.SET_VARIABLE, RuleName.SET, 
+                RuleName.RESET_PARAMETER, RuleName.CALL));
     }
     
     /** 
      * New instance of SQL visitor.
      * 
      * @param databaseTypeName name of database type
-     * @param parseTree parse tree
+     * @param ruleName rule name
      * @return parse tree visitor
      */
-    public static ParseTreeVisitor newInstance(final String databaseTypeName, final ParseTree parseTree) {
+    public static ParseTreeVisitor newInstance(final String databaseTypeName, final RuleName ruleName) {
         for (SQLParserConfiguration each : NewInstanceServiceLoader.newServiceInstances(SQLParserConfiguration.class)) {
             if (each.getDatabaseTypeName().equals(databaseTypeName)) {
-                return createParseTreeVisitor(each, getVisitorName(parseTree.getClass().getSimpleName()));
+                return createParseTreeVisitor(each, getVisitorName(ruleName));
             }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
@@ -79,12 +77,12 @@ public final class ParseTreeVisitorFactory {
         return configuration.getVisitorClass(visitorName).getConstructor().newInstance();
     }
     
-    private static String getVisitorName(final String visitorRuleName) {
-        for (Entry<String, Collection<String>> entry : SQL_VISITOR_RULES.entrySet()) {
-            if (entry.getValue().contains(visitorRuleName)) {
+    private static String getVisitorName(final RuleName ruleName) {
+        for (Entry<String, Collection<RuleName>> entry : SQL_VISITOR_RULES.entrySet()) {
+            if (entry.getValue().contains(ruleName)) {
                 return entry.getKey();
             }
         }
-        throw new SQLParsingException("Could not find corresponding SQL visitor for %s.", visitorRuleName);
+        throw new SQLParsingException("Could not find corresponding SQL visitor for %s.", ruleName);
     }
 }
