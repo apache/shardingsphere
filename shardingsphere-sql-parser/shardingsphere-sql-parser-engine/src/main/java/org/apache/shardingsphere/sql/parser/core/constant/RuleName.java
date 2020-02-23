@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.core.constant;
 
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Rule name.
@@ -125,12 +126,23 @@ public enum RuleName {
     
     private final String name;
     
-    /**
-     * Get name.
-     * 
-     * @return name
-     */
-    public String getName() {
+    private String getContextName() {
         return name + "Context";
+    }
+    
+    /**
+     * Value of rule name.
+     * 
+     * @param parseTreeClass parse tree class
+     * @return rule name
+     */
+    public static RuleName valueOf(final Class<? extends ParseTree> parseTreeClass) {
+        String parseTreeClassName = parseTreeClass.getSimpleName();
+        for (RuleName each : RuleName.values()) {
+            if (each.getContextName().equals(parseTreeClassName)) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Can not find rule name: `%s`", parseTreeClassName));
     }
 }
