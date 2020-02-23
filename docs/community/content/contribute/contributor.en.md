@@ -63,7 +63,7 @@ git push origin issueNo
 
 ### Delete Branch
 
- - You can delete the remote branch (origin/issueNo) and the local branch (issueNo) associated with the remote branch (origin/issueNo) after the mentor merged the pull request into the master branch of shardingsphere.
+ - You can delete the remote branch (origin/issueNo) and the local branch (issueNo) associated with the remote branch (origin/issueNo) after the mentor merged the pull request into the master branch of ShardingSphere.
  
 ```shell
 git checkout master
