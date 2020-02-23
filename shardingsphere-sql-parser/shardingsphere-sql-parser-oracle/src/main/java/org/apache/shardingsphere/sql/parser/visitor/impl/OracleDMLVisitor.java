@@ -267,7 +267,6 @@ public final class OracleDMLVisitor extends OracleVisitor {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
-            result.getAllSQLSegments().addAll(getTableSegments(where, result.getTables()));
         }
         if (null != ctx.groupByClause()) {
             GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
@@ -288,26 +287,6 @@ public final class OracleDMLVisitor extends OracleVisitor {
         for (TableSegment tableSegment : ((CollectionValue<TableSegment>) visit(joinedTable)).getValue()) {
             if (isTable(tableSegment, tableSegments)) {
                 result.add(tableSegment);
-            }
-        }
-        return result;
-    }
-    
-    private Collection<TableSegment> getTableSegments(final WhereSegment where, final Collection<TableSegment> tableSegments) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (AndPredicate each : where.getAndPredicates()) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                if (predicate.getColumn().getOwner().isPresent() && isTable(predicate.getColumn().getOwner().get(), tableSegments)) {
-                    result.add(predicate.getColumn().getOwner().get());
-                }
-                if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()
-                        && isTable(((ColumnSegment) predicate.getRightValue()).getOwner().get(), tableSegments)) {
-                    result.add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
-                }
-                if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()
-                        && isTable(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get(), tableSegments)) {
-                    result.add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
-                }
             }
         }
         return result;

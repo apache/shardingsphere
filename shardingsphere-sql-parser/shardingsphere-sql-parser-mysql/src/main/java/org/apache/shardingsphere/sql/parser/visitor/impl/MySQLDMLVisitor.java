@@ -136,12 +136,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         InsertStatement result = new InsertStatement();
-        if (null != ctx.columnNames()) { 
+        if (null != ctx.columnNames()) {
             InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
             result.setInsertColumns(insertColumnsSegment);
             result.getAllSQLSegments().add(insertColumnsSegment);
         } else {
-            InsertColumnsSegment insertColumnsSegment = 
+            InsertColumnsSegment insertColumnsSegment =
                     new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList());
             result.setInsertColumns(insertColumnsSegment);
             result.getAllSQLSegments().add(insertColumnsSegment);
@@ -309,8 +309,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
             WhereSegment where = (WhereSegment) visit(ctx.whereClause());
             result.setWhere(where);
             result.getAllSQLSegments().add(where);
-            // FIXME: getTableSegments() should be moved to TableTokenGenerator.
-            result.getAllSQLSegments().addAll(getTableSegments(where, result.getTables()));
         }
         if (null != ctx.groupByClause()) {
             GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
@@ -350,26 +348,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
         return result;
     }
     
-    private Collection<TableSegment> getTableSegments(final WhereSegment where, final Collection<TableSegment> tableSegments) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (AndPredicate each : where.getAndPredicates()) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                if (predicate.getColumn().getOwner().isPresent() && isTable(predicate.getColumn().getOwner().get(), tableSegments)) {
-                    result.add(predicate.getColumn().getOwner().get());
-                }
-                if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()
-                        && isTable(((ColumnSegment) predicate.getRightValue()).getOwner().get(), tableSegments)) {
-                    result.add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
-                }
-                if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()
-                        && isTable(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get(), tableSegments)) {
-                    result.add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
-                }
-            }
-        }
-        return result;
-    }
-    
     private Collection<TableSegment> getTableSegments(final Collection<OrderByItemSegment> orderBys, final Collection<TableSegment> tableSegments) {
         Collection<TableSegment> result = new LinkedList<>();
         for (OrderByItemSegment each : orderBys) {
@@ -390,7 +368,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor {
     }
     
     private boolean isTable(final OrderByItemSegment each, final Collection<TableSegment> tableSegments) {
-        return each instanceof ColumnOrderByItemSegment 
+        return each instanceof ColumnOrderByItemSegment
                 && ((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent() && isTable(((ColumnOrderByItemSegment) each).getColumn().getOwner().get(), tableSegments);
     }
     

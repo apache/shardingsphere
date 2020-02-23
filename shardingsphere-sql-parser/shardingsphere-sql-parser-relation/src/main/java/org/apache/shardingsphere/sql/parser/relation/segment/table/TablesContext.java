@@ -148,7 +148,13 @@ public final class TablesContext {
         return Optional.absent();
     }
     
-    private Optional<Table> findTableFromAlias(final String alias) {
+    /**
+     * Find table via table alias.
+     * 
+     * @param alias alias
+     * @return table
+     */
+    public Optional<Table> findTableFromAlias(final String alias) {
         for (Table each : tables) {
             if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
                 return Optional.of(each);
