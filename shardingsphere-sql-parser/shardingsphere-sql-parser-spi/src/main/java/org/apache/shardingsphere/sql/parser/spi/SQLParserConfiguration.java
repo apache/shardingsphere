@@ -50,8 +50,8 @@ public interface SQLParserConfiguration {
     /**
      * Get SQL visitor class type.
      *
-     * @param visitorName visitor name
+     * @param sqlStatementType SQL statement type
      * @return SQL visitor class type
      */
-    Class<? extends ParseTreeVisitor> getVisitorClass(String visitorName);
+    Class<? extends ParseTreeVisitor> getVisitorClass(String sqlStatementType);
 }
