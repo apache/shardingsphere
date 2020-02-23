@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterColumnAddOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterDefinitionClauseContext;
@@ -61,9 +62,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SQLServer DDL visitor.
+ * DDL visitor for SQLServer.
  */
-public final class SQLServerDDLVisitor extends SQLServerVisitor {
+public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

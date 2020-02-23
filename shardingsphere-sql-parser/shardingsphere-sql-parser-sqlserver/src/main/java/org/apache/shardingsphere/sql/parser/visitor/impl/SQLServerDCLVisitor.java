@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterUserContext;
@@ -51,9 +52,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * SQLServer DCL visitor.
+ * DCL visitor for SQLServer.
  */
-public final class SQLServerDCLVisitor extends SQLServerVisitor {
+public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVisitor {
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {

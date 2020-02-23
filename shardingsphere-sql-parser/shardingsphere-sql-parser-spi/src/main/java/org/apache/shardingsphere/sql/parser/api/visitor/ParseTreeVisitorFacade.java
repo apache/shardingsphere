@@ -15,42 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.spi;
-
-import org.antlr.v4.runtime.Lexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
+package org.apache.shardingsphere.sql.parser.api.visitor;
 
 /**
- * SQL parser configuration.
+ * Parse tree visitor facade.
  */
-public interface SQLParserConfiguration {
+public interface ParseTreeVisitorFacade {
     
     /**
-     * Get name of database type.
+     * Get DML visitor class.
      *
-     * @return name of database type
+     * @return DML visitor class
      */
-    String getDatabaseTypeName();
+    Class<? extends DMLVisitor> getDMLVisitorClass();
     
     /**
-     * Get SQL lexer class type.
+     * Get DDL visitor class.
      *
-     * @return SQL lexer class type
+     * @return DDL visitor class
      */
-    Class<? extends Lexer> getLexerClass();
+    Class<? extends DDLVisitor> getDDLVisitorClass();
     
     /**
-     * Get SQL parser class type.
-     * 
-     * @return SQL parser class type
-     */
-    Class<? extends SQLParser> getParserClass();
-    
-    /**
-     * Get visitor facade class.
+     * Get TCL visitor class.
      *
-     * @return visitor facade class
+     * @return TCL visitor class
      */
-    Class<? extends ParseTreeVisitorFacade> getVisitorFacadeClass();
+    Class<? extends TCLVisitor> getTCLVisitorClass();
+    
+    /**
+     * Get DCL visitor class.
+     *
+     * @return DCL visitor class
+     */
+    Class<? extends DCLVisitor> getDCLVisitorClass();
+    
+    /**
+     * Get DAL visitor class.
+     *
+     * @return DAL visitor class
+     */
+    Class<? extends DALVisitor> getDALVisitorClass();
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AssignmentValuesContext;
@@ -95,9 +96,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * PostgreSQL DML visitor.
+ * DML visitor for PostgreSQL.
  */
-public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor {
+public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValuesContext;
@@ -85,9 +86,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL92 DML visitor.
+ * DML visitor for SQL92.
  */
-public final class SQL92DMLVisitor extends SQL92Visitor {
+public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {

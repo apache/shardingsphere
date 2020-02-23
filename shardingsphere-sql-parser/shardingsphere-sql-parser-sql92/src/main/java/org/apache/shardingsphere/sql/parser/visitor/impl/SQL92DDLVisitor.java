@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterTableContext;
@@ -51,9 +52,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * SQL92 DDL visitor.
+ * DDL visitor for SQL92.
  */
-public final class SQL92DDLVisitor extends SQL92Visitor {
+public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
     
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

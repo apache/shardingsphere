@@ -15,18 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
-
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+package org.apache.shardingsphere.sql.parser.api.visitor;
 
 /**
- * SQL parser for SQLServer.
+ * TCL visitor.
  */
-public final class SQLServerParser extends SQLServerStatementParser implements SQLParser {
-    
-    public SQLServerParser(final TokenStream input) {
-        super(input);
-    }
+public interface TCLVisitor {
 }

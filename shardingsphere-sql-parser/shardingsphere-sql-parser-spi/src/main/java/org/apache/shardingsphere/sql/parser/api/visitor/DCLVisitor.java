@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api;
-
-import org.antlr.v4.runtime.tree.ParseTree;
+package org.apache.shardingsphere.sql.parser.api.visitor;
 
 /**
- * SQL parser.
+ * DCL visitor.
  */
-public interface SQLParser {
-    
-    /**
-     * Execute to parse SQL.
-     * 
-     * @return parse tree
-     */
-    ParseTree execute();
+public interface DCLVisitor {
 }

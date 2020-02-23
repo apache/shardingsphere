@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;
@@ -47,9 +48,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
- * MySQL DCL visitor.
+ * DCL visitor for MySQL.
  */
-public final class MySQLDCLVisitor extends MySQLVisitor {
+public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
