@@ -106,16 +106,6 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         return result;
     }
     
-    private Optional<TableToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable<TableSegment> segment) {
-        Optional<TableSegment> owner = segment.getOwner();
-        return owner.isPresent() && isToGenerateTableToken(sqlStatementContext, owner.get())
-                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier())) : Optional.<TableToken>absent();
-    }
-    
-    private Optional<TableToken> generateSQLToken(final SQLStatement sqlStatement, final TableSegment segment) {
-        return isToGenerateTableToken(sqlStatement, segment) ? Optional.of(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier())) : Optional.<TableToken>absent();
-    }
-    
     private Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final WhereSegment where) {
         Collection<TableToken> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
@@ -135,6 +125,16 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
             }
         }
         return result;
+    }
+    
+    private Optional<TableToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable<TableSegment> segment) {
+        Optional<TableSegment> owner = segment.getOwner();
+        return owner.isPresent() && isToGenerateTableToken(sqlStatementContext, owner.get())
+                ? Optional.of(new TableToken(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier())) : Optional.<TableToken>absent();
+    }
+    
+    private Optional<TableToken> generateSQLToken(final SQLStatement sqlStatement, final TableSegment segment) {
+        return isToGenerateTableToken(sqlStatement, segment) ? Optional.of(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier())) : Optional.<TableToken>absent();
     }
     
     private Collection<TableToken> getTableTokens(final SQLStatementContext sqlStatementContext, final PredicateSegment predicate) {
