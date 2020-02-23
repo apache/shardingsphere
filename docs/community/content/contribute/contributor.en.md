@@ -61,6 +61,16 @@ git push origin issueNo
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
  - At last, congratulate to be an official contributor of ShardingSphere
 
+### Delete Branch
+
+ - You can delete the remote branch (origin/issueNo) and the local branch (issueNo) associated with the remote branch (origin/issueNo) after the mentor merged the pull request into the master branch of shardingsphere.
+ 
+```shell
+git checkout master
+git branch -d issueNo
+git push origin --delete issueNo
+```
+
 ### Notice 
 
 Please note that in order to show your id in the contributor list, don't forget the configurations below:
