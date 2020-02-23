@@ -21,7 +21,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -33,7 +32,6 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.DistributedLockManagement;
 import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.handler.CuratorZookeeperExceptionHandler;
@@ -57,7 +55,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Distributed lock center for zookeeper with curator.
  */
-public final class CuratorZookeeperInstance implements ConfigCenter, DistributedLockManagement, RegistryCenter {
+public final class CuratorZookeeperInstance implements ConfigCenter, RegistryCenter {
     
     private final Map<String, TreeCache> caches = new HashMap<>();
     
@@ -299,22 +297,5 @@ public final class CuratorZookeeperInstance implements ConfigCenter, Distributed
     @Override
     public String getType() {
         return "zookeeper";
-    }
-    
-    @Override
-    public void initLock(final String key) {
-        leafLock = new InterProcessMutex(client, key);
-    }
-    
-    @Override
-    @SneakyThrows
-    public boolean tryLock() {
-        return leafLock.acquire(5, TimeUnit.SECONDS);
-    }
-    
-    @Override
-    @SneakyThrows
-    public void tryRelease() {
-        leafLock.release();
     }
 }
