@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.DALVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
@@ -54,9 +55,9 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteral
 import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
- * MySQL DAL visitor.
+ * DAL visitor for MySQL.
  */
-public final class MySQLDALVisitor extends MySQLVisitor {
+public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {

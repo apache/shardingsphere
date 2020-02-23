@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateRoleContext;
@@ -43,9 +44,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * PostgreSQL DCL visitor.
+ * DCL visitor for PostgreSQL.
  */
-public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor {
+public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCLVisitor {
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {

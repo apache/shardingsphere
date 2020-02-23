@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SetTransactionContext;
@@ -27,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStat
 import org.apache.shardingsphere.sql.parser.visitor.SQL92Visitor;
 
 /**
- * SQL92 TCL visitor.
+ * TCL visitor for SQL92.
  */
-public final class SQL92TCLVisitor extends SQL92Visitor {
+public final class SQL92TCLVisitor extends SQL92Visitor implements TCLVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.DALVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.SQL92Visitor;
 
 /**
- * SQL92 DAL visitor.
+ * DAL visitor for SQL92.
  */
-public final class SQL92DALVisitor extends SQL92Visitor {
+public final class SQL92DALVisitor extends SQL92Visitor implements DALVisitor {
 }

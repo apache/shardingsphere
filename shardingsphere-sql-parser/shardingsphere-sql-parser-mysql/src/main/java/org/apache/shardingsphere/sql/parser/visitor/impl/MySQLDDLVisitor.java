@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.antlr.v4.runtime.Token;
+import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDefinitionClauseContext;
@@ -75,9 +76,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MySQL DDL visitor.
+ * DDL visitor for MySQL.
  */
-public final class MySQLDDLVisitor extends MySQLVisitor {
+public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

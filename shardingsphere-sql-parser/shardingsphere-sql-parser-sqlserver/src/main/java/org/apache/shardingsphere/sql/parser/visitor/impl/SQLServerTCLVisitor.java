@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RollbackContext;
@@ -33,9 +34,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStat
 import org.apache.shardingsphere.sql.parser.visitor.SQLServerVisitor;
 
 /**
- * SQLServer TCL visitor.
+ * TCL visitor for SQLServer.
  */
-public final class SQLServerTCLVisitor extends SQLServerVisitor {
+public final class SQLServerTCLVisitor extends SQLServerVisitor implements TCLVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

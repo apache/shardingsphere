@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
@@ -104,9 +105,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MySQL DML visitor.
+ * DML visitor for MySQL.
  */
-public final class MySQLDMLVisitor extends MySQLVisitor {
+public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @SuppressWarnings("unchecked")
     @Override

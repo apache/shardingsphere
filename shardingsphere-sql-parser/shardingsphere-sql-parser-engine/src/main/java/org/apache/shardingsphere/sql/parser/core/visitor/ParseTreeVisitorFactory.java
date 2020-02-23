@@ -22,7 +22,9 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
 import org.apache.shardingsphere.sql.parser.core.constant.RuleName;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatementType;
 
@@ -50,6 +52,20 @@ public final class ParseTreeVisitorFactory {
     
     @SneakyThrows
     private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration configuration, final SQLStatementType type) {
-        return configuration.getVisitorClass(type.name()).getConstructor().newInstance();
+        ParseTreeVisitorFacade visitorFacade = configuration.getVisitorFacadeClass().getConstructor().newInstance();
+        switch (type) {
+            case DML:
+                return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();
+            case DDL:
+                return (ParseTreeVisitor) visitorFacade.getDDLVisitorClass().getConstructor().newInstance();
+            case TCL:
+                return (ParseTreeVisitor) visitorFacade.getTCLVisitorClass().getConstructor().newInstance();
+            case DCL:
+                return (ParseTreeVisitor) visitorFacade.getDCLVisitorClass().getConstructor().newInstance();
+            case DAL:
+                return (ParseTreeVisitor) visitorFacade.getDALVisitorClass().getConstructor().newInstance();
+            default:
+                throw new SQLParsingException("Can not support SQL statement type: `%s`", type);
+        }
     }
 }

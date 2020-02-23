@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
@@ -35,9 +36,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetTransactionStat
 import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 /**
- * MySQL TCL visitor.
+ * TCL visitor for MySQL.
  */
-public final class MySQLTCLVisitor extends MySQLVisitor {
+public final class MySQLTCLVisitor extends MySQLVisitor implements TCLVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

@@ -18,16 +18,11 @@
 package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DALVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DCLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DDLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92DMLVisitor;
-import org.apache.shardingsphere.sql.parser.visitor.impl.SQL92TCLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.SQL92VisitorFacade;
 
 /**
  * SQL parser configuration for SQL92.
@@ -50,20 +45,7 @@ public final class SQL92ParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends ParseTreeVisitor> getVisitorClass(final String sqlStatementType) {
-        switch (sqlStatementType) {
-            case "DML":
-                return SQL92DMLVisitor.class;
-            case "DDL":
-                return SQL92DDLVisitor.class;
-            case "TCL":
-                return SQL92TCLVisitor.class;
-            case "DCL":
-                return SQL92DCLVisitor.class;
-            case "DAL":
-                return SQL92DALVisitor.class;
-            default:
-                throw new SQLParsingException("Can not support SQL statement type: `%s`", sqlStatementType);
-        }
+    public Class<? extends ParseTreeVisitorFacade> getVisitorFacadeClass() {
+        return SQL92VisitorFacade.class;
     }
 }

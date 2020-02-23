@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValuesContext;
@@ -86,9 +87,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Oracle DML visitor.
+ * DML visitor for Oracle.
  */
-public final class OracleDMLVisitor extends OracleVisitor {
+public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDefinitionClauseContext;
@@ -66,9 +67,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * PostgreSQL DDL visitor.
+ * DDL visitor for PostgreSQL.
  */
-public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor {
+public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

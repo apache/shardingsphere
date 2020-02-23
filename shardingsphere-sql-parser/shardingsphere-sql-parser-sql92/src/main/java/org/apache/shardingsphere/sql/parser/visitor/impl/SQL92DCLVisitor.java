@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RevokeContext;
@@ -30,9 +31,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * SQL92 DCL visitor.
+ * DCL visitor for SQL92.
  */
-public final class SQL92DCLVisitor extends SQL92Visitor {
+public final class SQL92DCLVisitor extends SQL92Visitor implements DCLVisitor {
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
