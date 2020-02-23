@@ -21,6 +21,7 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.api.SQLParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDALVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDCLVisitor;
@@ -49,19 +50,20 @@ public final class MySQLParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends ParseTreeVisitor> getVisitorClass(final String visitorName) {
-        if (MySQLDMLVisitor.class.getSimpleName().contains(visitorName)) {
-            return MySQLDMLVisitor.class;
+    public Class<? extends ParseTreeVisitor> getVisitorClass(final String sqlStatementType) {
+        switch (sqlStatementType) {
+            case "DML":
+                return MySQLDMLVisitor.class;
+            case "DDL":
+                return MySQLDDLVisitor.class;
+            case "TCL":
+                return MySQLTCLVisitor.class;
+            case "DCL":
+                return MySQLDCLVisitor.class;
+            case "DAL":
+                return MySQLDALVisitor.class;
+            default:
+                throw new SQLParsingException("Can not support SQL statement type: `%s`", sqlStatementType);
         }
-        if (MySQLDDLVisitor.class.getSimpleName().contains(visitorName)) {
-            return MySQLDDLVisitor.class;
-        }
-        if (MySQLTCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return MySQLTCLVisitor.class;
-        }
-        if (MySQLDCLVisitor.class.getSimpleName().contains(visitorName)) {
-            return MySQLDCLVisitor.class;
-        }
-        return MySQLDALVisitor.class;
     }
 }

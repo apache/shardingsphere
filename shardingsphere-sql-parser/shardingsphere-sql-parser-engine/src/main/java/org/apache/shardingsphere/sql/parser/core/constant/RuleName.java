@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.core.constant;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatementType;
 
 /**
  * Rule name.
@@ -26,105 +28,108 @@ import org.antlr.v4.runtime.tree.ParseTree;
 @RequiredArgsConstructor
 public enum RuleName {
     
-    SELECT("Select"),
+    SELECT("Select", SQLStatementType.DML),
     
-    INSERT("Insert"),
+    INSERT("Insert", SQLStatementType.DML),
     
-    UPDATE("Update"),
+    UPDATE("Update", SQLStatementType.DML),
     
-    DELETE("Delete"),
+    DELETE("Delete", SQLStatementType.DML),
     
-    REPLACE("Replace"),
+    REPLACE("Replace", SQLStatementType.DML),
     
-    CREATE_TABLE("CreateTable"),
+    CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
-    ALTER_TABLE("AlterTable"),
+    ALTER_TABLE("AlterTable", SQLStatementType.DDL),
     
-    DROP_TABLE("DropTable"),
+    DROP_TABLE("DropTable", SQLStatementType.DDL),
     
-    TRUNCATE_TABLE("TruncateTable"),
+    TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
     
-    CREATE_INDEX("CreateIndex"),
+    CREATE_INDEX("CreateIndex", SQLStatementType.DDL),
     
-    ALTER_INDEX("AlterIndex"),
+    ALTER_INDEX("AlterIndex", SQLStatementType.DDL),
     
-    DROP_INDEX("DropIndex"),
+    DROP_INDEX("DropIndex", SQLStatementType.DDL),
     
-    SET_TRANSACTION("SetTransaction"),
+    SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     
-    SET_IMPLICIT_TRANSACTIONS("SetImplicitTransactions"),
+    SET_IMPLICIT_TRANSACTIONS("SetImplicitTransactions", SQLStatementType.TCL),
     
-    BEGIN_TRANSACTION("BeginTransaction"),
+    BEGIN_TRANSACTION("BeginTransaction", SQLStatementType.TCL),
     
-    SET_AUTOCOMMIT("SetAutoCommit"),
+    SET_AUTOCOMMIT("SetAutoCommit", SQLStatementType.TCL),
     
-    COMMIT("Commit"),
+    COMMIT("Commit", SQLStatementType.TCL),
     
-    ROLLBACK("Rollback"),
+    ROLLBACK("Rollback", SQLStatementType.TCL),
     
-    SAVE_POINT("Savepoint"),
+    SAVE_POINT("Savepoint", SQLStatementType.TCL),
     
-    GRANT("Grant"),
+    GRANT("Grant", SQLStatementType.DCL),
     
-    REVOKE("Revoke"),
+    REVOKE("Revoke", SQLStatementType.DCL),
     
-    CREATE_USER("CreateUser"),
+    CREATE_USER("CreateUser", SQLStatementType.DCL),
     
-    ALTER_USER("AlterUser"),
+    ALTER_USER("AlterUser", SQLStatementType.DCL),
     
-    DROP_USER("DropUser"),
+    DROP_USER("DropUser", SQLStatementType.DCL),
     
-    DENY_USER("Deny"),
+    DENY_USER("Deny", SQLStatementType.DCL),
     
-    RENAME_USER("RenameUser"),
+    RENAME_USER("RenameUser", SQLStatementType.DCL),
     
-    CREATE_ROLE("CreateRole"),
+    CREATE_ROLE("CreateRole", SQLStatementType.DCL),
     
-    ALTER_ROLE("AlterRole"),
+    ALTER_ROLE("AlterRole", SQLStatementType.DCL),
     
-    DROP_ROLE("DropRole"),
+    DROP_ROLE("DropRole", SQLStatementType.DCL),
     
-    CREATE_LOGIN("CreateLogin"),
+    CREATE_LOGIN("CreateLogin", SQLStatementType.DCL),
     
-    ALTER_LOGIN("AlterLogin"),
+    ALTER_LOGIN("AlterLogin", SQLStatementType.DCL),
     
-    DROP_LOGIN("DropLogin"),
+    DROP_LOGIN("DropLogin", SQLStatementType.DCL),
     
-    SET_DEFAULT_ROLE("SetDefaultRole"),
+    SET_DEFAULT_ROLE("SetDefaultRole", SQLStatementType.DCL),
     
-    SET_ROLE("SetRole"),
+    SET_ROLE("SetRole", SQLStatementType.DCL),
     
-    SET_PASSWORD("SetPassword"),
+    SET_PASSWORD("SetPassword", SQLStatementType.DCL),
     
-    USE("Use"),
+    USE("Use", SQLStatementType.DAL),
     
-    DESC("Desc"),
+    DESC("Desc", SQLStatementType.DAL),
     
-    SHOW_DATABASES("ShowDatabases"),
+    SHOW_DATABASES("ShowDatabases", SQLStatementType.DAL),
     
-    SHOW_TABLES("ShowTables"),
+    SHOW_TABLES("ShowTables", SQLStatementType.DAL),
     
-    SHOW_TABLE_STATUS("ShowTableStatus"),
+    SHOW_TABLE_STATUS("ShowTableStatus", SQLStatementType.DAL),
     
-    SHOW_COLUMNS("ShowColumns"),
+    SHOW_COLUMNS("ShowColumns", SQLStatementType.DAL),
     
-    SHOW_INDEX("ShowIndex"),
+    SHOW_INDEX("ShowIndex", SQLStatementType.DAL),
     
-    SHOW_CREATE_TABLE("ShowCreateTable"),
+    SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
-    SHOW_OTHER("ShowOther"),
+    SHOW_OTHER("ShowOther", SQLStatementType.DAL),
     
-    SHOW("Show"),
+    SHOW("Show", SQLStatementType.DAL),
     
-    SET_VARIABLE("SetVariable"),
+    SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
-    SET("Set"),
+    SET("Set", SQLStatementType.DAL),
     
-    RESET_PARAMETER("ResetParameter"),
+    RESET_PARAMETER("ResetParameter", SQLStatementType.DAL),
     
-    CALL("Call");
+    CALL("Call", SQLStatementType.DAL);
     
     private final String name;
+    
+    @Getter
+    private final SQLStatementType type;
     
     private String getContextName() {
         return name + "Context";
