@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
@@ -41,22 +40,4 @@ public interface SQLStatement extends ASTNode {
      * @return all SQL segments
      */
     Collection<SQLSegment> getAllSQLSegments();
-    
-    /**
-     * Find SQL segment.
-     *
-     * @param sqlSegmentType SQL segment type
-     * @param <T> type of SQL segment
-     * @return SQL segment
-     */
-    <T extends SQLSegment> Optional<T> findSQLSegment(Class<T> sqlSegmentType);
-    
-    /**
-     * Find SQL segment.
-     *
-     * @param sqlSegmentType SQL segment type
-     * @param <T> type of SQL segment
-     * @return SQL segments
-     */
-    <T extends SQLSegment> Collection<T> findSQLSegments(Class<T> sqlSegmentType);
 }
