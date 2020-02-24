@@ -27,6 +27,10 @@
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+    
     <modules>
         <module>sharding-jdbc-test</module>
     </modules>
