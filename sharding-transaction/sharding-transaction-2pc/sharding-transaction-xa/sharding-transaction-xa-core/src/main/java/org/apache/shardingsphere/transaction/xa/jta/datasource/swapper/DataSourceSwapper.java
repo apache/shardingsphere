@@ -27,8 +27,6 @@ import java.lang.reflect.Method;
 
 /**
  * Data source swapper.
- *
- * @author zhangliang
  */
 public final class DataSourceSwapper {
     

@@ -26,8 +26,6 @@ import java.util.Collection;
 
 /**
  * Derived column alias.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum DerivedColumn {

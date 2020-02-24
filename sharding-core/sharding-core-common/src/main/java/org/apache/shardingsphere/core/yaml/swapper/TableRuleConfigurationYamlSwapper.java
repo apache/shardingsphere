@@ -24,9 +24,6 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Table rule configuration YAML swapper.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<YamlTableRuleConfiguration, TableRuleConfiguration> {
     

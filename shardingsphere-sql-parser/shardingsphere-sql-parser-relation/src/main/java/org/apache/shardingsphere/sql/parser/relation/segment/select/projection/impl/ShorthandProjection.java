@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 
 /**
  * Shorthand projection.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

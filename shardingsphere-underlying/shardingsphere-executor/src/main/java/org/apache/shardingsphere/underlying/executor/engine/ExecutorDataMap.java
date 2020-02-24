@@ -25,9 +25,6 @@ import java.util.Map;
 
 /**
  * Executor data map for thread local even cross multiple threads.
- *
- * @author caohao
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecutorDataMap {

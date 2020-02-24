@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 
 /**
  * SQL segment.
- * 
- * @author zhangliang
  */
 public interface SQLSegment extends ASTNode {
     

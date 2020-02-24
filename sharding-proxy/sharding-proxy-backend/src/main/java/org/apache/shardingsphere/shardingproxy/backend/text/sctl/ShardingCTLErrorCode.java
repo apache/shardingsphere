@@ -26,9 +26,6 @@ import org.apache.shardingsphere.shardingproxy.error.SQLErrorCode;
 
 /**
  * Sharding CTL error code.
- *
- * @author zhangliang
- * @author liya
  */
 @RequiredArgsConstructor
 @Getter

@@ -21,8 +21,6 @@ import lombok.Getter;
 
 /**
  * SQL cases registry.
- * 
- * @author zhangliang 
  */
 public final class SQLCasesRegistry {
     

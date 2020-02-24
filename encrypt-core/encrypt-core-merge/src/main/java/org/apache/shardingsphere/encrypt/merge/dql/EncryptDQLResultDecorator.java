@@ -27,8 +27,6 @@ import org.apache.shardingsphere.underlying.merge.result.impl.transparent.Transp
 
 /**
  * DQL result decorator for encrypt.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class EncryptDQLResultDecorator implements ResultDecorator {

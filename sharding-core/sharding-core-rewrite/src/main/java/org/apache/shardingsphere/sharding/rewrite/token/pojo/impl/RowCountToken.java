@@ -23,9 +23,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable
 
 /**
  * Row count token.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class RowCountToken extends SQLToken implements Substitutable {
     

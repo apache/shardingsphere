@@ -40,8 +40,6 @@ import java.sql.SQLException;
 
 /**
  * Command execute engine for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     

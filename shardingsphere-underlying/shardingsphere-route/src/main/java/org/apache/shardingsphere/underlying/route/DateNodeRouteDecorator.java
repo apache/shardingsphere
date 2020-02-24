@@ -21,8 +21,6 @@ import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
  * Data node route decorator.
- *
- * @author zhangliang
  */
 public interface DateNodeRouteDecorator {
     

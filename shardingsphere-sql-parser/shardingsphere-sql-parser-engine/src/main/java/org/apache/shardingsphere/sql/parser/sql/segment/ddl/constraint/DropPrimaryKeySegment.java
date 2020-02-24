@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Drop primary key segment.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

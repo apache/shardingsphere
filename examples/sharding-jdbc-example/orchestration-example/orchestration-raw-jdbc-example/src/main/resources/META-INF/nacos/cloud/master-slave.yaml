@@ -1,0 +1,10 @@
+orchestration:
+  name: demo_yaml_ds_ms
+  overwrite: false
+  registry:
+    type: nacos
+    serverLists: localhost:8848
+    namespace:
+    props:
+      group: SHARDING_SPHERE_DEFAULT_GROUP
+      timeout: 3000

@@ -39,9 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Statement execute callback interface.
  *
- * @author gaohongtao
- * @author zhangliang
- *
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor

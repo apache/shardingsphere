@@ -21,9 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLSta
 
 /**
  * Transaction Control Language statement.
- *
- * @author zhangliang
- * @author maxiaoguang
  */
-public class TCLStatement extends AbstractSQLStatement {
+public abstract class TCLStatement extends AbstractSQLStatement {
 }

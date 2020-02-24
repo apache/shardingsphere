@@ -26,9 +26,6 @@ import java.util.List;
 
 /**
  * SQL unit.
- *
- * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

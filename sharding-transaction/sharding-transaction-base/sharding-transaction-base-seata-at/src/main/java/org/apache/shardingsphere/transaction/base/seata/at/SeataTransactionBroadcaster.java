@@ -24,8 +24,6 @@ import java.util.Map;
 
 /**
  * Seata transaction broadcaster.
- *
- * @author zhaojun
  */
 class SeataTransactionBroadcaster {
     

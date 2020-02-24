@@ -29,10 +29,6 @@ import java.util.List;
 
 /**
  * Pagination context.
- *
- * @author zhangliang
- * @author caohao
- * @author zhangyonglun
  */
 public final class PaginationContext {
     

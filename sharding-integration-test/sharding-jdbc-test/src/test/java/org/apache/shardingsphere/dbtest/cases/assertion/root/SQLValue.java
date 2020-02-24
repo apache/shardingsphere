@@ -25,8 +25,6 @@ import java.text.SimpleDateFormat;
 
 /**
  * SQL value.
- *
- * @author zhangliang
  */
 @Getter
 public final class SQLValue {

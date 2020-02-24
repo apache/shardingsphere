@@ -22,8 +22,6 @@ import java.sql.SQLException;
 
 /**
  * Connection manager.
- *
- * @author zhangliang
  */
 public interface ConnectionManager {
     

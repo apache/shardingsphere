@@ -23,8 +23,6 @@ import java.sql.Connection;
 
 /**
  * XA connection wrapper.
- *
- * @author zhaojun
  */
 public interface XAConnectionWrapper {
     

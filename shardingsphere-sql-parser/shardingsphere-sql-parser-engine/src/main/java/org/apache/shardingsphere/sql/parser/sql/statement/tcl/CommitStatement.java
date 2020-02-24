@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.tcl;
 
 /**
  * Commit statement.
- *
- * @author maxiaoguang
  */
 public final class CommitStatement extends TCLStatement {
 }

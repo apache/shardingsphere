@@ -31,8 +31,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * Sharding data source names.
  * 
  * <p>Will convert actual data source names to master-slave data source name.</p>
- * 
- * @author zhangliang
  */
 public final class ShardingDataSourceNames {
     

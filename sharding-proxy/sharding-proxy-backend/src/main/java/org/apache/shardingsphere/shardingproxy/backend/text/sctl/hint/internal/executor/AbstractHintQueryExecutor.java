@@ -31,8 +31,6 @@ import java.util.List;
 
 /**
  * Abstract hint query command.
- *
- * @author liya
  */
 public abstract class AbstractHintQueryExecutor<T extends HintCommand> implements HintCommandExecutor<T> {
     

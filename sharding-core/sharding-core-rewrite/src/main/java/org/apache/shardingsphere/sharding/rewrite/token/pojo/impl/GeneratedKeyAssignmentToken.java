@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * Generated key assignment token.
- *
- * @author zhangliang
  */
 public abstract class GeneratedKeyAssignmentToken extends SQLToken implements Attachable {
     

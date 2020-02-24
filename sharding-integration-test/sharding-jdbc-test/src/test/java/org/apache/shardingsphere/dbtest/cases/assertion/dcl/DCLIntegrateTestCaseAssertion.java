@@ -22,8 +22,6 @@ import org.apache.shardingsphere.dbtest.cases.assertion.root.IntegrateTestCaseAs
 
 /**
  * JAXB definition of DCL integrate test case assertion.
- *
- * @author panjuan
  */
 @Getter
 public final class DCLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {

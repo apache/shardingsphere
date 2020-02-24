@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Rewrite input entity for JAXB.
- *
- * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter

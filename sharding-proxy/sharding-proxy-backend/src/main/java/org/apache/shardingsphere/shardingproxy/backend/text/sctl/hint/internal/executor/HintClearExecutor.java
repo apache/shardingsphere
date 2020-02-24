@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 
 /**
  * Hint clear command executor.
- *
- * @author liya
  */
 public final class HintClearExecutor extends AbstractHintUpdateExecutor<HintClearCommand> {
     

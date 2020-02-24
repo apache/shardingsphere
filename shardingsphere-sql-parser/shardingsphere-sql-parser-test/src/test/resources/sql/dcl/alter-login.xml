@@ -17,14 +17,15 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="alter_login_enable" />
-    <common sql-case-id="alter_login_set_password"  />
-    <common sql-case-id="alter_login_set_hashed_password" />
-    <common sql-case-id="alter_login_set_password_with_old_password"  />
-    <common sql-case-id="alter_login_set_default_database" />
-    <common sql-case-id="create_login_set_expired_password" />
-    <common sql-case-id="alter_login_add_credential"  />
-    <common sql-case-id="alter_login_drop_credential"  />
-    <common sql-case-id="alter_login_unlock" />
-    <common sql-case-id="alter_login_rename"  />
+    <alter-login sql-case-id="alter_login_enable" />
+    <alter-login sql-case-id="alter_login_name" />
+    <alter-login sql-case-id="alter_login_passwd" />
+    <alter-login sql-case-id="alter_login_set_password" />
+    <alter-login sql-case-id="alter_login_set_hashed_password" />
+    <alter-login sql-case-id="alter_login_set_password_with_old_password" />
+    <alter-login sql-case-id="alter_login_set_default_database" />
+    <alter-login sql-case-id="alter_login_add_credential" />
+    <alter-login sql-case-id="alter_login_drop_credential" />
+    <alter-login sql-case-id="alter_login_unlock" />
+    <alter-login sql-case-id="alter_login_rename" />
 </sql-parser-test-cases>

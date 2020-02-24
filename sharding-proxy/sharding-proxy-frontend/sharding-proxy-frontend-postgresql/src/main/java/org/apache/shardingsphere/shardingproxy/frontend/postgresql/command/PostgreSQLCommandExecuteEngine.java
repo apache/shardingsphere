@@ -41,8 +41,6 @@ import java.sql.SQLException;
 
 /**
  * Command execute engine for PostgreSQL.
- *
- * @author zhangliang
  */
 public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngine {
     

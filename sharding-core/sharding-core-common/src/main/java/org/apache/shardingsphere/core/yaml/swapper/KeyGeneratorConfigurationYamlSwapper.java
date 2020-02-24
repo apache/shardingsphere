@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Key generator configuration YAML swapper.
- *
- * @author zhangliang
  */
 public final class KeyGeneratorConfigurationYamlSwapper implements YamlSwapper<YamlKeyGeneratorConfiguration, KeyGeneratorConfiguration> {
     

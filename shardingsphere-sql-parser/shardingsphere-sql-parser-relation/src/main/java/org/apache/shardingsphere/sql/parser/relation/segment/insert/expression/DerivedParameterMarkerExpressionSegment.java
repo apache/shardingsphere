@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.Paramete
 
 /**
  * Derived parameter marker expression segment.
- *
- * @author zhangliang
  */
 @Getter
 @ToString(callSuper = true)

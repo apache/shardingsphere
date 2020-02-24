@@ -21,8 +21,6 @@ import java.util.Map;
 
 /**
  * Logic and actual tables aware.
- *
- * @author zhangliang
  */
 public interface LogicAndActualTablesAware {
     

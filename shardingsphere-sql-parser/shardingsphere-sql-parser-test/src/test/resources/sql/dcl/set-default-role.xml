@@ -17,8 +17,8 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="set_none_role" />
-    <common sql-case-id="set_all_role" />
-    <common sql-case-id="set_role" />
-    <common sql-case-id="set_roles_to_users" />
+    <set-default-role sql-case-id="set_default_none_role" />
+    <set-default-role sql-case-id="set_default_all_role" />
+    <set-default-role sql-case-id="set_default_role_to_user" />
+    <set-default-role sql-case-id="set_default_roles_to_users" />
 </sql-parser-test-cases>

@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Orchestration master slave rule.
- *
- * @author panjuan
  */
 public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     

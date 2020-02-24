@@ -31,8 +31,6 @@ import java.util.LinkedList;
 
 /**
  * SQL token generator builder for shadow.
- *
- * @author zhyee
  */
 @RequiredArgsConstructor
 public final class ShadowTokenGenerateBuilder implements SQLTokenGeneratorBuilder {

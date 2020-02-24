@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * Transparent result merger.
- *
- * @author zhangliang
  */
 public final class TransparentResultMerger implements ResultMerger {
     

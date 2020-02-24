@@ -30,11 +30,6 @@ import java.util.List;
 
 /**
  * SQL execute template.
- *
- * @author gaohongtao
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class SQLExecuteTemplate {

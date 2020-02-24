@@ -21,8 +21,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Sharding rule aware.
- *
- * @author zhangliang
  */
 public interface ShardingRuleAware {
     

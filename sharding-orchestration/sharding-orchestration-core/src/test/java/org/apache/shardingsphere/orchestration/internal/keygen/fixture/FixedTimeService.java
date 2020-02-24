@@ -23,6 +23,9 @@ import org.apache.shardingsphere.orchestration.internal.keygen.TimeService;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Fixed time service.
+ */
 @RequiredArgsConstructor
 public final class FixedTimeService extends TimeService {
     

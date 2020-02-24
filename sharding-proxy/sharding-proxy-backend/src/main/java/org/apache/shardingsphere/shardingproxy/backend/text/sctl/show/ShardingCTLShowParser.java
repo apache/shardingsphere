@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 
 /**
  * Sharding CTL show parser.
- *
- * @author zhaojun
  */
 public final class ShardingCTLShowParser implements ShardingCTLParser<ShardingCTLShowStatement> {
     

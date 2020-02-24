@@ -35,9 +35,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
  * Frontend channel inbound handler.
- * 
- * @author zhangliang
- * @author liya
  */
 @RequiredArgsConstructor
 @Slf4j

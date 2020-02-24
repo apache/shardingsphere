@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.limit.Limi
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
@@ -37,8 +37,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Select statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SelectStatementAssert {
@@ -95,7 +93,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<LimitSegment> limitSegment = actual.findSQLSegment(LimitSegment.class);
+        Optional<LimitSegment> limitSegment = actual.getLimit();
         if (null != expected.getLimitClause()) {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
             LimitClauseAssert.assertOffset(assertContext, limitSegment.get().getOffset().orNull(), expected.getLimitClause().getOffset());

@@ -22,13 +22,12 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  * Orchestration sharding rule.
- *
- * @author panjuan
  */
 @Getter
 public final class OrchestrationShardingRule extends ShardingRule {

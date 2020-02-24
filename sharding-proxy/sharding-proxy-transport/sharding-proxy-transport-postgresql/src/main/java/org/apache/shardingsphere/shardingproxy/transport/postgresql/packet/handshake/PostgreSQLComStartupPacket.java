@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Startup packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @Getter
 public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {

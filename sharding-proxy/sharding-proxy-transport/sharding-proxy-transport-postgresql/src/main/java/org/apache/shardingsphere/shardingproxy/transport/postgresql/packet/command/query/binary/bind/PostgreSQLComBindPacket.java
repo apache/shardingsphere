@@ -35,8 +35,6 @@ import java.util.List;
 
 /**
  * Command bind packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @Getter
 @ToString

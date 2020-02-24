@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Aggregation projection segment.
- * 
- * @author zhangliang
  */
 @Getter
 public class AggregationProjectionSegment implements ProjectionSegment, AliasAvailable {

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
 
 /**
  * Proxy user for YAML.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

@@ -28,8 +28,6 @@ import java.util.ServiceLoader;
 
 /**
  * XA data source definition factory.
- *
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XADataSourceDefinitionFactory {

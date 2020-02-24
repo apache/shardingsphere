@@ -26,9 +26,6 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 
 /**
  * Sharding tracer object container.
- *
- * @author gaohongtao
- * @author wangkai
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTracer {

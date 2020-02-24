@@ -24,8 +24,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 
 /**
  * Disabled state event.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 
 /**
  * SQL rewrite engine.
- *
- * @author zhangliang
  */
 public interface SQLRewriteEngine {
     

@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.My
  * COM_QUIT command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-quit.html">COM_QUIT</a>
- *
- * @author zhangliang
  */
 public final class MySQLComQuitPacket extends MySQLCommandPacket {
     

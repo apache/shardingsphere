@@ -26,8 +26,6 @@ import org.apache.shardingsphere.spi.database.type.DatabaseTypeAwareSPI;
 
 /**
  * Database protocol frontend engine.
- * 
- * @author zhangliang 
  */
 public interface DatabaseProtocolFrontendEngine extends DatabaseTypeAwareSPI {
     

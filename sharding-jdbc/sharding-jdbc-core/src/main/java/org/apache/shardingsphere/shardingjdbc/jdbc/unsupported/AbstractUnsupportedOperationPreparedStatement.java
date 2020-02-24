@@ -33,8 +33,6 @@ import java.sql.SQLFeatureNotSupportedException;
 
 /**
  * Unsupported {@code PreparedStatement} methods.
- * 
- * @author zhangliang
  */
 public abstract class AbstractUnsupportedOperationPreparedStatement extends AbstractStatementAdapter implements PreparedStatement {
     

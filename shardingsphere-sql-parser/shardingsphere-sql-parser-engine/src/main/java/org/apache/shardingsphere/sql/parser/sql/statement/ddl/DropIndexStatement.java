@@ -29,8 +29,6 @@ import java.util.LinkedList;
 
 /**
  * Drop index statement.
- *
- * @author panjuan
  */
 @Getter
 @Setter

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 
 /**
  * Encrypt rule aware.
- *
- * @author zhangliang
  */
 public interface EncryptRuleAware {
     

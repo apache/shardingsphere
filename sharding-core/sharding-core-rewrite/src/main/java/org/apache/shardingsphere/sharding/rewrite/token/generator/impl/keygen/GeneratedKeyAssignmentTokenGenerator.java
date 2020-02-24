@@ -31,9 +31,6 @@ import java.util.List;
 
 /**
  * Generated key assignment token generator.
- *
- * @author panjuan
- * @author zhangliang
  */
 @Setter
 public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKeyTokenGenerator implements ParametersAware {

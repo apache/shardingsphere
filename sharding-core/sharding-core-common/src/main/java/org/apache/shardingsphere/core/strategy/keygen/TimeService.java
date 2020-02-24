@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.strategy.keygen;
 
 /**
  * Time service.
- * 
- * @author zhangliang
  */
 public class TimeService {
     

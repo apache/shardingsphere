@@ -50,8 +50,6 @@ import java.util.Map.Entry;
 
 /**
  * Sharding condition engine for where clause.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class WhereClauseShardingConditionEngine {
@@ -103,10 +101,10 @@ public final class WhereClauseShardingConditionEngine {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
             Optional<String> tableName = tablesContext.findTableName(each.getColumn(), relationMetas);
-            if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getName(), tableName.get())) {
+            if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName.get())) {
                 continue;
             }
-            Column column = new Column(each.getColumn().getName(), tableName.get());
+            Column column = new Column(each.getColumn().getIdentifier().getValue(), tableName.get());
             Optional<RouteValue> routeValue = ConditionValueGeneratorFactory.generate(each.getRightValue(), column, parameters);
             if (!routeValue.isPresent()) {
                 continue;

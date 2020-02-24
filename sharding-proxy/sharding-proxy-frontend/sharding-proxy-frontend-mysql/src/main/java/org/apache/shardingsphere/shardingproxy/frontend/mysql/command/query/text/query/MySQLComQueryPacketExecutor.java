@@ -50,8 +50,6 @@ import java.util.List;
 
 /**
  * COM_QUERY command packet executor for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     

@@ -66,10 +66,6 @@ import java.util.Map;
 
 /**
  * Spring boot starter configuration.
- *
- * @author caohao
- * @author panjuan
- * @author yangyi
  */
 @Configuration
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")

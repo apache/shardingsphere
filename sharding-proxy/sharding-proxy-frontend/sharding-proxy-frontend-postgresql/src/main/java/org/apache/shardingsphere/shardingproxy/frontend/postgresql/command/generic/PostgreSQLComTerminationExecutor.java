@@ -25,8 +25,6 @@ import java.util.Collections;
 
 /**
  * Command termination executor for PostgreSQL.
- * 
- * @author zhangliang
  */
 public final class PostgreSQLComTerminationExecutor implements CommandExecutor {
     

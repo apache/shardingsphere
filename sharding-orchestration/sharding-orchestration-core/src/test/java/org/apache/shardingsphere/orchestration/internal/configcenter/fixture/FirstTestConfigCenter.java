@@ -19,9 +19,9 @@ package org.apache.shardingsphere.orchestration.internal.configcenter.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.config.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.config.api.ConfigCenterConfiguration;
-import org.apache.shardingsphere.orchestration.config.listener.DataChangedEventListener;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,22 +34,12 @@ public final class FirstTestConfigCenter implements ConfigCenter {
     private Properties properties = new Properties();
     
     @Override
-    public void init(final ConfigCenterConfiguration config) {
+    public void init(final InstanceConfiguration config) {
     }
     
     @Override
     public String get(final String key) {
         return "";
-    }
-    
-    @Override
-    public String getDirectly(final String key) {
-        return "";
-    }
-    
-    @Override
-    public boolean isExisted(final String key) {
-        return true;
     }
     
     @Override
@@ -59,14 +49,6 @@ public final class FirstTestConfigCenter implements ConfigCenter {
     
     @Override
     public void persist(final String key, final String value) {
-    }
-    
-    @Override
-    public void update(final String key, final String value) {
-    }
-    
-    @Override
-    public void persistEphemeral(final String key, final String value) {
     }
     
     @Override

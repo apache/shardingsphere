@@ -52,10 +52,6 @@ import java.util.List;
 
 /**
  * Sharding standard routing engine.
- * 
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShardingStandardRoutingEngine implements ShardingRouteEngine {
@@ -167,7 +163,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private List<RouteValue> getDatabaseShardingValuesFromHint() {
-        return getRouteValues(HintManager.getDatabaseShardingValues(logicTableName));
+        return getRouteValues(HintManager.isDatabaseShardingOnly() ? HintManager.getDatabaseShardingValues() : HintManager.getDatabaseShardingValues(logicTableName));
     }
     
     private List<RouteValue> getTableShardingValuesFromHint() {

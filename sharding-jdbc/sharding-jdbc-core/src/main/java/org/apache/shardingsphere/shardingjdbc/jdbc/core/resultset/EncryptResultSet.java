@@ -54,8 +54,6 @@ import java.util.TreeMap;
 
 /**
  * Encrypt result set.
- *
- * @author panjuan
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     

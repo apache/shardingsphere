@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.rewrite.sql.token.pojo;
 
 /**
  * Attach available.
- *
- * @author panjuan
  */
 public interface Attachable {
     

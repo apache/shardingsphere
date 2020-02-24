@@ -19,7 +19,7 @@
 <sql-parser-test-cases>
     <delete sql-case-id="delete_with_sharding_value" parameters="1000, 1001, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
-        <where parameters-count="3" start-index="20" stop-index="66" literal-stop-index="77">
+        <where start-index="20" stop-index="66" literal-stop-index="77">
             <and-predicate>
                 <predicate start-index="26" stop-index="37" literal-stop-index="40">
                     <column-left-value name="order_id" start-index="26" stop-index="33" />
@@ -51,7 +51,7 @@
     
     <delete sql-case-id="delete_without_sharding_value" parameters="'init'">
         <table name="t_order" start-index="12" stop-index="18" />
-        <where parameters-count="1" start-index="20" stop-index="33" literal-stop-index="38">
+        <where start-index="20" stop-index="33" literal-stop-index="38">
             <and-predicate>
                 <predicate start-index="26" stop-index="33" literal-stop-index="38">
                     <column-left-value name="status" start-index="26" stop-index="31" />
@@ -67,7 +67,7 @@
     
     <delete sql-case-id="delete_with_special_character_without_sharding_value">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
-        <where parameters-count="0" start-index="22" stop-index="42">
+        <where start-index="22" stop-index="42">
             <and-predicate>
                 <predicate start-index="28" stop-index="42">
                     <column-left-value name="status" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="35" />
@@ -82,7 +82,7 @@
     
     <delete sql-case-id="delete_with_special_comments_return_without_sharding_value">
         <table name="t_order" start-index="33" stop-index="39" />
-        <where parameters-count="0" start-index="41" stop-index="54">
+        <where start-index="41" stop-index="54">
             <and-predicate>
                 <predicate start-index="47" stop-index="54">
                     <column-left-value name="status" start-index="47" stop-index="52" />
@@ -97,7 +97,7 @@
     
     <delete sql-case-id="delete_with_special_comments_returning_without_sharding_value">
         <table name="t_order" start-index="34" stop-index="40" />
-        <where parameters-count="0" start-index="43" stop-index="56">
+        <where start-index="43" stop-index="56">
             <and-predicate>
                 <predicate start-index="49" stop-index="56">
                     <column-left-value name="status" start-index="49" stop-index="54" />
@@ -113,7 +113,7 @@
     <delete sql-case-id="delete_with_alias" parameters="'init'">
         <table name="o" start-index="7" stop-index="7" />
         <table name="t_order" alias="o" start-index="14" stop-index="20" />
-        <where parameters-count="1" start-index="27" stop-index="40" literal-stop-index="46">
+        <where start-index="27" stop-index="40" literal-stop-index="46">
             <and-predicate>
                 <predicate start-index="33" stop-index="40" literal-stop-index="45">
                     <column-left-value name="status" start-index="33" stop-index="38" />

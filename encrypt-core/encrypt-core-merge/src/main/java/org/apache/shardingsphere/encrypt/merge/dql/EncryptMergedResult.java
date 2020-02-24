@@ -28,8 +28,6 @@ import java.util.Calendar;
 
 /**
  * Merged result for encrypt.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class EncryptMergedResult implements MergedResult {

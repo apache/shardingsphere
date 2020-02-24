@@ -25,7 +25,6 @@ import java.util.List;
 /**
  * Input group.
  *
- * @author zhangliang
  * @param <T> type of inputs value
  */
 @RequiredArgsConstructor

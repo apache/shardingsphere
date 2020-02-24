@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Encrypt column rule configuration.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

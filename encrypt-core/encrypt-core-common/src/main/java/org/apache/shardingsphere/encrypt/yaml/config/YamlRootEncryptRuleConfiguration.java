@@ -26,8 +26,6 @@ import java.util.Properties;
 
 /**
  * Root encrypt rule configuration for YAML.
- *
- * @author panjuan
  */
 @Getter
 @Setter

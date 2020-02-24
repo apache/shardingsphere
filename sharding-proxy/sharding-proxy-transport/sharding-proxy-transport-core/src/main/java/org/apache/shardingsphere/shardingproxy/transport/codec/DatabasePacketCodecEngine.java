@@ -27,8 +27,6 @@ import java.util.List;
 /**
  * Database packet codec engine.
  * 
- * @author zhangliang
- * 
  * @param <T> type of database packet
  */
 public interface DatabasePacketCodecEngine<T extends DatabasePacket> {

@@ -23,8 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Connection state handler.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class ConnectionStateHandler {

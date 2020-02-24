@@ -19,8 +19,6 @@ package org.apache.shardingsphere.route.time.spi;
 
 /**
  * SQLServer entry.
- *
- * @author chenchuangliu
  */
 public final class SQLServerDatabaseSQLEntry implements DatabaseSQLEntry {
     

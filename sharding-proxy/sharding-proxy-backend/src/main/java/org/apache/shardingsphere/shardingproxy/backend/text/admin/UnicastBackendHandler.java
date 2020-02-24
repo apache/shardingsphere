@@ -31,8 +31,6 @@ import java.sql.SQLException;
 
 /**
  * Backend handler for unicast.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class UnicastBackendHandler implements TextProtocolBackendHandler {

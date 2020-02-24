@@ -18,23 +18,21 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.handler;
 
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.EncryptDataSourceBeanDefinitionParserTag;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.InstanceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.MasterSlaveDataSourceBeanDefinitionParserTag;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.RegistryCenterBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser.DataSourceBeanDefinitionParser;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser.RegBeanDefinitionParser;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.parser.InstanceBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
  * Orchestration spring namespace handler for sharding.
- * 
- * @author panjuan
  */
 public final class OrchestrationNamespaceHandler extends NamespaceHandlerSupport {
     
     @Override
     public void init() {
-        registerBeanDefinitionParser(RegistryCenterBeanDefinitionParserTag.ROOT_TAG, new RegBeanDefinitionParser());
+        registerBeanDefinitionParser(InstanceBeanDefinitionParserTag.ROOT_TAG, new InstanceBeanDefinitionParser());
         registerBeanDefinitionParser(ShardingDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
         registerBeanDefinitionParser(MasterSlaveDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
         registerBeanDefinitionParser(EncryptDataSourceBeanDefinitionParserTag.ROOT_TAG, new DataSourceBeanDefinitionParser());

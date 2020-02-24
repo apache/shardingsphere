@@ -24,9 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * SQL parse result cache.
- *
- * @author zhangliang
- * @author zhaojun
  */
 public final class SQLParseResultCache {
     

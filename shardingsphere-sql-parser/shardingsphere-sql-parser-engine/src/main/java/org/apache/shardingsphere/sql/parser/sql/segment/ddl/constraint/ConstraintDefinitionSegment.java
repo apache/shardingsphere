@@ -26,8 +26,6 @@ import java.util.LinkedHashSet;
 
 /**
  * Constraint definition segment.
- *
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

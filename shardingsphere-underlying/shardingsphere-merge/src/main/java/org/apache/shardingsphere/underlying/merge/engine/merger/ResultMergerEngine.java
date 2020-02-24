@@ -26,8 +26,6 @@ import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 /**
  * Result merger engine.
  *
- * @author zhangliang
- * 
  * @param <T> type of base rule
  */
 public interface ResultMergerEngine<T extends BaseRule> extends ResultProcessEngine {

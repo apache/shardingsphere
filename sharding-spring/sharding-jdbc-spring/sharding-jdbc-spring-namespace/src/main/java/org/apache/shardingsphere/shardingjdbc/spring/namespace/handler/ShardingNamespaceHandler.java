@@ -26,10 +26,6 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
  * Spring namespace handler for sharding.
- * 
- * @author caohao
- * @author zhangliang
- * @author panjuan
  */
 public final class ShardingNamespaceHandler extends NamespaceHandlerSupport {
     

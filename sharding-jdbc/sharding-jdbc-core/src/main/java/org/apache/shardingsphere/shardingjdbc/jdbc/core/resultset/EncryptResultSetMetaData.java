@@ -31,8 +31,6 @@ import java.util.Map.Entry;
 
 /**
  * Encrypt result set meta data.
- * 
- * @author panjuan
  */
 public final class EncryptResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     

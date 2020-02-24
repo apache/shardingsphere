@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Rename column segment.
- *
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

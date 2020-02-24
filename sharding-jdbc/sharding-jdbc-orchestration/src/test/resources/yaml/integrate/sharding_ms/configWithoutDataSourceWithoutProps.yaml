@@ -65,8 +65,25 @@ shardingRule:
         - db1_slave
 
 orchestration:
-  name: demo_ds_ms
-  registry:
-    type: TestRegistryCenter
+  test_sharding_ms_registry_name:
+    orchestrationType: registry_center
+    instanceType: FirstTestRegistryCenter
     serverLists: localhost:3181
-    namespace: orchestration-yaml-test
+    namespace: test_sharding_ms_registry
+    props:
+      overwrite: true
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10
+  test_sharding_ms_config_name:
+    orchestrationType: config_center
+    instanceType: FirstTestConfigCenter
+    serverLists: localhost:3181
+    namespace: test_sharding_ms_config
+    props:
+      overwrite: true
+      retryIntervalMilliseconds: 10
+      timeToLiveSeconds: 10
+      maxRetries: 10
+      operationTimeoutMilliseconds: 10

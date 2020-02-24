@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * Encryptor meta data for query header.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class QueryHeaderEncryptorMetaData implements EncryptorMetaData {

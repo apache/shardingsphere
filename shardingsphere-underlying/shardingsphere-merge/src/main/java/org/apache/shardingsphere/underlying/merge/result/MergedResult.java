@@ -23,8 +23,6 @@ import java.util.Calendar;
 
 /**
  * Merged result after merge engine.
- *
- * @author zhangliang
  */
 public interface MergedResult {
     

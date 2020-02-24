@@ -25,8 +25,6 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 
 /**
  * Sharding algorithm factory.
- * 
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingAlgorithmFactory {

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 /**
  * Database packet.
  *
- * @author zhangliang
- * 
  * @param <T> type of packet payload
  */
 public interface DatabasePacket<T extends PacketPayload> {

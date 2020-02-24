@@ -32,8 +32,6 @@ import java.util.List;
 
 /**
  * Data sets root xml entry.
- * 
- * @author zhangliang 
  */
 @Getter
 //@Setter

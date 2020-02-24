@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.DistinctProjec
 
 /**
  * Distinct projection prefix token generator.
- *
- * @author panjuan
  */
 public final class DistinctProjectionPrefixTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     

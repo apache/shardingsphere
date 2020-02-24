@@ -23,8 +23,6 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfigurati
 
 /**
  * Root shadow configuration for YAML.
- *
- * @author xiayan
  */
 @Getter
 @Setter

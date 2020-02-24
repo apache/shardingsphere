@@ -21,8 +21,6 @@ import java.util.List;
 
 /**
  * SQL parameters aware.
- *
- * @author zhangliang
  */
 public interface ParametersAware {
     

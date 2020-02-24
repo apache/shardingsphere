@@ -26,8 +26,6 @@ import java.sql.SQLException;
 
 /**
  * Table meta data loader.
- *
- * @author zhangliang
  */
 public interface TableMetaDataLoader<T extends BaseRule> extends TableMetaDataInitializer {
     

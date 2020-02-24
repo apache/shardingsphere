@@ -35,8 +35,6 @@ import java.util.TreeSet;
 
 /**
  * Standard sharding strategy.
- * 
- * @author zhangliang
  */
 public final class StandardShardingStrategy implements ShardingStrategy {
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.ExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.ExpectedSQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
@@ -29,8 +29,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  *  SQL segment assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLSegmentAssert {

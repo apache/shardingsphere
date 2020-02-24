@@ -34,8 +34,6 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Implementation of Registry center configs repository.
- *
- * @author chenqingyang
  */
 @Repository
 public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCenterConfigsRepository {

@@ -24,8 +24,6 @@ import lombok.RequiredArgsConstructor;
  * New parameters bound flag for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

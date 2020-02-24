@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
 /**
  * Substitutable column name token.
- *
- * @author zhangliang
  */
+@EqualsAndHashCode
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable {
     
     @Getter

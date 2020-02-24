@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.internal.registry.config.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.internal.registry.state.listener.StateChangedListenerManager;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
 
 /**
  * Sharding orchestration listener manager.
- *
- * @author caohao
- * @author panjuan
  */
 public final class ShardingOrchestrationListenerManager {
     
@@ -35,9 +33,11 @@ public final class ShardingOrchestrationListenerManager {
     
     private final StateChangedListenerManager stateChangedListenerManager;
     
-    public ShardingOrchestrationListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
-        configurationChangedListenerManager = new ConfigurationChangedListenerManager(name, regCenter, shardingSchemaNames);
-        stateChangedListenerManager = new StateChangedListenerManager(name, regCenter);
+    public ShardingOrchestrationListenerManager(final String regCenterName, final RegistryCenter regCenter,
+                                                final String configCenterName, final ConfigCenter configCenter,
+                                                final Collection<String> shardingSchemaNames) {
+        configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterName, configCenter, shardingSchemaNames);
+        stateChangedListenerManager = new StateChangedListenerManager(regCenterName, regCenter);
     }
     
     /**

@@ -24,8 +24,6 @@ import java.util.Collection;
 
 /**
  * JDBC URL recognizer for SQLServer.
- *
- * @author zhangliang
  */
 public final class SQLServerRecognizer implements JDBCDriverURLRecognizer {
     

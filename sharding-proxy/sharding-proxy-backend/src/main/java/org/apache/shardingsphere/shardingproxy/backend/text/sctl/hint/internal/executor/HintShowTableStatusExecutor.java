@@ -39,8 +39,6 @@ import java.util.Map;
 
 /**
  * Hint show table status command executor.
- *
- * @author liya
  */
 @RequiredArgsConstructor
 public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor<HintShowTableStatusCommand> {

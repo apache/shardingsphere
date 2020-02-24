@@ -23,8 +23,6 @@ import java.lang.reflect.Method;
 
 /**
  * Invocation that reflected call for {@code PreparedStatement.setParameter} method.
- * 
- * @author zhangliang
  */
 public final class SetParameterMethodInvocation extends JdbcMethodInvocation {
     

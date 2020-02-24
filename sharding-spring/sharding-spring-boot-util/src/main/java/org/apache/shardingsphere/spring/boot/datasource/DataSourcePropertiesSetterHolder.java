@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Datasource properties setter holder.
- *
- * @author yangyi
  */
 public final class DataSourcePropertiesSetterHolder {
     

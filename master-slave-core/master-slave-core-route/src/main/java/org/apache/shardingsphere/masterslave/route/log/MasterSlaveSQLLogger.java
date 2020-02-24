@@ -23,9 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * SQL logger for master-slave.
- * 
- * @author zhangliang
- * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-SQL")

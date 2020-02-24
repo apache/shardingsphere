@@ -27,8 +27,6 @@ import java.util.Collections;
 
 /**
  * None sharding strategy.
- * 
- * @author zhangliang
  */
 @Getter
 public final class NoneShardingStrategy implements ShardingStrategy {

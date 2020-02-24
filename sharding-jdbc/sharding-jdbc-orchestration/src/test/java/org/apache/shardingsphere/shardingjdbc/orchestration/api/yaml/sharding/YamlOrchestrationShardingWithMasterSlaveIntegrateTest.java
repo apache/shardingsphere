@@ -21,9 +21,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -83,7 +83,6 @@ public final class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends
             statement.executeQuery("SELECT * FROM t_order_item");
             statement.executeQuery("SELECT * FROM config");
         }
-
         ((OrchestrationShardingDataSource) dataSource).close();
     }
 }

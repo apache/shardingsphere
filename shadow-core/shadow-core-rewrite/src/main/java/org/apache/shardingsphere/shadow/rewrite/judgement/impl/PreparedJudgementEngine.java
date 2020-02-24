@@ -33,13 +33,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Shadow judgement engine for prepared.
- *
- * @author zhyee
  */
 @RequiredArgsConstructor
 public final class PreparedJudgementEngine implements ShadowJudgementEngine {
@@ -53,12 +50,14 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
     @Override
     public boolean isShadowSQL() {
         if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
-            LinkedList<ColumnSegment> columnSegments = (LinkedList<ColumnSegment>) ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns();
-            for (int i = 0; i < columnSegments.size(); i++) {
-                if (columnSegments.get(i).getName().equals(shadowRule.getColumn())) {
-                    final Object value = parameters.get(i);
+            Collection<ColumnSegment> columnSegments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns();
+            int count = 0;
+            for (ColumnSegment each : columnSegments) {
+                if (each.getIdentifier().getValue().equals(shadowRule.getColumn())) {
+                    Object value = parameters.get(count);
                     return value instanceof Boolean && (Boolean) value;
                 }
+                count++;
             }
             return false;
         }
@@ -79,7 +78,7 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
     
     private boolean judgePredicateSegments(final Collection<PredicateSegment> predicates) {
         for (PredicateSegment each : predicates) {
-            if (each.getColumn().getName().equals(shadowRule.getColumn())) {
+            if (each.getColumn().getIdentifier().getValue().equals(shadowRule.getColumn())) {
                 Preconditions.checkArgument(each.getRightValue() instanceof PredicateCompareRightValue, "must be PredicateCompareRightValue");
                 PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
                 int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) rightValue.getExpression()).getParameterMarkerIndex();

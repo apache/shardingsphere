@@ -19,22 +19,19 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.column;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
  * Column segment.
- *
- * @author duhongjun
- * @author zhangliang
- * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -44,18 +41,9 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final int stopIndex;
     
-    private final String name;
-    
-    private final QuoteCharacter quoteCharacter;
+    private final IdentifierValue identifier;
     
     private TableSegment owner;
-    
-    public ColumnSegment(final int startIndex, final int stopIndex, final String name) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.name = SQLUtil.getExactlyValue(name);
-        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
-    }
     
     /**
      * Get qualified name.
@@ -63,7 +51,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
      * @return qualified name
      */
     public final String getQualifiedName() {
-        return null == owner ? name : owner.getTableName() + "." + name;
+        return null == owner ? identifier.getValue() : owner.getIdentifier().getValue() + "." + identifier.getValue();
     }
 
     @Override

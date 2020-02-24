@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Insert value for sharding.
- *
- * @author zhangliang
  */
 @Getter
 public final class ShardingInsertValue extends InsertValue {

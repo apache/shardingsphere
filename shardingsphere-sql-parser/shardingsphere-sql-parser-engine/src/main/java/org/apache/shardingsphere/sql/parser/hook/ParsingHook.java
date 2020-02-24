@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * Parsing hook.
- *
- * @author zhangliang
  */
 public interface ParsingHook {
     

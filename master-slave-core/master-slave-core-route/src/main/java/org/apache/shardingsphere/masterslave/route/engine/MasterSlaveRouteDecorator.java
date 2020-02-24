@@ -29,8 +29,6 @@ import java.util.LinkedList;
 
 /**
  * Route decorator for master-slave.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {

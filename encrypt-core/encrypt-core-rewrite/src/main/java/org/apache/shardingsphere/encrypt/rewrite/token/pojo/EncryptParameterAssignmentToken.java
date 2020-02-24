@@ -26,8 +26,6 @@ import java.util.LinkedList;
 
 /**
  * Parameter assignment token for encrypt.
- *
- * @author panjuan
  */
 public final class EncryptParameterAssignmentToken extends EncryptAssignmentToken {
     

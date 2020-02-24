@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 
 /**
  * Complex expression segment.
- *
- * @author zhangliang
  */
 public interface ComplexExpressionSegment extends ExpressionSegment {
     

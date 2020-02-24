@@ -25,8 +25,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Inser
 
 /**
  * Insert values token for sharding.
- *
- * @author zhangliang
  */
 public final class ShardingInsertValuesToken extends InsertValuesToken implements RouteUnitAware {
     

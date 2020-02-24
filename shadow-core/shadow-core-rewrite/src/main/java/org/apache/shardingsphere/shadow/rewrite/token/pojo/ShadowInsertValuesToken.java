@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Inser
 
 /**
  * Insert values token for encrypt.
- *
- * @author zhangliang
  */
 public final class ShadowInsertValuesToken extends InsertValuesToken {
     

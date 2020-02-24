@@ -33,8 +33,6 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Mock backend connection Util.
- *
- * @author zhaojun
  */
 final class MockConnectionUtil {
     

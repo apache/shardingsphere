@@ -24,8 +24,6 @@ import lombok.Setter;
 
 /**
  * Sharding schema DTO.
- *
- * @author chenqingyang
  */
 @Setter
 @Getter

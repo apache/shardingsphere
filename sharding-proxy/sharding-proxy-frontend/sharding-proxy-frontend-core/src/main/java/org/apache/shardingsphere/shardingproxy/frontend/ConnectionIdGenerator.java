@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Connection ID generator.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class ConnectionIdGenerator {

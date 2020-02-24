@@ -53,7 +53,7 @@ hexadecimalLiterals
 bitValueLiterals
     : characterSetName_? BIT_NUM_ collateClause_?
     ;
-    
+
 booleanLiterals
     : TRUE | FALSE
     ;
@@ -62,20 +62,19 @@ nullValueLiterals
     : NULL
     ;
 
+characterSetName_
+    : IDENTIFIER_
+    ;
+
+collationName_
+   : IDENTIFIER_
+   ;
+
 identifier
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | unreservedWord
     ;
 
-variable_
-    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
-    ;
-
-scope_
-    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
-    | AT_ AT_ (GLOBAL | PERSIST | PERSIST_ONLY | SESSION) DOT_
-    ;
-
-unreservedWord_
+unreservedWord
     : ACCOUNT | ACTION | AFTER | ALGORITHM | ALWAYS | ANY | AUTO_INCREMENT 
     | AVG_ROW_LENGTH | BEGIN | BTREE | CHAIN | CHARSET | CHECKSUM | CIPHER 
     | CLIENT | COALESCE | COLUMNS | COLUMN_FORMAT | COMMENT | COMMIT | COMMITTED 
@@ -110,6 +109,10 @@ unreservedWord_
     | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | CONTEXT | CODE | CHANNEL | SOURCE
     ;
 
+variable
+    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
+    ;
+
 schemaName
     : identifier
     ;
@@ -120,6 +123,10 @@ tableName
 
 columnName
     : (owner DOT_)? name
+    ;
+
+indexName
+    : identifier
     ;
 
 userName
@@ -162,25 +169,13 @@ name
     : identifier
     ;
 
-columnNames
-    : LP_? columnName (COMMA_ columnName)* RP_?
-    ;
-
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
     ;
 
-indexName
-    : identifier
+columnNames
+    : LP_? columnName (COMMA_ columnName)* RP_?
     ;
-
-characterSetName_
-    : IDENTIFIER_
-    ;
-
-collationName_
-   : IDENTIFIER_
-   ;
 
 groupName
     : IDENTIFIER_
@@ -316,14 +311,14 @@ simpleExpr
     | literals
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier)
-    | variable_
+    | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | matchExpression_
-    | caseExpression_
+    | caseExpression
     | intervalExpression
     ;
 
@@ -332,10 +327,10 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause_?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause_?
     ;
 
-aggregationFunctionName_
+aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | BIT_AND | BIT_OR
     | BIT_XOR | JSON_ARRAYAGG | JSON_OBJECTAGG | STD | STDDEV | STDDEV_POP | STDDEV_SAMP
     | VAR_POP | VAR_SAMP | VARIANCE
@@ -462,7 +457,7 @@ matchSearchModifier_
     : IN NATURAL LANGUAGE MODE | IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION | IN BOOLEAN MODE | WITH QUERY EXPANSION
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_? END
     ;
 
@@ -497,10 +492,10 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-dataTypeName_
+dataTypeName
     : identifier identifier?
     ;
 

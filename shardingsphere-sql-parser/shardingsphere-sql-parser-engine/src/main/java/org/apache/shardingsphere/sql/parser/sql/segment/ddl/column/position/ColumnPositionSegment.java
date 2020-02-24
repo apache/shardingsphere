@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Column position segment.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

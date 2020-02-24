@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * Predicate parameter rewriter for shadow.
- *
- * @author zhyee
  */
 public final class ShadowPredicateParameterRewriter extends ShadowParameterRewriter {
     

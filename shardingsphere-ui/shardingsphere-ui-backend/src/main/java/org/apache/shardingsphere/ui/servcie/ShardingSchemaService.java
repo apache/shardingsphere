@@ -21,8 +21,6 @@ import java.util.Collection;
 
 /**
  * Sharding schema service.
- *
- * @author chenqingyang
  */
 public interface ShardingSchemaService {
     

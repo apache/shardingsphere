@@ -36,11 +36,6 @@ import java.util.Map;
 
 /**
  * Connection that support sharding.
- *
- * @author zhangliang
- * @author caohao
- * @author gaohongtao
- * @author zhaojun
  */
 @Getter
 public final class ShardingConnection extends AbstractConnectionAdapter {

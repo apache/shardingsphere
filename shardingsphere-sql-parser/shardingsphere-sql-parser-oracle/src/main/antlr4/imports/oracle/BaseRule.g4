@@ -63,10 +63,10 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | unreservedWord
     ;
 
-unreservedWord_
+unreservedWord
     : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
     | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
     | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET
@@ -219,7 +219,7 @@ simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | caseExpression_
+    | caseExpression
     | privateExprOfDb
     ;
 
@@ -228,10 +228,10 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
-aggregationFunctionName_
+aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG
     ;
 
@@ -259,7 +259,7 @@ regularFunctionName_
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_?
     ;
 
@@ -308,14 +308,14 @@ lobItemList
     ;
 
 dataType
-    : dataTypeName_ dataTypeLength? | specialDatatype | dataTypeName_ dataTypeLength? datetimeTypeSuffix
+    : dataTypeName dataTypeLength? | specialDatatype | dataTypeName dataTypeLength? datetimeTypeSuffix
     ;
 
 specialDatatype
-    : dataTypeName_ (LP_ NUMBER_ IDENTIFIER_ RP_) | NATIONAL dataTypeName_ VARYING? LP_ NUMBER_ RP_ | dataTypeName_ LP_? columnName RP_?
+    : dataTypeName (LP_ NUMBER_ IDENTIFIER_ RP_) | NATIONAL dataTypeName VARYING? LP_ NUMBER_ RP_ | dataTypeName LP_? columnName RP_?
     ;
 
-dataTypeName_
+dataTypeName
     : IDENTIFIER_ IDENTIFIER_ | IDENTIFIER_
     ;
 
@@ -324,7 +324,7 @@ datetimeTypeSuffix
     ;
 
 treatFunction
-    : TREAT LP_ expr AS REF? dataTypeName_ RP_
+    : TREAT LP_ expr AS REF? dataTypeName RP_
     ;
 
 privateExprOfDb
@@ -356,7 +356,7 @@ objectAccessExpression
     ;
 
 constructorExpr
-    : NEW dataTypeName_ exprList
+    : NEW dataTypeName exprList
     ;
 
 ignoredIdentifier_

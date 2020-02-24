@@ -33,9 +33,6 @@ import java.util.Map;
 
 /**
  * Table meta data loader for encrypt.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<EncryptRule> {
     

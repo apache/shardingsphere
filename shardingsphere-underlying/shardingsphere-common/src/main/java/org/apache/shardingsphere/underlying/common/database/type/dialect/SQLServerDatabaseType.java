@@ -25,8 +25,6 @@ import java.util.Collections;
 
 /**
  * Database type of SQLServer.
- *
- * @author zhangliang
  */
 public final class SQLServerDatabaseType implements DatabaseType {
     

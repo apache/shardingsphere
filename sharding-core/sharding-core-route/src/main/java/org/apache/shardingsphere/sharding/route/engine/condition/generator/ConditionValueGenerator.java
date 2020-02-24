@@ -27,8 +27,6 @@ import java.util.List;
 /**
  * Condition value generator.
  *
- * @author zhangliang
- * 
  * @param <T> type of predicate right value
  */
 public interface ConditionValueGenerator<T extends PredicateRightValue> {

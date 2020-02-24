@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.metadata.CircuitBreakerDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.statement.CircuitBreakerPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.statement.CircuitBreakerStatement;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.metadata.CircuitBreakerDatabaseMetaData;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -30,8 +30,6 @@ import java.sql.Statement;
 
 /**
  * Circuit breaker connection.
- * 
- * @author caohao
  */
 public final class CircuitBreakerConnection extends AbstractUnsupportedOperationConnection {
     

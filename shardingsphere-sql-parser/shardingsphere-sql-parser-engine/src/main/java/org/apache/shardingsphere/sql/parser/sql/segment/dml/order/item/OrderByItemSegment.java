@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Order by item segment.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

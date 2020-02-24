@@ -25,9 +25,6 @@ import java.util.Collections;
 
 /**
  * Command execute executor for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
     

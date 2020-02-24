@@ -57,8 +57,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Mock command handler for seata.
- *
- * @author zhaojun
  */
 @Sharable
 public final class MockMessageHandler extends ChannelDuplexHandler {

@@ -24,8 +24,6 @@ import java.sql.SQLException;
 
 /**
  * SQL Execute engine.
- *
- * @author zhangliang
  */
 public interface SQLExecuteEngine {
     

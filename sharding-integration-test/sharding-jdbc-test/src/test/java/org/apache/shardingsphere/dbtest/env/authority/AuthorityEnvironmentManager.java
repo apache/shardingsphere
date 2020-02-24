@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * Authority environment manager.
- *
- * @author panjuan
  */
 public final class AuthorityEnvironmentManager {
     

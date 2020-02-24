@@ -27,8 +27,6 @@ import java.util.LinkedList;
 
 /**
  * Local transaction manager.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class LocalTransactionManager implements TransactionManager {

@@ -21,8 +21,6 @@ import java.sql.SQLException;
 
 /**
  * Transaction manager interface for proxy.
- *
- * @author zhaojun
  */
 public interface TransactionManager {
     

@@ -31,8 +31,6 @@ import java.util.Set;
 
 /**
  * Route result.
- * 
- * @author zhangliang
  */
 @Getter
 public final class RouteResult {

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.rewrite.sql.token.pojo;
 
 /**
  * Substitute available.
- *
- * @author panjuan
  */
 public interface Substitutable {
     

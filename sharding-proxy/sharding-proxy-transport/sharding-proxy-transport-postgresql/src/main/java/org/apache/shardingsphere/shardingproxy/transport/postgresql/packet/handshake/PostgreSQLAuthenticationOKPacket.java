@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Authentication OK packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLPacket {
     

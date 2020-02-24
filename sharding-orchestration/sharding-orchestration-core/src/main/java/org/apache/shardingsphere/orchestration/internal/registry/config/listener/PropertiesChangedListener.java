@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import com.google.common.collect.Lists;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingConfigCenterEventListener;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Properties changed listener.
- *
- * @author panjuan
  */
-public final class PropertiesChangedListener extends PostShardingOrchestrationEventListener {
+public final class PropertiesChangedListener extends PostShardingConfigCenterEventListener {
     
-    public PropertiesChangedListener(final String name, final RegistryCenter regCenter) {
-        super(regCenter, new ConfigurationNode(name).getPropsPath());
+    public PropertiesChangedListener(final String name, final ConfigCenter configCenter) {
+        super(configCenter, Lists.newArrayList(new ConfigurationNode(name).getPropsPath()));
     }
     
     @Override

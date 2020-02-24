@@ -25,8 +25,6 @@ import java.util.Collections;
 
 /**
  * Database type of SQL92.
- *
- * @author zhangyonglun
  */
 public final class SQL92DatabaseType implements DatabaseType {
     

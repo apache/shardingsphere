@@ -31,8 +31,6 @@ import java.util.Objects;
 
 /**
  * Data source metas.
- *
- * @author panjuan
  */
 public final class DataSourceMetas {
     

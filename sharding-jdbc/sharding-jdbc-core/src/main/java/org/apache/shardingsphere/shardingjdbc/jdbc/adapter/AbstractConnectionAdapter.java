@@ -44,11 +44,6 @@ import java.util.Map.Entry;
 
 /**
  * Adapter for {@code Connection}.
- *
- * @author zhangliang
- * @author panjuan
- * @author zhaojun
- * @author maxiaoguang
  */
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
     

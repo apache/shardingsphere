@@ -27,8 +27,6 @@ import java.util.LinkedList;
 
 /**
  * Drop table statement.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

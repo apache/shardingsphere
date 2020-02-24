@@ -25,8 +25,6 @@ import java.util.Properties;
 
 /**
  * Properties changed event.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

@@ -26,8 +26,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Random generator for MySQL.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class MySQLRandomGenerator {

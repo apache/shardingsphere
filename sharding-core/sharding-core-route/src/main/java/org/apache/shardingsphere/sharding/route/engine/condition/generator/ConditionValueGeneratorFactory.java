@@ -34,8 +34,6 @@ import java.util.List;
 
 /**
  * Condition value generator factory.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConditionValueGeneratorFactory {

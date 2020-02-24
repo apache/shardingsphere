@@ -28,8 +28,6 @@ import java.sql.Connection;
 
 /**
  * PostgreSQL XA connection wrapper.
- *
- * @author zhaojun
  */
 public final class PostgreSQLXAConnectionWrapper implements XAConnectionWrapper {
     

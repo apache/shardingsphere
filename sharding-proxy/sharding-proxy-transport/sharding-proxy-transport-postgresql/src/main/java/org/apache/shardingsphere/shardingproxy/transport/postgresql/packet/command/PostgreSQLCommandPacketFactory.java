@@ -33,8 +33,6 @@ import java.sql.SQLException;
 
 /**
  * Command packet factory for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLCommandPacketFactory {

@@ -32,8 +32,6 @@ import java.util.Map.Entry;
 
 /**
  * Encryptor table.
- *
- * @author panjuan
  */
 public final class EncryptTable {
     

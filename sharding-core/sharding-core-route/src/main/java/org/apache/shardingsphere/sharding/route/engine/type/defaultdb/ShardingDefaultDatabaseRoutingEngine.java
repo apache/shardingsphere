@@ -30,8 +30,6 @@ import java.util.List;
 
 /**
  * Sharding default datasource engine.
- * 
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class ShardingDefaultDatabaseRoutingEngine implements ShardingRouteEngine {

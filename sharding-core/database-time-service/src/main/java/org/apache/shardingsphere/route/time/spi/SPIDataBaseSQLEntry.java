@@ -25,8 +25,6 @@ import java.util.Collection;
 
 /**
  * SPI for DatabaseSQLEntry.
- *
- * @author chenchuangliu
  */
 @RequiredArgsConstructor
 public final class SPIDataBaseSQLEntry implements DatabaseSQLEntry {

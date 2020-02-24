@@ -26,9 +26,6 @@ import java.sql.Statement;
 
 /**
  * Execute unit for JDBC statement.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

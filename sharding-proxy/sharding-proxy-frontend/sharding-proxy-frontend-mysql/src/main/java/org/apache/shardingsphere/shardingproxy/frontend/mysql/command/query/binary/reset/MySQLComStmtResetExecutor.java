@@ -28,8 +28,6 @@ import java.util.Collections;
 
 /**
  * COM_STMT_RESET command executor for MySQL.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class MySQLComStmtResetExecutor implements CommandExecutor {

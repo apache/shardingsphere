@@ -23,8 +23,6 @@ import javax.sql.DataSource;
 
 /**
  * Unique resource data source.
- *
- * @author zhaojun
  */
 @Getter
 public final class ResourceDataSource {

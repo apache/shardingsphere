@@ -34,8 +34,6 @@ import java.util.Map.Entry;
 
 /**
  * Predicate parameter rewriter for encrypt.
- *
- * @author zhangliang
  */
 @Setter
 public final class EncryptPredicateParameterRewriter extends EncryptParameterRewriter implements RelationMetasAware, QueryWithCipherColumnAware {

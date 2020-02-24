@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 
 /**
  * Relation metas aware.
- *
- * @author zhangliang
  */
 public interface RelationMetasAware {
     

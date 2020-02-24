@@ -24,8 +24,6 @@ import java.util.Collection;
 
 /**
  * Orchestration operation service.
- *
- * @author chenqingyang
  */
 public interface OrchestrationService {
     

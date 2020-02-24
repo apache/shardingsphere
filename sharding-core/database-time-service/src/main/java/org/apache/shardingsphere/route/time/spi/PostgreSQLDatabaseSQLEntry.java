@@ -19,8 +19,6 @@ package org.apache.shardingsphere.route.time.spi;
 
 /**
  * PostgreSQL entry.
- *
- * @author chenchuangliu
  */
 public final class PostgreSQLDatabaseSQLEntry implements DatabaseSQLEntry {
     

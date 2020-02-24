@@ -22,14 +22,10 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Properties constant.
- * 
- * @author gaohongtao
- * @author caohao
- * @author cookie
  */
 @RequiredArgsConstructor
 @Getter
-public enum PropertiesConstant {
+public enum PropertiesConstant implements TypedPropertiesKey {
     
     /**
      * Enable or Disable to show SQL details.
@@ -146,18 +142,4 @@ public enum PropertiesConstant {
     
     private final Class<?> type;
     
-    /**
-     * Find value via property key.
-     * 
-     * @param key property key
-     * @return value enum, return {@code null} if not found
-     */
-    public static PropertiesConstant findByKey(final String key) {
-        for (PropertiesConstant each : PropertiesConstant.values()) {
-            if (each.getKey().equals(key)) {
-                return each;
-            }
-        }
-        return null;
-    }
 }

@@ -20,15 +20,15 @@ grammar DDLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause_
+    : CREATE createTableSpecification_ TABLE tableName createDefinitionClause
     ;
 
 createIndex
-    : CREATE createIndexSpecification_ INDEX indexName ON createIndexDefinitionClause_
+    : CREATE createIndexSpecification_ INDEX indexName ON createIndexDefinitionClause
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_
+    : ALTER TABLE tableName alterDefinitionClause
     ;
 
 // TODO hongjun throw exeption when alter index on oracle
@@ -64,7 +64,7 @@ domainIndexClause
     : indexTypeName
     ;
 
-createDefinitionClause_
+createDefinitionClause
     : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
 
@@ -180,7 +180,7 @@ createIndexSpecification_
     : (UNIQUE | BITMAP)?
     ;
 
-tableIndexClause_
+tableIndexClause
     : tableName alias? indexExpressions_
     ;
 
@@ -204,15 +204,15 @@ columnSortClause_
     : (tableName | alias)? columnName (ASC | DESC)?
     ;
 
-createIndexDefinitionClause_
-    : tableIndexClause_ | bitmapJoinIndexClause_
+createIndexDefinitionClause
+    : tableIndexClause | bitmapJoinIndexClause_
     ;
 
 tableAlias
     : tableName alias? (COMMA_ tableName alias?)*
     ;
 
-alterDefinitionClause_
+alterDefinitionClause
     : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
     ;
 
@@ -257,7 +257,7 @@ objectTypeColProperties
     ;
 
 substitutableColumnClause
-    : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName_ RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
+    : ELEMENT? IS OF TYPE? LP_ ONLY? dataTypeName RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
 
 modifyColumnSpecification

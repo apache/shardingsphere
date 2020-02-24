@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * XML definition for database schema environment.
- *
- * @author zhangliang
  */
 @Getter
 @XmlRootElement(name = "schema")

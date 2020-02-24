@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.node;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.junit.Test;
 
+import java.util.Collection;
+
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -55,5 +59,15 @@ public final class ConfigurationNodeTest {
     @Test
     public void assertGetSchemaName() {
         assertThat(configurationNode.getSchemaName("/test/config/schema/logic_db/rule"), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
+    
+    @Test
+    public void assertGetAllSchemaConfigPaths() {
+        Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Lists.newArrayList(ShardingConstant.LOGIC_SCHEMA_NAME));
+        assertThat(actual.size(), is(4));
+        assertThat(actual, hasItems("/test/config/schema"));
+        assertThat(actual, hasItems("/test/config/schema/logic_db"));
+        assertThat(actual, hasItems("/test/config/schema/logic_db/rule"));
+        assertThat(actual, hasItems("/test/config/schema/logic_db/datasource"));
     }
 }

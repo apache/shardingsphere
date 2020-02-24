@@ -19,12 +19,10 @@ package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 /**
  * SQL parser for SQL92.
- * 
- * @author zhangyonglun
  */
 public final class SQL92Parser extends SQL92StatementParser implements SQLParser {
     

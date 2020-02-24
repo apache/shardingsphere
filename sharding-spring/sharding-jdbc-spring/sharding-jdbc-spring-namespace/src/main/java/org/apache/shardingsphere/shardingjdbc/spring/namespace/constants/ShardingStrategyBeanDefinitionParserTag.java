@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Sharding strategy parser tag constants.
- * 
- * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingStrategyBeanDefinitionParserTag {

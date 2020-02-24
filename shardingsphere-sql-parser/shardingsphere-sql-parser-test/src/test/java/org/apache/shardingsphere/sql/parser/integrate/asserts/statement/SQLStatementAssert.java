@@ -22,20 +22,20 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.DALStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dcl.DCLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.ddl.DDLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.DMLStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.tcl.TCLStatementAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 
 /**
  * SQL statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementAssert {
@@ -55,6 +55,8 @@ public final class SQLStatementAssert {
             DDLStatementAssert.assertIs(assertContext, (DDLStatement) actual, expected);
         } else if (actual instanceof TCLStatement) {
             TCLStatementAssert.assertIs(assertContext, (TCLStatement) actual, expected);
+        } else if (actual instanceof DCLStatement) {
+            DCLStatementAssert.assertIs(assertContext, (DCLStatement) actual, expected);
         } else if (actual instanceof DALStatement) {
             DALStatementAssert.assertIs(assertContext, (DALStatement) actual, expected);
         }

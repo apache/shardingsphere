@@ -23,13 +23,13 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertConte
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedAndPredicate;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedOperator;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedPredicate;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.ExpectedWhereClause;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateBetweenRightValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.predicate.value.ExpectedPredicateInRightValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.ExpectedAndPredicate;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.ExpectedOperator;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.ExpectedPredicate;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.ExpectedWhereClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.value.ExpectedPredicateBetweenRightValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.value.ExpectedPredicateCompareRightValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.value.ExpectedPredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
@@ -43,7 +43,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,9 +52,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- *  Where clause assert.
- *
- * @author zhaoyanan
+ * Where clause assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WhereClauseAssert {
@@ -68,9 +65,6 @@ public final class WhereClauseAssert {
      * @param expected expected where clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhereClause expected) {
-        if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {
-            assertThat(assertContext.getText("Parameters count in where clause assertion error: "), actual.getParametersCount(), is(expected.getParametersCount()));
-        }
         assertAndPredicates(assertContext, actual.getAndPredicates(), expected.getAndPredicates());
     }
     

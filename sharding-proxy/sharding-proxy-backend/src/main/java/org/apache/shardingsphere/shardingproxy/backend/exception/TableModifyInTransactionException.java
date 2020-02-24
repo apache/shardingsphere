@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Table modify in transaction exception.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

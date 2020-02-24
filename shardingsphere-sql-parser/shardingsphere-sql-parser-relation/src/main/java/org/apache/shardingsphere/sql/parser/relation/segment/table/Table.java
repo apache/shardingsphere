@@ -25,8 +25,6 @@ import lombok.ToString;
 
 /**
  * Table.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

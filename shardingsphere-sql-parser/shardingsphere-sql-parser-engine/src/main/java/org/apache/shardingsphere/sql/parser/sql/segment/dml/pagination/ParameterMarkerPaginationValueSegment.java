@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination;
 
 /**
  * Pagination value segment for parameter marker.
- * 
- * @author zhangliang
  */
 public interface ParameterMarkerPaginationValueSegment extends PaginationValueSegment {
     

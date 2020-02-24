@@ -25,8 +25,6 @@ import java.util.Properties;
 
 /**
  * Test encryptor.
- *
- * @author panjuan
  */
 @Getter
 @Setter

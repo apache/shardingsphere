@@ -31,9 +31,6 @@ import java.util.List;
 
 /**
  * Generated key for use default insert columns token generator.
- *
- * @author panjuan
- * @author zhangliang
  */
 public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends BaseGeneratedKeyTokenGenerator {
     
@@ -44,7 +41,7 @@ public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends 
     
     @Override
     protected UseDefaultInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> insertColumnsSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
         return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertSQLStatementContext) sqlStatementContext, generatedKey));
     }

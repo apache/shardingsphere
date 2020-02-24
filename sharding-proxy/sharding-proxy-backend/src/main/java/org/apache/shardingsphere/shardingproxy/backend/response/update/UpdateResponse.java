@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Update response.
- * 
- * @author zhangliang
  */
 public final class UpdateResponse implements BackendResponse {
     

@@ -39,12 +39,6 @@ import org.apache.shardingsphere.shardingproxy.frontend.netty.ServerHandlerIniti
 
 /**
  * Sharding-Proxy.
- *
- * @author zhangliang
- * @author xiaoyu
- * @author wangkai
- * @author panjuan
- * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingProxy {

@@ -28,8 +28,6 @@ import java.util.LinkedList;
 
 /**
  * Column meta data loader.
- *
- * @author zhangliang
  */
 public final class ColumnMetaDataLoader {
     

@@ -28,10 +28,8 @@ import java.util.Map.Entry;
 
 /**
  * Error response packet for PostgreSQL.
+ * 
  * @see <a href="https://www.postgresql.org/docs/12/protocol-message-formats.html">ErrorResponse (B)</a>
- *
- * @author zhangyonglun
- * @author avalon566
  */
 public final class PostgreSQLErrorResponsePacket implements PostgreSQLPacket {
 

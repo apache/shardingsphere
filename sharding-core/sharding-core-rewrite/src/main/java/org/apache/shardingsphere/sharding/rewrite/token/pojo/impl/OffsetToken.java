@@ -23,9 +23,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable
 
 /**
  * Offset token.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class OffsetToken extends SQLToken implements Substitutable {
     

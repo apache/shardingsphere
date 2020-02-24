@@ -23,8 +23,6 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 /**
  * Database environment.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class DatabaseEnvironment {

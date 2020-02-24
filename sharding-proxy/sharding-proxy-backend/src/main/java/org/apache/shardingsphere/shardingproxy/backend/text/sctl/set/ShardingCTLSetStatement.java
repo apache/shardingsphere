@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLStat
 
 /**
  * Sharding CTL set statement.
- *
- * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter

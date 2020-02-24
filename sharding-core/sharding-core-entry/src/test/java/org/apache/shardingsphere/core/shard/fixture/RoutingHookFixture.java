@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
 
 /**
  * Routing hook fixture.
- *
- * @author zhaojun
  */
 public final class RoutingHookFixture implements RoutingHook {
     

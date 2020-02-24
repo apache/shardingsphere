@@ -30,8 +30,6 @@ import java.io.File;
 
 /**
  * Encrypt data source factory for YAML.
- * 
- * @author panjuan 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlEncryptDataSourceFactory {

@@ -24,8 +24,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Resource synchronizer.
- *
- * @author zhaojun
  */
 public final class ResourceSynchronizer {
     

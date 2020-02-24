@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.Paginatio
 
 /**
  * Row number value segment.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

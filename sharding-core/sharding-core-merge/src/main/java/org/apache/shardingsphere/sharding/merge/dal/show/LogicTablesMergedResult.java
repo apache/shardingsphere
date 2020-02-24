@@ -34,8 +34,6 @@ import java.util.Set;
 
 /**
  * Logic tables merged result.
- *
- * @author zhangliang
  */
 public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     

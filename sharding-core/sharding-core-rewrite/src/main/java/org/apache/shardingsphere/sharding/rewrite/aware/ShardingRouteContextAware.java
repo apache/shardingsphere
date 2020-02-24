@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteCont
 
 /**
  * Sharding route context aware.
- *
- * @author zhangliang
  */
 public interface ShardingRouteContextAware {
     

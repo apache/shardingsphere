@@ -28,8 +28,6 @@ import java.util.LinkedList;
 
 /**
  * Group by context engine.
- *
- * @author zhangliang
  */
 public final class GroupByContextEngine {
     

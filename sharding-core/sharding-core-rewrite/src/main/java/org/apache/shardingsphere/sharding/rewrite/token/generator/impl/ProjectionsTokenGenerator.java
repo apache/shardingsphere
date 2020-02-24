@@ -35,8 +35,6 @@ import java.util.LinkedList;
 
 /**
  * Projections token generator.
- *
- * @author zhangliang
  */
 public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     

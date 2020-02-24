@@ -63,10 +63,10 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | unreservedWord
     ;
 
-unreservedWord_
+unreservedWord
     : TRUNCATE | FUNCTION | TRIGGER | LIMIT | OFFSET | SAVEPOINT | BOOLEAN
     | ARRAY | LOCALTIME | LOCALTIMESTAMP | QUARTER | WEEK | MICROSECOND | ENABLE
     | DISABLE | BINARY | HIDDEN_ | MOD | PARTITION | TOP | ROW
@@ -206,7 +206,7 @@ simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | caseExpression_
+    | caseExpression
     | privateExprOfDb
     ;
 
@@ -215,10 +215,10 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
-aggregationFunctionName_
+aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG
     ;
 
@@ -246,7 +246,7 @@ regularFunctionName_
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_?
     ;
 
@@ -276,10 +276,10 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName_ (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
+    : dataTypeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? ignoredIdentifier_ RP_)?
     ;
 
-dataTypeName_
+dataTypeName
     : IDENTIFIER_
     ;
 

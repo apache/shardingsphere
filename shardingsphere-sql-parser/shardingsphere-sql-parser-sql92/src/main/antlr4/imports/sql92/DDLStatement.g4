@@ -20,11 +20,11 @@ grammar DDLStatement;
 import Symbol, Keyword, SQL92Keyword, Literals, BaseRule, DMLStatement;
 
 createTable
-    : CREATE createTableSpecification_? TABLE tableName (createDefinitionClause_ | createLikeClause_)
+    : CREATE createTableSpecification_? TABLE tableName (createDefinitionClause | createLikeClause_)
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_
+    : ALTER TABLE tableName alterDefinitionClause
     ;
 
 dropTable
@@ -53,40 +53,36 @@ createTableSpecification_
     : (GLOBAL | LOCAL) TEMPORARY
     ;
 
-createDefinitionClause_
-    : LP_ createDefinitions_ RP_
+createDefinitionClause
+    : LP_ createDefinition (COMMA_ createDefinition)* RP_
     ;
 
 createDatabaseSpecification_
     : DEFAULT CHARACTER SET EQ_? characterSetName_
     ;
 
-createDefinitions_
-    : createDefinition_ (COMMA_ createDefinition_)*
-    ;
-
-createDefinition_
-    : columnDefinition | constraintDefinition_ | checkConstraintDefinition_
+createDefinition
+    : columnDefinition | constraintDefinition | checkConstraintDefinition_
     ;
 
 columnDefinition
-    : columnName dataType (inlineDataType_* | generatedDataType_*)
+    : columnName dataType (inlineDataType* | generatedDataType*)
     ;
 
-inlineDataType_
-    : commonDataTypeOption_
+inlineDataType
+    : commonDataTypeOption
     | DEFAULT (literals | expr)
     ;
 
-commonDataTypeOption_
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition_ | STRING_
+commonDataTypeOption
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition | STRING_
     ;
 
 checkConstraintDefinition_
     : (CONSTRAINT ignoredIdentifier_?)? CHECK expr
     ;
 
-referenceDefinition_
+referenceDefinition
     : REFERENCES tableName keyParts_ (MATCH FULL | MATCH PARTIAL | MATCH UNIQUE)? (ON (UPDATE | DELETE) referenceOption_)*
     ;
 
@@ -94,8 +90,8 @@ referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
-generatedDataType_
-    : commonDataTypeOption_
+generatedDataType
+    : commonDataTypeOption
     ;
 
 keyParts_
@@ -106,8 +102,8 @@ keyPart_
     : (columnName (LP_ NUMBER_ RP_)? | expr) (ASC | DESC)?
     ;
 
-constraintDefinition_
-    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
+constraintDefinition
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption)
     ;
 
 primaryKeyOption_
@@ -122,19 +118,16 @@ uniqueOption_
     : UNIQUE keyParts_
     ;
 
-foreignKeyOption_
-    : FOREIGN KEY columnNames referenceDefinition_
+foreignKeyOption
+    : FOREIGN KEY columnNames referenceDefinition
     ;
 
 createLikeClause_
     : LP_? LIKE tableName RP_?
     ;
 
-alterDefinitionClause_
-    : alterSpecification_
-    ;
 
-alterSpecification_
+alterDefinitionClause
     : addColumnSpecification
     | modifyColumnSpecification
     | dropColumnSpecification
@@ -155,10 +148,10 @@ dropColumnSpecification
     ;
 
 addConstraintSpecification
-    : ADD constraintDefinition_
+    : ADD constraintDefinition
     ;
 
 dropConstraintSpecification
-    : DROP constraintDefinition_
+    : DROP constraintDefinition
     ;
 

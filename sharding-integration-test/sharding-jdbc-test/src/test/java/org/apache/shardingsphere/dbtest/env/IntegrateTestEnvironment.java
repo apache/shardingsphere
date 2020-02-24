@@ -32,8 +32,6 @@ import java.util.Properties;
 
 /**
  * Integrate test running environment.
- *
- * @author zhangliang
  */
 @Getter
 public final class IntegrateTestEnvironment {

@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Database packet codec.
- * 
- * @author zhangliang 
  */
 @RequiredArgsConstructor
 @Slf4j

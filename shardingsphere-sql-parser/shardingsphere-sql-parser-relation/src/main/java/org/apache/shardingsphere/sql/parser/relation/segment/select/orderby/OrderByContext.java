@@ -24,8 +24,6 @@ import java.util.Collection;
 
 /**
  * Order by context.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

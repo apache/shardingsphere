@@ -27,8 +27,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Random slave database load-balance algorithm.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm
 
 /**
  * Master-slave database load-balance algorithm service loader.
- * 
- * @author zhangliang
  */
 public final class MasterSlaveLoadBalanceAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
     

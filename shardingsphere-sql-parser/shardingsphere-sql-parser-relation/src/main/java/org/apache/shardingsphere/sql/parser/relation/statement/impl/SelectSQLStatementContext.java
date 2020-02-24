@@ -47,8 +47,6 @@ import java.util.Map;
 
 /**
  * Select SQL statement context.
- *
- * @author zhangliang
  */
 @Getter
 @ToString(callSuper = true)
@@ -156,7 +154,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     
     private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
         return orderByItemSegment instanceof ColumnOrderByItemSegment
-                ? ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getName() : ((ExpressionOrderByItemSegment) orderByItemSegment).getExpression();
+                ? ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue() : ((ExpressionOrderByItemSegment) orderByItemSegment).getExpression();
     }
     
     /**

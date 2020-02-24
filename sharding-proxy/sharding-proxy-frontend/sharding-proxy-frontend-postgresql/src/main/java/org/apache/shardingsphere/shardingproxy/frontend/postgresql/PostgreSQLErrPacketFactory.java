@@ -25,8 +25,6 @@ import org.postgresql.util.ServerErrorMessage;
 
 /**
  * ERR packet factory for PostgreSQL.
- * 
- * @author avalon566
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLErrPacketFactory {

@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Parameter rewriter.
- *
- * @author zhangliang
  */
 public interface ParameterRewriter {
     

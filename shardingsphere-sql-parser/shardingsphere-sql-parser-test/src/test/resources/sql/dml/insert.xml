@@ -213,8 +213,7 @@
     
     <insert sql-case-id="insert_without_columns_with_all_placeholders" parameters="1, 1, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
-        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
-        <columns start-index="20" stop-index="19" />
+        <columns start-index="19" stop-index="19" />
         <values>
             <value>
                 <assignment-value>
@@ -465,6 +464,14 @@
                 </assignment-value>
             </value>
         </values>
+        <on-duplicate-key-columns start-index="65" stop-index="111" literal-start-index="70" literal-stop-index="116">
+            <assignment start-index="89" stop-index="111" literal-start-index="94" literal-stop-index="116">
+                <column name="status" start-index="89" stop-index="94" literal-start-index="94" literal-stop-index="99" />
+                <assignment-value>
+                    <common-expression text="VALUES(status)" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
     </insert>
     
     <insert sql-case-id="insert_set_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
@@ -500,14 +507,46 @@
         </set>
     </insert>
     
-    <!--<insert sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">-->
-            <!--<table name="t_order" start-index="12" stop-index="18" />-->
-            <!--<table name="t_order" start-index="21" stop-index="27" />-->
-            <!--<table name="t_order" start-index="39" stop-index="45" />-->
-            <!--<table name="t_order" start-index="56" stop-index="62" />-->
-            <!--<table name="t_order" start-index="113" stop-index="119" />-->
-            <!--<table name="t_order" start-index="137" stop-index="143" />-->
-    <!--</insert>-->
+    <insert sql-case-id="insert_on_duplicate_key_update_with_table_identifier" parameters="1, 1, 'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="70">
+            <column name="order_id" start-index="21" stop-index="36">
+                <owner name="t_order" start-index="21" stop-index="27" />
+            </column>
+            <column name="user_id" start-index="39" stop-index="53">
+                <owner name="t_order" start-index="39" stop-index="45" />
+            </column>
+            <column name="status" start-index="56" stop-index="69">
+                <owner name="t_order" start-index="56" stop-index="62" />
+            </column>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="1" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="init" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="89" stop-index="151" literal-start-index="94" literal-stop-index="156">
+            <assignment start-index="118" stop-index="151" literal-start-index="123" literal-stop-index="156">
+                <column name="status" start-index="113" stop-index="126" literal-start-index="118" literal-stop-index="131">
+                    <owner name="t_order" start-index="113" stop-index="119" literal-start-index="118" literal-stop-index="124" />
+                </column>
+                <assignment-value>
+                    <common-expression text="VALUES(t_order.status)" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
     
     <insert sql-case-id="insert_with_batch" parameters="1000, 10, 'init', 1100, 11, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
@@ -642,9 +681,49 @@
         </values>
     </insert>
     
-    <!--<insert sql-case-id="insert_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">-->
-            <!--<table name="t_order_item" start-index="12" stop-index="23" />-->
-    <!--</insert>-->
+    <insert sql-case-id="insert_with_batch_and_without_generate_key_column" parameters="1000, 10, 1001, 10">
+        <table name="t_order_item" start-index="12" stop-index="23" />
+        <columns start-index="24" stop-index="65">
+            <column name="order_id" start-index="25" stop-index="32" />
+            <column name="user_id" start-index="35" stop-index="41" />
+            <column name="status" start-index="44" stop-index="49" />
+            <column name="creation_date" start-index="52" stop-index="64" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="0" />
+                    <literal-expression value="1000" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="1" />
+                    <literal-expression value="10" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2017-08-08" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression value="2" />
+                    <literal-expression value="1001" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression value="3" />
+                    <literal-expression value="10" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="insert" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2017-08-08" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
     
     <insert sql-case-id="insert_with_geography" parameters="7, 200, '{&quot;rule&quot;:&quot;null&quot;}'">
         <table name="t_order" start-index="12" stop-index="18" />
@@ -677,9 +756,7 @@
     
     <insert sql-case-id="insert_without_columns_and_with_generate_key_column" parameters="10000, 1000, 10">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
-        <columns start-index="25" stop-index="24">
-        </columns>
+        <columns start-index="24" stop-index="24" />
         <values>
             <value>
                 <assignment-value>
@@ -706,8 +783,7 @@
     
     <insert sql-case-id="insert_without_columns_and_without_generate_key_column" parameters="1000, 10">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
-        <columns start-index="25" stop-index="24" />
+        <columns start-index="24" stop-index="24" />
         <values>
             <value>
                 <assignment-value>
@@ -739,8 +815,7 @@
     
     <insert sql-case-id="insert_with_one_auto_increment_column">
         <table name="t_auto_increment_table" start-index="12" stop-index="33" />
-        <!-- FIXME no insert columns should not parse the segment, and the start and stop index are incorrect -->
-        <columns start-index="35" stop-index="34" />
+        <columns start-index="34" stop-index="34" />
         <values>
             <value />
         </values>
@@ -840,6 +915,16 @@
                 </assignment-value>
             </value>
         </values>
+        <on-duplicate-key-columns start-index="61" stop-index="126" literal-start-index="65" literal-stop-index="130">
+            <assignment start-index="85" stop-index="126" literal-start-index="89" literal-stop-index="130">
+                <column name="salary" start-index="85" stop-index="90" literal-start-index="89" literal-stop-index="94" />
+                <assignment-value>
+                    <!-- FIXME -->
+                    <!--<common-expression text="VALUES(salary)+VALUES(salary)*0.2" />-->
+                    <common-expression text="VALUES(salary)" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
     </insert>
     
     <insert sql-case-id="insert_with_unix_timestamp_function" parameters="2019-10-19, 1000, 10">
@@ -939,14 +1024,15 @@
                     <common-expression text="convert(to_base64(aes_encrypt(?,'key'))USINGutf8)" literal-text="convert(to_base64(aes_encrypt('init','key'))USINGutf8)" />
                 </assignment-value>
             </assignment>
-            <!-- FIXME split generic SET assignment and ON DUPLICATE KEY UPDATE  -->
-            <assignment start-index="137" stop-index="159" literal-start-index="142" literal-stop-index="164">
+        </set>
+        <on-duplicate-key-columns start-index="113" stop-index="159" literal-start-index="118" literal-stop-index="164">
+            <assignment start-index="118" stop-index="164" literal-start-index="123" literal-stop-index="169">
                 <column name="status" start-index="137" stop-index="142" literal-start-index="142" literal-stop-index="147" />
                 <assignment-value>
                     <common-expression text="VALUES(status)" />
                 </assignment-value>
             </assignment>
-        </set>
+        </on-duplicate-key-columns>
     </insert>
     
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 1, 1, 'init', 1, 1, 'init'">

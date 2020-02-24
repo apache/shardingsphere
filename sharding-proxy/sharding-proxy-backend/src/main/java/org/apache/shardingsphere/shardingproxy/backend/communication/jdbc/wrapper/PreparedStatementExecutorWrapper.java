@@ -55,9 +55,6 @@ import java.util.Map;
 
 /**
  * Executor wrapper for prepared statement.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapper {
@@ -84,18 +81,18 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     private ExecutionContext doShardingRoute(final String sql) {
         PreparedQueryShardingEngine shardingEngine = new PreparedQueryShardingEngine(
-                logicSchema.getShardingRule(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getParseEngine());
+                logicSchema.getShardingRule(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
         return shardingEngine.shard(sql, parameters);
     }
     
     private ExecutionContext doMasterSlaveRoute(final String sql) {
-        SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, true);
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getRelationMetas(), sqlStatementContext, sql, parameters);
         sqlRewriteContext.generateSQLTokens();
         String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        for (RouteUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getParseEngine(),
+        for (RouteUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getSqlParserEngine(),
                 SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)).route(rewriteSQL, parameters, true).getRouteResult().getRouteUnits()) {
             result.getExecutionUnits().add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(rewriteSQL, parameters)));
         }
@@ -105,7 +102,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     @SuppressWarnings("unchecked")
     private ExecutionContext doEncryptRoute(final String sql) {
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
-        SQLStatement sqlStatement = encryptSchema.getParseEngine().parse(sql, true);
+        SQLStatement sqlStatement = encryptSchema.getSqlParserEngine().parse(sql, true);
         RelationMetas relationMetas = logicSchema.getMetaData().getRelationMetas();
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, parameters, sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
@@ -124,7 +121,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private ExecutionContext doTransparentRoute(final String sql) {
-        SQLStatement sqlStatement = logicSchema.getParseEngine().parse(sql, false);
+        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, false);
         ExecutionContext result = new ExecutionContext(new CommonSQLStatementContext(sqlStatement));
         result.getExecutionUnits().add(new ExecutionUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sql, Collections.emptyList())));
         return result;

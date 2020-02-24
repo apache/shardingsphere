@@ -21,8 +21,6 @@ import java.util.Date;
 
 /**
  * Time service.
- *
- * @author chenchuangliu
  */
 public interface TimeService {
     

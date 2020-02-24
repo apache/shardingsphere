@@ -30,10 +30,6 @@ import java.util.Map;
 
 /**
  * Sharding rule configuration for YAML.
- *
- * @author caohao
- * @author panjuan
- * @author maxiaoguang
  */
 @Getter
 @Setter

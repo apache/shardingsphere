@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
  * Schema segment.
- *
- * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 public final class SchemaSegment implements SQLSegment {
     
@@ -34,14 +33,5 @@ public final class SchemaSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final String name;
-    
-    private final QuoteCharacter quoteCharacter;
-    
-    public SchemaSegment(final int startIndex, final int stopIndex, final String name) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.name = SQLUtil.getExactlyValue(name);
-        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
-    }
+    private final IdentifierValue identifier;
 }

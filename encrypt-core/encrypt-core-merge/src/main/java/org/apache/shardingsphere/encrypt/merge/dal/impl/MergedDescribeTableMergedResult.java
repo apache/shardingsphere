@@ -25,8 +25,6 @@ import java.sql.SQLException;
 
 /**
  * Merged merged result for describe table.
- *
- * @author liya
  */
 public final class MergedDescribeTableMergedResult extends DescribeTableMergedResult {
     

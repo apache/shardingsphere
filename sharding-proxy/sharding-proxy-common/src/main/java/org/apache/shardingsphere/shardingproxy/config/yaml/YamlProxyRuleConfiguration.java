@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * Rule configuration for YAML.
- *
- * @author panjuan
  */
 @Getter
 @Setter

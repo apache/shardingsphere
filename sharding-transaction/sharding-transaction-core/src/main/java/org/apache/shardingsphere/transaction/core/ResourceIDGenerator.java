@@ -24,8 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Resource ID generator.
- *
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceIDGenerator {
