@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValuesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
@@ -106,11 +107,14 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return new InsertStatement();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         InsertStatement result = new InsertStatement();
-        if (null != ctx.columnNames()) { 
-            InsertColumnsSegment insertColumnsSegment = (InsertColumnsSegment) visit(ctx.columnNames());
+        if (null != ctx.columnNames()) {
+            ColumnNamesContext columnNames = ctx.columnNames();
+            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
+            InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
             result.setInsertColumns(insertColumnsSegment);
             result.getAllSQLSegments().add(insertColumnsSegment);
         } else {

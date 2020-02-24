@@ -56,7 +56,6 @@ import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
@@ -208,11 +207,11 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
-        Collection<ColumnSegment> columnSegments = new LinkedList<>();
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (ColumnNameContext each : ctx.columnName()) {
-            columnSegments.add((ColumnSegment) visit(each));
+            result.getValue().add((ColumnSegment) visit(each));
         }
-        return new InsertColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments);
+        return result;
     }
     
     @Override
