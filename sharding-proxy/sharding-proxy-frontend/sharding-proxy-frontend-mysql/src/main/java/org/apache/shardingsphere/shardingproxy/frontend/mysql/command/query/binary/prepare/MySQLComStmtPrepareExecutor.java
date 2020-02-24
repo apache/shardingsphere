@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,26 +49,33 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         logicSchema = backendConnection.getLogicSchema();
     }
     
+    private int getColumnsCount(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return ((SelectStatement) sqlStatement).getProjections().getProjections().size();
+        }
+        return 0;
+    }
+    
     @Override
     public Collection<DatabasePacket> execute() {
         Collection<DatabasePacket> result = new LinkedList<>();
         int currentSequenceId = 0;
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(packet.getSql(), true);
         int parametersCount = sqlStatement.getParametersCount();
-        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), getNumColumns(), parametersCount, 0));
-        for (int i = 0; i < parametersCount; i++) {
-            // TODO add column name
-            result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
-        }
+        int columnsCount = getColumnsCount(sqlStatement);
+        result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), columnsCount, parametersCount, 0));
         if (parametersCount > 0) {
+            for (int i = 0; i < parametersCount; i++) {
+                result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "?", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
+            }
             result.add(new MySQLEofPacket(++currentSequenceId));
         }
-        // TODO add If numColumns > 0
+        if (columnsCount > 0) {
+            for (int i = 0; i < columnsCount; i++) {
+                result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, "", "", "", "", "", 0, MySQLColumnType.MYSQL_TYPE_VAR_STRING, 0));
+            }
+            result.add(new MySQLEofPacket(++currentSequenceId));
+        }
         return result;
-    }
-    
-    // TODO Set columnsCount=0 is a workaround to escape jdbc check for now, there's no issues found during a few tests.
-    private int getNumColumns() {
-        return 0;
     }
 }
