@@ -50,10 +50,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private int getColumnsCount(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return ((SelectStatement) sqlStatement).getProjections().getProjections().size();
-        }
-        return 0;
+        return (sqlStatement instanceof SelectStatement) ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 0;
     }
     
     @Override
