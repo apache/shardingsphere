@@ -25,12 +25,11 @@ import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.DistributedLockManagement;
 import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestCenter implements RegistryCenter, ConfigCenter, DistributedLockManagement {
+public final class TestCenter implements RegistryCenter, ConfigCenter {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -74,18 +73,5 @@ public final class TestCenter implements RegistryCenter, ConfigCenter, Distribut
     @Override
     public String getType() {
         return "TestRegistry";
-    }
-    
-    @Override
-    public void initLock(final String key) {
-    }
-    
-    @Override
-    public boolean tryLock() {
-        return true;
-    }
-    
-    @Override
-    public void tryRelease() {
     }
 }
