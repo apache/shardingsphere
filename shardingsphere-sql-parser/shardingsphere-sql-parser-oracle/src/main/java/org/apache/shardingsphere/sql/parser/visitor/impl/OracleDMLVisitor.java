@@ -342,7 +342,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             result.setOwner(new TableSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
             return result;
         }
-        String alias = null == ctx.alias() ? null : ctx.alias().getText();
+        AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
             ColumnProjectionSegment result = new ColumnProjectionSegment(ctx.columnName().getText(), column);
@@ -360,7 +360,8 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()));
     }
     
-    private ASTNode createProjection(final ProjectionContext ctx, final String alias) {
+    private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment aliasSegment) {
+        String alias = null == aliasSegment ? null : aliasSegment.getIdentifier().getValue();
         ASTNode projection = visit(ctx.expr());
         if (projection instanceof AggregationProjectionSegment) {
             ((AggregationProjectionSegment) projection).setAlias(alias);

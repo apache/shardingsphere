@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProj
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
@@ -61,7 +62,7 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("text", new ColumnSegment(0, 10, new IdentifierValue("name")));
-        columnProjectionSegment.setAlias("alias");
+        columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         Optional<Projection> actual = new ProjectionEngine().createProjection(null, columnProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ColumnProjection.class));
