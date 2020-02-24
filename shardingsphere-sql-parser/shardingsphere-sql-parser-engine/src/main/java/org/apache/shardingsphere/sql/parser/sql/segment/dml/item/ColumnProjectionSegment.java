@@ -20,18 +20,18 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Column projection segment.
  */
-public final class ColumnProjectionSegment extends ColumnSegment implements ProjectionSegment, AliasAvailable {
+public final class ColumnProjectionSegment extends ColumnSegment implements ProjectionSegment {
     
     @Getter
     private final String text;
     
-    private String alias;
+    private AliasSegment alias;
     
     public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
         super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getIdentifier());
@@ -41,13 +41,19 @@ public final class ColumnProjectionSegment extends ColumnSegment implements Proj
         }
     }
     
-    @Override
+    /**
+     * Get alias.
+     * @return alias
+     */
     public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
+        return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
     }
     
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = SQLUtil.getExactlyValue(alias);
+    /**
+     * Set alias.
+     * @param alias alias
+     */
+    public void setAlias(final AliasSegment alias) {
+        this.alias = alias;
     }
 }
