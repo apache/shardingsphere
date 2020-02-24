@@ -42,6 +42,8 @@
         <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
+        
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     
     <dependencyManagement>
