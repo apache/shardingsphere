@@ -42,6 +42,9 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * History data sync task group.
@@ -56,6 +59,8 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
     private final List<SyncTask> syncTasks = new LinkedList<>();
     
     private final String syncTaskId;
+    
+    private final Queue<SyncTask> submitFailureTasks = new LinkedList<>();
 
     public HistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
@@ -155,25 +160,32 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
 
     @Override
     public void start(final ReportCallback callback) {
-        final List<Event> finishedEvents = new LinkedList<>();
+        final AtomicInteger finishedTask = new AtomicInteger();
         for (final SyncTask each : syncTasks) {
-            each.start(new ReportCallback() {
-
-                @Override
-                public void report(final Event event) {
-                    if (EventType.FINISHED == event.getEventType()) {
-                        finishedEvents.add(event);
-                    } else {
-                        callback.report(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
+            try {
+                each.start(new ReportCallback() {
+        
+                    @Override
+                    public void report(final Event event) {
+                        if (EventType.FINISHED == event.getEventType()) {
+                            finishedTask.incrementAndGet();
+                        } else {
+                            callback.report(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
+                        }
+                        if (syncTasks.size() == finishedTask.get() && submitFailureTasks.isEmpty()) {
+                            callback.report(new Event(syncTaskId, EventType.FINISHED));
+                        } else if (!submitFailureTasks.isEmpty()) {
+                            submitFailureTasks.peek().start(this);
+                            submitFailureTasks.poll();
+                        }
                     }
-                    if (syncTasks.size() == finishedEvents.size()) {
-                        callback.report(new Event(syncTaskId, EventType.FINISHED));
-                    }
-                }
-            });
+                });
+            } catch (RejectedExecutionException ex) {
+                submitFailureTasks.offer(each);
+            }
         }
     }
-
+    
     @Override
     public void stop() {
         for (SyncTask each : syncTasks) {

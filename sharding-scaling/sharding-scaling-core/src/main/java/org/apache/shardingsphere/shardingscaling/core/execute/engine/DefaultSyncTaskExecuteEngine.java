@@ -33,6 +33,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Default implement for sync task execute engine.
@@ -41,12 +42,12 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
     
     private final ListeningExecutorService executorService;
     
-    private int availableWorkerThread;
+    private AtomicInteger availableWorkerThread;
     
     public DefaultSyncTaskExecuteEngine(final int maxWorkerThread) {
         executorService = MoreExecutors.listeningDecorator(
             new ThreadPoolExecutor(maxWorkerThread, maxWorkerThread, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.AbortPolicy()));
-        availableWorkerThread = maxWorkerThread;
+        availableWorkerThread = new AtomicInteger(maxWorkerThread);
     }
     
     @Override
@@ -72,11 +73,11 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
         if (null == syncExecutors || 0 == syncExecutors.size()) {
             return Collections.emptyList();
         }
-        if (availableWorkerThread < syncExecutors.size()) {
+        if (availableWorkerThread.get() < syncExecutors.size()) {
             throw new RejectedExecutionException("The execute engine does not have enough threads to execute sync executor.");
         }
         List<ListenableFuture<Object>> result = new ArrayList<>(syncExecutors.size());
-        availableWorkerThread -= syncExecutors.size();
+        availableWorkerThread.addAndGet(-syncExecutors.size());
         for (SyncExecutor syncExecutor : syncExecutors) {
             ListenableFuture listenableFuture = executorService.submit(syncExecutor);
             addReleaseWorkerThreadCallback(listenableFuture);
@@ -101,6 +102,6 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
     }
     
     private synchronized void releaseWorkerThread() {
-        availableWorkerThread++;
+        availableWorkerThread.incrementAndGet();
     }
 }
