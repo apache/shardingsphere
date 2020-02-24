@@ -17,11 +17,11 @@
   -->
 
 <sql-parser-test-cases>
-    <set-variable sql-case-id="set_parameter_equal" />
-    <set-variable sql-case-id="set_parameter_to" />
-    <set-variable sql-case-id="set_parameter_for_session_scope" />
-    <set-variable sql-case-id="set_parameter_for_local_scope" />
-    <set-variable sql-case-id="set_parameter_for_default_scope" />
+    <set-variable sql-case-id="set_parameter_equal" variable="configuration_parameter" />
+    <set-variable sql-case-id="set_parameter_to" variable="configuration_parameter" />
+    <set-variable sql-case-id="set_parameter_for_session_scope" variable="configuration_parameter" />
+    <set-variable sql-case-id="set_parameter_for_local_scope" variable="configuration_parameter" />
+    <set-variable sql-case-id="set_parameter_for_default_scope" variable="configuration_parameter" />
     <set-variable sql-case-id="set_timezone_with_zero_value" />
     <set-variable sql-case-id="set_timezone_with_positive_value" />
     <set-variable sql-case-id="set_timezone_with_negative_value" />

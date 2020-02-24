@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
- * Variable expression segment.
+ * Variable segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class VariableExpressionSegment implements SQLSegment {
+public final class VariableSegment implements SQLSegment {
     
     private final int startIndex;
     

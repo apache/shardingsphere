@@ -31,10 +31,10 @@ import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
