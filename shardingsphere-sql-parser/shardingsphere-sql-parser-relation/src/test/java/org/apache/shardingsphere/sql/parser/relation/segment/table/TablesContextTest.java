@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -199,7 +200,8 @@ public final class TablesContextTest {
     
     private TableSegment createTableSegment(final String tableName, final String alias) {
         TableSegment result = new TableSegment(0, 0, new IdentifierValue(tableName));
-        result.setAlias(alias);
+        AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
+        result.setAlias(aliasSegment);
         return result;
     }
 }

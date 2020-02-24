@@ -17,55 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
- * Table segment.
+ * Alias segment.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class TableSegment implements OwnerAvailable<SchemaSegment> {
+public final class AliasSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
     private final IdentifierValue identifier;
-    
-    @Setter
-    private SchemaSegment owner;
-    
-    private AliasSegment alias;
-    
-    @Override
-    public int getStartIndex() {
-        return null == owner ? startIndex : owner.getStartIndex(); 
-    }
-    
-    @Override
-    public Optional<SchemaSegment> getOwner() {
-        return Optional.fromNullable(owner);
-    }
-    
-    /**
-     * Get alias.
-     * @return alias
-     */
-    public Optional<String> getAlias() {
-        return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
-    }
-    
-    /**
-     * Set alias.
-     * @param alias alias
-     */
-    public void setAlias(final AliasSegment alias) {
-        this.alias = alias;
-    }
 }
