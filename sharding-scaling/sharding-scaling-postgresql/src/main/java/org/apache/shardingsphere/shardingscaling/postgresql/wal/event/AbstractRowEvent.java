@@ -22,8 +22,6 @@ import lombok.Setter;
 
 /**
  * Abstract row event.
- *
- * @author avalon566
  */
 @Setter
 @Getter

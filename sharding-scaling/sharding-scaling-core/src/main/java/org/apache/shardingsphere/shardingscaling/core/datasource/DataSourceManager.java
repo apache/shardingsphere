@@ -29,9 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Data source manager.
- *
- * @author avalon566
- * @author ssxlulu
  */
 @NoArgsConstructor
 public final class DataSourceManager {

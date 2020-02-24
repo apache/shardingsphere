@@ -21,9 +21,6 @@ import lombok.Data;
 
 /**
  * Column definition.
- *
- * @author yangyi
- * @author avalon566
  */
 @Data
 public class ColumnDef {

@@ -22,9 +22,6 @@ import lombok.Data;
 
 /**
  * Abstract command packet.
- *
- * @author avalon566
- * @author yangyi
  */
 @Data
 public abstract class AbstractCommandPacket extends AbstractPacket {

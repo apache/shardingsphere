@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * Channel.
- *
- * @author avalon566
  */
 public interface Channel {
 

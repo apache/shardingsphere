@@ -48,9 +48,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Table slice execute task.
- *
- * @author avalon566
- * @author yangyi
  */
 @Slf4j
 public final class HistoryDataSyncTask implements SyncTask {

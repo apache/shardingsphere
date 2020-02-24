@@ -28,9 +28,6 @@ import io.netty.util.concurrent.Promise;
 
 /**
  * MySQL Negotiate Handler.
- *
- * @author avalon566
- * @author yangyi
  */
 @RequiredArgsConstructor
 public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {

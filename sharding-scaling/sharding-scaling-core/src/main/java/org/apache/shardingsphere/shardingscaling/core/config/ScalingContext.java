@@ -26,9 +26,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Scaling context.
- *
- * @author ssxlulu
- * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter

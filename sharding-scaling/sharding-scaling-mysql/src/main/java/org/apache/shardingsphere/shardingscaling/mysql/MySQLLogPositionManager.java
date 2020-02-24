@@ -28,9 +28,6 @@ import java.sql.SQLException;
 
 /**
  * MySQL log manager, based on binlog mechanism.
- *
- * @author avalon566
- * @author yangyi
  */
 @RequiredArgsConstructor
 public final class MySQLLogPositionManager implements LogPositionManager<BinlogPosition> {

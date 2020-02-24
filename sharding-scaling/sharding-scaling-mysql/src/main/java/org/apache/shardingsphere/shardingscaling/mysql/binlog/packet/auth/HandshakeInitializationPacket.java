@@ -45,9 +45,6 @@ import lombok.Data;
  *     n           rest of the plugin provided data (at least 12 bytes)
  *     1           \0 byte, terminating the second part of a scramble
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Data
 public final class HandshakeInitializationPacket extends AbstractPacket {

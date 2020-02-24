@@ -25,8 +25,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Scaling job progress.
- *
- * @author yangyi
  */
 @Getter
 @RequiredArgsConstructor

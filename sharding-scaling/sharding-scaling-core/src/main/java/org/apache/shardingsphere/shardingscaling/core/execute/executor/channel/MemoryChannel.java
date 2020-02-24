@@ -30,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Memory channel.
- *
- * @author avalon566
  */
 public final class MemoryChannel implements Channel {
 

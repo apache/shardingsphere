@@ -32,8 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sync task controller, synchronize history data and realtime data.
- *
- * @author avalon566
  */
 @Slf4j
 public final class SyncTaskController implements Runnable {

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseCode;
 
 /**
  * Http response util.
- *
- * @author ssxlulu
  */
 public class ResponseContentUtil {
 

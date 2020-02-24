@@ -24,8 +24,6 @@ import org.postgresql.replication.LogSequenceNumber;
 
 /**
  * PostgreSQL wal position.
- *
- * @author avalon566
  */
 @Getter
 @RequiredArgsConstructor

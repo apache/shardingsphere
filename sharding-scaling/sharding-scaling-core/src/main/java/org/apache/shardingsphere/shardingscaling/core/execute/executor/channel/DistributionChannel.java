@@ -36,8 +36,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Realtime data execute channel.
- *
- * @author avalon566
  */
 public final class DistributionChannel implements Channel {
     

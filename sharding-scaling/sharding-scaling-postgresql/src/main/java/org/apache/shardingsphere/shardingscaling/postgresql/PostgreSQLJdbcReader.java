@@ -28,8 +28,6 @@ import java.sql.SQLException;
 
 /**
  * PostgreSQL JDBC reader.
- *
- * @author avalon566
  */
 public final class PostgreSQLJdbcReader extends AbstractJdbcReader {
 

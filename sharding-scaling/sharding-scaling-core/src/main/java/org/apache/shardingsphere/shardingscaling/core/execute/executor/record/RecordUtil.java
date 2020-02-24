@@ -22,8 +22,6 @@ import java.util.List;
 
 /**
  * Record util.
- *
- * @author yangyi
  */
 public final class RecordUtil {
     

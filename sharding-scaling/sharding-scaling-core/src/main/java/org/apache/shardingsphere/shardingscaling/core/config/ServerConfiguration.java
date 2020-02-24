@@ -23,8 +23,6 @@ import lombok.Data;
 
 /**
  * Global server configuration.
- *
- * @author ssxlulu
  */
 @Data
 public class ServerConfiguration implements YamlConfiguration {

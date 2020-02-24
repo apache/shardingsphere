@@ -46,9 +46,6 @@ import java.io.Serializable;
 
 /**
  * MySQL binlog reader.
- *
- * @author avalon566
- * @author yangyi
  */
 @Slf4j
 public final class MySQLBinlogReader extends AbstractSyncExecutor implements LogReader {

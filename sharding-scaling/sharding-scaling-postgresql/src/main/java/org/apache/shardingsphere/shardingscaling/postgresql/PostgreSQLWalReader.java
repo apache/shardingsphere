@@ -39,8 +39,6 @@ import java.sql.SQLException;
 
 /**
  * PostgreSQL WAL reader.
- *
- * @author avalon566
  */
 public final class PostgreSQLWalReader extends AbstractSyncExecutor implements LogReader {
     

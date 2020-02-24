@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.controller.task;
 
 /**
  * Sync task control status.
- *
- * @author yangyi
  */
 public enum SyncTaskControlStatus {
     

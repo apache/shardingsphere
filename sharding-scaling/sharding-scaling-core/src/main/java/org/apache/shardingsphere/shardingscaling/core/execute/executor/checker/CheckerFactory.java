@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 
 /**
  * DatasourceChecker factory.
- *
- * @author ssxlulu
  */
 public class CheckerFactory {
 

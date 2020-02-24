@@ -25,8 +25,6 @@ import javax.sql.DataSource;
 
 /**
  * Data source factory.
- *
- * @author yangyi
  */
 public final class DataSourceFactory {
     

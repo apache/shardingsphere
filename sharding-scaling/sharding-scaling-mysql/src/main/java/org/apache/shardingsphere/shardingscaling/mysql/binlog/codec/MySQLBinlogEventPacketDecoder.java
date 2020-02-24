@@ -37,9 +37,6 @@ import java.util.List;
 
 /**
  * MySQL binlog event packet decoder.
- *
- * @author avalon566
- * @author yangyi
  */
 @Slf4j
 public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {

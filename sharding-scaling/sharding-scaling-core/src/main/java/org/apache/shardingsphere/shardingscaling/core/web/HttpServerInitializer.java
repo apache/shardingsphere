@@ -25,8 +25,6 @@ import io.netty.handler.codec.http.HttpServerCodec;
 
 /**
  * Http server initializer.
- *
- * @author ssxlulu
  */
 public final class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 

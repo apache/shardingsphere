@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Wr
 
 /**
  * PostgreSQL scaling entry.
- *
- * @author yangyi
  */
 public final class PostgreSQLScalingEntry implements ScalingEntry {
     

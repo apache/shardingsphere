@@ -27,9 +27,6 @@ import lombok.Data;
  *     Implement fromByteBuf and toByteBuf in here is a bad design.
  *     But we no need to implement both of method in this project.
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Data
 public abstract class AbstractPacket implements Packet {

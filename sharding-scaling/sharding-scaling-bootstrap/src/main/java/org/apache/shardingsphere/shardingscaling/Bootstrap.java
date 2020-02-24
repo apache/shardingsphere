@@ -40,8 +40,6 @@ import java.io.IOException;
 
 /**
  * Bootstrap of ShardingScaling.
- *
- * @author avalon566
  */
 @Slf4j
 public class Bootstrap {

@@ -27,9 +27,6 @@ import io.netty.buffer.ByteBufAllocator;
 
 /**
  * MySQL binlog dump command packet.
- *
- * @author avalon566
- * @author yangyi
  */
 @Setter
 public final class BinlogDumpCommandPacket extends AbstractCommandPacket {

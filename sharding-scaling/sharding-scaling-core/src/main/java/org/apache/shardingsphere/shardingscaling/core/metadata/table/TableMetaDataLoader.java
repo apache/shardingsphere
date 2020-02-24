@@ -29,8 +29,6 @@ import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMeta
 
 /**
  * Table meta data loader.
- *
- * @author yangyi
  */
 public final class TableMetaDataLoader implements MetaDataLoader<TableMetaData> {
     

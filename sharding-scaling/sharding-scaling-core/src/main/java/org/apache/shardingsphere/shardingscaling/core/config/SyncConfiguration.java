@@ -24,8 +24,6 @@ import java.util.Map;
 
 /**
  * Sync configuration.
- *
- * @author avalon566
  */
 @Getter
 @RequiredArgsConstructor

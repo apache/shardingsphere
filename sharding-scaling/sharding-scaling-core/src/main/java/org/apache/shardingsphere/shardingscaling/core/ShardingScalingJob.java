@@ -29,8 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Sharding scaling out job.
- *
- * @author yangyi
  */
 @Getter
 @Setter

@@ -23,8 +23,6 @@ import java.util.TreeMap;
 
 /**
  * Scaling entry loader.
- *
- * @author yangyi
  */
 public final class ScalingEntryLoader {
     

@@ -25,9 +25,6 @@ import java.util.List;
 
 /**
  * Internal Result Set.
- *
- * @author avalon566
- * @author yangyi
  */
 @RequiredArgsConstructor
 @Getter

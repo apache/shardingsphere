@@ -24,9 +24,6 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 
 /**
  * MySQL writer.
- *
- * @author avalon566
- * @author yangyi
  */
 public final class MySQLWriter extends AbstractJdbcWriter {
     

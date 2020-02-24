@@ -27,8 +27,6 @@ import lombok.Setter;
 
 /**
  * Jdbc data source configuration.
- *
- * @author avalon566
  */
 @Getter
 @Setter

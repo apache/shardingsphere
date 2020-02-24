@@ -25,8 +25,6 @@ import javax.sql.DataSource;
 
 /**
  * Log manager factory.
- *
- * @author avalon566
  */
 public class LogPositionManagerFactory {
 

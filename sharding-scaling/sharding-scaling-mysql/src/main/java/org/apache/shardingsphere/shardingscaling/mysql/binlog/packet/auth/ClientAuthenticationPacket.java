@@ -32,9 +32,6 @@ import lombok.SneakyThrows;
 
 /**
  * MySQL client authentication packet.
- *
- * @author avalon566
- * @author yangyi
  */
 @Setter
 public final class ClientAuthenticationPacket extends AbstractPacket {

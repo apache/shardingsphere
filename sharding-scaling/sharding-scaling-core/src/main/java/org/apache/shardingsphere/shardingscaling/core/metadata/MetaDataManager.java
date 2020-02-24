@@ -26,9 +26,6 @@ import java.util.Map;
 
 /**
  * Meta data manager.
- *
- * @author avalon566
- * @author yangyi
  */
 public final class MetaDataManager {
     

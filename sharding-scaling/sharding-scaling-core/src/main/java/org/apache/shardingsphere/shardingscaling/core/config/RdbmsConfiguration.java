@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Relational database management system configuration.
- *
- * @author avalon566
  */
 @Setter
 @Getter

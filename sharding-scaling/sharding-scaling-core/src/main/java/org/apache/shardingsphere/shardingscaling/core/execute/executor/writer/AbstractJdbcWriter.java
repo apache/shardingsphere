@@ -40,9 +40,6 @@ import java.util.List;
 
 /**
  * generic jdbc writer implement.
- *
- * @author avalon566
- * @author yangyi
  */
 @Slf4j
 public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements Writer {

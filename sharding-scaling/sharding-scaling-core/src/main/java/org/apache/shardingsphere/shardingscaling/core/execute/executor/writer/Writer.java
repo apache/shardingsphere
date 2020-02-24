@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.C
 
 /**
  * Writer.
- *
- * @author avalon566
  */
 public interface Writer extends SyncExecutor {
 

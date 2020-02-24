@@ -45,8 +45,6 @@ import java.util.List;
 
 /**
  * History data sync task group.
- *
- * @author avalon566
  */
 @Slf4j
 public final class HistoryDataSyncTaskGroup implements SyncTask {

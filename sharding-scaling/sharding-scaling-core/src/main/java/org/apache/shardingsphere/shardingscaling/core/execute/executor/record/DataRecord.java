@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Data record.
- *
- * @author avalon566
  */
 @Setter
 @Getter

@@ -25,9 +25,6 @@ import java.math.BigDecimal;
 
 /**
  * Decimal Value decoder.
- *
- * @author avalon566
- * @author yangyi
  */
 public class DecimalValueDecoder {
 

@@ -24,8 +24,6 @@ import lombok.Setter;
 
 /**
  * Record interface.
- *
- * @author avalon566
  */
 @Getter
 @Setter

@@ -28,8 +28,6 @@ import java.util.Collection;
 
 /**
  * Datasource checker for MySQL.
- *
- * @author ssxlulu
  */
 public final class MySQLDatasourceChecker extends AbstractDatasourceChecker {
 

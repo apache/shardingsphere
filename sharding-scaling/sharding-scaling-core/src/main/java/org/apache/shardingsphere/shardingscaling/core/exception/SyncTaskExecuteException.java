@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.exception;
 
 /**
  * Synchronize task run exception.
- *
- * @author yangyi
  */
 public final class SyncTaskExecuteException extends RuntimeException {
     

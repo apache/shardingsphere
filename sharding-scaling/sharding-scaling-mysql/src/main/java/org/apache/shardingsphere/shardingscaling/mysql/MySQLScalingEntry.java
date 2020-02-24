@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 
 /**
  * MySQL scaling entry.
- *
- * @author yangyi
  */
 public final class MySQLScalingEntry implements ScalingEntry {
     

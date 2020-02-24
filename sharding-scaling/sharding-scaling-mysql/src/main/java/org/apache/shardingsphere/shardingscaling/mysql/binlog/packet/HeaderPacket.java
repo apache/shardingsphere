@@ -29,9 +29,6 @@ import lombok.Data;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  MySQL Packets
  *     https://dev.mysql.com/doc/internals/en/mysql-packet.html
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Data
 public final class HeaderPacket implements Packet {

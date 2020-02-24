@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.execute;
 
 /**
  * Event type.
- *
- * @author avalon566
  */
 public enum EventType {
     FINISHED,

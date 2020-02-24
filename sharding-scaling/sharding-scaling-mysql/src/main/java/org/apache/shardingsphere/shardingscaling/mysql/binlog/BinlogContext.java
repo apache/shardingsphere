@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Binlog context.
- *
- * @author avalon566
  */
 @Data
 public class BinlogContext {

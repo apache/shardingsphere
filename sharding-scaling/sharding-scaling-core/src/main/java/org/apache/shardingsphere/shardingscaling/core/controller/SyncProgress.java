@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.controller;
 
 /**
  * Sync progress.
- *
- * @author avalon566
  */
 public interface SyncProgress {
 }

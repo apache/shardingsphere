@@ -22,8 +22,6 @@ import lombok.Setter;
 
 /**
  * Abstract rows event.
- *
- * @author yangyi
  */
 @Getter
 @Setter

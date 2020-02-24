@@ -30,8 +30,6 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Abstract SQL builder.
- *
- * @author avalon566
  */
 public abstract class AbstractSqlBuilder {
     

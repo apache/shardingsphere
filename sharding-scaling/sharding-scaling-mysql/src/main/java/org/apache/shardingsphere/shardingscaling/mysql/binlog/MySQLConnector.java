@@ -50,9 +50,6 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * MySQL Connector.
- *
- * @author avalon566
- * @author yangyi
  */
 @Slf4j
 @RequiredArgsConstructor

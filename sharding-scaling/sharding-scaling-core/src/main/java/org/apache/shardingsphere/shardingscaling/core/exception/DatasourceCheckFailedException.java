@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.exception;
 
 /**
  * Datasource checks failed exception.
- *
- * @author ssxlulu
  */
 public class DatasourceCheckFailedException extends RuntimeException {
 

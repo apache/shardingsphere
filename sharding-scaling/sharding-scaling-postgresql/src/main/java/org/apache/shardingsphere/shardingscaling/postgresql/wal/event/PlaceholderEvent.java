@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.postgresql.wal.event;
 
 /**
  * Placeholder event.
- *
- * @author avalon566
  */
 public final class PlaceholderEvent extends AbstractWalEvent {
 }

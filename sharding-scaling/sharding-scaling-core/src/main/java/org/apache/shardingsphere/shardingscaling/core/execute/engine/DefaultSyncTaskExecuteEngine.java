@@ -36,9 +36,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Default implement for sync task execute engine.
- *
- * @author avalon566
- * @author yangyi
  */
 public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine {
     

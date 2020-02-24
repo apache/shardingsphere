@@ -24,8 +24,6 @@ import lombok.Getter;
 
 /**
  * Rotate event.
- *
- * @author avalon566
  */
 @Getter
 public class RotateEvent {

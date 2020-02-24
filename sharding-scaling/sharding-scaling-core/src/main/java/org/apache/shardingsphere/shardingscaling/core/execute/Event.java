@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Event.
- *
- * @author avalon566
  */
 @RequiredArgsConstructor
 @Getter

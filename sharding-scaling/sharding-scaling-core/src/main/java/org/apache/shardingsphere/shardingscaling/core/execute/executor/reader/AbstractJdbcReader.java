@@ -43,9 +43,6 @@ import java.sql.SQLException;
 
 /**
  * generic jdbc reader implement.
- *
- * @author avalon566
- * @author yangyi
  */
 @Slf4j
 public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements JdbcReader {

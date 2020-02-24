@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 
 /**
  * Default sync task factory.
- *
- * @author avalon566
  */
 public final class DefaultSyncTaskFactory implements SyncTaskFactory {
 

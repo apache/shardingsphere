@@ -21,8 +21,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.
 
 /**
  * Placeholder record.
- *
- * @author avalon566
  */
 public class PlaceholderRecord extends Record {
 

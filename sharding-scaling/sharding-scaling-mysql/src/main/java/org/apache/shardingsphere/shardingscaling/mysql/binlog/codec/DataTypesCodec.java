@@ -25,9 +25,6 @@ import java.util.BitSet;
 /**
  * Data types codec.
  * https://dev.mysql.com/doc/internals/en/describing-packets.html
- *
- * @author avalon566
- * @author yangyi
  */
 public final class DataTypesCodec {
 

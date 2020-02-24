@@ -24,8 +24,6 @@ import java.nio.ByteBuffer;
 
 /**
  * logical replication decoding plugin interface.
- *
- * @author avalon566
  */
 public interface DecodingPlugin {
     

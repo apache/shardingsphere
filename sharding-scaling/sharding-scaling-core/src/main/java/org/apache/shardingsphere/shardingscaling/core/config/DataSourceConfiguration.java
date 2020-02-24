@@ -22,8 +22,6 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 /**
  * Data source configuration.
- *
- * @author avalon566
  */
 public interface DataSourceConfiguration {
     
