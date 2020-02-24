@@ -37,7 +37,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
@@ -83,12 +82,13 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     }
     
     private boolean containsSubquery() {
-        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class);
-        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
-            if (!each.getAndPredicates().isEmpty()) {
-                return true;
-            }
-        }
+        // FIXME process subquery
+//        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class);
+//        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
+//            if (!each.getAndPredicates().isEmpty()) {
+//                return true;
+//            }
+//        }
         return false;
     }
     
