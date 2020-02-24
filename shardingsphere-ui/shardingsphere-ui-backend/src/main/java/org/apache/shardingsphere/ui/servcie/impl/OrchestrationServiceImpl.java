@@ -35,8 +35,6 @@ import java.util.List;
 
 /**
  * Implementation of orchestration operation service.
- *
- * @author chenqingyang
  */
 @Service
 public final class OrchestrationServiceImpl implements OrchestrationService {

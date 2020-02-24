@@ -32,9 +32,6 @@ import lombok.Data;
  *     |4 bytes  |1 byte   |4 bytes  |4 bytes     |4 bytes    |2 bytes|
  *     +---------+---------+---------+------------+-----------+-------+
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Data
 public final class BinlogEventHeader {

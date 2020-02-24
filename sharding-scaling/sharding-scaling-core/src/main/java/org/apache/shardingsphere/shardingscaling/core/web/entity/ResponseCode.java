@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.web.entity;
 
 /**
  * Http response code.
- *
- * @author ssxlulu
  */
 public final class ResponseCode {
 

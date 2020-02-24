@@ -32,8 +32,6 @@ import java.util.TreeSet;
 
 /**
  * Hint sharding strategy.
- * 
- * @author zhangliang
  */
 public final class HintShardingStrategy implements ShardingStrategy {
     

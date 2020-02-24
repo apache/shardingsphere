@@ -43,9 +43,6 @@ import java.util.Map.Entry;
 
 /**
  * Memory merged result for group by.
- *
- * @author zhangliang
- * @author yangyi
  */
 public final class GroupByMemoryMergedResult extends MemoryMergedResult<ShardingRule> {
     

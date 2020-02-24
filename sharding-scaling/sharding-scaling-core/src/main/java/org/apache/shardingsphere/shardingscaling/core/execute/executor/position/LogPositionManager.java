@@ -20,9 +20,6 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.position
 /**
  * Database itself data synchronize position manager.
  * Such as mysql binlog, postgresql wal.
- *
- * @author avalon566
- * @author yangyi
  */
 public interface LogPositionManager<T extends LogPosition> {
 

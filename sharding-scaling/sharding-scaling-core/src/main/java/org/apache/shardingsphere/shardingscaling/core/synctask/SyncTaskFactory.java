@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 
 /**
  * Sync task factory.
- *
- * @author avalon566
  */
 public interface SyncTaskFactory {
 

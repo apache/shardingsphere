@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 
 /**
  * reader factory.
- *
- * @author yangyi
  */
 public final class ReaderFactory {
     

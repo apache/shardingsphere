@@ -29,8 +29,6 @@ import lombok.Setter;
 
 /**
  * Sync task progress.
- *
- * @author yangyi
  */
 @Getter
 @Setter

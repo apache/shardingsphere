@@ -22,9 +22,6 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * MySQL Password Encryptor.
- *
- * @author avalon566
- * @author yangyi
  */
 public class MySQLPasswordEncryptor {
     

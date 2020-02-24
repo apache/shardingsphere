@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * Batch route unit.
- * 
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

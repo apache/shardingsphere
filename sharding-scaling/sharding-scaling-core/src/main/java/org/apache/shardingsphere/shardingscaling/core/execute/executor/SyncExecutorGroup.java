@@ -29,8 +29,6 @@ import java.util.LinkedList;
 
 /**
  * Sync executor group.
- *
- * @author yangyi
  */
 @RequiredArgsConstructor
 @Getter

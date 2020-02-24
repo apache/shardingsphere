@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
 
 /**
  * MySQL protocol constants.
- *
- * @author yangyi
  */
 public final class PacketConstants {
     

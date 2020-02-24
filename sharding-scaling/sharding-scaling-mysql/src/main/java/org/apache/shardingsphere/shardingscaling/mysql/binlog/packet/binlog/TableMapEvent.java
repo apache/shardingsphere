@@ -25,8 +25,6 @@ import lombok.Getter;
 /**
  * Table map event.
  * https://dev.mysql.com/doc/internals/en/table-map-event.html
- *
- * @author avalon566
  */
 @Getter
 public class TableMapEvent {

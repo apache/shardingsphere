@@ -21,8 +21,6 @@ import java.util.List;
 
 /**
  * Sync process group.
- *
- * @author yangyi
  */
 public interface SyncProgressGroup extends SyncProgress {
     

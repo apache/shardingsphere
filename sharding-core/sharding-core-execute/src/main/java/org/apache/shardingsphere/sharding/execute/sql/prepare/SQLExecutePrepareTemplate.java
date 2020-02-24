@@ -36,11 +36,6 @@ import java.util.Map.Entry;
 
 /**
  * SQL execute prepare template.
- *
- * @author zhaojun
- * @author zhangliang
- * @author panjuan
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class SQLExecutePrepareTemplate {

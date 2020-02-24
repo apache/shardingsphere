@@ -30,8 +30,6 @@ import java.util.List;
 
 /**
  * SQL token generators.
- * 
- * @author zhangliang
  */
 public final class SQLTokenGenerators {
     

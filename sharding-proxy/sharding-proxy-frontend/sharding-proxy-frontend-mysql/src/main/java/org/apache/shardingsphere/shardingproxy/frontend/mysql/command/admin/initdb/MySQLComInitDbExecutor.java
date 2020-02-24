@@ -34,8 +34,6 @@ import java.util.Collections;
 
 /**
  * COM_INIT_DB command executor for MySQL.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MySQLComInitDbExecutor implements CommandExecutor {

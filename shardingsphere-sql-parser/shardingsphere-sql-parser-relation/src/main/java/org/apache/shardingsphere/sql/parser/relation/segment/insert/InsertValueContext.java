@@ -30,9 +30,6 @@ import java.util.List;
 
 /**
  * Insert value context.
- *
- * @author panjuan
- * @author zhangliang
  */
 @Getter
 @ToString

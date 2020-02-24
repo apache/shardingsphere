@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingRegistryCenterEventListener;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.instance.OrchestrationInstance;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNode;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 
 /**
  * Instance state changed listener.
- *
- * @author caohao
- * @author panjuan
  */
-public final class InstanceStateChangedListener extends PostShardingOrchestrationEventListener {
+public final class InstanceStateChangedListener extends PostShardingRegistryCenterEventListener {
     
     public InstanceStateChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new StateNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()));

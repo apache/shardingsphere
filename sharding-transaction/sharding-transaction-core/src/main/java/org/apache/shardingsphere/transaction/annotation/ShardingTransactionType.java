@@ -27,8 +27,6 @@ import java.lang.annotation.Target;
 
 /**
  * Sharding transactional annotation.
- *
- * @author yangyi
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

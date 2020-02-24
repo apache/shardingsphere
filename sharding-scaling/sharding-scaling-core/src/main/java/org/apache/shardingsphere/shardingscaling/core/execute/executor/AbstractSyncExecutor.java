@@ -23,8 +23,6 @@ import lombok.Setter;
 
 /**
  * Abstract executor.
- *
- * @author avalon566
  */
 public abstract class AbstractSyncExecutor implements SyncExecutor {
 

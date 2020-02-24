@@ -22,8 +22,6 @@ import java.util.Map;
 
 /**
  * Encrypt condition.
- *
- * @author zhangliang
  */
 public interface EncryptCondition {
     

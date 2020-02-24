@@ -22,8 +22,6 @@ import lombok.Setter;
 
 /**
  * Column meta data.
- *
- * @author avalon566
  */
 @Setter
 @Getter

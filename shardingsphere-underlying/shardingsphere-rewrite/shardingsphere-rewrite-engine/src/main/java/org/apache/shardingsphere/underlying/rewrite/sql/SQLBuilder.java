@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.rewrite.sql;
 
 /**
  * SQL builder.
- *
- * @author zhangliang
  */
 public interface SQLBuilder {
     

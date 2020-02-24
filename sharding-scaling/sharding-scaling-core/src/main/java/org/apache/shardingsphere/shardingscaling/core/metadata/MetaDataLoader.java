@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.metadata;
 
 /**
  * Meta data loader.
- *
- * @author yangyi
  */
 public interface MetaDataLoader<T> {
     

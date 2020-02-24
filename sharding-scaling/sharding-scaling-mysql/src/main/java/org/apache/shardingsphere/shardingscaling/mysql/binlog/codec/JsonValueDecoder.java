@@ -24,8 +24,6 @@ import java.io.Serializable;
 /**
  * Json value decoder.
  * https://github.com/mysql/mysql-server/blob/5.7/sql/json_binary.h
- *
- * @author avalon566
  */
 public final class JsonValueDecoder {
 

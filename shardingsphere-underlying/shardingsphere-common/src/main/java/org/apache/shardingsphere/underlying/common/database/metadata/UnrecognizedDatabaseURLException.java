@@ -21,8 +21,6 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 
 /**
  * Unrecognized database URL exception.
- *
- * @author zhangliang
  */
 public final class UnrecognizedDatabaseURLException extends ShardingSphereException {
     

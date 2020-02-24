@@ -35,8 +35,6 @@ import java.util.ServiceLoader;
 
 /**
  * Sharding transaction manager engine.
- *
- * @author zhaojun
  */
 @Slf4j
 public final class ShardingTransactionManagerEngine {

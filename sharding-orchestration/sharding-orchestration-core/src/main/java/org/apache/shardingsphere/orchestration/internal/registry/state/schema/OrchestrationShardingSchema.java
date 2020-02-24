@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Orchestration sharding schema.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

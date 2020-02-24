@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE TABLE tableName fileTableClause_ createDefinitionClause_
+    : CREATE TABLE tableName fileTableClause_ createDefinitionClause
     ;
 
 createIndex
@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause_
+    : ALTER TABLE tableName alterDefinitionClause
     ;
 
 alterIndex
@@ -51,15 +51,15 @@ fileTableClause_
     : (AS FILETABLE)?
     ;
 
-createDefinitionClause_
-    : createTableDefinitions_ partitionScheme_ fileGroup_
+createDefinitionClause
+    : createTableDefinitions partitionScheme_ fileGroup_
     ;
 
-createTableDefinitions_
-    : LP_ createTableDefinition_ (COMMA_ createTableDefinition_)* (COMMA_ periodClause)? RP_
+createTableDefinitions
+    : LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_
     ;
 
-createTableDefinition_
+createTableDefinition
     : columnDefinition | computedColumnDefinition | columnSetDefinition | tableConstraint | tableIndex
     ;
 
@@ -281,10 +281,13 @@ createIndexSpecification_
     : UNIQUE? clusterOption_?
     ;
 
-alterDefinitionClause_
-    : modifyColumnSpecification | addColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
+alterDefinitionClause
+    : addColumnSpecification | modifyColumnSpecification | alterDrop | alterCheckConstraint | alterTrigger | alterSwitch | alterSet | alterTableOption | REBUILD
     ;
 
+addColumnSpecification
+    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOptions | generatedColumnNamesClause)
+    ;
 
 modifyColumnSpecification
     : alterColumnOperation dataType (COLLATE collationName)? (NULL | NOT NULL)? SPARSE?
@@ -292,10 +295,6 @@ modifyColumnSpecification
 
 alterColumnOperation
     : ALTER COLUMN columnName
-    ;
-
-addColumnSpecification
-    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOptions | generatedColumnNamesClause)
     ;
 
 alterColumnAddOptions
@@ -332,7 +331,7 @@ generatedColumnNameClause
     ;
 
 generatedColumnName
-    : columnName dataTypeName_ GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier_)?
+    : columnName dataTypeName GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT ignoredIdentifier_)?
     ;
 
 alterDrop

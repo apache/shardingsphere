@@ -26,8 +26,6 @@ import java.util.UUID;
 
 /**
  * UUID key generator.
- *
- * @author panjuan
  */
 @Getter
 @Setter

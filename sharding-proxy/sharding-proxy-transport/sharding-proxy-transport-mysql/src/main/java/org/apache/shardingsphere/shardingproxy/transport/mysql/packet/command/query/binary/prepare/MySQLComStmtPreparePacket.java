@@ -27,8 +27,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * COM_STMT_PREPARE command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare.html">COM_STMT_PREPARE</a>
- *
- * @author zhangliang
  */
 @Getter
 @ToString

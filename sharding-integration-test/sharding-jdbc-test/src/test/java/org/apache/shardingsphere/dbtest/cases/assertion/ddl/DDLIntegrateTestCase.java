@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * JAXB definition of DDL integrate test case.
- *
- * @author zhangliang
  */
 @Getter
 public class DDLIntegrateTestCase extends IntegrateTestCase {

@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * SyncConfiguration Util.
- *
- * @author ssxlulu
  */
 public class SyncConfigurationUtil {
     

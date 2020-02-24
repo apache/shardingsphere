@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Sync task execute engine.
- *
- * @author avalon566
  */
 public interface SyncTaskExecuteEngine {
     

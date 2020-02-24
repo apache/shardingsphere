@@ -61,7 +61,7 @@ literalsType_
     ;
 
 identifier
-    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord_ 
+    : unicodeEscapes_? IDENTIFIER_ uescape_? |  unreservedWord 
     ;
 
 unicodeEscapes_
@@ -72,7 +72,7 @@ uescape_
     : UESCAPE STRING_
     ;
     
-unreservedWord_
+unreservedWord
     : ADMIN | ESCAPE | EXCLUDE | KEY | PARTITION | SET | UNKNOWN 
     | ADD | ALTER | ALWAYS | CASCADE | COMMIT | CURRENT | DAY 
     | DELETE | DISABLE | DROP | ENABLE | FUNCTION | GENERATED | INDEX
@@ -202,7 +202,7 @@ simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | caseExpression_
+    | caseExpression
     | CURRENT_USER
     ;
 
@@ -211,10 +211,10 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ filterClause_?
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ filterClause_?
     ;
 
-aggregationFunctionName_
+aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG
     ;
 
@@ -274,7 +274,7 @@ regularFunctionName_
     : identifier | IF | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_?
     ;
 
@@ -299,10 +299,10 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet_? collateClause_? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-dataTypeName_
+dataTypeName
     : identifier identifier?
     ;
 

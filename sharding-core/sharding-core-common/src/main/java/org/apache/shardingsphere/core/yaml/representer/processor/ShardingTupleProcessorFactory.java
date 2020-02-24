@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.common.yaml.representer.processor.Tu
 
 /**
  * Sharding tuple processor.
- *
- * @author yangyi
  */
 public final class ShardingTupleProcessorFactory {
     

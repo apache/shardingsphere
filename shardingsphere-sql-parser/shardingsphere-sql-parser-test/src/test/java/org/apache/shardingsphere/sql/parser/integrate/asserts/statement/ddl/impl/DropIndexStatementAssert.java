@@ -21,14 +21,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropIndexStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.DropIndexStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Drop index statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropIndexStatementAssert {
@@ -46,7 +46,12 @@ public final class DropIndexStatementAssert {
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
+        if (null != expected.getTable()) {
+            assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTable());
+            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+        } else {
+            assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
+        }
     }
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {

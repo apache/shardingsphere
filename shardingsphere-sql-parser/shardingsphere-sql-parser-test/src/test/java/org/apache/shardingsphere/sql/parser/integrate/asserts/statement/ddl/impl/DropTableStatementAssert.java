@@ -21,14 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.ddl.DropTableStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 
 /**
  * Drop table statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropTableStatementAssert {
@@ -45,6 +42,6 @@ public final class DropTableStatementAssert {
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final DropTableStatement actual, final DropTableStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

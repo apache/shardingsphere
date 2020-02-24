@@ -46,9 +46,6 @@ import java.util.TreeMap;
 
 /**
  * DQL result merger for Sharding.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShardingDQLResultMerger implements ResultMerger {

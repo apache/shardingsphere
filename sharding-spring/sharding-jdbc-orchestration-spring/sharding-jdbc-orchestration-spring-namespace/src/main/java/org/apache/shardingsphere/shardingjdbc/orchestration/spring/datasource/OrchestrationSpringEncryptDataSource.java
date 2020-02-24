@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource;
 
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import java.sql.SQLException;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 
-import java.sql.SQLException;
-
 /**
  * Orchestration encrypt datasource for spring namespace.
- *
- * @author yangyi
  */
 public final class OrchestrationSpringEncryptDataSource extends OrchestrationEncryptDataSource {
     

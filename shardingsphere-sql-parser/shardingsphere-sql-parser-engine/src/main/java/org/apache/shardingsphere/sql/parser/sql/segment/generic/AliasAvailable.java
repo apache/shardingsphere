@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Alias available.
- *
- * @author zhangliang
  */
 public interface AliasAvailable extends SQLSegment {
     

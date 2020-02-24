@@ -26,8 +26,6 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 
 /**
  * Expression projection.
- *
- * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter

@@ -25,7 +25,8 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="5" start-index="99" stop-index="154" literal-stop-index="155">
+        <!-- TODO parameters-count should be 4, because the last parameter is in offset -->
+        <where start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
                     <column-left-value name="user_id" start-index="105" stop-index="113">
@@ -69,7 +70,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="5" start-index="99" stop-index="154" literal-stop-index="155">
+        <where start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
                     <column-left-value name="user_id" start-index="105" stop-index="113">
@@ -113,7 +114,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="6" start-index="103" stop-index="162" literal-stop-index="163">
+        <where start-index="103" stop-index="162" literal-stop-index="163">
             <and-predicate>
                 <predicate start-index="109" stop-index="129">
                     <column-left-value name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
@@ -158,7 +159,7 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="6" start-index="103" stop-index="162" literal-stop-index="163">
+        <where start-index="103" stop-index="162" literal-stop-index="163">
             <and-predicate>
                 <predicate start-index="109" stop-index="129">
                     <column-left-value name="user_id" start-delimiter="`" end-delimiter="`" start-index="109" stop-index="119">
@@ -215,7 +216,7 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
-        <where parameters-count="5" start-index="250" stop-index="305" literal-stop-index="306">
+        <where start-index="250" stop-index="305" literal-stop-index="306">
             <and-predicate>
                 <predicate start-index="256" stop-index="274">
                     <column-left-value name="user_id" start-index="256" stop-index="264">
@@ -257,7 +258,8 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <where parameters-count="6" start-index="99" stop-index="154" literal-stop-index="155">
+        <!-- TODO parameters-count should be 4, because the last parameter is in offset -->
+        <where start-index="99" stop-index="154" literal-stop-index="155">
             <and-predicate>
                 <predicate start-index="105" stop-index="123">
                     <column-left-value name="user_id" start-index="105" stop-index="113">
@@ -294,6 +296,50 @@
         </limit>
     </select>
     
+    <select sql-case-id="select_pagination_with_offset_and_limit_all" parameters="1, 2, 9, 10, 5">
+        <table name="t_order" alias="o" start-index="16" stop-index="22" />
+        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="99" stop-index="154" literal-stop-index="155">
+            <and-predicate>
+                <predicate start-index="105" stop-index="123">
+                    <column-left-value name="user_id" start-index="105" stop-index="113">
+                        <owner name="o" start-index="105" stop-index="105" />
+                    </column-left-value>
+                    <in-right-value>
+                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="1" />
+                        <literal-expression value="1" />
+                        <literal-expression value="2" />
+                    </in-right-value>
+                </predicate>
+                <predicate start-index="129" stop-index="154" literal-stop-index="155">
+                    <column-left-value name="order_id" start-index="129" stop-index="138">
+                        <owner name="o" start-index="129" stop-index="129" />
+                    </column-left-value>
+                    <between-right-value>
+                        <between-parameter-marker-expression value="2" />
+                        <between-literal-expression value="9" />
+                        <and-parameter-marker-expression value="3" />
+                        <and-literal-expression value="10" />
+                    </between-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+        <order-by>
+            <column-item name="item_id" order-direction="DESC">
+                <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
+            </column-item>
+        </order-by>
+        <limit start-index="180" stop-index="197" literal-start-index="181" literal-stop-index="198">
+            <offset value="5" parameter-index="4" start-index="187" stop-index="187" literal-start-index="188" literal-stop-index="188" />
+        </limit>
+    </select>
+    
     <select sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
         <table name="t_order" alias="o" start-index="167" stop-index="173" />
         <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
@@ -314,7 +360,7 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="315" stop-index="337" literal-start-index="316" literal-stop-index="338">
+        <where start-index="315" stop-index="337" literal-start-index="316" literal-stop-index="338">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="322" stop-index="337" literal-start-index="323" literal-stop-index="338">
@@ -358,7 +404,7 @@
                 <owner name="o" start-index="141" stop-index="141" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="315" stop-index="338" literal-start-index="316" literal-stop-index="339">
+        <where start-index="315" stop-index="338" literal-start-index="316" literal-stop-index="339">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="322" stop-index="338" literal-start-index="323" literal-stop-index="339">
@@ -396,7 +442,7 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
-        <where parameters-count="5" start-index="253" stop-index="314" literal-stop-index="315">
+        <where start-index="253" stop-index="314" literal-stop-index="315">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <!--<predicate start-index="253" stop-index="277">-->
@@ -441,7 +487,7 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="367" stop-index="385" literal-start-index="368" literal-stop-index="386">
+        <where start-index="367" stop-index="385" literal-start-index="368" literal-stop-index="386">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="373" stop-index="385" literal-start-index="374" literal-stop-index="386">
@@ -479,7 +525,7 @@
                 <owner name="order0_" start-index="114" stop-index="120" />
             </column-projection>
         </projections>
-        <where parameters-count="6" start-index="367" stop-index="386" literal-start-index="368" literal-stop-index="387">
+        <where start-index="367" stop-index="386" literal-start-index="368" literal-stop-index="387">
             <and-predicate>
                 <!-- FIXME cannot parse subquery's predicate -->
                 <predicate start-index="373" stop-index="386" literal-start-index="374" literal-stop-index="387">
@@ -508,7 +554,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="1" start-index="22" stop-index="38" literal-stop-index="39">
+        <where start-index="22" stop-index="38" literal-stop-index="39">
             <and-predicate>
                 <predicate start-index="28" stop-index="38" literal-stop-index="39">
                     <column-left-value name="ROWNUM" start-index="28" stop-index="33" />

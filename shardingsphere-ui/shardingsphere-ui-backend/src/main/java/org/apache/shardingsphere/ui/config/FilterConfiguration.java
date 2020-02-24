@@ -30,8 +30,6 @@ import java.util.List;
 
 /**
  * Web filter configuration.
- *
- * @author chenqingyang
  */
 @Configuration
 public class FilterConfiguration {

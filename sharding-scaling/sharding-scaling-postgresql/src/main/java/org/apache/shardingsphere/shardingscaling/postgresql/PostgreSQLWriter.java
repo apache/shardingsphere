@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 
 /**
  * postgreSQL writer.
- *
- * @author avalon566
  */
 public final class PostgreSQLWriter extends AbstractJdbcWriter {
 

@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Update row event.
- *
- * @author avalon566
  */
 @Setter
 @Getter

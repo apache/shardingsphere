@@ -29,9 +29,6 @@ import lombok.Getter;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  ERR_Packet
  *     https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Getter
 public final class ErrorPacket extends AbstractPacket {

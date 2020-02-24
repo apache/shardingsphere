@@ -21,8 +21,6 @@ package org.apache.shardingsphere.masterslave.route.engine.impl;
  * Master data source visited manager.
  * 
  * <p>Trace master data source visited or not in current thread.</p>
- * 
- * @author zhangliang
  */
 public final class MasterVisitedManager {
     

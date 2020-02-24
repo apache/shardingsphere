@@ -36,8 +36,6 @@ import java.util.Properties;
 
 /**
  * Configuration logger.
- *
- * @author sunbufu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j

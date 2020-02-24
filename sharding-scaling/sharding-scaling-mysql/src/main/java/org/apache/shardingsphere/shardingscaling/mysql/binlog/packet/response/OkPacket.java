@@ -29,9 +29,6 @@ import lombok.Getter;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  OK_Packet
  *     https://dev.mysql.com/doc/internals/en/packet-OK_Packet.html
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Getter
 public final class OkPacket extends AbstractPacket {

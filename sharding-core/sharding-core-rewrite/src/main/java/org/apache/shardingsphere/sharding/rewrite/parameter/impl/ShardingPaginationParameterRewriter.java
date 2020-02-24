@@ -32,8 +32,6 @@ import java.util.List;
 
 /**
  * Sharding pagination parameter rewriter.
- *
- * @author zhangliang
  */
 @Setter
 public final class ShardingPaginationParameterRewriter implements ParameterRewriter, ShardingRouteContextAware {

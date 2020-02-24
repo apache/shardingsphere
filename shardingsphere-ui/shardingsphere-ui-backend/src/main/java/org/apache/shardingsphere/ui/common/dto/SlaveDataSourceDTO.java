@@ -24,8 +24,6 @@ import lombok.Setter;
 
 /**
  * Slave data source DTO.
- *
- * @author chenqingyang
  */
 @Setter
 @Getter

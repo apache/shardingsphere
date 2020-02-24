@@ -26,8 +26,6 @@ import java.util.LinkedList;
 
 /**
  * Authority root xml entry.
- * 
- * @author panjuan
  */
 @XmlRootElement(name = "authority")
 public final class AuthorityEnvironment {

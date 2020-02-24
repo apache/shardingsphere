@@ -23,8 +23,6 @@ import java.util.Collection;
 
 /**
  * Indexes segment available.
- *
- * @author zhangliang
  */
 public interface IndexSegmentsAvailable {
     

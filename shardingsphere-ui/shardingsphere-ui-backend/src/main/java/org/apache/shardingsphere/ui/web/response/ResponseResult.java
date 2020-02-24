@@ -26,8 +26,6 @@ import java.io.Serializable;
 
 /**
  * Restful Response result.
- * 
- * @author chenqingyang
  */
 @Getter
 @Setter

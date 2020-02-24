@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegme
 
 /**
  * Subquery segment.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

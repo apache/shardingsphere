@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 
 /**
  * Mysql column types.
- *
- * @author avalon566
  */
 public final class ColumnTypes {
 

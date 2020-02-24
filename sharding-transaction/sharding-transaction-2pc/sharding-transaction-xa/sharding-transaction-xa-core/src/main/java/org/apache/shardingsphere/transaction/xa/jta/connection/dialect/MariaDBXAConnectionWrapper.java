@@ -29,8 +29,6 @@ import java.sql.Connection;
 
 /**
  * XA connection wrapper for MariaDB.
- *
- * @author yanqiufang
  */
 @RequiredArgsConstructor
 public final class MariaDBXAConnectionWrapper implements XAConnectionWrapper {

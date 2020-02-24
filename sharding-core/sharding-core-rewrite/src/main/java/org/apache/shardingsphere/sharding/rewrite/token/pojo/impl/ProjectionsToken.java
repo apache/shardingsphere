@@ -24,9 +24,6 @@ import java.util.Collection;
 
 /**
  * Projections token.
- *
- * @author zhangliang
- * @author panjuan
  */
 public final class ProjectionsToken extends SQLToken implements Attachable {
     

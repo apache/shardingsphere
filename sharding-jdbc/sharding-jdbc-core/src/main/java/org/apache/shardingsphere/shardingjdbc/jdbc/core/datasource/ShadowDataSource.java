@@ -31,8 +31,6 @@ import java.util.Properties;
 
 /**
  * Shadow data source.
- *
- * @author zhyee
  */
 @Getter
 public class ShadowDataSource extends AbstractDataSourceAdapter {

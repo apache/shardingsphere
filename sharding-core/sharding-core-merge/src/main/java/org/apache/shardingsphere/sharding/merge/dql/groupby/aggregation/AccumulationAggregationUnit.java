@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Accumulation aggregation unit.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class AccumulationAggregationUnit implements AggregationUnit {

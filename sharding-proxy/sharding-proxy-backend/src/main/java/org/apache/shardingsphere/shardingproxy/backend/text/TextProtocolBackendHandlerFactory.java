@@ -20,18 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.text;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.core.SQLParseKernel;
-import org.apache.shardingsphere.sql.parser.core.rule.registry.ParseRuleRegistry;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
@@ -43,12 +31,21 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.utils.SCTLUtils
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
  * Text protocol backend handler factory.
- *
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextProtocolBackendHandlerFactory {
@@ -69,7 +66,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (trimSql.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSql, backendConnection);
         }
-        SQLStatement sqlStatement = new SQLParseKernel(ParseRuleRegistry.getInstance(), databaseType.getName(), sql).parse();
+        SQLStatement sqlStatement = new SQLParserEngine(databaseType.getName()).parse(sql, false);
         if (sqlStatement instanceof TCLStatement) {
             return createTCLBackendHandler(sql, (TCLStatement) sqlStatement, backendConnection);
         }
@@ -105,6 +102,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (dalStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler(backendConnection);
         }
+        // FIXME: There are three SetStatement class.
         if (dalStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(sql, backendConnection);
         }

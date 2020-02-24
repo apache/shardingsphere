@@ -29,8 +29,6 @@ import java.util.Properties;
 
 /**
  * PostgreSQL logical replication.
- *
- * @author avalon566
  */
 public final class LogicalReplication {
     

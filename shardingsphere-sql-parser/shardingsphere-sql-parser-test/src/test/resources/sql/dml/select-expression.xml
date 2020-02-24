@@ -21,7 +21,7 @@
         <table name="t_order" alias="o" start-index="38" stop-index="44" />
         <projections start-index="7" stop-index="31">
             <!-- TODO check expression-projection's stop-index whether include alias --> 
-            <expression-projection alias="exp" start-index="7" stop-index="31" />
+            <expression-projection alias="exp" start-index="7" stop-index="24" />
         </projections>
         <order-by>
             <column-item name="order_id">
@@ -45,7 +45,7 @@
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where parameters-count="3" start-index="29" stop-index="75" literal-stop-index="80">
+        <where start-index="29" stop-index="75" literal-stop-index="80">
             <and-predicate>
                 <!-- FIXME cannot parse REGEXP -->
                 <!--<predicate start-index="35" stop-index="51" literal-stop-index="56">-->

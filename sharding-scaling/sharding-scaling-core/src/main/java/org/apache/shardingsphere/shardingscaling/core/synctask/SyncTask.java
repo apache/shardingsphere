@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 /**
  * Sync task interface.
- *
- * @author avalon566
  */
 public interface SyncTask {
 

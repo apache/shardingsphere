@@ -25,8 +25,6 @@ import java.util.Collections;
 
 /**
  * Database type of MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLDatabaseType implements DatabaseType {
     

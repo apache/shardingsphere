@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketTyp
 
 /**
  * Command packet type for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

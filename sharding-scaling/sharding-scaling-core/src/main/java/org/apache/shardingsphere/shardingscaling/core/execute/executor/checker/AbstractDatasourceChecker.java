@@ -25,8 +25,6 @@ import java.util.Collection;
 
 /**
  * generic checker implement.
- *
- * @author ssxlulu
  */
 public abstract class AbstractDatasourceChecker implements DatasourceChecker {
 

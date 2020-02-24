@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 
 /**
  * Sharding execution context.
- *
- * @author zhangliang
  */
 public final class ShardingExecutionContext extends ExecutionContext {
     

@@ -43,9 +43,6 @@ import java.util.List;
 
 /**
  * Sharding adapter for {@code PreparedStatement}.
- *
- * @author zhangliang
- * @author maxiaoguang
  */
 public abstract class AbstractShardingPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
     

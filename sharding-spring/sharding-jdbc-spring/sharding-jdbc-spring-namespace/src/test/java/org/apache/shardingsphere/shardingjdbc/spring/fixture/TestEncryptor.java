@@ -23,8 +23,6 @@ import java.util.Properties;
 
 /**
  * Test encryptor.
- *
- * @author panjuan
  */
 public final class TestEncryptor implements Encryptor {
     

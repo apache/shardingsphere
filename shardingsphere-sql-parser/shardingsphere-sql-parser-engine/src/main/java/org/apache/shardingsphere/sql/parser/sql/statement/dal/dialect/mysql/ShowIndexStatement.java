@@ -17,12 +17,31 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
+import com.google.common.base.Optional;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 /**
  * Show columns statement.
- *
- * @author zhangyonglun
  */
-public final class ShowIndexStatement extends DALStatement {
+@Getter
+@Setter
+public final class ShowIndexStatement extends DALStatement implements TableSegmentAvailable {
+    
+    private TableSegment table;
+    
+    private SchemaSegment schema;
+    
+    /**
+     * Get schema.
+     * 
+     * @return schema
+     */
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.fromNullable(schema);
+    }
 }

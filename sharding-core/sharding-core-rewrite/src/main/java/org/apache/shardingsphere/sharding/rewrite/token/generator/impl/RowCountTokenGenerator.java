@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.RowCountToken;
 
 /**
  * Row count token generator.
- *
- * @author panjuan
  */
 public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     

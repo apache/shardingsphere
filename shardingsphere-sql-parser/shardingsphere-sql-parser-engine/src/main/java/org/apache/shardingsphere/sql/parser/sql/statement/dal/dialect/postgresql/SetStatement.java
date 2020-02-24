@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
  * Set statement.
- *
- * @author loxp
  */
 public final class SetStatement extends DALStatement {
 }

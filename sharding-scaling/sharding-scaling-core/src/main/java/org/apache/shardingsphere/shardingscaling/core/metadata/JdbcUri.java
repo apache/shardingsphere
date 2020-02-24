@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Jdbc uri.
- *
- * @author avalon566
  */
 public final class JdbcUri {
 

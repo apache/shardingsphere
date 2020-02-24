@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -54,9 +55,6 @@ import java.util.Map.Entry;
 
 /**
  * Table meta data loader for sharding.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<ShardingRule> {
@@ -135,6 +133,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                                               final DataSourceMetaData dataSourceMetaData, final String actualTableName, final String generateKeyColumnName) throws SQLException {
         String catalog = dataSourceMetaData.getCatalog();
         String schema = dataSourceMetaData.getSchema();
+        MetaDataLogger.logTableMetaData(catalog, schema, actualTableName);
         return isTableExist(connection, catalog, actualTableName)
                 ? new TableMetaData(getColumnMetaDataList(connection, catalog, actualTableName, generateKeyColumnName), getLogicIndexes(connection, catalog, schema, actualTableName))
                 : new TableMetaData(Collections.<ColumnMetaData>emptyList(), Collections.<String>emptySet());
@@ -202,6 +201,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private Map<String, TableMetaData> loadShardingTables(final ShardingRule shardingRule) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        MetaDataLogger.log("There are {} sharding table(s) will be loaded.", shardingRule.getTableRules().size());
         for (TableRule each : shardingRule.getTableRules()) {
             result.put(each.getLogicTable(), load(each.getLogicTable(), shardingRule));
         }
@@ -214,6 +214,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
             return Collections.emptyMap();
         }
         Collection<String> tableNames = loadAllTableNames(actualDefaultDataSourceName.get());
+        MetaDataLogger.log("There are {} default table(s) will be loaded.", tableNames.size());
         List<TableMetaData> tableMetaDataList = getTableMetaDataList(shardingRule, tableNames);
         return loadDefaultTables(tableNames, tableMetaDataList);
     }

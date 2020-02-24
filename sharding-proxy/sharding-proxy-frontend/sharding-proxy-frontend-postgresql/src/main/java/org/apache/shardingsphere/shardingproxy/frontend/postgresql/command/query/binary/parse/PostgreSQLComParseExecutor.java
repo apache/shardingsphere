@@ -32,9 +32,6 @@ import java.util.Collections;
 
 /**
  * PostgreSQL command parse executor.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
@@ -53,7 +50,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         if (!packet.getSql().isEmpty()) {
-            SQLStatement sqlStatement = logicSchema.getParseEngine().parse(packet.getSql(), true);
+            SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(packet.getSql(), true);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParametersCount(), packet.getBinaryStatementParameterTypes());
         }
         return Collections.<DatabasePacket>singletonList(new PostgreSQLParseCompletePacket());

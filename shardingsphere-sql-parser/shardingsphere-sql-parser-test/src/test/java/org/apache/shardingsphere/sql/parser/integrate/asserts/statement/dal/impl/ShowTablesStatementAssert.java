@@ -20,13 +20,11 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.imp
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.statement.dal.ShowTablesStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 
 /**
  * Show tables statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowTablesStatementAssert {

@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Sharding value for complex keys.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

@@ -32,9 +32,6 @@ import java.util.List;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Text Protocol  /  COM_QUERY  /  COM_QUERY Response
  *     https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Getter
 public final class RowDataPacket extends AbstractPacket {

@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.Ro
 
 /**
  * Top projection segment.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

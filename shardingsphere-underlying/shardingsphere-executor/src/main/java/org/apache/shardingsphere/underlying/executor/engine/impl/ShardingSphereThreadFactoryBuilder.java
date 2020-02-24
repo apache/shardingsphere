@@ -25,8 +25,6 @@ import java.util.concurrent.ThreadFactory;
 
 /**
  * ShardingSphere thread factory builder.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereThreadFactoryBuilder {

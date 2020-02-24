@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * Comparable aggregation unit.
- * 
- * @author gaohongtao
  */
 @RequiredArgsConstructor
 public final class ComparableAggregationUnit implements AggregationUnit {

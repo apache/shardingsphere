@@ -39,12 +39,6 @@ import java.util.List;
 
 /**
  * Statement executor.
- * 
- * @author gaohongtao
- * @author caohao
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 public final class StatementExecutor extends AbstractStatementExecutor {
     

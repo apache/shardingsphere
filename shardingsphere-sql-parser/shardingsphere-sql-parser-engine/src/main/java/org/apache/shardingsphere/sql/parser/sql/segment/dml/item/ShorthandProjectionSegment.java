@@ -26,9 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
  * Shorthand projection segment.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

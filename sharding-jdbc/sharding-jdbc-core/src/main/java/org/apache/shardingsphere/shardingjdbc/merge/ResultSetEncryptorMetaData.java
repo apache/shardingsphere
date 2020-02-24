@@ -29,8 +29,6 @@ import java.sql.SQLException;
 
 /**
  * Encryptor meta data for query header.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ResultSetEncryptorMetaData implements EncryptorMetaData {

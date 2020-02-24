@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Seata transactional SQL execution hook.
- *
- * @author zhaojun
  */
 public final class TransactionalSQLExecutionHook implements SQLExecutionHook {
     

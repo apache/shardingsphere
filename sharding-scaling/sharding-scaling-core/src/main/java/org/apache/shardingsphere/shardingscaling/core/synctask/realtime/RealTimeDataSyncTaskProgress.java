@@ -25,8 +25,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Real-time data sync task progress.
- *
- * @author yangyi
  */
 @Getter
 @RequiredArgsConstructor

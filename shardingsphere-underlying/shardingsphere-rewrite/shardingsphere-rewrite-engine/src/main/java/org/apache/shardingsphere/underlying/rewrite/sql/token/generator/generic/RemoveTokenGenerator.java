@@ -17,33 +17,54 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.generic;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.RemoveToken;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 
 /**
  * Remove token generator.
- *
- * @author zhangliang
  */
 public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return !sqlStatementContext.getSqlStatement().findSQLSegments(RemoveAvailable.class).isEmpty();
+        if (sqlStatementContext.getSqlStatement() instanceof ShowTablesStatement) {
+            return ((ShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        }
+        if (sqlStatementContext.getSqlStatement() instanceof ShowTableStatusStatement) {
+            return ((ShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        }
+        if (sqlStatementContext.getSqlStatement() instanceof ShowColumnsStatement) {
+            return ((ShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent();
+        }
+        return false;
     }
     
     @Override
     public Collection<RemoveToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Collection<RemoveToken> result = new LinkedList<>();
-        for (SQLSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(RemoveAvailable.class)) {
-            result.add(new RemoveToken(each.getStartIndex(), each.getStopIndex()));
+        if (sqlStatementContext.getSqlStatement() instanceof ShowTablesStatement) {
+            Preconditions.checkState(((ShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
+            RemoveAvailable removeAvailable = ((ShowTablesStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
+            return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
         }
-        return result;
+        if (sqlStatementContext.getSqlStatement() instanceof ShowTableStatusStatement) {
+            Preconditions.checkState(((ShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
+            RemoveAvailable removeAvailable = ((ShowTableStatusStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
+            return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
+        }
+        if (sqlStatementContext.getSqlStatement() instanceof ShowColumnsStatement) {
+            Preconditions.checkState(((ShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().isPresent());
+            RemoveAvailable removeAvailable = ((ShowColumnsStatement) sqlStatementContext.getSqlStatement()).getFromSchema().get();
+            return Collections.singletonList(new RemoveToken(removeAvailable.getStartIndex(), removeAvailable.getStopIndex()));
+        }
+        return Collections.emptyList();
     }
 }

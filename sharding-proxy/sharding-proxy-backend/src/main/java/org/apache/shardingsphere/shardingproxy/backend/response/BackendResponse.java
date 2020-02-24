@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend.response;
 
 /**
  * Backend response.
- *
- * @author zhangliang
  */
 public interface BackendResponse {
 }

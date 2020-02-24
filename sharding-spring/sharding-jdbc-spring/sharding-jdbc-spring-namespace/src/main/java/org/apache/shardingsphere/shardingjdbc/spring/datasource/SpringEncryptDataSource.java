@@ -27,8 +27,6 @@ import java.util.Properties;
 
 /**
  * Encrypt datasource for spring namespace.
- *
- * @author panjuan
  */
 public class SpringEncryptDataSource extends EncryptDataSource {
     

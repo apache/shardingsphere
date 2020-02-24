@@ -27,8 +27,6 @@ import java.util.Map.Entry;
 
 /**
  * Encrypt table configuration YAML swapper.
- *
- * @author panjuan
  */
 public final class EncryptTableRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptTableRuleConfiguration, EncryptTableRuleConfiguration> {
     

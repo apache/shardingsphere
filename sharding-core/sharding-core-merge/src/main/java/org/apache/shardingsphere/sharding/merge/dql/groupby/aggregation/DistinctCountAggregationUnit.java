@@ -25,8 +25,6 @@ import java.util.List;
 
 /**
  * Distinct count aggregation unit.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class DistinctCountAggregationUnit implements AggregationUnit {

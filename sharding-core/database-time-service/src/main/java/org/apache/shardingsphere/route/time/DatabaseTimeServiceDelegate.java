@@ -24,8 +24,6 @@ import java.util.Date;
 
 /**
  * Delegate database time service.
- *
- * @author chenchuangliu
  */
 public final class DatabaseTimeServiceDelegate implements TimeService {
     

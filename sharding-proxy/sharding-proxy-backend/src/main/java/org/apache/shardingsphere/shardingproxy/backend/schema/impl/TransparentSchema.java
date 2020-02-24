@@ -42,8 +42,6 @@ import java.util.Map;
 
 /**
  * Transparent schema.
- *
- * @author zhangyonglun
  */
 @Getter
 public final class TransparentSchema extends LogicSchema {

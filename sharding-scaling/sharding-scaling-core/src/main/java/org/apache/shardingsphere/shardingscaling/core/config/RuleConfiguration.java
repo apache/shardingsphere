@@ -22,8 +22,6 @@ import lombok.Setter;
 
 /**
  * Rule configuration.
- *
- * @author avalon566
  */
 @Setter
 @Getter

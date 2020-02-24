@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
 
 /**
  * Write factory.
- *
- * @author yangyi
  */
 public final class WriterFactory {
     

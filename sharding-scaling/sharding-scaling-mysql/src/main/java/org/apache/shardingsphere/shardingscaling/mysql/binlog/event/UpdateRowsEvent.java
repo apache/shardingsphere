@@ -25,8 +25,6 @@ import java.util.List;
 
 /**
  * Update rows event.
- *
- * @author avalon566
  */
 @Data
 public final class UpdateRowsEvent extends AbstractRowsEvent {

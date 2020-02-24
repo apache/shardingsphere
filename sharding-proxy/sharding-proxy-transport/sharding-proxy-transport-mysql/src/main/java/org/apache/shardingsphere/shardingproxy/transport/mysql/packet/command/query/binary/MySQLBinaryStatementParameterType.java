@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCol
 
 /**
  * Binary prepared statement parameter type for MySQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

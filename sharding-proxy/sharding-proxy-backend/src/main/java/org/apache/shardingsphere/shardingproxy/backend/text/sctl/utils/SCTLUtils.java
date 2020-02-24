@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * SCTL utils.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SCTLUtils {

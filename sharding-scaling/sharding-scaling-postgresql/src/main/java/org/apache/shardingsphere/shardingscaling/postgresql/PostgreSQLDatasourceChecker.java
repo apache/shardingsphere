@@ -24,8 +24,6 @@ import java.util.Collection;
 
 /**
  * Datasource checker for PostgreSQL.
- *
- * @author ssxlulu
  */
 public final class PostgreSQLDatasourceChecker extends AbstractDatasourceChecker {
 

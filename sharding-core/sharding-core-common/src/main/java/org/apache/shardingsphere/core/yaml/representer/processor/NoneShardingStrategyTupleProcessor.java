@@ -25,8 +25,6 @@ import org.yaml.snakeyaml.nodes.Tag;
 
 /**
  * NoneShardingStrategy YAML tuple processor.
- *
- * @author yangyi
  */
 public final class NoneShardingStrategyTupleProcessor implements TupleProcessor {
     

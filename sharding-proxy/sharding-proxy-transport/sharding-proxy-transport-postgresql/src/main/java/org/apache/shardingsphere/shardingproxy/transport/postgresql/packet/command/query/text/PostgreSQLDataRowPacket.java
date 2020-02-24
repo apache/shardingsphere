@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Data row packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

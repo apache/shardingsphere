@@ -40,8 +40,6 @@ import java.util.List;
  * COM_STMT_EXECUTE command packet for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
- *
- * @author zhangyonglun
  */
 @ToString(of = {"sql", "parameters"})
 public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByIt
 
 /**
  * Order by item.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

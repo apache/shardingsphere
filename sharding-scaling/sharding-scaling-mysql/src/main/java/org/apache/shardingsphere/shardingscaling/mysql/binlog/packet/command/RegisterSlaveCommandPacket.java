@@ -25,9 +25,6 @@ import lombok.Setter;
 
 /**
  * Register salve command packet.
- *
- * @author avalon566
- * @author yangyi
  */
 @Setter
 public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {

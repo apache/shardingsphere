@@ -38,8 +38,6 @@ import java.util.List;
 
 /**
  * Convert wal event to {@code Record}.
- *
- * @author avalon566
  */
 public final class WalEventConverter {
     

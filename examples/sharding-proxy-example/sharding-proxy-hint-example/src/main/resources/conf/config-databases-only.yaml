@@ -1,0 +1,28 @@
+schemaName: databases_only
+
+dataSources:
+  ds_0:
+    url: jdbc:mysql://localhost:3306/demo_ds_0
+    username: root
+    password:
+  ds_1:
+    url: jdbc:mysql://localhost:3306/demo_ds_1
+    username: root
+    password:
+
+shardingRule:
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item
+  bindingTables:
+  - t_order,t_order_item
+  broadcastTables:
+  - t_address
+
+  defaultDatabaseStrategy:
+    hint:
+      algorithmClassName: org.apache.shardingsphere.example.proxy.hint.ModuloHintShardingAlgorithm
+  defaultTableStrategy:
+    none:

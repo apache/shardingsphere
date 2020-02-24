@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Query data.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

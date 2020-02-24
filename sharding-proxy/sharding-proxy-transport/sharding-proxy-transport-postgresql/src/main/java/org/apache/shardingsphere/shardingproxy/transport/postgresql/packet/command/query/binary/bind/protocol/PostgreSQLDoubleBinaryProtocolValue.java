@@ -21,8 +21,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Binary protocol value for double for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLDoubleBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     

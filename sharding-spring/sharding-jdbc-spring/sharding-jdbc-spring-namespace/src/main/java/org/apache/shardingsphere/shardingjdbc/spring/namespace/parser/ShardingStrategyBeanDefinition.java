@@ -33,8 +33,6 @@ import org.w3c.dom.Element;
 
 /**
  * Sharding strategy parser for spring namespace.
- * 
- * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingStrategyBeanDefinition {

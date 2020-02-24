@@ -30,8 +30,6 @@ import java.sql.SQLException;
 
 /**
  * PostgreSQL log position manager.
- *
- * @author avalon566
  */
 @RequiredArgsConstructor
 public final class PostgreSQLLogPositionManager implements LogPositionManager<WalPosition> {

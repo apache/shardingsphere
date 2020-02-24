@@ -34,9 +34,6 @@ import java.util.Map;
 
 /**
  * YAML converter for configuration.
- *
- * @author panjuan
- * @author avalon566
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConfigurationYamlConverter {

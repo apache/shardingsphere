@@ -37,19 +37,16 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Predicate right value token generator for encrypt.
- *
- * @author panjuan
- * @author zhangliang
  */
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, 
-        RelationMetasAware, ParametersAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator 
+        implements CollectionSQLTokenGenerator, RelationMetasAware, ParametersAware, QueryWithCipherColumnAware {
     
     private RelationMetas relationMetas;
     
@@ -69,7 +66,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     }
     
     private Collection<SQLToken> generateSQLTokens(final List<EncryptCondition> encryptConditions) {
-        Collection<SQLToken> result = new LinkedList<>();
+        Collection<SQLToken> result = new LinkedHashSet<>();
         for (EncryptCondition each : encryptConditions) {
             result.add(generateSQLToken(each));
         }
@@ -78,7 +75,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private SQLToken generateSQLToken(final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
-        int startIndex = encryptCondition instanceof EncryptInCondition ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
+        int startIndex = encryptCondition.getStartIndex();
         return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues, startIndex)
                 : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex);
     }

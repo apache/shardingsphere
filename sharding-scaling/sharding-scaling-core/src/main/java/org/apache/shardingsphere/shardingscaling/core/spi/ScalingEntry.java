@@ -26,8 +26,6 @@ import org.apache.shardingsphere.spi.database.type.DatabaseTypeAwareSPI;
 
 /**
  * Scaling entry.
- *
- * @author yangyi
  */
 public interface ScalingEntry extends DatabaseTypeAwareSPI {
     

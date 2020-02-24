@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Condition value.
- *
- * @author zhangliang
  */
 public final class ConditionValue {
     

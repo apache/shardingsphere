@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expressio
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.complex.ExpectedSubquery;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.complex.ExpectedCommonExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.complex.ExpectedSubquery;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple.ExpectedLiteralExpression;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -35,8 +35,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  *  Expression assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExpressionAssert {

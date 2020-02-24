@@ -26,17 +26,18 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserEntry;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 
 /**
  * SQL parser factory.
- * 
- * @author duhongjun
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
+    
+    static {
+        NewInstanceServiceLoader.register(SQLParserConfiguration.class);
+    }
     
     /** 
      * New instance of SQL parser.
@@ -46,7 +47,7 @@ public final class SQLParserFactory {
      * @return SQL parser
      */
     public static SQLParser newInstance(final String databaseTypeName, final String sql) {
-        for (SQLParserEntry each : NewInstanceServiceLoader.newServiceInstances(SQLParserEntry.class)) {
+        for (SQLParserConfiguration each : NewInstanceServiceLoader.newServiceInstances(SQLParserConfiguration.class)) {
             if (each.getDatabaseTypeName().equals(databaseTypeName)) {
                 return createSQLParser(sql, each);
             }
@@ -55,8 +56,8 @@ public final class SQLParserFactory {
     }
     
     @SneakyThrows
-    private static SQLParser createSQLParser(final String sql, final SQLParserEntry parserEntry) {
-        Lexer lexer = parserEntry.getLexerClass().getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
-        return parserEntry.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
+    private static SQLParser createSQLParser(final String sql, final SQLParserConfiguration configuration) {
+        Lexer lexer = configuration.getLexerClass().getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
+        return configuration.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
     }
 }

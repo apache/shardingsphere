@@ -29,8 +29,6 @@ import java.util.Properties;
 
 /**
  * Encrypt data source.
- *
- * @author panjuan
  */
 @Getter
 public class EncryptDataSource extends AbstractDataSourceAdapter {

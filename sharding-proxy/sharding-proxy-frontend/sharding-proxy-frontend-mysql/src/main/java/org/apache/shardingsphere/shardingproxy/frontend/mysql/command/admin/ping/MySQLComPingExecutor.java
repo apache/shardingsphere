@@ -26,8 +26,6 @@ import java.util.Collections;
 
 /**
  * COM_PING executor for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLComPingExecutor implements CommandExecutor {
     

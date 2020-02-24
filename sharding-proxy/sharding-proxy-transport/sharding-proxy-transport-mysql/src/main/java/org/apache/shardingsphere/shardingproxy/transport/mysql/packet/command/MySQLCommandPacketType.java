@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Command packet type for MySQL.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

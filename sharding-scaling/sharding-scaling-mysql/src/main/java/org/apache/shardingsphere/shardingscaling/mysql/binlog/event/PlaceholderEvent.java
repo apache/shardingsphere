@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.event;
 
 /**
  * Placeholder binlog event, unsupported binlog event will replace it into this class.
- *
- * @author avalon566
  */
 public final class PlaceholderEvent extends AbstractBinlogEvent {
 }

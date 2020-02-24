@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * MySQL JDBC Reader.
- *
- * @author avalon566
  */
 public final class MySQLJdbcReader extends AbstractJdbcReader {
     

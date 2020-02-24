@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * String convert to none sharding strategy configuration.
- *
- * @author yangyi
  */
 @Component
 @ConfigurationPropertiesBinding

@@ -21,8 +21,6 @@ import lombok.Setter;
 
 /**
  * Http response content.
- *
- * @author ssxlulu
  */
 @Setter
 public class ResponseContent<T> {

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.execute.engine;
 
 /**
  * Sync task execute callback.
- *
- * @author avalon566
  */
 public interface ExecuteCallback {
 

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
  * Show databases statement.
- *
- * @author zhangliang
  */
 public final class ShowDatabasesStatement extends DALStatement {
 }

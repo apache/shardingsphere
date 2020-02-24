@@ -24,8 +24,6 @@ import lombok.ToString;
 
 /**
  * Column meta data.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

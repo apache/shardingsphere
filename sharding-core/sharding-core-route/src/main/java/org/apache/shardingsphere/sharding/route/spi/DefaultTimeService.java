@@ -21,8 +21,6 @@ import java.util.Date;
 
 /**
  * Default time service.
- *
- * @author chenchuangliu
  */
 public final class DefaultTimeService implements TimeService {
     

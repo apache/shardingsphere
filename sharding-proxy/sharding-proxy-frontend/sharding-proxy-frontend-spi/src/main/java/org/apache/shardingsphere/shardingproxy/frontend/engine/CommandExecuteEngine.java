@@ -30,8 +30,6 @@ import java.sql.SQLException;
 
 /**
  * Command execute engine.
- *
- * @author zhangliang
  */
 public interface CommandExecuteEngine {
     

@@ -25,9 +25,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Binlog Position.
- *
- * @author avalon566
- * @author yangyi
  */
 @Data
 @RequiredArgsConstructor

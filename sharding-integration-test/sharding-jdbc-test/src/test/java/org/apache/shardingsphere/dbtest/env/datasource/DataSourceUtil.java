@@ -34,8 +34,6 @@ import java.util.Map;
 
 /**
  * Data source utility.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceUtil {

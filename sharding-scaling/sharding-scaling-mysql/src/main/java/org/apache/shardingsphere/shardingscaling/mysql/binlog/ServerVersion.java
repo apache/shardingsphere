@@ -24,8 +24,6 @@ import lombok.Getter;
 
 /**
  * Server Version.
- *
- * @author yangyi
  */
 @Getter
 public final class ServerVersion {

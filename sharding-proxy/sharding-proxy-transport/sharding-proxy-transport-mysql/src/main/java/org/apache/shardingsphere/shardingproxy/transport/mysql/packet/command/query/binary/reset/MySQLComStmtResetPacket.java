@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * COM_STMT_RESET command packet for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-reset.html">COM_STMT_RESET</a>
- *
- * @author zhaojun
  */
 @Getter
 public final class MySQLComStmtResetPacket extends MySQLCommandPacket {

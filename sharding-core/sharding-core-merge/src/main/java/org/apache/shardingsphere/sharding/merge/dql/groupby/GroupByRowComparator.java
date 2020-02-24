@@ -30,9 +30,6 @@ import java.util.List;
 
 /**
  * Group by row comparator.
- *
- * @author zhangliang
- * @author yangyi
  */
 @RequiredArgsConstructor
 public final class GroupByRowComparator implements Comparator<MemoryQueryResultRow> {

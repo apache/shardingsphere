@@ -23,8 +23,6 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfigu
 
 /**
  * Data source configuration YAML swapper.
- *
- * @author zhangliang
  */
 public final class DataSourceConfigurationYamlSwapper implements YamlSwapper<YamlDataSourceConfiguration, DataSourceConfiguration> {
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.position
 
 /**
  * Nop log position.
- *
- * @author avalon566
  */
 public class NopLogPosition implements LogPosition<NopLogPosition> {
     

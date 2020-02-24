@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Ready for query packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
     

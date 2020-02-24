@@ -24,9 +24,6 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Connection Phase  /  CapabilityFlags Flags
  *     https://dev.mysql.com/doc/internals/en/capability-flags.html#flag-CLIENT_PROTOCOL_41
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 public final class CapabilityFlags {
     

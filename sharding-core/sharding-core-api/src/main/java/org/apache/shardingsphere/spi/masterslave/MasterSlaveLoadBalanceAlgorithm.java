@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * Master-slave database load-balance algorithm.
- *
- * @author zhangliang
  */
 public interface MasterSlaveLoadBalanceAlgorithm extends TypeBasedSPI {
     

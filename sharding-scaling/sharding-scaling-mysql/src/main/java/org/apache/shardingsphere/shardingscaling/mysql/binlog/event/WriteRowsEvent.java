@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Write rows event.
- *
- * @author avalon566
  */
 @Data
 public final class WriteRowsEvent extends AbstractRowsEvent {

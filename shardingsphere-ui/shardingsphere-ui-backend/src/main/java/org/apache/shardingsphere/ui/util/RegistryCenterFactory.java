@@ -17,20 +17,17 @@
 
 package org.apache.shardingsphere.ui.util;
 
-import org.apache.shardingsphere.ui.common.constant.RegistryCenterType;
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.orchestration.reg.zookeeper.curator.CuratorZookeeperRegistryCenter;
-
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperInstance;
+import org.apache.shardingsphere.ui.common.constant.RegistryCenterType;
+import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
 
 /**
  * Registry center factory.
- *
- * @author chenqingyang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenterFactory {
@@ -51,7 +48,7 @@ public final class RegistryCenterFactory {
         RegistryCenterType registryCenterType = RegistryCenterType.nameOf(config.getRegistryCenterType());
         switch (registryCenterType) {
             case ZOOKEEPER:
-                result = new CuratorZookeeperRegistryCenter();
+                result = new CuratorZookeeperInstance();
                 break;
             default:
                 throw new UnsupportedOperationException(config.getName());
@@ -61,11 +58,11 @@ public final class RegistryCenterFactory {
         return result;
     }
     
-    private static RegistryCenterConfiguration convert(final RegistryCenterConfig config) {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration(config.getRegistryCenterType());
+    private static InstanceConfiguration convert(final RegistryCenterConfig config) {
+        InstanceConfiguration result = new InstanceConfiguration(config.getRegistryCenterType());
         result.setServerLists(config.getServerLists());
         result.setNamespace(config.getNamespace());
-        result.setDigest(config.getDigest());
+        result.getProperties().put("digest", config.getDigest());
         return result;
     }
     

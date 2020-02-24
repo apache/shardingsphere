@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * Common SQL statement context.
- *
- * @author zhangliang
  */
 @Getter
 @ToString

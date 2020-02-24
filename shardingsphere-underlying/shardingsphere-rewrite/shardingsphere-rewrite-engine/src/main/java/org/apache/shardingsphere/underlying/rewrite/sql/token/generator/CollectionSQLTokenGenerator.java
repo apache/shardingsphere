@@ -24,9 +24,6 @@ import java.util.Collection;
 
 /**
  * SQL token generator for collection.
- *
- * @author zhangliang
- * @author panjuan
  */
 public interface CollectionSQLTokenGenerator extends SQLTokenGenerator {
     

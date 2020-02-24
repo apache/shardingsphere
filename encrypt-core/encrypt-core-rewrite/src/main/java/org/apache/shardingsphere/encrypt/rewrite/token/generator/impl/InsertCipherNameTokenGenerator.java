@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLSta
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 
@@ -33,26 +34,27 @@ import java.util.Map;
 
 /**
  * Insert cipher column name token generator.
- *
- * @author panjuan
  */
 public final class InsertCipherNameTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
-        return sqlStatementContext instanceof InsertSQLStatementContext && insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
+        if (!(sqlStatementContext instanceof InsertSQLStatementContext)) {
+            return false;
+        }
+        Optional<InsertColumnsSegment> insertColumnsSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();
+        return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = sqlStatementContext.getSqlStatement().findSQLSegment(InsertColumnsSegment.class);
+        Optional<InsertColumnsSegment> sqlSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
         Map<String, String> logicAndCipherColumns = getEncryptRule().getLogicAndCipherColumns(sqlStatementContext.getTablesContext().getSingleTableName());
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ColumnSegment each : sqlSegment.get().getColumns()) {
-            if (logicAndCipherColumns.keySet().contains(each.getName())) {
-                result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), logicAndCipherColumns.get(each.getName())));
+            if (logicAndCipherColumns.keySet().contains(each.getIdentifier().getValue())) {
+                result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), logicAndCipherColumns.get(each.getIdentifier().getValue())));
             }
         }
         return result;

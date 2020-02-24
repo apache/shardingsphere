@@ -23,8 +23,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 
 /**
  * State node.
- *
- * @author caohao
  */
 @RequiredArgsConstructor
 public final class StateNode {

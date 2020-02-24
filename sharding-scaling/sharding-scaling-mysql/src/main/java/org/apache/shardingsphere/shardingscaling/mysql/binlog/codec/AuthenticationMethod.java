@@ -24,8 +24,6 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Authentication Method  /  SHA256
  *     https://dev.mysql.com/doc/internals/en/sha256.html
  * </p>
- *
- * @author yangyi
  */
 public final class AuthenticationMethod {
     

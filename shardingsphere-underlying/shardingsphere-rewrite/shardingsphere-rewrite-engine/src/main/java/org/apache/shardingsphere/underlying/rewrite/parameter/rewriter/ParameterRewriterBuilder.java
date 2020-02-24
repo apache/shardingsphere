@@ -23,8 +23,6 @@ import java.util.Collection;
 
 /**
  * Parameter rewriter builder.
- *
- * @author zhangliang
  */
 public interface ParameterRewriterBuilder {
     

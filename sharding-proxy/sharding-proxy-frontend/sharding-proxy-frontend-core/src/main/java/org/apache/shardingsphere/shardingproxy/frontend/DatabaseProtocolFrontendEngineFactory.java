@@ -26,9 +26,6 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 
 /**
  * Database protocol frontend engine factory.
- *
- * @author zhangliang
- * @author xiaoyu
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseProtocolFrontendEngineFactory {

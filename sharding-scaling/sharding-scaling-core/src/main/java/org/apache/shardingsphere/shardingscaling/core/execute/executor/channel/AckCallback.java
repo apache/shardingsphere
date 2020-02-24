@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * Record acknowledged callback.
- *
- * @author avalon566
  */
 public interface AckCallback {
 

@@ -21,8 +21,6 @@ import lombok.Data;
 
 /**
  * MySQL server info.
- *
- * @author avalon566
  */
 @Data
 public class ServerInfo {

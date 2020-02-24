@@ -27,9 +27,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * COM_FIELD_LIST command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-field-list.html">COM_FIELD_LIST</a>
- * 
- * @author zhangliang
- * @author wangkai
  */
 @Getter
 @ToString

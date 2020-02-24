@@ -41,8 +41,6 @@ import java.util.List;
 
 /**
  * Schema environment manager.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaEnvironmentManager {

@@ -19,56 +19,34 @@ package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Table segment.
- * 
- * @author duhongjun
- * @author panjuan
- * @author zhangliang
  */
+@RequiredArgsConstructor
+@Getter
 @ToString
-public final class TableSegment implements SQLSegment, TableAvailable, OwnerAvailable<SchemaSegment>, AliasAvailable {
+public final class TableSegment implements OwnerAvailable<SchemaSegment>, AliasAvailable {
     
     private final int startIndex;
     
-    @Getter
     private final int stopIndex;
     
-    private final String name;
-    
-    private final QuoteCharacter quoteCharacter;
+    private final IdentifierValue identifier;
     
     @Setter
     private SchemaSegment owner;
     
     private String alias;
     
-    public TableSegment(final int startIndex, final int stopIndex, final String name) {
-        this.startIndex = startIndex;
-        this.stopIndex = stopIndex;
-        this.name = SQLUtil.getExactlyValue(name);
-        this.quoteCharacter = QuoteCharacter.getQuoteCharacter(name);
-    }
-    
     @Override
     public int getStartIndex() {
         return null == owner ? startIndex : owner.getStartIndex(); 
-    }
-    
-    @Override
-    public String getTableName() {
-        return name;
-    }
-    
-    @Override
-    public QuoteCharacter getTableQuoteCharacter() {
-        return quoteCharacter;
     }
     
     @Override

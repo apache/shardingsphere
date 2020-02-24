@@ -27,10 +27,6 @@ import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
 /**
  * SQL route context.
- * 
- * @author gaohongtao
- * @author zhangliang
- * @author zhaojun
  */
 @Getter
 public final class ShardingRouteContext extends RouteContext {

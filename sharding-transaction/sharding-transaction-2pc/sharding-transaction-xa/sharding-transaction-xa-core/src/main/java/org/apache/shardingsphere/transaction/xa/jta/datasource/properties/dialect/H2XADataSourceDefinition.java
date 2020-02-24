@@ -27,8 +27,6 @@ import java.util.Properties;
 
 /**
  * XA data source definition for H2.
- *
- * @author zhaojun
  */
 public final class H2XADataSourceDefinition implements XADataSourceDefinition {
     

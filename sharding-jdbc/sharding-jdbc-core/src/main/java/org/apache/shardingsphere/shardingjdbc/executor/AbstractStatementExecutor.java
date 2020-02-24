@@ -64,9 +64,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Abstract statement executor.
- *
- * @author panjuan
- * @author maxiaoguang
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractStatementExecutor {
@@ -221,7 +218,7 @@ public abstract class AbstractStatementExecutor {
         if (null == createIndexStatement.getIndex()) {
             return;
         }
-        runtimeContext.getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getName());
+        runtimeContext.getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getIdentifier().getValue());
     }
     
     private void refreshTableMetaDataForDropIndex(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) {
@@ -242,7 +239,7 @@ public abstract class AbstractStatementExecutor {
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : dropIndexStatement.getIndexes()) {
-            result.add(each.getName());
+            result.add(each.getIdentifier().getValue());
         }
         return result;
     }

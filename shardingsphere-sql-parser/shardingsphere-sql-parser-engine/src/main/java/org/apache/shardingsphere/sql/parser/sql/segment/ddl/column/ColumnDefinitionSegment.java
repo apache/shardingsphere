@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Column definition segment.
- *
- * @author duhongjun
  */
 @Getter
 @Setter

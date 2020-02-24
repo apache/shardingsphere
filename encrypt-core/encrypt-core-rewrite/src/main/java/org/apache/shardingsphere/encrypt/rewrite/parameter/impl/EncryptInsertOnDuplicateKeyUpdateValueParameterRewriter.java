@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 
@@ -36,23 +38,22 @@ import java.util.List;
 
 /**
  * Insert on duplicate key update parameter rewriter for encrypt.
- *
- * @author chun.yang
  */
 @Setter
 public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter extends EncryptParameterRewriter implements QueryWithCipherColumnAware {
-
+    
     private boolean queryWithCipherColumn;
-
+    
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && sqlStatementContext.getSqlStatement().findSQLSegment(OnDuplicateKeyColumnsSegment.class).isPresent();
+        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) (sqlStatementContext.getSqlStatement())).getOnDuplicateKeyColumns().isPresent();
     }
-
+    
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = sqlStatementContext.getSqlStatement().findSQLSegment(OnDuplicateKeyColumnsSegment.class).get();
+        Preconditions.checkState(((InsertStatement) (sqlStatementContext.getSqlStatement())).getOnDuplicateKeyColumns().isPresent());
+        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = ((InsertStatement) (sqlStatementContext.getSqlStatement())).getOnDuplicateKeyColumns().get();
         Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
         if (onDuplicateKeyColumnsSegments.isEmpty()) {
             return;
@@ -60,13 +61,13 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
         GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
             ExpressionSegment expressionSegment = each.getValue();
-            Object cipherColumnValue = null;
+            Object cipherColumnValue;
             Object plainColumnValue = null;
             if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                 plainColumnValue = parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
             }
             if (queryWithCipherColumn) {
-                Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, each.getColumn().getName());
+                Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, each.getColumn().getIdentifier().getValue());
                 if (encryptor.isPresent()) {
                     cipherColumnValue = encryptor.get().encrypt(plainColumnValue);
                     groupedParameterBuilder.getOnDuplicateKeyUpdateAddedParameters().add(cipherColumnValue);

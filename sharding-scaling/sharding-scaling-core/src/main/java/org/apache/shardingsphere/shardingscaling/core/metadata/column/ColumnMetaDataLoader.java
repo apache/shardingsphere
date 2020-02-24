@@ -30,8 +30,6 @@ import javax.sql.DataSource;
 
 /**
  * Implmentation of column meta data loader by JDBC.
- *
- * @author yangyi
  */
 @RequiredArgsConstructor
 public final class ColumnMetaDataLoader implements MetaDataLoader<List<ColumnMetaData>> {

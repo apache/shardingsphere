@@ -17,27 +17,27 @@
   -->
 
 <sql-parser-test-cases>
-    <common sql-case-id="deny_user">
+    <deny-user sql-case-id="deny_user">
         <table name="t_order" start-index="15" stop-index="21" />
-    </common>
+    </deny-user>
     
-    <common sql-case-id="deny_select">
+    <deny-user sql-case-id="deny_select">
         <table name="t_order" start-index="15" stop-index="21" />
-    </common>
+    </deny-user>
     
-    <common sql-case-id="deny_select_column">
+    <deny-user sql-case-id="deny_select_column">
         <table name="t_order" start-index="26" stop-index="32" />
-    </common>
+    </deny-user>
     
-    <common sql-case-id="deny_select_to_users">
+    <deny-user sql-case-id="deny_select_to_users">
         <table name="t_order" start-index="26" stop-index="32" />
-    </common>
+    </deny-user>
     
-    <common sql-case-id="deny_crud">
+    <deny-user sql-case-id="deny_crud">
         <table name="t_order" start-index="39" stop-index="45" />
-    </common>
+    </deny-user>
     
-    <common sql-case-id="deny_all">
+    <deny-user sql-case-id="deny_all">
         <table name="t_order" start-index="23" stop-index="29" />
-    </common>
+    </deny-user>
 </sql-parser-test-cases>

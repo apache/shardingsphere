@@ -25,8 +25,6 @@ import java.util.List;
 
 /**
  * Binary prepared statement for MySQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

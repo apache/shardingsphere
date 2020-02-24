@@ -20,13 +20,11 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 
 /**
  * Order by clause assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderByClauseAssert {

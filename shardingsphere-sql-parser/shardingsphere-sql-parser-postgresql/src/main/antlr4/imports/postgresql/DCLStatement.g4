@@ -20,15 +20,15 @@ grammar DCLStatement;
 import Symbol, Keyword, PostgreSQLKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (privilegeClause_ | roleClause_)
+    : GRANT (privilegeClause | roleClause_)
     ;
 
 revoke
-    : REVOKE optionForClause_? (privilegeClause_ | roleClause_)
+    : REVOKE optionForClause_? (privilegeClause | roleClause_)
     ;
 
-privilegeClause_
-    : privileges_ ON onObjectClause_
+privilegeClause
+    : privileges_ ON onObjectClause
     ;
     
 roleClause_
@@ -60,7 +60,7 @@ privilegeType_
     | ALL PRIVILEGES?
     ;
 
-onObjectClause_
+onObjectClause
     : DATABASE 
     | SCHEMA
     | DOMAIN

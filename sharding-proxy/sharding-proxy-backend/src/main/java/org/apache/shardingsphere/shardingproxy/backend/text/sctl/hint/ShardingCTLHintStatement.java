@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.H
 
 /**
  * Sharding CTL hint statement.
- *
- * @author liya
  */
 @RequiredArgsConstructor
 @Getter

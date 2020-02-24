@@ -24,9 +24,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 
 /**
  * Master slave rule changed event.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

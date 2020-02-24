@@ -23,8 +23,6 @@ import org.postgresql.replication.LogSequenceNumber;
 
 /**
  * Abstract wal event.
- *
- * @author avalon566
  */
 @Setter
 @Getter

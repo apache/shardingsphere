@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaDat
 
 /**
  * Column meta data for encrypt.
- *
- * @author zhangliang
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)

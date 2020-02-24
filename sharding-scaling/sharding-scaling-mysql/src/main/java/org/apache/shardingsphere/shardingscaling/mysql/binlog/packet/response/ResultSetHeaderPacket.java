@@ -31,9 +31,6 @@ import lombok.Getter;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Prepared Statements  /  Binary Protocol Resultset
  *     https://dev.mysql.com/doc/internals/en/binary-protocol-resultset.html
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Getter
 public final class ResultSetHeaderPacket extends AbstractPacket {

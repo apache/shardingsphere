@@ -34,8 +34,6 @@ import java.util.LinkedList;
 
 /**
  * Parameter rewriter builder for sharding.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ShardingParameterRewriterBuilder implements ParameterRewriterBuilder {

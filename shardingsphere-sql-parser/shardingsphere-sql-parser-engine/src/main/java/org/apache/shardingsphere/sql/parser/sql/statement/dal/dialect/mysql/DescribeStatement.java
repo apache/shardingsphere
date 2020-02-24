@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 /**
  * Describe statement.
- *
- * @author zhangliang
  */
-public final class DescribeStatement extends DALStatement {
+@Getter
+@Setter
+public final class DescribeStatement extends DALStatement implements TableSegmentAvailable {
+
+    private TableSegment table;
 }

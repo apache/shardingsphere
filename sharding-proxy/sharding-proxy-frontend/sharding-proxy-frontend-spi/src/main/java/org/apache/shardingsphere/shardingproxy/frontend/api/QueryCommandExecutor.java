@@ -23,8 +23,6 @@ import java.sql.SQLException;
 
 /**
  * Query command executor.
- *
- * @author zhangliang
  */
 public interface QueryCommandExecutor extends CommandExecutor {
     

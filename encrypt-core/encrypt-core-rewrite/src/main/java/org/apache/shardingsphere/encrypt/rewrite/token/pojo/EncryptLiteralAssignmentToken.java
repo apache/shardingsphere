@@ -25,8 +25,6 @@ import java.util.LinkedList;
 
 /**
  * Literal assignment token for encrypt.
- *
- * @author panjuan
  */
 public final class EncryptLiteralAssignmentToken extends EncryptAssignmentToken {
     

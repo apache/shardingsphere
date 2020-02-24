@@ -17,34 +17,35 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -65,10 +66,26 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration("TestRegistryCenter");
-        registryCenterConfiguration.setNamespace("test_ms");
-        registryCenterConfiguration.setServerLists("localhost:3181");
-        return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        instanceConfigurationMap.put("test_ms_registry_name", getRegistryCenterConfiguration());
+        instanceConfigurationMap.put("test_ms_config_name", getConfigCenterConfiguration());
+        return new OrchestrationConfiguration(instanceConfigurationMap);
+    }
+    
+    private static InstanceConfiguration getRegistryCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("ThirdTestRegistryCenter");
+        result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+        result.setNamespace("test_ms_registry");
+        result.setServerLists("localhost:3181");
+        return result;
+    }
+    
+    private static InstanceConfiguration getConfigCenterConfiguration() {
+        InstanceConfiguration result = new InstanceConfiguration("ThirdTestConfigCenter");
+        result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
+        result.setNamespace("test_ms_config");
+        result.setServerLists("localhost:3181");
+        return result;
     }
     
     @Test

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.core.strategy.route.value;
 
 /**
  * Route value.
- * 
- * @author zhangliang
  */
 public interface RouteValue {
     

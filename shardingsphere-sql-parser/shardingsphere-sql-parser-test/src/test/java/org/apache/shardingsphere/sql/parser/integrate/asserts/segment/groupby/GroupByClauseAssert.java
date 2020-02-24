@@ -21,13 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByItemAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 
 /**
  * Group by clause assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GroupByClauseAssert {

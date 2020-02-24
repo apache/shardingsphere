@@ -26,9 +26,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.show.ShardingCT
 
 /**
  * Sharding CTL backend handler factory.
- *
- * @author zhangliang
- * @author liya
  */
 public final class ShardingCTLBackendHandlerFactory {
     

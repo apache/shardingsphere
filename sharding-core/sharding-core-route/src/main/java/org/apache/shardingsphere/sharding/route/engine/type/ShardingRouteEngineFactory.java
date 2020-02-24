@@ -49,8 +49,6 @@ import java.util.Collection;
 
 /**
  * Sharding routing engine factory.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingRouteEngineFactory {

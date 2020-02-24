@@ -31,8 +31,6 @@ import java.util.LinkedList;
 
 /**
  * Parameter rewriter builder for shadow.
- *
- * @author zhyee
  */
 @RequiredArgsConstructor
 public final class ShadowParameterRewriterBuilder implements ParameterRewriterBuilder {

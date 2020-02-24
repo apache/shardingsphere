@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Expression projection segment.
- * 
- * @author zhangliang
  */
 @Getter
 public final class ExpressionProjectionSegment implements ProjectionSegment, ComplexExpressionSegment, AliasAvailable {

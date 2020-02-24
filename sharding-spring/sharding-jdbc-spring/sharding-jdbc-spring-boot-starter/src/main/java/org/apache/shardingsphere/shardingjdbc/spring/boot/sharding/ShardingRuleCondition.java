@@ -27,8 +27,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Sharding rule condition.
- *
- * @author yangyi
  */
 public final class ShardingRuleCondition extends SpringBootCondition {
     

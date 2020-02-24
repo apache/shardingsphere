@@ -24,8 +24,6 @@ import java.util.Collection;
 
 /**
  * Sharding strategy.
- * 
- * @author zhangliang
  */
 public interface ShardingStrategy {
     

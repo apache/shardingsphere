@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Delete rows event.
- *
- * @author avalon566
  */
 @Data
 public final class DeleteRowsEvent extends AbstractRowsEvent {

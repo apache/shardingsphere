@@ -19,12 +19,10 @@ package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 /**
  * SQL parser for MySQL.
- * 
- * @author duhongjun
  */
 public final class MySQLParser extends MySQLStatementParser implements SQLParser {
     

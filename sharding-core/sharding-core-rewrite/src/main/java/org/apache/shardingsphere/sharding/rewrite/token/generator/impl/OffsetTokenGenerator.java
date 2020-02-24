@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.OffsetToken;
 
 /**
  * Offset token generator.
- *
- * @author panjuan
  */
 public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
     

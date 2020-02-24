@@ -25,8 +25,6 @@ import java.util.Collection;
 
 /**
  * Group by context.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

@@ -20,19 +20,19 @@ grammar DCLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (proxyClause_ | privilegeClause_ | roleClause_)
+    : GRANT (proxyClause_ | privilegeClause | roleClause_)
     ;
 
 revoke
-    : REVOKE (proxyClause_ | privilegeClause_ | allClause_ | roleClause_)
+    : REVOKE (proxyClause_ | privilegeClause | allClause_ | roleClause_)
     ;
 
 proxyClause_
     : PROXY ON userOrRole TO userOrRoles_ withGrantOption_?
     ;
 
-privilegeClause_
-    : privileges_ ON onObjectClause_ (TO | FROM) userOrRoles_ withGrantOption_? grantOption_?
+privilegeClause
+    : privileges_ ON onObjectClause (TO | FROM) userOrRoles_ withGrantOption_? grantOption_?
     ;
 
 roleClause_
@@ -93,15 +93,15 @@ privilegeType_
     | VERSION_TOKEN_ADMIN
     ;
 
-onObjectClause_
-    : objectType_? privilegeLevel_
+onObjectClause
+    : objectType_? privilegeLevel
     ;
 
 objectType_
     : TABLE | FUNCTION | PROCEDURE
     ;
 
-privilegeLevel_
+privilegeLevel
     : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName
     ;
 

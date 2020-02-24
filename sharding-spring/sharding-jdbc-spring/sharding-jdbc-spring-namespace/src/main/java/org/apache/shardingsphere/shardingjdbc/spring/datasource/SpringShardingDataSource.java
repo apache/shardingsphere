@@ -28,9 +28,6 @@ import java.util.Properties;
 
 /**
  * Sharding datasource for spring namespace.
- *
- * @author caohao
- * @author zhangliang
  */
 public class SpringShardingDataSource extends ShardingDataSource {
     

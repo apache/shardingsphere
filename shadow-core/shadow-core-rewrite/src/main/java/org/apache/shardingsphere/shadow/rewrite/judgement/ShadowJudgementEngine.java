@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shadow.rewrite.judgement;
 
 /**
  * Shadow judgement engine.
- *
- * @author zhyee
  */
 public interface ShadowJudgementEngine {
     

@@ -25,8 +25,6 @@ import java.util.Properties;
 
 /**
  * XA data source definition.
- *
- * @author zhangliang
  */
 public interface XADataSourceDefinition extends DatabaseTypeAwareSPI {
     

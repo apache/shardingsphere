@@ -23,8 +23,6 @@ import lombok.Setter;
 
 /**
  * Instance DTO.
- *
- * @author chenqingyang
  */
 @Setter
 @Getter

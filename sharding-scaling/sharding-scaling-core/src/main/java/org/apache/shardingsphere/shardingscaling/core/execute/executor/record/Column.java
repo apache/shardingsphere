@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Column.
- *
- * @author avalon566
  */
 @Getter
 @RequiredArgsConstructor

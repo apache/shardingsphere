@@ -22,8 +22,6 @@ import java.util.Collection;
 
 /**
  * DatasourceChecker.
- *
- * @author ssxlulu
  */
 public interface DatasourceChecker {
 

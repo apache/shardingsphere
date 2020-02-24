@@ -37,8 +37,6 @@ import java.util.LinkedList;
 
 /**
  * COM_FIELD_LIST packet executor for MySQL.
- *
- * @author zhangliang 
  */
 public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     

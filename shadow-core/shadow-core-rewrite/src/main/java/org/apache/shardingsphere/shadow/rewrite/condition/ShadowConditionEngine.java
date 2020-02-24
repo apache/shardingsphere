@@ -37,8 +37,6 @@ import java.util.HashSet;
 
 /**
  * Shadow condition engine.
- *
- * @author zhyee
  */
 @RequiredArgsConstructor
 public final class ShadowConditionEngine {
@@ -80,7 +78,8 @@ public final class ShadowConditionEngine {
         for (PredicateSegment predicate : andPredicate.getPredicates()) {
             Collection<Integer> stopIndexes = new HashSet<>();
             if (stopIndexes.add(predicate.getStopIndex())) {
-                Optional<ShadowCondition> condition = shadowRule.getColumn().equals(predicate.getColumn().getName()) ? createShadowCondition(predicate) : Optional.<ShadowCondition>absent();
+                Optional<ShadowCondition> condition = shadowRule.getColumn().equals(predicate.getColumn().getIdentifier().getValue())
+                        ? createShadowCondition(predicate) : Optional.<ShadowCondition>absent();
                 if (condition.isPresent()) {
                     return condition;
                 }
@@ -105,7 +104,7 @@ public final class ShadowConditionEngine {
     
     private static Optional<ShadowCondition> createCompareShadowCondition(final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment
-                ? Optional.of(new ShadowCondition(predicateSegment.getColumn().getName(), compareRightValue.getExpression().getStartIndex(),
+                ? Optional.of(new ShadowCondition(predicateSegment.getColumn().getIdentifier().getValue(), compareRightValue.getExpression().getStartIndex(),
                 predicateSegment.getStopIndex(), compareRightValue.getExpression()))
                 : Optional.<ShadowCondition>absent();
     }

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.api.sharding;
 
 /**
  * Sharding value.
- * 
- * @author zhangliang
  */
 public interface ShardingValue {
 }

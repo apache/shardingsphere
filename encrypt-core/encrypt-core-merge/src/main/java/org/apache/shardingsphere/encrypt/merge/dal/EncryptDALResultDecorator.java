@@ -33,8 +33,6 @@ import org.apache.shardingsphere.underlying.merge.result.impl.transparent.Transp
 
 /**
  * DAL result decorator for encrypt.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class EncryptDALResultDecorator implements ResultDecorator {

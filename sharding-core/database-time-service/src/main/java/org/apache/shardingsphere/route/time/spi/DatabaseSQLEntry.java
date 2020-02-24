@@ -19,8 +19,6 @@ package org.apache.shardingsphere.route.time.spi;
 
 /**
  * Database SQL entry.
- *
- * @author chenchuangliu
  */
 public interface DatabaseSQLEntry {
     

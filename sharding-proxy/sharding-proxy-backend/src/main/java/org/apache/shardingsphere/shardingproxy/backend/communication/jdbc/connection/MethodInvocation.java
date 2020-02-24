@@ -25,8 +25,6 @@ import java.lang.reflect.Method;
 
 /**
  * Reflective method invocation.
- * 
- * @author zhaojun
  */
 @RequiredArgsConstructor
 class MethodInvocation {

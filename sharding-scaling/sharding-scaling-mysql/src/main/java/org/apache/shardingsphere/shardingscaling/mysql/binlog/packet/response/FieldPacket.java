@@ -29,9 +29,6 @@ import lombok.Getter;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Text Protocol  /  COM_QUERY  /  COM_QUERY Response
  *     https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Getter
 public final class FieldPacket extends AbstractPacket {

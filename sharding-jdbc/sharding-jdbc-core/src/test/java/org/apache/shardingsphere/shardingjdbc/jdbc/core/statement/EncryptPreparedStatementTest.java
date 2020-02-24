@@ -44,7 +44,9 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String UPDATE_SQL = "UPDATE t_query_encrypt SET pwd =? WHERE pwd = ?";
     
-    private static final String SELECT_SQL = "SELECT * FROM t_query_encrypt WHERE pwd = ? ";
+    private static final String SELECT_SQL = "SELECT * FROM t_query_encrypt WHERE pwd = ?";
+ 
+    private static final String SELECT_SQL_OR = "SELECT * FROM t_query_encrypt WHERE pwd = ? and (id = ? or id =?)";
     
     private static final String SELECT_ALL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";
     
@@ -126,6 +128,20 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(5));
             assertThat(resultSet.getString(2), is("decryptValue"));
+        }
+    }
+    
+    @Test
+    public void assertSelectWithOr() throws SQLException {
+        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL_OR)) {
+            statement.setObject(1, "plainValue");
+            statement.setObject(2, 1);
+            statement.setObject(3, 5);
+            ResultSet resultSet = statement.executeQuery();
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt(1), is(1));
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt(1), is(5));
         }
     }
     

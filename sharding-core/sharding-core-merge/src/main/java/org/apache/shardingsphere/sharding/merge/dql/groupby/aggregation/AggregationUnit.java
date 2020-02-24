@@ -21,8 +21,6 @@ import java.util.List;
 
 /**
  * Aggregation unit interface.
- * 
- * @author gaohongtao
  */
 public interface AggregationUnit {
     

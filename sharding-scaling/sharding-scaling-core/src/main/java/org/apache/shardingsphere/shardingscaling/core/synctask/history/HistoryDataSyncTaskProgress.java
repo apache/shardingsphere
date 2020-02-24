@@ -23,9 +23,6 @@ import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 /**
  * History data sync task progress.
- *
- * @author avalon556
- * @author yangyi
  */
 @Getter
 @AllArgsConstructor

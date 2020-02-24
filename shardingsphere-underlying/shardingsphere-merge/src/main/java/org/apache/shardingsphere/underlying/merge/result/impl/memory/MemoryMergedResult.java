@@ -38,8 +38,6 @@ import java.util.List;
 /**
  * Memory merged result.
  *
- * @author zhangliang
- * 
  * @param <T> type of rule
  */
 @RequiredArgsConstructor

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 
 /**
  * Where segment available.
- *
- * @author zhangliang
  */
 public interface WhereSegmentAvailable {
     

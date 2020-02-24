@@ -17,39 +17,29 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.registry;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestRegistryCenter implements RegistryCenter {
+public final class TestRegistryCenter implements RegistryCenter, ConfigCenter {
     
     @Getter
     @Setter
     private Properties properties;
     
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final InstanceConfiguration config) {
     }
     
     @Override
     public String get(final String key) {
         return "";
-    }
-    
-    @Override
-    public String getDirectly(final String key) {
-        return "";
-    }
-    
-    @Override
-    public boolean isExisted(final String key) {
-        return true;
     }
     
     @Override
@@ -59,10 +49,6 @@ public final class TestRegistryCenter implements RegistryCenter {
     
     @Override
     public void persist(final String key, final String value) {
-    }
-    
-    @Override
-    public void update(final String key, final String value) {
     }
     
     @Override
@@ -80,18 +66,5 @@ public final class TestRegistryCenter implements RegistryCenter {
     @Override
     public String getType() {
         return "TestRegistry";
-    }
-
-    @Override
-    public void initLock(final String key) {
-    }
-
-    @Override
-    public boolean tryLock() {
-        return true;
-    }
-
-    @Override
-    public void tryRelease() {
     }
 }

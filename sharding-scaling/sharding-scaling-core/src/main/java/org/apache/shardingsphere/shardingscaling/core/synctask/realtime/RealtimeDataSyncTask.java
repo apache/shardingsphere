@@ -42,9 +42,6 @@ import java.util.List;
 
 /**
  * Realtime data execute task.
- *
- * @author avalon566
- * @author yangyi 
  */
 @Slf4j
 public final class RealtimeDataSyncTask implements SyncTask {

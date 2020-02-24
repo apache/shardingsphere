@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingscaling.core.exception;
 
 /**
  * Scaling job not found exception.
- *
- * @author yangyi
  */
 public final class ScalingJobNotFoundException extends RuntimeException {
     

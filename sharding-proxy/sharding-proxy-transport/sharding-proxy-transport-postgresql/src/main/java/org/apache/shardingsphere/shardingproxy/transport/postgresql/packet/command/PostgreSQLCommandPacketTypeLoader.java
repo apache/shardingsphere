@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Command packet type loader for PostgreSQL.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLCommandPacketTypeLoader {

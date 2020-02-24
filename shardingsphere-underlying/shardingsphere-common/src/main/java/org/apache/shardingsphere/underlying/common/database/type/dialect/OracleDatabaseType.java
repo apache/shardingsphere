@@ -25,8 +25,6 @@ import java.util.Collections;
 
 /**
  * Database type of Oracle.
- *
- * @author zhangliang
  */
 public final class OracleDatabaseType implements DatabaseType {
     

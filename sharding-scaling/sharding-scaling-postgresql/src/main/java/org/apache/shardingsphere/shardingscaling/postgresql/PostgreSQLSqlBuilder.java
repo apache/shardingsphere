@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Ab
 
 /**
  * PostgreSQL SQL builder.
- *
- * @author yangyi
  */
 public final class PostgreSQLSqlBuilder extends AbstractSqlBuilder {
     

@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Sharding-Proxy's information for MySQL.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLServerInfo {

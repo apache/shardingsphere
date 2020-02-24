@@ -32,8 +32,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Sharding data source group broadcast routing engine.
- *
- * @author zhaojun
  */
 public final class ShardingDataSourceGroupBroadcastRoutingEngine implements ShardingRouteEngine {
     

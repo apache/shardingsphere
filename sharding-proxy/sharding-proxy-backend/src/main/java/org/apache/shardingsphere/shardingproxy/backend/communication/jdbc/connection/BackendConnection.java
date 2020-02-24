@@ -43,10 +43,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Backend connection.
- *
- * @author zhaojun
- * @author zhangliang
- * @author liya
  */
 @Getter
 @Slf4j

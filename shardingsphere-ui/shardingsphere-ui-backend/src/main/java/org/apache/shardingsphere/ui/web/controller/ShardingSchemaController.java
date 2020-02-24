@@ -33,8 +33,6 @@ import java.util.Map;
 
 /**
  * RESTful API of sharding schema configuration.
- *
- * @author chenqingyang
  */
 @RestController
 @RequestMapping("/api/schema")

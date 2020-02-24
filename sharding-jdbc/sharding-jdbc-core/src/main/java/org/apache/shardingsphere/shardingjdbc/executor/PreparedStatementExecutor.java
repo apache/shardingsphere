@@ -41,11 +41,6 @@ import java.util.List;
 
 /**
  * Prepared statement executor.
- * 
- * @author zhangliang
- * @author caohao
- * @author maxiaoguang
- * @author panjuan
  */
 public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     

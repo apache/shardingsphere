@@ -21,8 +21,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 
 /**
  * Report callback.
- *
- * @author avalon566
  */
 public interface ReportCallback {
 

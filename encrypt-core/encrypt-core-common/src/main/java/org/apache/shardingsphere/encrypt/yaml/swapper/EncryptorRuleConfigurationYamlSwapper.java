@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Encryptor configuration YAML swapper.
- *
- * @author panjuan
  */
 public final class EncryptorRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptorRuleConfiguration, EncryptorRuleConfiguration> {
     

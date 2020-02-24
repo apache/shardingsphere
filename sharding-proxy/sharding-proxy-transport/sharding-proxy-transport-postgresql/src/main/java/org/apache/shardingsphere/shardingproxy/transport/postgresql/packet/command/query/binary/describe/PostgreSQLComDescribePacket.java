@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Command describe packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @Getter
 public final class PostgreSQLComDescribePacket extends PostgreSQLCommandPacket {

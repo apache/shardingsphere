@@ -25,8 +25,6 @@ import java.util.List;
 
 /**
  * History data sync task group progress.
- *
- * @author yangyi
  */
 public final class HistoryDataSyncTaskProgressGroup implements SyncProgressGroup {
     

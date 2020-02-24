@@ -32,9 +32,10 @@ import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLSta
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.merge.engine.merger.impl.TransparentResultMerger;
@@ -60,17 +61,16 @@ public final class ShardingResultMergerEngineTest {
     @Test
     public void assertNewInstanceWithDALStatement() {
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new DALStatement());
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new ShowStatement());
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
     @Test
     public void assertNewInstanceWithOtherStatement() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, "tbl"));
-        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0);
-        insertColumnsSegment.getColumns().add(new ColumnSegment(0, 0, "col"));
-        insertStatement.setColumns(insertColumnsSegment);
+        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl")));
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
+        insertStatement.setInsertColumns(insertColumnsSegment);
         SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentResultMerger.class));

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
  * Encryptor.
- *
- * @author panjuan
  */
 public interface Encryptor extends TypeBasedSPI {
     

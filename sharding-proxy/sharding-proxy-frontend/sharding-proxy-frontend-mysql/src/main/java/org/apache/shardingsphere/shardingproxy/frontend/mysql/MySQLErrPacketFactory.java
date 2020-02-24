@@ -32,8 +32,6 @@ import java.sql.SQLException;
 
 /**
  * ERR packet factory for MySQL.
- * 
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLErrPacketFactory {

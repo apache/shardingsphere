@@ -23,9 +23,6 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
 
 /**
  * Table rule configuration for YAML.
- *
- * @author caohao
- * @author panjuan
  */
 @Getter
 @Setter

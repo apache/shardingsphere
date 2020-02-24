@@ -19,8 +19,6 @@ package org.apache.shardingsphere.route.time.spi;
 
 /**
  * MySQL entry.
- *
- * @author chenchuangliu
  */
 public final class MySQLDatabaseSQLEntry implements DatabaseSQLEntry {
     

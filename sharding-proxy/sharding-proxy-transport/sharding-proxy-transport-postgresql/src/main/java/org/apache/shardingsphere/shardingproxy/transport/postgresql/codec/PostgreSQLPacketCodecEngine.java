@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * Database packet codec for PostgreSQL.
- *
- * @author zhangyonglun
  */
 public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine<PostgreSQLPacket> {
     

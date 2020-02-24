@@ -55,8 +55,6 @@ import java.util.regex.Pattern;
 
 /**
  * Http server handler.
- *
- * @author ssxlulu
  */
 @Slf4j
 public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {

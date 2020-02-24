@@ -22,8 +22,6 @@ import lombok.AllArgsConstructor;
 
 /**
  * String utility class.
- *
- * @author zhangliang
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringUtil {

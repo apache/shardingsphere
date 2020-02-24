@@ -21,9 +21,6 @@ import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
  * Key generator.
- *
- * @author zhangliang
- * @author panjuan
  */
 public interface ShardingKeyGenerator extends TypeBasedSPI {
     

@@ -24,8 +24,6 @@ import java.util.Map;
 
 /**
  * Adapted database meta data.
- *
- * @author zhangliang
  */
 public abstract class AdaptedDatabaseMetaData extends ResultSetReturnedDatabaseMetaData {
     

@@ -25,8 +25,6 @@ import java.lang.reflect.Modifier;
 
 /**
  * Field Utility.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class FieldUtil {

@@ -34,9 +34,6 @@ import java.util.Map;
 
 /**
  * Connection that support master-slave.
- * 
- * @author zhangliang
- * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter

@@ -28,8 +28,6 @@ import java.util.Properties;
 
 /**
  * XA data source definition for Oracle.
- *
- * @author zhaojun
  */
 public final class OracleXADataSourceDefinition implements XADataSourceDefinition {
     

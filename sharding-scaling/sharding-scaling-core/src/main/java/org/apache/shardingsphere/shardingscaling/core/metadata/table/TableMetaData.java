@@ -29,8 +29,6 @@ import lombok.Getter;
 
 /**
  * Table meta data.
- *
- * @author yangyi
  */
 public final class TableMetaData {
 

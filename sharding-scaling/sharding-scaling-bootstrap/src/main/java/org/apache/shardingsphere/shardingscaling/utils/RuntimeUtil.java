@@ -21,7 +21,6 @@ import org.apache.shardingsphere.shardingscaling.Bootstrap;
 
 /**
  * Runtime util.
- * @author avalon566
  */
 public final class RuntimeUtil {
 

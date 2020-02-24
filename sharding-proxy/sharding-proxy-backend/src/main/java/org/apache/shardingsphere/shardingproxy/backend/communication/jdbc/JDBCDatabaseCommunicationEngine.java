@@ -62,11 +62,6 @@ import java.util.Map;
 
 /**
  * Database access engine for JDBC.
- *
- * @author zhaojun
- * @author zhangliang
- * @author panjuan
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicationEngine {

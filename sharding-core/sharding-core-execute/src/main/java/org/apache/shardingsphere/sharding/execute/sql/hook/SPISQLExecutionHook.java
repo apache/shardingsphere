@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * SQL Execution hook for SPI.
- *
- * @author zhangliang
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.ui.servcie;
 
 /**
  * Sharding properties service.
- *
- * @author chenqingyang
  */
 public interface ShardingPropertiesService {
     

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 
 /**
  * Standard strategy configuration.
- * 
- * @author zhangliang
  */
 @Getter
 public final class StandardShardingStrategyConfiguration implements ShardingStrategyConfiguration {

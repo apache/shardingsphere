@@ -21,8 +21,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.
 
 /**
  * Finished record.
- *
- * @author avalon566
  */
 public class FinishedRecord extends Record {
 

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.Complex
 
 /**
  * Expression judgment tool for route.
- *
- * @author chenchuangliu
  */
 public final class ExpressionConditionUtils {
 

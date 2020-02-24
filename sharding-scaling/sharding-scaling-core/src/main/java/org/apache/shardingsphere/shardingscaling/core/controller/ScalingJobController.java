@@ -29,8 +29,6 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * Scaling job controller.
- *
- * @author avalon566
  */
 public class ScalingJobController {
     

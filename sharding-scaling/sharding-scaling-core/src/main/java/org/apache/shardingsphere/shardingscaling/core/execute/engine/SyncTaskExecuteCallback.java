@@ -26,8 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sync task execute callback.
- *
- * @author yangyi
  */
 @RequiredArgsConstructor
 @Slf4j

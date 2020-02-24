@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
 
 /**
  * Command packet type loader for MySQL.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLCommandPacketTypeLoader {

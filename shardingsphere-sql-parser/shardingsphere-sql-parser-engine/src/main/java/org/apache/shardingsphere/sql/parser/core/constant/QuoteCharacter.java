@@ -23,8 +23,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Quote character.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

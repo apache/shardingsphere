@@ -19,8 +19,6 @@ package org.apache.shardingsphere.orchestration.internal.registry.state.node;
 
 /**
  * State node status.
- *
- * @author caohao
  */
 public enum StateNodeStatus {
     

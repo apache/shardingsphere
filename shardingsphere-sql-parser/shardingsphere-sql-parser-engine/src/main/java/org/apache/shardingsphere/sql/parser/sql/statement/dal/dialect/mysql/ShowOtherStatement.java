@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
  * Other show statement.
- *
- * @author zhangliang
  */
 public final class ShowOtherStatement extends DALStatement {
 }

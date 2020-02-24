@@ -29,9 +29,6 @@ import io.netty.buffer.ByteBuf;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  EOF_Packet
  *     https://dev.mysql.com/doc/internals/en/packet-EOF_Packet.html
  * </p>
- *
- * @author avalon566
- * @author yangyi
  */
 @Getter
 public final class EofPacket extends AbstractPacket {

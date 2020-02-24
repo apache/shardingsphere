@@ -21,9 +21,6 @@ import io.netty.buffer.ByteBuf;
 
 /**
  * Packet.
- *
- * @author avalon566
- * @author yangyi
  */
 public interface Packet {
     

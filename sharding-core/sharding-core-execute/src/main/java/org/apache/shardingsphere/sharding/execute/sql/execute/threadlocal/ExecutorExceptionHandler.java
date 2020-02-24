@@ -26,8 +26,6 @@ import java.sql.SQLException;
 
 /**
  * Executor runtime exception handler.
- * 
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j

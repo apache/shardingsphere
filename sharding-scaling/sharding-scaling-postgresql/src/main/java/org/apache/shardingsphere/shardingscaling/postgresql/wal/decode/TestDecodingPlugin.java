@@ -36,8 +36,6 @@ import java.util.List;
 
 /**
  * Test decoding plugin.
- *
- * @author avalon566
  */
 public final class TestDecodingPlugin implements DecodingPlugin {
     

@@ -44,8 +44,6 @@ import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
 
 /**
  * Command executor factory for MySQL.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j

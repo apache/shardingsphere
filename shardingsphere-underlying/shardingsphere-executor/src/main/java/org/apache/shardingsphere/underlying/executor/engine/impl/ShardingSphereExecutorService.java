@@ -28,9 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ShardingSphere executor service.
- *
- * @author wuxu
- * @author zhaojun
  */
 @Getter
 public final class ShardingSphereExecutorService {

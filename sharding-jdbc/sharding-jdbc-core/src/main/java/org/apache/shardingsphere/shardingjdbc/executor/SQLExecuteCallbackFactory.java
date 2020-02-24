@@ -27,8 +27,6 @@ import java.sql.Statement;
 
 /**
  * SQL execute callback factory.
- *
- * @author yangyi
  */
 public final class SQLExecuteCallbackFactory {
     

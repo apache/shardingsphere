@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
  * Table segment available.
- *
- * @author zhangliang
  */
 public interface TableSegmentAvailable {
     

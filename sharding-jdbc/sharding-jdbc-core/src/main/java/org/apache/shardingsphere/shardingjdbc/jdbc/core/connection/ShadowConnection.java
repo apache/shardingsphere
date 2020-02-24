@@ -33,8 +33,6 @@ import java.sql.Statement;
 
 /**
  * Shadow connection.
- *
- * @author zhyee
  */
 @RequiredArgsConstructor
 @Getter

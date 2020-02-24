@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecu
 
 /**
  * Reader interface.
- *
- * @author avalon566
  */
 public interface Reader extends SyncExecutor {
 

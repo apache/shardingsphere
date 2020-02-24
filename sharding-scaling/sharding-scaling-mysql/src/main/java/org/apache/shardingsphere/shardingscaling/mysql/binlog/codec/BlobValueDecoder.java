@@ -23,8 +23,6 @@ import java.io.Serializable;
 
 /**
  * Blob value decoder.
- *
- * @author avalon566
  */
 public final class BlobValueDecoder {
     

@@ -37,8 +37,6 @@ import java.util.List;
 
 /**
  * Pagination context engine for row number.
- *
- * @author zhangliang
  */
 public final class RowNumberPaginationContextEngine {
     
@@ -90,7 +88,7 @@ public final class RowNumberPaginationContextEngine {
     }
     
     private boolean isRowNumberColumn(final PredicateSegment predicate, final String rowNumberAlias) {
-        return ROW_NUMBER_IDENTIFIERS.contains(predicate.getColumn().getName()) || predicate.getColumn().getName().equalsIgnoreCase(rowNumberAlias);
+        return ROW_NUMBER_IDENTIFIERS.contains(predicate.getColumn().getIdentifier().getValue()) || predicate.getColumn().getIdentifier().getValue().equalsIgnoreCase(rowNumberAlias);
     }
     
     private boolean isCompareCondition(final PredicateSegment predicate) {

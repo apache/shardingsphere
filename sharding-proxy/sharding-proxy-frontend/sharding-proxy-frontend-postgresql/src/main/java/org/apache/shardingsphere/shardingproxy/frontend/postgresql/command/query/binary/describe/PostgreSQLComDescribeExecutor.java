@@ -25,9 +25,6 @@ import java.util.Collections;
 
 /**
  * Command describe for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     

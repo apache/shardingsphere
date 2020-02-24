@@ -38,8 +38,6 @@ import java.util.Collection;
 
 /**
  * Command executor task.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Slf4j

@@ -25,12 +25,12 @@ import java.util.Collection;
 
 /**
  * Predicate right value for IN operator.
- *
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
 public final class PredicateInRightValue implements PredicateRightValue {
+    
+    private final PredicateBracketValue predicateBracketValue;
     
     private final Collection<ExpressionSegment> sqlExpressions;
 }

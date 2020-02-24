@@ -24,8 +24,6 @@ import lombok.RequiredArgsConstructor;
  * MySQL Column Field Detail Flag.
  * 
  * @see <a href="https://mariadb.com/kb/en/library/resultset/#field-detail-flag">Field detail flag</a>
- * 
- * @author dongzonglei
  */
 @RequiredArgsConstructor
 @Getter

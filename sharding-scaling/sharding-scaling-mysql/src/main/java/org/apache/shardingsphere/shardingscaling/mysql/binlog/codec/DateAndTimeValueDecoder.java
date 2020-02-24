@@ -29,8 +29,6 @@ import java.util.TimeZone;
 /**
  * Date and time value decoder.
  * https://dev.mysql.com/doc/refman/5.7/en/date-and-time-types.html
- *
- * @author avalon566
  */
 public final class DateAndTimeValueDecoder {
 

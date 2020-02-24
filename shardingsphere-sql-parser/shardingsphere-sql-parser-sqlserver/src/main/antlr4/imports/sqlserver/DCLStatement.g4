@@ -20,23 +20,23 @@ grammar DCLStatement;
 import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (classPrivilegesClause_ | classTypePrivilegesClause_ | roleClause_)
+    : GRANT (classPrivilegesClause | classTypePrivilegesClause | roleClause_)
     ;
 
 revoke
-    : REVOKE (optionForClause_? classPrivilegesClause_ | classTypePrivilegesClause_ | roleClause_)
+    : REVOKE (optionForClause_? classPrivilegesClause | classTypePrivilegesClause | roleClause_)
     ;
 
 deny
-    : DENY (classPrivilegesClause_ | classTypePrivilegesClause_)
+    : DENY (classPrivilegesClause | classTypePrivilegesClause)
     ;
 
-classPrivilegesClause_
-    : classPrivileges_ (ON onClassClause_)?
+classPrivilegesClause
+    : classPrivileges_ (ON onClassClause)?
     ;
 
-classTypePrivilegesClause_
-    : classTypePrivileges_ (ON onClassTypeClause_)?
+classTypePrivilegesClause
+    : classTypePrivileges_ (ON onClassTypeClause)?
     ;
 
 optionForClause_
@@ -47,7 +47,7 @@ classPrivileges_
     : privilegeType_ columnNames? (COMMA_ privilegeType_ columnNames?)*
     ;
 
-onClassClause_
+onClassClause
     : class_? tableName
     ;
 
@@ -55,7 +55,7 @@ classTypePrivileges_
     : privilegeType_ (COMMA_ privilegeType_)*
     ;
 
-onClassTypeClause_
+onClassTypeClause
     : classType_? tableName
     ;
 

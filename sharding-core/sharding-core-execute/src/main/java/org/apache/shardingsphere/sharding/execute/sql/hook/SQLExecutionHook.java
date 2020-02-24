@@ -24,8 +24,6 @@ import java.util.Map;
 
 /**
  * SQL Execution hook.
- *
- * @author zhangliang
  */
 public interface SQLExecutionHook {
     

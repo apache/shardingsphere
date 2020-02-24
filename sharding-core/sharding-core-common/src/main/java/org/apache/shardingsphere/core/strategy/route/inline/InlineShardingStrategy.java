@@ -38,8 +38,6 @@ import java.util.TreeSet;
 
 /**
  * Standard sharding strategy.
- * 
- * @author zhangliang
  */
 public final class InlineShardingStrategy implements ShardingStrategy {
     

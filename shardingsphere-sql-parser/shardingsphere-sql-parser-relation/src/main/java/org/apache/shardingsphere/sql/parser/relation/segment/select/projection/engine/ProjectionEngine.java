@@ -36,8 +36,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 /**
  * Projection engine.
- *
- * @author zhangliang
  */
 public final class ProjectionEngine {
     
@@ -74,12 +72,12 @@ public final class ProjectionEngine {
     
     private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
         Optional<TableSegment> owner = projectionSegment.getOwner();
-        return new ShorthandProjection(owner.isPresent() ? owner.get().getTableName() : null);
+        return new ShorthandProjection(owner.isPresent() ? owner.get().getIdentifier().getValue() : null);
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
-        String owner = projectionSegment.getOwner().isPresent() ? projectionSegment.getOwner().get().getTableName() : null;
-        return new ColumnProjection(owner, projectionSegment.getName(), projectionSegment.getAlias().orNull());
+        String owner = projectionSegment.getOwner().isPresent() ? projectionSegment.getOwner().get().getIdentifier().getValue() : null;
+        return new ColumnProjection(owner, projectionSegment.getIdentifier().getValue(), projectionSegment.getAlias().orNull());
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {

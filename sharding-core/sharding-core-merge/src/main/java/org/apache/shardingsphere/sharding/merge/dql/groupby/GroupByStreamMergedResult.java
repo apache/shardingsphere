@@ -38,8 +38,6 @@ import java.util.Map.Entry;
 
 /**
  * Stream merged result for group by.
- *
- * @author zhangliang
  */
 public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
@@ -129,11 +127,15 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
+        Object result = currentRow.get(columnIndex - 1);
+        setWasNull(null == result);
+        return result;
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
+        Object result = currentRow.get(columnIndex - 1);
+        setWasNull(null == result);
+        return result;
     }
 }

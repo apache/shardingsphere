@@ -26,9 +26,6 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 
 /**
  * Common projection.
- *
- * @author zhangliang
- * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter

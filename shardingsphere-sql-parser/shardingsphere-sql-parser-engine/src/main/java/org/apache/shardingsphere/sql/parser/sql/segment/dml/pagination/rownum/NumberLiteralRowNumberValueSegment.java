@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLit
 
 /**
  * Row number value segment for number literal.
- * 
- * @author zhangliang
  */
 @Getter
 public final class NumberLiteralRowNumberValueSegment extends RowNumberValueSegment implements NumberLiteralPaginationValueSegment {

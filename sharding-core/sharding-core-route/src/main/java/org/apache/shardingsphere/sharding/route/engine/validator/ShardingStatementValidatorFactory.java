@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingUp
 
 /**
  * Sharding statement validator factory.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingStatementValidatorFactory {

@@ -47,9 +47,6 @@ import java.util.List;
 
 /**
  * Command query executor for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     

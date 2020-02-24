@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.assignment.AssignmentValueAssert;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValue;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.segment.impl.insert.ExpectedInsertValuesClause;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.insert.ExpectedInsertValue;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.insert.ExpectedInsertValuesClause;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 
@@ -33,8 +33,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Insert values clause assert.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InsertValuesClauseAssert {

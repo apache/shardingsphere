@@ -17,16 +17,26 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
+import org.apache.shardingsphere.orchestration.internal.configcenter.ConfigCenterServiceLoader;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.internal.registry.state.service.StateService;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.properties.OrchestrationProperties;
+import org.apache.shardingsphere.underlying.common.constant.properties.OrchestrationPropertiesEnum;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,15 +45,13 @@ import java.util.Properties;
 
 /**
  * Sharding orchestration facade.
- *
- * @author zhangliang
- * @author caohao
- * @author panjuan
  */
 @Slf4j
 public final class ShardingOrchestrationFacade implements AutoCloseable {
     
     private final RegistryCenter regCenter;
+    
+    private final ConfigCenter configCenter;
     
     private final boolean isOverwrite;
     
@@ -55,12 +63,20 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     private final ShardingOrchestrationListenerManager listenerManager;
     
     public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
-        regCenter = new RegistryCenterServiceLoader().load(orchestrationConfig.getRegCenterConfig());
-        isOverwrite = orchestrationConfig.isOverwrite();
-        configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
-        stateService = new StateService(orchestrationConfig.getName(), regCenter);
-        listenerManager = shardingSchemaNames.isEmpty() ? new ShardingOrchestrationListenerManager(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames())
-                : new ShardingOrchestrationListenerManager(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
+        Optional<String> registryCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), OrchestrationType.REGISTRY_CENTER.getValue());
+        Preconditions.checkArgument(registryCenterName.isPresent(), "Can not find instance configuration with registry center orchestration type.");
+        InstanceConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
+        regCenter = new RegistryCenterServiceLoader().load(registryCenterConfiguration);
+        stateService = new StateService(registryCenterName.get(), regCenter);
+        Optional<String> configCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), OrchestrationType.CONFIG_CENTER.getValue());
+        Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
+        InstanceConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
+        configCenter = new ConfigCenterServiceLoader().load(configCenterConfiguration);
+        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertiesEnum.OVERWRITE);
+        configService = new ConfigurationService(configCenterName.get(), configCenter);
+        listenerManager = shardingSchemaNames.isEmpty()
+                ? new ShardingOrchestrationListenerManager(registryCenterName.get(), regCenter, configCenterName.get(), configCenter, configService.getAllShardingSchemaNames())
+                : new ShardingOrchestrationListenerManager(registryCenterName.get(), regCenter, configCenterName.get(), configCenter, shardingSchemaNames);
     }
     
     /**
@@ -99,5 +115,29 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
             // CHECKSTYLE:ON
             log.warn("RegCenter exception for: {}", ex.getMessage());
         }
+    }
+    
+    private Optional<String> getInstanceNameByOrchestrationType(final Map<String, InstanceConfiguration> map, final String type) {
+        if (null == map || 0 == map.size() || null == type) {
+            return Optional.absent();
+        }
+        for (Entry<String, InstanceConfiguration> entry : map.entrySet()) {
+            if (contains(entry.getValue().getOrchestrationType(), type)) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private boolean contains(final String collection, final String element) {
+        if (Strings.isNullOrEmpty(collection)) {
+            return false;
+        }
+        for (String each : Splitter.on(",").split(collection)) {
+            if (element.equals(each.trim())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

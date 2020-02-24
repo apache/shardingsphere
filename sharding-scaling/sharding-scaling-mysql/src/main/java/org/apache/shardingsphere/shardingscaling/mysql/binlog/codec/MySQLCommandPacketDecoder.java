@@ -34,9 +34,6 @@ import java.util.List;
 
 /**
  * MySQL Command Packet decoder.
- *
- * @author avalon566
- * @author yangyi
  */
 @Slf4j
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {

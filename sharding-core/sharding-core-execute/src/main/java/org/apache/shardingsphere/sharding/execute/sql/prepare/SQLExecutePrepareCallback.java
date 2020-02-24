@@ -27,9 +27,6 @@ import java.util.List;
 
 /**
  * SQL execute prepare callback.
- *
- * @author zhangliang
- * @author panjuan
  */
 public interface SQLExecutePrepareCallback {
     

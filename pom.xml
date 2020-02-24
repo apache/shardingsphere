@@ -84,6 +84,8 @@
         
         <curator.version>2.10.0</curator.version>
         <opentracing.version>0.30.0</opentracing.version>
+        <apollo.client.version>1.5.0</apollo.client.version>
+        <nacos.client.verison>1.1.4</nacos.client.verison>
         
         <lombok.version>1.16.20</lombok.version>
         
@@ -135,7 +137,7 @@
         
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
         <maven.deploy.skip>false</maven.deploy.skip>
-        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+        <argLine>-Xmx1024m -XX:MaxMetaspaceSize=256m</argLine>
     </properties>
     
     <dependencyManagement>
@@ -809,6 +811,8 @@
                         <exclude>**/node_modules/**</exclude>
                         <exclude>**/test/coverage/**</exclude>
                         <exclude>**/package-lock.json</exclude>
+                        <!-- example files -->
+                        <exclude>/examples/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

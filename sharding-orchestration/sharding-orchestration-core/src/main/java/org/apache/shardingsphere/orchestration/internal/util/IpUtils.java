@@ -27,8 +27,6 @@ import java.util.Enumeration;
 
 /**
  * IP utilities.
- * 
- * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IpUtils {

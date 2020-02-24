@@ -29,9 +29,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * Handshake packet protocol for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::Handshake">Handshake</a>
- * 
- * @author zhangliang
- * @author linjiaqi
  */
 public final class MySQLHandshakePacket implements MySQLPacket {
     

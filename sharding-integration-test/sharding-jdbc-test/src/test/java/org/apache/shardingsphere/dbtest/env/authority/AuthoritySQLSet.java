@@ -36,8 +36,6 @@ import java.util.List;
 
 /**
  * Authority SQL set xml entry.
- *
- * @author panjuan
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Setter

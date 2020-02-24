@@ -26,9 +26,7 @@ import java.util.Properties;
 
 /**
  * Key generator configuration.
- *
- * @author panjuan
- */
+*/
 @Getter
 public final class KeyGeneratorConfiguration extends TypeBasedSPIConfiguration {
     

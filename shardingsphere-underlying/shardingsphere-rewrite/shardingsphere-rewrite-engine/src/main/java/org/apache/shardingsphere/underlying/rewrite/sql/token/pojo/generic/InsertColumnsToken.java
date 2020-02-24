@@ -25,9 +25,6 @@ import java.util.List;
 
 /**
  * Insert columns token.
- *
- * @author panjuan
- * @author zhangliang
  */
 public final class InsertColumnsToken extends SQLToken implements Attachable {
     

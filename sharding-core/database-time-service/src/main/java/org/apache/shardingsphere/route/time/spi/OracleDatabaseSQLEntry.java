@@ -19,8 +19,6 @@ package org.apache.shardingsphere.route.time.spi;
 
 /**
  * Oracle entry.
- *
- * @author chenchuangliu
  */
 public final class OracleDatabaseSQLEntry implements DatabaseSQLEntry {
     
