@@ -19,9 +19,9 @@ package org.apache.shardingsphere.encrypt.rewrite.condition;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
@@ -71,11 +70,12 @@ public final class EncryptConditionEngine {
         for (AndPredicate each : whereSegment.get().getAndPredicates()) {
             result.addAll(createEncryptConditions(each, sqlStatementContext.getTablesContext()));
         }
-        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
-            for (AndPredicate andPredicate : each.getAndPredicates()) {
-                result.addAll(createEncryptConditions(andPredicate, sqlStatementContext.getTablesContext()));
-            }
-        }
+        // FIXME process subquery
+//        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
+//            for (AndPredicate andPredicate : each.getAndPredicates()) {
+//                result.addAll(createEncryptConditions(andPredicate, sqlStatementContext.getTablesContext()));
+//            }
+//        }
         return result;
     }
     

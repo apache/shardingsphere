@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.SubqueryPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
@@ -63,14 +62,15 @@ public final class ShadowConditionEngine {
                 return condition;
             }
         }
-        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
-            for (AndPredicate andPredicate : each.getAndPredicates()) {
-                Optional<ShadowCondition> condition = createShadowCondition(andPredicate);
-                if (condition.isPresent()) {
-                    return condition;
-                }
-            }
-        }
+        // FIXME process subquery
+//        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
+//            for (AndPredicate andPredicate : each.getAndPredicates()) {
+//                Optional<ShadowCondition> condition = createShadowCondition(andPredicate);
+//                if (condition.isPresent()) {
+//                    return condition;
+//                }
+//            }
+//        }
         return Optional.absent();
     }
     
