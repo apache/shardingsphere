@@ -34,6 +34,7 @@
     
     <properties>
         <spring-boot.version>1.5.21.RELEASE</spring-boot.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     
     <dependencyManagement>
