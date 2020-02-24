@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
@@ -86,6 +87,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegmen
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -257,7 +259,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     public ASTNode visitSingleTableClause(final SingleTableClauseContext ctx) {
         TableSegment result = (TableSegment) visit(ctx.tableName());
         if (null != ctx.alias()) {
-            result.setAlias(ctx.alias().getText());
+            result.setAlias((AliasSegment) visit(ctx.alias()));
         }
         return result;
     }
@@ -418,6 +420,14 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         return createProjection(ctx, alias);
     }
     
+    @Override
+    public ASTNode visitAlias(final AliasContext ctx) {
+        if (null != ctx.identifier()) {
+            return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        }
+        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()));
+    }
+    
     private ASTNode createProjection(final ProjectionContext ctx, final String alias) {
         ASTNode projection = visit(ctx.expr());
         if (projection instanceof AggregationProjectionSegment) {
@@ -492,7 +502,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         if (null != ctx.tableName()) {
             TableSegment result = (TableSegment) visit(ctx.tableName());
             if (null != ctx.alias()) {
-                result.setAlias(ctx.alias().getText());
+                result.setAlias((AliasSegment) visit(ctx.alias()));
             }
             return result;
         }
