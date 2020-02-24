@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-proxy-frontend</artifactId>
-        <version>4.0.1</version>
+        <version>4.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-proxy-frontend-mysql</artifactId>
     <name>${project.artifactId}</name>
