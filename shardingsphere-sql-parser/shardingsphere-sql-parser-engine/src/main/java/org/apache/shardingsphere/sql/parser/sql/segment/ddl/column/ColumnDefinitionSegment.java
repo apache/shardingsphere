@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
  */
 @Getter
 @Setter
-public final class ColumnDefinitionSegment implements SQLSegment {
+public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     private final int startIndex;
     
