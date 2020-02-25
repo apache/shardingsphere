@@ -21,7 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.SetVariableStatementTestCase;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Set variable statement assert.
@@ -37,5 +42,11 @@ public final class SetVariableStatementAssert {
      * @param expected expected variable statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetStatement actual, final SetVariableStatementTestCase expected) {
+        if (null != expected.getVariable()) {
+            assertNotNull(assertContext.getText("Actual variable expression should exist."), actual.getVariable());
+            assertThat(assertContext.getText("variable expression assertion error: "), actual.getVariable().getVariable(), is(expected.getVariable()));
+        } else {
+            assertNull(assertContext.getText("Actual variable expression should not exist."), actual.getVariable());
+        }
     }
 }
