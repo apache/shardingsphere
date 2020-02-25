@@ -139,7 +139,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-center-zookeeper-curator</artifactId>
+            <artifactId>sharding-orchestration-center-zookeeper</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
