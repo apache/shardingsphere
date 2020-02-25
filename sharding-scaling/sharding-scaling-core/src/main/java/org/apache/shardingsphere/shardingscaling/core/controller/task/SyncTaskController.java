@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class SyncTaskController implements Runnable {
     
     private final SyncTask historyDataSyncTaskGroup;
-
+    
     private final SyncTask realtimeDataSyncTask;
     
     private final DataSourceManager dataSourceManager = new DataSourceManager();
@@ -45,7 +45,7 @@ public final class SyncTaskController implements Runnable {
     private final String syncTaskId;
     
     private SyncTaskControlStatus syncTaskControlStatus;
-
+    
     public SyncTaskController(final SyncConfiguration syncConfiguration) {
         SyncTaskFactory syncTaskFactory = new DefaultSyncTaskFactory();
         syncTaskId = generateSyncTaskId(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
@@ -66,16 +66,18 @@ public final class SyncTaskController implements Runnable {
     public void start() {
         new Thread(this).start();
     }
-
+    
     /**
      * Stop synchronize data.
      */
     public void stop() {
-        syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
+        if (!syncTaskControlStatus.isStoppedStatus()) {
+            syncTaskControlStatus = SyncTaskControlStatus.STOPPING;
+        }
         historyDataSyncTaskGroup.stop();
         realtimeDataSyncTask.stop();
     }
-
+    
     /**
      * Get synchronize progress.
      *
@@ -87,34 +89,41 @@ public final class SyncTaskController implements Runnable {
         result.setRealTimeSyncTaskProgress(realtimeDataSyncTask.getProgress());
         return result;
     }
-
+    
     @Override
     public void run() {
         realtimeDataSyncTask.prepare();
         historyDataSyncTaskGroup.prepare();
         syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA;
         historyDataSyncTaskGroup.start(new ReportCallback() {
-
+            
             @Override
             public void report(final Event event) {
-                log.info("history data sync finished, execute result: {}", event.getEventType().name());
-                if (EventType.FINISHED.equals(event.getEventType())) {
-                    executeRealTimeSyncTask();
-                } else {
+                log.info("history data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
+                if (EventType.EXCEPTION_EXIT.equals(event.getEventType())) {
                     stop();
+                    dataSourceManager.close();
                     syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA_FAILURE;
+                } else {
+                    executeRealTimeSyncTask();
                 }
             }
         });
     }
     
     private void executeRealTimeSyncTask() {
+        if (!SyncTaskControlStatus.MIGRATE_HISTORY_DATA.equals(syncTaskControlStatus)) {
+            dataSourceManager.close();
+            syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
+            return;
+        }
         realtimeDataSyncTask.start(new ReportCallback() {
-        
+            
             @Override
             public void report(final Event event) {
-                syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
+                log.info("realtime data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
                 dataSourceManager.close();
+                syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA_FAILURE;
             }
         });
         syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA;

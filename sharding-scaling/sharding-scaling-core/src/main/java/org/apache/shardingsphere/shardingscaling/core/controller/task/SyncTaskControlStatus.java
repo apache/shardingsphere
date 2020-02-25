@@ -17,11 +17,50 @@
 
 package org.apache.shardingsphere.shardingscaling.core.controller.task;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Sync task control status.
  */
+@RequiredArgsConstructor
+@Getter
 public enum SyncTaskControlStatus {
     
-    PREPARING, MIGRATE_HISTORY_DATA, SYNCHRONIZE_REALTIME_DATA, STOPPING, STOPPED,
-    MIGRATE_HISTORY_DATA_FAILURE
+    /**
+     * Task is in prepare status.
+     */
+    PREPARING(false),
+    
+    /**
+     * Task is in migrate history data status.
+     */
+    MIGRATE_HISTORY_DATA(false),
+    
+    /**
+     * Task is in synchronize realtime data status.
+     */
+    SYNCHRONIZE_REALTIME_DATA(false),
+    
+    /**
+     * Task is stopping.
+     */
+    STOPPING(false),
+    
+    /**
+     * Task has stopped.
+     */
+    STOPPED(true),
+    
+    /**
+     * Task has stopped by failing to migrate history data.
+     */
+    MIGRATE_HISTORY_DATA_FAILURE(true),
+    
+    /**
+     * Task has stopped by failing to synchronize realtime data.
+     */
+    SYNCHRONIZE_REALTIME_DATA_FAILURE(true);
+    
+    private final boolean stoppedStatus;
 }
