@@ -216,7 +216,7 @@
               <el-form-item label="syncTask">
                 {{ item.id }}
               </el-form-item>
-              <el-form-item label="syncStatic">
+              <el-form-item label="syncStatus">
                 {{ item.status }}
               </el-form-item>
               <el-form-item>
@@ -584,6 +584,8 @@ export default {
         } else {
           this.serverDialogVisible = true
         }
+      }, () => {
+        this.serverDialogVisible = true
       })
     },
     getPercentage(arr) {
