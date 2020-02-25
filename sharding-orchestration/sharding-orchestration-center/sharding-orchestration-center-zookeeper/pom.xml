@@ -23,7 +23,7 @@
         <artifactId>sharding-orchestration-center</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration-center-zookeeper-curator</artifactId>
+    <artifactId>sharding-orchestration-center-zookeeper</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

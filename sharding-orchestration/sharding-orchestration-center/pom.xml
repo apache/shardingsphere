@@ -31,7 +31,7 @@
     <modules>
         <module>sharding-orchestration-center-api</module>
         <module>sharding-orchestration-center-apollo</module>
-        <module>sharding-orchestration-center-zookeeper-curator</module>
+        <module>sharding-orchestration-center-zookeeper</module>
         <module>sharding-orchestration-center-nacos</module>
     </modules>
 </project>
