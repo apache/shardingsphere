@@ -21,6 +21,7 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
@@ -182,6 +183,10 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
                 });
             } catch (RejectedExecutionException ex) {
                 submitFailureTasks.offer(each);
+            } catch (SyncTaskExecuteException syncTaskEx) {
+                stop();
+                callback.report(new Event(syncTaskId, EventType.EXCEPTION_EXIT));
+                break;
             }
         }
     }
