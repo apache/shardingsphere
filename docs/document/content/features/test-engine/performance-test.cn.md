@@ -7,7 +7,8 @@ weight = 5
 
 ## 目标
 
-对Sharding-JDBC，Sharding-Proxy及MySQL进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+脱敏+分库分表，全路由）下，INSERT+UPDATE+DELETE通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将INSERT+SELECT+DELETE作为一组评估性能的关联操作。为了更好的观察效果，设计在一定数据量的基础上，使用jmeter 20并发线程持续压测半小时，进行增删改查性能测试，且每台机器部署一个MySQL实例。
+对Sharding-JDBC，Sharding-Proxy及MySQL进行性能对比。从业务角度考虑，在基本应用场景（单路由，主从+脱敏+分库分表，全路由）下，INSERT+UPDATE+DELETE通常用作一个完整的关联操作，用于性能评估，而SELECT关注分片优化可用作性能评估的另一个操作；而主从模式下，可将INSERT+SELECT+DELETE作为一组评估性能的关联操作。
+为了更好的观察效果，设计在一定数据量的基础上，使用jmeter 20并发线程持续压测半小时，进行增删改查性能测试，且每台机器部署一个MySQL实例，而对比MySQL场景为单机单实例部署。
 
 ## 测试场景
 
