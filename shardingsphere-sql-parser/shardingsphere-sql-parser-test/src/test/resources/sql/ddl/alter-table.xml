@@ -62,6 +62,19 @@
             <column name="column6" />
         </add-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_number_columns">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="decimal">
+            <column name="column4" />
+        </add-column>
+        <add-column name="column5" type="Integer">
+            <column name="column5" />
+        </add-column>
+        <add-column type="double">
+            <column name="column6" />
+        </add-column>
+    </alter-table>
     
     <alter-table sql-case-id="alter_table_add_column_with_first">
         <table name="t_order" start-index="12" stop-index="18" />
