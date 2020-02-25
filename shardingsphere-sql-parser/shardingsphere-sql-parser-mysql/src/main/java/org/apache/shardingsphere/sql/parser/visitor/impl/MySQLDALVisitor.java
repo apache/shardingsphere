@@ -150,14 +150,14 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
         if (null != ctx.variable()) {
-            List<VariableContext>  variableContextList = ctx.variable();
+            List<VariableContext> variableContextList = ctx.variable();
             List<VariableSegment> variableSegmentList = new ArrayList<VariableSegment>();
             for (VariableContext variableContext : variableContextList) {
                 variableSegmentList.add((VariableSegment) visit(variableContext));
             }
             result.setVariable(variableSegmentList.get(0));
             
-            List<VariableValueContext>  variableValueContextList = ctx.variableValue();
+            List<VariableValueContext> variableValueContextList = ctx.variableValue();
             List<VariableValueSegment> variableValueSegmentList = new ArrayList<VariableValueSegment>();
             for (VariableValueContext variableValueContext : variableValueContextList) {
                 variableValueSegmentList.add((VariableValueSegment) visit(variableValueContext));
