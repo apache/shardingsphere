@@ -57,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.RenameC
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnAfterPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnFirstPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -226,18 +227,22 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         boolean isPrimaryKey = isPrimaryKey(ctx);
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
-        Collection<TableSegment> referencedTables = new LinkedList<>();
+        result.getReferencedTables().addAll(getReferencedTables(ctx));
+        return result;
+    }
+    
+    private Collection<TableSegment> getReferencedTables(final ColumnDefinitionContext ctx) {
+        Collection<TableSegment> result = new LinkedList<>();
         for (StorageOptionContext each : ctx.storageOption()) {
             if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
-                referencedTables.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
+                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
             }
         }
         for (GeneratedOptionContext each : ctx.generatedOption()) {
             if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
-                referencedTables.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
+                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
             }
         }
-        result.getReferencedTables().addAll(referencedTables);
         return result;
     }
     
@@ -253,6 +258,19 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
             }
         }
         return false;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitConstraintDefinition(final ConstraintDefinitionContext ctx) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.primaryKeyOption()) {
+            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().columnNames())).getValue());
+        }
+        if (null != ctx.foreignKeyOption()) {
+            result.setReferencedTable((TableSegment) visit(ctx.foreignKeyOption().referenceDefinition()));
+        }
+        return result;
     }
     
     @Override

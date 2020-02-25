@@ -304,10 +304,10 @@ indexOption_
     ;
 
 constraintDefinition
-    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption)
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption | uniqueOption_ | foreignKeyOption)
     ;
 
-primaryKeyOption_
+primaryKeyOption
     : primaryKey indexType_? columnNames indexOption_*
     ;
 

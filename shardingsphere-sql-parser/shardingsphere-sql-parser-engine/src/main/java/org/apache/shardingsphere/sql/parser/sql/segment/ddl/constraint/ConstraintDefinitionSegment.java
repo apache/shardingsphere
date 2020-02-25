@@ -17,23 +17,39 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 /**
  * Constraint definition segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConstraintDefinitionSegment implements SQLSegment {
+@Setter
+public final class ConstraintDefinitionSegment implements CreateDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<String> primaryKeyColumnNames = new LinkedHashSet<>();
+    private final Collection<ColumnSegment> primaryKeyColumns = new LinkedList<>();
+    
+    private TableSegment referencedTable;
+    
+    /**
+     * Get referenced table.
+     * 
+     * @return referenced table
+     */
+    public Optional<TableSegment> getReferencedTable() {
+        return Optional.of(referencedTable);
+    }
 }
