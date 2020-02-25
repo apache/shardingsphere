@@ -107,18 +107,11 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
-            result.setInsertColumns(insertColumnsSegment);
-            result.getAllSQLSegments().add(insertColumnsSegment);
+            result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
         } else {
-            InsertColumnsSegment insertColumnsSegment =
-                    new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList());
-            result.setInsertColumns(insertColumnsSegment);
-            result.getAllSQLSegments().add(insertColumnsSegment);
+            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList()));
         }
-        Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
-        result.getValues().addAll(insertValuesSegments);
-        result.getAllSQLSegments().addAll(insertValuesSegments);
+        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
     }
     
