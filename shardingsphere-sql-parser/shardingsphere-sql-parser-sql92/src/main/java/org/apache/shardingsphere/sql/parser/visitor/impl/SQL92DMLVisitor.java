@@ -95,9 +95,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.setTable(table);
-        result.getAllSQLSegments().add(table);
+        result.setTable((TableSegment) visit(ctx.tableName()));
         result.setParametersCount(getCurrentParameterIndex());
         return result;
     }
@@ -136,16 +134,10 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
-        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableReferences());
-        SetAssignmentSegment setSegment = (SetAssignmentSegment) visit(ctx.setAssignmentsClause());
-        result.getTables().addAll(tables.getValue());
-        result.setSetAssignment(setSegment);
-        result.getAllSQLSegments().addAll(tables.getValue());
-        result.getAllSQLSegments().add(setSegment);
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableReferences())).getValue());
+        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            WhereSegment whereSegment = (WhereSegment) visit(ctx.whereClause());
-            result.setWhere(whereSegment);
-            result.getAllSQLSegments().add(whereSegment);
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParametersCount(getCurrentParameterIndex());
         return result;
@@ -189,13 +181,9 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
-        TableSegment table = (TableSegment) visit(ctx.singleTableClause());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.singleTableClause()));
         if (null != ctx.whereClause()) {
-            WhereSegment where = (WhereSegment) visit(ctx.whereClause());
-            result.setWhere(where);
-            result.getAllSQLSegments().add(where);
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParametersCount(getCurrentParameterIndex());
         return result;
@@ -228,31 +216,21 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();
-        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
-        result.setProjections(projections);
-        result.getAllSQLSegments().add(projections);
+        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (!ctx.selectSpecification().isEmpty()) {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
         if (null != ctx.fromClause()) {
-            CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.fromClause());
-            result.getTables().addAll(tables.getValue());
-            result.getAllSQLSegments().addAll(tables.getValue());
+            result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.fromClause())).getValue());
         }
         if (null != ctx.whereClause()) {
-            WhereSegment where = (WhereSegment) visit(ctx.whereClause());
-            result.setWhere(where);
-            result.getAllSQLSegments().add(where);
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupByClause()) {
-            GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
-            result.setGroupBy(groupBy);
-            result.getAllSQLSegments().add(groupBy);
+            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.orderByClause()) {
-            OrderBySegment orderBy = (OrderBySegment) visit(ctx.orderByClause());
-            result.setOrderBy(orderBy);
-            result.getAllSQLSegments().add(orderBy);
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         return result;
     }

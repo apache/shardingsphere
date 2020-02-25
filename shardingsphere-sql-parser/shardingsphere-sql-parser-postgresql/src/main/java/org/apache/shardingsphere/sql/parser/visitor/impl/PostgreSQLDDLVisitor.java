@@ -74,9 +74,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
             result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
@@ -112,9 +110,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableNameClause());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableNameClause()));
         if (null != ctx.alterDefinitionClause()) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
@@ -243,9 +239,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNames());
-        result.getTables().addAll(tables.getValue());
-        result.getAllSQLSegments().addAll(tables.getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
@@ -253,21 +247,15 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNamesClause());
-        result.getTables().addAll(tables.getValue());
-        result.getAllSQLSegments().addAll(tables.getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNamesClause())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        IndexSegment index = (IndexSegment) visit(ctx.indexName()); 
-        result.setTable(table);
-        result.setIndex(index);
-        result.getAllSQLSegments().add(table);
-        result.getAllSQLSegments().add(index);
+        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
@@ -275,9 +263,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         DropIndexStatement result = new DropIndexStatement();
-        CollectionValue<IndexSegment> indexes = (CollectionValue<IndexSegment>) visit(ctx.indexNames());
-        result.getIndexes().addAll(indexes.getValue());
-        result.getAllSQLSegments().addAll(indexes.getValue());
+        result.getIndexes().addAll(((CollectionValue<IndexSegment>) visit(ctx.indexNames())).getValue());
         return result;
     }
     

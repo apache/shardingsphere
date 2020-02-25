@@ -70,9 +70,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
             result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
@@ -159,7 +157,6 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
         AlterTableStatement result = new AlterTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
         if (null != ctx.alterDefinitionClause()) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
@@ -263,9 +260,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     
@@ -273,9 +268,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     
@@ -283,9 +276,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
-            TableSegment table = (TableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName());
-            result.setTable(table);
-            result.getAllSQLSegments().add(table);
+            result.setTable((TableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName()));
         }
         return result;
     }

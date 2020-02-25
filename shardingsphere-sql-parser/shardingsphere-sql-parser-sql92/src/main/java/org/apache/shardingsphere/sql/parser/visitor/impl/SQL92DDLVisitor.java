@@ -59,9 +59,7 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
             result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
@@ -133,9 +131,7 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
@@ -210,9 +206,7 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        Collection<TableSegment> tables = ((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue();
-        result.getTables().addAll(tables);
-        result.getAllSQLSegments().addAll(tables);
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
 }

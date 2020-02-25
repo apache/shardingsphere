@@ -99,9 +99,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         // TODO deal with insert select
         if (null != ctx.insertSingleTable()) {
             InsertStatement result = (InsertStatement) visit(ctx.insertSingleTable().insertValuesClause());
-            TableSegment table = (TableSegment) visit(ctx.insertSingleTable().insertIntoClause().tableName());
-            result.setTable(table);
-            result.getAllSQLSegments().add(table);
+            result.setTable((TableSegment) visit(ctx.insertSingleTable().insertIntoClause().tableName()));
             result.setParametersCount(getCurrentParameterIndex());
             return result;
         }
@@ -115,18 +113,11 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
-            result.setInsertColumns(insertColumnsSegment);
-            result.getAllSQLSegments().add(insertColumnsSegment);
+            result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
         } else {
-            InsertColumnsSegment insertColumnsSegment =
-                    new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList());
-            result.setInsertColumns(insertColumnsSegment);
-            result.getAllSQLSegments().add(insertColumnsSegment);
+            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList()));
         }
-        Collection<InsertValuesSegment> insertValuesSegments = createInsertValuesSegments(ctx.assignmentValues());
-        result.getValues().addAll(insertValuesSegments);
-        result.getAllSQLSegments().addAll(insertValuesSegments);
+        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
     }
     
@@ -142,16 +133,10 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
-        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableReferences());
-        SetAssignmentSegment setSegment = (SetAssignmentSegment) visit(ctx.setAssignmentsClause());
-        result.getTables().addAll(tables.getValue());
-        result.setSetAssignment(setSegment);
-        result.getAllSQLSegments().addAll(tables.getValue());
-        result.getAllSQLSegments().add(setSegment);
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableReferences())).getValue());
+        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            WhereSegment whereSegment = (WhereSegment) visit(ctx.whereClause());
-            result.setWhere(whereSegment);
-            result.getAllSQLSegments().add(whereSegment);
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParametersCount(getCurrentParameterIndex());
         return result;
@@ -196,18 +181,12 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
         if (null != ctx.multipleTablesClause()) {
-            CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.multipleTablesClause());
-            result.getTables().addAll(tables.getValue());
-            result.getAllSQLSegments().addAll(tables.getValue());
+            result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.multipleTablesClause())).getValue());
         } else {
-            TableSegment table = (TableSegment) visit(ctx.singleTableClause());
-            result.getTables().add(table);
-            result.getAllSQLSegments().add(table);
+            result.getTables().add((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.whereClause()) {
-            WhereSegment where = (WhereSegment) visit(ctx.whereClause());
-            result.setWhere(where);
-            result.getAllSQLSegments().add(where);
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         result.setParametersCount(getCurrentParameterIndex());
         return result;
@@ -258,31 +237,21 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();
-        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
-        result.setProjections(projections);
-        result.getAllSQLSegments().add(projections);
+        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
         if (null != ctx.fromClause()) {
-            CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.fromClause());
-            result.getTables().addAll(tables.getValue());
-            result.getAllSQLSegments().addAll(tables.getValue());
+            result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.fromClause())).getValue());
         }
         if (null != ctx.whereClause()) {
-            WhereSegment where = (WhereSegment) visit(ctx.whereClause());
-            result.setWhere(where);
-            result.getAllSQLSegments().add(where);
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupByClause()) {
-            GroupBySegment groupBy = (GroupBySegment) visit(ctx.groupByClause());
-            result.setGroupBy(groupBy);
-            result.getAllSQLSegments().add(groupBy);
+            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.orderByClause()) {
-            OrderBySegment orderBy = (OrderBySegment) visit(ctx.orderByClause());
-            result.setOrderBy(orderBy);
-            result.getAllSQLSegments().add(orderBy);
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         return result;
     }
