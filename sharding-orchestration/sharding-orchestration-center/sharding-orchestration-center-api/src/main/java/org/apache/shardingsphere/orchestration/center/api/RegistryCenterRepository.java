@@ -17,28 +17,16 @@
 
 package org.apache.shardingsphere.orchestration.center.api;
 
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-
-import java.util.List;
-
 /**
- * Config center.
+ * Registry center.
  */
-public interface ConfigCenter extends CenterRepository {
+public interface RegistryCenterRepository extends CenterRepository {
     
     /**
-     * Get node's sub-nodes list.
+     * Persist ephemeral data.
      *
      * @param key key of data
-     * @return sub-nodes name list
+     * @param value value of data
      */
-    List<String> getChildrenKeys(String key);
-    
-    /**
-     * Watch key or path of the config server.
-     *
-     * @param key key of data
-     * @param dataChangedEventListener data changed event listener
-     */
-    void watch(String key, DataChangedEventListener dataChangedEventListener);
+    void persistEphemeral(String key, String value);
 }

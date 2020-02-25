@@ -25,7 +25,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
@@ -39,7 +39,7 @@ import java.util.concurrent.Executor;
  * The nacos instance for ConfigCenter.
  */
 @Slf4j
-public class NacosConfigInstance implements ConfigCenter {
+public class NacosConfigInstanceRepository implements ConfigCenterRepository {
     
     private ConfigService configService;
     

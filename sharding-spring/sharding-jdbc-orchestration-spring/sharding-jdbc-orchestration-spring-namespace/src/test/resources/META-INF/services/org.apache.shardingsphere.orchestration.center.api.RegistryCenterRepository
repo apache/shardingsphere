@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.orchestration.center.instance.NacosConfigInstance
+org.apache.shardingsphere.shardingjdbc.orchestration.spring.registry.TestRegistryCenterRepositoryRepository

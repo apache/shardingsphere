@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
 public final class StateChangedListenerManagerTest {
     
     @Mock
-    private RegistryCenter regCenter;
+    private RegistryCenterRepository regCenter;
     
     @Mock
     private InstanceStateChangedListener instanceStateChangedListener;
