@@ -56,6 +56,12 @@ alterDatabase
     : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecification_*
     ;
 
+createDatabaseSpecification_
+    : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
+    | DEFAULT? COLLATE EQ_? collationName_
+    | DEFAULT ENCRYPTION EQ_ Y_N_
+    ;
+
 dropDatabse
     : DROP (DATABASE | SCHEMA) (IF EXISTS)? schemaName
     ;
@@ -232,17 +238,7 @@ tableNotExistClause_
     ;
 
 createDefinitionClause
-    : LP_ createDefinitions RP_
-    ;
-
-createDatabaseSpecification_
-    : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
-    | DEFAULT? COLLATE EQ_? collationName_
-    | DEFAULT ENCRYPTION EQ_ Y_N_
-    ;
-
-createDefinitions
-    : createDefinition (COMMA_ createDefinition)*
+    : LP_ createDefinition (COMMA_ createDefinition)* RP_
     ;
 
 createDefinition

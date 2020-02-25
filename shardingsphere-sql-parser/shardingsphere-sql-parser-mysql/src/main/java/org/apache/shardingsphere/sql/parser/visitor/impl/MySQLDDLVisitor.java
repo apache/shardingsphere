@@ -104,7 +104,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        for (CreateDefinitionContext each : ctx.createDefinitions().createDefinition()) {
+        for (CreateDefinitionContext each : ctx.createDefinition()) {
             ColumnDefinitionContext columnDefinition = each.columnDefinition();
             if (null != columnDefinition) {
                 result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
