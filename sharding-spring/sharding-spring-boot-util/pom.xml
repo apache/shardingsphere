@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-spring</artifactId>
-        <version>4.0.0-RC4-SNAPSHOT</version>
+        <version>4.0.1</version>
     </parent>
     <artifactId>sharding-spring-boot-util</artifactId>
     <name>${project.artifactId}</name>
