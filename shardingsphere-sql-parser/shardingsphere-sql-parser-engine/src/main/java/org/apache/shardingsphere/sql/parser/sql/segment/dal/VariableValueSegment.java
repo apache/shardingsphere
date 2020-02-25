@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal;
+package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
+import lombok.RequiredArgsConstructor;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
- * Set variable statement test case.
+ * VariableValue segment.
+ * @author duanchao
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class SetVariableStatementTestCase extends SQLParserTestCase {
+public final class VariableValueSegment implements ValueASTNode<String> {
     
-    @XmlAttribute(name = "variable")
-    private String variable;
+    private final String value;
     
-    @XmlAttribute(name = "variableValue")
-    private String variableValue;
+    private final QuoteCharacter quoteCharacter;
+    
+    public VariableValueSegment(final String text) {
+        value = SQLUtil.getExactlyValue(text);
+        quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
+    }
 }

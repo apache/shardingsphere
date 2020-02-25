@@ -84,7 +84,11 @@ showProfileType
     ;
 
 setVariable
-    : SET variable?
+    : SET (variable? (TO | EQ_) variableValue COMMA_?)*
+    ;
+
+variableValue
+    : (NUMBER_ | identifier | STRING_ | DEFAULT)
     ;
 
 showBinaryLogs

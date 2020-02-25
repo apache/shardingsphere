@@ -45,6 +45,10 @@ public final class SetVariableStatementAssert {
         if (null != expected.getVariable()) {
             assertNotNull(assertContext.getText("Actual variable expression should exist."), actual.getVariable());
             assertThat(assertContext.getText("variable expression assertion error: "), actual.getVariable().getVariable(), is(expected.getVariable()));
+            //TODO if finish PGSQL set parse.the IF code will do away with
+            if (null != actual.getVariableValue()) {
+                assertThat(assertContext.getText("variable expression assertion error: "), actual.getVariableValue().getValue(), is(expected.getVariableValue()));
+            }
         } else {
             assertNull(assertContext.getText("Actual variable expression should not exist."), actual.getVariable());
         }

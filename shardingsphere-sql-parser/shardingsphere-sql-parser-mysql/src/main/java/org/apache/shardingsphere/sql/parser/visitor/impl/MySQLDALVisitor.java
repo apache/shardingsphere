@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.shardingsphere.sql.parser.api.visitor.DALVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
@@ -33,11 +36,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTab
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableValueContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
@@ -145,14 +150,32 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
         if (null != ctx.variable()) {
-            result.setVariable((VariableSegment) visit(ctx.variable()));
+            List<VariableContext>  variableContextList = ctx.variable();
+            List<VariableSegment> variableSegmentList = new ArrayList<VariableSegment>();
+            for (VariableContext variableContext : variableContextList) {
+                variableSegmentList.add((VariableSegment) visit(variableContext));
+            }
+            result.setVariable(variableSegmentList.get(0));
+            
+            List<VariableValueContext>  variableValueContextList = ctx.variableValue();
+            List<VariableValueSegment> variableValueSegmentList = new ArrayList<VariableValueSegment>();
+            for (VariableValueContext variableValueContext : variableValueContextList) {
+                variableValueSegmentList.add((VariableValueSegment) visit(variableValueContext));
+            }
+            result.setVariableValue(variableValueSegmentList.get(0));
         }
         return result;
     }
     
     @Override
+    public ASTNode visitVariableValue(final VariableValueContext ctx) {
+        VariableValueSegment result = new VariableValueSegment(ctx.getText());
+        return result;
+    }
+    
+    @Override
     public ASTNode visitVariable(final VariableContext ctx) {
-        return new VariableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new VariableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.identifier().getText());
     }
     
     @Override
