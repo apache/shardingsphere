@@ -224,7 +224,21 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
         boolean isPrimaryKey = isPrimaryKey(ctx);
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        Collection<TableSegment> referencedTables = new LinkedList<>();
+        for (StorageOptionContext each : ctx.storageOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
+                referencedTables.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
+            }
+        }
+        for (GeneratedOptionContext each : ctx.generatedOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
+                referencedTables.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
+            }
+        }
+        result.getReferencedTables().addAll(referencedTables);
+        return result;
     }
     
     private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {

@@ -20,7 +20,11 @@ package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Column definition segment.
@@ -38,6 +42,8 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     private String dataType;
     
     private boolean primaryKey;
+    
+    private final Collection<TableSegment> referencedTables = new LinkedList<>();
     
     public ColumnDefinitionSegment(final int startIndex, final int stopIndex, final String columnName, final String dataType, final boolean primaryKey) {
         this.startIndex = startIndex;

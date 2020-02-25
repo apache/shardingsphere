@@ -312,12 +312,14 @@
     
     <create-table sql-case-id="create_table_with_inline_foreign_key">
         <table name="t_order_item" start-index="13" stop-index="24" />
+        <!-- FIXME remove t_order assert -->
         <table name="t_order" start-index="64" stop-index="70" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
         <column-definition type="INT">
             <column name="order_id" />
+            <referenced-table name="t_order" start-index="64" stop-index="70" />
         </column-definition>
         <column-definition type="INT">
             <column name="user_id" />
