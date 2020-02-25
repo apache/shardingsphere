@@ -49,6 +49,7 @@ public final class CreateTableStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertColumnDefinitions(assertContext, actual, expected);
+        assertConstraintDefinitions(assertContext, actual, expected);
         assertIndexes(assertContext, actual, expected);
     }
     
@@ -64,6 +65,11 @@ public final class CreateTableStatementAssert {
             ColumnDefinitionAssert.assertIs(assertContext, each, expected.getColumnDefinitions().get(count));
             count++;
         }
+    }
+    
+    private static void assertConstraintDefinitions(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Constraint definitions size assertion error: "), actual.getConstraintDefinitions().size(), is(expected.getConstraintDefinitions().size()));
+        int count = 0;
         for (ConstraintDefinitionSegment each : actual.getConstraintDefinitions()) {
             ConstraintDefinitionAssert.assertIs(assertContext, each, expected.getConstraintDefinitions().get(count));
             count++;

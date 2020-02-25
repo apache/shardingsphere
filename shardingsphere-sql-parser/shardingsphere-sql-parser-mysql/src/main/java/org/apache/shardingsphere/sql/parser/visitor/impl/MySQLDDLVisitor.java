@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Storage
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
@@ -81,44 +82,41 @@ import java.util.List;
  */
 public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getTables().add(table);
         if (null != ctx.createDefinitionClause()) {
-            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
-            result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
-            for (SQLSegment each : createDefinition.getAllSQLSegments()) {
-                result.getAllSQLSegments().add(each);
-                if (each instanceof TableSegment) {
-                    result.getTables().add((TableSegment) each);
+            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
+            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
+                if (each instanceof ColumnDefinitionSegment) {
+                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    result.getTables().addAll(((ColumnDefinitionSegment) each).getReferencedTables());
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
+                    }
                 }
             }
-        }
-        if (null != ctx.createLikeClause()) {
-            result.getTables().add((TableSegment) visit(ctx.createLikeClause()));
         }
         return result;
     }
     
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
         for (CreateDefinitionContext each : ctx.createDefinition()) {
-            ColumnDefinitionContext columnDefinition = each.columnDefinition();
-            if (null != columnDefinition) {
-                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
-                result.getAllSQLSegments().addAll(getTableSegments(columnDefinition));
+            if (null != each.columnDefinition()) {
+                result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
-            ConstraintDefinitionContext constraintDefinition = each.constraintDefinition();
-            ForeignKeyOptionContext foreignKeyOption = null == constraintDefinition ? null : constraintDefinition.foreignKeyOption();
-            if (null != foreignKeyOption) {
-                result.getAllSQLSegments().add((TableSegment) visit(foreignKeyOption));
+            if (null != each.constraintDefinition()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.constraintDefinition()));
             }
-        }
-        if (result.getColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
         }
         return result;
     }

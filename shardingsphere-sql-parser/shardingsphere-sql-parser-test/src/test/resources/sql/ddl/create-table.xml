@@ -380,6 +380,9 @@
         <column-definition type="VARCHAR">
             <column name="column3" />
         </column-definition>
+        <constraint-definition>
+            <primary-key-column name="order_id" start-index="168" stop-index="175" />
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_primary_key">
@@ -403,6 +406,11 @@
         <column-definition type="VARCHAR">
             <column name="column3" />
         </column-definition>
+        <constraint-definition>
+            <primary-key-column name="order_id" start-index="168" stop-index="175" />
+            <primary-key-column name="user_id" start-index="178" stop-index="184" />
+            <primary-key-column name="status" start-index="187" stop-index="192" />
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_unique_key">
@@ -425,6 +433,7 @@
         <column-definition type="VARCHAR">
             <column name="column3" />
         </column-definition>
+        <constraint-definition />
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_unique_key">
@@ -447,6 +456,7 @@
         <column-definition type="VARCHAR">
             <column name="column3" />
         </column-definition>
+        <constraint-definition />
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_foreign_key">
@@ -473,6 +483,9 @@
         <column-definition type="VARCHAR">
             <column name="column3" />
         </column-definition>
+        <constraint-definition>
+            <referenced-table name="t_order" start-index="207" stop-index="213" />
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_foreign_key">
@@ -499,6 +512,9 @@
         <column-definition type="VARCHAR">
             <column name="column3" />
         </column-definition>
+        <constraint-definition>
+            <referenced-table name="t_order" start-index="224" stop-index="230" />
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_check">
@@ -547,6 +563,13 @@
         <column-definition type="VARCHAR">
             <column name="column3" />
         </column-definition>
+        <constraint-definition>
+            <primary-key-column name="item_id" start-index="163" stop-index="169" />
+        </constraint-definition>
+        <constraint-definition />
+        <constraint-definition>
+            <referenced-table name="t_order" start-index="225" stop-index="231" />
+        </constraint-definition>
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_index">

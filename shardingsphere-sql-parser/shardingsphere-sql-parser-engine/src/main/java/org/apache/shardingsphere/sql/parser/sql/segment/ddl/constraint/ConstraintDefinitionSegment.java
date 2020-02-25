@@ -50,6 +50,6 @@ public final class ConstraintDefinitionSegment implements CreateDefinitionSegmen
      * @return referenced table
      */
     public Optional<TableSegment> getReferencedTable() {
-        return Optional.of(referencedTable);
+        return Optional.fromNullable(referencedTable);
     }
 }
