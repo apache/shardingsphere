@@ -75,13 +75,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        ShowDatabasesStatement result = new ShowDatabasesStatement();
-        ShowLikeContext showLikeContext = ctx.showLike();
-        if (null != showLikeContext) {
-            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            result.getAllSQLSegments().add(showLikeSegment);
-        }
-        return result;
+        return new ShowDatabasesStatement();
     }
     
     @Override
@@ -89,10 +83,6 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
         ShowTablesStatement result = new ShowTablesStatement();
         if (null != ctx.fromSchema()) {
             result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
-        }
-        if (null != ctx.showLike()) {
-            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            result.getAllSQLSegments().add(showLikeSegment);
         }
         return result;
     }
@@ -102,10 +92,6 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
         ShowTableStatusStatement result = new ShowTableStatusStatement();
         if (null != ctx.fromSchema()) {
             result.setFromSchema((FromSchemaSegment) visit(ctx.fromSchema()));
-        }
-        if (null != ctx.showLike()) {
-            ShowLikeSegment showLikeSegment = (ShowLikeSegment) visit(ctx.showLike());
-            result.getAllSQLSegments().add(showLikeSegment);
         }
         return result;
     }
