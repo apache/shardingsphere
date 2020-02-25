@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class TableSegment implements OwnerAvailable<SchemaSegment> {
+public final class TableSegment implements OwnerAvailable<SchemaSegment>, AliasAvailable {
     
     private final int startIndex;
     
@@ -41,6 +41,7 @@ public final class TableSegment implements OwnerAvailable<SchemaSegment> {
     @Setter
     private SchemaSegment owner;
     
+    @Setter
     private AliasSegment alias;
     
     @Override
@@ -53,19 +54,8 @@ public final class TableSegment implements OwnerAvailable<SchemaSegment> {
         return Optional.fromNullable(owner);
     }
     
-    /**
-     * Get alias.
-     * @return alias
-     */
+    @Override
     public Optional<String> getAlias() {
         return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
-    }
-    
-    /**
-     * Set alias.
-     * @param alias alias
-     */
-    public void setAlias(final AliasSegment alias) {
-        this.alias = alias;
     }
 }
