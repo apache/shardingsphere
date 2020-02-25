@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.util;
+package org.apache.shardingsphere.orchestration.internal.registry.fixture;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class FourthTestConfigCenter implements ConfigCenter {
-    
-    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
+public final class FirstTestRegistryCenterRepository implements RegistryCenterRepository {
     
     @Getter
     @Setter
-    private Properties properties;
+    private Properties properties = new Properties();
     
     @Override
     public void init(final InstanceConfiguration config) {
@@ -42,7 +39,7 @@ public final class FourthTestConfigCenter implements ConfigCenter {
     
     @Override
     public String get(final String key) {
-        return REGISTRY_DATA.get(key);
+        return "";
     }
     
     @Override
@@ -52,7 +49,10 @@ public final class FourthTestConfigCenter implements ConfigCenter {
     
     @Override
     public void persist(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
+    }
+    
+    @Override
+    public void persistEphemeral(final String key, final String value) {
     }
     
     @Override
@@ -61,11 +61,10 @@ public final class FourthTestConfigCenter implements ConfigCenter {
     
     @Override
     public void close() {
-        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "FourthTestConfigCenter";
+        return "FirstTestRegistryCenter";
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.util;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ThirdTestRegistryCenter implements RegistryCenter, ConfigCenter {
+public final class FourthTestRegistryCenterRepositoryRepository implements RegistryCenterRepository, ConfigCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -73,6 +73,6 @@ public final class ThirdTestRegistryCenter implements RegistryCenter, ConfigCent
     
     @Override
     public String getType() {
-        return "ThirdTestRegistryCenter";
+        return "FourthTestRegistryCenter";
     }
 }

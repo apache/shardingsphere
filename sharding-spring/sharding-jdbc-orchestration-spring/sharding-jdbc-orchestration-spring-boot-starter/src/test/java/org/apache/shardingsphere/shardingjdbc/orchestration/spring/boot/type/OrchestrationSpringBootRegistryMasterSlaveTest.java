@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepositoryRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.junit.BeforeClass;
@@ -50,7 +50,7 @@ public class OrchestrationSpringBootRegistryMasterSlaveTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestCenter testCenter = new TestCenter();
+        TestCenterRepositoryRepository testCenter = new TestCenterRepositoryRepository();
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource",
             "ds_master: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"

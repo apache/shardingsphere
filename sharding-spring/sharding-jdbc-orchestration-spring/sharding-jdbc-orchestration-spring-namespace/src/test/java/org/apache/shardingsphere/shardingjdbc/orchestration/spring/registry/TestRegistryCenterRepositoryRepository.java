@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.util;
+package org.apache.shardingsphere.shardingjdbc.orchestration.spring.registry;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class FirstTestRegistryCenter implements RegistryCenter, ConfigCenter {
-    
-    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
+public final class TestRegistryCenterRepositoryRepository implements RegistryCenterRepository, ConfigCenterRepository {
     
     @Getter
     @Setter
@@ -43,7 +39,7 @@ public final class FirstTestRegistryCenter implements RegistryCenter, ConfigCent
     
     @Override
     public String get(final String key) {
-        return REGISTRY_DATA.get(key);
+        return "";
     }
     
     @Override
@@ -53,12 +49,10 @@ public final class FirstTestRegistryCenter implements RegistryCenter, ConfigCent
     
     @Override
     public void persist(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-        REGISTRY_DATA.put(key, value);
     }
     
     @Override
@@ -67,11 +61,10 @@ public final class FirstTestRegistryCenter implements RegistryCenter, ConfigCent
     
     @Override
     public void close() {
-        REGISTRY_DATA.clear();
     }
     
     @Override
     public String getType() {
-        return "FirstTestRegistryCenter";
+        return "TestRegistry";
     }
 }

@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.orchestration.center.api;
 
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.spi.TypeBasedSPI;
+
+import java.util.List;
 
 /**
  * An interface for center to get/persist data.
@@ -54,4 +57,20 @@ public interface CenterRepository extends TypeBasedSPI {
      * Close.
      */
     void close();
+
+    /**
+     * Get node's sub-nodes list.
+     *
+     * @param key key of data
+     * @return sub-nodes name list
+     */
+    List<String> getChildrenKeys(String key);
+
+    /**
+     * Watch key or path of the config server.
+     *
+     * @param key key of data
+     * @param dataChangedEventListener data changed event listener
+     */
+    void watch(String key, DataChangedEventListener dataChangedEventListener);
 }

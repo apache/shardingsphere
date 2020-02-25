@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.config.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.internal.registry.state.listener.StateChangedListenerManager;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
@@ -35,10 +35,10 @@ import static org.mockito.Mockito.verify;
 public final class ShardingOrchestrationListenerManagerTest {
     
     @Mock
-    private RegistryCenter regCenter;
+    private RegistryCenterRepository regCenter;
 
     @Mock
-    private ConfigCenter configCenter;
+    private ConfigCenterRepository configCenterRepository;
     
     @Mock
     private ConfigurationChangedListenerManager configurationChangedListenerManager;
@@ -48,7 +48,8 @@ public final class ShardingOrchestrationListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("testRegCenter", regCenter, "FirstTestConfigCenter", configCenter, Collections.<String>emptyList());
+        ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("testRegCenter", regCenter,
+                                                                            "FirstTestConfigCenter", configCenterRepository, Collections.<String>emptyList());
         FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
         FieldUtil.setField(actual, "stateChangedListenerManager", stateChangedListenerManager);
         actual.initListeners();

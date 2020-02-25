@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.internal.registry;
+package org.apache.shardingsphere.orchestration.internal.configcenter;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.internal.registry.fixture.SecondTestRegistryCenter;
+import org.apache.shardingsphere.orchestration.internal.configcenter.fixture.FirstTestConfigCenterRepository;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class RegistryCenterLoaderTest {
+public final class ConfigCenterRepositoryLoaderTest {
     
     @Test
     public void assertLoad() {
-        RegistryCenter regCenter = new RegistryCenterServiceLoader().load(new InstanceConfiguration("SecondTestRegistryCenter"));
-        assertThat(regCenter, instanceOf(SecondTestRegistryCenter.class));
+        ConfigCenterRepository configCenterRepository = new ConfigCenterServiceLoader().load(new InstanceConfiguration("FirstTestConfigCenter"));
+        assertThat(configCenterRepository, instanceOf(FirstTestConfigCenterRepository.class));
     }
 }
