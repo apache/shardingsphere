@@ -246,18 +246,24 @@ createDefinition
     ;
 
 columnDefinition
-    : columnName dataType (inlineDataType* | generatedDataType*)
+    : columnName dataType (storageOption* | generatedOption*)
     ;
 
-inlineDataType
-    : commonDataTypeOption
+storageOption
+    : dataTypeGenericOption
     | AUTO_INCREMENT
     | DEFAULT (literals | expr)
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
     ;
 
-commonDataTypeOption
+generatedOption
+    : dataTypeGenericOption
+    | (GENERATED ALWAYS)? AS expr
+    | (VIRTUAL | STORED)
+    ;
+
+dataTypeGenericOption
     : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition | COMMENT STRING_
     ;
 
@@ -271,12 +277,6 @@ referenceDefinition
 
 referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
-    ;
-
-generatedDataType
-    : commonDataTypeOption
-    | (GENERATED ALWAYS)? AS expr
-    | (VIRTUAL | STORED)
     ;
 
 indexDefinition_

@@ -41,11 +41,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropPri
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FirstOrAfterColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ForeignKeyOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedDataTypeContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InlineDataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StorageOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
@@ -223,18 +223,18 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
-        boolean isPrimaryKey = containsPrimaryKey(ctx);
+        boolean isPrimaryKey = isPrimaryKey(ctx);
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
     }
     
-    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
-        for (InlineDataTypeContext each : ctx.inlineDataType()) {
-            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().primaryKey()) {
+    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
+        for (StorageOptionContext each : ctx.storageOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().primaryKey()) {
                 return true;
             }
         }
-        for (GeneratedDataTypeContext each : ctx.generatedDataType()) {
-            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().primaryKey()) {
+        for (GeneratedOptionContext each : ctx.generatedOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().primaryKey()) {
                 return true;
             }
         }
@@ -304,14 +304,14 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
         Collection<TableSegment> result = new LinkedList<>();
-        for (InlineDataTypeContext each : columnDefinition.inlineDataType()) {
-            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().referenceDefinition()) {
-                result.add((TableSegment) visit(each.commonDataTypeOption().referenceDefinition()));
+        for (StorageOptionContext each : columnDefinition.storageOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
             }
         }
-        for (GeneratedDataTypeContext each : columnDefinition.generatedDataType()) {
-            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().referenceDefinition()) {
-                result.add((TableSegment) visit(each.commonDataTypeOption().referenceDefinition()));
+        for (GeneratedOptionContext each : columnDefinition.generatedOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
             }
         }
         return result;
