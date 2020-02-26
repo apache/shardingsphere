@@ -55,7 +55,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.visitor.SQLServerVisitor;
 
 import java.util.Collection;
@@ -109,7 +109,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
+        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
         boolean isPrimaryKey = containsPrimaryKey(ctx);
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
     }
