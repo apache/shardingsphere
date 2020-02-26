@@ -14,22 +14,23 @@ To achieve the result better, these tests are performed with jmeter which based 
 
 #### Single Route
 
-On the basis of one thousand data volume, four databases that are deployed on the same machine and each contains 1024 tables with `id` used for database sharding and `k` used for table sharding are designed for this scenario.          
-Single route select sql statement is chosen here.
+On the basis of one thousand data volume, four databases that are deployed on the same machine and each contains 1024 tables with `id` used for database sharding and `k` used for table sharding are designed for this scenario，single route select sql statement is chosen here.
+While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and single route select sql statement on the basis of one thousand data volume.
 
 #### Master Slave
 
-One master database and one slave database, which are deployed on different machines, are designed for this scenario based on ten thousand data volume. 
+One master database and one slave database, which are deployed on different machines, are designed for this scenario based on ten thousand data volume.
+While as a comparison, MySQL runs with INSERT & SELECT & DELETE sql statement on the basis of ten thousand data volume.
 
 #### Master Slave & Encrypt & Sharding
 
-On the basis of one thousand data volume, four databases that are deployed on different machines and each contains 1024 tables with `id` used for database sharding, `k` used for table sharding, `c` encrypted with aes and  `pad` encrypted with md5 are designed for this scenario.
-Single route select sql statement is chosen here.
+On the basis of one thousand data volume, four databases that are deployed on different machines and each contains 1024 tables with `id` used for database sharding, `k` used for table sharding, `c` encrypted with aes and  `pad` encrypted with md5 are designed for this scenario, single route select sql statement is chosen here.
+While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and single route select sql statement on the basis of one thousand data volume.
 
 #### Full Route
 
-On the basis of one thousand data volume, four databases that are deployed on different machines and each contains one table are designed for this scenario, field `id` is used for database sharding and `k` is used for table sharding.
-Full route select sql statement is chosen here.
+On the basis of one thousand data volume, four databases that are deployed on different machines and each contains one table are designed for this scenario, field `id` is used for database sharding and `k` is used for table sharding, full route select sql statement is chosen here.
+While as a comparison, MySQL runs with INSERT & UPDATE & DELETE statement and full route select sql statement on the basis of one thousand data volume.
 
 ## Testing Environment
 
