@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CheckConstraintDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClauseContext;
@@ -116,6 +117,9 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
             }
             if (null != each.constraintDefinition()) {
                 result.getValue().add((ConstraintDefinitionSegment) visit(each.constraintDefinition()));
+            }
+            if (null != each.checkConstraintDefinition()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.checkConstraintDefinition()));
             }
         }
         return result;
@@ -269,6 +273,11 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
             result.setReferencedTable((TableSegment) visit(ctx.foreignKeyOption().referenceDefinition()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCheckConstraintDefinition(final CheckConstraintDefinitionContext ctx) {
+        return new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
     
     @Override

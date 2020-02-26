@@ -203,7 +203,9 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
-            result.getReferencedTables().add((TableSegment) visit(each.columnConstraintOption().tableName()));
+            if (null != each.columnConstraintOption().tableName()) {
+                result.getReferencedTables().add((TableSegment) visit(each.columnConstraintOption().tableName()));
+            }
         }
         return result;
     }

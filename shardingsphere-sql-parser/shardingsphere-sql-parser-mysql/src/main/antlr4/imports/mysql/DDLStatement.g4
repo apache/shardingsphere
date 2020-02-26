@@ -242,7 +242,7 @@ createDefinitionClause
     ;
 
 createDefinition
-    : columnDefinition | indexDefinition_ | constraintDefinition | checkConstraintDefinition_
+    : columnDefinition | indexDefinition_ | constraintDefinition | checkConstraintDefinition
     ;
 
 columnDefinition
@@ -264,10 +264,10 @@ generatedOption
     ;
 
 dataTypeGenericOption
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition | COMMENT STRING_
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition | referenceDefinition | COMMENT STRING_
     ;
 
-checkConstraintDefinition_
+checkConstraintDefinition
     : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
     ;
 
@@ -340,7 +340,7 @@ alterSpecification
     | addColumnSpecification
     | addIndexSpecification
     | addConstraintSpecification
-    | ADD checkConstraintDefinition_
+    | ADD checkConstraintDefinition
     | DROP CHECK ignoredIdentifier_
     | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
     | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)

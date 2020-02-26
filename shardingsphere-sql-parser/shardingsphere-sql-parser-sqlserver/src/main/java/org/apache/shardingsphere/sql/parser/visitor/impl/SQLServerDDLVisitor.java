@@ -145,28 +145,11 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         return false;
     }
     
-    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ColumnDefinitionOptionContext each : columnDefinition.columnDefinitionOption()) {
-            for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
-                if (null != columnConstraint.columnForeignKeyConstraint()) {
-                    result.add((TableSegment) visit(columnConstraint.columnForeignKeyConstraint().tableName()));
-                }
-            }
-        }
-        for (ColumnConstraintContext each : columnDefinition.columnConstraints().columnConstraint()) {
-            if (null != each.columnForeignKeyConstraint()) {
-                result.add((TableSegment) visit(each.columnForeignKeyConstraint().tableName()));
-            }
-        }
-        return result;
-    }
-    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableConstraint(final TableConstraintContext ctx) {
         ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
-        if (null != ctx.tablePrimaryConstraint()) {
+        if (null != ctx.tablePrimaryConstraint() && null != ctx.tablePrimaryConstraint().primaryKeyUnique().primaryKey()) {
             if (null != ctx.tablePrimaryConstraint().diskTablePrimaryConstraintOption()) {
                 result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.tablePrimaryConstraint().diskTablePrimaryConstraintOption().columnNames())).getValue());
             }
