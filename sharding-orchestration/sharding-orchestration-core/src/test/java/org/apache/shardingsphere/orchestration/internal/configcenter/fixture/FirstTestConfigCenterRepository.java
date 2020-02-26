@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.registry;
+package org.apache.shardingsphere.orchestration.internal.configcenter.fixture;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestRegistryCenter implements RegistryCenter, ConfigCenter {
+public final class FirstTestConfigCenterRepository implements ConfigCenterRepository {
     
     @Getter
     @Setter
-    private Properties properties;
+    private Properties properties = new Properties();
     
     @Override
     public void init(final InstanceConfiguration config) {
@@ -52,10 +52,6 @@ public final class TestRegistryCenter implements RegistryCenter, ConfigCenter {
     }
     
     @Override
-    public void persistEphemeral(final String key, final String value) {
-    }
-    
-    @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
     }
     
@@ -65,6 +61,6 @@ public final class TestRegistryCenter implements RegistryCenter, ConfigCenter {
     
     @Override
     public String getType() {
-        return "TestRegistry";
+        return "FirstTestConfigCenter";
     }
 }

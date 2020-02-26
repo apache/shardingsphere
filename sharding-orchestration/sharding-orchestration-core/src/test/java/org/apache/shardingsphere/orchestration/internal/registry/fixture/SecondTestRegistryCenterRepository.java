@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.internal.registry.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-public final class FirstTestRegistryCenter implements RegistryCenter {
+public final class SecondTestRegistryCenterRepository implements RegistryCenterRepository {
     
     @Getter
     @Setter
@@ -65,6 +65,6 @@ public final class FirstTestRegistryCenter implements RegistryCenter {
     
     @Override
     public String getType() {
-        return "FirstTestRegistryCenter";
+        return "SecondTestRegistryCenter";
     }
 }

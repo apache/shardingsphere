@@ -15,7 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shardingjdbc.orchestration.util.FirstTestRegistryCenter
-org.apache.shardingsphere.shardingjdbc.orchestration.util.SecondTestRegistryCenter
-org.apache.shardingsphere.shardingjdbc.orchestration.util.ThirdTestRegistryCenter
-org.apache.shardingsphere.shardingjdbc.orchestration.util.FourthTestRegistryCenter
+org.apache.shardingsphere.orchestration.internal.registry.fixture.FirstTestRegistryCenterRepository
+org.apache.shardingsphere.orchestration.internal.registry.fixture.SecondTestRegistryCenterRepository

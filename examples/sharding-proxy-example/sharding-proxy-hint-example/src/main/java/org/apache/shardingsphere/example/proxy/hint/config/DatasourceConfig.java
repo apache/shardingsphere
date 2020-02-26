@@ -1,6 +1,6 @@
 package org.apache.shardingsphere.example.proxy.hint.config;
 
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
 public class DatasourceConfig implements YamlConfiguration {
     private String driverClassName;

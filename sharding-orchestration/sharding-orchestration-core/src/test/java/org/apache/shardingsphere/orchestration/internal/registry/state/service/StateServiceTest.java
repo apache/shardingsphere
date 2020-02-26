@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.service;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 public final class StateServiceTest {
     
     @Mock
-    private RegistryCenter regCenter;
+    private RegistryCenterRepository regCenter;
     
     private StateService stateService;
     

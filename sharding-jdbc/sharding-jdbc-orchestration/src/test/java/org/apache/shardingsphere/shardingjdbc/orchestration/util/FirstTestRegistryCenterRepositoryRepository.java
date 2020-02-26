@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry;
+package org.apache.shardingsphere.shardingjdbc.orchestration.util;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -24,12 +24,12 @@ import java.util.Map;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
-public final class TestCenter implements RegistryCenter, ConfigCenter {
+public final class FirstTestRegistryCenterRepositoryRepository implements RegistryCenterRepository, ConfigCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -72,6 +72,6 @@ public final class TestCenter implements RegistryCenter, ConfigCenter {
     
     @Override
     public String getType() {
-        return "TestRegistry";
+        return "FirstTestRegistryCenter";
     }
 }

@@ -85,7 +85,6 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         CreateTableStatement result = new CreateTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
         if (null != ctx.createDefinitionClause()) {
             CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
             result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
@@ -97,9 +96,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
             }
         }
         if (null != ctx.createLikeClause()) {
-            TableSegment likeTable = (TableSegment) visit(ctx.createLikeClause());
-            result.getAllSQLSegments().add(likeTable);
-            result.getTables().add(likeTable);
+            result.getTables().add((TableSegment) visit(ctx.createLikeClause()));
         }
         return result;
     }
@@ -135,7 +132,6 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         AlterTableStatement result = new AlterTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
         if (null != ctx.alterDefinitionClause()) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
@@ -332,36 +328,28 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNames());
-        result.getTables().addAll(tables.getValue());
-        result.getAllSQLSegments().addAll(tables.getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getAllSQLSegments().add(table);
-        result.getTables().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.setTable(table);
-        result.getAllSQLSegments().add(table);
+        result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         DropIndexStatement result = new DropIndexStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.setTable(table);
-        result.getAllSQLSegments().add(table);
+        result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
 }

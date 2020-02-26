@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import com.google.common.collect.Lists;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.junit.Test;
@@ -31,21 +32,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostShardingRegistryCenterEventListenerTest {
+public final class PostShardingConfigCenterRepositoryEventListenerTest {
     
     @Mock
-    private RegistryCenter regCenter;
+    private ConfigCenterRepository configCenterRepository;
     
     @Test
     public void assertWatch() {
-        PostShardingRegistryCenterEventListener postShardingRegistryCenterEventListener = new PostShardingRegistryCenterEventListener(regCenter, "test") {
+        PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenterRepository, Lists.newArrayList("test")) {
             
             @Override
             protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
                 return mock(ShardingOrchestrationEvent.class);
             }
         };
-        postShardingRegistryCenterEventListener.watch();
-        verify(regCenter).watch(eq("test"), ArgumentMatchers.<DataChangedEventListener>any());
+        postShardingConfigCenterEventListener.watch();
+        verify(configCenterRepository).watch(eq("test"), ArgumentMatchers.<DataChangedEventListener>any());
     }
 }

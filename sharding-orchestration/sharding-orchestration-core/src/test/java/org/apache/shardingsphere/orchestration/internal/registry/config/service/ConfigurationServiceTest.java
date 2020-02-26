@@ -36,7 +36,7 @@ import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfi
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -97,7 +97,7 @@ public final class ConfigurationServiceTest {
     private static final String SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE = "defaultTableStrategy:\n" + "  none: ''\n";
     
     @Mock
-    private ConfigCenter regCenter;
+    private ConfigCenterRepository regCenter;
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
