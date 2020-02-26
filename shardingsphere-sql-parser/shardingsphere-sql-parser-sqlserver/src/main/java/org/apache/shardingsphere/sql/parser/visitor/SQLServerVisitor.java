@@ -431,7 +431,7 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        return new IdentifierValue(ctx.IDENTIFIER_().getText());
+        return new IdentifierValue(ctx.getText());
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
