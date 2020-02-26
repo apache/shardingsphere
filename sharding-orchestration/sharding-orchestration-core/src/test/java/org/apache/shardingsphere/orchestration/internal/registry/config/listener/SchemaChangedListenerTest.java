@@ -170,4 +170,11 @@ public final class SchemaChangedListenerTest {
         assertThat(actual, instanceOf(SchemaDeletedEvent.class));
         assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("logic_db"));
     }
+
+    @Test
+    public void assertCreateWithInvalidNodeChangedEvent() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db", DATA_SOURCE_YAML, ChangedType.DELETED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
+    }
 }
