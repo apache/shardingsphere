@@ -163,12 +163,12 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     @Test
     public void assertSetReadOnly() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
-            assertTrue(actual.isReadOnly());
+            assertFalse(actual.isReadOnly());
+            actual.setReadOnly(true);
+            assertReadOnly(actual, true);
             actual.setReadOnly(false);
             actual.createStatement().executeQuery(sql);
             assertReadOnly(actual, false);
-            actual.setReadOnly(true);
-            assertReadOnly(actual, true);
         }
     }
     
