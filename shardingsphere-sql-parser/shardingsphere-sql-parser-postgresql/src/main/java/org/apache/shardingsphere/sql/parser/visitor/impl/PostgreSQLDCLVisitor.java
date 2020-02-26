@@ -53,7 +53,6 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
         GrantStatement result = new GrantStatement();
         if (null != ctx.privilegeClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
-                result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
         }
@@ -65,7 +64,6 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
         RevokeStatement result = new RevokeStatement();
         if (null != ctx.privilegeClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
-                result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
         }

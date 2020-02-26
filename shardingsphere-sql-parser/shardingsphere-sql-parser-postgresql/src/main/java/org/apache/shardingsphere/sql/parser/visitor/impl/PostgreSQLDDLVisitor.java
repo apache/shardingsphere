@@ -37,18 +37,21 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -59,7 +62,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
 
 import java.util.Collection;
@@ -71,19 +74,24 @@ import java.util.LinkedList;
  */
 public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDLVisitor {
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
-            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
-            result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
-            for (SQLSegment each : createDefinition.getAllSQLSegments()) {
-                result.getAllSQLSegments().add(each);
-                if (each instanceof TableSegment) {
-                    result.getTables().add((TableSegment) each);
+            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
+            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
+                if (each instanceof ColumnDefinitionSegment) {
+                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    result.getTables().addAll(((ColumnDefinitionSegment) each).getReferencedTables());
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
+                    }
                 }
             }
         }
@@ -92,19 +100,14 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
         for (CreateDefinitionContext each : ctx.createDefinition()) {
-            ColumnDefinitionContext columnDefinition = each.columnDefinition();
-            if (null != columnDefinition) {
-                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
-                result.getAllSQLSegments().addAll(getTableSegments(columnDefinition));
+            if (null != each.columnDefinition()) {
+                result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
-            if (null != each.tableConstraint() && null != each.tableConstraint().tableConstraintOption().tableName()) {
-                result.getAllSQLSegments().add((TableSegment) visit(each.tableConstraint().tableConstraintOption().tableName()));
+            if (null != each.tableConstraint()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.tableConstraint()));
             }
-        }
-        if (result.getColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
         }
         return result;
     }
@@ -112,9 +115,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableNameClause());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableNameClause()));
         if (null != ctx.alterDefinitionClause()) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
@@ -197,18 +198,38 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
-        boolean isPrimaryKey = containsPrimaryKey(ctx);
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
+        boolean isPrimaryKey = isPrimaryKey(ctx);
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        for (ColumnConstraintContext each : ctx.columnConstraint()) {
+            if (null != each.columnConstraintOption().tableName()) {
+                result.getReferencedTables().add((TableSegment) visit(each.columnConstraintOption().tableName()));
+            }
+        }
+        return result;
     }
     
-    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
+    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
             if (null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey()) {
                 return true;
             }
         }
         return false;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitTableConstraint(final TableConstraintContext ctx) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.tableConstraintOption().primaryKey()) {
+            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.tableConstraintOption().columnNames(0))).getValue());
+        }
+        if (null != ctx.tableConstraintOption().FOREIGN()) {
+            result.setReferencedTable((TableSegment) visit(ctx.tableConstraintOption().tableName()));
+        }
+        return result;
     }
     
     @Override
@@ -243,9 +264,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNames());
-        result.getTables().addAll(tables.getValue());
-        result.getAllSQLSegments().addAll(tables.getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
@@ -253,21 +272,15 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        CollectionValue<TableSegment> tables = (CollectionValue<TableSegment>) visit(ctx.tableNamesClause());
-        result.getTables().addAll(tables.getValue());
-        result.getAllSQLSegments().addAll(tables.getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNamesClause())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        IndexSegment index = (IndexSegment) visit(ctx.indexName()); 
-        result.setTable(table);
-        result.setIndex(index);
-        result.getAllSQLSegments().add(table);
-        result.getAllSQLSegments().add(index);
+        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
@@ -275,9 +288,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         DropIndexStatement result = new DropIndexStatement();
-        CollectionValue<IndexSegment> indexes = (CollectionValue<IndexSegment>) visit(ctx.indexNames());
-        result.getIndexes().addAll(indexes.getValue());
-        result.getAllSQLSegments().addAll(indexes.getValue());
+        result.getIndexes().addAll(((CollectionValue<IndexSegment>) visit(ctx.indexNames())).getValue());
         return result;
     }
     

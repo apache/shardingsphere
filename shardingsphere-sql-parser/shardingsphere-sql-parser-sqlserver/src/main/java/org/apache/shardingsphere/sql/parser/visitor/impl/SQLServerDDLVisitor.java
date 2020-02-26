@@ -36,14 +36,17 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ModifyColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -55,7 +58,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.visitor.SQLServerVisitor;
 
 import java.util.Collection;
@@ -66,19 +69,24 @@ import java.util.LinkedList;
  */
 public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVisitor {
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
-            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
-            result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
-            for (SQLSegment each : createDefinition.getAllSQLSegments()) {
-                result.getAllSQLSegments().add(each);
-                if (each instanceof TableSegment) {
-                    result.getTables().add((TableSegment) each);
+            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
+            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
+                if (each instanceof ColumnDefinitionSegment) {
+                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    result.getTables().addAll(((ColumnDefinitionSegment) each).getReferencedTables());
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
+                    }
                 }
             }
         }
@@ -87,23 +95,14 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
         for (CreateTableDefinitionContext each : ctx.createTableDefinitions().createTableDefinition()) {
-            ColumnDefinitionContext columnDefinition = each.columnDefinition();
-            if (null != columnDefinition) {
-                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
-                Collection<TableSegment> tableSegments = getTableSegments(columnDefinition);
-                result.getTables().addAll(tableSegments);
-                result.getAllSQLSegments().addAll(tableSegments);
+            if (null != each.columnDefinition()) {
+                result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
-            if (null != each.tableConstraint() && null != each.tableConstraint().tableForeignKeyConstraint()) {
-                TableSegment tableSegment = (TableSegment) visit(each.tableConstraint().tableForeignKeyConstraint().tableName());
-                result.getTables().add(tableSegment);
-                result.getAllSQLSegments().add(tableSegment);
+            if (null != each.tableConstraint()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.tableConstraint()));
             }
-        }
-        if (result.getColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
         }
         return result;
     }
@@ -111,15 +110,27 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
-        boolean isPrimaryKey = containsPrimaryKey(ctx);
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
+        boolean isPrimaryKey = isPrimaryKey(ctx);
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        for (ColumnDefinitionOptionContext each : ctx.columnDefinitionOption()) {
+            for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
+                if (null != columnConstraint.columnForeignKeyConstraint()) {
+                    result.getReferencedTables().add((TableSegment) visit(columnConstraint.columnForeignKeyConstraint().tableName()));
+                }
+            }
+        }
+        for (ColumnConstraintContext each : ctx.columnConstraints().columnConstraint()) {
+            if (null != each.columnForeignKeyConstraint()) {
+                result.getReferencedTables().add((TableSegment) visit(each.columnForeignKeyConstraint().tableName()));
+            }
+        }
+        return result;
     }
     
-    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
-        // CHECKSTYLE:OFF
+    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
         for (ColumnDefinitionOptionContext each : ctx.columnDefinitionOption()) {
-            // CHECKSTYLE:ON
             for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
                 if (null != columnConstraint.primaryKeyConstraint() && null != columnConstraint.primaryKeyConstraint().primaryKey()) {
                     return true;
@@ -134,19 +145,20 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         return false;
     }
     
-    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ColumnDefinitionOptionContext each : columnDefinition.columnDefinitionOption()) {
-            for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
-                if (null != columnConstraint.columnForeignKeyConstraint()) {
-                    result.add((TableSegment) visit(columnConstraint.columnForeignKeyConstraint().tableName()));
-                }
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitTableConstraint(final TableConstraintContext ctx) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.tablePrimaryConstraint() && null != ctx.tablePrimaryConstraint().primaryKeyUnique().primaryKey()) {
+            if (null != ctx.tablePrimaryConstraint().diskTablePrimaryConstraintOption()) {
+                result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.tablePrimaryConstraint().diskTablePrimaryConstraintOption().columnNames())).getValue());
+            }
+            if (null != ctx.tablePrimaryConstraint().memoryTablePrimaryConstraintOption()) {
+                result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.tablePrimaryConstraint().memoryTablePrimaryConstraintOption().columnNames())).getValue());
             }
         }
-        for (ColumnConstraintContext each : columnDefinition.columnConstraints().columnConstraint()) {
-            if (null != each.columnForeignKeyConstraint()) {
-                result.add((TableSegment) visit(each.columnForeignKeyConstraint().tableName()));
-            }
+        if (null != ctx.tableForeignKeyConstraint()) {
+            result.setReferencedTable((TableSegment) visit(ctx.tableForeignKeyConstraint().tableName()));
         }
         return result;
     }
@@ -154,9 +166,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
@@ -240,9 +250,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        Collection<TableSegment> tables = ((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue();
-        result.getTables().addAll(tables);
-        result.getAllSQLSegments().addAll(tables);
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
@@ -250,18 +258,14 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
-        result.getAllSQLSegments().add(table);
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.setTable(table);
-        result.getAllSQLSegments().add(table);
+        result.setTable((TableSegment) visit(ctx.tableName()));
         return result;
     }
     

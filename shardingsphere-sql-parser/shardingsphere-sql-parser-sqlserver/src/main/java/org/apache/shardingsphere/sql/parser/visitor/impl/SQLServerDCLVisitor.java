@@ -61,13 +61,11 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
         GrantStatement result = new GrantStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
-                result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
         }
         if (null != ctx.classTypePrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
-                result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
         }
@@ -79,13 +77,11 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
         RevokeStatement result = new RevokeStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
-                result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
         }
         if (null != ctx.classTypePrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
-                result.getAllSQLSegments().add(each);
                 result.getTables().add(each);
             }
         }
@@ -115,13 +111,11 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
         DenyUserStatement result = new DenyUserStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
-                result.getAllSQLSegments().add(each);
                 result.setTable(each);
             }
         }
         if (null != ctx.classTypePrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
-                result.getAllSQLSegments().add(each);
                 result.setTable(each);
             }
         }

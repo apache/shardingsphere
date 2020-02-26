@@ -21,6 +21,10 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-common</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
