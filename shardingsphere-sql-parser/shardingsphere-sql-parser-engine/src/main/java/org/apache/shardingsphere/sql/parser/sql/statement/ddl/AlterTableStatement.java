@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -36,11 +36,11 @@ public final class AlterTableStatement extends DDLStatement implements TableSegm
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
-    private final Collection<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();
+    private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
+    
+    private final Collection<ConstraintDefinitionSegment> addConstraintDefinitions = new LinkedList<>();
     
     private final Collection<ColumnPositionSegment> changedPositionColumns = new TreeSet<>();
     
     private final Collection<String> droppedColumnNames = new LinkedList<>();
-    
-    private final Collection<ConstraintDefinitionSegment> addedConstraintDefinitions = new LinkedList<>();
 }

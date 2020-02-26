@@ -169,7 +169,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
-            result.getAddedColumnDefinitions().addAll(alterDefinition.getAddedColumnDefinitions());
+            result.getAddColumnDefinitions().addAll(alterDefinition.getAddColumnDefinitions());
             result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
             result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());
             for (SQLSegment each : alterDefinition.getAllSQLSegments()) {
@@ -190,7 +190,8 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         if (null != addColumnSpecification) {
             CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
             for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-                result.getAddedColumnDefinitions().add(addColumnDefinition.getColumnDefinition());
+                ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinition();
+                result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), columnDefinition));
                 Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
                 if (columnPositionSegment.isPresent()) {
                     result.getChangedPositionColumns().add(columnPositionSegment.get());
@@ -207,8 +208,8 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         if (null != ctx.alterDrop() && null != ctx.alterDrop().dropColumnSpecification()) {
             result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(ctx.alterDrop().dropColumnSpecification())).getColumnNames());
         }
-        if (result.getAddedColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getAddedColumnDefinitions());
+        if (result.getAddColumnDefinitions().isEmpty()) {
+            result.getAllSQLSegments().addAll(result.getAddColumnDefinitions());
         }
         if (result.getChangedPositionColumns().isEmpty()) {
             result.getAllSQLSegments().addAll(result.getChangedPositionColumns());
