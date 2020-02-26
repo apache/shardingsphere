@@ -496,7 +496,7 @@ dataType
     ;
 
 dataTypeName
-    : identifier identifier?
+    : identifier
     ;
 
 dataTypeLength

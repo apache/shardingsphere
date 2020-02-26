@@ -415,7 +415,7 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        return new IdentifierValue(ctx.identifier(0).getText());
+        return new IdentifierValue(ctx.getText());
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date

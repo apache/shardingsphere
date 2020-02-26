@@ -459,7 +459,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        return visit(ctx.identifier(0));
+        return new IdentifierValue(ctx.getText());
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
