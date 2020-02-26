@@ -46,7 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatemen
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.visitor.SQL92Visitor;
 
 import java.util.Collections;
@@ -97,7 +97,7 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
+        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
         boolean isPrimaryKey = isPrimaryKey(ctx);
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
