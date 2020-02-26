@@ -22,6 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected add column definition.
@@ -31,7 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ExpectedAddColumnDefinition extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "column-definition")
-    private ExpectedColumnDefinition columnDefinition;
+    private final List<ExpectedColumnDefinition> columnDefinitions = new LinkedList<>();
     
     @XmlElement(name = "column-position")
     private ExpectedColumnPosition columnPosition;

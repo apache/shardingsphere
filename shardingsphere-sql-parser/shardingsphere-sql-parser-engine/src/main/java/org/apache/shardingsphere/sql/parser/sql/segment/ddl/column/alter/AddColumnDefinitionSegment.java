@@ -25,6 +25,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 
+import java.util.Collection;
+
 /**
  * Add column definition segment.
  */
@@ -37,7 +39,7 @@ public final class AddColumnDefinitionSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final ColumnDefinitionSegment columnDefinition;
+    private final Collection<ColumnDefinitionSegment> columnDefinitions;
     
     private ColumnPositionSegment columnPosition;
     

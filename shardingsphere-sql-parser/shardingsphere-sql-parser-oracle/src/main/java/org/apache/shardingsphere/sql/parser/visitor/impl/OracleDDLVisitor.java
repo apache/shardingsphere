@@ -64,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -214,8 +215,9 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
                 if (null != addColumnSpecification) {
                     CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
                     for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-                        ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinition();
-                        result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), columnDefinition));
+                        ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinitions().iterator().next();
+                        result.getAddColumnDefinitions().add(
+                                new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), addColumnDefinition.getColumnDefinitions()));
                         Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
                         // TODO refactor SQLStatement
                         // CHECKSTYLE:OFF
@@ -267,7 +269,8 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
         for (ColumnOrVirtualDefinitionContext each : ctx.columnOrVirtualDefinitions().columnOrVirtualDefinition()) {
             if (null != each.columnDefinition()) {
                 AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
-                        each.columnDefinition().getStart().getStartIndex(), each.columnDefinition().getStop().getStopIndex(), (ColumnDefinitionSegment) visit(each.columnDefinition()));
+                        each.columnDefinition().getStart().getStartIndex(), each.columnDefinition().getStop().getStopIndex(), 
+                        Collections.singletonList((ColumnDefinitionSegment) visit(each.columnDefinition())));
                 result.getValue().add(addColumnDefinition);
             }
         }

@@ -141,8 +141,9 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
                 if (null != addColumnSpecification) {
                     CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
                     for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-                        ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinition();
-                        result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), columnDefinition));
+                        ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinitions().iterator().next();
+                        result.getAddColumnDefinitions().add(
+                                new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), addColumnDefinition.getColumnDefinitions()));
                         Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
                         // TODO refactor SQLStatement
                         // CHECKSTYLE:OFF
@@ -190,7 +191,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         ColumnDefinitionContext columnDefinition = ctx.columnDefinition();
         if (null != columnDefinition) {
             AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
-                    ctx.columnDefinition().getStart().getStartIndex(), columnDefinition.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(columnDefinition));
+                    ctx.columnDefinition().getStart().getStartIndex(), columnDefinition.getStop().getStopIndex(), Collections.singletonList((ColumnDefinitionSegment) visit(columnDefinition)));
             result.getValue().add(addColumnDefinition);
         }
         return result;

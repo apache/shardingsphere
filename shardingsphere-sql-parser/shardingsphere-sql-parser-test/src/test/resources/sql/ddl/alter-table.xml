@@ -81,10 +81,10 @@
             <column-definition type="VARCHAR">
                 <column name="column3" />
             </column-definition>
+            <column-position>
+                <column name="column3" />
+            </column-position>
         </add-column>
-        <position-changed-column>
-            <column name="column3" />
-        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_column_with_after">
@@ -93,11 +93,11 @@
             <column-definition type="VARCHAR">
                 <column name="column4" />
             </column-definition>
+            <column-position>
+                <column name="column4" />
+                <after-column name="order_id" />
+            </column-position>
         </add-column>
-        <position-changed-column>
-            <column name="column4" />
-            <after-column name="order_id" />
-        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_column_with_first_after">
@@ -106,36 +106,36 @@
             <column-definition type="VARCHAR">
                 <column name="column5" />
             </column-definition>
+            <column-position>
+                <column name="column5" />
+            </column-position>
         </add-column>
         <add-column>
             <column-definition type="VARCHAR">
                 <column name="column6" />
             </column-definition>
+            <column-position>
+                <column name="column6" />
+            </column-position>
         </add-column>
         <add-column>
             <column-definition type="VARCHAR">
                 <column name="column7" />
             </column-definition>
+            <column-position>
+                <column name="column7" />
+                <after-column name="column5" />
+            </column-position>
         </add-column>
         <add-column>
             <column-definition type="VARCHAR">
                 <column name="column8" />
             </column-definition>
+            <column-position column-name="column8" after-column="column6">
+                <column name="column8" />
+                <after-column name="column6" />
+            </column-position>
         </add-column>
-        <position-changed-column>
-            <column name="column5" />
-        </position-changed-column>
-        <position-changed-column>
-            <column name="column6" />
-        </position-changed-column>
-        <position-changed-column>
-            <column name="column7" />
-            <after-column name="column5" />
-        </position-changed-column>
-        <position-changed-column column-name="column8" after-column="column6">
-            <column name="column8" />
-            <after-column name="column6" />
-        </position-changed-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify_column">

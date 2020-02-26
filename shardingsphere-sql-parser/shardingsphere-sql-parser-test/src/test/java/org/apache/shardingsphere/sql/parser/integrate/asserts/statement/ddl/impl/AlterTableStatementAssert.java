@@ -24,10 +24,15 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ColumnPositionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedAddColumnDefinition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+
+import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -64,14 +69,21 @@ public final class AlterTableStatementAssert {
         int count = 0;
         for (AddColumnDefinitionSegment each : actual.getAddColumnDefinitions()) {
             ExpectedAddColumnDefinition addColumnDefinition = expected.getAddColumns().get(count);
-            assertNotNull(assertContext.getText("Column definition should exist."), addColumnDefinition.getColumnDefinition());
-            ColumnDefinitionAssert.assertIs(assertContext, each.getColumnDefinition(), addColumnDefinition.getColumnDefinition());
+            assertColumnDefinitions(assertContext, each.getColumnDefinitions(), addColumnDefinition.getColumnDefinitions());
             if (each.getColumnPosition().isPresent()) {
                 assertNotNull(assertContext.getText("Column position should exist."), addColumnDefinition.getColumnPosition());
                 ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), addColumnDefinition.getColumnPosition());
             } else {
                 assertNull(assertContext.getText("Column position should not exist."), addColumnDefinition.getColumnPosition());
             }
+            count++;
+        }
+    }
+    
+    private static void assertColumnDefinitions(final SQLCaseAssertContext assertContext, final Collection<ColumnDefinitionSegment> actual, final List<ExpectedColumnDefinition> expected) {
+        int count = 0;
+        for (ColumnDefinitionSegment each : actual) {
+            ColumnDefinitionAssert.assertIs(assertContext, each, expected.get(count));
             count++;
         }
     }

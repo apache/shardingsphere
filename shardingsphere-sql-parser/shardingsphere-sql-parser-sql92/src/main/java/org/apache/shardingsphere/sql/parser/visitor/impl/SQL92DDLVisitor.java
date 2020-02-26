@@ -158,8 +158,8 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
         if (null != addColumnSpecification) {
             CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
             for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-                ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinition();
-                result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), columnDefinition));
+                ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinitions().iterator().next();
+                result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), addColumnDefinition.getColumnDefinitions()));
                 Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
                 if (columnPositionSegment.isPresent()) {
                     result.getChangedPositionColumns().add(columnPositionSegment.get());
@@ -189,7 +189,8 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
     public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
         CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
         AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
-                ctx.columnDefinition().getStart().getStartIndex(), ctx.columnDefinition().getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+                ctx.columnDefinition().getStart().getStartIndex(), ctx.columnDefinition().getStop().getStopIndex(), 
+                Collections.singletonList((ColumnDefinitionSegment) visit(ctx.columnDefinition())));
         result.getValue().add(addColumnDefinition);
         return result;
     }

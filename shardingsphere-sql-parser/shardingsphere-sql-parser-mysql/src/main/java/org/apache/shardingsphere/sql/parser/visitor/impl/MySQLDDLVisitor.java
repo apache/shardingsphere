@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
+import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
@@ -150,22 +149,13 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         final AlterTableStatement result = new AlterTableStatement();
         for (AlterSpecificationContext each : ctx.alterSpecification()) {
             AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
             if (null != addColumnSpecification) {
-                CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
-                for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-                    ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinition();
-                    result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), columnDefinition));
-                    Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
-                    if (columnPositionSegment.isPresent()) {
-                        result.getChangedPositionColumns().add(columnPositionSegment.get());
-                    }
-                }
+                result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) visit(addColumnSpecification));
                 result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
             }
             AddConstraintSpecificationContext addConstraintSpecification = each.addConstraintSpecification();
@@ -205,20 +195,14 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitAddColumnSpecification(final AddColumnSpecificationContext ctx) {
-        CollectionValue<AddColumnDefinitionSegment> result = new CollectionValue<>();
-        List<AddColumnDefinitionSegment> addColumnDefinitions = Lists.transform(ctx.columnDefinition(), new Function<ColumnDefinitionContext, AddColumnDefinitionSegment>() {
-            
-            @Override
-            public AddColumnDefinitionSegment apply(final ColumnDefinitionContext columnDefinition) {
-                return new AddColumnDefinitionSegment(columnDefinition.getStart().getStartIndex(), columnDefinition.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(columnDefinition));
-            }
-        });
-        if (null == ctx.firstOrAfterColumn()) {
-            result.getValue().addAll(addColumnDefinitions);
-        } else {
-            AddColumnDefinitionSegment addColumnDefinition = addColumnDefinitions.get(0);
-            addColumnDefinition.setColumnPosition(getColumnPositionSegment(addColumnDefinition.getColumnDefinition(), (ColumnPositionSegment) visit(ctx.firstOrAfterColumn())));
-            result.getValue().add(addColumnDefinition);
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        for (ColumnDefinitionContext each : ctx.columnDefinition()) {
+            columnDefinitions.add((ColumnDefinitionSegment) visit(each));
+        }
+        AddColumnDefinitionSegment result = new AddColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinitions);
+        if (null != ctx.firstOrAfterColumn()) {
+            Preconditions.checkState(1 == columnDefinitions.size());
+            result.setColumnPosition(getColumnPositionSegment(columnDefinitions.iterator().next(), (ColumnPositionSegment) visit(ctx.firstOrAfterColumn())));
         }
         return result;
     }
