@@ -36,16 +36,20 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropTa
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OperateColumnClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OutOfLineRefConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RelationalPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VirtualColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterIndexStatement;
@@ -56,7 +60,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.visitor.OracleVisitor;
 
 import java.util.Collection;
@@ -67,17 +71,24 @@ import java.util.LinkedList;
  */
 public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor {
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
         result.getTables().add((TableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
-            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
-            result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
-            for (SQLSegment each : createDefinition.getAllSQLSegments()) {
-                result.getAllSQLSegments().add(each);
-                if (each instanceof TableSegment) {
-                    result.getTables().add((TableSegment) each);
+            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
+            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
+                if (each instanceof ColumnDefinitionSegment) {
+                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    result.getTables().addAll(((ColumnDefinitionSegment) each).getReferencedTables());
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
+                    }
                 }
             }
         }
@@ -86,28 +97,17 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
         for (RelationalPropertyContext each : ctx.relationalProperties().relationalProperty()) {
-            ColumnDefinitionContext columnDefinition = each.columnDefinition();
-            if (null != columnDefinition) {
-                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
-                Collection<TableSegment> tableSegments = getTableSegments(columnDefinition);
-                result.getTables().addAll(tableSegments);
-                result.getAllSQLSegments().addAll(tableSegments);
+            if (null != each.columnDefinition()) {
+                result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
-            if (null != each.outOfLineConstraint() && null != each.outOfLineConstraint().referencesClause() && null != each.outOfLineConstraint().referencesClause().tableName()) {
-                TableSegment tableSegment = (TableSegment) visit(each.outOfLineConstraint().referencesClause().tableName());
-                result.getTables().add(tableSegment);
-                result.getAllSQLSegments().add(tableSegment);
+            if (null != each.outOfLineConstraint()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.outOfLineConstraint()));
             }
-            if (null != each.outOfLineRefConstraint() && null != each.outOfLineRefConstraint().referencesClause() && null != each.outOfLineRefConstraint().referencesClause().tableName()) {
-                TableSegment tableSegment = (TableSegment) visit(each.outOfLineRefConstraint().referencesClause().tableName());
-                result.getTables().add(tableSegment);
-                result.getAllSQLSegments().add(tableSegment);
+            if (null != each.outOfLineRefConstraint()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.outOfLineRefConstraint()));
             }
-        }
-        if (result.getColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
         }
         return result;
     }
@@ -115,12 +115,22 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
-        boolean isPrimaryKey = containsPrimaryKey(ctx);
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
+        boolean isPrimaryKey = isPrimaryKey(ctx);
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        for (InlineConstraintContext each : ctx.inlineConstraint()) {
+            if (null != each.referencesClause()) {
+                result.getReferencedTables().add((TableSegment) visit(each.referencesClause().tableName()));
+            }
+        }
+        if (null != ctx.inlineRefConstraint()) {
+            result.getReferencedTables().add((TableSegment) visit(ctx.inlineRefConstraint().tableName()));
+        }
+        return result;
     }
     
-    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
+    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
         for (InlineConstraintContext each : ctx.inlineConstraint()) {
             if (null != each.primaryKey()) {
                 return true;
@@ -148,6 +158,28 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
             if (null != each.referencesClause()) {
                 result.add((TableSegment) visit(each.referencesClause().tableName()));
             }
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitOutOfLineConstraint(final OutOfLineConstraintContext ctx) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.primaryKey()) {
+            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
+        }
+        if (null != ctx.referencesClause()) {
+            result.setReferencedTable((TableSegment) visit(ctx.referencesClause().tableName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitOutOfLineRefConstraint(final OutOfLineRefConstraintContext ctx) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.referencesClause()) {
+            result.setReferencedTable((TableSegment) visit(ctx.referencesClause().tableName()));
         }
         return result;
     }

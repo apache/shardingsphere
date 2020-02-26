@@ -23,27 +23,20 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.Abstra
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected column definition.
+ * Expected constraint definition.
  */
 @Getter
 @Setter
-public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
-    
-    @XmlAttribute
-    private String type;
-    
-    @XmlAttribute(name = "primary-key")
-    private boolean primaryKey;
-    
-    @XmlElement
-    private ExpectedColumn column;
+public final class ExpectedConstraintDefinition extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "referenced-table")
-    private final List<ExpectedTable> referencedTables = new LinkedList<>();
+    private ExpectedTable referencedTable;
+    
+    @XmlElement(name = "primary-key-column")
+    private List<ExpectedColumn> primaryKeyColumns = new LinkedList<>();
 }

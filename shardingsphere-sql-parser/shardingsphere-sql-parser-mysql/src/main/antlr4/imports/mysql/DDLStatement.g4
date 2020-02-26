@@ -56,6 +56,12 @@ alterDatabase
     : ALTER (DATABASE | SCHEMA) schemaName createDatabaseSpecification_*
     ;
 
+createDatabaseSpecification_
+    : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
+    | DEFAULT? COLLATE EQ_? collationName_
+    | DEFAULT ENCRYPTION EQ_ Y_N_
+    ;
+
 dropDatabse
     : DROP (DATABASE | SCHEMA) (IF EXISTS)? schemaName
     ;
@@ -232,40 +238,36 @@ tableNotExistClause_
     ;
 
 createDefinitionClause
-    : LP_ createDefinitions RP_
-    ;
-
-createDatabaseSpecification_
-    : DEFAULT? (CHARACTER SET | CHARSET) EQ_? characterSetName_
-    | DEFAULT? COLLATE EQ_? collationName_
-    | DEFAULT ENCRYPTION EQ_ Y_N_
-    ;
-
-createDefinitions
-    : createDefinition (COMMA_ createDefinition)*
+    : LP_ createDefinition (COMMA_ createDefinition)* RP_
     ;
 
 createDefinition
-    : columnDefinition | indexDefinition_ | constraintDefinition | checkConstraintDefinition_
+    : columnDefinition | indexDefinition_ | constraintDefinition | checkConstraintDefinition
     ;
 
 columnDefinition
-    : columnName dataType (inlineDataType* | generatedDataType*)
+    : columnName dataType (storageOption* | generatedOption*)
     ;
 
-inlineDataType
-    : commonDataTypeOption
+storageOption
+    : dataTypeGenericOption
     | AUTO_INCREMENT
     | DEFAULT (literals | expr)
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
     ;
 
-commonDataTypeOption
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition | COMMENT STRING_
+generatedOption
+    : dataTypeGenericOption
+    | (GENERATED ALWAYS)? AS expr
+    | (VIRTUAL | STORED)
     ;
 
-checkConstraintDefinition_
+dataTypeGenericOption
+    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition | referenceDefinition | COMMENT STRING_
+    ;
+
+checkConstraintDefinition
     : (CONSTRAINT ignoredIdentifier_?)? CHECK expr (NOT? ENFORCED)?
     ;
 
@@ -275,12 +277,6 @@ referenceDefinition
 
 referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
-    ;
-
-generatedDataType
-    : commonDataTypeOption
-    | (GENERATED ALWAYS)? AS expr
-    | (VIRTUAL | STORED)
     ;
 
 indexDefinition_
@@ -308,10 +304,10 @@ indexOption_
     ;
 
 constraintDefinition
-    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption)
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption | uniqueOption_ | foreignKeyOption)
     ;
 
-primaryKeyOption_
+primaryKeyOption
     : primaryKey indexType_? columnNames indexOption_*
     ;
 
@@ -344,7 +340,7 @@ alterSpecification
     | addColumnSpecification
     | addIndexSpecification
     | addConstraintSpecification
-    | ADD checkConstraintDefinition_
+    | ADD checkConstraintDefinition
     | DROP CHECK ignoredIdentifier_
     | ALTER CHECK ignoredIdentifier_ NOT? ENFORCED
     | ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)

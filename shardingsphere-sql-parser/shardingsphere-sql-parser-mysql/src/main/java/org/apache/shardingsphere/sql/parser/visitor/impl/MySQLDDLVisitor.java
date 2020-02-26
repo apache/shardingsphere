@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CheckConstraintDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDefinitionClauseContext;
@@ -41,14 +42,15 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropPri
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FirstOrAfterColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ForeignKeyOptionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedDataTypeContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InlineDataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeneratedOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StorageOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
@@ -57,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.RenameC
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnAfterPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnFirstPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -67,7 +70,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
 import java.util.Collection;
@@ -80,44 +83,44 @@ import java.util.List;
  */
 public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getTables().add(table);
         if (null != ctx.createDefinitionClause()) {
-            CreateTableStatement createDefinition = (CreateTableStatement) visit(ctx.createDefinitionClause());
-            result.getColumnDefinitions().addAll(createDefinition.getColumnDefinitions());
-            for (SQLSegment each : createDefinition.getAllSQLSegments()) {
-                result.getAllSQLSegments().add(each);
-                if (each instanceof TableSegment) {
-                    result.getTables().add((TableSegment) each);
+            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
+            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
+                if (each instanceof ColumnDefinitionSegment) {
+                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    result.getTables().addAll(((ColumnDefinitionSegment) each).getReferencedTables());
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
+                    }
                 }
             }
-        }
-        if (null != ctx.createLikeClause()) {
-            result.getTables().add((TableSegment) visit(ctx.createLikeClause()));
         }
         return result;
     }
     
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
-        for (CreateDefinitionContext each : ctx.createDefinitions().createDefinition()) {
-            ColumnDefinitionContext columnDefinition = each.columnDefinition();
-            if (null != columnDefinition) {
-                result.getColumnDefinitions().add((ColumnDefinitionSegment) visit(columnDefinition));
-                result.getAllSQLSegments().addAll(getTableSegments(columnDefinition));
+        CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
+        for (CreateDefinitionContext each : ctx.createDefinition()) {
+            if (null != each.columnDefinition()) {
+                result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
-            ConstraintDefinitionContext constraintDefinition = each.constraintDefinition();
-            ForeignKeyOptionContext foreignKeyOption = null == constraintDefinition ? null : constraintDefinition.foreignKeyOption();
-            if (null != foreignKeyOption) {
-                result.getAllSQLSegments().add((TableSegment) visit(foreignKeyOption));
+            if (null != each.constraintDefinition()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.constraintDefinition()));
             }
-        }
-        if (result.getColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getColumnDefinitions());
+            if (null != each.checkConstraintDefinition()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.checkConstraintDefinition()));
+            }
         }
         return result;
     }
@@ -222,23 +225,59 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
-        boolean isPrimaryKey = containsPrimaryKey(ctx);
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        IdentifierValue dataType = (IdentifierValue) visit(ctx.dataType().dataTypeName());
+        boolean isPrimaryKey = isPrimaryKey(ctx);
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+        result.getReferencedTables().addAll(getReferencedTables(ctx));
+        return result;
     }
     
-    private boolean containsPrimaryKey(final ColumnDefinitionContext ctx) {
-        for (InlineDataTypeContext each : ctx.inlineDataType()) {
-            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().primaryKey()) {
+    private Collection<TableSegment> getReferencedTables(final ColumnDefinitionContext ctx) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (StorageOptionContext each : ctx.storageOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
+            }
+        }
+        for (GeneratedOptionContext each : ctx.generatedOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
+            }
+        }
+        return result;
+    }
+    
+    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
+        for (StorageOptionContext each : ctx.storageOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().primaryKey()) {
                 return true;
             }
         }
-        for (GeneratedDataTypeContext each : ctx.generatedDataType()) {
-            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().primaryKey()) {
+        for (GeneratedOptionContext each : ctx.generatedOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().primaryKey()) {
                 return true;
             }
         }
         return false;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitConstraintDefinition(final ConstraintDefinitionContext ctx) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.primaryKeyOption()) {
+            result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().columnNames())).getValue());
+        }
+        if (null != ctx.foreignKeyOption()) {
+            result.setReferencedTable((TableSegment) visit(ctx.foreignKeyOption().referenceDefinition()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCheckConstraintDefinition(final CheckConstraintDefinitionContext ctx) {
+        return new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
     
     @Override
@@ -304,14 +343,14 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
         Collection<TableSegment> result = new LinkedList<>();
-        for (InlineDataTypeContext each : columnDefinition.inlineDataType()) {
-            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().referenceDefinition()) {
-                result.add((TableSegment) visit(each.commonDataTypeOption().referenceDefinition()));
+        for (StorageOptionContext each : columnDefinition.storageOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
             }
         }
-        for (GeneratedDataTypeContext each : columnDefinition.generatedDataType()) {
-            if (null != each.commonDataTypeOption() && null != each.commonDataTypeOption().referenceDefinition()) {
-                result.add((TableSegment) visit(each.commonDataTypeOption().referenceDefinition()));
+        for (GeneratedOptionContext each : columnDefinition.generatedOption()) {
+            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
+                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
             }
         }
         return result;
