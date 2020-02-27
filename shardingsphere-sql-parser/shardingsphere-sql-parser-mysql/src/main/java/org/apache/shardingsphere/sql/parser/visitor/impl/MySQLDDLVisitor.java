@@ -22,7 +22,6 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterTableContext;
@@ -158,10 +157,12 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
                 result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) visit(addColumnSpecification));
                 result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
             }
-            AddConstraintSpecificationContext addConstraintSpecification = each.addConstraintSpecification();
-            ForeignKeyOptionContext foreignKeyOption = null == addConstraintSpecification ? null : addConstraintSpecification.constraintDefinition().foreignKeyOption();
-            if (null != foreignKeyOption) {
-                result.getAllSQLSegments().add((TableSegment) visit(foreignKeyOption));
+            if (null != each.addConstraintSpecification()) {
+                ConstraintDefinitionSegment constraintDefinition = (ConstraintDefinitionSegment) visit(each.addConstraintSpecification().constraintDefinition());
+                result.getAddConstraintDefinitions().add(constraintDefinition);
+                if (constraintDefinition.getReferencedTable().isPresent()) {
+                    result.getAllSQLSegments().add(constraintDefinition.getReferencedTable().get());
+                }
             }
             ChangeColumnSpecificationContext changeColumnSpecification = each.changeColumnSpecification();
             if (null != changeColumnSpecification) {

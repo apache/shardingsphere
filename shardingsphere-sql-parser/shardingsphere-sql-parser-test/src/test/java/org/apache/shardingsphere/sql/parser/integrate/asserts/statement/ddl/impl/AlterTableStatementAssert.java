@@ -29,8 +29,8 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.d
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 
 import java.util.Collection;
@@ -81,8 +81,8 @@ public final class AlterTableStatementAssert {
             count++;
         }
         count = 0;
-        for (AddConstraintDefinitionSegment each : actual.getAddConstraintDefinitions()) {
-            ConstraintDefinitionAssert.assertIs(assertContext, each.getConstraintDefinition(), expected.getAddConstraints().get(count));
+        for (ConstraintDefinitionSegment each : actual.getAddConstraintDefinitions()) {
+            ConstraintDefinitionAssert.assertIs(assertContext, each, expected.getAddConstraints().get(count));
             count++;
         }
     }
