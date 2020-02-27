@@ -369,6 +369,21 @@
     
     <alter-table sql-case-id="alter_table_modify_columns_oracle">
         <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR2">
+                <column name="column4" />
+            </column-definition>
+        </modify-column>
+        <modify-column>
+            <column-definition type="VARCHAR2">
+                <column name="column5" />
+            </column-definition>
+        </modify-column>
+        <modify-column>
+            <column-definition type="VARCHAR2">
+                <column name="column6" />
+            </column-definition>
+        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_columns_oracle">
