@@ -15,46 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
- * Shorthand projection segment.
+ * Owner segment.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class ShorthandProjectionSegment implements ProjectionSegment, OwnerSegmentAvailable {
+public final class OwnerSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String text;
-    
-    private OwnerSegment owner;
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<OwnerSegment> getOwner() {
-        return Optional.fromNullable(owner);
-    }
-    
-    /**
-     * Set owner.
-     * 
-     * @param owner owner
-     */
-    public void setOwner(final OwnerSegment owner) {
-        this.owner = owner; 
-    }
+    private final IdentifierValue identifier;
 }

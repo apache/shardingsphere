@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectio
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 
 /**
  * Projection engine.
@@ -71,7 +71,7 @@ public final class ProjectionEngine {
     }
     
     private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
-        Optional<TableSegment> owner = projectionSegment.getOwner();
+        Optional<OwnerSegment> owner = projectionSegment.getOwner();
         return new ShorthandProjection(owner.isPresent() ? owner.get().getIdentifier().getValue() : null);
     }
     

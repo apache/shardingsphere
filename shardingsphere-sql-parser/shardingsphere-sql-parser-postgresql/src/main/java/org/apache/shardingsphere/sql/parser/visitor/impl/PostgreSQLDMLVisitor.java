@@ -80,6 +80,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicat
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -316,7 +317,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
             ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex(), shorthand.getText());
             IdentifierValue identifier = new IdentifierValue(shorthand.identifier().getText());
-            result.setOwner(new TableSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
+            result.setOwner(new OwnerSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
             return result;
         }
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
