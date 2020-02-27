@@ -21,6 +21,7 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import com.alibaba.nacos.api.exception.NacosException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
@@ -36,10 +37,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
 
 public class NacosConfigInstanceTest {
     
@@ -74,7 +76,7 @@ public class NacosConfigInstanceTest {
         nacosConfigCenter.persist("/sharding/test", value);
         verify(configService).publishConfig("sharding.test", group, value);
     }
-    
+
     @Test
     @SneakyThrows
     public void assertGet() {
@@ -100,6 +102,68 @@ public class NacosConfigInstanceTest {
         };
         nacosConfigCenter.watch("/sharding/test", listener);
         Assert.assertEquals(expectValue, actualValue[0]);
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertGetWithNonExistentKey() {
+        when(configService.getConfig(eq("sharding.nonExistentKey"), eq(group), anyLong())).thenReturn(null);
+        Assert.assertEquals(null, nacosConfigCenter.get("/sharding/nonExistentKey"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertGetWhenThrowException() {
+        doThrow(NacosException.class).when(configService).getConfig(eq("sharding.test"), eq(group), anyLong());
+        Assert.assertEquals(null, nacosConfigCenter.get("/sharding/test"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertUpdate() {
+        String updatedValue = "newValue";
+        nacosConfigCenter.persist("/sharding/test", updatedValue);
+        verify(configService).publishConfig("sharding.test", group, updatedValue);
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertWatchUpdatedChangedType() {
+        final String expectValue = "expectValue";
+        final String[] actualValue = {null};
+        final DataChangedEvent.ChangedType[] actualType = {null};
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
+                .when(configService)
+                .addListener(anyString(), anyString(), any(Listener.class));
+        DataChangedEventListener listener = new DataChangedEventListener() {
+
+            @Override
+            public void onChange(final DataChangedEvent dataChangedEvent) {
+                actualValue[0] = dataChangedEvent.getValue();
+                actualType[0] = dataChangedEvent.getChangedType();
+            }
+        };
+        nacosConfigCenter.watch("/sharding/test", listener);
+        Assert.assertEquals(expectValue, actualValue[0]);
+        Assert.assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertWatchDeletedChangedType() {
+        final DataChangedEvent.ChangedType[] actualType = {null};
+        doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null)))
+                .when(configService)
+                .addListener(anyString(), anyString(), any(Listener.class));
+        DataChangedEventListener listener = new DataChangedEventListener() {
+
+            @Override
+            public void onChange(final DataChangedEvent dataChangedEvent) {
+                actualType[0] = dataChangedEvent.getChangedType();
+            }
+        };
+        nacosConfigCenter.watch("/sharding/test", listener);
+        Assert.assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
     }
     
     private VoidAnswer3 getListenerAnswer(final String expectValue) {
