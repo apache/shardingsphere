@@ -22,12 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ColumnDefinitionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ColumnPositionAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedAddColumnDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 
@@ -68,14 +70,19 @@ public final class AlterTableStatementAssert {
         assertThat(assertContext.getText("Added column definitions size assertion error: "), actual.getAddColumnDefinitions().size(), is(expected.getAddColumns().size()));
         int count = 0;
         for (AddColumnDefinitionSegment each : actual.getAddColumnDefinitions()) {
-            ExpectedAddColumnDefinition addColumnDefinition = expected.getAddColumns().get(count);
-            assertColumnDefinitions(assertContext, each.getColumnDefinitions(), addColumnDefinition.getColumnDefinitions());
+            ExpectedAddColumnDefinition expectedAddColumnDefinition = expected.getAddColumns().get(count);
+            assertColumnDefinitions(assertContext, each.getColumnDefinitions(), expectedAddColumnDefinition.getColumnDefinitions());
             if (each.getColumnPosition().isPresent()) {
-                assertNotNull(assertContext.getText("Column position should exist."), addColumnDefinition.getColumnPosition());
-                ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), addColumnDefinition.getColumnPosition());
+                assertNotNull(assertContext.getText("Column position should exist."), expectedAddColumnDefinition.getColumnPosition());
+                ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedAddColumnDefinition.getColumnPosition());
             } else {
-                assertNull(assertContext.getText("Column position should not exist."), addColumnDefinition.getColumnPosition());
+                assertNull(assertContext.getText("Column position should not exist."), expectedAddColumnDefinition.getColumnPosition());
             }
+            count++;
+        }
+        count = 0;
+        for (AddConstraintDefinitionSegment each : actual.getAddConstraintDefinitions()) {
+            ConstraintDefinitionAssert.assertIs(assertContext, each.getConstraintDefinition(), expected.getAddConstraints().get(count));
             count++;
         }
     }

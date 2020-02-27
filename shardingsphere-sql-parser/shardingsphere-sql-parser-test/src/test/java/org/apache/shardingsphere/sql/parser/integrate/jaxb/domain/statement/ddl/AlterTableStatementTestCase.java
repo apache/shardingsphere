@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedAddColumnDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedColumnPosition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedConstraintDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
@@ -41,6 +42,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "add-column")
     private final List<ExpectedAddColumnDefinition> addColumns = new LinkedList<>();
+    
+    @XmlElement(name = "add-constraints")
+    private final List<ExpectedConstraintDefinition> addConstraints = new LinkedList<>();
     
     @XmlElement(name = "position-changed-column")
     private final List<ExpectedColumnPosition> positionChangedColumns = new LinkedList<>();
