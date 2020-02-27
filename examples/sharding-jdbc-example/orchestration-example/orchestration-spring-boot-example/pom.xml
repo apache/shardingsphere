@@ -23,12 +23,15 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+            <artifactId>sharding-orchestration-center-zookeeper-curator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-nacos</artifactId>
-            <version>${project.version}</version>
+            <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-center-nacos</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba.nacos</groupId>

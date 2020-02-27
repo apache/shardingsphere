@@ -59,7 +59,7 @@
             </encrypt:tables>
             <encrypt:encryptors>
                 <encrypt:encryptor id="name_encryptor" type="AES" props-ref="props"/>
-                <encrypt:encryptor id="pwd_encryptor" type="assistedTest" />
+                <encrypt:encryptor id="pwd_encryptor" type="MD5" />
             </encrypt:encryptors>
         </encrypt:encrypt-rule>
         <encrypt:props>
@@ -67,7 +67,7 @@
         </encrypt:props>
     </encrypt:data-source>
 
-    <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" registry-center-ref="regCenter" overwrite="true" />
+    <orchestraion:encrypt-data-source id="encryptDataSource" data-source-ref="realEncryptDataSource" instance-ref="regCenter,confCenter" overwrite="true"/>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

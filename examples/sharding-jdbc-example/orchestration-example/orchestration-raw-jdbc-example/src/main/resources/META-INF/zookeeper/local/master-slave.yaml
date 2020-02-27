@@ -24,9 +24,10 @@ props:
   sql.show: true
 
 orchestration:
-  name: demo_yaml_ds_ms
-  overwrite: true
-  registry:
-    type: zookeeper
+  demo_yaml_ds_ms:
+    orchestrationType: config_center,registry_center
+    instanceType: zookeeper
     serverLists: localhost:2181
     namespace: orchestration-yaml-demo
+    props:
+      overwrite: true

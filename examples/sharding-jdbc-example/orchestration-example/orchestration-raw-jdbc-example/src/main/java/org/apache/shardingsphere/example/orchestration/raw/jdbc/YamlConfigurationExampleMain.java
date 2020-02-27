@@ -48,7 +48,7 @@ public class YamlConfigurationExampleMain {
     
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.NACOS;
-
+    
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(registryCenterType, loadConfigFromRegCenter, shardingType);
         try {

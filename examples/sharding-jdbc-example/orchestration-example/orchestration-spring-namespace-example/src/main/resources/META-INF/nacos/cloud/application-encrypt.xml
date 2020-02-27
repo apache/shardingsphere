@@ -32,7 +32,7 @@
     <import resource="classpath*:META-INF/nacos/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
 
-    <orchestraion:encrypt-data-source id="encryptDataSource" registry-center-ref="regCenter" />
+    <orchestraion:encrypt-data-source id="encryptDataSource" instance-ref="regCenter,confCenter" overwrite="false"/>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="encryptDataSource" />

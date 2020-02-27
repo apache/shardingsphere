@@ -1,10 +1,18 @@
 orchestration:
-  name: demo_yaml_ds_encrypt
-  overwrite: false
-  registry:
-    type: nacos
+  demo_naocs_yaml_ds_encrypt:
+    orchestrationType: config_center
+    instanceType: nacos
     serverLists: localhost:8848
-    namespace:
+    namespace: orchestration-yaml-demo
     props:
+      overwrite: false
       group: SHARDING_SPHERE_DEFAULT_GROUP
       timeout: 3000
+
+  demo_zookeeper_yaml_ds_encrypt:
+    orchestrationType: registry_center
+    instanceType: zookeeper
+    serverLists: localhost:2181
+    namespace: orchestration-yaml-demo
+    props:
+      overwrite: true
