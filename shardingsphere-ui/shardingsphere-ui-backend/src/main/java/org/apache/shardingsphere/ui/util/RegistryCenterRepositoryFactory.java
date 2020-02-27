@@ -20,7 +20,7 @@ package org.apache.shardingsphere.ui.util;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperInstance;
 import org.apache.shardingsphere.ui.common.constant.RegistryCenterType;
@@ -30,9 +30,9 @@ import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
  * Registry center factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterFactory {
+public final class RegistryCenterRepositoryFactory {
     
-    private static final ConcurrentHashMap<String, RegistryCenter> REGISTRY_CENTER_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, RegistryCenterRepository> REGISTRY_CENTER_MAP = new ConcurrentHashMap<>();
     
     /**
      * Create registry center instance.
@@ -40,8 +40,8 @@ public final class RegistryCenterFactory {
      * @param config registry center config
      * @return registry center
      */
-    public static RegistryCenter createRegistryCenter(final RegistryCenterConfig config) {
-        RegistryCenter result = REGISTRY_CENTER_MAP.get(config.getName());
+    public static RegistryCenterRepository createRegistryCenter(final RegistryCenterConfig config) {
+        RegistryCenterRepository result = REGISTRY_CENTER_MAP.get(config.getName());
         if (null != result) {
             return result;
         }
