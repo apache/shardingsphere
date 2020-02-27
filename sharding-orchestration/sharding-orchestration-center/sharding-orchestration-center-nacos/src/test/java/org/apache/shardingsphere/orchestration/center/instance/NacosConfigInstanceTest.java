@@ -108,21 +108,21 @@ public class NacosConfigInstanceTest {
     @SneakyThrows
     public void assertGetWithNonExistentKey() {
         when(configService.getConfig(eq("sharding.nonExistentKey"), eq(group), anyLong())).thenReturn(null);
-        Assert.assertEquals(null, nacosConfigCenter.get("/sharding/nonExistentKey"));
+        Assert.assertEquals(null, nacosConfigCenterRepository.get("/sharding/nonExistentKey"));
     }
 
     @Test
     @SneakyThrows
     public void assertGetWhenThrowException() {
         doThrow(NacosException.class).when(configService).getConfig(eq("sharding.test"), eq(group), anyLong());
-        Assert.assertEquals(null, nacosConfigCenter.get("/sharding/test"));
+        Assert.assertEquals(null, nacosConfigCenterRepository.get("/sharding/test"));
     }
 
     @Test
     @SneakyThrows
     public void assertUpdate() {
         String updatedValue = "newValue";
-        nacosConfigCenter.persist("/sharding/test", updatedValue);
+        nacosConfigCenterRepository.persist("/sharding/test", updatedValue);
         verify(configService).publishConfig("sharding.test", group, updatedValue);
     }
 
@@ -143,7 +143,7 @@ public class NacosConfigInstanceTest {
                 actualType[0] = dataChangedEvent.getChangedType();
             }
         };
-        nacosConfigCenter.watch("/sharding/test", listener);
+        nacosConfigCenterRepository.watch("/sharding/test", listener);
         Assert.assertEquals(expectValue, actualValue[0]);
         Assert.assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
     }
@@ -162,7 +162,7 @@ public class NacosConfigInstanceTest {
                 actualType[0] = dataChangedEvent.getChangedType();
             }
         };
-        nacosConfigCenter.watch("/sharding/test", listener);
+        nacosConfigCenterRepository.watch("/sharding/test", listener);
         Assert.assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
     }
     
