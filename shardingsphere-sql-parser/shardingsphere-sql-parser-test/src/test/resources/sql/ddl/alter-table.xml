@@ -346,6 +346,7 @@
     
     <alter-table sql-case-id="alter_table_add_check">
         <table name="t_order" start-index="12" stop-index="18" />
+        <add-constraint />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_columns_oracle">
@@ -427,11 +428,29 @@
     
     <alter-table sql-case-id="alter_table_alter_columns">
         <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR">
+                <column name="column4" />
+            </column-definition>
+        </modify-column>
+        <modify-column>
+            <column-definition type="VARCHAR">
+                <column name="column5" />
+            </column-definition>
+        </modify-column>
+        <modify-column>
+            <column-definition type="VARCHAR">
+                <column name="column6" />
+            </column-definition>
+        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_foreign_key_with_cascade">
         <table name="t_order_item" start-index="12" stop-index="23" />
         <table name="t_order" start-index="86" stop-index="92" />
+        <add-constraint>
+            <referenced-table name="t_order" start-index="86" stop-index="92" />
+        </add-constraint>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_constraints_postgresql">
@@ -498,6 +517,11 @@
     
     <alter-table sql-case-id="alter_table_alter_column_for_postgresql">
         <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR">
+                <column name="column4" />
+            </column-definition>
+        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_alter_column_for_sqlserver">

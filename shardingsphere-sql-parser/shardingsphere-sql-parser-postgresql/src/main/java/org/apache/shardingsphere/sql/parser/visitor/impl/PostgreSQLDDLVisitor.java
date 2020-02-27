@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddColumnSpecificationContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
@@ -38,19 +36,17 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNameClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.RenameColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -112,19 +108,35 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
-        result.getTables().add((TableSegment) visit(ctx.tableNameClause()));
+        TableSegment table = (TableSegment) visit(ctx.tableNameClause().tableName());
+        result.getTables().add(table);
         if (null != ctx.alterDefinitionClause()) {
-            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
-            result.getAddColumnDefinitions().addAll(alterDefinition.getAddColumnDefinitions());
-            result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
-            result.getDropColumnDefinitions().addAll(alterDefinition.getDropColumnDefinitions());
-            for (SQLSegment each : alterDefinition.getAllSQLSegments()) {
-                result.getAllSQLSegments().add(each);
-                if (each instanceof TableSegment) {
-                    result.getTables().add((TableSegment) each);
+            for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
+                if (each instanceof AddColumnDefinitionSegment) {
+                    result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
+                    for (ColumnDefinitionSegment columnDefinition : ((AddColumnDefinitionSegment) each).getColumnDefinitions()) {
+                        result.getTables().addAll(columnDefinition.getReferencedTables());
+                    }
+                } else if (each instanceof ModifyColumnDefinitionSegment) {
+                    result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (null != ((ModifyColumnDefinitionSegment) each).getColumnDefinition()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().addAll(((ModifyColumnDefinitionSegment) each).getColumnDefinition().getReferencedTables());
+                    }
+                } else if (each instanceof DropColumnDefinitionSegment) {
+                    result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
+                    }
                 }
             }
         }
@@ -134,53 +146,24 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
-        final AlterTableStatement result = new AlterTableStatement();
+        CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
+        
         if (null != ctx.alterTableActions()) {
             for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
                 AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
                 if (null != addColumnSpecification) {
-                    CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
-                    for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-                        ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinitions().iterator().next();
-                        result.getAddColumnDefinitions().add(
-                                new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), addColumnDefinition.getColumnDefinitions()));
-                        Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
-                        // TODO refactor SQLStatement
-                        // CHECKSTYLE:OFF
-                        if (columnPositionSegment.isPresent()) {
-                            result.getChangedPositionColumns().add(columnPositionSegment.get());
-                        }
-                        // CHECKSTYLE:ON
-                    }
-                    result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
+                    result.getValue().addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification)).getValue());
                 }
-                AddConstraintSpecificationContext addConstraintSpecification = each.addConstraintSpecification();
-                TableConstraintOptionContext tableConstraintOption = null == addConstraintSpecification || null == addConstraintSpecification.tableConstraint()
-                        ? null : addConstraintSpecification.tableConstraint().tableConstraintOption();
-                if (null != tableConstraintOption && null != tableConstraintOption.tableName()) {
-                    result.getAllSQLSegments().add((TableSegment) visit(tableConstraintOption.tableName()));
+                if (null != each.addConstraintSpecification() && null != each.addConstraintSpecification().tableConstraint()) {
+                    result.getValue().add((ConstraintDefinitionSegment) visit(each.addConstraintSpecification().tableConstraint()));
                 }
-                ModifyColumnSpecificationContext modifyColumnSpecification = each.modifyColumnSpecification();
-                if (null != modifyColumnSpecification) {
-                    Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
-                    // TODO refactor SQLStatement
-                    // CHECKSTYLE:OFF
-                    if (columnPositionSegment.isPresent()) {
-                        result.getChangedPositionColumns().add(columnPositionSegment.get());
-                    }
-                    // CHECKSTYLE:ON
+                if (null != each.modifyColumnSpecification()) {
+                    result.getValue().add((ModifyColumnDefinitionSegment) visit(each.modifyColumnSpecification()));
                 }
-                DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
-                if (null != dropColumnSpecification) {
-                    result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) visit(dropColumnSpecification));
+                if (null != each.dropColumnSpecification()) {
+                    result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnSpecification()));
                 }
             }
-        }
-        if (result.getAddColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getAddColumnDefinitions());
-        }
-        if (result.getChangedPositionColumns().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getChangedPositionColumns());
         }
         return result;
     }
@@ -236,8 +219,11 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     
     @Override
     public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
-        // TODO visit column definition, need to change g4 for modifyColumn
-        return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null);
+        // TODO visit pk and table ref
+        ColumnSegment column = (ColumnSegment) visit(ctx.modifyColumn().columnName());
+        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getQualifiedName(), dataType.getValue(), false);
+        return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     
     @Override
