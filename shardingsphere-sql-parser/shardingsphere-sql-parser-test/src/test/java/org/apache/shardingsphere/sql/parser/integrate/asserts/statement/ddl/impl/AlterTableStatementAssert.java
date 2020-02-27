@@ -26,9 +26,11 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedAddColumnDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedColumnDefinition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedModifyColumnDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
@@ -57,6 +59,8 @@ public final class AlterTableStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertAddColumnDefinitions(assertContext, actual, expected);
+        assertAddConstraintDefinitions(assertContext, actual, expected);
+        assertModifyColumnDefinitions(assertContext, actual, expected);
         assertChangeColumnPositions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
     }
@@ -67,7 +71,7 @@ public final class AlterTableStatementAssert {
     }
     
     private static void assertAddColumnDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
-        assertThat(assertContext.getText("Added column definitions size assertion error: "), actual.getAddColumnDefinitions().size(), is(expected.getAddColumns().size()));
+        assertThat(assertContext.getText("Add column definitions size assertion error: "), actual.getAddColumnDefinitions().size(), is(expected.getAddColumns().size()));
         int count = 0;
         for (AddColumnDefinitionSegment each : actual.getAddColumnDefinitions()) {
             ExpectedAddColumnDefinition expectedAddColumnDefinition = expected.getAddColumns().get(count);
@@ -80,17 +84,36 @@ public final class AlterTableStatementAssert {
             }
             count++;
         }
-        count = 0;
-        for (ConstraintDefinitionSegment each : actual.getAddConstraintDefinitions()) {
-            ConstraintDefinitionAssert.assertIs(assertContext, each, expected.getAddConstraints().get(count));
-            count++;
-        }
     }
     
     private static void assertColumnDefinitions(final SQLCaseAssertContext assertContext, final Collection<ColumnDefinitionSegment> actual, final List<ExpectedColumnDefinition> expected) {
         int count = 0;
         for (ColumnDefinitionSegment each : actual) {
             ColumnDefinitionAssert.assertIs(assertContext, each, expected.get(count));
+            count++;
+        }
+    }
+    
+    private static void assertAddConstraintDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        int count = 0;
+        for (ConstraintDefinitionSegment each : actual.getAddConstraintDefinitions()) {
+            ConstraintDefinitionAssert.assertIs(assertContext, each, expected.getAddConstraints().get(count));
+            count++;
+        }
+    }
+    
+    private static void assertModifyColumnDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Modify column definitions size assertion error: "), actual.getModifyColumnDefinitions().size(), is(expected.getModifyColumns().size()));
+        int count = 0;
+        for (ModifyColumnDefinitionSegment each : actual.getModifyColumnDefinitions()) {
+            ExpectedModifyColumnDefinition expectedModifyColumnDefinition = expected.getModifyColumns().get(count);
+            ColumnDefinitionAssert.assertIs(assertContext, each.getColumnDefinition(), expectedModifyColumnDefinition.getColumnDefinition());
+            if (each.getColumnPosition().isPresent()) {
+                assertNotNull(assertContext.getText("Column position should exist."), expectedModifyColumnDefinition.getColumnPosition());
+                ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedModifyColumnDefinition.getColumnPosition());
+            } else {
+                assertNull(assertContext.getText("Column position should not exist."), expectedModifyColumnDefinition.getColumnPosition());
+            }
             count++;
         }
     }
