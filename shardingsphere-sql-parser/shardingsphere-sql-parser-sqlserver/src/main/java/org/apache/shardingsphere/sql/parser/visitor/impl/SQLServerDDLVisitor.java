@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterColumnAddOptionContext;
@@ -39,13 +38,12 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Mod
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -164,19 +162,35 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
-        result.getTables().add((TableSegment) visit(ctx.tableName()));
+        TableSegment table = (TableSegment) visit(ctx.tableName());
+        result.getTables().add(table);
         if (null != ctx.alterDefinitionClause()) {
-            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
-            result.getAddColumnDefinitions().addAll(alterDefinition.getAddColumnDefinitions());
-            result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
-            result.getDropColumnDefinitions().addAll(alterDefinition.getDropColumnDefinitions());
-            for (SQLSegment each : alterDefinition.getAllSQLSegments()) {
-                result.getAllSQLSegments().add(each);
-                if (each instanceof TableSegment) {
-                    result.getTables().add((TableSegment) each);
+            for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
+                if (each instanceof AddColumnDefinitionSegment) {
+                    result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
+                    for (ColumnDefinitionSegment columnDefinition : ((AddColumnDefinitionSegment) each).getColumnDefinitions()) {
+                        result.getTables().addAll(columnDefinition.getReferencedTables());
+                    }
+                } else if (each instanceof ModifyColumnDefinitionSegment) {
+                    result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (null != ((ModifyColumnDefinitionSegment) each).getColumnDefinition()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().addAll(((ModifyColumnDefinitionSegment) each).getColumnDefinition().getReferencedTables());
+                    }
+                } else if (each instanceof DropColumnDefinitionSegment) {
+                    result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
+                    }
                 }
             }
         }
@@ -186,34 +200,15 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
-        final AlterTableStatement result = new AlterTableStatement();
-        AddColumnSpecificationContext addColumnSpecification = ctx.addColumnSpecification();
-        if (null != addColumnSpecification) {
-            CollectionValue<AddColumnDefinitionSegment> addColumnDefinitions = (CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification);
-            for (AddColumnDefinitionSegment addColumnDefinition : addColumnDefinitions.getValue()) {
-                ColumnDefinitionSegment columnDefinition = addColumnDefinition.getColumnDefinitions().iterator().next();
-                result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(columnDefinition.getStartIndex(), columnDefinition.getStopIndex(), addColumnDefinition.getColumnDefinitions()));
-                Optional<ColumnPositionSegment> columnPositionSegment = addColumnDefinition.getColumnPosition();
-                if (columnPositionSegment.isPresent()) {
-                    result.getChangedPositionColumns().add(columnPositionSegment.get());
-                }
-            }
+        CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
+        if (null != ctx.addColumnSpecification()) {
+            result.getValue().addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(ctx.addColumnSpecification())).getValue());
         }
-        ModifyColumnSpecificationContext modifyColumnSpecification = ctx.modifyColumnSpecification();
-        if (null != modifyColumnSpecification) {
-            Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
-            if (columnPositionSegment.isPresent()) {
-                result.getChangedPositionColumns().add(columnPositionSegment.get());
-            }
+        if (null != ctx.modifyColumnSpecification()) {
+            result.getValue().add((ModifyColumnDefinitionSegment) visit(ctx.modifyColumnSpecification()));
         }
         if (null != ctx.alterDrop() && null != ctx.alterDrop().dropColumnSpecification()) {
-            result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) visit(ctx.alterDrop().dropColumnSpecification()));
-        }
-        if (result.getAddColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getAddColumnDefinitions());
-        }
-        if (result.getChangedPositionColumns().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getChangedPositionColumns());
+            result.getValue().add((DropColumnDefinitionSegment) visit(ctx.alterDrop().dropColumnSpecification()));
         }
         return result;
     }
@@ -236,8 +231,11 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     
     @Override
     public ASTNode visitModifyColumnSpecification(final ModifyColumnSpecificationContext ctx) {
-        // TODO visit column definition, need to change g4 for modifyColumn
-        return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null);
+        // TODO visit pk and table ref
+        ColumnSegment column = (ColumnSegment) visit(ctx.alterColumnOperation().columnName());
+        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getQualifiedName(), dataType.getValue(), false);
+        return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     
     @Override

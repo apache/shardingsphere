@@ -33,12 +33,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinit
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -64,7 +64,6 @@ public final class AlterTableStatementAssert {
         assertAddColumnDefinitions(assertContext, actual, expected);
         assertAddConstraintDefinitions(assertContext, actual, expected);
         assertModifyColumnDefinitions(assertContext, actual, expected);
-//        assertChangeColumnPositions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
     }
     
@@ -122,22 +121,20 @@ public final class AlterTableStatementAssert {
     }
     
     private static void assertDropColumns(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
-        assertThat(assertContext.getText("Drop columns size assertion error: "), actual.getDropColumnDefinitions().size(), is(expected.getDropColumns().size()));
+        Collection<ColumnSegment> actualDropColumns = getDropColumns(actual);
+        assertThat(assertContext.getText("Drop columns size assertion error: "), actualDropColumns.size(), is(expected.getDropColumns().size()));
         int count = 0;
-        for (DropColumnDefinitionSegment each : actual.getDropColumnDefinitions()) {
-            for (ColumnSegment column : each.getColumns()) {
-                ColumnAssert.assertIs(assertContext, column, expected.getDropColumns().get(count));
-            }
+        for (ColumnSegment each : actualDropColumns) {
+            ColumnAssert.assertIs(assertContext, each, expected.getDropColumns().get(count));
             count++;
         }
     }
     
-    private static void assertChangeColumnPositions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
-        assertThat(assertContext.getText("Changed column positions size assertion error: "), actual.getChangedPositionColumns().size(), is(expected.getPositionChangedColumns().size()));
-        int count = 0;
-        for (ColumnPositionSegment each : actual.getChangedPositionColumns()) {
-            ColumnPositionAssert.assertIs(assertContext, each, expected.getPositionChangedColumns().get(count));
-            count++;
+    private static Collection<ColumnSegment> getDropColumns(final AlterTableStatement actual) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (DropColumnDefinitionSegment each : actual.getDropColumnDefinitions()) {
+            result.addAll(each.getColumns());
         }
+        return result;
     }
 }

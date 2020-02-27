@@ -502,5 +502,10 @@
     
     <alter-table sql-case-id="alter_table_alter_column_for_sqlserver">
         <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR">
+                <column name="column4" />
+            </column-definition>
+        </modify-column>
     </alter-table>
 </sql-parser-test-cases>
