@@ -27,7 +27,6 @@ import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.AdditionalAnswers;
@@ -42,8 +41,9 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doThrow;
+import static org.junit.Assert.assertEquals;
 
-public class NacosConfigInstanceTest {
+public final class NacosConfigInstanceTest {
     
     private static ConfigCenterRepository nacosConfigCenterRepository = new NacosConfigInstanceRepository();
     
@@ -68,7 +68,7 @@ public class NacosConfigInstanceTest {
         configServiceField.setAccessible(true);
         configServiceField.set(nacosConfigCenterRepository, configService);
     }
-    
+
     @Test
     @SneakyThrows
     public void assertPersist() {
@@ -82,7 +82,7 @@ public class NacosConfigInstanceTest {
     public void assertGet() {
         String value = "value";
         when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn(value);
-        Assert.assertEquals(value, nacosConfigCenterRepository.get("/sharding/test"));
+        assertEquals(value, nacosConfigCenterRepository.get("/sharding/test"));
     }
     
     @Test
@@ -101,21 +101,21 @@ public class NacosConfigInstanceTest {
             }
         };
         nacosConfigCenterRepository.watch("/sharding/test", listener);
-        Assert.assertEquals(expectValue, actualValue[0]);
+        assertEquals(expectValue, actualValue[0]);
     }
 
     @Test
     @SneakyThrows
     public void assertGetWithNonExistentKey() {
         when(configService.getConfig(eq("sharding.nonExistentKey"), eq(group), anyLong())).thenReturn(null);
-        Assert.assertEquals(null, nacosConfigCenterRepository.get("/sharding/nonExistentKey"));
+        assertEquals(null, nacosConfigCenterRepository.get("/sharding/nonExistentKey"));
     }
 
     @Test
     @SneakyThrows
     public void assertGetWhenThrowException() {
         doThrow(NacosException.class).when(configService).getConfig(eq("sharding.test"), eq(group), anyLong());
-        Assert.assertEquals(null, nacosConfigCenterRepository.get("/sharding/test"));
+        assertEquals(null, nacosConfigCenterRepository.get("/sharding/test"));
     }
 
     @Test
@@ -144,8 +144,8 @@ public class NacosConfigInstanceTest {
             }
         };
         nacosConfigCenterRepository.watch("/sharding/test", listener);
-        Assert.assertEquals(expectValue, actualValue[0]);
-        Assert.assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
+        assertEquals(expectValue, actualValue[0]);
+        assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class NacosConfigInstanceTest {
             }
         };
         nacosConfigCenterRepository.watch("/sharding/test", listener);
-        Assert.assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
+        assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
     }
     
     private VoidAnswer3 getListenerAnswer(final String expectValue) {
