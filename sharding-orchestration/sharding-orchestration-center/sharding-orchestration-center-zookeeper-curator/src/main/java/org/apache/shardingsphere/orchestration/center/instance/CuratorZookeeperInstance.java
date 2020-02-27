@@ -31,8 +31,8 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Distributed lock center for zookeeper with curator.
  */
-public final class CuratorZookeeperInstance implements ConfigCenter, RegistryCenter {
+public final class CuratorZookeeperInstance implements ConfigCenterRepository, RegistryCenterRepository {
     
     private final Map<String, TreeCache> caches = new HashMap<>();
     

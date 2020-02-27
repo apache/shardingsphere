@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.center.instance;
 import com.ctrip.framework.apollo.mockserver.EmbeddedApollo;
 import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
@@ -47,7 +47,7 @@ public final class ApolloInstanceTest {
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
     
-    private static ConfigCenter configCenter = new ApolloInstance();
+    private static ConfigCenterRepository configCenterRepository = new ApolloInstance();
     
     @BeforeClass
     @SneakyThrows
@@ -57,19 +57,19 @@ public final class ApolloInstanceTest {
         configuration.setNamespace("orchestration");
         Properties properties = new Properties();
         ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
-        FieldSetter.setField(configCenter, ApolloInstance.class.getDeclaredField("configWrapper"), configWrapper);
+        FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("configWrapper"), configWrapper);
     }
     
     @Test
     public void assertGet() {
-        assertThat(configCenter.get("/test/children/2"), is("value2"));
+        assertThat(configCenterRepository.get("/test/children/2"), is("value2"));
     }
     
     @Test
     @SneakyThrows
     public void assertWatch() {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenter.watch("/test/children/1", new DataChangedEventListener() {
+        configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
             
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {

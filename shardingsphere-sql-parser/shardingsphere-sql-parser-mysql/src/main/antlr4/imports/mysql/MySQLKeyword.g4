@@ -1979,3 +1979,67 @@ ST_X
 ST_Y
     : S T UL_ Y
     ;
+
+BIT
+    : B I T
+    ;
+
+BOOL
+    : B O O L
+    ;
+
+DEC
+    : D E C
+    ;
+
+VARCHAR
+    : V A R C H A R
+    ;
+
+VARBINARY
+    : V A R B I N A R Y
+    ;
+
+TINYBLOB
+    : T I N Y B L O B
+    ;
+
+TINYTEXT
+    : T I N Y T E X T
+    ;
+
+BLOB
+    : B L O B
+    ;
+
+TEXT
+    : T E X T
+    ;
+
+MEDIUMBLOB
+    : M E D I U M B L O B
+    ;
+
+MEDIUMTEXT
+    : M E D I U M T E X T
+    ;
+
+LONGBLOB
+    : L O N G B L O B
+    ;
+
+LONGTEXT
+    : L O N G T E X T
+    ;
+
+ENUM
+    : E N U M
+    ;
+
+GEOMETRY
+    : G E O M E T R Y
+    ;
+
+JSON
+    : J S O N
+    ;

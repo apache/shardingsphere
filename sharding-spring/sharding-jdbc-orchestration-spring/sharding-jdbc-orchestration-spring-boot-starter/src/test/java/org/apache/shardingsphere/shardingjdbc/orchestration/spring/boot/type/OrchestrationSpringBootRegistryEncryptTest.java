@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepositoryRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.junit.BeforeClass;
@@ -51,7 +51,7 @@ public class OrchestrationSpringBootRegistryEncryptTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestCenter testCenter = new TestCenter();
+        TestCenterRepositoryRepository testCenter = new TestCenterRepositoryRepository();
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource",
             "dataSource: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"

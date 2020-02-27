@@ -110,11 +110,11 @@ You can get more detail from **[hint-example](./sharding-jdbc-example/other-feat
 
 You can get more detail from **[encrypt-example](./sharding-jdbc-example/other-feature-example/encrypt-example)**
 
-### Best Practice for APM
+### Best Practice for APM Integration
 
-We will add APM example recently.
+We will add APM integration example recently.
 
-### Best Practice for sharding-proxy.
+### Best Practice for sharding-proxy
 
 We prefer to add a docker base example recently.
 

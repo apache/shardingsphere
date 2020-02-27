@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
  */
 public final class PropertiesChangedListener extends PostShardingConfigCenterEventListener {
     
-    public PropertiesChangedListener(final String name, final ConfigCenter configCenter) {
-        super(configCenter, Lists.newArrayList(new ConfigurationNode(name).getPropsPath()));
+    public PropertiesChangedListener(final String name, final ConfigCenterRepository configCenterRepository) {
+        super(configCenterRepository, Lists.newArrayList(new ConfigurationNode(name).getPropsPath()));
     }
     
     @Override
