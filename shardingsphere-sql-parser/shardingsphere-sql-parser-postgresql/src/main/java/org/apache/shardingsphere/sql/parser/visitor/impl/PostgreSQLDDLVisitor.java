@@ -229,23 +229,13 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
         return new DropColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(((ColumnSegment) visit(ctx.columnName()))));
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList((ColumnSegment) visit(ctx.columnName())));
     }
     
     @Override
     public ASTNode visitRenameColumnSpecification(final RenameColumnSpecificationContext ctx) {
         return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                 ((ColumnSegment) visit(ctx.columnName(0))).getIdentifier().getValue(), ((ColumnSegment) visit(ctx.columnName(1))).getIdentifier().getValue());
-    }
-    
-    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ColumnConstraintContext each : columnDefinition.columnConstraint()) {
-            if (null != each.columnConstraintOption().tableName()) {
-                result.add((TableSegment) visit(each.columnConstraintOption().tableName()));
-            }
-        }
-        return result;
     }
     
     @SuppressWarnings("unchecked")
