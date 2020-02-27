@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
@@ -164,25 +163,29 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
                     result.getAllSQLSegments().add(constraintDefinition.getReferencedTable().get());
                 }
             }
-            ChangeColumnSpecificationContext changeColumnSpecification = each.changeColumnSpecification();
-            if (null != changeColumnSpecification) {
-                Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(changeColumnSpecification)).getColumnPosition();
-                if (columnPositionSegment.isPresent()) {
-                    result.getChangedPositionColumns().add(columnPositionSegment.get());
+            if (null != each.changeColumnSpecification()) {
+                ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
+                        each.changeColumnSpecification().getStart().getStartIndex(), each.changeColumnSpecification().getStop().getStopIndex(), 
+                        (ColumnDefinitionSegment) visit(each.changeColumnSpecification().columnDefinition()));
+                if (null != each.changeColumnSpecification().firstOrAfterColumn()) {
+                    modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(each.changeColumnSpecification().firstOrAfterColumn()));
                 }
-                result.getAllSQLSegments().addAll(getTableSegments(changeColumnSpecification.columnDefinition()));
+                result.getModifyColumnDefinitions().add(modifyColumnDefinition);
+                result.getAllSQLSegments().addAll(getTableSegments(each.changeColumnSpecification().columnDefinition()));
+            }
+            if (null != each.modifyColumnSpecification()) {
+                ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
+                        each.modifyColumnSpecification().getStart().getStartIndex(), each.modifyColumnSpecification().getStop().getStopIndex(),
+                        (ColumnDefinitionSegment) visit(each.modifyColumnSpecification().columnDefinition()));
+                if (null != each.modifyColumnSpecification().firstOrAfterColumn()) {
+                    modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(each.modifyColumnSpecification().firstOrAfterColumn()));
+                }
+                result.getModifyColumnDefinitions().add(modifyColumnDefinition);
+                result.getAllSQLSegments().addAll(getTableSegments(each.modifyColumnSpecification().columnDefinition()));
             }
             DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
             if (null != dropColumnSpecification) {
                 result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(dropColumnSpecification)).getColumnNames());
-            }
-            ModifyColumnSpecificationContext modifyColumnSpecification = each.modifyColumnSpecification();
-            if (null != modifyColumnSpecification) {
-                Optional<ColumnPositionSegment> columnPositionSegment = ((ModifyColumnDefinitionSegment) visit(modifyColumnSpecification)).getColumnPosition();
-                if (columnPositionSegment.isPresent()) {
-                    result.getChangedPositionColumns().add(columnPositionSegment.get());
-                }
-                result.getAllSQLSegments().addAll(getTableSegments(modifyColumnSpecification.columnDefinition()));
             }
         }
         if (result.getAddColumnDefinitions().isEmpty()) {
