@@ -170,11 +170,42 @@ public final class SchemaChangedListenerTest {
         assertThat(actual, instanceOf(SchemaDeletedEvent.class));
         assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("logic_db"));
     }
-
+    
     @Test
     public void assertCreateWithInvalidNodeChangedEvent() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db", DATA_SOURCE_YAML, ChangedType.DELETED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
+    }
+    
+    @Test
+    public void assertCreateWithNullShardingSchemaName() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/datasource", DATA_SOURCE_YAML, ChangedType.DELETED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
+    }
+    
+    @Test
+    public void assertCreateAddedEventWithEncryptRuleConfigurationForNewSchema() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/encrypt_db/rule", ENCRYPT_RULE_YAML, ChangedType.UPDATED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(EncryptRuleChangedEvent.class));
+        assertThat(((EncryptRuleChangedEvent) actual).getEncryptRuleConfiguration(), instanceOf(EncryptRuleConfiguration.class));
+    }
+    
+    @Test
+    public void assertCreateAddedEventWithShardingRuleConfigurationForNewSchema() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML, ChangedType.UPDATED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(ShardingRuleChangedEvent.class));
+        assertThat(((ShardingRuleChangedEvent) actual).getShardingRuleConfiguration(), instanceOf(ShardingRuleConfiguration.class));
+    }
+    
+    @Test
+    public void assertCreateAddedEventWithMasterSlaveRuleConfigurationForNewSchema() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/masterslave_db/rule", MASTER_SLAVE_RULE_YAML, ChangedType.UPDATED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(MasterSlaveRuleChangedEvent.class));
+        assertThat(((MasterSlaveRuleChangedEvent) actual).getMasterSlaveRuleConfiguration(), instanceOf(MasterSlaveRuleConfiguration.class));
     }
 }
