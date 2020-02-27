@@ -19,7 +19,7 @@ package org.apache.shardingsphere.ui.web.controller;
 
 import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterConfigService;
-import org.apache.shardingsphere.ui.util.RegistryCenterFactory;
+import org.apache.shardingsphere.ui.util.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
 import org.apache.shardingsphere.ui.web.response.ResponseResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +82,7 @@ public final class RegistryCenterController {
      */
     @RequestMapping(value = "/connect", method = RequestMethod.POST)
     public ResponseResult<Boolean> connect(@RequestBody final RegistryCenterConfig config) {
-        RegistryCenterFactory.createRegistryCenter(registryCenterConfigService.load(config.getName()));
+        RegistryCenterRepositoryFactory.createRegistryCenter(registryCenterConfigService.load(config.getName()));
         registryCenterConfigService.setActivated(config.getName());
         return ResponseResultUtil.build(Boolean.TRUE);
     }
