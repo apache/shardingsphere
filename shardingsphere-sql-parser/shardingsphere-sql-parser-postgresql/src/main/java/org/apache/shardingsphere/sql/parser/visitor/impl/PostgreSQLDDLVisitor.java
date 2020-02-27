@@ -120,7 +120,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
             AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
             result.getAddColumnDefinitions().addAll(alterDefinition.getAddColumnDefinitions());
             result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
-            result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());
+            result.getDropColumnDefinitions().addAll(alterDefinition.getDropColumnDefinitions());
             for (SQLSegment each : alterDefinition.getAllSQLSegments()) {
                 result.getAllSQLSegments().add(each);
                 if (each instanceof TableSegment) {
@@ -172,7 +172,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
                 }
                 DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
                 if (null != dropColumnSpecification) {
-                    result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(dropColumnSpecification)).getColumnNames());
+                    result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) visit(dropColumnSpecification));
                 }
             }
         }
@@ -243,7 +243,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
         return new DropColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue()));
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(((ColumnSegment) visit(ctx.columnName()))));
     }
     
     @Override

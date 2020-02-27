@@ -46,7 +46,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StorageOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
@@ -73,7 +73,6 @@ import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * DDL visitor for MySQL.
@@ -127,20 +126,31 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         return visit(ctx.tableName());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement();
         TableSegment table = (TableSegment) visit(ctx.tableName());
         result.getTables().add(table);
         if (null != ctx.alterDefinitionClause()) {
-            AlterTableStatement alterDefinition = (AlterTableStatement) visit(ctx.alterDefinitionClause());
-            result.getAddColumnDefinitions().addAll(alterDefinition.getAddColumnDefinitions());
-            result.getChangedPositionColumns().addAll(alterDefinition.getChangedPositionColumns());
-            result.getDroppedColumnNames().addAll(alterDefinition.getDroppedColumnNames());
-            for (SQLSegment each : alterDefinition.getAllSQLSegments()) {
-                result.getAllSQLSegments().add(each);
-                if (each instanceof TableSegment) {
-                    result.getTables().add((TableSegment) each);
+            for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
+                if (each instanceof AddColumnDefinitionSegment) {
+                    result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
+                    for (ColumnDefinitionSegment columnDefinition : ((AddColumnDefinitionSegment) each).getColumnDefinitions()) {
+                        result.getTables().addAll(columnDefinition.getReferencedTables());
+                    }
+                } else if (each instanceof ModifyColumnDefinitionSegment) {
+                    result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
+                    result.getTables().addAll(((ModifyColumnDefinitionSegment) each).getColumnDefinition().getReferencedTables());
+                } else if (each instanceof DropColumnDefinitionSegment) {
+                    result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    // CHECKSTYLE:OFF
+                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
+                        // CHECKSTYLE:ON
+                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
+                    }
                 }
             }
         }
@@ -149,19 +159,13 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
-        final AlterTableStatement result = new AlterTableStatement();
+        CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
         for (AlterSpecificationContext each : ctx.alterSpecification()) {
-            AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
-            if (null != addColumnSpecification) {
-                result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) visit(addColumnSpecification));
-                result.getAllSQLSegments().addAll(getTableSegments(addColumnSpecification.columnDefinition()));
+            if (null != each.addColumnSpecification()) {
+                result.getValue().add((AddColumnDefinitionSegment) visit(each.addColumnSpecification()));
             }
             if (null != each.addConstraintSpecification()) {
-                ConstraintDefinitionSegment constraintDefinition = (ConstraintDefinitionSegment) visit(each.addConstraintSpecification().constraintDefinition());
-                result.getAddConstraintDefinitions().add(constraintDefinition);
-                if (constraintDefinition.getReferencedTable().isPresent()) {
-                    result.getAllSQLSegments().add(constraintDefinition.getReferencedTable().get());
-                }
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.addConstraintSpecification().constraintDefinition()));
             }
             if (null != each.changeColumnSpecification()) {
                 ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
@@ -170,8 +174,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
                 if (null != each.changeColumnSpecification().firstOrAfterColumn()) {
                     modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(each.changeColumnSpecification().firstOrAfterColumn()));
                 }
-                result.getModifyColumnDefinitions().add(modifyColumnDefinition);
-                result.getAllSQLSegments().addAll(getTableSegments(each.changeColumnSpecification().columnDefinition()));
+                result.getValue().add(modifyColumnDefinition);
             }
             if (null != each.modifyColumnSpecification()) {
                 ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
@@ -180,19 +183,11 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
                 if (null != each.modifyColumnSpecification().firstOrAfterColumn()) {
                     modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(each.modifyColumnSpecification().firstOrAfterColumn()));
                 }
-                result.getModifyColumnDefinitions().add(modifyColumnDefinition);
-                result.getAllSQLSegments().addAll(getTableSegments(each.modifyColumnSpecification().columnDefinition()));
+                result.getValue().add(modifyColumnDefinition);
             }
-            DropColumnSpecificationContext dropColumnSpecification = each.dropColumnSpecification();
-            if (null != dropColumnSpecification) {
-                result.getDroppedColumnNames().addAll(((DropColumnDefinitionSegment) visit(dropColumnSpecification)).getColumnNames());
+            if (null != each.dropColumnSpecification()) {
+                result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnSpecification()));
             }
-        }
-        if (result.getAddColumnDefinitions().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getAddColumnDefinitions());
-        }
-        if (result.getChangedPositionColumns().isEmpty()) {
-            result.getAllSQLSegments().addAll(result.getChangedPositionColumns());
         }
         return result;
     }
@@ -276,8 +271,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-        return new DropColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList(((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue()));
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList((ColumnSegment) visit(ctx.columnName())));
     }
     
     @Override
@@ -318,31 +312,13 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitFirstOrAfterColumn(final FirstOrAfterColumnContext ctx) {
-        return null == ctx.columnName() ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null)
-                : new ColumnAfterPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
-    }
-    
-    private Collection<TableSegment> getTableSegments(final List<ColumnDefinitionContext> columnDefinitions) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (ColumnDefinitionContext each : columnDefinitions) {
-            result.addAll(getTableSegments(each));
+        String columnName = null;
+        if (null != ctx.columnName()) {
+            columnName = ((ColumnSegment) visit(ctx.columnName())).getQualifiedName();
         }
-        return result;
-    }
-    
-    private Collection<TableSegment> getTableSegments(final ColumnDefinitionContext columnDefinition) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (StorageOptionContext each : columnDefinition.storageOption()) {
-            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
-                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
-            }
-        }
-        for (GeneratedOptionContext each : columnDefinition.generatedOption()) {
-            if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
-                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
-            }
-        }
-        return result;
+        return null == ctx.columnName() ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName)
+                : new ColumnAfterPositionSegment(
+                        ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName, ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
     }
     
     private ColumnPositionSegment getColumnPositionSegment(final ColumnDefinitionSegment columnDefinition, final ColumnPositionSegment columnPosition) {
