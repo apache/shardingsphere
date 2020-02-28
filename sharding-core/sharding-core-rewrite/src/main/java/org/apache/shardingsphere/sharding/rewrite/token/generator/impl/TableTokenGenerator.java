@@ -172,14 +172,9 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
                 && isTable(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get(), tablesContext);
     }
     
-    private boolean isToGenerateTableToken(final TablesContext tablesContext, final OrderByItemSegment each) {
-        return each instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent() 
-                && isTable(((ColumnOrderByItemSegment) each).getColumn().getOwner().get(), tablesContext);
-    }
-    
-    private boolean isToGenerateTableToken(final SQLStatementContext sqlStatementContext, final TableSegment tableSegment) {
-        Optional<Table> table = sqlStatementContext.getTablesContext().find(tableSegment.getIdentifier().getValue());
-        return table.isPresent() && !table.get().getAlias().isPresent() && shardingRule.findTableRule(table.get().getName()).isPresent();
+    private boolean isToGenerateTableToken(final TablesContext tablesContext, final OrderByItemSegment orderByItemSegment) {
+        return orderByItemSegment instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getOwner().isPresent() 
+                && isTable(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getOwner().get(), tablesContext);
     }
     
     private boolean isToGenerateTableToken(final SQLStatement sqlStatement, final TableSegment segment) {
