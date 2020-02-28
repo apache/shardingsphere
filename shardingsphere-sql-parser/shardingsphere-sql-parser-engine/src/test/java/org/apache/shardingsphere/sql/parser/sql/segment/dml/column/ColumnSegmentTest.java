@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.column;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public final class ColumnSegmentTest {
     @Test
     public void assertGetQualifiedNameWithOwner() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        actual.setOwner(new TableSegment(0, 0, new IdentifierValue("tbl")));
+        actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
         assertThat(actual.getQualifiedName(), is("tbl.col"));
     }
 }
