@@ -31,7 +31,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends JDBCReader> getJdbcReaderClass() {
-        return PostgreSQLJDBCReader.class;
+        return PostgreSQLJdbcReader.class;
     }
     
     @Override

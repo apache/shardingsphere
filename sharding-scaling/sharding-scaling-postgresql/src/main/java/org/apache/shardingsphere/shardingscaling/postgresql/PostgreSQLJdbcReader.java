@@ -29,9 +29,9 @@ import java.sql.SQLException;
 /**
  * PostgreSQL JDBC reader.
  */
-public final class PostgreSQLJDBCReader extends AbstractJDBCReader {
+public final class PostgreSQLJdbcReader extends AbstractJDBCReader {
 
-    public PostgreSQLJDBCReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public PostgreSQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
     }
     

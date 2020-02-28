@@ -33,9 +33,9 @@ import java.util.Map;
 /**
  * MySQL JDBC Reader.
  */
-public final class MySQLJDBCReader extends AbstractJDBCReader {
+public final class MySQLJdbcReader extends AbstractJDBCReader {
     
-    public MySQLJDBCReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public MySQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
         JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
         jdbcDataSourceConfiguration.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfiguration.getJdbcUrl()));

@@ -31,7 +31,7 @@ public final class MySQLScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends JDBCReader> getJdbcReaderClass() {
-        return MySQLJDBCReader.class;
+        return MySQLJdbcReader.class;
     }
     
     @Override
