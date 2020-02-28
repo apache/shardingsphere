@@ -40,21 +40,8 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     
     private OwnerSegment owner;
     
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
+    @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.fromNullable(owner);
-    }
-    
-    /**
-     * Set owner.
-     * 
-     * @param owner owner
-     */
-    public void setOwner(final OwnerSegment owner) {
-        this.owner = owner; 
     }
 }

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegment
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.schema.SchemaAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
@@ -68,7 +70,9 @@ public final class TableAssert {
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
-            SchemaAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
+            // TODO OwnerAssert is necessary.
+            OwnerSegment owner = actual.getOwner().get();
+            SchemaAssert.assertIs(assertContext, new SchemaSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }

@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -156,7 +156,7 @@ public final class TablesContextTest {
         selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 10, new IdentifierValue("table_1"))));
+        when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 10, new IdentifierValue("table_1"))));
         assertTrue(tablesContext.findTableName(columnSegment, null).isPresent());
     }
     
@@ -193,7 +193,7 @@ public final class TablesContextTest {
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         InsertStatement sqlStatement = new InsertStatement();
         TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
-        tableSegment.setOwner(new SchemaSegment(0, 0, new IdentifierValue("schema")));
+        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         sqlStatement.setTable(tableSegment);
         new TablesContext(sqlStatement);
     }

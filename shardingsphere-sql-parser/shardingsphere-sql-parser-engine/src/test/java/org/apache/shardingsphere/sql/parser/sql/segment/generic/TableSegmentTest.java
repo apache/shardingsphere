@@ -34,7 +34,7 @@ public final class TableSegmentTest {
     @Test
     public void getStartIndexWithOwner() {
         TableSegment tableSegment = new TableSegment(10, 13, new IdentifierValue("tbl"));
-        tableSegment.setOwner(new SchemaSegment(7, 8, new IdentifierValue("o")));
+        tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("o")));
         assertThat(tableSegment.getStartIndex(), is(7));
     }
 }

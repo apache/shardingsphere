@@ -436,16 +436,20 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         if (expr instanceof PredicateSegment) {
             PredicateSegment predicate = (PredicateSegment) expr;
             if (predicate.getColumn().getOwner().isPresent()) {
-                result.getValue().add(predicate.getColumn().getOwner().get());
+                result.getValue().add(createTableSegment(predicate.getColumn().getOwner().get()));
             }
             if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
-                result.getValue().add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
+                result.getValue().add(createTableSegment(((ColumnSegment) predicate.getRightValue()).getOwner().get()));
             }
             if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
-                result.getValue().add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
+                result.getValue().add(createTableSegment(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get()));
             }
         }
         return result;
+    }
+    
+    private TableSegment createTableSegment(final OwnerSegment ownerSegment) {
+        return new TableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier());
     }
     
     @Override
