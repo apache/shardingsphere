@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.statement;
 
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-
-import java.util.Collection;
 
 /**
  * SQL statement.
@@ -33,11 +30,4 @@ public interface SQLStatement extends ASTNode {
      * @return count of parameters
      */
     int getParametersCount();
-    
-    /**
-     * Get all SQL segments.
-     * 
-     * @return all SQL segments
-     */
-    Collection<SQLSegment> getAllSQLSegments();
 }

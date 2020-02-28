@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingRegistryCenterEventListener;
@@ -33,7 +33,7 @@ public final class DataSourceStateChangedListener extends PostShardingRegistryCe
     
     private final StateNode stateNode;
     
-    public DataSourceStateChangedListener(final String name, final RegistryCenter regCenter) {
+    public DataSourceStateChangedListener(final String name, final RegistryCenterRepository regCenter) {
         super(regCenter, new StateNode(name).getDataSourcesNodeFullRootPath());
         stateNode = new StateNode(name);
     }

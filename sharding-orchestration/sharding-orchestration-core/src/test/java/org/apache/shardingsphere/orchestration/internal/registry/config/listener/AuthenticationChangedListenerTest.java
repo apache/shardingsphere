@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.junit.Before;
@@ -38,11 +38,11 @@ public final class AuthenticationChangedListenerTest {
     private AuthenticationChangedListener authenticationChangedListener;
     
     @Mock
-    private ConfigCenter configCenter;
+    private ConfigCenterRepository configCenterRepository;
     
     @Before
     public void setUp() {
-        authenticationChangedListener = new AuthenticationChangedListener("test", configCenter);
+        authenticationChangedListener = new AuthenticationChangedListener("test", configCenterRepository);
     }
     
     @Test

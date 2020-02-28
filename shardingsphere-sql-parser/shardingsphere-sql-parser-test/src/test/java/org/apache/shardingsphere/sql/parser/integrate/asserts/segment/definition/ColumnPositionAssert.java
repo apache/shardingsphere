@@ -46,12 +46,12 @@ public final class ColumnPositionAssert {
         assertThat(assertContext.getText("Column change position name assertion error: "), actual.getColumnName(), is(expected.getColumn().getName()));
         // TODO assert start index and stop index
         if (actual instanceof ColumnAfterPositionSegment) {
-            assertNotNull(assertContext.getText("Assignments should existed."), expected.getAfterColumn());
+            assertNotNull(assertContext.getText("Assignments should exist."), expected.getAfterColumn());
             assertThat(assertContext.getText("Column change position after name assertion error: "), 
                     ((ColumnAfterPositionSegment) actual).getAfterColumnName(), is(expected.getAfterColumn().getName()));
             // TODO assert start index and stop index
         } else {
-            assertNull(assertContext.getText("Assignments should not existed."), expected.getAfterColumn());
+            assertNull(assertContext.getText("Assignments should not exist."), expected.getAfterColumn());
         }
     }
 }

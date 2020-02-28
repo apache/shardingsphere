@@ -24,8 +24,8 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
@@ -49,9 +49,9 @@ import java.util.Properties;
 @Slf4j
 public final class ShardingOrchestrationFacade implements AutoCloseable {
     
-    private final RegistryCenter regCenter;
+    private final RegistryCenterRepository registryCenterRepository;
     
-    private final ConfigCenter configCenter;
+    private final ConfigCenterRepository configCenterRepository;
     
     private final boolean isOverwrite;
     
@@ -66,17 +66,19 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         Optional<String> registryCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), OrchestrationType.REGISTRY_CENTER.getValue());
         Preconditions.checkArgument(registryCenterName.isPresent(), "Can not find instance configuration with registry center orchestration type.");
         InstanceConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
-        regCenter = new RegistryCenterServiceLoader().load(registryCenterConfiguration);
-        stateService = new StateService(registryCenterName.get(), regCenter);
+        registryCenterRepository = new RegistryCenterServiceLoader().load(registryCenterConfiguration);
+        stateService = new StateService(registryCenterName.get(), registryCenterRepository);
         Optional<String> configCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), OrchestrationType.CONFIG_CENTER.getValue());
         Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
         InstanceConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
-        configCenter = new ConfigCenterServiceLoader().load(configCenterConfiguration);
+        configCenterRepository = new ConfigCenterServiceLoader().load(configCenterConfiguration);
         isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertiesEnum.OVERWRITE);
-        configService = new ConfigurationService(configCenterName.get(), configCenter);
+        configService = new ConfigurationService(configCenterName.get(), configCenterRepository);
         listenerManager = shardingSchemaNames.isEmpty()
-                ? new ShardingOrchestrationListenerManager(registryCenterName.get(), regCenter, configCenterName.get(), configCenter, configService.getAllShardingSchemaNames())
-                : new ShardingOrchestrationListenerManager(registryCenterName.get(), regCenter, configCenterName.get(), configCenter, shardingSchemaNames);
+                ? new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,
+                                                            configCenterName.get(), configCenterRepository, configService.getAllShardingSchemaNames())
+                : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,
+                                                            configCenterName.get(), configCenterRepository, shardingSchemaNames);
     }
     
     /**
@@ -109,7 +111,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     @Override
     public void close() {
         try {
-            regCenter.close();
+            registryCenterRepository.close();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

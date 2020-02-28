@@ -19,18 +19,21 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Column projection segment.
  */
-public final class ColumnProjectionSegment extends ColumnSegment implements ProjectionSegment {
+public final class ColumnProjectionSegment extends ColumnSegment implements ProjectionSegment, AliasAvailable {
     
     @Getter
     private final String text;
     
+    @Setter
     private AliasSegment alias;
     
     public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
@@ -41,19 +44,8 @@ public final class ColumnProjectionSegment extends ColumnSegment implements Proj
         }
     }
     
-    /**
-     * Get alias.
-     * @return alias
-     */
+    @Override
     public Optional<String> getAlias() {
         return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
-    }
-    
-    /**
-     * Set alias.
-     * @param alias alias
-     */
-    public void setAlias(final AliasSegment alias) {
-        this.alias = alias;
     }
 }

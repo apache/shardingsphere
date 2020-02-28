@@ -37,14 +37,19 @@ pipeline {
                         deleteDir()
                         checkout scm
                         sh 'git submodule update --init'
-                    } catch (exc) {
-                        error 'Build failed'
-                        sh 'exit 1'
+                    } catch (e) {
+                        currentBuild.result = 'FAILURE'
+                        throw e
                     }
                 }
             }
         }
         stage('Build & Test') {
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
             tools {
                 // use at least Apache Maven 3.3.1 to have .mvn/jvm.config support
                 maven 'Maven 3.6.2'

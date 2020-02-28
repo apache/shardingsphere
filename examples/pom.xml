@@ -121,6 +121,11 @@
                 <artifactId>sharding-orchestration-reg-etcd</artifactId>
                 <version>${shardingsphere.spi.impl.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-common</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
             
             <dependency>
                 <groupId>org.aspectj</groupId>

@@ -21,10 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ColumnDefinitionAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 
@@ -47,6 +49,7 @@ public final class CreateTableStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertColumnDefinitions(assertContext, actual, expected);
+        assertConstraintDefinitions(assertContext, actual, expected);
         assertIndexes(assertContext, actual, expected);
     }
     
@@ -60,6 +63,15 @@ public final class CreateTableStatementAssert {
         int count = 0;
         for (ColumnDefinitionSegment each : actual.getColumnDefinitions()) {
             ColumnDefinitionAssert.assertIs(assertContext, each, expected.getColumnDefinitions().get(count));
+            count++;
+        }
+    }
+    
+    private static void assertConstraintDefinitions(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Constraint definitions size assertion error: "), actual.getConstraintDefinitions().size(), is(expected.getConstraintDefinitions().size()));
+        int count = 0;
+        for (ConstraintDefinitionSegment each : actual.getConstraintDefinitions()) {
+            ConstraintDefinitionAssert.assertIs(assertContext, each, expected.getConstraintDefinitions().get(count));
             count++;
         }
     }

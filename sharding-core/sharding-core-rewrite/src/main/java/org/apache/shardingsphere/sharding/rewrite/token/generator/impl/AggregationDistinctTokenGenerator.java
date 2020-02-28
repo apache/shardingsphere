@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.AggregationDistinctToken;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.AggregationDistinctToken;
 
 import java.util.Collection;
 import java.util.LinkedList;
