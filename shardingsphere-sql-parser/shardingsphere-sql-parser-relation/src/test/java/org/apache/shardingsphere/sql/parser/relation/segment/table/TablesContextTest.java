@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -194,7 +193,7 @@ public final class TablesContextTest {
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         InsertStatement sqlStatement = new InsertStatement();
         TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
-        tableSegment.setOwner(new SchemaSegment(0, 0, new IdentifierValue("schema")));
+        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         sqlStatement.setTable(tableSegment);
         new TablesContext(sqlStatement);
     }
