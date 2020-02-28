@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.core.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 
 import javax.sql.DataSource;
 
@@ -35,13 +35,13 @@ public final class DataSourceFactory {
      * @return new data source
      */
     public DataSource newInstance(final DataSourceConfiguration dataSourceConfiguration) {
-        if (dataSourceConfiguration instanceof JdbcDataSourceConfiguration) {
-            return newInstanceDataSourceByJDBC((JdbcDataSourceConfiguration) dataSourceConfiguration);
+        if (dataSourceConfiguration instanceof JDBCDataSourceConfiguration) {
+            return newInstanceDataSourceByJDBC((JDBCDataSourceConfiguration) dataSourceConfiguration);
         }
         throw new UnsupportedOperationException("Unsupported data source configuration");
     }
     
-    private DataSource newInstanceDataSourceByJDBC(final JdbcDataSourceConfiguration dataSourceConfiguration) {
+    private DataSource newInstanceDataSourceByJDBC(final JDBCDataSourceConfiguration dataSourceConfiguration) {
         HikariDataSource result = new HikariDataSource();
         result.setJdbcUrl(dataSourceConfiguration.getJdbcUrl());
         result.setUsername(dataSourceConfiguration.getUsername());

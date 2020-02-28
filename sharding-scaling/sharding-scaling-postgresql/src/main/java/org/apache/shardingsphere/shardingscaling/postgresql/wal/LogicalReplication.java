@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql.wal;
 
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.postgresql.PGConnection;
 import org.postgresql.PGProperty;
 import org.postgresql.replication.LogSequenceNumber;
@@ -35,11 +35,11 @@ public final class LogicalReplication {
     /**
      *  Create PostgreSQL connection.
      *
-     * @param jdbcDataSourceConfiguration jdbc configuration
+     * @param jdbcDataSourceConfiguration JDBC configuration
      * @return PostgreSQL connection
      * @throws SQLException sql exception
      */
-    public PGConnection createPgConnection(final JdbcDataSourceConfiguration jdbcDataSourceConfiguration) throws SQLException {
+    public PGConnection createPgConnection(final JDBCDataSourceConfiguration jdbcDataSourceConfiguration) throws SQLException {
         return createConnection(jdbcDataSourceConfiguration);
     }
     
@@ -63,7 +63,7 @@ public final class LogicalReplication {
                 .start();
     }
     
-    private PGConnection createConnection(final JdbcDataSourceConfiguration jdbcDataSourceConfiguration) throws SQLException {
+    private PGConnection createConnection(final JDBCDataSourceConfiguration jdbcDataSourceConfiguration) throws SQLException {
         Properties props = new Properties();
         PGProperty.USER.set(props, jdbcDataSourceConfiguration.getUsername());
         PGProperty.PASSWORD.set(props, jdbcDataSourceConfiguration.getPassword());

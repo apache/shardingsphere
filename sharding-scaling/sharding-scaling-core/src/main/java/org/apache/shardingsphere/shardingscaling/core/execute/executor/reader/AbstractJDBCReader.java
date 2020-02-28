@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
@@ -42,10 +42,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * generic jdbc reader implement.
+ * Abstract JDBC reader implement.
  */
 @Slf4j
-public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements JdbcReader {
+public abstract class AbstractJDBCReader extends AbstractSyncExecutor implements JDBCReader {
     
     @Getter(AccessLevel.PROTECTED)
     private final RdbmsConfiguration rdbmsConfiguration;
@@ -57,9 +57,9 @@ public abstract class AbstractJdbcReader extends AbstractSyncExecutor implements
     @Setter
     private Channel channel;
     
-    public AbstractJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-        if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
-            throw new UnsupportedOperationException("AbstractJdbcReader only support JdbcDataSourceConfiguration");
+    public AbstractJDBCReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+        if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
+            throw new UnsupportedOperationException("AbstractJDBCReader only support JDBCDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceManager = dataSourceManager;

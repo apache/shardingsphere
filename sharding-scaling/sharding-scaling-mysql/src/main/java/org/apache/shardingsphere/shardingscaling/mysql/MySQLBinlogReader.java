@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
@@ -61,8 +61,8 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
 
     public MySQLBinlogReader(final RdbmsConfiguration rdbmsConfiguration, final LogPosition binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
-        if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
-            throw new UnsupportedOperationException("MySQLBinlogReader only support JdbcDataSourceConfiguration");
+        if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
+            throw new UnsupportedOperationException("MySQLBinlogReader only support JDBCDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
@@ -76,7 +76,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
 
     @Override
     public void read(final Channel channel) {
-        JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
+        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
         final JdbcUri uri = new JdbcUri(jdbcDataSourceConfiguration.getJdbcUrl());
         MySQLConnector client = new MySQLConnector(123456, uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
         client.connect();

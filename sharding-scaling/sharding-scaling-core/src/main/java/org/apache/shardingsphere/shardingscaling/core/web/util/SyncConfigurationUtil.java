@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingscaling.core.web.util;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
@@ -102,7 +102,7 @@ public class SyncConfigurationUtil {
     private static RdbmsConfiguration createReaderConfiguration(final DataSourceConfiguration dataSourceConfiguration) {
         RdbmsConfiguration result = new RdbmsConfiguration();
         Map<String, Object> dataSourceProperties = dataSourceConfiguration.getProperties();
-        JdbcDataSourceConfiguration readerDataSourceConfiguration = new JdbcDataSourceConfiguration(
+        JDBCDataSourceConfiguration readerDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 dataSourceProperties.containsKey("jdbcUrl") ? dataSourceProperties.get("jdbcUrl").toString() : dataSourceProperties.get("url").toString(),
                 dataSourceProperties.get("username").toString(), dataSourceProperties.get("password").toString());
         result.setDataSourceConfiguration(readerDataSourceConfiguration);
@@ -111,7 +111,7 @@ public class SyncConfigurationUtil {
     
     private static RdbmsConfiguration createWriterConfiguration(final ScalingConfiguration scalingConfiguration) {
         RdbmsConfiguration writerConfiguration = new RdbmsConfiguration();
-        JdbcDataSourceConfiguration writerDataSourceConfiguration = new JdbcDataSourceConfiguration(
+        JDBCDataSourceConfiguration writerDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());

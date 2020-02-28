@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.fixture;
+package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJDBCReader;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public final class FixtureH2JdbcReader extends AbstractJdbcReader {
-    
-    public FixtureH2JdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+/**
+ * PostgreSQL JDBC reader.
+ */
+public final class PostgreSQLJDBCReader extends AbstractJDBCReader {
+
+    public PostgreSQLJDBCReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
     }
     
     @Override
     protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
-        return conn.prepareStatement(sql);
+        PreparedStatement ps = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        ps.setFetchSize(1);
+        return ps;
     }
 }

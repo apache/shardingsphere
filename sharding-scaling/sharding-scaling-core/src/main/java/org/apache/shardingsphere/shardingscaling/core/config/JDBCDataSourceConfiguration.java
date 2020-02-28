@@ -26,12 +26,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Jdbc data source configuration.
+ * JDBC data source configuration.
  */
 @Getter
 @Setter
 @EqualsAndHashCode(exclude = {"databaseType"})
-public final class JdbcDataSourceConfiguration implements DataSourceConfiguration {
+public final class JDBCDataSourceConfiguration implements DataSourceConfiguration {
     
     private String jdbcUrl;
     
@@ -41,7 +41,7 @@ public final class JdbcDataSourceConfiguration implements DataSourceConfiguratio
     
     private DatabaseType databaseType;
     
-    public JdbcDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
+    public JDBCDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
         this.jdbcUrl = jdbcUrl;
         this.username = username;
         this.password = password;

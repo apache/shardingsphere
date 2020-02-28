@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import lombok.Setter;
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.AbstractSyncExecutor;
@@ -57,8 +58,8 @@ public final class PostgreSQLWalReader extends AbstractSyncExecutor implements L
     
     public PostgreSQLWalReader(final RdbmsConfiguration rdbmsConfiguration, final LogPosition logPosition) {
         walPosition = (WalPosition) logPosition;
-        if (!JdbcDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
-            throw new UnsupportedOperationException("PostgreSQLWalReader only support JdbcDataSourceConfiguration");
+        if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
+            throw new UnsupportedOperationException("PostgreSQLWalReader only support JDBCDataSourceConfiguration");
         }
         this.rdbmsConfiguration = rdbmsConfiguration;
         walEventConverter = new WalEventConverter(rdbmsConfiguration);
@@ -73,7 +74,7 @@ public final class PostgreSQLWalReader extends AbstractSyncExecutor implements L
     @Override
     public void read(final Channel channel) {
         try {
-            PGConnection pgConnection = logicalReplication.createPgConnection((JdbcDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
+            PGConnection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
                     PostgreSQLLogPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {

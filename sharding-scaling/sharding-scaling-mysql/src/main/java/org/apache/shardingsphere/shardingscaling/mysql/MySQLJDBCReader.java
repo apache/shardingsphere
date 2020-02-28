@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql;
 
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJDBCReader;
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
@@ -33,15 +33,15 @@ import java.util.Map;
 /**
  * MySQL JDBC Reader.
  */
-public final class MySQLJdbcReader extends AbstractJdbcReader {
+public final class MySQLJDBCReader extends AbstractJDBCReader {
     
-    public MySQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public MySQLJDBCReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
-        JdbcDataSourceConfiguration jdbcDataSourceConfiguration = (JdbcDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
-        jdbcDataSourceConfiguration.setJdbcUrl(fixMysqlUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
+        JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) getRdbmsConfiguration().getDataSourceConfiguration();
+        jdbcDataSourceConfiguration.setJdbcUrl(fixMySQLUrl(jdbcDataSourceConfiguration.getJdbcUrl()));
     }
     
-    private String formatMysqlParams(final Map<String, String> params) {
+    private String formatMySQLParams(final Map<String, String> params) {
         StringBuilder result = new StringBuilder();
         for (Map.Entry<String, String> entry : params.entrySet()) {
             result.append(entry.getKey());
@@ -54,22 +54,21 @@ public final class MySQLJdbcReader extends AbstractJdbcReader {
         return result.toString();
     }
     
-    private String fixMysqlUrl(final String url) {
+    private String fixMySQLUrl(final String url) {
         JdbcUri uri = new JdbcUri(url);
-        return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMysqlParams(uri.getParameters()));
+        return String.format("jdbc:%s://%s/%s?%s", uri.getScheme(), uri.getHost(), uri.getDatabase(), fixMySQLParams(uri.getParameters()));
     }
     
-    private String fixMysqlParams(final Map<String, String> parameters) {
+    private String fixMySQLParams(final Map<String, String> parameters) {
         if (!parameters.containsKey("yearIsDateType")) {
             parameters.put("yearIsDateType", "false");
         }
-        return formatMysqlParams(parameters);
+        return formatMySQLParams(parameters);
     }
     
     @Override
     public Object readValue(final ResultSet resultSet, final int index) throws SQLException {
         if (isDateTimeValue(resultSet.getMetaData().getColumnType(index))) {
-            // fix: jdbc Time objects represent a wall-clock time and not a duration as MySQL treats them
             return resultSet.getString(index);
         } else {
             return resultSet.getObject(index);

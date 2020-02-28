@@ -20,6 +20,6 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
 /**
  * JDBC reader.
  */
-public interface JdbcReader extends Reader {
+public interface JDBCReader extends Reader {
 
 }
