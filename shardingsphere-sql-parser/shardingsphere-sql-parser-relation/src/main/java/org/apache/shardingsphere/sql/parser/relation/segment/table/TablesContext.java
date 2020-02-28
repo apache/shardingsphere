@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.ArrayList;
@@ -64,14 +63,7 @@ public final class TablesContext {
     }
     
     private Collection<TableSegment> getTableSegments(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof TableSegmentAvailable) {
-            TableSegment table = ((TableSegmentAvailable) sqlStatement).getTable();
-            return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
-        }
-        if (sqlStatement instanceof TableSegmentsAvailable) {
-            return ((TableSegmentsAvailable) sqlStatement).getAllTables();
-        }
-        return Collections.emptyList();
+        return sqlStatement instanceof TableSegmentsAvailable ? ((TableSegmentsAvailable) sqlStatement).getAllTables() : Collections.<TableSegment>emptyList();
     }
     
     private void setSchema(final TableSegment tableSegment) {
