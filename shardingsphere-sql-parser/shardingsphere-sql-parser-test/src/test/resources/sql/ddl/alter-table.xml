@@ -74,6 +74,120 @@
             </column-definition>
         </add-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_integer_type_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column name="column4" type="INTEGER">
+            <column name="column4" />
+        </add-column>
+        <add-column name="column5" type="INT">
+            <column name="column5" />
+        </add-column>
+        <add-column name="column6" type="SMALLINT">
+            <column name="column6" />
+        </add-column>
+        <add-column name="column7" type="TINYINT">
+            <column name="column7" />
+        </add-column>
+        <add-column name="column8" type="MEDIUMINT">
+            <column name="column8" />
+        </add-column>
+        <add-column name="column9" type="BIGINT">
+            <column name="column9" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_fixed_point_type_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="decimal">
+            <column name="column4" />
+        </add-column>
+        <add-column name="column5" type="NUMERIC">
+            <column name="column5" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_float_point_type_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="FLOAT">
+            <column name="column4" />
+        </add-column>
+        <add-column name="column5" type="DOUBLE">
+            <column name="column5" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_bit_type_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="bit">
+            <column name="column4" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_date_type_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="DATE">
+            <column name="column4" />
+        </add-column>
+        <add-column type="DATETIME">
+            <column name="column5" />
+        </add-column>
+        <add-column type="TIMESTAMP">
+            <column name="column6" />
+        </add-column>
+        <add-column type="TIME">
+            <column name="column7" />
+        </add-column>
+        <add-column type="YEAR">
+            <column name="column8" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_string_type_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column type="CHAR">
+            <column name="column4" />
+        </add-column>
+        <add-column type="VARCHAR">
+            <column name="column5" />
+        </add-column>
+        <add-column type="BINARY">
+            <column name="column6" />
+        </add-column>
+        <add-column type="VARBINARY">
+            <column name="column7" />
+        </add-column>
+        <add-column type="TINYBLOB">
+            <column name="column8" />
+        </add-column>
+        <add-column type="TINYTEXT">
+            <column name="column9" />
+        </add-column>
+        <add-column type="BLOB">
+            <column name="column10" />
+        </add-column>
+        <add-column type="TEXT">
+            <column name="column11" />
+        </add-column>
+        <add-column type="MEDIUMBLOB">
+            <column name="column12" />
+        </add-column>
+        <add-column type="MEDIUMTEXT">
+            <column name="column13" />
+        </add-column>
+        <add-column type="LONGBLOB">
+            <column name="column14" />
+        </add-column>
+        <add-column type="LONGTEXT">
+            <column name="column15" />
+        </add-column>
+        <add-column type="ENUM">
+            <column name="column16" />
+        </add-column>
+        <add-column type="SET">
+            <column name="column17" />
+        </add-column>
+    </alter-table>
     
     <alter-table sql-case-id="alter_table_add_column_with_first">
         <table name="t_order" start-index="12" stop-index="18" />
