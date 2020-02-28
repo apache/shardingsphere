@@ -156,7 +156,7 @@ public final class ProjectionsContextEngineTest {
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         table.setOwner(new OwnerSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);
-        when(selectStatement.getTables()).thenReturn(Collections.singletonList(tableSegment));
+        when(selectStatement.getAllTables()).thenReturn(Collections.singletonList(tableSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         columnSegment.setOwner(owner);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);

@@ -41,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegmentAvai
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -66,16 +65,11 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<TableToken> result = new LinkedList<>();
         if (sqlStatementContext.getSqlStatement() instanceof TableSegmentsAvailable) {
-            for (TableSegment each : ((TableSegmentsAvailable) sqlStatementContext.getSqlStatement()).getTables()) {
+            for (TableSegment each : ((TableSegmentsAvailable) sqlStatementContext.getSqlStatement()).getAllTables()) {
                 Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext.getSqlStatement(), each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());
                 }
-            }
-        } else if (sqlStatementContext.getSqlStatement() instanceof TableSegmentAvailable && null != ((TableSegmentAvailable) sqlStatementContext.getSqlStatement()).getTable()) {
-            Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext.getSqlStatement(), ((TableSegmentAvailable) sqlStatementContext.getSqlStatement()).getTable());
-            if (tableToken.isPresent()) {
-                result.add(tableToken.get());
             }
         }
         if (sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent()) {

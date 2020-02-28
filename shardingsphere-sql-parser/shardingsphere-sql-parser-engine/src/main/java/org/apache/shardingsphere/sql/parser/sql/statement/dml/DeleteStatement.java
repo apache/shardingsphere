@@ -40,6 +40,11 @@ public final class DeleteStatement extends DMLStatement implements TableSegments
     private WhereSegment where;
     
     @Override
+    public Collection<TableSegment> getAllTables() {
+        return tables;
+    }
+    
+    @Override
     public Optional<WhereSegment> getWhere() {
         return Optional.fromNullable(where);
     }
