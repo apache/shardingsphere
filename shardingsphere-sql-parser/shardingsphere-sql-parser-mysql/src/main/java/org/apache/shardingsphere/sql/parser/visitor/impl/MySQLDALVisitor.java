@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTab
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableValueContext;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.VariableProperty;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
@@ -149,20 +151,25 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        if (null != ctx.variable()) {
-            List<VariableContext> variableContextList = ctx.variable();
-            List<VariableSegment> variableSegmentList = new ArrayList<VariableSegment>();
-            for (VariableContext variableContext : variableContextList) {
-                variableSegmentList.add((VariableSegment) visit(variableContext));
-            }
-            result.setVariable(variableSegmentList.get(0));
-            
+        List<VariableContext> variableContextList = ctx.variable();
+        if (null != variableContextList) {
             List<VariableValueContext> variableValueContextList = ctx.variableValue();
+            if (null == variableValueContextList || variableValueContextList.size() != variableContextList.size()) {
+                throw new SQLParsingException("the variable have %d, but the value number is not %d.", variableContextList.size(), variableContextList.size());
+            }
+            List<VariableProperty> variablePropertyList = new ArrayList<VariableProperty>(variableContextList.size());
+            for (int i = 0; i < variableContextList.size(); i++) {
+                
+                VariableContext variableContext = variableContextList.get(i);
+                VariableProperty variableProperty = new VariableProperty((VariableSegment) visitVariable(variableContextList.get(i)), (VariableValueSegment) visitVariableValue(variableValueContextList.get(i)), variableContext.scopeKeyword() == null ? null : variableContext.scopeKeyword().getText());
+                variablePropertyList.add(variableProperty);
+            }
+            
             List<VariableValueSegment> variableValueSegmentList = new ArrayList<VariableValueSegment>();
             for (VariableValueContext variableValueContext : variableValueContextList) {
                 variableValueSegmentList.add((VariableValueSegment) visit(variableValueContext));
             }
-            result.setVariableValue(variableValueSegmentList.get(0));
+            result.setVariableProperty(variablePropertyList);
         }
         return result;
     }

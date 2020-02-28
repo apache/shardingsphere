@@ -20,8 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dal;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
+import java.util.List;
+
+import org.apache.shardingsphere.sql.parser.sql.statement.VariableProperty;
 
 /**
  * Set statement.
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment
 @Setter
 public final class SetStatement extends DALStatement {
     
-    private VariableSegment variable;
+    private List<VariableProperty> variableProperty;
     
-    private VariableValueSegment variableValue;
 }

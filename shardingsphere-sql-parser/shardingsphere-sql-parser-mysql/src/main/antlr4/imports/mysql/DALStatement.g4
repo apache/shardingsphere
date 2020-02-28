@@ -88,7 +88,7 @@ setVariable
     ;
 
 variableValue
-    : (NUMBER_ | identifier | STRING_ | DEFAULT)
+    : (identifier | NUMBER_ | STRING_ | DEFAULT)
     ;
 
 showBinaryLogs

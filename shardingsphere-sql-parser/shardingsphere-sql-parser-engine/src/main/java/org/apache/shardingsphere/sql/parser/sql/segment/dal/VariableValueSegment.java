@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * VariableValue segment.
- * @author duanchao
  */
 @RequiredArgsConstructor
 @Getter

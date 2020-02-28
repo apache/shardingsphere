@@ -43,7 +43,7 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     public ASTNode visitSet(final SetContext ctx) {
         SetStatement result = new SetStatement();
         if (null != ctx.configurationParameterClause()) {
-            result.setVariable((VariableSegment) visit(ctx.configurationParameterClause()));
+            //result.setVariable((VariableSegment) visit(ctx.configurationParameterClause()));
         }
         return result;
     }

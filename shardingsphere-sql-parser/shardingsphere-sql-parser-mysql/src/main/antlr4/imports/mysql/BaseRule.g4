@@ -110,9 +110,13 @@ unreservedWord
     ;
 
 variable
-    : (AT_? AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? identifier
+    : (AT_? AT_)? scopeKeyword? DOT_? identifier
     ;
-
+	
+scopeKeyword
+    : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
+	;
+	
 schemaName
     : identifier
     ;
