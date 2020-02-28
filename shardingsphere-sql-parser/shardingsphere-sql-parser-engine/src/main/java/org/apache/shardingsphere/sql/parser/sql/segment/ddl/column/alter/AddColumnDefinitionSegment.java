@@ -21,9 +21,11 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+
+import java.util.Collection;
 
 /**
  * Add column definition segment.
@@ -31,13 +33,13 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.Colu
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class AddColumnDefinitionSegment implements SQLSegment {
+public final class AddColumnDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ColumnDefinitionSegment columnDefinition;
+    private final Collection<ColumnDefinitionSegment> columnDefinitions;
     
     private ColumnPositionSegment columnPosition;
     

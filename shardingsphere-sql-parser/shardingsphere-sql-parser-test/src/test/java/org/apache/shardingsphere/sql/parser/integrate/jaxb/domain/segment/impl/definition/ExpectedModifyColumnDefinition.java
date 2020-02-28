@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Drop column definition segment.
+ * Expected modify column definition.
  */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class DropColumnDefinitionSegment implements AlterDefinitionSegment {
+@Setter
+public final class ExpectedModifyColumnDefinition extends AbstractExpectedSQLSegment {
     
-    private final int startIndex;
+    @XmlElement(name = "column-definition")
+    private ExpectedColumnDefinition columnDefinition;
     
-    private final int stopIndex;
-    
-    private final Collection<ColumnSegment> columns;
+    @XmlElement(name = "column-position")
+    private ExpectedColumnPosition columnPosition;
 }

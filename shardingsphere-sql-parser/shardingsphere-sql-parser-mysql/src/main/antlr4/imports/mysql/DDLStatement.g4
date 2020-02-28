@@ -23,14 +23,6 @@ createTable
     : CREATE createTableSpecification_? TABLE tableNotExistClause_ tableName (createDefinitionClause | createLikeClause)
     ;
 
-createIndex
-    : CREATE createIndexSpecification_ INDEX indexName indexType_? ON tableName keyParts_ indexOption_? 
-    (
-        ALGORITHM EQ_? (DEFAULT | INPLACE | COPY) 
-        | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
-    )*
-    ;
-
 alterTable
     : ALTER TABLE tableName alterDefinitionClause?
     ;
@@ -46,6 +38,14 @@ dropIndex
 
 truncateTable
     : TRUNCATE TABLE? tableName
+    ;
+
+createIndex
+    : CREATE createIndexSpecification_ INDEX indexName indexType_? ON tableName keyParts_ indexOption_? 
+    (
+        ALGORITHM EQ_? (DEFAULT | INPLACE | COPY) 
+        | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
+    )*
     ;
 
 createDatabase
@@ -347,6 +347,7 @@ alterSpecification
     | ALTER COLUMN? columnName (SET DEFAULT literals | DROP DEFAULT)
     | ALTER INDEX indexName (VISIBLE | INVISIBLE)
     | changeColumnSpecification
+    | modifyColumnSpecification
     | DEFAULT? characterSet_ collateClause_?
     | CONVERT TO characterSet_ collateClause_?
     | (DISABLE | ENABLE) KEYS
@@ -357,8 +358,7 @@ alterSpecification
     | DROP FOREIGN KEY ignoredIdentifier_
     | FORCE
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
-    | modifyColumnSpecification
-    // TODO hongjun investigate ORDER BY col_name [, col_name] ...
+    // TODO investigate ORDER BY col_name [, col_name] ...
     | ORDER BY columnNames
     | renameColumnSpecification
     | renameIndexSpecification
@@ -431,6 +431,10 @@ changeColumnSpecification
     : CHANGE COLUMN? columnName columnDefinition firstOrAfterColumn?
     ;
 
+modifyColumnSpecification
+    : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
+    ;
+
 dropColumnSpecification
     : DROP COLUMN? columnName
     ;
@@ -441,10 +445,6 @@ dropIndexSpecification
 
 dropPrimaryKeySpecification
     : DROP primaryKey
-    ;
-
-modifyColumnSpecification
-    : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
 
 renameColumnSpecification

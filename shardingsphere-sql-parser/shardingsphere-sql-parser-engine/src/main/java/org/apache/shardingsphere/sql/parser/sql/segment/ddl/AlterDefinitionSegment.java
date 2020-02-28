@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter;
+package org.apache.shardingsphere.sql.parser.sql.segment.ddl;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
- * Drop column definition segment.
+ * Alter definition segment.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public final class DropColumnDefinitionSegment implements AlterDefinitionSegment {
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final Collection<ColumnSegment> columns;
+public interface AlterDefinitionSegment extends SQLSegment {
 }
