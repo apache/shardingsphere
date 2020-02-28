@@ -184,7 +184,7 @@ public final class SQL92DDLVisitor extends SQL92Visitor implements DDLVisitor {
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getAllTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
 }

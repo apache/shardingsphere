@@ -237,7 +237,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getAllTables().add((TableSegment) visit(ctx.tableName()));
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     
@@ -245,7 +245,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        result.getAllTables().add((TableSegment) visit(ctx.tableName()));
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     

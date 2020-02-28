@@ -313,14 +313,14 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getAllTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        result.getAllTables().add((TableSegment) visit(ctx.tableName()));
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     

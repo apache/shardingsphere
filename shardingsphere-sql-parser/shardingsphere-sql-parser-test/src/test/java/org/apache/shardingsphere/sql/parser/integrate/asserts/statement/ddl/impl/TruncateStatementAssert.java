@@ -42,6 +42,6 @@ public final class TruncateStatementAssert {
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final TruncateStatement actual, final TruncateStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getAllTables(), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

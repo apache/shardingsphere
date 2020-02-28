@@ -229,7 +229,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getAllTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
@@ -237,7 +237,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        result.getAllTables().add((TableSegment) visit(ctx.tableName()));
+        result.getTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     

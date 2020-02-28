@@ -220,7 +220,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getAllTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
@@ -228,7 +228,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        result.getAllTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNamesClause())).getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNamesClause())).getValue());
         return result;
     }
     

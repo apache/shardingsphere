@@ -129,7 +129,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
-        result.getAllTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableReferences())).getValue());
+        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableReferences())).getValue());
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -177,9 +177,9 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
         if (null != ctx.multipleTablesClause()) {
-            result.getAllTables().addAll(((CollectionValue<TableSegment>) visit(ctx.multipleTablesClause())).getValue());
+            result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.multipleTablesClause())).getValue());
         } else {
-            result.getAllTables().add((TableSegment) visit(ctx.singleTableClause()));
+            result.getTables().add((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -238,7 +238,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
         if (null != ctx.fromClause()) {
-            result.getAllTables().addAll(((CollectionValue<TableSegment>) visit(ctx.fromClause())).getValue());
+            result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.fromClause())).getValue());
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));

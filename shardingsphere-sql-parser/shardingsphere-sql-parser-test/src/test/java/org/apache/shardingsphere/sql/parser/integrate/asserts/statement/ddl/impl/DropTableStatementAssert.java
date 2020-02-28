@@ -42,6 +42,6 @@ public final class DropTableStatementAssert {
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final DropTableStatement actual, final DropTableStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getAllTables(), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }
