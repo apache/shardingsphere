@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Truncate table statement.
+ * Expected constraint definition.
  */
 @Getter
-public final class TruncateStatement extends DDLStatement implements TableSegmentsAvailable {
+@Setter
+public final class ExpectedConstraintDefinition extends AbstractExpectedSQLSegment {
     
-    private final Collection<TableSegment> tables = new LinkedList<>();
+    @XmlElement(name = "referenced-table")
+    private ExpectedTable referencedTable;
     
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return tables;
-    }
+    @XmlElement(name = "primary-key-column")
+    private List<ExpectedColumn> primaryKeyColumns = new LinkedList<>();
 }

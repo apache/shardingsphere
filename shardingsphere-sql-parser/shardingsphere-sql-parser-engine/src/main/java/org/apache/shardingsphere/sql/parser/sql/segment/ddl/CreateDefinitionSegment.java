@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement;
+package org.apache.shardingsphere.sql.parser.sql.segment.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
- * SQL statement.
+ * Create definition segment.
  */
-public interface SQLStatement extends ASTNode {
-    
-    /**
-     * Get count of parameters.
-     *
-     * @return count of parameters
-     */
-    int getParametersCount();
+public interface CreateDefinitionSegment extends SQLSegment {
 }
