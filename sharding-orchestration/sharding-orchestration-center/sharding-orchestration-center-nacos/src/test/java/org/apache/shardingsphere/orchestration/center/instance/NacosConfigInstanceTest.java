@@ -68,7 +68,7 @@ public final class NacosConfigInstanceTest {
         configServiceField.setAccessible(true);
         configServiceField.set(nacosConfigCenterRepository, configService);
     }
-
+    
     @Test
     @SneakyThrows
     public void assertPersist() {
@@ -76,7 +76,7 @@ public final class NacosConfigInstanceTest {
         nacosConfigCenterRepository.persist("/sharding/test", value);
         verify(configService).publishConfig("sharding.test", group, value);
     }
-
+    
     @Test
     @SneakyThrows
     public void assertGet() {
@@ -103,21 +103,21 @@ public final class NacosConfigInstanceTest {
         nacosConfigCenterRepository.watch("/sharding/test", listener);
         assertEquals(expectValue, actualValue[0]);
     }
-
+    
     @Test
     @SneakyThrows
     public void assertGetWithNonExistentKey() {
         when(configService.getConfig(eq("sharding.nonExistentKey"), eq(group), anyLong())).thenReturn(null);
         assertEquals(null, nacosConfigCenterRepository.get("/sharding/nonExistentKey"));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertGetWhenThrowException() {
         doThrow(NacosException.class).when(configService).getConfig(eq("sharding.test"), eq(group), anyLong());
         assertEquals(null, nacosConfigCenterRepository.get("/sharding/test"));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertUpdate() {
@@ -125,7 +125,7 @@ public final class NacosConfigInstanceTest {
         nacosConfigCenterRepository.persist("/sharding/test", updatedValue);
         verify(configService).publishConfig("sharding.test", group, updatedValue);
     }
-
+    
     @Test
     @SneakyThrows
     public void assertWatchUpdatedChangedType() {
@@ -136,7 +136,7 @@ public final class NacosConfigInstanceTest {
                 .when(configService)
                 .addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = new DataChangedEventListener() {
-
+    
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 actualValue[0] = dataChangedEvent.getValue();
@@ -147,7 +147,7 @@ public final class NacosConfigInstanceTest {
         assertEquals(expectValue, actualValue[0]);
         assertEquals(DataChangedEvent.ChangedType.UPDATED, actualType[0]);
     }
-
+    
     @Test
     @SneakyThrows
     public void assertWatchDeletedChangedType() {
@@ -156,7 +156,7 @@ public final class NacosConfigInstanceTest {
                 .when(configService)
                 .addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = new DataChangedEventListener() {
-
+    
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 actualType[0] = dataChangedEvent.getChangedType();
