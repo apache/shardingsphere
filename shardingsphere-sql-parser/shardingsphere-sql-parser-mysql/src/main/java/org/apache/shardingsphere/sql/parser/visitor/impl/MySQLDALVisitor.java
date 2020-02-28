@@ -33,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTab
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
@@ -41,6 +43,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.CacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
@@ -58,6 +62,16 @@ import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
  * DAL visitor for MySQL.
  */
 public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
+    
+    @Override
+    public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
+        return new AnalyzeTableStatement();
+    }
+    
+    @Override
+    public ASTNode visitCacheIndex(final CacheIndexContext ctx) {
+        return new CacheIndexStatement();
+    }
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {
