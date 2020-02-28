@@ -329,7 +329,7 @@
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
-      title="Data Scaling Seting"
+      title="Data Scaling Setting"
       width="480px"
       center>
       <el-form label-width="110px">
