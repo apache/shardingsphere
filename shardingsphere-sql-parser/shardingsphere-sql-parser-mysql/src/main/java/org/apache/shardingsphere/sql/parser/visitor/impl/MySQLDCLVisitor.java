@@ -57,7 +57,7 @@ public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
         GrantStatement result = new GrantStatement();
         Optional<TableSegment> tableSegment = null == ctx.privilegeClause() ? Optional.<TableSegment>absent() : getTableFromPrivilegeClause(ctx.privilegeClause());
         if (tableSegment.isPresent()) {
-            result.getTables().add(tableSegment.get());
+            result.getAllTables().add(tableSegment.get());
         }
         return result;
     }
@@ -67,7 +67,7 @@ public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
         RevokeStatement result = new RevokeStatement();
         Optional<TableSegment> tableSegment = null == ctx.privilegeClause() ? Optional.<TableSegment>absent() : getTableFromPrivilegeClause(ctx.privilegeClause());
         if (tableSegment.isPresent()) {
-            result.getTables().add(tableSegment.get());
+            result.getAllTables().add(tableSegment.get());
         }
         return result;
     }

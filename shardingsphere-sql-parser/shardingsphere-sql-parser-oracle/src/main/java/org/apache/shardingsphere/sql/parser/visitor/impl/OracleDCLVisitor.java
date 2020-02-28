@@ -52,7 +52,7 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
         GrantStatement result = new GrantStatement();
         if (null != ctx.objectPrivilegeClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
-                result.getTables().add(each);
+                result.getAllTables().add(each);
             }
         }
         return result;
@@ -63,7 +63,7 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
         RevokeStatement result = new RevokeStatement();
         if (null != ctx.objectPrivilegeClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
-                result.getTables().add(each);
+                result.getAllTables().add(each);
             }
         }
         return result;

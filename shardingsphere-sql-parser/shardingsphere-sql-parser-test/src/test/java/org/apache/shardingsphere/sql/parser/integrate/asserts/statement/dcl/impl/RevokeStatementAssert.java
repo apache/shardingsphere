@@ -42,6 +42,6 @@ public final class RevokeStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final RevokeStatement actual, final RevokeStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getAllTables(), expected.getTables());
     }
 }

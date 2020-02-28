@@ -84,7 +84,7 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatement() {
         UpdateStatement result = new UpdateStatement();
-        result.getTables().add(new TableSegment(0, 0, new IdentifierValue("user")));
+        result.getAllTables().add(new TableSegment(0, 0, new IdentifierValue("user")));
         result.setSetAssignment(
                 new SetAssignmentSegment(0, 0, Collections.singletonList(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, "")))));
         return result;
@@ -92,7 +92,7 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private UpdateStatement createUpdateStatementAndParameters(final Object shardingColumnParameter) {
         UpdateStatement result = new UpdateStatement();
-        result.getTables().add(new TableSegment(0, 0, new IdentifierValue("user")));
+        result.getAllTables().add(new TableSegment(0, 0, new IdentifierValue("user")));
         Collection<AssignmentSegment> assignments = Collections.singletonList(
                 new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")), new LiteralExpressionSegment(0, 0, shardingColumnParameter)));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, assignments);

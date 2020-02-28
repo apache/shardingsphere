@@ -69,7 +69,7 @@ public final class ProjectionsContextEngine {
         ProjectionsSegment projectionsSegment = selectStatement.getProjections();
         Collection<Projection> projections = getProjections(sql, projectionsSegment);
         ProjectionsContext result = new ProjectionsContext(
-                projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections, getColumnLabels(selectStatement.getTables(), projections));
+                projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections, getColumnLabels(selectStatement.getAllTables(), projections));
         TablesContext tablesContext = new TablesContext(selectStatement);
         result.getProjections().addAll(getDerivedGroupByColumns(tablesContext, projections, groupByContext));
         result.getProjections().addAll(getDerivedOrderByColumns(tablesContext, projections, orderByContext));

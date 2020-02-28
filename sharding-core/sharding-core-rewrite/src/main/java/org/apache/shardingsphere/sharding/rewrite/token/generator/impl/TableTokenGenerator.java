@@ -67,7 +67,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<TableToken> result = new LinkedList<>();
         if (sqlStatementContext.getSqlStatement() instanceof TableSegmentsAvailable) {
-            for (TableSegment each : ((TableSegmentsAvailable) sqlStatementContext.getSqlStatement()).getTables()) {
+            for (TableSegment each : ((TableSegmentsAvailable) sqlStatementContext.getSqlStatement()).getAllTables()) {
                 Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext.getSqlStatement(), each);
                 if (tableToken.isPresent()) {
                     result.add(tableToken.get());

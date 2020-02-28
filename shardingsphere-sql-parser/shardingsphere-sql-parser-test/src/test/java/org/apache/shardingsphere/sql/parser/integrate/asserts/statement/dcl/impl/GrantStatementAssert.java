@@ -42,6 +42,6 @@ public final class GrantStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final GrantStatement actual, final GrantStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getAllTables(), expected.getTables());
     }
 }

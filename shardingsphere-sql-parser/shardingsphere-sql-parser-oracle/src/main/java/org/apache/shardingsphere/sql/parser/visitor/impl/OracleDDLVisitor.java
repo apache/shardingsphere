@@ -72,21 +72,14 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
-        result.getTables().add((TableSegment) visit(ctx.tableName()));
+        CreateTableStatement result = new CreateTableStatement((TableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
                     result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
-                    result.getTables().addAll(((ColumnDefinitionSegment) each).getReferencedTables());
                 } else if (each instanceof ConstraintDefinitionSegment) {
                     result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
-                    // CHECKSTYLE:OFF
-                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
-                        // CHECKSTYLE:ON
-                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
-                    }
                 }
             }
         }
@@ -162,38 +155,23 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement();
-        TableSegment table = (TableSegment) visit(ctx.tableName());
-        result.getTables().add(table);
+        AlterTableStatement result = new AlterTableStatement((TableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
                     result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
-                    for (ColumnDefinitionSegment columnDefinition : ((AddColumnDefinitionSegment) each).getColumnDefinitions()) {
-                        result.getTables().addAll(columnDefinition.getReferencedTables());
-                    }
                 } else if (each instanceof ModifyColumnDefinitionSegment) {
                     result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
-                    // CHECKSTYLE:OFF
-                    if (null != ((ModifyColumnDefinitionSegment) each).getColumnDefinition()) {
-                        // CHECKSTYLE:ON
-                        result.getTables().addAll(((ModifyColumnDefinitionSegment) each).getColumnDefinition().getReferencedTables());
-                    }
                 } else if (each instanceof DropColumnDefinitionSegment) {
                     result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
                     result.getAddConstraintDefinitions().add((ConstraintDefinitionSegment) each);
-                    // CHECKSTYLE:OFF
-                    if (((ConstraintDefinitionSegment) each).getReferencedTable().isPresent()) {
-                        // CHECKSTYLE:ON
-                        result.getTables().add(((ConstraintDefinitionSegment) each).getReferencedTable().get());
-                    }
                 }
             }
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
@@ -259,7 +237,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getTables().add((TableSegment) visit(ctx.tableName()));
+        result.getAllTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     
@@ -267,7 +245,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        result.getTables().add((TableSegment) visit(ctx.tableName()));
+        result.getAllTables().add((TableSegment) visit(ctx.tableName()));
         return result;
     }
     

@@ -158,12 +158,12 @@ public final class ProjectionsContextEngineTest {
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         table.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);
-        when(selectStatement.getTables()).thenReturn(Collections.singletonList(tableSegment));
+        when(selectStatement.getAllTables()).thenReturn(Collections.singletonList(tableSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         columnSegment.setOwner(tableSegment);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);
         columnProjectionSegment.setOwner(table);
-        when(projectionsSegment.getProjections()).thenReturn(Lists.<ProjectionSegment>newArrayList(columnProjectionSegment, shorthandProjectionSegment));
+        when(projectionsSegment.getProjections()).thenReturn(Lists.newArrayList(columnProjectionSegment, shorthandProjectionSegment));
         OrderByContext orderByContext = mock(OrderByContext.class);
         OrderByItem orderByItem = mock(OrderByItem.class);
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);

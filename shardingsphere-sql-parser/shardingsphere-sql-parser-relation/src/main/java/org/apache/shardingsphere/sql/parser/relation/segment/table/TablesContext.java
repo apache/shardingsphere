@@ -69,7 +69,7 @@ public final class TablesContext {
             return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
         }
         if (sqlStatement instanceof TableSegmentsAvailable) {
-            return ((TableSegmentsAvailable) sqlStatement).getTables();
+            return ((TableSegmentsAvailable) sqlStatement).getAllTables();
         }
         return Collections.emptyList();
     }

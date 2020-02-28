@@ -61,12 +61,12 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
         GrantStatement result = new GrantStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
-                result.getTables().add(each);
+                result.getAllTables().add(each);
             }
         }
         if (null != ctx.classTypePrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
-                result.getTables().add(each);
+                result.getAllTables().add(each);
             }
         }
         return result;
@@ -77,12 +77,12 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
         RevokeStatement result = new RevokeStatement();
         if (null != ctx.classPrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classPrivilegesClause())) {
-                result.getTables().add(each);
+                result.getAllTables().add(each);
             }
         }
         if (null != ctx.classTypePrivilegesClause()) {
             for (TableSegment each : getTableFromPrivilegeClause(ctx.classTypePrivilegesClause())) {
-                result.getTables().add(each);
+                result.getAllTables().add(each);
             }
         }
         return result;

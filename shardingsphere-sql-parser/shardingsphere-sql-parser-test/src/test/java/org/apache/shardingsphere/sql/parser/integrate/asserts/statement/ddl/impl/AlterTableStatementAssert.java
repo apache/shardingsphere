@@ -69,7 +69,7 @@ public final class AlterTableStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         // TODO split old table and new table
-        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getAllTables(), expected.getTables());
     }
     
     private static void assertAddColumnDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
