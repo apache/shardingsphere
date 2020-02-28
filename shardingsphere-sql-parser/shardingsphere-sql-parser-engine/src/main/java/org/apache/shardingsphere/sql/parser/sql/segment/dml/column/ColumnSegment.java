@@ -24,8 +24,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegmentAvailable;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 @Getter
 @Setter
 @ToString
-public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable<TableSegment> {
+public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerSegmentAvailable {
     
     private final int startIndex;
     
@@ -43,7 +43,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     
     private final IdentifierValue identifier;
     
-    private TableSegment owner;
+    private OwnerSegment owner;
     
     /**
      * Get qualified name.
@@ -55,7 +55,7 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
     }
 
     @Override
-    public final Optional<TableSegment> getOwner() {
+    public final Optional<OwnerSegment> getOwner() {
         return Optional.fromNullable(owner);
     }
 }

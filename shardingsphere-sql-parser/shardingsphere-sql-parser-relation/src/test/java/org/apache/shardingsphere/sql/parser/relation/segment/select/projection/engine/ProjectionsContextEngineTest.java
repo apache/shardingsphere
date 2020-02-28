@@ -116,7 +116,7 @@ public final class ProjectionsContextEngineTest {
         OrderByItem orderByItem = mock(OrderByItem.class);
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
+        when(columnSegment.getOwner()).thenReturn(Optional.<OwnerSegment>absent());
         when(columnOrderByItemSegment.getColumn()).thenReturn(columnSegment);
         when(orderByItem.getSegment()).thenReturn(columnOrderByItemSegment);
         when(orderByContext.getItems()).thenReturn(Collections.singletonList(orderByItem));
@@ -137,7 +137,7 @@ public final class ProjectionsContextEngineTest {
         OrderByItem orderByItem = mock(OrderByItem.class);
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 0, new IdentifierValue("tbl"))));
+        when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("tbl"))));
         when(columnOrderByItemSegment.getColumn()).thenReturn(columnSegment);
         when(orderByItem.getSegment()).thenReturn(columnOrderByItemSegment);
         when(orderByContext.getItems()).thenReturn(Collections.singletonList(orderByItem));
@@ -160,9 +160,9 @@ public final class ProjectionsContextEngineTest {
         shorthandProjectionSegment.setOwner(owner);
         when(selectStatement.getTables()).thenReturn(Collections.singletonList(tableSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        columnSegment.setOwner(tableSegment);
+        columnSegment.setOwner(owner);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);
-        columnProjectionSegment.setOwner(table);
+        columnProjectionSegment.setOwner(owner);
         when(projectionsSegment.getProjections()).thenReturn(Lists.<ProjectionSegment>newArrayList(columnProjectionSegment, shorthandProjectionSegment));
         OrderByContext orderByContext = mock(OrderByContext.class);
         OrderByItem orderByItem = mock(OrderByItem.class);

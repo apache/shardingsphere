@@ -117,7 +117,9 @@ public final class ProjectionAssert {
         assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
-            TableAssert.assertOwner(assertContext, actual.getOwner().get(), expected.getOwner());
+            // TODO OwnerAssert is needed.
+            OwnerSegment owner = actual.getOwner().get();
+            TableAssert.assertOwner(assertContext, new TableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
