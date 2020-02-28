@@ -128,12 +128,12 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator {
     
     private Collection<TableToken> getTableTokens(final SQLStatementContext sqlStatementContext, final PredicateSegment predicate) {
         Collection<TableToken> result = new LinkedList<>();
-        if (isToGenerateTableTokenForPredicate(sqlStatementContext.getTablesContext(), predicate)) {
+        if (isToGenerateTableTokenLeftValue(sqlStatementContext.getTablesContext(), predicate)) {
             Preconditions.checkState(predicate.getColumn().getOwner().isPresent());
             OwnerSegment segment = predicate.getColumn().getOwner().get();
             result.add(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
         }
-        if (isToGenerateTableTokenForColumn(sqlStatementContext.getTablesContext(), predicate)) {
+        if (isToGenerateTableTokenForRightValue(sqlStatementContext.getTablesContext(), predicate)) {
             Preconditions.checkState(((ColumnSegment) predicate.getRightValue()).getOwner().isPresent());
             OwnerSegment segment = ((ColumnSegment) predicate.getRightValue()).getOwner().get();
             result.add(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
@@ -146,12 +146,13 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator {
         return result;
     }
     
-    private boolean isToGenerateTableTokenForPredicate(final TablesContext tablesContext, final PredicateSegment predicate) {
+    private boolean isToGenerateTableTokenLeftValue(final TablesContext tablesContext, final PredicateSegment predicate) {
         return predicate.getColumn().getOwner().isPresent() && isTable(predicate.getColumn().getOwner().get(), tablesContext);
     }
     
-    private boolean isToGenerateTableTokenForColumn(final TablesContext tablesContext, final PredicateSegment predicate) {
-        return predicate.getRightValue() instanceof ColumnSegment && predicate.getColumn().getOwner().isPresent() && isTable(predicate.getColumn().getOwner().get(), tablesContext);
+    private boolean isToGenerateTableTokenForRightValue(final TablesContext tablesContext, final PredicateSegment predicate) {
+        return predicate.getRightValue() instanceof ColumnSegment
+                && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent() && isTable(((ColumnSegment) predicate.getRightValue()).getOwner().get(), tablesContext);
     }
     
     private boolean isToGenerateTableTokenForProjection(final TablesContext tablesContext, final PredicateSegment predicate) {
