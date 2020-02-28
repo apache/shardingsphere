@@ -19,9 +19,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.Setter;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.TableToken;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.Table;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
@@ -36,25 +33,22 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByIt
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * Table token generator.
  */
-@Setter
-public final class TableTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware {
-    
-    private ShardingRule shardingRule;
+public final class TableTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -63,14 +57,12 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     
     @Override
     public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext.getSqlStatement() instanceof TableSegmentsAvailable)) {
+            return Collections.emptyList();
+        }
         Collection<TableToken> result = new LinkedList<>();
-        if (sqlStatementContext.getSqlStatement() instanceof TableSegmentsAvailable) {
-            for (TableSegment each : ((TableSegmentsAvailable) sqlStatementContext.getSqlStatement()).getAllTables()) {
-                Optional<TableToken> tableToken = generateSQLToken(sqlStatementContext.getSqlStatement(), each);
-                if (tableToken.isPresent()) {
-                    result.add(tableToken.get());
-                }
-            }
+        for (TableSegment each : ((TableSegmentsAvailable) sqlStatementContext.getSqlStatement()).getAllTables()) {
+            result.add(new TableToken(each.getStartIndex(), each.getStopIndex(), each.getIdentifier()));
         }
         if (sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent()) {
             result.addAll(generateSQLTokens(sqlStatementContext, ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get()));
@@ -82,6 +74,16 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
             }
             if (((SelectStatement) sqlStatementContext.getSqlStatement()).getOrderBy().isPresent()) {
                 result.addAll(generateSQLTokens(sqlStatementContext, ((SelectStatement) sqlStatementContext.getSqlStatement()).getOrderBy().get().getOrderByItems()));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final WhereSegment where) {
+        Collection<TableToken> result = new LinkedList<>();
+        for (AndPredicate each : where.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                result.addAll(getTableTokens(sqlStatementContext, predicate));
             }
         }
         return result;
@@ -106,16 +108,6 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         return result;
     }
     
-    private Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final WhereSegment where) {
-        Collection<TableToken> result = new LinkedList<>();
-        for (AndPredicate each : where.getAndPredicates()) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                result.addAll(getTableTokens(sqlStatementContext, predicate));
-            }
-        }
-        return result;
-    }
-    
     private Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final Collection<OrderByItemSegment> orderBys) {
         Collection<TableToken> result = new LinkedList<>();
         for (OrderByItemSegment each : orderBys) {
@@ -126,10 +118,6 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
             }
         }
         return result;
-    }
-    
-    private Optional<TableToken> generateSQLToken(final SQLStatement sqlStatement, final TableSegment segment) {
-        return isToGenerateTableToken(sqlStatement, segment) ? Optional.of(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier())) : Optional.<TableToken>absent();
     }
     
     private Optional<TableToken> generateSQLToken(final SQLStatementContext sqlStatementContext, final OwnerAvailable segment) {
@@ -163,8 +151,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     }
     
     private boolean isToGenerateTableTokenForColumn(final TablesContext tablesContext, final PredicateSegment predicate) {
-        return predicate.getRightValue() instanceof ColumnSegment && predicate.getColumn().getOwner().isPresent()
-                && isTable(predicate.getColumn().getOwner().get(), tablesContext);
+        return predicate.getRightValue() instanceof ColumnSegment && predicate.getColumn().getOwner().isPresent() && isTable(predicate.getColumn().getOwner().get(), tablesContext);
     }
     
     private boolean isToGenerateTableTokenForProjection(final TablesContext tablesContext, final PredicateSegment predicate) {
@@ -177,13 +164,9 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
                 && isTable(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getOwner().get(), tablesContext);
     }
     
-    private boolean isToGenerateTableToken(final SQLStatement sqlStatement, final TableSegment segment) {
-        return shardingRule.findTableRule(segment.getIdentifier().getValue()).isPresent() || !(sqlStatement instanceof SelectStatement);
-    }
-    
     private boolean isToGenerateTableToken(final SQLStatementContext sqlStatementContext, final OwnerSegment ownerSegment) {
         Optional<Table> table = sqlStatementContext.getTablesContext().find(ownerSegment.getIdentifier().getValue());
-        return table.isPresent() && !table.get().getAlias().isPresent() && shardingRule.findTableRule(table.get().getName()).isPresent();
+        return table.isPresent() && !table.get().getAlias().isPresent();
     }
     
     private boolean isTable(final OwnerSegment owner, final TablesContext tablesContext) {
