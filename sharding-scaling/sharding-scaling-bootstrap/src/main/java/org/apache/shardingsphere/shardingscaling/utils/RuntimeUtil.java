@@ -26,9 +26,11 @@ public final class RuntimeUtil {
 
     /**
      * Get runtime classpath.
+     *
+     * @param relativePath relative resource path
      * @return classpath
      */
-    public static String getBasePath() {
-        return Bootstrap.class.getResource("/").getFile();
+    public static String getResourcePath(final String relativePath) {
+        return Bootstrap.class.getResource(relativePath).getFile();
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql.wal;
 
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
@@ -57,7 +57,7 @@ public final class WalEventConverter {
      * @return record
      */
     public Record convert(final AbstractWalEvent event) {
-        final JdbcUri uri = new JdbcUri(((JdbcDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration()).getJdbcUrl());
+        final JdbcUri uri = new JdbcUri(((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration()).getJdbcUrl());
         if (filter(uri.getDatabase(), event)) {
             return createPlaceholderRecord(event);
         } else if (event instanceof WriteRowEvent) {

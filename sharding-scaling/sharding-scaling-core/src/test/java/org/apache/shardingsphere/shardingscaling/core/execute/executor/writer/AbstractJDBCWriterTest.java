@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AbstractJdbcWriterTest {
+public final class AbstractJDBCWriterTest {
     
     private static final String TABLE_NAME = "test_table";
     
@@ -74,11 +74,11 @@ public final class AbstractJdbcWriterTest {
     @Mock
     private PreparedStatement preparedStatement;
     
-    private AbstractJdbcWriter jdbcWriter;
+    private AbstractJDBCWriter jdbcWriter;
     
     @Before
     public void setUp() throws Exception {
-        jdbcWriter = new AbstractJdbcWriter(getRdbmsConfiguration(), dataSourceManager) {
+        jdbcWriter = new AbstractJDBCWriter(getRdbmsConfiguration(), dataSourceManager) {
             
             @Override
             protected AbstractSqlBuilder createSqlBuilder() {

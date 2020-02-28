@@ -37,7 +37,7 @@ public final class ReaderFactory {
      * @return JDBC reader
      */
     @SneakyThrows
-    public static JdbcReader newInstanceJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public static JDBCReader newInstanceJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         return newInstanceJdbcReader(rdbmsConfiguration.getDataSourceConfiguration().getDatabaseType().getName(), rdbmsConfiguration, dataSourceManager);
     }
     
@@ -50,7 +50,7 @@ public final class ReaderFactory {
      * @return JDBC reader
      */
     @SneakyThrows
-    public static JdbcReader newInstanceJdbcReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public static JDBCReader newInstanceJdbcReader(final String databaseType, final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getJdbcReaderClass().getConstructor(RdbmsConfiguration.class, DataSourceManager.class).newInstance(rdbmsConfiguration, dataSourceManager);
     }

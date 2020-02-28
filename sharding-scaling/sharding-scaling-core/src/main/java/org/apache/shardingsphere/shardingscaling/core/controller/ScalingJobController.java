@@ -88,9 +88,9 @@ public class ScalingJobController {
     }
 
     /**
-     * List all shardingscaling jobs.
+     * List all sharding scaling jobs.
      *
-     * @return list of shardingscaling jobs
+     * @return list of sharding scaling jobs
      */
     public List<ShardingScalingJob> listShardingScalingJobs() {
         return new LinkedList<>(scalingJobMap.values());

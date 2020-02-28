@@ -39,10 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * generic jdbc writer implement.
+ * Abstract JDBC writer implement.
  */
 @Slf4j
-public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements Writer {
+public abstract class AbstractJDBCWriter extends AbstractSyncExecutor implements Writer {
     
     private final RdbmsConfiguration rdbmsConfiguration;
     
@@ -53,7 +53,7 @@ public abstract class AbstractJdbcWriter extends AbstractSyncExecutor implements
     @Setter
     private Channel channel;
     
-    public AbstractJdbcWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
+    public AbstractJDBCWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.dataSourceManager = dataSourceManager;
         sqlBuilder = createSqlBuilder();

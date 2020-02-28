@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.core.synctask.history;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.config.JdbcDataSourceConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.JDBCDataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
@@ -91,7 +91,7 @@ public class HistoryDataSyncTaskTest {
     }
 
     private RdbmsConfiguration mockReaderConfig() {
-        DataSourceConfiguration dataSourceConfiguration = new JdbcDataSourceConfiguration(dataSourceUrl, userName, password);
+        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         result.setTableName("t_order");
@@ -99,7 +99,7 @@ public class HistoryDataSyncTaskTest {
     }
 
     private RdbmsConfiguration mockWriterConfig() {
-        DataSourceConfiguration dataSourceConfiguration = new JdbcDataSourceConfiguration(dataSourceUrl, userName, password);
+        DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
         RdbmsConfiguration result = new RdbmsConfiguration();
         result.setDataSourceConfiguration(dataSourceConfiguration);
         return result;

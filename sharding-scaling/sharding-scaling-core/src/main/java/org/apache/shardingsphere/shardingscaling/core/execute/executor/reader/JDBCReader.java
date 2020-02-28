@@ -15,24 +15,11 @@
  * limitations under the License.
  */
 
-{
-  "ruleConfiguration": {
-    "dataSources": [
-      {
-        "name": "ds_0",
-        "password": "123456",
-        "url": "jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&useSSL=false",
-        "username": "root"
-      }
-    ],
-    "destinationDataSources": {
-        "name": "dt_0",
-        "password": "123456",
-        "url": "jdbc:mysql://127.0.0.1:3306/test2?serverTimezone=UTC&useSSL=false",
-        "username": "root"
-      }
-  },
-  "jobConfiguration": {
-    "concurrency": 3
-  }
+package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
+
+/**
+ * JDBC reader.
+ */
+public interface JDBCReader extends Reader {
+
 }

@@ -28,7 +28,6 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.web.HttpServerInitializer;
@@ -43,12 +42,10 @@ import java.io.IOException;
  */
 @Slf4j
 public class Bootstrap {
-
-    private static final String SERVER_CONFIG_FILE = "/conf/server.yaml";
-
-    static {
-        PropertyConfigurator.configure(RuntimeUtil.getBasePath() + "conf" + File.separator + "log4j.properties");
-    }
+    
+    private static final String DEFAULT_CONFIG_PATH = "/conf/";
+    
+    private static final String DEFAULT_CONFIG_FILE_NAME = "server.yaml";
 
     /**
      * Main entry.
@@ -72,7 +69,7 @@ public class Bootstrap {
                     .childHandler(new HttpServerInitializer());
             int port = ScalingContext.getInstance().getServerConfiguration().getPort();
             Channel channel = bootstrap.bind(port).sync().channel();
-            log.info("Shardingscaling is server on http://127.0.0.1:" + port + '/');
+            log.info("ShardingScaling is server on http://127.0.0.1:" + port + '/');
             channel.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
@@ -81,7 +78,7 @@ public class Bootstrap {
     }
 
     private static void initServerConfig() throws IOException {
-        File yamlFile = new File(Bootstrap.class.getResource(SERVER_CONFIG_FILE).getFile());
+        File yamlFile = new File(RuntimeUtil.getResourcePath(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME));
         ServerConfiguration serverConfiguration = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);
         Preconditions.checkNotNull(serverConfiguration, "Server configuration file `%s` is invalid.", yamlFile.getName());
         ScalingContext.getInstance().init(serverConfiguration);

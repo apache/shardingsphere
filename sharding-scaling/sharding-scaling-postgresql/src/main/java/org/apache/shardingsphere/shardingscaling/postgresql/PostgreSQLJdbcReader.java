@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.postgresql;
 
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJdbcReader;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.AbstractJDBCReader;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 import java.sql.Connection;
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL JDBC reader.
  */
-public final class PostgreSQLJdbcReader extends AbstractJdbcReader {
+public final class PostgreSQLJdbcReader extends AbstractJDBCReader {
 
     public PostgreSQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);

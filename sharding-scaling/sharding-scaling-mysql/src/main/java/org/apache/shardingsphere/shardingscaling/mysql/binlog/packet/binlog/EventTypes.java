@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 
 /**
- * Mysql event types.
+ * MySQL event types.
  * https://dev.mysql.com/doc/shorternals/en/binlog-event-type.html
  */
 public final class EventTypes {

@@ -25,7 +25,7 @@ import lombok.Setter;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Mysql Query command packet.
+ * MySQL Query command packet.
  */
 @Setter
 public final class QueryCommandPacket extends AbstractCommandPacket {
