@@ -19,6 +19,9 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import lombok.Setter;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.TableToken;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.Table;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
@@ -48,7 +51,10 @@ import java.util.LinkedList;
 /**
  * Table token generator.
  */
-public final class TableTokenGenerator implements CollectionSQLTokenGenerator {
+@Setter
+public final class TableTokenGenerator implements CollectionSQLTokenGenerator, ShardingRuleAware {
+    
+    private ShardingRule shardingRule; 
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -62,7 +68,9 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator {
         }
         Collection<TableToken> result = new LinkedList<>();
         for (TableSegment each : ((TableSegmentsAvailable) sqlStatementContext.getSqlStatement()).getAllTables()) {
-            result.add(new TableToken(each.getStartIndex(), each.getStopIndex(), each.getIdentifier()));
+            if (shardingRule.findTableRule(each.getIdentifier().getValue()).isPresent()) {
+                result.add(new TableToken(each.getStartIndex(), each.getStopIndex(), each.getIdentifier()));
+            }
         }
         if (sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent()) {
             result.addAll(generateSQLTokens(sqlStatementContext, ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get()));
@@ -131,17 +139,23 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator {
         if (isToGenerateTableTokenLeftValue(sqlStatementContext.getTablesContext(), predicate)) {
             Preconditions.checkState(predicate.getColumn().getOwner().isPresent());
             OwnerSegment segment = predicate.getColumn().getOwner().get();
-            result.add(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+            if (shardingRule.findTableRule(segment.getIdentifier().getValue()).isPresent()) {
+                result.add(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+            }
         }
         if (isToGenerateTableTokenForRightValue(sqlStatementContext.getTablesContext(), predicate)) {
             Preconditions.checkState(((ColumnSegment) predicate.getRightValue()).getOwner().isPresent());
             OwnerSegment segment = ((ColumnSegment) predicate.getRightValue()).getOwner().get();
-            result.add(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+            if (shardingRule.findTableRule(segment.getIdentifier().getValue()).isPresent()) {
+                result.add(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+            }
         }
         if (isToGenerateTableTokenForProjection(sqlStatementContext.getTablesContext(), predicate)) {
             Preconditions.checkState(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent());
             OwnerSegment segment = ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get();
-            result.add(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+            if (shardingRule.findTableRule(segment.getIdentifier().getValue()).isPresent()) {
+                result.add(new TableToken(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+            }
         }
         return result;
     }
