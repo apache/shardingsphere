@@ -24,6 +24,9 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public final class TablesContext {
             tables = Collections.emptyList();
             return;
         }
-        Collection<TableSegment> tableSegments = ((TableSegmentsAvailable) sqlStatement).getAllTables();
+        Collection<TableSegment> tableSegments = getAllTables((TableSegmentsAvailable) sqlStatement);
         tables = new ArrayList<>(tableSegments.size());
         Collection<String> aliases = getAlias(tableSegments);
         for (TableSegment each : tableSegments) {
@@ -59,6 +62,19 @@ public final class TablesContext {
             tables.add(new Table(each.getIdentifier().getValue(), alias.orNull()));
             setSchema(each);
         }
+    }
+    
+    private Collection<TableSegment> getAllTables(final TableSegmentsAvailable sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return ((SelectStatement) sqlStatement).getTables();
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            return ((UpdateStatement) sqlStatement).getTables();
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return ((DeleteStatement) sqlStatement).getTables();
+        }
+        return sqlStatement.getAllTables();
     }
     
     private Collection<String> getAlias(final Collection<TableSegment> tableSegments) {
