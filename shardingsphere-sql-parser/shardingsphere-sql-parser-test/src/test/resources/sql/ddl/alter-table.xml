@@ -439,7 +439,6 @@
     
     <alter-table sql-case-id="alter_table_add_constraints">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <table name="t_order" start-index="113" stop-index="119" />
         <add-constraint>
             <primary-key-column name="order_id" start-index="42" stop-index="49" />
         </add-constraint>
@@ -621,7 +620,6 @@
     
     <alter-table sql-case-id="alter_table_add_foreign_key_with_cascade">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <table name="t_order" start-index="86" stop-index="92" />
         <add-constraint>
             <referenced-table name="t_order" start-index="86" stop-index="92" />
         </add-constraint>

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.ArrayList;
@@ -40,19 +39,18 @@ import java.util.TreeSet;
 @ToString
 public final class TablesContext {
     
-    private final Collection<Table> tables = new ArrayList<>();
+    private final Collection<Table> tables;
     
     private String schema;
     
     public TablesContext(final SQLStatement sqlStatement) {
-        Collection<String> aliases = new HashSet<>();
-        Collection<TableSegment> tableSegments = getTableSegments(sqlStatement);
-        for (TableSegment each : tableSegments) {
-            Optional<String> alias = each.getAlias();
-            if (alias.isPresent()) {
-                aliases.add(alias.get());
-            }
+        if (!(sqlStatement instanceof TableSegmentsAvailable)) {
+            tables = Collections.emptyList();
+            return;
         }
+        Collection<TableSegment> tableSegments = ((TableSegmentsAvailable) sqlStatement).getAllTables();
+        tables = new ArrayList<>(tableSegments.size());
+        Collection<String> aliases = getAlias(tableSegments);
         for (TableSegment each : tableSegments) {
             Optional<String> alias = each.getAlias();
             if (aliases.contains(each.getIdentifier().getValue()) && !alias.isPresent()) {
@@ -63,15 +61,15 @@ public final class TablesContext {
         }
     }
     
-    private Collection<TableSegment> getTableSegments(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof TableSegmentAvailable) {
-            TableSegment table = ((TableSegmentAvailable) sqlStatement).getTable();
-            return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
+    private Collection<String> getAlias(final Collection<TableSegment> tableSegments) {
+        Collection<String> result = new HashSet<>(tableSegments.size(), 1);
+        for (TableSegment each : tableSegments) {
+            Optional<String> alias = each.getAlias();
+            if (alias.isPresent()) {
+                result.add(alias.get());
+            }
         }
-        if (sqlStatement instanceof TableSegmentsAvailable) {
-            return ((TableSegmentsAvailable) sqlStatement).getTables();
-        }
-        return Collections.emptyList();
+        return result;
     }
     
     private void setSchema(final TableSegment tableSegment) {

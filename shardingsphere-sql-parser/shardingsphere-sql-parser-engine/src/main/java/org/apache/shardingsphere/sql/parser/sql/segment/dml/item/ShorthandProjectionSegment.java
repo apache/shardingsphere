@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 
 /**
  * Shorthand projection segment.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegmentAvai
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class ShorthandProjectionSegment implements ProjectionSegment, OwnerSegmentAvailable {
+public final class ShorthandProjectionSegment implements ProjectionSegment, OwnerAvailable {
     
     private final int startIndex;
     
@@ -40,21 +40,8 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     
     private OwnerSegment owner;
     
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
+    @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.fromNullable(owner);
-    }
-    
-    /**
-     * Set owner.
-     * 
-     * @param owner owner
-     */
-    public void setOwner(final OwnerSegment owner) {
-        this.owner = owner; 
     }
 }

@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -51,7 +51,7 @@ public final class TablesContextTest {
     @Test
     public void assertIsNotEmpty() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllTables().add(createTableSegment("table", "tbl"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         assertFalse(tablesContext.isEmpty());
     }
@@ -59,7 +59,7 @@ public final class TablesContextTest {
     @Test
     public void assertIsSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllTables().add(createTableSegment("table", "tbl"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         assertTrue(tablesContext.isSingleTable());
     }
@@ -67,8 +67,8 @@ public final class TablesContextTest {
     @Test
     public void assertIsSingleTableWithCaseSensitiveNames() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        selectStatement.getTables().add(createTableSegment("Table", null));
+        selectStatement.getAllTables().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllTables().add(createTableSegment("Table", null));
         TablesContext tablesContext = new TablesContext(selectStatement);
         assertTrue(tablesContext.isSingleTable());
     }
@@ -76,8 +76,8 @@ public final class TablesContextTest {
     @Test
     public void assertIsSingleTableWithNameConflictAlias() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        selectStatement.getTables().add(createTableSegment("tbl", null));
+        selectStatement.getAllTables().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllTables().add(createTableSegment("tbl", null));
         TablesContext tablesContext = new TablesContext(selectStatement);
         assertTrue(tablesContext.isSingleTable());
     }
@@ -85,8 +85,8 @@ public final class TablesContextTest {
     @Test
     public void assertIsNotSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         assertFalse(tablesContext.isSingleTable());
     }
@@ -94,7 +94,7 @@ public final class TablesContextTest {
     @Test
     public void assertGetSingleTableName() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
+        selectStatement.getAllTables().add(createTableSegment("table", "tbl"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         assertThat(tablesContext.getSingleTableName(), is("table"));
     }
@@ -102,8 +102,8 @@ public final class TablesContextTest {
     @Test
     public void assertGetTableNames() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         assertThat(tablesContext.getTableNames(), CoreMatchers.<Collection<String>>is(Sets.newHashSet("table_1", "table_2")));
     }
@@ -111,8 +111,8 @@ public final class TablesContextTest {
     @Test
     public void assertFindTableWithName() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         Optional<Table> table = tablesContext.find("table_1");
         assertTrue(table.isPresent());
@@ -123,8 +123,8 @@ public final class TablesContextTest {
     @Test
     public void assertFindTableWithAlias() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         Optional<Table> table = tablesContext.find("tbl_1");
         assertTrue(table.isPresent());
@@ -135,8 +135,8 @@ public final class TablesContextTest {
     @Test
     public void assertNotFoundTable() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         Optional<Table> table = tablesContext.find("table_3");
         assertFalse(table.isPresent());
@@ -145,26 +145,26 @@ public final class TablesContextTest {
     @Test
     public void assertFindTableNameWhenSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
         assertTrue(new TablesContext(selectStatement).findTableName(null, null).isPresent());
     }
     
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerPresent() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 10, new IdentifierValue("table_1"))));
+        when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 10, new IdentifierValue("table_1"))));
         assertTrue(tablesContext.findTableName(columnSegment, null).isPresent());
     }
     
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         RelationMetas relationMetas = mock(RelationMetas.class);
@@ -174,8 +174,8 @@ public final class TablesContextTest {
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndRelationMetasContainsColumn() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_2", "tbl_2"));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
@@ -185,7 +185,7 @@ public final class TablesContextTest {
     @Test
     public void assertGetSchema() {
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
+        selectStatement.getAllTables().add(createTableSegment("table_1", "tbl_1"));
         assertFalse(new TablesContext(selectStatement).getSchema().isPresent());
     }
     
@@ -193,7 +193,7 @@ public final class TablesContextTest {
     public void assertInstanceCreatedWhenNoExceptionThrown() {
         InsertStatement sqlStatement = new InsertStatement();
         TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
-        tableSegment.setOwner(new SchemaSegment(0, 0, new IdentifierValue("schema")));
+        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         sqlStatement.setTable(tableSegment);
         new TablesContext(sqlStatement);
     }

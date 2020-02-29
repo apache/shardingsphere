@@ -57,6 +57,11 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     private LockSegment lock;
     
     @Override
+    public Collection<TableSegment> getAllTables() {
+        return tables;
+    }
+    
+    @Override
     public Optional<WhereSegment> getWhere() {
         return Optional.fromNullable(where);
     }
