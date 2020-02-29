@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsA
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
@@ -44,8 +43,6 @@ public final class TablesContext {
     
     private final Collection<Table> tables;
     
-    private String schema;
-    
     public TablesContext(final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof TableSegmentsAvailable)) {
             tables = Collections.emptyList();
@@ -53,14 +50,8 @@ public final class TablesContext {
         }
         Collection<TableSegment> tableSegments = getAllTables((TableSegmentsAvailable) sqlStatement);
         tables = new ArrayList<>(tableSegments.size());
-        Collection<String> aliases = getAlias(tableSegments);
         for (TableSegment each : tableSegments) {
-            Optional<String> alias = each.getAlias();
-            if (aliases.contains(each.getIdentifier().getValue()) && !alias.isPresent()) {
-                continue;
-            }
-            tables.add(new Table(each.getIdentifier().getValue(), alias.orNull()));
-            setSchema(each);
+            tables.add(new Table(each.getIdentifier().getValue(), each.getAlias().orNull()));
         }
     }
     
@@ -75,26 +66,6 @@ public final class TablesContext {
             return ((DeleteStatement) sqlStatement).getTables();
         }
         return sqlStatement.getAllTables();
-    }
-    
-    private Collection<String> getAlias(final Collection<TableSegment> tableSegments) {
-        Collection<String> result = new HashSet<>(tableSegments.size(), 1);
-        for (TableSegment each : tableSegments) {
-            Optional<String> alias = each.getAlias();
-            if (alias.isPresent()) {
-                result.add(alias.get());
-            }
-        }
-        return result;
-    }
-    
-    private void setSchema(final TableSegment tableSegment) {
-        if (tableSegment.getOwner().isPresent()) {
-            if (null != schema && !tableSegment.getOwner().get().getIdentifier().getValue().equalsIgnoreCase(schema)) {
-                throw new UnsupportedOperationException("Cannot support multiple schemas in one SQL");
-            }
-            schema = tableSegment.getOwner().get().getIdentifier().getValue();
-        }
     }
     
     /**
@@ -162,13 +133,7 @@ public final class TablesContext {
         return Optional.absent();
     }
     
-    /**
-     * Find table via table alias.
-     * 
-     * @param alias alias
-     * @return table
-     */
-    public Optional<Table> findTableFromAlias(final String alias) {
+    private Optional<Table> findTableFromAlias(final String alias) {
         for (Table each : tables) {
             if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
                 return Optional.of(each);
@@ -202,14 +167,5 @@ public final class TablesContext {
             }
         }
         return Optional.absent();
-    }
-    
-    /**
-     * Get schema.
-     * 
-     * @return schema
-     */
-    public Optional<String> getSchema() {
-        return Optional.fromNullable(schema);
     }
 }

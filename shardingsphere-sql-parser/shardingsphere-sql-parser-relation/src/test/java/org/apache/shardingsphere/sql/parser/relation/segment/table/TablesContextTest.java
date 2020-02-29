@@ -74,15 +74,6 @@ public final class TablesContextTest {
     }
     
     @Test
-    public void assertIsSingleTableWithNameConflictAlias() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        selectStatement.getTables().add(createTableSegment("tbl", null));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertTrue(tablesContext.isSingleTable());
-    }
-    
-    @Test
     public void assertIsNotSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
@@ -180,13 +171,6 @@ public final class TablesContextTest {
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
         assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, relationMetas).isPresent());
-    }
-    
-    @Test
-    public void assertGetSchema() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        assertFalse(new TablesContext(selectStatement).getSchema().isPresent());
     }
     
     @Test
