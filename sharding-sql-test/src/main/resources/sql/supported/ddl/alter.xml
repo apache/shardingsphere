@@ -25,12 +25,16 @@
     <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" db-types="MySQL" />
     <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" />
     <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL" />
-    <sql-case id="alter_table_add_columns_integer_type_mysql" value="ALTER TABLE t_order ADD column4 INTEGER, ADD column5 INT, ADD column6 SMALLINT, ADD column7 TINYINT, ADD column8 MEDIUMINT, ADD column9 BIGINT" db-types="MySQL" />
-    <sql-case id="alter_table_add_columns_fixed_point_type_mysql" value="ALTER TABLE t_order ADD column4 decimal(10,2), ADD column5 NUMERIC" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_integer_type_mysql" value="ALTER TABLE t_order ADD column4 TINYINT, ADD column5 MEDIUMINT" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_fixed_point_type" value="ALTER TABLE t_order ADD column4 decimal(10,2), ADD column5 NUMERIC" db-types="MySQL,PostgreSQL" />
     <sql-case id="alter_table_add_columns_float_point_type_mysql" value="ALTER TABLE t_order ADD column4 FLOAT(10,2), ADD column5 DOUBLE(10,2)" db-types="MySQL" />
     <sql-case id="alter_table_add_columns_bit_type_mysql" value="ALTER TABLE t_order ADD column4 bit" db-types="MySQL" />
-    <sql-case id="alter_table_add_columns_date_type_mysql" value="ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, ADD column6 TIMESTAMP, ADD column7 TIME, ADD column8 YEAR" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_date_type_mysql" value="ALTER TABLE t_order ADD column4 YEAR" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_date_type" value="ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, ADD column6 TIMESTAMP, ADD column7 TIME" db-types="MySQL,PostgreSQL" />
     <sql-case id="alter_table_add_columns_string_type_mysql" value="ALTER TABLE t_order ADD column4 CHAR, ADD column5 VARCHAR, ADD column6 BINARY, ADD column7 VARBINARY, ADD column8 TINYBLOB, ADD column9 TINYTEXT, ADD column10 BLOB, ADD column11 TEXT, ADD column12 MEDIUMBLOB, ADD column13 MEDIUMTEXT, ADD column14 LONGBLOB, ADD column15 LONGTEXT, ADD column16 ENUM, ADD column17 SET" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_integer_type" value="ALTER TABLE t_order ADD column4 INTEGER, ADD column5 INT, ADD column6 SMALLINT, ADD column7 BIGINT" db-types="MySQL,PostgreSQL" />
+    <sql-case id="alter_table_add_columns_float_point_type_postgresql" value="ALTER TABLE t_order ADD column4 FLOAT, ADD column5 double precision, ADD column6 REAL, ADD column7 SMALLSERIAL, ADD column8 SERIAL, ADD column9 BIGSERIAL, ADD column10 float4" db-types="PostgreSQL" />
+    <sql-case id="alter_table_add_columns_string_type_postgresql" value="ALTER TABLE t_order ADD column4 VARCHAR, ADD column5 CHARACTER, ADD column6 CHAR, ADD column7 TEXT, ADD column8 NAME" db-types="PostgreSQL" />
     <sql-case id="alter_table_add_column_with_first" value="ALTER TABLE t_order ADD column3 VARCHAR(10) FIRST" db-types="MySQL" />
     <sql-case id="alter_table_add_column_with_after" value="ALTER TABLE t_order ADD column4 VARCHAR(10) AFTER order_id" db-types="MySQL" />
     <sql-case id="alter_table_add_column_with_first_after" value="ALTER TABLE t_order ADD column5 VARCHAR(10) FIRST, ADD column6 VARCHAR(10) FIRST, ADD column7 VARCHAR(10) AFTER column5, ADD column8 VARCHAR(10) AFTER column6" db-types="MySQL" />

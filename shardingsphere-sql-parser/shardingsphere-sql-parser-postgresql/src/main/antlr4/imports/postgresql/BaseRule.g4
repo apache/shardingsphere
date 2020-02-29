@@ -303,7 +303,14 @@ dataType
     ;
 
 dataTypeName
-    : identifier
+    : INT | SMALLINT | INTEGER | BIGINT | DECIMAL | NUMERIC | REAL | FLOAT | doublePrecision | SMALLSERIAL | SERIAL | BIGSERIAL
+    | MONEY | VARCHAR | CHARACTER | CHAR | TEXT | NAME | BYTEA | TIMESTAMP | DATE | TIME | INTERVAL | BOOLEAN | ENUM | POINT
+    | LINE | LSEG | BOX | PATH | POLYGON | CIRCLE | CIDR | INET | MACADDR | BIT | VARBIT | TSVECTOR | TSQUERY | UUID | XML
+    | JSON | INTRANGE | NUMRANGE | TSRANGE | TSTZRANGE | DATERANGE | ARRAY | identifier
+    ;
+
+doublePrecision
+    : DOUBLE PRECISION
     ;
 
 dataTypeLength

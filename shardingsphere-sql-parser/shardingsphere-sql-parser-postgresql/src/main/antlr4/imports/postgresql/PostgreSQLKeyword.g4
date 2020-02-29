@@ -470,3 +470,127 @@ GROUPS
 RECURSIVE
     : R E C U R S I V E
     ;
+
+INT
+    : I N T [248]?
+    ;
+
+FLOAT
+    : F L O A T [48]?
+    ;
+
+SMALLSERIAL
+    : S M A L L S E R I A L
+    ;
+
+SERIAL
+    : S E R I A L
+    ;
+
+BIGSERIAL
+    : B I G S E R I A L
+    ;
+
+MONEY
+    : M O N E Y
+    ;
+
+VARCHAR
+    : V A R C H A R
+    ;
+
+BYTEA
+    : B Y T E A
+    ;
+
+ENUM
+    : E N U M
+    ;
+
+POINT
+    : P O I N T
+    ;
+
+LINE
+    : L I N E
+    ;
+
+LSEG
+    : L S E G
+    ;
+
+BOX
+    : B O X
+    ;
+
+PATH
+    : P A T H
+    ;
+
+POLYGON
+    : P O L Y G O N
+    ;
+
+CIRCLE
+    : C I R C L E
+    ;
+
+CIDR
+    : C I D R
+    ;
+
+INET
+    : I N E T
+    ;
+
+MACADDR
+    : M A C A D D R [8]?
+    ;
+
+BIT
+    : B I T
+    ;
+
+VARBIT
+    : V A R B I T
+    ;
+
+TSVECTOR
+    : T S V E C T O R
+    ;
+
+TSQUERY
+    : T S Q U E R Y
+    ;
+
+UUID
+    : U U I D
+    ;
+
+XML
+    : X M L
+    ;
+
+JSON
+    : J S O N
+    ;
+
+INTRANGE
+    : I N T [48] R A N G E
+    ;
+
+NUMRANGE
+    : N U M R A N G E
+    ;
+
+TSRANGE
+    : T S R A N G E
+    ;
+
+TSTZRANGE
+    : T S T Z R A N G E
+    ;
+
+DATERANGE
+    : D A T E R A N G E
+    ;
