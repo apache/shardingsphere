@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
@@ -25,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
@@ -106,18 +109,24 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     @Override
     public Collection<TableSegment> getAllTables() {
         Collection<TableSegment> result = new LinkedList<>(tables);
-        result.addAll(getAllTablesFromWhere());
+        if (null != where) {
+            result.addAll(getAllTablesFromWhere());
+        }
         result.addAll(getAllTablesFromProjections());
+        if (null != groupBy) {
+            result.addAll(getAllTablesFromOrderByItems(groupBy.getGroupByItems()));
+        }
+        if (null != orderBy) {
+            result.addAll(getAllTablesFromOrderByItems(orderBy.getOrderByItems()));
+        }
         return result;
     }
     
     private Collection<TableSegment> getAllTablesFromWhere() {
         Collection<TableSegment> result = new LinkedList<>();
-        if (null != where) {
-            for (AndPredicate each : where.getAndPredicates()) {
-                for (PredicateSegment predicate : each.getPredicates()) {
-                    result.addAll(new PredicateExtractor(tables, predicate).extractTables());
-                }
+        for (AndPredicate each : where.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                result.addAll(new PredicateExtractor(tables, predicate).extractTables());
             }
         }
         return result;
@@ -130,6 +139,21 @@ public final class SelectStatement extends DMLStatement implements TableSegments
                 Optional<OwnerSegment> owner = ((OwnerAvailable) each).getOwner();
                 if (owner.isPresent() && isTable(owner.get())) {
                     result.add(new TableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getAllTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (OrderByItemSegment each : orderByItems) {
+            if (each instanceof ColumnOrderByItemSegment) {
+                Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
+                if (owner.isPresent() && isTable(owner.get())) {
+                    Preconditions.checkState(((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent());
+                    OwnerSegment segment = ((ColumnOrderByItemSegment) each).getColumn().getOwner().get();
+                    result.add(new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
                 }
             }
         }

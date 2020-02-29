@@ -54,10 +54,16 @@ public final class UpdateStatement extends DMLStatement implements TableSegments
     public Collection<TableSegment> getAllTables() {
         Collection<TableSegment> result = new LinkedList<>(tables);
         if (null != where) {
-            for (AndPredicate each : where.getAndPredicates()) {
-                for (PredicateSegment predicate : each.getPredicates()) {
-                    result.addAll(new PredicateExtractor(tables, predicate).extractTables());
-                }
+            result.addAll(getAllTablesFromWhere());
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getAllTablesFromWhere() {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (AndPredicate each : where.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                result.addAll(new PredicateExtractor(tables, predicate).extractTables());
             }
         }
         return result;
