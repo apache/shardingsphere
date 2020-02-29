@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
@@ -29,6 +30,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
@@ -103,6 +106,13 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     @Override
     public Collection<TableSegment> getAllTables() {
         Collection<TableSegment> result = new LinkedList<>(tables);
+        result.addAll(getAllTablesFromWhere());
+        result.addAll(getAllTablesFromProjections());
+        return result;
+    }
+    
+    private Collection<TableSegment> getAllTablesFromWhere() {
+        Collection<TableSegment> result = new LinkedList<>();
         if (null != where) {
             for (AndPredicate each : where.getAndPredicates()) {
                 for (PredicateSegment predicate : each.getPredicates()) {
@@ -111,5 +121,27 @@ public final class SelectStatement extends DMLStatement implements TableSegments
             }
         }
         return result;
+    }
+    
+    private Collection<TableSegment> getAllTablesFromProjections() {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projections.getProjections()) {
+            if (each instanceof OwnerAvailable) {
+                Optional<OwnerSegment> owner = ((OwnerAvailable) each).getOwner();
+                if (owner.isPresent() && isTable(owner.get())) {
+                    result.add(new TableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private boolean isTable(final OwnerSegment owner) {
+        for (TableSegment each : tables) {
+            if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
