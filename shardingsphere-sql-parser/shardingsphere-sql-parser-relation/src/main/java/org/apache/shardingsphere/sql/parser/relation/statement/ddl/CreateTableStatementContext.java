@@ -18,17 +18,19 @@
 package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Create table statement context.
  */
-public class CreateTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class CreateTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
         super(sqlStatement);
@@ -36,7 +38,17 @@ public class CreateTableStatementContext extends CommonSQLStatementContext imple
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        CreateTableStatement sqlStatement = (CreateTableStatement) getSqlStatement();
-        return null == sqlStatement.getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(sqlStatement.getTable());
+        Collection<TableSegment> result = new LinkedList<>();
+        CreateTableStatement statement = (CreateTableStatement) getSqlStatement();
+        result.add(statement.getTable());
+        for (ColumnDefinitionSegment each : statement.getColumnDefinitions()) {
+            result.addAll(each.getReferencedTables());
+        }
+        for (ConstraintDefinitionSegment each : statement.getConstraintDefinitions()) {
+            if (each.getReferencedTable().isPresent()) {
+                result.add(each.getReferencedTable().get());
+            }
+        }
+        return result;
     }
 }

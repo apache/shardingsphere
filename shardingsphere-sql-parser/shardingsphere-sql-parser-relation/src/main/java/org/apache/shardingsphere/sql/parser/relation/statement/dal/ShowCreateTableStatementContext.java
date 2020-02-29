@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Show create table statement context.
  */
-public class ShowCreateTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class ShowCreateTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     public ShowCreateTableStatementContext(final ShowCreateTableStatement sqlStatement) {
         super(sqlStatement);

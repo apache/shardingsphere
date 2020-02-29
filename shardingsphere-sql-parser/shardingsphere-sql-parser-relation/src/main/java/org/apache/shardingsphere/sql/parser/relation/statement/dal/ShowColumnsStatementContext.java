@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Show columns statement context.
  */
-public class ShowColumnsStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class ShowColumnsStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     public ShowColumnsStatementContext(final ShowColumnsStatement sqlStatement) {
         super(sqlStatement);

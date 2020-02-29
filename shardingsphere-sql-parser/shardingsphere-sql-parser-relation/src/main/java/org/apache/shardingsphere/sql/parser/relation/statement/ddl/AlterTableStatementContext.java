@@ -18,17 +18,21 @@
 package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Alter table statement context.
  */
-public class AlterTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class AlterTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     public AlterTableStatementContext(final AlterTableStatement sqlStatement) {
         super(sqlStatement);
@@ -36,7 +40,22 @@ public class AlterTableStatementContext extends CommonSQLStatementContext implem
     
     @Override
     public Collection<TableSegment> getAllTables() {
+        Collection<TableSegment> result = new LinkedList<>();
         AlterTableStatement sqlStatement = (AlterTableStatement) getSqlStatement();
-        return null == sqlStatement.getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(sqlStatement.getTable());
+        result.add(sqlStatement.getTable());
+        for (AddColumnDefinitionSegment each : sqlStatement.getAddColumnDefinitions()) {
+            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
+                result.addAll(columnDefinition.getReferencedTables());
+            }
+        }
+        for (ModifyColumnDefinitionSegment each : sqlStatement.getModifyColumnDefinitions()) {
+            result.addAll(each.getColumnDefinition().getReferencedTables());
+        }
+        for (ConstraintDefinitionSegment each : sqlStatement.getAddConstraintDefinitions()) {
+            if (each.getReferencedTable().isPresent()) {
+                result.add(each.getReferencedTable().get());
+            }
+        }
+        return result;
     }
 }

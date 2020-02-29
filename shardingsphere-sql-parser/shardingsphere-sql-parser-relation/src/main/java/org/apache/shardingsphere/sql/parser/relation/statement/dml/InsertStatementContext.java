@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,6 +85,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        return ((InsertStatement) getSqlStatement()).getAllTables();
+        return Collections.singletonList(((InsertStatement) getSqlStatement()).getTable());
     }
 }

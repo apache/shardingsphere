@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Truncate statement context.
  */
-public class TruncateStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class TruncateStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     public TruncateStatementContext(final TruncateStatement sqlStatement) {
         super(sqlStatement);

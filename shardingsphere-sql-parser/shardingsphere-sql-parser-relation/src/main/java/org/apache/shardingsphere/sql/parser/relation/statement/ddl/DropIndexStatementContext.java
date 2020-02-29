@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Drop index statement context.
  */
-public class DropIndexStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class DropIndexStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
         super(sqlStatement);

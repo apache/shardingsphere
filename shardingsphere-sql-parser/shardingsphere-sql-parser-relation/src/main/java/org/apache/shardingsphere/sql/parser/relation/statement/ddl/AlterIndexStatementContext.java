@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Alter index statement context.
  */
-public class AlterIndexStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class AlterIndexStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     public AlterIndexStatementContext(final AlterIndexStatement sqlStatement) {
         super(sqlStatement);

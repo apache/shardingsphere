@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Describe statement context.
  */
-public class DescribeStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class DescribeStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     public DescribeStatementContext(final DescribeStatement sqlStatement) {
         super(sqlStatement);
