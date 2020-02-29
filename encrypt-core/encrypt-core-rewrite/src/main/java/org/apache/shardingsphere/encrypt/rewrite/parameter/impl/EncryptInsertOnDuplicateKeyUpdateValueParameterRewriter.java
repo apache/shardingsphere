@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAwar
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -46,7 +46,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
     
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) (sqlStatementContext.getSqlStatement())).getOnDuplicateKeyColumns().isPresent();
+        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatement) (sqlStatementContext.getSqlStatement())).getOnDuplicateKeyColumns().isPresent();
     }
     
     @Override

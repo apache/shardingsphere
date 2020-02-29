@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.relation.statement.impl;
 
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
@@ -46,7 +47,7 @@ public final class InsertSQLStatementContextTest {
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
-        InsertSQLStatementContext actual = new InsertSQLStatementContext(mock(RelationMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(mock(RelationMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertSQLStatementContext(actual);
     }
     
@@ -57,7 +58,7 @@ public final class InsertSQLStatementContextTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
-        InsertSQLStatementContext actual = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertSQLStatementContext(actual);
     }
     
@@ -68,7 +69,7 @@ public final class InsertSQLStatementContextTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
-        InsertSQLStatementContext actual = new InsertSQLStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertThat(actual.getGroupedParameters().size(), is(2));
     }
     
@@ -79,7 +80,7 @@ public final class InsertSQLStatementContextTest {
                 new ParameterMarkerExpressionSegment(0, 0, 3), new ParameterMarkerExpressionSegment(0, 0, 4), new LiteralExpressionSegment(0, 0, "init"))));
     }
     
-    private void assertInsertSQLStatementContext(final InsertSQLStatementContext actual) {
+    private void assertInsertSQLStatementContext(final InsertStatementContext actual) {
         assertThat(actual.getTablesContext().getSingleTableName(), is("tbl"));
         assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
         assertThat(actual.getInsertValueContexts().size(), is(2));

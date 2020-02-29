@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.relation.statement.impl;
+package org.apache.shardingsphere.sql.parser.relation.statement.dml;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -33,14 +33,27 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +62,7 @@ import java.util.Map;
  */
 @Getter
 @ToString(callSuper = true)
-public final class SelectSQLStatementContext extends CommonSQLStatementContext {
+public final class SelectStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     private final ProjectionsContext projectionsContext;
     
@@ -62,8 +75,8 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
     private final boolean containsSubquery;
 
     // TODO to be remove, for test case only
-    public SelectSQLStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
-                                     final OrderByContext orderByContext, final ProjectionsContext projectionsContext, final PaginationContext paginationContext) {
+    public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
+                                  final OrderByContext orderByContext, final ProjectionsContext projectionsContext, final PaginationContext paginationContext) {
         super(sqlStatement);
         this.groupByContext = groupByContext;
         this.orderByContext = orderByContext;
@@ -72,7 +85,7 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
         containsSubquery = containsSubquery();
     }
     
-    public SelectSQLStatementContext(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectStatementContext(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
@@ -164,5 +177,69 @@ public final class SelectSQLStatementContext extends CommonSQLStatementContext {
      */
     public boolean isSameGroupByAndOrderByItems() {
         return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderByContext.getItems());
+    }
+    
+    @Override
+    public Collection<TableSegment> getAllTables() {
+        SelectStatement selectStatement = (SelectStatement) getSqlStatement();
+        Collection<TableSegment> result = new LinkedList<>(selectStatement.getTables());
+        if (selectStatement.getWhere().isPresent()) {
+            result.addAll(getAllTablesFromWhere(selectStatement.getWhere().get(), selectStatement.getTables()));
+        }
+        result.addAll(getAllTablesFromProjections(selectStatement.getProjections(), selectStatement.getTables()));
+        if (selectStatement.getGroupBy().isPresent()) {
+            result.addAll(getAllTablesFromOrderByItems(selectStatement.getGroupBy().get().getGroupByItems(), selectStatement.getTables()));
+        }
+        if (selectStatement.getOrderBy().isPresent()) {
+            result.addAll(getAllTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems(), selectStatement.getTables()));
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getAllTablesFromWhere(final WhereSegment where, final Collection<TableSegment> tables) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (AndPredicate each : where.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                result.addAll(new PredicateExtractor(tables, predicate).extractTables());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getAllTablesFromProjections(final ProjectionsSegment projections, final Collection<TableSegment> tables) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projections.getProjections()) {
+            if (each instanceof OwnerAvailable) {
+                Optional<OwnerSegment> owner = ((OwnerAvailable) each).getOwner();
+                if (owner.isPresent() && isTable(owner.get(), tables)) {
+                    result.add(new TableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getAllTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems, final Collection<TableSegment> tables) {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (OrderByItemSegment each : orderByItems) {
+            if (each instanceof ColumnOrderByItemSegment) {
+                Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
+                if (owner.isPresent() && isTable(owner.get(), tables)) {
+                    Preconditions.checkState(((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent());
+                    OwnerSegment segment = ((ColumnOrderByItemSegment) each).getColumn().getOwner().get();
+                    result.add(new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+                }
+            }
+        }
+        return result;
+    }
+    
+    private boolean isTable(final OwnerSegment owner, final Collection<TableSegment> tables) {
+        for (TableSegment each : tables) {
+            if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

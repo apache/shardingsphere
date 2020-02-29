@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -39,7 +39,7 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof InsertSQLStatementContext)) {
+        if (!(sqlStatementContext instanceof InsertStatementContext)) {
             return false;
         }
         return ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns().isPresent() && !((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();

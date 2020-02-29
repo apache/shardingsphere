@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteCont
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
 import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
@@ -38,7 +38,7 @@ public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLToken
     
     @Override
     public final boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && shardingRouteContext.getGeneratedKey().isPresent()
+        return sqlStatementContext instanceof InsertStatementContext && shardingRouteContext.getGeneratedKey().isPresent()
                 && shardingRouteContext.getGeneratedKey().get().isGenerated() && isGenerateSQLToken((InsertStatement) sqlStatementContext.getSqlStatement());
     }
     

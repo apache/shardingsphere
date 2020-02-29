@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -55,7 +55,7 @@ public final class InsertClauseShardingConditionEngine {
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final InsertStatementContext insertSQLStatementContext, final GeneratedKey generatedKey, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
         String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
         Collection<String> columnNames = getColumnNames(insertSQLStatementContext, generatedKey);
@@ -68,7 +68,7 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<String> getColumnNames(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
+    private Collection<String> getColumnNames(final InsertStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
         if (null == generatedKey || !generatedKey.isGenerated()) {
             return insertSQLStatementContext.getColumnNames();
         }

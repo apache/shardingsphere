@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.relation.statement.impl;
+package org.apache.shardingsphere.sql.parser.relation.statement.dml;
 
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,13 +37,13 @@ import java.util.List;
  */
 @Getter
 @ToString(callSuper = true)
-public final class InsertSQLStatementContext extends CommonSQLStatementContext {
+public final class InsertStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
     private final List<String> columnNames;
     
     private final List<InsertValueContext> insertValueContexts;
     
-    public InsertSQLStatementContext(final RelationMetas relationMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
+    public InsertStatementContext(final RelationMetas relationMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
         columnNames = sqlStatement.useDefaultColumns() ? relationMetas.getAllColumnNames(getTablesContext().getSingleTableName()) : sqlStatement.getColumnNames();
         insertValueContexts = getInsertValueContexts(parameters);
@@ -77,5 +80,10 @@ public final class InsertSQLStatementContext extends CommonSQLStatementContext {
             result.add(each.getParameters());
         }
         return result;
+    }
+    
+    @Override
+    public Collection<TableSegment> getAllTables() {
+        return ((InsertStatement) getSqlStatement()).getAllTables();
     }
 }

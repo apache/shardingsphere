@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.D
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -55,17 +55,17 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && !((InsertStatement) sqlStatementContext.getSqlStatement()).getValues().isEmpty();
+        return sqlStatementContext instanceof InsertStatementContext && !((InsertStatement) sqlStatementContext.getSqlStatement()).getValues().isEmpty();
     }
     
     @Override
     public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         Optional<SQLToken> insertValuesToken = findPreviousSQLToken(InsertValuesToken.class);
         if (insertValuesToken.isPresent()) {
-            processPreviousSQLToken((InsertSQLStatementContext) sqlStatementContext, (InsertValuesToken) insertValuesToken.get());
+            processPreviousSQLToken((InsertStatementContext) sqlStatementContext, (InsertValuesToken) insertValuesToken.get());
             return (InsertValuesToken) insertValuesToken.get();
         }
-        return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext);
+        return generateNewSQLToken((InsertStatementContext) sqlStatementContext);
     }
     
     private Optional<SQLToken> findPreviousSQLToken(final Class<?> sqlToken) {
@@ -77,7 +77,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         return Optional.absent();
     }
     
-    private void processPreviousSQLToken(final InsertSQLStatementContext sqlStatementContext, final InsertValuesToken insertValuesToken) {
+    private void processPreviousSQLToken(final InsertStatementContext sqlStatementContext, final InsertValuesToken insertValuesToken) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         int count = 0;
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
@@ -86,7 +86,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         }
     }
     
-    private InsertValuesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext) {
+    private InsertValuesToken generateNewSQLToken(final InsertStatementContext sqlStatementContext) {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Collection<InsertValuesSegment> insertValuesSegments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getValues();
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
@@ -114,7 +114,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         return result;
     }
     
-    private void encryptToken(final InsertValue insertValueToken, final String tableName, final InsertSQLStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
+    private void encryptToken(final InsertValue insertValueToken, final String tableName, final InsertStatementContext sqlStatementContext, final InsertValueContext insertValueContext) {
         Optional<SQLToken> useDefaultInsertColumnsToken = findPreviousSQLToken(UseDefaultInsertColumnsToken.class);
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {

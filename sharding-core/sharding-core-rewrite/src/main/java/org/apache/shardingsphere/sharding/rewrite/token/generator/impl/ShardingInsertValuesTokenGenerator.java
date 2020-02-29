@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -57,7 +57,7 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
         InsertValuesToken result = new ShardingInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         Iterator<ShardingCondition> shardingConditionIterator = null == shardingRouteContext || shardingRouteContext.getShardingConditions().getConditions().isEmpty()
                 ? null : shardingRouteContext.getShardingConditions().getConditions().iterator();
-        for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
+        for (InsertValueContext each : ((InsertStatementContext) sqlStatementContext).getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
             Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
             result.getInsertValues().add(new ShardingInsertValue(expressionSegments, dataNodes));

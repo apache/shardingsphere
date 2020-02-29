@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.relation.statement.impl;
+package org.apache.shardingsphere.sql.parser.relation.statement.dcl;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+
+import java.util.Collection;
 
 /**
- * Common SQL statement context.
+ * Revoke statement context.
  */
-@Getter
-@ToString
-public class CommonSQLStatementContext implements SQLStatementContext {
+public final class RevokeStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
     
-    private final SQLStatement sqlStatement;
+    public RevokeStatementContext(final RevokeStatement sqlStatement) {
+        super(sqlStatement);
+    }
     
-    private final TablesContext tablesContext;
-    
-    public CommonSQLStatementContext(final SQLStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-        tablesContext = new TablesContext(sqlStatement);
+    @Override
+    public Collection<TableSegment> getAllTables() {
+        return ((RevokeStatement) getSqlStatement()).getTables();
     }
 }

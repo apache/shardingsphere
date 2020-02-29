@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTokenGenerator;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -38,7 +38,7 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof InsertSQLStatementContext)) {
+        if (!(sqlStatementContext instanceof InsertStatementContext)) {
             return false;
         }
         Optional<InsertColumnsSegment> insertColumnsSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();

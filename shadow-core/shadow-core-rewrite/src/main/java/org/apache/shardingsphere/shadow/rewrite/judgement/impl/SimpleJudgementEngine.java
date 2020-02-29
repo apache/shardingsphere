@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shadow.rewrite.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
@@ -46,8 +46,8 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
     @Override
     public boolean isShadowSQL() {
         if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
-            for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
-                if (judgeShadowSqlForInsert(each, (InsertSQLStatementContext) sqlStatementContext)) {
+            for (InsertValueContext each : ((InsertStatementContext) sqlStatementContext).getInsertValueContexts()) {
+                if (judgeShadowSqlForInsert(each, (InsertStatementContext) sqlStatementContext)) {
                     return true;
                 }
             }
@@ -64,7 +64,7 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
         return false;
     }
     
-    private boolean judgeShadowSqlForInsert(final InsertValueContext insertValueContext, final InsertSQLStatementContext insertSQLStatementContext) {
+    private boolean judgeShadowSqlForInsert(final InsertValueContext insertValueContext, final InsertStatementContext insertSQLStatementContext) {
         Iterator<String> descendingColumnNames = insertSQLStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();

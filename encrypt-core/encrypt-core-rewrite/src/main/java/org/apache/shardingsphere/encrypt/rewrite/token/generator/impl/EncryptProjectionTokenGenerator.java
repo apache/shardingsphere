@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAwar
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
@@ -50,7 +50,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectSQLStatementContext)) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return Collections.emptyList();
         }
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();

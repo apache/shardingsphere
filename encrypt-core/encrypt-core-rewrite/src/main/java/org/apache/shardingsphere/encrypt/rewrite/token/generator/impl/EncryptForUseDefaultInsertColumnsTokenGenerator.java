@@ -22,7 +22,7 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
@@ -45,7 +45,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
+        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
     }
     
     @Override
@@ -53,10 +53,10 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         Optional<UseDefaultInsertColumnsToken> previousSQLToken = findInsertColumnsToken();
         if (previousSQLToken.isPresent()) {
-            processPreviousSQLToken(previousSQLToken.get(), (InsertSQLStatementContext) sqlStatementContext, tableName);
+            processPreviousSQLToken(previousSQLToken.get(), (InsertStatementContext) sqlStatementContext, tableName);
             return previousSQLToken.get();
         }
-        return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext, tableName);
+        return generateNewSQLToken((InsertStatementContext) sqlStatementContext, tableName);
     }
     
     private Optional<UseDefaultInsertColumnsToken> findInsertColumnsToken() {
@@ -68,7 +68,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
         return Optional.absent();
     }
     
-    private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertSQLStatementContext sqlStatementContext, final String tableName) {
+    private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext sqlStatementContext, final String tableName) {
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         List<String> columnNames = getColumnNames(sqlStatementContext, encryptTable.get(), previousSQLToken.getColumns());
@@ -76,7 +76,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
         previousSQLToken.getColumns().addAll(columnNames);
     }
     
-    private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext, final String tableName) {
+    private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertStatementContext sqlStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
@@ -84,7 +84,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
         return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(sqlStatementContext, encryptTable.get(), sqlStatementContext.getColumnNames()));
     }
     
-    private List<String> getColumnNames(final InsertSQLStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {
+    private List<String> getColumnNames(final InsertStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {
         List<String> result = new LinkedList<>(currentColumnNames);
         Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {

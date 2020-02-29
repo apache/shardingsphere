@@ -36,7 +36,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeC
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
 import org.apache.shardingsphere.shardingjdbc.merge.JDBCEncryptResultDecoratorEngine;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -117,7 +117,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
                 queryResults.add(new StreamQueryResult(resultSet));
             }
         }
-        if (shardingExecutionContext.getSqlStatementContext() instanceof SelectSQLStatementContext || shardingExecutionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+        if (shardingExecutionContext.getSqlStatementContext() instanceof SelectStatementContext || shardingExecutionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             currentResultSet = new ShardingResultSet(resultSets, createMergedResult(resultSets, queryResults), this, shardingExecutionContext);
         }
         return currentResultSet;

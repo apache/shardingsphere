@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.Orde
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -44,11 +44,11 @@ import static org.mockito.Mockito.when;
 
 public final class IteratorStreamMergedResultTest {
     
-    private SelectSQLStatementContext selectSQLStatementContext;
+    private SelectStatementContext selectSQLStatementContext;
     
     @Before
     public void setUp() {
-        selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
     }

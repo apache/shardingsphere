@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
@@ -39,7 +39,7 @@ public final class InsertCipherNameTokenGenerator extends BaseEncryptSQLTokenGen
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof InsertSQLStatementContext)) {
+        if (!(sqlStatementContext instanceof InsertStatementContext)) {
             return false;
         }
         Optional<InsertColumnsSegment> insertColumnsSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();
