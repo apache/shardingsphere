@@ -594,3 +594,7 @@ TSTZRANGE
 DATERANGE
     : D A T E R A N G E
     ;
+
+DOUBLE_PRECISION
+    : D O U B L E [ ]+ P R E C I S I O N
+    ;

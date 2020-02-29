@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ch
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DataTypeNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DoublePrecisionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.HexadecimalLiteralsContext;
@@ -461,10 +460,6 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        DoublePrecisionContext doublePrecisionContext = ctx.doublePrecision();
-        if (null != doublePrecisionContext) {
-            return new KeywordValue(String.format("%s %s", doublePrecisionContext.getChild(0).getText(), doublePrecisionContext.getChild(1).getText()));
-        }
         IdentifierContext identifierContext = ctx.identifier();
         if (null != identifierContext) {
             return new KeywordValue(identifierContext.getText());
