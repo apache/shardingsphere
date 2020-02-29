@@ -31,6 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.VariableProperty;
 @Setter
 public final class SetStatement extends DALStatement {
     
-    private List<VariableProperty> variableProperty;
+    private List<VariableProperty> variablePropertyList;
     
 }

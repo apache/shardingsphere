@@ -32,6 +32,10 @@ NUMBER_
     : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
     ;
 
+NATURAL_NUMBER_
+    : MINUS_? INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
+	;
+
 HEX_DIGIT_
     : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
     ;

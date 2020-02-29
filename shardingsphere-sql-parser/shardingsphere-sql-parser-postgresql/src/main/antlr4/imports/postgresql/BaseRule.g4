@@ -325,3 +325,23 @@ ignoredIdentifier_
 ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
     ;
+
+variableProperty
+    : (((scopeKeyword? timeZone)? variableValue) | ( scopeKeyword? variable (TO | EQ_) variableValue))?
+    ;
+
+variableValue
+    : (NATURAL_NUMBER_ | STRING_ | DEFAULT | LOCAL)
+    ;
+
+timeZone
+    : TIME ZONE
+    ;
+
+variable
+    : identifier
+    ;
+	
+scopeKeyword
+    : (SESSION | LOCAL)
+    ;

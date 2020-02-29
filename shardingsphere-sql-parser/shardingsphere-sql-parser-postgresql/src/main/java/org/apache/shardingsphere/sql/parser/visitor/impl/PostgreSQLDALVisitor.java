@@ -17,13 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.shardingsphere.sql.parser.api.visitor.DALVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConfigurationParameterClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ResetParameterContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ShowContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TimeZoneContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VariablePropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VariableValueContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.TimeZoneSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.VariableProperty;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
@@ -40,17 +49,43 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     }
     
     @Override
-    public ASTNode visitSet(final SetContext ctx) {
+    public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        if (null != ctx.configurationParameterClause()) {
-            //result.setVariable((VariableSegment) visit(ctx.configurationParameterClause()));
+        if (null != ctx.variableProperty()) {
+            VariablePropertyContext variablePropertyContext = ctx.variableProperty();
+            List<VariableProperty> variablePropertyList = new ArrayList<VariableProperty>(1);
+                VariableSegment variableSegment = null;
+                VariableValueSegment variableValueSegment = null;
+                String scopeType = variablePropertyContext.scopeKeyword() == null ? null : variablePropertyContext.scopeKeyword().getText();
+                if (null != variablePropertyContext.timeZone()) {
+                    TimeZoneSegment timeZoneSegment = (TimeZoneSegment)visit(variablePropertyContext.timeZone());
+                    variableSegment = new VariableSegment(timeZoneSegment.getStartIndex(), timeZoneSegment.getStopIndex(), timeZoneSegment.getVariable());
+                    variableValueSegment = (VariableValueSegment) visit(variablePropertyContext.variableValue());
+                }else {
+                    variableSegment = (VariableSegment) visitVariable(variablePropertyContext.variable());
+                    variableValueSegment = (VariableValueSegment) visitVariableValue(variablePropertyContext.variableValue());
+                }
+                VariableProperty variableProperty = new VariableProperty(variableSegment, variableValueSegment, scopeType);
+                variablePropertyList.add(variableProperty);
+            result.setVariablePropertyList(variablePropertyList);
         }
         return result;
     }
     
     @Override
-    public ASTNode visitConfigurationParameterClause(final ConfigurationParameterClauseContext ctx) {
-        return new VariableSegment(ctx.identifier(0).getStart().getStartIndex(), ctx.identifier(0).getStop().getStopIndex(), ctx.identifier(0).getText());
+    public ASTNode visitVariableValue(final VariableValueContext ctx) {
+        VariableValueSegment result = new VariableValueSegment(ctx.getText());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitVariable(final VariableContext ctx) {
+        return new VariableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitTimeZone(final TimeZoneContext ctx) {
+        return new TimeZoneSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
     @Override

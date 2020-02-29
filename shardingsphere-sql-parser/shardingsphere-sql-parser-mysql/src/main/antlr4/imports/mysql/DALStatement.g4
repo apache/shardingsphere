@@ -86,11 +86,11 @@ showProfileType
 setVariable
     : SET (variable? (TO | EQ_) variableValue COMMA_?)*
     ;
-
+	
 variableValue
-    : (identifier | NUMBER_ | STRING_ | DEFAULT)
+    : (identifier | NUMBER_ | STRING_ | DEFAULT | numberLiterals | LOCAL )
     ;
-
+	
 showBinaryLogs
     : SHOW (BINARY | MASTER) LOGS
     ;

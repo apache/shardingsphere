@@ -15,38 +15,22 @@
  * limitations under the License.
  */
 
-grammar PostgreSQLStatement;
+package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createIndex
-    | alterIndex
-    | dropIndex
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | setTransaction
-    | beginTransaction
-    | commit
-    | rollback
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | show
-    | setVariable
-    | resetParameter
-    | call
-    ) SEMI_?
-    ;
+/**
+ * Variable segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class TimeZoneSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String variable;
+}

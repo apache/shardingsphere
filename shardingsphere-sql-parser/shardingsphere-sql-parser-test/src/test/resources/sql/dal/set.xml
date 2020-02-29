@@ -18,16 +18,16 @@
 
 <sql-parser-test-cases>
     <set-variable sql-case-id="set_parameter_equal" variable="configuration_parameter" variableValue="value"/>
-    <set-variable sql-case-id="set_parameter_to" variable="configuration_parameter" />
-    <set-variable sql-case-id="set_parameter_for_session_scope" variable="configuration_parameter" />
-    <set-variable sql-case-id="set_parameter_for_local_scope" variable="configuration_parameter" />
-    <set-variable sql-case-id="set_parameter_for_default_scope" variable="configuration_parameter" />
-    <set-variable sql-case-id="set_timezone_with_zero_value" />
-    <set-variable sql-case-id="set_timezone_with_positive_value" />
-    <set-variable sql-case-id="set_timezone_with_negative_value" />
-    <set-variable sql-case-id="set_timezone_with_double_value" />
-    <set-variable sql-case-id="set_timezone_for_default_scope" />
-    <set-variable sql-case-id="set_timezone_for_local_scope" />
-    <set-variable sql-case-id="set_timezone_for_session_scope" />
-    <set-variable sql-case-id="set_timezone_for_local_scope_with_double_value" />
+    <set-variable sql-case-id="set_parameter_to" variable="configuration_parameter" variableValue="value" />
+    <set-variable sql-case-id="set_parameter_for_session_scope" variable="configuration_parameter" variableValue="value" />
+    <set-variable sql-case-id="set_parameter_for_local_scope" variable="configuration_parameter" variableValue="value" />
+    <set-variable sql-case-id="set_parameter_for_default_scope" variable="configuration_parameter" variableValue="DEFAULT" />
+    <set-variable sql-case-id="set_timezone_with_zero_value" variable="TIMEZONE" variableValue="0" />
+    <set-variable sql-case-id="set_timezone_with_positive_value" variable="TIMEZONE" variableValue="8" />
+    <set-variable sql-case-id="set_timezone_with_negative_value" variable="TIMEZONE" variableValue="-2" />
+    <set-variable sql-case-id="set_timezone_with_double_value" variable="TIMEZONE" variableValue="3.5" />
+    <set-variable sql-case-id="set_timezone_for_default_scope" variable="TIMEZONE" variableValue="DEFAULT" />
+    <set-variable sql-case-id="set_timezone_for_local_scope" variable="TIMEZONE" variableValue="LOCAL" />
+    <set-variable sql-case-id="set_timezone_for_session_scope" variable="TIMEZONE" variableValue="3.5" />
+    <set-variable sql-case-id="set_timezone_for_local_scope_with_double_value" variable="TIMEZONE" variableValue="3.5" />
 </sql-parser-test-cases>
