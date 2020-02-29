@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
@@ -59,53 +56,10 @@ public final class UpdateStatement extends DMLStatement implements TableSegments
         if (null != where) {
             for (AndPredicate each : where.getAndPredicates()) {
                 for (PredicateSegment predicate : each.getPredicates()) {
-                    result.addAll(getTables(predicate));
+                    result.addAll(new PredicateExtractor(tables, predicate).extractTables());
                 }
             }
         }
         return result;
-    }
-    
-    private Collection<TableSegment> getTables(final PredicateSegment predicate) {
-        Collection<TableSegment> result = new LinkedList<>();
-        if (isToGenerateTableTokenLeftValue(predicate)) {
-            Preconditions.checkState(predicate.getColumn().getOwner().isPresent());
-            OwnerSegment segment = predicate.getColumn().getOwner().get();
-            result.add(new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
-        }
-        if (isToGenerateTableTokenForRightValue(predicate)) {
-            Preconditions.checkState(((ColumnSegment) predicate.getRightValue()).getOwner().isPresent());
-            OwnerSegment segment = ((ColumnSegment) predicate.getRightValue()).getOwner().get();
-            result.add(new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
-        }
-        if (isToGenerateTableTokenForProjection(predicate)) {
-            Preconditions.checkState(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent());
-            OwnerSegment segment = ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get();
-            new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
-        }
-        return result;
-    }
-    
-    private boolean isToGenerateTableTokenLeftValue(final PredicateSegment predicate) {
-        return predicate.getColumn().getOwner().isPresent() && isTable(predicate.getColumn().getOwner().get());
-    }
-    
-    private boolean isToGenerateTableTokenForRightValue(final PredicateSegment predicate) {
-        return predicate.getRightValue() instanceof ColumnSegment
-                && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent() && isTable(((ColumnSegment) predicate.getRightValue()).getOwner().get());
-    }
-    
-    private boolean isToGenerateTableTokenForProjection(final PredicateSegment predicate) {
-        return predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()
-                && isTable(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
-    }
-    
-    private boolean isTable(final OwnerSegment owner) {
-        for (TableSegment each : tables) {
-            if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
-                return false;
-            }
-        }
-        return true;
     }
 }
