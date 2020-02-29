@@ -322,4 +322,9 @@
         <input sql="SELECT t_account.account_id, t_account.password, t_account.amount AS a, status AS s FROM t_account WHERE t_account.account_id = 1 AND t_account.password = 'aaa' AND t_account.amount = 1000 AND t_account.status = 'OK'" />
         <output sql="SELECT t_account_1.account_id, t_account_1.password, t_account_1.amount AS a, status AS s FROM t_account_1 WHERE t_account_1.account_id = 1 AND t_account_1.password = 'aaa' AND t_account_1.amount = 1000 AND t_account_1.status = 'OK'" />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="select_with_join_table_with_qualified_columns">
+        <input sql="SELECT * FROM t_account, t_account_detail WHERE t_account.account_id = 1 AND t_account.account_id = t_account_detail.account_id" />
+        <output sql="SELECT * FROM t_account_1, t_account_detail_1 WHERE t_account_1.account_id = 1 AND t_account_1.account_id = t_account_detail_1.account_id" />
+    </rewrite-assertion>
 </rewrite-assertions>
