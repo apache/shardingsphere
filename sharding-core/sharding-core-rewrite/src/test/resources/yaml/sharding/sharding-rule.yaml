@@ -37,7 +37,7 @@ shardingRule:
       actualDataNodes: db.t_account_detail_${0..1}
       tableStrategy: 
         inline:
-          shardingColumn: order_id
+          shardingColumn: account_id
           algorithmExpression: t_account_detail_${account_id % 2}
   bindingTables:
     - t_account, t_account_detail
