@@ -22,9 +22,10 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -32,9 +33,14 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class DropIndexStatement extends DDLStatement implements TableSegmentAvailable, IndexSegmentsAvailable {
+public final class DropIndexStatement extends DDLStatement implements TableSegmentsAvailable, IndexSegmentsAvailable {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
     
     private TableSegment table;
+    
+    @Override
+    public Collection<TableSegment> getAllTables() {
+        return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
+    }
 }

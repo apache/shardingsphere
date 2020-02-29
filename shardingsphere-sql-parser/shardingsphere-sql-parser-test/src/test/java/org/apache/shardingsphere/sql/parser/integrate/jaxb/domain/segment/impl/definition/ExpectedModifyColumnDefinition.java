@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Table segment available.
+ * Expected modify column definition.
  */
-public interface TableSegmentAvailable {
+@Getter
+@Setter
+public final class ExpectedModifyColumnDefinition extends AbstractExpectedSQLSegment {
     
-    /**
-     * Get table segment.
-     * 
-     * @return table segment
-     */
-    TableSegment getTable();
+    @XmlElement(name = "column-definition")
+    private ExpectedColumnDefinition columnDefinition;
     
-    /**
-     * Set table segment.
-     * 
-     * @param table table segment
-     */
-    void setTable(TableSegment table);
+    @XmlElement(name = "column-position")
+    private ExpectedColumnPosition columnPosition;
 }

@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -34,7 +35,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class ConstraintDefinitionSegment implements CreateDefinitionSegment {
+public final class ConstraintDefinitionSegment implements CreateDefinitionSegment, AlterDefinitionSegment {
     
     private final int startIndex;
     

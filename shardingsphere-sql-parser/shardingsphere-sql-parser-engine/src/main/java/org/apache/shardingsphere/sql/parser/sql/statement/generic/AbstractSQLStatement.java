@@ -19,25 +19,14 @@ package org.apache.shardingsphere.sql.parser.sql.statement.generic;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * SQL statement abstract class.
  */
+@Getter
+@Setter
 public abstract class AbstractSQLStatement implements SQLStatement {
     
-    private final Collection<SQLSegment> sqlSegments = new LinkedList<>();
-    
-    @Getter
-    @Setter
     private int parametersCount;
-    
-    @Override
-    public final Collection<SQLSegment> getAllSQLSegments() {
-        return sqlSegments;
-    }
 }

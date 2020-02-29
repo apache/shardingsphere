@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition;
 
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * SQL statement.
+ * Expected add column definition.
  */
-public interface SQLStatement extends ASTNode {
+@Getter
+@Setter
+public final class ExpectedAddColumnDefinition extends AbstractExpectedSQLSegment {
     
-    /**
-     * Get count of parameters.
-     *
-     * @return count of parameters
-     */
-    int getParametersCount();
+    @XmlElement(name = "column-definition")
+    private final List<ExpectedColumnDefinition> columnDefinitions = new LinkedList<>();
+    
+    @XmlElement(name = "column-position")
+    private ExpectedColumnPosition columnPosition;
 }
