@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
+import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.junit.BeforeClass;
@@ -35,7 +36,11 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ApolloInstanceTest {
     
@@ -46,9 +51,11 @@ public final class ApolloInstanceTest {
     
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
-    
+
     private static ConfigCenterRepository configCenterRepository = new ApolloInstance();
-    
+
+    private static ApolloOpenApiWrapper openApiWrapper = mock(ApolloOpenApiWrapper.class);
+
     @BeforeClass
     @SneakyThrows
     public static void init() {
@@ -56,8 +63,10 @@ public final class ApolloInstanceTest {
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         Properties properties = new Properties();
+        configCenterRepository.setProperties(properties);
         ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
         FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("configWrapper"), configWrapper);
+        FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("openApiWrapper"), openApiWrapper);
     }
     
     @Test
@@ -80,6 +89,67 @@ public final class ApolloInstanceTest {
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is("/test/children/1"));
         assertThat(changeEvent.getValue(), is("value3"));
+        assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertGetWithNonExistentKey() {
+        when(openApiWrapper.getValue(eq("test.nonExistentKey"))).thenReturn(null);
+        assertNull(configCenterRepository.get("/test/nonExistentKey"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertUpdate() {
+        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
+        configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
+
+            @Override
+            public void onChange(final DataChangedEvent dataChangedEvent) {
+                future.set(dataChangedEvent);
+            }
+        });
+        embeddedApollo.addOrModifyProperty("orchestration", "test.children.1", "newValue1");
+        DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
+        assertThat(changeEvent.getKey(), is("/test/children/1"));
+        assertThat(changeEvent.getValue(), is("newValue1"));
+        assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertWatchDeletedChangedType() {
+        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
+        configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
+
+            @Override
+            public void onChange(final DataChangedEvent dataChangedEvent) {
+                future.set(dataChangedEvent);
+            }
+        });
+        embeddedApollo.deleteProperty("orchestration", "test.children.1");
+        DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
+        assertThat(changeEvent.getKey(), is("/test/children/1"));
+        assertNull(changeEvent.getValue());
+        assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
+    }
+
+    @Test
+    @SneakyThrows
+    public void assertWatchAddChangedType() {
+        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
+        configCenterRepository.watch("/test/children/newKey", new DataChangedEventListener() {
+
+            @Override
+            public void onChange(final DataChangedEvent dataChangedEvent) {
+                future.set(dataChangedEvent);
+            }
+        });
+        embeddedApollo.addOrModifyProperty("orchestration", "test.children.newKey", "newVaule");
+        DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
+        assertThat(changeEvent.getKey(), is("/test/children/newKey"));
+        assertThat(changeEvent.getValue(), is("newVaule"));
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
     }
 }
