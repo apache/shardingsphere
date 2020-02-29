@@ -161,7 +161,9 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
             for (int i = 0; i < variableContextList.size(); i++) {
                 VariableContext variableContext = variableContextList.get(i);
                 String scopeType = variableContext.scopeKeyword() == null ? null : variableContext.scopeKeyword().getText();
-                VariableProperty variableProperty = new VariableProperty((VariableSegment) visitVariable(variableContextList.get(i)), (VariableValueSegment) visitVariableValue(variableValueContextList.get(i)), scopeType);
+                VariableSegment variableSegment = (VariableSegment) visitVariable(variableContextList.get(i));
+                VariableValueSegment variableValueSegment = (VariableValueSegment) visitVariableValue(variableValueContextList.get(i));
+                VariableProperty variableProperty = new VariableProperty(variableSegment, variableValueSegment, scopeType);
                 variablePropertyList.add(variableProperty);
             }
             result.setVariablePropertyList(variablePropertyList);
