@@ -42,52 +42,52 @@ import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
  * DAL visitor for PostgreSQL.
  */
 public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DALVisitor {
-    
+
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
         return new ShowStatement();
     }
-    
+
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
         if (null != ctx.variableProperty()) {
             VariablePropertyContext variablePropertyContext = ctx.variableProperty();
             List<VariableProperty> variablePropertyList = new ArrayList<VariableProperty>(1);
-                VariableSegment variableSegment = null;
-                VariableValueSegment variableValueSegment = null;
-                String scopeType = variablePropertyContext.scopeKeyword() == null ? null : variablePropertyContext.scopeKeyword().getText();
-                if (null != variablePropertyContext.timeZone()) {
-                    TimeZoneSegment timeZoneSegment = (TimeZoneSegment)visit(variablePropertyContext.timeZone());
-                    variableSegment = new VariableSegment(timeZoneSegment.getStartIndex(), timeZoneSegment.getStopIndex(), timeZoneSegment.getVariable());
-                    variableValueSegment = (VariableValueSegment) visit(variablePropertyContext.variableValue());
-                }else {
-                    variableSegment = (VariableSegment) visitVariable(variablePropertyContext.variable());
-                    variableValueSegment = (VariableValueSegment) visitVariableValue(variablePropertyContext.variableValue());
-                }
-                VariableProperty variableProperty = new VariableProperty(variableSegment, variableValueSegment, scopeType);
-                variablePropertyList.add(variableProperty);
+            VariableSegment variableSegment = null;
+            VariableValueSegment variableValueSegment = null;
+            String scopeType = variablePropertyContext.scopeKeyword() == null ? null : variablePropertyContext.scopeKeyword().getText();
+            if (null != variablePropertyContext.timeZone()) {
+                TimeZoneSegment timeZoneSegment = (TimeZoneSegment)visit(variablePropertyContext.timeZone());
+                variableSegment = new VariableSegment(timeZoneSegment.getStartIndex(), timeZoneSegment.getStopIndex(), timeZoneSegment.getVariable());
+                variableValueSegment = (VariableValueSegment) visitVariableValue(variablePropertyContext.variableValue());
+            }else {
+                variableSegment = (VariableSegment) visitVariable(variablePropertyContext.variable());
+                variableValueSegment = (VariableValueSegment) visitVariableValue(variablePropertyContext.variableValue());
+            }
+            VariableProperty variableProperty = new VariableProperty(variableSegment, variableValueSegment, scopeType);
+            variablePropertyList.add(variableProperty);
             result.setVariablePropertyList(variablePropertyList);
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitVariableValue(final VariableValueContext ctx) {
         VariableValueSegment result = new VariableValueSegment(ctx.getText());
         return result;
     }
-    
+
     @Override
     public ASTNode visitVariable(final VariableContext ctx) {
         return new VariableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-    
+
     @Override
     public ASTNode visitTimeZone(final TimeZoneContext ctx) {
         return new TimeZoneSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-    
+
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
         return new ResetParameterStatement();

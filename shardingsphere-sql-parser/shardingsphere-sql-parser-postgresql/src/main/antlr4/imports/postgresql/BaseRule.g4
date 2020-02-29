@@ -331,7 +331,7 @@ variableProperty
     ;
 
 variableValue
-    : (NATURAL_NUMBER_ | STRING_ | DEFAULT | LOCAL)
+    : (identifier | NUMBER_ | (MINUS_+ NUMBER_) | STRING_ | DEFAULT | LOCAL)
     ;
 
 timeZone
