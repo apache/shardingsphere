@@ -30,7 +30,7 @@ import java.util.LinkedList;
 /**
  * Create table statement context.
  */
-public final class CreateTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class CreateTableStatementContext extends CommonSQLStatementContext<CreateTableStatement> implements TableSegmentsAvailable {
     
     public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
         super(sqlStatement);
@@ -39,12 +39,11 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     @Override
     public Collection<TableSegment> getAllTables() {
         Collection<TableSegment> result = new LinkedList<>();
-        CreateTableStatement statement = (CreateTableStatement) getSqlStatement();
-        result.add(statement.getTable());
-        for (ColumnDefinitionSegment each : statement.getColumnDefinitions()) {
+        result.add(getSqlStatement().getTable());
+        for (ColumnDefinitionSegment each : getSqlStatement().getColumnDefinitions()) {
             result.addAll(each.getReferencedTables());
         }
-        for (ConstraintDefinitionSegment each : statement.getConstraintDefinitions()) {
+        for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
             if (each.getReferencedTable().isPresent()) {
                 result.add(each.getReferencedTable().get());
             }

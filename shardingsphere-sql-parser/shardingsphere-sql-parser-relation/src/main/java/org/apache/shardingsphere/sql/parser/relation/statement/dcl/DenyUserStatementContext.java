@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Deny user statement context.
  */
-public final class DenyUserStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class DenyUserStatementContext extends CommonSQLStatementContext<DenyUserStatement> implements TableSegmentsAvailable {
     
     public DenyUserStatementContext(final DenyUserStatement sqlStatement) {
         super(sqlStatement);
@@ -36,7 +36,6 @@ public final class DenyUserStatementContext extends CommonSQLStatementContext im
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        DenyUserStatement denyUserStatement = (DenyUserStatement) getSqlStatement();
-        return null == denyUserStatement.getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(denyUserStatement.getTable());
+        return null == getSqlStatement().getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
 }

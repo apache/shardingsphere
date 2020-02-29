@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Grant statement context.
  */
-public final class GrantStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class GrantStatementContext extends CommonSQLStatementContext<GrantStatement> implements TableSegmentsAvailable {
     
     public GrantStatementContext(final GrantStatement sqlStatement) {
         super(sqlStatement);
@@ -35,6 +35,6 @@ public final class GrantStatementContext extends CommonSQLStatementContext imple
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        return ((GrantStatement) getSqlStatement()).getTables();
+        return getSqlStatement().getTables();
     }
 }

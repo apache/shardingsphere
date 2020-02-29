@@ -24,16 +24,18 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * Common SQL statement context.
+ * 
+ * @param <T> type of SQL statement
  */
 @Getter
 @ToString
-public class CommonSQLStatementContext implements SQLStatementContext {
+public class CommonSQLStatementContext<T extends SQLStatement> implements SQLStatementContext<T> {
     
-    private final SQLStatement sqlStatement;
+    private final T sqlStatement;
     
     private final TablesContext tablesContext;
     
-    public CommonSQLStatementContext(final SQLStatement sqlStatement) {
+    public CommonSQLStatementContext(final T sqlStatement) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(sqlStatement);
     }

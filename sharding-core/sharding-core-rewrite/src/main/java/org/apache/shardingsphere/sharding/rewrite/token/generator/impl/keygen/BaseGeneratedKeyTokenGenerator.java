@@ -39,7 +39,7 @@ public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLToken
     @Override
     public final boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && shardingRouteContext.getGeneratedKey().isPresent()
-                && shardingRouteContext.getGeneratedKey().get().isGenerated() && isGenerateSQLToken((InsertStatement) sqlStatementContext.getSqlStatement());
+                && shardingRouteContext.getGeneratedKey().get().isGenerated() && isGenerateSQLToken(((InsertStatementContext) sqlStatementContext).getSqlStatement());
     }
     
     protected abstract boolean isGenerateSQLToken(InsertStatement insertStatement);

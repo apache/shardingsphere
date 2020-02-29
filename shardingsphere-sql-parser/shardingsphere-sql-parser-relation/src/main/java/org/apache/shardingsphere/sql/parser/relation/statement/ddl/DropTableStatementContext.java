@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Drop table statement context.
  */
-public final class DropTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class DropTableStatementContext extends CommonSQLStatementContext<DropTableStatement> implements TableSegmentsAvailable {
     
     public DropTableStatementContext(final DropTableStatement sqlStatement) {
         super(sqlStatement);
@@ -35,6 +35,6 @@ public final class DropTableStatementContext extends CommonSQLStatementContext i
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        return ((DropTableStatement) getSqlStatement()).getTables();
+        return getSqlStatement().getTables();
     }
 }

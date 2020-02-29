@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Truncate statement context.
  */
-public final class TruncateStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class TruncateStatementContext extends CommonSQLStatementContext<TruncateStatement> implements TableSegmentsAvailable {
     
     public TruncateStatementContext(final TruncateStatement sqlStatement) {
         super(sqlStatement);
@@ -35,6 +35,6 @@ public final class TruncateStatementContext extends CommonSQLStatementContext im
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        return ((TruncateStatement) getSqlStatement()).getTables();
+        return getSqlStatement().getTables();
     }
 }

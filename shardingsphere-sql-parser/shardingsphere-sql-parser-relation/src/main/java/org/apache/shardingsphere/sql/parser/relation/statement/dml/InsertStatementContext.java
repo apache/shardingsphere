@@ -38,7 +38,7 @@ import java.util.List;
  */
 @Getter
 @ToString(callSuper = true)
-public final class InsertStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableSegmentsAvailable {
     
     private final List<String> columnNames;
     
@@ -53,7 +53,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters) {
         List<InsertValueContext> result = new LinkedList<>();
         int parametersOffset = 0;
-        for (Collection<ExpressionSegment> each : ((InsertStatement) getSqlStatement()).getAllValueExpressions()) {
+        for (Collection<ExpressionSegment> each : getSqlStatement().getAllValueExpressions()) {
             InsertValueContext insertValueContext = new InsertValueContext(each, parameters, parametersOffset);
             result.add(insertValueContext);
             parametersOffset += insertValueContext.getParametersCount();
@@ -85,6 +85,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        return Collections.singletonList(((InsertStatement) getSqlStatement()).getTable());
+        return Collections.singletonList(getSqlStatement().getTable());
     }
 }

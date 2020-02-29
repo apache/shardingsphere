@@ -32,7 +32,7 @@ import java.util.LinkedList;
 /**
  * Alter table statement context.
  */
-public final class AlterTableStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class AlterTableStatementContext extends CommonSQLStatementContext<AlterTableStatement> implements TableSegmentsAvailable {
     
     public AlterTableStatementContext(final AlterTableStatement sqlStatement) {
         super(sqlStatement);
@@ -41,17 +41,16 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext 
     @Override
     public Collection<TableSegment> getAllTables() {
         Collection<TableSegment> result = new LinkedList<>();
-        AlterTableStatement sqlStatement = (AlterTableStatement) getSqlStatement();
-        result.add(sqlStatement.getTable());
-        for (AddColumnDefinitionSegment each : sqlStatement.getAddColumnDefinitions()) {
+        result.add(getSqlStatement().getTable());
+        for (AddColumnDefinitionSegment each : getSqlStatement().getAddColumnDefinitions()) {
             for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
                 result.addAll(columnDefinition.getReferencedTables());
             }
         }
-        for (ModifyColumnDefinitionSegment each : sqlStatement.getModifyColumnDefinitions()) {
+        for (ModifyColumnDefinitionSegment each : getSqlStatement().getModifyColumnDefinitions()) {
             result.addAll(each.getColumnDefinition().getReferencedTables());
         }
-        for (ConstraintDefinitionSegment each : sqlStatement.getAddConstraintDefinitions()) {
+        for (ConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
             if (each.getReferencedTable().isPresent()) {
                 result.add(each.getReferencedTable().get());
             }

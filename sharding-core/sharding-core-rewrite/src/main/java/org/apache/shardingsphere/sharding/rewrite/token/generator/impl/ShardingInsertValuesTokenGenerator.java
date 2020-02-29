@@ -18,18 +18,17 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValue;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValuesToken;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValue;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValuesToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
 
@@ -48,12 +47,12 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof InsertStatement && !((InsertStatement) sqlStatementContext.getSqlStatement()).getValues().isEmpty();
+        return sqlStatementContext instanceof InsertStatementContext && !(((InsertStatementContext) sqlStatementContext).getSqlStatement()).getValues().isEmpty();
     }
     
     @Override
     public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Collection<InsertValuesSegment> insertValuesSegments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getValues();
+        Collection<InsertValuesSegment> insertValuesSegments = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getValues();
         InsertValuesToken result = new ShardingInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         Iterator<ShardingCondition> shardingConditionIterator = null == shardingRouteContext || shardingRouteContext.getShardingConditions().getConditions().isEmpty()
                 ? null : shardingRouteContext.getShardingConditions().getConditions().iterator();

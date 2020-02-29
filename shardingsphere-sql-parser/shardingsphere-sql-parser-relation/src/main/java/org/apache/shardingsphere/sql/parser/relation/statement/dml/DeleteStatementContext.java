@@ -36,7 +36,7 @@ import java.util.LinkedList;
  */
 @Getter
 @ToString(callSuper = true)
-public final class DeleteStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class DeleteStatementContext extends CommonSQLStatementContext<DeleteStatement> implements TableSegmentsAvailable {
     
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
@@ -44,19 +44,18 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        DeleteStatement deleteStatement = (DeleteStatement) getSqlStatement();
-        Collection<TableSegment> result = new LinkedList<>(deleteStatement.getTables());
-        if (deleteStatement.getWhere().isPresent()) {
-            result.addAll(getAllTablesFromWhere(deleteStatement.getWhere().get(), deleteStatement.getTables()));
+        Collection<TableSegment> result = new LinkedList<>(getSqlStatement().getTables());
+        if (getSqlStatement().getWhere().isPresent()) {
+            result.addAll(getAllTablesFromWhere(getSqlStatement().getWhere().get()));
         }
         return result;
     }
     
-    private Collection<TableSegment> getAllTablesFromWhere(final WhereSegment where, final Collection<TableSegment> tables) {
+    private Collection<TableSegment> getAllTablesFromWhere(final WhereSegment where) {
         Collection<TableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                result.addAll(new PredicateExtractor(tables, predicate).extractTables());
+                result.addAll(new PredicateExtractor(getSqlStatement().getTables(), predicate).extractTables());
             }
         }
         return result;

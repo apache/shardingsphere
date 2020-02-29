@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Revoke statement context.
  */
-public final class RevokeStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class RevokeStatementContext extends CommonSQLStatementContext<RevokeStatement> implements TableSegmentsAvailable {
     
     public RevokeStatementContext(final RevokeStatement sqlStatement) {
         super(sqlStatement);
@@ -35,6 +35,6 @@ public final class RevokeStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        return ((RevokeStatement) getSqlStatement()).getTables();
+        return getSqlStatement().getTables();
     }
 }

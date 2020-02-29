@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueC
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
@@ -40,7 +39,7 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumnNames().contains(getShadowRule().getColumn());
+        return sqlStatementContext instanceof InsertStatementContext && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getColumnNames().contains(getShadowRule().getColumn());
     }
     
     @Override
@@ -49,7 +48,7 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     private InsertValuesToken generateNewSQLToken(final InsertStatementContext sqlStatementContext) {
-        Collection<InsertValuesSegment> insertValuesSegments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getValues();
+        Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new ShadowInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(each.getValueExpressions());

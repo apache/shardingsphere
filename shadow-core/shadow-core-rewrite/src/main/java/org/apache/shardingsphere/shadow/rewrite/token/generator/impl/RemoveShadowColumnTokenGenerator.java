@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.RemoveToken;
 
@@ -41,13 +40,13 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
         if (!(sqlStatementContext instanceof InsertStatementContext)) {
             return false;
         }
-        Optional<InsertColumnsSegment> insertColumnsSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();
+        Optional<InsertColumnsSegment> insertColumnsSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns();
         return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     
     @Override
     public Collection<RemoveToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns();
+        Optional<InsertColumnsSegment> sqlSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
         Collection<RemoveToken> result = new LinkedList<>();
         LinkedList<ColumnSegment> columns = (LinkedList<ColumnSegment>) sqlSegment.get().getColumns();

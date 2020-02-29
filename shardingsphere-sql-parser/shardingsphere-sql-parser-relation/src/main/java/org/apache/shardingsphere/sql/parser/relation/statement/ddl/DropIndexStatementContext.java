@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Drop index statement context.
  */
-public final class DropIndexStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class DropIndexStatementContext extends CommonSQLStatementContext<DropIndexStatement> implements TableSegmentsAvailable {
     
     public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
         super(sqlStatement);
@@ -36,7 +36,6 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext i
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        DropIndexStatement sqlStatement = (DropIndexStatement) getSqlStatement();
-        return null == sqlStatement.getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(sqlStatement.getTable());
+        return null == getSqlStatement().getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
 }

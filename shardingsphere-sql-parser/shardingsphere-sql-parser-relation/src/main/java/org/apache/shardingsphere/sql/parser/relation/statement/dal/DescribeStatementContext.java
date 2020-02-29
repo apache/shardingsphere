@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Describe statement context.
  */
-public final class DescribeStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class DescribeStatementContext extends CommonSQLStatementContext<DescribeStatement> implements TableSegmentsAvailable {
     
     public DescribeStatementContext(final DescribeStatement sqlStatement) {
         super(sqlStatement);
@@ -36,7 +36,6 @@ public final class DescribeStatementContext extends CommonSQLStatementContext im
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        DescribeStatement describeStatement = (DescribeStatement) getSqlStatement();
-        return null == describeStatement.getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(describeStatement.getTable());
+        return null == getSqlStatement().getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
 }

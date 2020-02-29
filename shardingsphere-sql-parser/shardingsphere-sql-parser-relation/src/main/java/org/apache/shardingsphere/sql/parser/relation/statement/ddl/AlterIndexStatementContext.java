@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Alter index statement context.
  */
-public final class AlterIndexStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class AlterIndexStatementContext extends CommonSQLStatementContext<AlterIndexStatement> implements TableSegmentsAvailable {
     
     public AlterIndexStatementContext(final AlterIndexStatement sqlStatement) {
         super(sqlStatement);
@@ -36,7 +36,6 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        AlterIndexStatement sqlStatement = (AlterIndexStatement) getSqlStatement();
-        return null == sqlStatement.getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(sqlStatement.getTable());
+        return null == getSqlStatement().getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
 }

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collections;
@@ -45,7 +44,7 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
     
     @Override
     public boolean isShadowSQL() {
-        if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
+        if (sqlStatementContext instanceof InsertStatementContext) {
             for (InsertValueContext each : ((InsertStatementContext) sqlStatementContext).getInsertValueContexts()) {
                 if (judgeShadowSqlForInsert(each, (InsertStatementContext) sqlStatementContext)) {
                     return true;

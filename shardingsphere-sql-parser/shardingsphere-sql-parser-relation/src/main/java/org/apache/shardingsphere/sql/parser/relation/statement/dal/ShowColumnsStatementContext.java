@@ -28,7 +28,7 @@ import java.util.Collections;
 /**
  * Show columns statement context.
  */
-public final class ShowColumnsStatementContext extends CommonSQLStatementContext implements TableSegmentsAvailable {
+public final class ShowColumnsStatementContext extends CommonSQLStatementContext<ShowColumnsStatement> implements TableSegmentsAvailable {
     
     public ShowColumnsStatementContext(final ShowColumnsStatement sqlStatement) {
         super(sqlStatement);
@@ -36,7 +36,6 @@ public final class ShowColumnsStatementContext extends CommonSQLStatementContext
     
     @Override
     public Collection<TableSegment> getAllTables() {
-        ShowColumnsStatement sqlStatement = (ShowColumnsStatement) getSqlStatement();
-        return null == sqlStatement.getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(sqlStatement.getTable());
+        return null == getSqlStatement().getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
 }
