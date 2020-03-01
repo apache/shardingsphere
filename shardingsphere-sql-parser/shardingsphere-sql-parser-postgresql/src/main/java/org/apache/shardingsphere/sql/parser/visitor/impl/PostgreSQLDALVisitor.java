@@ -26,13 +26,13 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Se
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ShowContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TimeZoneContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VariableContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VariablePropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VariableExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.VariableValueContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.TimeZoneSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.VariableProperty;
+import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpr;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
@@ -51,23 +51,22 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        if (null != ctx.variableProperty()) {
-            VariablePropertyContext variablePropertyContext = ctx.variableProperty();
-            List<VariableProperty> variablePropertyList = new ArrayList<VariableProperty>(1);
+        if (null != ctx.variableExpr()) {
+            List<VariableExpr> variableExprList = new ArrayList<VariableExpr>(1);
+            VariableExprContext variableExprContext = ctx.variableExpr();
             VariableSegment variableSegment = null;
             VariableValueSegment variableValueSegment = null;
-            String scopeType = variablePropertyContext.scopeKeyword() == null ? null : variablePropertyContext.scopeKeyword().getText();
-            if (null != variablePropertyContext.timeZone()) {
-                TimeZoneSegment timeZoneSegment = (TimeZoneSegment) visit(variablePropertyContext.timeZone());
+            String scopeType = variableExprContext.scopeKeyword() == null ? null : variableExprContext.scopeKeyword().getText();
+            if (null != variableExprContext.timeZone()) {
+                TimeZoneSegment timeZoneSegment = (TimeZoneSegment) visitTimeZone(variableExprContext.timeZone());
                 variableSegment = new VariableSegment(timeZoneSegment.getStartIndex(), timeZoneSegment.getStopIndex(), timeZoneSegment.getVariable());
-                variableValueSegment = (VariableValueSegment) visitVariableValue(variablePropertyContext.variableValue());
             } else {
-                variableSegment = (VariableSegment) visitVariable(variablePropertyContext.variable());
-                variableValueSegment = (VariableValueSegment) visitVariableValue(variablePropertyContext.variableValue());
+                variableSegment = (VariableSegment) visitVariable(variableExprContext.variable());
             }
-            VariableProperty variableProperty = new VariableProperty(variableSegment, variableValueSegment, scopeType);
-            variablePropertyList.add(variableProperty);
-            result.setVariablePropertyList(variablePropertyList);
+            variableValueSegment = (VariableValueSegment) visitVariableValue(variableExprContext.variableValue());
+            VariableExpr variableExpr = new VariableExpr(variableSegment, variableValueSegment, scopeType);
+            variableExprList.add(variableExpr);
+            result.setVariableExprList(variableExprList);
         }
         return result;
     }

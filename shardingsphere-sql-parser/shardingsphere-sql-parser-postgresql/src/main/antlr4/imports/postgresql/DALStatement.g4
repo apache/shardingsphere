@@ -24,7 +24,7 @@ show
     ;
 
 setVariable
-    : SET variableProperty
+    : SET variableExpr
     ;
 
 resetParameter

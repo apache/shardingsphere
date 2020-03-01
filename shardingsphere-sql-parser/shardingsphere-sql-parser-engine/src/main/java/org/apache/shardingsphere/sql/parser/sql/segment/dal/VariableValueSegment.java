@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
- * VariableValue segment.
+ * Variable value segment.
  */
 @RequiredArgsConstructor
 @Getter

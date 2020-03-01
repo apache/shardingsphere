@@ -84,9 +84,13 @@ showProfileType
     ;
 
 setVariable
-    : SET (variable? (TO | EQ_) variableValue COMMA_?)*
+    : SET variableExpr (COMMA_ variableExpr)*
     ;
-	
+
+variableExpr
+    : variable EQ_ variableValue
+    ;
+
 variableValue
     : (identifier | NUMBER_ | STRING_ | DEFAULT | numberLiterals | LOCAL )
     ;

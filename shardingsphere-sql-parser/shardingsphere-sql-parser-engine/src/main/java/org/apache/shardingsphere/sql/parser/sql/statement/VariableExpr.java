@@ -25,7 +25,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class VariableProperty {
+public class VariableExpr {
     
     private VariableSegment variable;
     

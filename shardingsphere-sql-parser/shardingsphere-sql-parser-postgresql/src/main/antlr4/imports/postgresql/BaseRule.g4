@@ -326,12 +326,12 @@ ignoredIdentifiers_
     : ignoredIdentifier_ (COMMA_ ignoredIdentifier_)*
     ;
 
-variableProperty
-    : (((scopeKeyword? timeZone)? variableValue) | ( scopeKeyword? variable (TO | EQ_) variableValue))?
+variableExpr
+    : ((scopeKeyword? variable (TO | EQ_) variableValue) | (scopeKeyword? timeZone variableValue))
     ;
 
 variableValue
-    : (identifier | NUMBER_ | (MINUS_+ NUMBER_) | STRING_ | DEFAULT | LOCAL)
+    : (identifier | NUMBER_ | (MINUS_ NUMBER_) | STRING_ | DEFAULT | LOCAL)
     ;
 
 timeZone

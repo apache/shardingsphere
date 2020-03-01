@@ -36,8 +36,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTab
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableValueContext;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
@@ -46,7 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.VariableProperty;
+import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpr;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
@@ -151,22 +151,19 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        List<VariableContext> variableContextList = ctx.variable();
-        if (null != variableContextList) {
-            List<VariableValueContext> variableValueContextList = ctx.variableValue();
-            if (null == variableValueContextList || variableValueContextList.size() != variableContextList.size()) {
-                throw new SQLParsingException("the variable have %d, but the value number is not %d.", variableContextList.size(), variableContextList.size());
+        
+        List<VariableExprContext> variableExprContextList = ctx.variableExpr();
+        if (null != variableExprContextList) {
+            List<VariableExpr> variableExprList = new ArrayList<VariableExpr>(variableExprContextList.size());
+            for (int i = 0; i < variableExprContextList.size(); i++) {
+                VariableExprContext variableExprContext = variableExprContextList.get(i);
+                VariableSegment variableSegment = (VariableSegment) visitVariable(variableExprContext.variable());
+                VariableValueSegment variableValueSegment = (VariableValueSegment) visitVariableValue(variableExprContext.variableValue());
+                String scopeType = variableExprContext.variable().scopeKeyword() == null ? null : variableExprContext.variable().scopeKeyword().getText();
+                VariableExpr variableExpr = new VariableExpr(variableSegment, variableValueSegment, scopeType);
+                variableExprList.add(variableExpr);
             }
-            List<VariableProperty> variablePropertyList = new ArrayList<VariableProperty>(variableContextList.size());
-            for (int i = 0; i < variableContextList.size(); i++) {
-                VariableContext variableContext = variableContextList.get(i);
-                String scopeType = variableContext.scopeKeyword() == null ? null : variableContext.scopeKeyword().getText();
-                VariableSegment variableSegment = (VariableSegment) visitVariable(variableContextList.get(i));
-                VariableValueSegment variableValueSegment = (VariableValueSegment) visitVariableValue(variableValueContextList.get(i));
-                VariableProperty variableProperty = new VariableProperty(variableSegment, variableValueSegment, scopeType);
-                variablePropertyList.add(variableProperty);
-            }
-            result.setVariablePropertyList(variablePropertyList);
+            result.setVariableExprList(variableExprList);
         }
         return result;
     }
