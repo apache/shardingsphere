@@ -81,35 +81,6 @@ public final class TablesContext {
     }
     
     /**
-     * Find table via table name or alias.
-     * 
-     * @param tableNameOrAlias table name or alias
-     * @return table
-     */
-    public Optional<Table> find(final String tableNameOrAlias) {
-        Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
-        return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
-    }
-    
-    private Optional<Table> findTableFromName(final String name) {
-        for (Table each : tables) {
-            if (each.getName().equals(name)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<Table> findTableFromAlias(final String alias) {
-        for (Table each : tables) {
-            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    /**
      * Find table name.
      *
      * @param columnSegment column segment
@@ -133,6 +104,29 @@ public final class TablesContext {
             tableNames.add(each.getName());
         }
         return 1 == tableNames.size();
+    }
+    
+    private Optional<Table> find(final String tableNameOrAlias) {
+        Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
+        return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
+    }
+    
+    private Optional<Table> findTableFromName(final String name) {
+        for (Table each : tables) {
+            if (each.getName().equals(name)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private Optional<Table> findTableFromAlias(final String alias) {
+        for (Table each : tables) {
+            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {
