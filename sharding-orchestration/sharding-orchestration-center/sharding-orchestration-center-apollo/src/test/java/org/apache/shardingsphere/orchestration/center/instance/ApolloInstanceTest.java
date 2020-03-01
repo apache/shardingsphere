@@ -46,14 +46,14 @@ public final class ApolloInstanceTest {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
     }
-
+    
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
-
+    
     private static ConfigCenterRepository configCenterRepository = new ApolloInstance();
-
+    
     private static ApolloOpenApiWrapper openApiWrapper = mock(ApolloOpenApiWrapper.class);
-
+    
     @BeforeClass
     @SneakyThrows
     public static void init() {
@@ -66,7 +66,7 @@ public final class ApolloInstanceTest {
         FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("configWrapper"), configWrapper);
         FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("openApiWrapper"), openApiWrapper);
     }
-    
+
     @Test
     public void assertGet() {
         assertThat(configCenterRepository.get("/test/children/2"), is("value2"));
@@ -89,13 +89,13 @@ public final class ApolloInstanceTest {
         assertThat(changeEvent.getValue(), is("value3"));
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertGetWithNonExistentKey() {
         assertNull(configCenterRepository.get("/test/nonExistentKey"));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertUpdate() {
@@ -113,7 +113,7 @@ public final class ApolloInstanceTest {
         assertThat(changeEvent.getValue(), is("newValue1"));
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertWatchDeletedChangedType() {
@@ -131,7 +131,7 @@ public final class ApolloInstanceTest {
         assertNull(changeEvent.getValue());
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertWatchAddChangedType() {
