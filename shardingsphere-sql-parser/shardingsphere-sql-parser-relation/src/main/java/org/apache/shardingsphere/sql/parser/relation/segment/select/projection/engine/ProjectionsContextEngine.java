@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.Table;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -175,16 +174,14 @@ public final class ProjectionsContextEngine {
     }
     
     private Optional<ShorthandProjection> findShorthandProjection(final Collection<Projection> projections, final String tableNameOrAlias, final SelectStatement selectStatement) {
-        Optional<Table> table = find(tableNameOrAlias, selectStatement);
-        if (!table.isPresent()) {
-            return Optional.absent();
-        }
+        TableSegment tableSegment = find(tableNameOrAlias, selectStatement);
         for (Projection each : projections) {
             if (!(each instanceof ShorthandProjection)) {
                 continue;
             }
             ShorthandProjection shorthandProjection = (ShorthandProjection) each;
-            if (shorthandProjection.getOwner().isPresent() && find(shorthandProjection.getOwner().get(), selectStatement).equals(table)) {
+            if (shorthandProjection.getOwner().isPresent() 
+                    && find(shorthandProjection.getOwner().get(), selectStatement).getIdentifier().getValue().equalsIgnoreCase(tableSegment.getIdentifier().getValue())) {
                 return Optional.of(shorthandProjection);
             }
         }
@@ -217,8 +214,8 @@ public final class ProjectionsContextEngine {
     
     private boolean isSameProjection(final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem, final SelectStatement selectStatement) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
-        Optional<Table> table = find(shorthandProjection.getOwner().get(), selectStatement);
-        return table.isPresent() && relationMetas.containsColumn(table.get().getName(), orderItem.getColumn().getIdentifier().getValue());
+        TableSegment tableSegment = find(shorthandProjection.getOwner().get(), selectStatement);
+        return relationMetas.containsColumn(tableSegment.getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {
@@ -229,15 +226,12 @@ public final class ProjectionsContextEngine {
         return !projection.getAlias().isPresent() && projection.getExpression().equalsIgnoreCase(orderItem.getText());
     }
     
-    private Optional<Table> find(final String tableNameOrAlias, final SelectStatement selectStatement) {
+    private TableSegment find(final String tableNameOrAlias, final SelectStatement selectStatement) {
         for (TableSegment each : selectStatement.getTables()) {
-            if (each.getIdentifier().getValue().equalsIgnoreCase(tableNameOrAlias)) {
-                return Optional.of(new Table(tableNameOrAlias, each.getAlias().orNull()));
-            }
-            if (each.getAlias().isPresent() && each.getAlias().get().equals(tableNameOrAlias)) {
-                return Optional.of(new Table(each.getIdentifier().getValue(), each.getAlias().orNull()));
+            if (tableNameOrAlias.equalsIgnoreCase(each.getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orNull())) {
+                return each;
             }
         }
-        return Optional.absent();
+        throw new IllegalStateException("Can not find owner from table.");
     }
 }
