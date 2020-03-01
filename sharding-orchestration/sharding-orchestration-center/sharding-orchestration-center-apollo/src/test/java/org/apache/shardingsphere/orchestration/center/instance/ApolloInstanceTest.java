@@ -66,7 +66,7 @@ public final class ApolloInstanceTest {
         FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("configWrapper"), configWrapper);
         FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("openApiWrapper"), openApiWrapper);
     }
-
+    
     @Test
     public void assertGet() {
         assertThat(configCenterRepository.get("/test/children/2"), is("value2"));
