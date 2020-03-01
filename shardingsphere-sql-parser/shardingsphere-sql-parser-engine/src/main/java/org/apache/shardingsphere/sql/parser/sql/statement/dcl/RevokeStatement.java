@@ -36,4 +36,9 @@ public final class RevokeStatement extends DCLStatement implements TableSegments
     public Collection<TableSegment> getAllTables() {
         return tables;
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

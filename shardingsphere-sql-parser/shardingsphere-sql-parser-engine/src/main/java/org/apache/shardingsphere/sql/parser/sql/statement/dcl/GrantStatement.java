@@ -36,4 +36,9 @@ public final class GrantStatement extends DCLStatement implements TableSegmentsA
     public Collection<TableSegment> getAllTables() {
         return tables;
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

@@ -66,4 +66,9 @@ public final class AlterTableStatement extends DDLStatement implements TableSegm
         }
         return result;
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

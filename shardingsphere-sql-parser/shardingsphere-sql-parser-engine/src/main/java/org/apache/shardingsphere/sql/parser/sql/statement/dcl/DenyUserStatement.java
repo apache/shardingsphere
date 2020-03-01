@@ -38,4 +38,9 @@ public final class DenyUserStatement extends DCLStatement implements TableSegmen
     public Collection<TableSegment> getAllTables() {
         return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

@@ -65,4 +65,9 @@ public final class DeleteStatement extends DMLStatement implements TableSegments
         }
         return result;
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

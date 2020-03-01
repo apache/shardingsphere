@@ -42,4 +42,9 @@ public final class AlterIndexStatement extends DDLStatement implements TableSegm
     public Collection<TableSegment> getAllTables() {
         return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

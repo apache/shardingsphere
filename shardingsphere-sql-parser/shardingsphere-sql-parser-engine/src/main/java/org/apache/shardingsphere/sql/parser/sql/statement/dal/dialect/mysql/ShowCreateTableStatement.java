@@ -39,4 +39,9 @@ public final class ShowCreateTableStatement extends DALStatement implements Tabl
     public Collection<TableSegment> getAllTables() {
         return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

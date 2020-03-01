@@ -58,4 +58,9 @@ public final class CreateTableStatement extends DDLStatement implements TableSeg
         }
         return result;
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

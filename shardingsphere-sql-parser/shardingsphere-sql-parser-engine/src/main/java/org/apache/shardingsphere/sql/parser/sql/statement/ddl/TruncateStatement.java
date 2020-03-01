@@ -36,4 +36,9 @@ public final class TruncateStatement extends DDLStatement implements TableSegmen
     public Collection<TableSegment> getAllTables() {
         return tables;
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

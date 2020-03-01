@@ -68,4 +68,9 @@ public final class UpdateStatement extends DMLStatement implements TableSegments
         }
         return result;
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

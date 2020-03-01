@@ -176,4 +176,9 @@ public final class InsertStatement extends DMLStatement implements TableSegments
     public Collection<TableSegment> getAllTables() {
         return Collections.singletonList(table);
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

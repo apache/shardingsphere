@@ -168,4 +168,9 @@ public final class SelectStatement extends DMLStatement implements TableSegments
         }
         return true;
     }
+    
+    @Override
+    public Object getTablesContext() {
+        return null;
+    }
 }

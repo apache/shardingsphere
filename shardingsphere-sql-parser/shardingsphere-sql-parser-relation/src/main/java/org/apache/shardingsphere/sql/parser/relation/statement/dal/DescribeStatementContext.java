@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.dal;
 
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
@@ -28,10 +30,14 @@ import java.util.Collections;
 /**
  * Describe statement context.
  */
+@Getter
 public final class DescribeStatementContext extends CommonSQLStatementContext<DescribeStatement> implements TableSegmentsAvailable {
+    
+    private final TablesContext tablesContext;
     
     public DescribeStatementContext(final DescribeStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override
