@@ -90,7 +90,8 @@ public final class TableAssert {
      */
     public static void assertOwner(final SQLCaseAssertContext assertContext, final TableSegment actual, final ExpectedTableOwner expected) {
         assertThat(assertContext.getText("Owner name assertion error: "), actual.getTableName().getIdentifier().getValue(), is(expected.getName()));
-        assertThat(assertContext.getText("Owner name start delimiter assertion error: "), actual.getTableName().getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertContext.getText("Owner name start delimiter assertion error: "), 
+                actual.getTableName().getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertContext.getText("Owner name end delimiter assertion error: "), actual.getTableName().getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

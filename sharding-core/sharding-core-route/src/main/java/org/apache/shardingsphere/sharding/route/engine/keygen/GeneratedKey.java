@@ -91,8 +91,8 @@ public final class GeneratedKey {
     }
     
     private static int findGenerateKeyIndex(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
-        return insertStatement.getColumnNames().isEmpty()
-                ? tableMetas.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName) : insertStatement.getColumnNames().indexOf(generateKeyColumnName);
+        return insertStatement.getColumnNames().isEmpty() ? tableMetas.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName) 
+                : insertStatement.getColumnNames().indexOf(generateKeyColumnName);
     }
     
     private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final String generateKeyColumnName) {
