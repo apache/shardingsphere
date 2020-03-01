@@ -122,43 +122,43 @@ public final class ShardingSchema extends LogicSchema {
             return;
         }
         if (sqlStatementContext instanceof CreateTableStatementContext) {
-            refreshTableMetaDataForCreateTable(sqlStatementContext);
+            refreshTableMetaData((CreateTableStatementContext) sqlStatementContext);
         } else if (sqlStatementContext instanceof AlterTableStatementContext) {
-            refreshTableMetaDataForAlterTable(sqlStatementContext);
+            refreshTableMetaData((AlterTableStatementContext) sqlStatementContext);
         } else if (sqlStatementContext instanceof DropTableStatementContext) {
-            refreshTableMetaDataForDropTable(sqlStatementContext);
+            refreshTableMetaData((DropTableStatementContext) sqlStatementContext);
         } else if (sqlStatementContext instanceof CreateIndexStatementContext) {
-            refreshTableMetaDataForCreateIndex(sqlStatementContext);
+            refreshTableMetaData((CreateIndexStatementContext) sqlStatementContext);
         } else if (sqlStatementContext instanceof DropIndexStatementContext) {
-            refreshTableMetaDataForDropIndex(sqlStatementContext);
+            refreshTableMetaData((DropIndexStatementContext) sqlStatementContext);
         }
     }
     
-    private void refreshTableMetaDataForCreateTable(final SQLStatementContext sqlStatementContext) throws SQLException {
+    private void refreshTableMetaData(final CreateTableStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry(metaData.getDataSources()).init(tableName));
     }
     
-    private void refreshTableMetaDataForAlterTable(final SQLStatementContext sqlStatementContext) throws SQLException {
+    private void refreshTableMetaData(final AlterTableStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
         getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry(metaData.getDataSources()).init(tableName));
     }
     
-    private void refreshTableMetaDataForDropTable(final SQLStatementContext sqlStatementContext) {
+    private void refreshTableMetaData(final DropTableStatementContext sqlStatementContext) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             getMetaData().getTables().remove(each);
         }
     }
     
-    private void refreshTableMetaDataForCreateIndex(final SQLStatementContext sqlStatementContext) {
-        CreateIndexStatement createIndexStatement = ((CreateIndexStatementContext) sqlStatementContext).getSqlStatement();
+    private void refreshTableMetaData(final CreateIndexStatementContext sqlStatementContext) {
+        CreateIndexStatement createIndexStatement = sqlStatementContext.getSqlStatement();
         if (null != createIndexStatement.getIndex()) {
             getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().add(createIndexStatement.getIndex().getIdentifier().getValue());
         }
     }
     
-    private void refreshTableMetaDataForDropIndex(final SQLStatementContext sqlStatementContext) {
-        DropIndexStatement dropIndexStatement = ((DropIndexStatementContext) sqlStatementContext).getSqlStatement();
+    private void refreshTableMetaData(final DropIndexStatementContext sqlStatementContext) {
+        DropIndexStatement dropIndexStatement = sqlStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         if (!sqlStatementContext.getTablesContext().isEmpty()) {
             getMetaData().getTables().get(sqlStatementContext.getTablesContext().getSingleTableName()).getIndexes().removeAll(indexNames);
