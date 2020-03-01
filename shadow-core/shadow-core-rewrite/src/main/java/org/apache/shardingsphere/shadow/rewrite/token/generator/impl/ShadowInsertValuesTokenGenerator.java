@@ -22,9 +22,8 @@ import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTok
 import org.apache.shardingsphere.shadow.rewrite.token.pojo.ShadowInsertValuesToken;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
@@ -36,28 +35,24 @@ import java.util.Iterator;
  * Insert values token generator for shadow.
  */
 @Setter
-public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGenerator implements OptionalSQLTokenGenerator {
+public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumnNames().contains(getShadowRule().getColumn());
+        return sqlStatementContext instanceof InsertStatementContext && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getColumnNames().contains(getShadowRule().getColumn());
     }
     
     @Override
-    public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return generateNewSQLToken((InsertSQLStatementContext) sqlStatementContext);
-    }
-    
-    private InsertValuesToken generateNewSQLToken(final InsertSQLStatementContext sqlStatementContext) {
-        Collection<InsertValuesSegment> insertValuesSegments = ((InsertStatement) sqlStatementContext.getSqlStatement()).getValues();
+    public InsertValuesToken generateSQLToken(final InsertStatementContext insertStatementContext) {
+        Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new ShadowInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
+        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
-            Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
+            Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
             while (descendingColumnNames.hasNext()) {
                 String columnName = descendingColumnNames.next();
                 if (getShadowRule().getColumn().equals(columnName)) {
-                    removeValueToken(insertValueToken, sqlStatementContext, columnName);
+                    removeValueToken(insertValueToken, insertStatementContext, columnName);
                 }
             }
             result.getInsertValues().add(insertValueToken);
@@ -65,8 +60,8 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
         return result;
     }
     
-    private void removeValueToken(final InsertValue insertValueToken, final InsertSQLStatementContext sqlStatementContext, final String columnName) {
-        int columnIndex = sqlStatementContext.getColumnNames().indexOf(columnName);
+    private void removeValueToken(final InsertValue insertValueToken, final InsertStatementContext insertStatementContext, final String columnName) {
+        int columnIndex = insertStatementContext.getColumnNames().indexOf(columnName);
         insertValueToken.getValues().remove(columnIndex);
     }
     

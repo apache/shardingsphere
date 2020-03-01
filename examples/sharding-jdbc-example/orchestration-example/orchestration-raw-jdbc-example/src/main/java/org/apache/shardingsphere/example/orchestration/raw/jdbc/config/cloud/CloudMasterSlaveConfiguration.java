@@ -18,23 +18,25 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud;
 
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 
 public final class CloudMasterSlaveConfiguration implements ExampleConfiguration {
     
-    private final RegistryCenterConfiguration registryCenterConfig;
+    private final Map<String, InstanceConfiguration> instanceConfigurationMap;
     
-    public CloudMasterSlaveConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
-        this.registryCenterConfig = registryCenterConfig;
+    public CloudMasterSlaveConfiguration(final Map<String, InstanceConfiguration> instanceConfigurationMap) {
+        this.instanceConfigurationMap = instanceConfigurationMap;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-master-slave-data-source", registryCenterConfig, false));
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(new OrchestrationConfiguration(instanceConfigurationMap));
     }
+    
 }

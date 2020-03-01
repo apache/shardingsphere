@@ -78,6 +78,20 @@
     <alter-table sql-case-id="alter_table_add_columns_integer_type_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
+            <column-definition type="TINYINT">
+                <column name="column4" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="MEDIUMINT">
+                <column name="column5" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_integer_type">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
             <column-definition type="INTEGER">
                 <column name="column4" />
             </column-definition>
@@ -93,23 +107,13 @@
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="TINYINT">
-                <column name="column7" />
-            </column-definition>
-        </add-column>
-        <add-column>
-            <column-definition type="MEDIUMINT">
-                <column name="column8" />
-            </column-definition>
-        </add-column>
-        <add-column>
             <column-definition type="BIGINT">
-                <column name="column9" />
+                <column name="column7" />
             </column-definition>
         </add-column>
     </alter-table>
 
-    <alter-table sql-case-id="alter_table_add_columns_fixed_point_type_mysql">
+    <alter-table sql-case-id="alter_table_add_columns_fixed_point_type">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
             <column-definition type="decimal">
@@ -137,6 +141,45 @@
         </add-column>
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_add_columns_float_point_type_postgresql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="FLOAT">
+                <column name="column4" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="double precision">
+                <column name="column5" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="REAL">
+                <column name="column6" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="SMALLSERIAL">
+                <column name="column7" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="SERIAL">
+                <column name="column8" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="BIGSERIAL">
+                <column name="column9" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="float4">
+                <column name="column10" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_add_columns_bit_type_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -149,28 +192,8 @@
     <alter-table sql-case-id="alter_table_add_columns_date_type_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
-            <column-definition type="DATE">
-                <column name="column4" />
-            </column-definition>
-        </add-column>
-        <add-column>
-            <column-definition type="DATETIME">
-                <column name="column5" />
-            </column-definition>
-        </add-column>
-        <add-column>
-            <column-definition type="TIMESTAMP">
-                <column name="column6" />
-            </column-definition>
-        </add-column>
-        <add-column>
-            <column-definition type="TIME">
-                <column name="column7" />
-            </column-definition>
-        </add-column>
-        <add-column>
             <column-definition type="YEAR">
-                <column name="column8" />
+                <column name="column4" />
             </column-definition>
         </add-column>
     </alter-table>
@@ -248,7 +271,60 @@
             </column-definition>
         </add-column>
     </alter-table>
-    
+
+    <alter-table sql-case-id="alter_table_add_columns_string_type_postgresql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="VARCHAR">
+                <column name="column4" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="CHARACTER">
+                <column name="column5" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="CHAR">
+                <column name="column6" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="TEXT">
+                <column name="column7" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="NAME">
+                <column name="column8" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_date_type">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="DATE">
+                <column name="column4" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="DATETIME">
+                <column name="column5" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="TIMESTAMP">
+                <column name="column6" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="TIME">
+                <column name="column7" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_add_column_with_first">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>

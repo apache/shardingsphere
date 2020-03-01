@@ -57,7 +57,7 @@
             </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
-    <orchestraion:sharding-data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" registry-center-ref="regCenter" overwrite="true" />
+    <orchestraion:sharding-data-source id="shardingDatabasesTablesDataSource" data-source-ref="realShardingDatabasesTablesDataSource" instance-ref="regCenter,confCenter" overwrite="true" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDatabasesTablesDataSource" />

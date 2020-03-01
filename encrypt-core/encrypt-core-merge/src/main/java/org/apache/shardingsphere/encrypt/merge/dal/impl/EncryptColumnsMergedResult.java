@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.io.InputStream;
@@ -29,22 +31,23 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 
 /**
- * Merged result for describe table.
+ * Encrypt column merged result.
  */
-public abstract class DescribeTableMergedResult implements MergedResult {
+public abstract class EncryptColumnsMergedResult implements MergedResult {
     
     private final EncryptRule encryptRule;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final String tableName;
     
-    protected DescribeTableMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    protected EncryptColumnsMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         this.encryptRule = encryptRule;
-        this.sqlStatementContext = sqlStatementContext;
+        Preconditions.checkState(sqlStatementContext instanceof TableSegmentsAvailable && 1 == ((TableSegmentsAvailable) sqlStatementContext).getAllTables().size());
+        tableName = ((TableSegmentsAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
     }
     
     @Override
     public final boolean next() throws SQLException {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
         boolean hasNext = nextValue();
         if (hasNext && !encryptTable.isPresent()) {
             return true;
@@ -66,7 +69,7 @@ public abstract class DescribeTableMergedResult implements MergedResult {
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (1 == columnIndex) {
             String columnName = getOriginalValue(columnIndex, type).toString();
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
+            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
             if (encryptTable.isPresent() && encryptTable.get().getCipherColumns().contains(columnName)) {
                 return encryptTable.get().getLogicColumnOfCipher(columnName);
             }
