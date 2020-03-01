@@ -20,7 +20,7 @@
     <s-container v-if="localStorage.getItem('Access-Token')">
       <el-breadcrumb separator="/" class="bread-wrap">
         <el-breadcrumb-item :to="{ path: '/' }">{{ $t('common.home') }}</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ $t('common.menuData[0].title') }}</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ parentName }}</el-breadcrumb-item>
         <el-breadcrumb-item>{{ name }}</el-breadcrumb-item>
       </el-breadcrumb>
       <router-view />
@@ -41,6 +41,7 @@ export default {
   data() {
     return {
       name: '',
+      parentName: '',
       localStorage: window.localStorage
     }
   },
@@ -50,6 +51,7 @@ export default {
         for (const vv of v.child) {
           if (vv.href === to.path) {
             this.name = vv.title
+            this.parentName = v.title
             break
           }
         }
