@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
@@ -136,14 +136,14 @@ public final class PaginationContext {
      * @param shardingStatement sharding optimized statement
      * @return revised row count
      */
-    public long getRevisedRowCount(final SelectSQLStatementContext shardingStatement) {
+    public long getRevisedRowCount(final SelectStatementContext shardingStatement) {
         if (isMaxRowCount(shardingStatement)) {
             return Integer.MAX_VALUE;
         }
         return rowCountSegment instanceof LimitValueSegment ? actualOffset + actualRowCount : actualRowCount;
     }
     
-    private boolean isMaxRowCount(final SelectSQLStatementContext shardingStatement) {
+    private boolean isMaxRowCount(final SelectStatementContext shardingStatement) {
         return (!shardingStatement.getGroupByContext().getItems().isEmpty()
                 || !shardingStatement.getProjectionsContext().getAggregationProjections().isEmpty()) && !shardingStatement.isSameGroupByAndOrderByItems();
     }

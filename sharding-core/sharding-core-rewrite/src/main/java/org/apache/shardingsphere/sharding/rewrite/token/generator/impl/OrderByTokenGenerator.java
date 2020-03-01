@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -34,14 +34,14 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, I
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectSQLStatementContext && ((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().isGenerated();
+        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getOrderByContext().isGenerated();
     }
     
     @Override
     public OrderByToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        OrderByToken result = new OrderByToken(((SelectSQLStatementContext) sqlStatementContext).getGroupByContext().getLastIndex() + 1);
+        OrderByToken result = new OrderByToken(((SelectStatementContext) sqlStatementContext).getGroupByContext().getLastIndex() + 1);
         String columnLabel;
-        for (OrderByItem each : ((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().getItems()) {
+        for (OrderByItem each : ((SelectStatementContext) sqlStatementContext).getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
                 QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getIdentifier().getQuoteCharacter();

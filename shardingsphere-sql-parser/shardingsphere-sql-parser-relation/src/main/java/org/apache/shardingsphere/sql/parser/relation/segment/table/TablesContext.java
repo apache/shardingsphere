@@ -24,12 +24,14 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
@@ -41,66 +43,29 @@ public final class TablesContext {
     
     private final Collection<Table> tables;
     
-    private String schema;
-    
     public TablesContext(final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof TableSegmentsAvailable)) {
             tables = Collections.emptyList();
             return;
         }
-        Collection<TableSegment> tableSegments = ((TableSegmentsAvailable) sqlStatement).getAllTables();
+        Collection<TableSegment> tableSegments = getAllTables((TableSegmentsAvailable) sqlStatement);
         tables = new ArrayList<>(tableSegments.size());
-        Collection<String> aliases = getAlias(tableSegments);
         for (TableSegment each : tableSegments) {
-            Optional<String> alias = each.getAlias();
-            if (aliases.contains(each.getIdentifier().getValue()) && !alias.isPresent()) {
-                continue;
-            }
-            tables.add(new Table(each.getIdentifier().getValue(), alias.orNull()));
-            setSchema(each);
+            tables.add(new Table(each.getIdentifier().getValue(), each.getAlias().orNull()));
         }
     }
     
-    private Collection<String> getAlias(final Collection<TableSegment> tableSegments) {
-        Collection<String> result = new HashSet<>(tableSegments.size(), 1);
-        for (TableSegment each : tableSegments) {
-            Optional<String> alias = each.getAlias();
-            if (alias.isPresent()) {
-                result.add(alias.get());
-            }
+    private Collection<TableSegment> getAllTables(final TableSegmentsAvailable sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return ((SelectStatement) sqlStatement).getTables();
         }
-        return result;
-    }
-    
-    private void setSchema(final TableSegment tableSegment) {
-        if (tableSegment.getOwner().isPresent()) {
-            if (null != schema && !tableSegment.getOwner().get().getIdentifier().getValue().equalsIgnoreCase(schema)) {
-                throw new UnsupportedOperationException("Cannot support multiple schemas in one SQL");
-            }
-            schema = tableSegment.getOwner().get().getIdentifier().getValue();
+        if (sqlStatement instanceof UpdateStatement) {
+            return ((UpdateStatement) sqlStatement).getTables();
         }
-    }
-    
-    /**
-     * Judge table is empty or not.
-     *
-     * @return table is empty or not
-     */
-    public boolean isEmpty() {
-        return tables.isEmpty();
-    }
-    
-    /**
-     * Judge is single table or not.
-     * 
-     * @return is single table or not
-     */
-    public boolean isSingleTable() {
-        Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (Table each : tables) {
-            tableNames.add(each.getName());
+        if (sqlStatement instanceof DeleteStatement) {
+            return ((DeleteStatement) sqlStatement).getTables();
         }
-        return 1 == tableNames.size();
+        return sqlStatement.getAllTables();
     }
     
     /**
@@ -109,7 +74,7 @@ public final class TablesContext {
      * @return single table name
      */
     public String getSingleTableName() {
-        Preconditions.checkArgument(!isEmpty());
+        Preconditions.checkArgument(!tables.isEmpty());
         return tables.iterator().next().getName();
     }
     
@@ -146,13 +111,7 @@ public final class TablesContext {
         return Optional.absent();
     }
     
-    /**
-     * Find table via table alias.
-     * 
-     * @param alias alias
-     * @return table
-     */
-    public Optional<Table> findTableFromAlias(final String alias) {
+    private Optional<Table> findTableFromAlias(final String alias) {
         for (Table each : tables) {
             if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
                 return Optional.of(each);
@@ -179,6 +138,14 @@ public final class TablesContext {
         return findTableNameFromMetaData(columnSegment.getIdentifier().getValue(), relationMetas);
     }
     
+    private boolean isSingleTable() {
+        Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (Table each : tables) {
+            tableNames.add(each.getName());
+        }
+        return 1 == tableNames.size();
+    }
+    
     private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {
         for (String each : getTableNames()) {
             if (relationMetas.containsColumn(each, columnName)) {
@@ -186,14 +153,5 @@ public final class TablesContext {
             }
         }
         return Optional.absent();
-    }
-    
-    /**
-     * Get schema.
-     * 
-     * @return schema
-     */
-    public Optional<String> getSchema() {
-        return Optional.fromNullable(schema);
     }
 }

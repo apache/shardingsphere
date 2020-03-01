@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.Orde
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForAscWithOrderByItems() throws SQLException {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0),
@@ -67,7 +67,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForDecsWithOrderByItems() throws SQLException {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0),
@@ -83,7 +83,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForEqualWithOrderByItems() throws SQLException {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0),
@@ -99,7 +99,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForAscWithGroupByItems() throws SQLException {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
@@ -112,7 +112,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForDecsWithGroupByItems() throws SQLException {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
@@ -125,7 +125,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForEqualWithGroupByItems() throws SQLException {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(new SelectStatement(), 
+        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),

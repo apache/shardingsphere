@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
@@ -58,7 +58,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
             return new IteratorStreamMergedResult(queryResults);
         }
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
-        SelectSQLStatementContext selectSQLStatementContext = (SelectSQLStatementContext) sqlStatementContext;
+        SelectStatementContext selectSQLStatementContext = (SelectStatementContext) sqlStatementContext;
         selectSQLStatementContext.setIndexes(columnLabelIndexMap);
         MergedResult mergedResult = build(queryResults, selectSQLStatementContext, columnLabelIndexMap);
         return decorate(queryResults, selectSQLStatementContext, mergedResult);
@@ -72,7 +72,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         return result;
     }
     
-    private MergedResult build(final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext, final Map<String, Integer> columnLabelIndexMap) throws SQLException {
+    private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectSQLStatementContext, final Map<String, Integer> columnLabelIndexMap) throws SQLException {
         if (isNeedProcessGroupBy(selectSQLStatementContext)) {
             return getGroupByMergedResult(queryResults, selectSQLStatementContext, columnLabelIndexMap);
         }
@@ -86,15 +86,15 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         return new IteratorStreamMergedResult(queryResults);
     }
     
-    private boolean isNeedProcessGroupBy(final SelectSQLStatementContext selectSQLStatementContext) {
+    private boolean isNeedProcessGroupBy(final SelectStatementContext selectSQLStatementContext) {
         return !selectSQLStatementContext.getGroupByContext().getItems().isEmpty() || !selectSQLStatementContext.getProjectionsContext().getAggregationProjections().isEmpty();
     }
     
-    private boolean isNeedProcessDistinctRow(final SelectSQLStatementContext selectSQLStatementContext) {
+    private boolean isNeedProcessDistinctRow(final SelectStatementContext selectSQLStatementContext) {
         return selectSQLStatementContext.getProjectionsContext().isDistinctRow();
     }
     
-    private void setGroupByForDistinctRow(final SelectSQLStatementContext selectSQLStatementContext) {
+    private void setGroupByForDistinctRow(final SelectStatementContext selectSQLStatementContext) {
         for (int index = 1; index <= selectSQLStatementContext.getProjectionsContext().getColumnLabels().size(); index++) {
             OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, OrderDirection.ASC));
             orderByItem.setIndex(index);
@@ -102,17 +102,17 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         }
     }
     
-    private MergedResult getGroupByMergedResult(final List<QueryResult> queryResults, 
-                                                final SelectSQLStatementContext selectSQLStatementContext, final Map<String, Integer> columnLabelIndexMap) throws SQLException {
+    private MergedResult getGroupByMergedResult(final List<QueryResult> queryResults,
+                                                final SelectStatementContext selectSQLStatementContext, final Map<String, Integer> columnLabelIndexMap) throws SQLException {
         return selectSQLStatementContext.isSameGroupByAndOrderByItems()
                 ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectSQLStatementContext) : new GroupByMemoryMergedResult(queryResults, selectSQLStatementContext);
     }
     
-    private boolean isNeedProcessOrderBy(final SelectSQLStatementContext selectSQLStatementContext) {
+    private boolean isNeedProcessOrderBy(final SelectStatementContext selectSQLStatementContext) {
         return !selectSQLStatementContext.getOrderByContext().getItems().isEmpty();
     }
     
-    private MergedResult decorate(final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext, final MergedResult mergedResult) throws SQLException {
+    private MergedResult decorate(final List<QueryResult> queryResults, final SelectStatementContext selectSQLStatementContext, final MergedResult mergedResult) throws SQLException {
         PaginationContext paginationContext = selectSQLStatementContext.getPaginationContext();
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;

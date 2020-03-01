@@ -20,7 +20,10 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
@@ -43,12 +46,26 @@ public final class UpdateStatement extends DMLStatement implements TableSegments
     private WhereSegment where;
     
     @Override
-    public Collection<TableSegment> getAllTables() {
-        return tables;
+    public Optional<WhereSegment> getWhere() {
+        return Optional.fromNullable(where);
     }
     
     @Override
-    public Optional<WhereSegment> getWhere() {
-        return Optional.fromNullable(where);
+    public Collection<TableSegment> getAllTables() {
+        Collection<TableSegment> result = new LinkedList<>(tables);
+        if (null != where) {
+            result.addAll(getAllTablesFromWhere());
+        }
+        return result;
+    }
+    
+    private Collection<TableSegment> getAllTablesFromWhere() {
+        Collection<TableSegment> result = new LinkedList<>();
+        for (AndPredicate each : where.getAndPredicates()) {
+            for (PredicateSegment predicate : each.getPredicates()) {
+                result.addAll(new PredicateExtractor(tables, predicate).extractTables());
+            }
+        }
+        return result;
     }
 }
