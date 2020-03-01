@@ -32,7 +32,6 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -49,40 +48,6 @@ public final class TablesContextTest {
         selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
         TablesContext tablesContext = new TablesContext(selectStatement);
         assertThat(tablesContext.getTableNames(), CoreMatchers.<Collection<String>>is(Sets.newHashSet("table_1", "table_2")));
-    }
-    
-    @Test
-    public void assertFindTableWithName() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        Optional<Table> table = tablesContext.find("table_1");
-        assertTrue(table.isPresent());
-        assertThat(table.get().getName(), is("table_1"));
-        assertThat(table.get().getAlias().orNull(), is("tbl_1"));
-    }
-    
-    @Test
-    public void assertFindTableWithAlias() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        Optional<Table> table = tablesContext.find("tbl_1");
-        assertTrue(table.isPresent());
-        assertThat(table.get().getName(), is("table_1"));
-        assertThat(table.get().getAlias().orNull(), is("tbl_1"));
-    }
-    
-    @Test
-    public void assertNotFoundTable() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        Optional<Table> table = tablesContext.find("table_3");
-        assertFalse(table.isPresent());
     }
     
     @Test
