@@ -160,7 +160,7 @@ public final class ShardingSchema extends LogicSchema {
     private void refreshTableMetaData(final DropIndexStatementContext dropIndexStatementContext) {
         DropIndexStatement dropIndexStatement = dropIndexStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
-        if (!dropIndexStatementContext.getTablesContext().isEmpty()) {
+        if (null != dropIndexStatement.getTable()) {
             getMetaData().getTables().get(dropIndexStatementContext.getTablesContext().getSingleTableName()).getIndexes().removeAll(indexNames);
         }
         for (String each : indexNames) {

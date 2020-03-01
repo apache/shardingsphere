@@ -43,20 +43,6 @@ import static org.mockito.Mockito.when;
 public final class TablesContextTest {
     
     @Test
-    public void assertIsEmpty() {
-        TablesContext tablesContext = new TablesContext(new SelectStatement());
-        assertTrue(tablesContext.isEmpty());
-    }
-    
-    @Test
-    public void assertIsNotEmpty() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertFalse(tablesContext.isEmpty());
-    }
-    
-    @Test
     public void assertIsSingleTable() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getTables().add(createTableSegment("table", "tbl"));

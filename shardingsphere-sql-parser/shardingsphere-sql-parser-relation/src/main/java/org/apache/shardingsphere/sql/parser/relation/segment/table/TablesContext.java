@@ -69,15 +69,6 @@ public final class TablesContext {
     }
     
     /**
-     * Judge table is empty or not.
-     *
-     * @return table is empty or not
-     */
-    public boolean isEmpty() {
-        return tables.isEmpty();
-    }
-    
-    /**
      * Judge is single table or not.
      * 
      * @return is single table or not
@@ -96,7 +87,7 @@ public final class TablesContext {
      * @return single table name
      */
     public String getSingleTableName() {
-        Preconditions.checkArgument(!isEmpty());
+        Preconditions.checkArgument(!tables.isEmpty());
         return tables.iterator().next().getName();
     }
     
