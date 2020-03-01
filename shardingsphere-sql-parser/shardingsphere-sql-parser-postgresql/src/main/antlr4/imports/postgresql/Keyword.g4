@@ -535,3 +535,19 @@ DECIMAL
 TYPE
     : T Y P E
     ;
+
+SMALLINT
+    : S M A L L I N T
+    ;
+
+BIGINT
+    : B I G I N T
+    ;
+
+NUMERIC
+    : N U M E R I C
+    ;
+
+TEXT
+    : T E X T
+    ;
