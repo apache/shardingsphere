@@ -23,21 +23,20 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 /**
  * Owner available.
  *
- * @param <T> type of SQL segment
  */
-public interface OwnerAvailable<T extends SQLSegment> extends SQLSegment {
+public interface OwnerAvailable extends SQLSegment {
     
     /**
      * Get owner.
      *
      * @return owner
      */
-    Optional<T> getOwner();
+    Optional<OwnerSegment> getOwner();
     
     /**
      * Set owner.
      *
      * @param owner owner
      */
-    void setOwner(T owner);
+    void setOwner(OwnerSegment owner);
 }

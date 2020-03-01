@@ -30,27 +30,34 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class TableSegment implements OwnerAvailable<SchemaSegment>, AliasAvailable {
+public final class TableSegment implements OwnerAvailable, AliasAvailable {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final IdentifierValue identifier;
+    private final TableNameSegment tableName;
     
     @Setter
-    private SchemaSegment owner;
+    private OwnerSegment owner;
     
     @Setter
     private AliasSegment alias;
     
-    @Override
-    public int getStartIndex() {
-        return null == owner ? startIndex : owner.getStartIndex(); 
+    public TableSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue) {
+        tableName = new TableNameSegment(startIndex, stopIndex, identifierValue);
     }
     
     @Override
-    public Optional<SchemaSegment> getOwner() {
+    public int getStartIndex() {
+        return null == owner ? tableName.getStartIndex() : owner.getStartIndex(); 
+    }
+    
+    @Override
+    public int getStopIndex() {
+        return tableName.getStopIndex();
+        //FIXME: Rewriter need to handle alias as well
+//        return null == alias ? tableName.getStopIndex() : alias.getStopIndex();
+    }
+    
+    @Override
+    public Optional<OwnerSegment> getOwner() {
         return Optional.fromNullable(owner);
     }
     

@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.relation.statement.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Common SQL statement context.
+ * Expected constraint definition.
  */
 @Getter
-@ToString
-public class CommonSQLStatementContext implements SQLStatementContext {
+@Setter
+public final class ExpectedConstraintDefinition extends AbstractExpectedSQLSegment {
     
-    private final SQLStatement sqlStatement;
+    @XmlElement(name = "referenced-table")
+    private ExpectedTable referencedTable;
     
-    private final TablesContext tablesContext;
-    
-    public CommonSQLStatementContext(final SQLStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-        tablesContext = new TablesContext(sqlStatement);
-    }
+    @XmlElement(name = "primary-key-column")
+    private List<ExpectedColumn> primaryKeyColumns = new LinkedList<>();
 }

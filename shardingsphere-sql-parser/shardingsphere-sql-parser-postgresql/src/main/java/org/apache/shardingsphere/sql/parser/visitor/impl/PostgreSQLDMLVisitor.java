@@ -80,6 +80,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.OrPredicat
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -278,7 +279,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     private boolean isTable(final TableSegment owner, final Collection<TableSegment> tableSegments) {
         for (TableSegment each : tableSegments) {
-            if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
+            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orNull())) {
                 return false;
             }
         }
@@ -316,7 +317,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
             QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
             ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex(), shorthand.getText());
             IdentifierValue identifier = new IdentifierValue(shorthand.identifier().getText());
-            result.setOwner(new TableSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
+            result.setOwner(new OwnerSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
             return result;
         }
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
@@ -444,16 +445,20 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (expr instanceof PredicateSegment) {
             PredicateSegment predicate = (PredicateSegment) expr;
             if (predicate.getColumn().getOwner().isPresent()) {
-                result.getValue().add(predicate.getColumn().getOwner().get());
+                result.getValue().add(createTableSegment(predicate.getColumn().getOwner().get()));
             }
             if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
-                result.getValue().add(((ColumnSegment) predicate.getRightValue()).getOwner().get());
+                result.getValue().add(createTableSegment(((ColumnSegment) predicate.getRightValue()).getOwner().get()));
             }
             if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
-                result.getValue().add(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
+                result.getValue().add(createTableSegment(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get()));
             }
         }
         return result;
+    }
+    
+    private TableSegment createTableSegment(final OwnerSegment ownerSegment) {
+        return new TableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier());
     }
     
     @Override

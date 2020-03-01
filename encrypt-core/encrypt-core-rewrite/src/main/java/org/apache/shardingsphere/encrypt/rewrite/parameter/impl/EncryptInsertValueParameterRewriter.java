@@ -23,8 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewri
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -38,47 +37,47 @@ import java.util.List;
 /**
  * Insert value parameter rewriter for encrypt.
  */
-public final class EncryptInsertValueParameterRewriter extends EncryptParameterRewriter {
+public final class EncryptInsertValueParameterRewriter extends EncryptParameterRewriter<InsertStatementContext> {
     
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && !((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent();
+        return sqlStatementContext instanceof InsertStatementContext && !(((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent();
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Iterator<String> descendingColumnNames = ((InsertSQLStatementContext) sqlStatementContext).getDescendingColumnNames();
+    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
+        String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
-                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, encryptor.get(), tableName, columnName);
+                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptor.get(), tableName, columnName);
             }
         }
     }
     
     private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder,
-                                     final InsertSQLStatementContext sqlStatementContext, final Encryptor encryptor, final String tableName, final String encryptLogicColumnName) {
-        int columnIndex = getColumnIndex(parameterBuilder, sqlStatementContext, encryptLogicColumnName);
+                                     final InsertStatementContext insertStatementContext, final Encryptor encryptor, final String tableName, final String encryptLogicColumnName) {
+        int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptLogicColumnName);
         int count = 0;
-        for (List<Object> each : sqlStatementContext.getGroupedParameters()) {
+        for (List<Object> each : insertStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
                 encryptInsertValue(
-                        encryptor, tableName, columnIndex, sqlStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
+                        encryptor, tableName, columnIndex, insertStatementContext.getInsertValueContexts().get(count).getValue(columnIndex), standardParameterBuilder, encryptLogicColumnName);
             }
             count++;
         }
     }
     
-    private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext sqlStatementContext, final String encryptLogicColumnName) {
+    private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final String encryptLogicColumnName) {
         List<String> columnNames;
         if (parameterBuilder.getDerivedColumnName().isPresent()) {
-            columnNames = new ArrayList<>(sqlStatementContext.getColumnNames());
+            columnNames = new ArrayList<>(insertStatementContext.getColumnNames());
             columnNames.remove(parameterBuilder.getDerivedColumnName().get());
         } else {
-            columnNames = sqlStatementContext.getColumnNames();
+            columnNames = insertStatementContext.getColumnNames();
         }
         return columnNames.indexOf(encryptLogicColumnName);
     }

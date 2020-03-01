@@ -31,4 +31,9 @@ import java.util.LinkedList;
 public final class TruncateStatement extends DDLStatement implements TableSegmentsAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
+    
+    @Override
+    public Collection<TableSegment> getAllTables() {
+        return tables;
+    }
 }

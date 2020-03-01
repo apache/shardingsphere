@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.sql.value.keyword;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
 
 /**
- * Table segment available.
+ * Key word value.
  */
-public interface TableSegmentAvailable {
+@RequiredArgsConstructor
+@Getter
+public final class KeywordValue implements ValueASTNode<String> {
     
-    /**
-     * Get table segment.
-     * 
-     * @return table segment
-     */
-    TableSegment getTable();
-    
-    /**
-     * Set table segment.
-     * 
-     * @param table table segment
-     */
-    void setTable(TableSegment table);
+    private final String value;
 }

@@ -22,16 +22,24 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Alter index statement.
  */
 @Getter
 @Setter
-public final class AlterIndexStatement extends DDLStatement implements TableSegmentAvailable, IndexSegmentAvailable {
+public final class AlterIndexStatement extends DDLStatement implements TableSegmentsAvailable, IndexSegmentAvailable {
     
     private IndexSegment index;
     
     private TableSegment table;
+    
+    @Override
+    public Collection<TableSegment> getAllTables() {
+        return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
+    }
 }

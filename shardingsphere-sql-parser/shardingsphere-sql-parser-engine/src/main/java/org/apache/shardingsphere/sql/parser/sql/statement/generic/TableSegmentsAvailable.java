@@ -27,9 +27,9 @@ import java.util.Collection;
 public interface TableSegmentsAvailable {
     
     /**
-     * Get table segments.
+     * Get all table segments.
      * 
-     * @return table segments
+     * @return all table segments
      */
-    Collection<TableSegment> getTables();
+    Collection<TableSegment> getAllTables();
 }
