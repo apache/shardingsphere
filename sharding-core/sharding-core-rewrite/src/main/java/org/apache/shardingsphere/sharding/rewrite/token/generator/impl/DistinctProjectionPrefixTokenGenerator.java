@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.DistinctProjec
 /**
  * Distinct projection prefix token generator.
  */
-public final class DistinctProjectionPrefixTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class DistinctProjectionPrefixTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -34,7 +34,7 @@ public final class DistinctProjectionPrefixTokenGenerator implements OptionalSQL
     }
     
     @Override
-    public DistinctProjectionPrefixToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return new DistinctProjectionPrefixToken(((SelectStatementContext) sqlStatementContext).getProjectionsContext().getStartIndex());
+    public DistinctProjectionPrefixToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        return new DistinctProjectionPrefixToken(selectStatementContext.getProjectionsContext().getStartIndex());
     }
 }

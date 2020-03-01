@@ -63,12 +63,12 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
         return false;
     }
     
-    private boolean judgeShadowSqlForInsert(final InsertValueContext insertValueContext, final InsertStatementContext insertSQLStatementContext) {
-        Iterator<String> descendingColumnNames = insertSQLStatementContext.getDescendingColumnNames();
+    private boolean judgeShadowSqlForInsert(final InsertValueContext insertValueContext, final InsertStatementContext insertStatementContext) {
+        Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             if (shadowRule.getColumn().equals(columnName)) {
-                int columnIndex = insertSQLStatementContext.getColumnNames().indexOf(columnName);
+                int columnIndex = insertStatementContext.getColumnNames().indexOf(columnName);
                 Object value = insertValueContext.getValue(columnIndex);
                 return "TRUE".equals((String.valueOf(value)).toUpperCase());
             }

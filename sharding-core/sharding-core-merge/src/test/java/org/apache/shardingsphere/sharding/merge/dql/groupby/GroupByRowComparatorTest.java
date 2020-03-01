@@ -51,7 +51,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForAscWithOrderByItems() throws SQLException {
-        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)), 
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0),
@@ -59,7 +59,7 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectSQLStatementContext, caseSensitives);
+        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("3", "4"));
         assertTrue(groupByRowComparator.compare(o1, o2) < 0);
@@ -67,7 +67,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForDecsWithOrderByItems() throws SQLException {
-        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0),
@@ -75,7 +75,7 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectSQLStatementContext, caseSensitives);
+        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("3", "4"));
         assertTrue(groupByRowComparator.compare(o1, o2) > 0);
@@ -83,7 +83,7 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForEqualWithOrderByItems() throws SQLException {
-        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0),
@@ -91,7 +91,7 @@ public final class GroupByRowComparatorTest {
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectSQLStatementContext, caseSensitives);
+        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("1", "2"));
         assertThat(groupByRowComparator.compare(o1, o2), is(0));
@@ -99,12 +99,12 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForAscWithGroupByItems() throws SQLException {
-        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectSQLStatementContext, caseSensitives);
+        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("3", "4"));
         assertTrue(groupByRowComparator.compare(o1, o2) < 0);
@@ -112,12 +112,12 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForDecsWithGroupByItems() throws SQLException {
-        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectSQLStatementContext, caseSensitives);
+        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("3", "4"));
         assertTrue(groupByRowComparator.compare(o1, o2) > 0);
@@ -125,12 +125,12 @@ public final class GroupByRowComparatorTest {
     
     @Test
     public void assertCompareToForEqualWithGroupByItems() throws SQLException {
-        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
+        SelectStatementContext selectStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Arrays.asList(
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
                         createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
-        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectSQLStatementContext, caseSensitives);
+        GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(createQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(createQueryResult("1", "2"));
         assertThat(groupByRowComparator.compare(o1, o2), is(0));

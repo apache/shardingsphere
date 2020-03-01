@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.OrderByToken;
 /**
  * Order by token generator.
  */
-public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -38,10 +38,10 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, I
     }
     
     @Override
-    public OrderByToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        OrderByToken result = new OrderByToken(((SelectStatementContext) sqlStatementContext).getGroupByContext().getLastIndex() + 1);
+    public OrderByToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        OrderByToken result = new OrderByToken(selectStatementContext.getGroupByContext().getLastIndex() + 1);
         String columnLabel;
-        for (OrderByItem each : ((SelectStatementContext) sqlStatementContext).getOrderByContext().getItems()) {
+        for (OrderByItem each : selectStatementContext.getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
                 QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getIdentifier().getQuoteCharacter();

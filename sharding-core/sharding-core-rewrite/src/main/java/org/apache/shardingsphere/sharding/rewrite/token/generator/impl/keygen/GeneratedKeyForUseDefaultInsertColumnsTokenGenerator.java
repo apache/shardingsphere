@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -40,14 +39,14 @@ public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends 
     }
     
     @Override
-    protected UseDefaultInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns();
+    protected UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames((InsertStatementContext) sqlStatementContext, generatedKey));
+        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, generatedKey));
     }
     
-    private List<String> getColumnNames(final InsertStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
-        List<String> result = new ArrayList<>(sqlStatementContext.getColumnNames());
+    private List<String> getColumnNames(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
+        List<String> result = new ArrayList<>(insertStatementContext.getColumnNames());
         result.remove(generatedKey.getColumnName());
         result.add(generatedKey.getColumnName());
         return result;

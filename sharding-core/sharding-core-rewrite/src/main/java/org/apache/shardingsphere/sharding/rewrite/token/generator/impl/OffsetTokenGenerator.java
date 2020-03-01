@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.OffsetToken;
 /**
  * Offset token generator.
  */
-public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -39,8 +39,8 @@ public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator, Ig
     }
     
     @Override
-    public OffsetToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        PaginationContext pagination = ((SelectStatementContext) sqlStatementContext).getPaginationContext();
+    public OffsetToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        PaginationContext pagination = selectStatementContext.getPaginationContext();
         Preconditions.checkState(pagination.getOffsetSegment().isPresent());
         return new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset());
     }

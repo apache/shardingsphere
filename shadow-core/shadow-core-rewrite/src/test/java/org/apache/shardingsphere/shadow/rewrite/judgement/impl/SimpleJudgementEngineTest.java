@@ -78,8 +78,8 @@ public final class SimpleJudgementEngineTest {
                         add(new LiteralExpressionSegment(0, 0, "true"));
                     }
                 })));
-        InsertStatementContext insertSQLStatementContext = new InsertStatementContext(relationMetas, Collections.emptyList(), insertStatement);
-        SimpleJudgementEngine simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, insertSQLStatementContext);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(relationMetas, Collections.emptyList(), insertStatement);
+        SimpleJudgementEngine simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, insertStatementContext);
         Assert.assertTrue("should be shadow", simpleJudgementEngine.isShadowSQL());
         insertStatement.getValues().clear();
         insertStatement.getValues()
@@ -90,8 +90,8 @@ public final class SimpleJudgementEngineTest {
                         add(new LiteralExpressionSegment(0, 0, "false"));
                     }
                 })));
-        insertSQLStatementContext = new InsertStatementContext(relationMetas, Collections.emptyList(), insertStatement);
-        simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, insertSQLStatementContext);
+        insertStatementContext = new InsertStatementContext(relationMetas, Collections.emptyList(), insertStatement);
+        simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, insertStatementContext);
         Assert.assertFalse("should not be shadow", simpleJudgementEngine.isShadowSQL());
     }
     
@@ -108,8 +108,8 @@ public final class SimpleJudgementEngineTest {
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectSQLStatementContext = new SelectStatementContext(relationMetas, "", Collections.emptyList(), selectStatement);
-        SimpleJudgementEngine simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, selectSQLStatementContext);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(relationMetas, "", Collections.emptyList(), selectStatement);
+        SimpleJudgementEngine simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, selectStatementContext);
         Assert.assertTrue("should be shadow", simpleJudgementEngine.isShadowSQL());
         andPredicate.getPredicates().clear();
         andPredicate.getPredicates().addAll(Collections.singletonList(

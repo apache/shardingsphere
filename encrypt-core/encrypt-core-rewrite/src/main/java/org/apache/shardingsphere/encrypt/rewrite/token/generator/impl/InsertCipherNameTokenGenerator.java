@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Insert cipher column name token generator.
  */
-public final class InsertCipherNameTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
+public final class InsertCipherNameTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
@@ -46,10 +46,10 @@ public final class InsertCipherNameTokenGenerator extends BaseEncryptSQLTokenGen
     }
     
     @Override
-    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns();
+    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
+        Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
-        Map<String, String> logicAndCipherColumns = getEncryptRule().getLogicAndCipherColumns(((InsertStatementContext) sqlStatementContext).getSqlStatement().getTable().getIdentifier().getValue());
+        Map<String, String> logicAndCipherColumns = getEncryptRule().getLogicAndCipherColumns(insertStatementContext.getSqlStatement().getTable().getIdentifier().getValue());
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ColumnSegment each : sqlSegment.get().getColumns()) {
             if (logicAndCipherColumns.keySet().contains(each.getIdentifier().getValue())) {

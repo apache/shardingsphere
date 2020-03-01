@@ -36,7 +36,7 @@ import java.util.LinkedList;
 /**
  * Projections token generator.
  */
-public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -44,14 +44,14 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     }
     
     @Override
-    public ProjectionsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Collection<String> derivedProjectionTexts = getDerivedProjectionTexts((SelectStatementContext) sqlStatementContext);
-        return new ProjectionsToken(((SelectStatementContext) sqlStatementContext).getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts);
+    public ProjectionsToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        Collection<String> derivedProjectionTexts = getDerivedProjectionTexts(selectStatementContext);
+        return new ProjectionsToken(selectStatementContext.getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts);
     }
     
-    private Collection<String> getDerivedProjectionTexts(final SelectStatementContext selectSQLStatementContext) {
+    private Collection<String> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext) {
         Collection<String> result = new LinkedList<>();
-        for (Projection each : selectSQLStatementContext.getProjectionsContext().getProjections()) {
+        for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
             if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
                 result.addAll(Lists.transform(((AggregationProjection) each).getDerivedAggregationProjections(), new Function<AggregationProjection, String>() {
                     
