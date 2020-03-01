@@ -180,8 +180,8 @@ public final class ProjectionsContextEngine {
                 continue;
             }
             ShorthandProjection shorthandProjection = (ShorthandProjection) each;
-            if (shorthandProjection.getOwner().isPresent() 
-                    && find(shorthandProjection.getOwner().get(), selectStatement).getIdentifier().getValue().equalsIgnoreCase(tableSegment.getIdentifier().getValue())) {
+            if (shorthandProjection.getOwner().isPresent() && find(
+                    shorthandProjection.getOwner().get(), selectStatement).getTableName().getIdentifier().getValue().equalsIgnoreCase(tableSegment.getTableName().getIdentifier().getValue())) {
                 return Optional.of(shorthandProjection);
             }
         }
@@ -215,7 +215,7 @@ public final class ProjectionsContextEngine {
     private boolean isSameProjection(final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem, final SelectStatement selectStatement) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
         TableSegment tableSegment = find(shorthandProjection.getOwner().get(), selectStatement);
-        return relationMetas.containsColumn(tableSegment.getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
+        return relationMetas.containsColumn(tableSegment.getTableName().getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {
@@ -228,7 +228,7 @@ public final class ProjectionsContextEngine {
     
     private TableSegment find(final String tableNameOrAlias, final SelectStatement selectStatement) {
         for (TableSegment each : selectStatement.getTables()) {
-            if (tableNameOrAlias.equalsIgnoreCase(each.getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orNull())) {
+            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orNull())) {
                 return each;
             }
         }
