@@ -25,7 +25,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 @Getter
 @Setter
 @ToString
-public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerSegmentAvailable {
+public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
     
     private final int startIndex;
     

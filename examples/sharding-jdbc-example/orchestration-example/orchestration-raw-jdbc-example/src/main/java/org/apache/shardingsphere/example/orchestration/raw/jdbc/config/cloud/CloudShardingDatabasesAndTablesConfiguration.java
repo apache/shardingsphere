@@ -18,23 +18,24 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.cloud;
 
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Map;
 
 public final class CloudShardingDatabasesAndTablesConfiguration implements ExampleConfiguration {
     
-    private final RegistryCenterConfiguration registryCenterConfig;
-
-    public CloudShardingDatabasesAndTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
-        this.registryCenterConfig = registryCenterConfig;
+    private final Map<String, InstanceConfiguration> instanceConfigurationMap;
+    
+    public CloudShardingDatabasesAndTablesConfiguration(final Map<String, InstanceConfiguration> instanceConfigurationMap) {
+        this.instanceConfigurationMap = instanceConfigurationMap;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
-        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration("orchestration-sharding-dbtbl-data-source", registryCenterConfig, false));
+        return OrchestrationShardingDataSourceFactory.createDataSource(new OrchestrationConfiguration(instanceConfigurationMap));
     }
 }

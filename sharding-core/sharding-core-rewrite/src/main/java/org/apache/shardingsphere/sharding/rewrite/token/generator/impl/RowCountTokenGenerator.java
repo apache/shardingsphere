@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
@@ -29,20 +29,19 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.RowCountToken;
 /**
  * Row count token generator.
  */
-public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectSQLStatementContext
-                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().isPresent()
-                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment;
+        return sqlStatementContext instanceof SelectStatementContext
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().isPresent()
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getRowCountSegment().get() instanceof NumberLiteralPaginationValueSegment;
     }
     
     @Override
-    public RowCountToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
+    public RowCountToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        PaginationContext pagination = selectStatementContext.getPaginationContext();
         Preconditions.checkState(pagination.getRowCountSegment().isPresent());
-        return new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), 
-                pagination.getRowCountSegment().get().getStopIndex(), pagination.getRevisedRowCount((SelectSQLStatementContext) sqlStatementContext));
+        return new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(), pagination.getRevisedRowCount(selectStatementContext));
     }
 }

@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
+import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Table segment available.
+ * Drop index statement context.
  */
-public interface TableSegmentAvailable {
+public final class DropIndexStatementContext extends CommonSQLStatementContext<DropIndexStatement> implements TableSegmentsAvailable {
     
-    /**
-     * Get table segment.
-     * 
-     * @return table segment
-     */
-    TableSegment getTable();
+    public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
+        super(sqlStatement);
+    }
     
-    /**
-     * Set table segment.
-     * 
-     * @param table table segment
-     */
-    void setTable(TableSegment table);
+    @Override
+    public Collection<TableSegment> getAllTables() {
+        return null == getSqlStatement().getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(getSqlStatement().getTable());
+    }
 }

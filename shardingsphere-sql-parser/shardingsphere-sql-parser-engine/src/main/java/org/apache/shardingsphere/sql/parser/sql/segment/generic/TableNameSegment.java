@@ -17,26 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import com.google.common.base.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
- * Owner available.
- *
+ * Table name segment.
  */
-public interface OwnerSegmentAvailable extends SQLSegment {
+@RequiredArgsConstructor
+@Getter
+public final class TableNameSegment implements SQLSegment {
     
-    /**
-     * Get owner.
-     *
-     * @return owner
-     */
-    Optional<OwnerSegment> getOwner();
+    private final int startIndex;
     
-    /**
-     * Set owner.
-     *
-     * @param owner owner
-     */
-    void setOwner(OwnerSegment owner);
+    private final int stopIndex;
+    
+    private final IdentifierValue identifier;
 }

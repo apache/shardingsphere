@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
@@ -39,7 +39,7 @@ public abstract class EncryptResultDecoratorEngine implements ResultDecoratorEng
     @Override
     public final ResultDecorator newInstance(final DatabaseType databaseType, 
                                              final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof SelectSQLStatementContext) {
+        if (sqlStatementContext instanceof SelectStatementContext) {
             return new EncryptDQLResultDecorator(createEncryptorMetaData(encryptRule, sqlStatementContext), properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {

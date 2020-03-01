@@ -312,8 +312,6 @@
     
     <create-table sql-case-id="create_table_with_inline_foreign_key">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <!-- FIXME remove t_order assert -->
-        <table name="t_order" start-index="64" stop-index="70" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -461,7 +459,6 @@
     
     <create-table sql-case-id="create_table_with_out_of_line_foreign_key">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <table name="t_order" start-index="207" stop-index="213" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -490,7 +487,6 @@
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_foreign_key">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <table name="t_order" start-index="224" stop-index="230" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -542,7 +538,6 @@
     
     <create-table sql-case-id="create_table_with_out_of_line_constraints">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <table name="t_order" start-index="225" stop-index="231" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>
@@ -790,8 +785,6 @@
     
     <create-table sql-case-id="create_table_with_inline_foreign_key_reference">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <!-- FIXME remove t_order table segment-->
-        <table name="t_order" start-index="101" stop-index="107" />
         <column-definition type="NUMBER">
             <column name="item_id" />
         </column-definition>
@@ -840,7 +833,6 @@
     
     <create-table sql-case-id="create_table_with_inline_constraints_cascade">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <table name="t_order" start-index="150" stop-index="156" />
         <column-definition type="NUMBER" primary-key="true">
             <column name="item_id" />
         </column-definition>
@@ -867,7 +859,6 @@
     
     <create-table sql-case-id="create_table_with_out_of_line_foreign_key_oracle">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <table name="t_order" start-index="232" stop-index="238" />
         <column-definition type="NUMBER">
             <column name="item_id" />
         </column-definition>
@@ -896,7 +887,6 @@
     
     <create-table sql-case-id="create_table_with_out_of_line_composite_foreign_key_oracle">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <table name="t_order" start-index="249" stop-index="255" />
         <column-definition type="NUMBER">
             <column name="item_id" />
         </column-definition>
@@ -925,7 +915,6 @@
     
     <create-table sql-case-id="create_table_with_out_of_line_constraints_oracle">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <table name="t_order" start-index="250" stop-index="256" />
         <column-definition type="NUMBER">
             <column name="item_id" />
         </column-definition>
@@ -1235,7 +1224,6 @@
     
     <create-table sql-case-id="create_table_with_inline_foreign_key_sqlserver">
         <table name="t_order_item" start-index="13" stop-index="24" />
-        <table name="t_order" start-index="87" stop-index="93" />
         <column-definition type="INT">
             <column name="item_id" />
         </column-definition>

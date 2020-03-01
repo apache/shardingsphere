@@ -38,7 +38,7 @@ import java.util.List;
 public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
+    private ExpectedTable table;
     
     @XmlElement(name = "add-column")
     private final List<ExpectedAddColumnDefinition> addColumns = new LinkedList<>();
