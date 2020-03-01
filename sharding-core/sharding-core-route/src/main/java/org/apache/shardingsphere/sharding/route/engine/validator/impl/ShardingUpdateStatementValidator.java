@@ -43,7 +43,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     
     @Override
     public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement, final List<Object> parameters) {
-        String tableName = sqlStatement.getTables().iterator().next().getIdentifier().getValue();
+        String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {

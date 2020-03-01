@@ -50,7 +50,7 @@ public final class TablesContext {
         Collection<TableSegment> tableSegments = getAllTables((TableSegmentsAvailable) sqlStatement);
         tables = new ArrayList<>(tableSegments.size());
         for (TableSegment each : tableSegments) {
-            tables.add(new Table(each.getIdentifier().getValue(), each.getAlias().orNull()));
+            tables.add(new Table(each.getTableName().getIdentifier().getValue(), each.getAlias().orNull()));
         }
     }
     

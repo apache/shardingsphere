@@ -42,7 +42,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     protected EncryptColumnsMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         this.encryptRule = encryptRule;
         Preconditions.checkState(sqlStatementContext instanceof TableSegmentsAvailable && 1 == ((TableSegmentsAvailable) sqlStatementContext).getAllTables().size());
-        tableName = ((TableSegmentsAvailable) sqlStatementContext).getAllTables().iterator().next().getIdentifier().getValue();
+        tableName = ((TableSegmentsAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
     }
     
     @Override

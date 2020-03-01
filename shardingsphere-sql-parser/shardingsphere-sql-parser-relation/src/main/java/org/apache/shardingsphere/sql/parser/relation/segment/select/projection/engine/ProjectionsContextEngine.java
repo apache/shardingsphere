@@ -106,8 +106,8 @@ public final class ProjectionsContextEngine {
     
     private Collection<String> getQualifiedShorthandColumnLabels(final Collection<TableSegment> tables, final String owner) {
         for (TableSegment each : tables) {
-            if (owner.equalsIgnoreCase(each.getAlias().or(each.getIdentifier().getValue()))) {
-                return relationMetas.getAllColumnNames(each.getIdentifier().getValue());
+            if (owner.equalsIgnoreCase(each.getAlias().or(each.getTableName().getIdentifier().getValue()))) {
+                return relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue());
             }
         }
         return Collections.emptyList();
@@ -116,7 +116,7 @@ public final class ProjectionsContextEngine {
     private Collection<String> getUnqualifiedShorthandColumnLabels(final Collection<TableSegment> tables) {
         Collection<String> result = new LinkedList<>();
         for (TableSegment each : tables) {
-            result.addAll(relationMetas.getAllColumnNames(each.getIdentifier().getValue()));
+            result.addAll(relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue()));
         }
         return result;
     }
