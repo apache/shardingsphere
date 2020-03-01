@@ -48,7 +48,7 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     @Override
     public Collection<InsertColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<InsertColumnsToken> result = new LinkedList<>();
-        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable((((InsertStatementContext) sqlStatementContext).getSqlStatement()).getTable().getIdentifier().getValue());
         Preconditions.checkState(encryptTable.isPresent());
         for (ColumnSegment each : (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getColumns()) {
             List<String> columns = getColumns(encryptTable.get(), each);

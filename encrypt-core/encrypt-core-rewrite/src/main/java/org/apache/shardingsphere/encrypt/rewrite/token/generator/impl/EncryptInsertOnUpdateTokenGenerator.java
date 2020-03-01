@@ -48,7 +48,7 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     @Override
     public Collection<EncryptAssignmentToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<EncryptAssignmentToken> result = new LinkedList<>();
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        String tableName = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getTable().getIdentifier().getValue();
         Preconditions.checkState((((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().isPresent());
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().get();
         Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();

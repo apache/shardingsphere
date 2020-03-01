@@ -77,7 +77,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     }
     
     private void processPreviousSQLToken(final InsertStatementContext sqlStatementContext, final InsertValuesToken insertValuesToken) {
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getIdentifier().getValue();
         int count = 0;
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
             encryptToken(insertValuesToken.getInsertValues().get(count), tableName, sqlStatementContext, each);
@@ -86,7 +86,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
     }
     
     private InsertValuesToken generateNewSQLToken(final InsertStatementContext sqlStatementContext) {
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getIdentifier().getValue();
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {

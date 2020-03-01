@@ -81,7 +81,6 @@ public final class InsertSQLStatementContextTest {
     }
     
     private void assertInsertSQLStatementContext(final InsertStatementContext actual) {
-        assertThat(actual.getTablesContext().getSingleTableName(), is("tbl"));
         assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
         assertThat(actual.getInsertValueContexts().size(), is(2));
         assertThat(actual.getInsertValueContexts().get(0).getValue(0), is((Object) 1));

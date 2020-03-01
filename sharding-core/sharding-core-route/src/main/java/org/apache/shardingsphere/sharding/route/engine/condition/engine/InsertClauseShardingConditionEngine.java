@@ -57,7 +57,7 @@ public final class InsertClauseShardingConditionEngine {
      */
     public List<ShardingCondition> createShardingConditions(final InsertStatementContext insertSQLStatementContext, final GeneratedKey generatedKey, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
-        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
+        String tableName = insertSQLStatementContext.getSqlStatement().getTable().getIdentifier().getValue();
         Collection<String> columnNames = getColumnNames(insertSQLStatementContext, generatedKey);
         for (InsertValueContext each : insertSQLStatementContext.getInsertValueContexts()) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));

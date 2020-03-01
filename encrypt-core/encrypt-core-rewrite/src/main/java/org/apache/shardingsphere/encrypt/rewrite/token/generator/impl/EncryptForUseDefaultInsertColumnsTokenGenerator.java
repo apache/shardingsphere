@@ -49,7 +49,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     
     @Override
     public UseDefaultInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        String tableName = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getTable().getIdentifier().getValue();
         Optional<UseDefaultInsertColumnsToken> previousSQLToken = findInsertColumnsToken();
         if (previousSQLToken.isPresent()) {
             processPreviousSQLToken(previousSQLToken.get(), (InsertStatementContext) sqlStatementContext, tableName);

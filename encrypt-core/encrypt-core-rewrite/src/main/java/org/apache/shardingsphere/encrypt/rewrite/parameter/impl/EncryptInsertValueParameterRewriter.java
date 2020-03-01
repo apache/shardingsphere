@@ -46,7 +46,7 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        String tableName = ((InsertStatementContext) sqlStatementContext).getSqlStatement().getTable().getIdentifier().getValue();
         Iterator<String> descendingColumnNames = ((InsertStatementContext) sqlStatementContext).getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();

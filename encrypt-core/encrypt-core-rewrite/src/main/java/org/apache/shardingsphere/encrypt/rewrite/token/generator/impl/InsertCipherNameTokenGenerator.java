@@ -49,7 +49,7 @@ public final class InsertCipherNameTokenGenerator extends BaseEncryptSQLTokenGen
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Optional<InsertColumnsSegment> sqlSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
-        Map<String, String> logicAndCipherColumns = getEncryptRule().getLogicAndCipherColumns(sqlStatementContext.getTablesContext().getSingleTableName());
+        Map<String, String> logicAndCipherColumns = getEncryptRule().getLogicAndCipherColumns(((InsertStatementContext) sqlStatementContext).getSqlStatement().getTable().getIdentifier().getValue());
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ColumnSegment each : sqlSegment.get().getColumns()) {
             if (logicAndCipherColumns.keySet().contains(each.getIdentifier().getValue())) {
