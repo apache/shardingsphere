@@ -30,8 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class SetVariableStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "variable")
-    private String variable;
+    @XmlAttribute(name = "variableName")
+    private String variableName;
     
     @XmlAttribute(name = "variableValue")
     private String variableValue;

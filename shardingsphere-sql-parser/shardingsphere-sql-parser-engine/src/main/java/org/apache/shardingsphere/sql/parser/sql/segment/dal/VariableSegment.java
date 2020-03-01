@@ -32,5 +32,5 @@ public final class VariableSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final String variable;
+    private final String variableName;
 }

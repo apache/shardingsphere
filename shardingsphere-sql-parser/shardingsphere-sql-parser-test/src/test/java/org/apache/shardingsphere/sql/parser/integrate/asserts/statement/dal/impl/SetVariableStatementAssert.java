@@ -42,9 +42,9 @@ public final class SetVariableStatementAssert {
      * @param expected expected variable statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetStatement actual, final SetVariableStatementTestCase expected) {
-        if (null != expected.getVariable()) {
+        if (null != expected.getVariableName()) {
             assertNotNull(assertContext.getText("Actual variable expression should exist."), actual.getVariableExprList());
-            assertThat(assertContext.getText("variable expression assertion error: "), actual.getVariableExprList().get(0).getVariable().getVariable(), is(expected.getVariable()));
+            assertThat(assertContext.getText("variable expression assertion error: "), actual.getVariableExprList().get(0).getVariable().getVariableName(), is(expected.getVariableName()));
             assertThat(assertContext.getText("variable expression assertion error: "), actual.getVariableExprList().get(0).getVariableValue().getValue(), is(expected.getVariableValue()));
         } else {
             assertNull(assertContext.getText("Actual variable expression should not exist."), actual.getVariableExprList());
