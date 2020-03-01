@@ -29,15 +29,15 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 
 /**
- * Merged result for describe table.
+ * Encrypt column merged result.
  */
-public abstract class DescribeTableMergedResult implements MergedResult {
+public abstract class EncryptColumnsMergedResult implements MergedResult {
     
     private final EncryptRule encryptRule;
     
     private final SQLStatementContext sqlStatementContext;
     
-    protected DescribeTableMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    protected EncryptColumnsMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         this.encryptRule = encryptRule;
         this.sqlStatementContext = sqlStatementContext;
     }

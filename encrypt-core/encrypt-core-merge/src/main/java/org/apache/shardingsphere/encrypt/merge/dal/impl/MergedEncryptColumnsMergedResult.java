@@ -19,34 +19,34 @@ package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
 
 /**
- * Decorated merged result for describe table.
+ * Merged encrypt column merged result.
  */
-public final class DecoratedDescribeTableMergedResult extends DescribeTableMergedResult {
+public final class MergedEncryptColumnsMergedResult extends EncryptColumnsMergedResult {
     
-    private final MergedResult mergedResult;
+    private final QueryResult queryResult;
     
-    public DecoratedDescribeTableMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    public MergedEncryptColumnsMergedResult(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         super(sqlStatementContext, encryptRule);
-        this.mergedResult = mergedResult;
+        this.queryResult = queryResult;
     }
     
     @Override
     protected boolean nextValue() throws SQLException {
-        return mergedResult.next();
+        return queryResult.next();
     }
     
     @Override
     protected Object getOriginalValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return mergedResult.getValue(columnIndex, type);
+        return queryResult.getValue(columnIndex, type);
     }
     
     @Override
     public boolean wasNull() throws SQLException {
-        return mergedResult.wasNull();
+        return queryResult.wasNull();
     }
 }
