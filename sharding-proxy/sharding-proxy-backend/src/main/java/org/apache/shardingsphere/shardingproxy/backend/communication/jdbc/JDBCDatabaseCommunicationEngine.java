@@ -112,7 +112,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             if (((TableSegmentsAvailable) sqlStatementContext).getAllTables().isEmpty()) {
                 return "unknown_table";
             }
-            return ((TableSegmentsAvailable) sqlStatementContext).getAllTables().iterator().next().getIdentifier().getValue();
+            return ((TableSegmentsAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         }
         return "unknown_table";
     }

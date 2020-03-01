@@ -204,18 +204,18 @@ public abstract class AbstractStatementExecutor {
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final CreateTableStatement createTableStatement) throws SQLException {
-        String tableName = createTableStatement.getTable().getIdentifier().getValue();
+        String tableName = createTableStatement.getTable().getTableName().getIdentifier().getValue();
         runtimeContext.getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry().init(tableName));
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final AlterTableStatement alterTableStatement) throws SQLException {
-        String tableName = alterTableStatement.getTable().getIdentifier().getValue();
+        String tableName = alterTableStatement.getTable().getTableName().getIdentifier().getValue();
         runtimeContext.getMetaData().getTables().put(tableName, createTableMetaDataInitializerEntry().init(tableName));
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final DropTableStatement dropTableStatement) {
         for (TableSegment each : dropTableStatement.getTables()) {
-            runtimeContext.getMetaData().getTables().remove(each.getIdentifier().getValue());
+            runtimeContext.getMetaData().getTables().remove(each.getTableName().getIdentifier().getValue());
         }
     }
     
@@ -224,12 +224,12 @@ public abstract class AbstractStatementExecutor {
             return;
         }
         runtimeContext.getMetaData().getTables().get(
-                createIndexStatement.getTable().getIdentifier().getValue()).getIndexes().add(createIndexStatement.getIndex().getIdentifier().getValue());
+                createIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().add(createIndexStatement.getIndex().getIdentifier().getValue());
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final DropIndexStatement dropIndexStatement) {
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
-        TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(dropIndexStatement.getTable().getIdentifier().getValue());
+        TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue());
         if (null != dropIndexStatement.getTable()) {
             tableMetaData.getIndexes().removeAll(indexNames);
         }

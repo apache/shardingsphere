@@ -46,7 +46,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     public InsertStatementContext(final RelationMetas relationMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
-        columnNames = sqlStatement.useDefaultColumns() ? relationMetas.getAllColumnNames(sqlStatement.getTable().getIdentifier().getValue()) : sqlStatement.getColumnNames();
+        columnNames = sqlStatement.useDefaultColumns() ? relationMetas.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
         insertValueContexts = getInsertValueContexts(parameters);
     }
     

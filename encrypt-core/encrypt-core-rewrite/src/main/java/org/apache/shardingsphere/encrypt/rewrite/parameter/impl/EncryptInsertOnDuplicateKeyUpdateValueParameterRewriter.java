@@ -50,7 +50,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
-        String tableName = insertStatementContext.getSqlStatement().getTable().getIdentifier().getValue();
+        String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Preconditions.checkState(insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().isPresent());
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().get();
         Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
