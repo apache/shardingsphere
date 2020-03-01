@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Assignment parameter rewriter for encrypt.
  */
-public final class EncryptAssignmentParameterRewriter extends EncryptParameterRewriter {
+public final class EncryptAssignmentParameterRewriter extends EncryptParameterRewriter<SQLStatementContext> {
     
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
