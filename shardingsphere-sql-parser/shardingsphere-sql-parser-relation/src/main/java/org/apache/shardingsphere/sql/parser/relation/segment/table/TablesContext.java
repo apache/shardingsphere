@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
-import com.google.common.base.Optional;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
@@ -32,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.TreeSet;
 
 /**
  * Tables context.
@@ -78,63 +74,5 @@ public final class TablesContext {
             result.add(each.getName());
         }
         return result;
-    }
-    
-    /**
-     * Find table name.
-     *
-     * @param columnSegment column segment
-     * @param relationMetas relation metas
-     * @return table name
-     */
-    public Optional<String> findTableName(final ColumnSegment columnSegment, final RelationMetas relationMetas) {
-        if (isSingleTable()) {
-            return Optional.of(tables.iterator().next().getName());
-        }
-        if (columnSegment.getOwner().isPresent()) {
-            Optional<Table> table = find(columnSegment.getOwner().get().getIdentifier().getValue());
-            return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
-        }
-        return findTableNameFromMetaData(columnSegment.getIdentifier().getValue(), relationMetas);
-    }
-    
-    private boolean isSingleTable() {
-        Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (Table each : tables) {
-            tableNames.add(each.getName());
-        }
-        return 1 == tableNames.size();
-    }
-    
-    private Optional<Table> find(final String tableNameOrAlias) {
-        Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
-        return tableFromName.isPresent() ? tableFromName : findTableFromAlias(tableNameOrAlias);
-    }
-    
-    private Optional<Table> findTableFromName(final String name) {
-        for (Table each : tables) {
-            if (each.getName().equals(name)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<Table> findTableFromAlias(final String alias) {
-        for (Table each : tables) {
-            if (each.getAlias().isPresent() && each.getAlias().get().equalsIgnoreCase(alias)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {
-        for (String each : getTableNames()) {
-            if (relationMetas.containsColumn(each, columnName)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
     }
 }
