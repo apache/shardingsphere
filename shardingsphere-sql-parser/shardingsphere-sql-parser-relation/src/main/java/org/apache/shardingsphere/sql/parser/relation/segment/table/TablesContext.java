@@ -69,19 +69,6 @@ public final class TablesContext {
     }
     
     /**
-     * Judge is single table or not.
-     * 
-     * @return is single table or not
-     */
-    public boolean isSingleTable() {
-        Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (Table each : tables) {
-            tableNames.add(each.getName());
-        }
-        return 1 == tableNames.size();
-    }
-    
-    /**
      * Get single table name.
      *
      * @return single table name
@@ -149,6 +136,14 @@ public final class TablesContext {
             return table.isPresent() ? Optional.of(table.get().getName()) : Optional.<String>absent();
         }
         return findTableNameFromMetaData(columnSegment.getIdentifier().getValue(), relationMetas);
+    }
+    
+    private boolean isSingleTable() {
+        Collection<String> tableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (Table each : tables) {
+            tableNames.add(each.getName());
+        }
+        return 1 == tableNames.size();
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {

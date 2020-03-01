@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -60,10 +61,9 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test(expected = ShardingSphereException.class)
     public void assertRouteByUnsupported() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
         TablesContext tablesContext = mock(TablesContext.class);
-        when(tablesContext.isSingleTable()).thenReturn(false);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null, new ShardingSphereProperties(new Properties()));
         standardRoutingEngine.route(mock(ShardingRule.class));
