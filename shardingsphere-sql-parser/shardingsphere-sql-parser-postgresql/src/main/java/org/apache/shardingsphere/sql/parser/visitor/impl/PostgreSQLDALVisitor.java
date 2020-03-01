@@ -73,8 +73,7 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
 
     @Override
     public ASTNode visitVariableValue(final VariableValueContext ctx) {
-        VariableValueSegment result = new VariableValueSegment(ctx.getText());
-        return result;
+        return new VariableValueSegment(ctx.getText());
     }
 
     @Override

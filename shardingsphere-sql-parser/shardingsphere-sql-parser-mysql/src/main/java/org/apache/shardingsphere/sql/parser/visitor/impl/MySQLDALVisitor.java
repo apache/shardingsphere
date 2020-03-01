@@ -170,8 +170,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     
     @Override
     public ASTNode visitVariableValue(final VariableValueContext ctx) {
-        VariableValueSegment result = new VariableValueSegment(ctx.getText());
-        return result;
+        return new VariableValueSegment(ctx.getText());
     }
     
     @Override
