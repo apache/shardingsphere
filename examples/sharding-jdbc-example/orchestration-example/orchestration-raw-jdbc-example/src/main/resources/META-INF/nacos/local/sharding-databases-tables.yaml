@@ -3,12 +3,12 @@ dataSources:
     driverClassName: com.mysql.jdbc.Driver
     jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
     username: root
-    password: 123456
+    password:
   ds_1: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
     jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
     username: root
-    password: 123456
+    password:
 
 shardingRule:
   tables:
@@ -45,12 +45,20 @@ props:
   sql.show: true
 
 orchestration:
-  name: demo_yaml_ds_sharding
-  overwrite: true
-  registry:
-    type: nacos
+  demo_nacos_yaml_ds_sharding:
+    orchestrationType: config_center
+    instanceType: nacos
     serverLists: localhost:8848
     namespace:
     props:
+      overwrite: true
       group: SHARDING_SPHERE_DEFAULT_GROUP
       timeout: 3000
+
+  demo_zookeeper_yaml_ds_sharding:
+    orchestrationType: registry_center
+    instanceType: zookeeper
+    serverLists: localhost:2181
+    namespace:
+    props:
+      overwrite: true
