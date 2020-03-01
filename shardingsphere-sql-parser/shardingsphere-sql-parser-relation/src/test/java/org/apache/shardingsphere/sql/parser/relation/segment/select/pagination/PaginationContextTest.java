@@ -126,17 +126,17 @@ public final class PaginationContextTest {
     
     @Test
     public void getRevisedRowCount() {
-        SelectStatementContext selectSQLStatementContext = mock(SelectStatementContext.class);
-        when(selectSQLStatementContext.getProjectionsContext()).thenReturn(mock(ProjectionsContext.class));
-        when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.<OrderByItem>emptyList(), 0));
-        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is(50L));
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.getProjectionsContext()).thenReturn(mock(ProjectionsContext.class));
+        when(selectStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.<OrderByItem>emptyList(), 0));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
     }
     
     @Test
     public void getRevisedRowCountWithMax() {
-        SelectStatementContext selectSQLStatementContext = mock(SelectStatementContext.class);
-        when(selectSQLStatementContext.getProjectionsContext()).thenReturn(mock(ProjectionsContext.class));
-        when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.singletonList(mock(OrderByItem.class)), 1));
-        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is((long) Integer.MAX_VALUE));
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.getProjectionsContext()).thenReturn(mock(ProjectionsContext.class));
+        when(selectStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.singletonList(mock(OrderByItem.class)), 1));
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is((long) Integer.MAX_VALUE));
     }
 }

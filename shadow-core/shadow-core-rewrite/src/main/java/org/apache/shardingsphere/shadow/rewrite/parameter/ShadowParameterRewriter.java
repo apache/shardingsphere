@@ -26,10 +26,12 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
 
 /**
  * Parameter rewriter for shadow.
+ * 
+ * @param <T> type of SQL statement context
  */
 @Getter
 @Setter
-public abstract class ShadowParameterRewriter implements ParameterRewriter, ShadowRuleAware {
+public abstract class ShadowParameterRewriter<T extends SQLStatementContext> implements ParameterRewriter<T>, ShadowRuleAware {
     
     private ShadowRule shadowRule;
     

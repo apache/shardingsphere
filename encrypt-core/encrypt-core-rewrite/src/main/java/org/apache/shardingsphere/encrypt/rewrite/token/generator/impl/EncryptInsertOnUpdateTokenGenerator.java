@@ -38,7 +38,7 @@ import java.util.LinkedList;
 /**
  * Insert on update values token generator for encrypt.
  */
-public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
+public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
@@ -46,11 +46,11 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     }
     
     @Override
-    public Collection<EncryptAssignmentToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<EncryptAssignmentToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Collection<EncryptAssignmentToken> result = new LinkedList<>();
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Preconditions.checkState((((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().isPresent());
-        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().get();
+        String tableName = insertStatementContext.getSqlStatement().getTable().getIdentifier().getValue();
+        Preconditions.checkState(insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().isPresent());
+        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().get();
         Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
         if (onDuplicateKeyColumnsSegments.isEmpty()) {
             return result;

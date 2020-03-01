@@ -39,7 +39,7 @@ import java.util.List;
  * Insert on duplicate key update parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter extends EncryptParameterRewriter implements QueryWithCipherColumnAware {
+public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter extends EncryptParameterRewriter<InsertStatementContext> implements QueryWithCipherColumnAware {
     
     private boolean queryWithCipherColumn;
     
@@ -49,10 +49,10 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter exten
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
-        Preconditions.checkState(((InsertStatementContext) sqlStatementContext).getSqlStatement().getOnDuplicateKeyColumns().isPresent());
-        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getOnDuplicateKeyColumns().get();
+    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
+        String tableName = insertStatementContext.getSqlStatement().getTable().getIdentifier().getValue();
+        Preconditions.checkState(insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().isPresent());
+        OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().get();
         Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
         if (onDuplicateKeyColumnsSegments.isEmpty()) {
             return;

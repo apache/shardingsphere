@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.RowCountToken;
 /**
  * Row count token generator.
  */
-public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -39,10 +39,9 @@ public final class RowCountTokenGenerator implements OptionalSQLTokenGenerator, 
     }
     
     @Override
-    public RowCountToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        PaginationContext pagination = ((SelectStatementContext) sqlStatementContext).getPaginationContext();
+    public RowCountToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        PaginationContext pagination = selectStatementContext.getPaginationContext();
         Preconditions.checkState(pagination.getRowCountSegment().isPresent());
-        return new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), 
-                pagination.getRowCountSegment().get().getStopIndex(), pagination.getRevisedRowCount((SelectStatementContext) sqlStatementContext));
+        return new RowCountToken(pagination.getRowCountSegment().get().getStartIndex(), pagination.getRowCountSegment().get().getStopIndex(), pagination.getRevisedRowCount(selectStatementContext));
     }
 }

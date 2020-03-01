@@ -38,7 +38,7 @@ import java.util.List;
  * Use default insert columns token generator for encrypt.
  */
 @Setter
-public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements OptionalSQLTokenGenerator, PreviousSQLTokensAware {
+public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, PreviousSQLTokensAware {
     
     private List<SQLToken> previousSQLTokens;
     
@@ -48,14 +48,14 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     }
     
     @Override
-    public UseDefaultInsertColumnsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+    public UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext) {
+        String tableName = insertStatementContext.getSqlStatement().getTable().getIdentifier().getValue();
         Optional<UseDefaultInsertColumnsToken> previousSQLToken = findInsertColumnsToken();
         if (previousSQLToken.isPresent()) {
-            processPreviousSQLToken(previousSQLToken.get(), (InsertStatementContext) sqlStatementContext, tableName);
+            processPreviousSQLToken(previousSQLToken.get(), insertStatementContext, tableName);
             return previousSQLToken.get();
         }
-        return generateNewSQLToken((InsertStatementContext) sqlStatementContext, tableName);
+        return generateNewSQLToken(insertStatementContext, tableName);
     }
     
     private Optional<UseDefaultInsertColumnsToken> findInsertColumnsToken() {
@@ -67,20 +67,20 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
         return Optional.absent();
     }
     
-    private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext sqlStatementContext, final String tableName) {
+    private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext insertStatementContext, final String tableName) {
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
-        List<String> columnNames = getColumnNames(sqlStatementContext, encryptTable.get(), previousSQLToken.getColumns());
+        List<String> columnNames = getColumnNames(insertStatementContext, encryptTable.get(), previousSQLToken.getColumns());
         previousSQLToken.getColumns().clear();
         previousSQLToken.getColumns().addAll(columnNames);
     }
     
-    private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertStatementContext sqlStatementContext, final String tableName) {
-        Optional<InsertColumnsSegment> insertColumnsSegment = sqlStatementContext.getSqlStatement().getInsertColumns();
+    private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertStatementContext insertStatementContext, final String tableName) {
+        Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
-        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(sqlStatementContext, encryptTable.get(), sqlStatementContext.getColumnNames()));
+        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, encryptTable.get(), insertStatementContext.getColumnNames()));
     }
     
     private List<String> getColumnNames(final InsertStatementContext sqlStatementContext, final EncryptTable encryptTable, final List<String> currentColumnNames) {

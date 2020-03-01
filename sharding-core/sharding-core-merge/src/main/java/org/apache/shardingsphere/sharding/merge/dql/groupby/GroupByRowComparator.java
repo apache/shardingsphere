@@ -34,16 +34,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class GroupByRowComparator implements Comparator<MemoryQueryResultRow> {
     
-    private final SelectStatementContext selectSQLStatementContext;
+    private final SelectStatementContext selectStatementContext;
     
     private final List<Boolean> valueCaseSensitive;
     
     @Override
     public int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2) {
-        if (!selectSQLStatementContext.getOrderByContext().getItems().isEmpty()) {
-            return compare(o1, o2, selectSQLStatementContext.getOrderByContext().getItems());
+        if (!selectStatementContext.getOrderByContext().getItems().isEmpty()) {
+            return compare(o1, o2, selectStatementContext.getOrderByContext().getItems());
         }
-        return compare(o1, o2, selectSQLStatementContext.getGroupByContext().getItems());
+        return compare(o1, o2, selectStatementContext.getGroupByContext().getItems());
     }
     
     private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final Collection<OrderByItem> orderByItems) {

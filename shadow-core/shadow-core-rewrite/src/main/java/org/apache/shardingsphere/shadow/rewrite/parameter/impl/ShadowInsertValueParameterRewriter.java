@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Insert value parameter rewriter for shadow.
  */
-public final class ShadowInsertValueParameterRewriter extends ShadowParameterRewriter {
+public final class ShadowInsertValueParameterRewriter extends ShadowParameterRewriter<InsertStatementContext> {
     
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
@@ -38,11 +38,11 @@ public final class ShadowInsertValueParameterRewriter extends ShadowParameterRew
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String columnName = getShadowRule().getColumn();
-        int columnIndex = getColumnIndex((GroupedParameterBuilder) parameterBuilder, (InsertStatementContext) sqlStatementContext, columnName);
+        int columnIndex = getColumnIndex((GroupedParameterBuilder) parameterBuilder, insertStatementContext, columnName);
         int count = 0;
-        for (List<Object> each : ((InsertStatementContext) sqlStatementContext).getGroupedParameters()) {
+        for (List<Object> each : insertStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count);
                 standardParameterBuilder.addRemovedParameters(columnIndex);
@@ -51,13 +51,13 @@ public final class ShadowInsertValueParameterRewriter extends ShadowParameterRew
         }
     }
     
-    private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext sqlStatementContext, final String shadowColumnName) {
+    private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final String shadowColumnName) {
         List<String> columnNames;
         if (parameterBuilder.getDerivedColumnName().isPresent()) {
-            columnNames = new ArrayList<>(sqlStatementContext.getColumnNames());
+            columnNames = new ArrayList<>(insertStatementContext.getColumnNames());
             columnNames.remove(parameterBuilder.getDerivedColumnName().get());
         } else {
-            columnNames = sqlStatementContext.getColumnNames();
+            columnNames = insertStatementContext.getColumnNames();
         }
         return columnNames.indexOf(shadowColumnName);
     }

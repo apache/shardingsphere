@@ -34,7 +34,7 @@ import java.util.List;
  * Sharding pagination parameter rewriter.
  */
 @Setter
-public final class ShardingPaginationParameterRewriter implements ParameterRewriter, ShardingRouteContextAware {
+public final class ShardingPaginationParameterRewriter implements ParameterRewriter<SelectStatementContext>, ShardingRouteContextAware {
     
     private ShardingRouteContext shardingRouteContext;
     
@@ -45,15 +45,15 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        PaginationContext pagination = ((SelectStatementContext) sqlStatementContext).getPaginationContext();
+    public void rewrite(final ParameterBuilder parameterBuilder, final SelectStatementContext selectStatementContext, final List<Object> parameters) {
+        PaginationContext pagination = selectStatementContext.getPaginationContext();
         Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
         if (offsetParameterIndex.isPresent()) {
             rewriteOffset(pagination, offsetParameterIndex.get(), (StandardParameterBuilder) parameterBuilder);
         }
         Optional<Integer> rowCountParameterIndex = pagination.getRowCountParameterIndex();
         if (rowCountParameterIndex.isPresent()) {
-            rewriteRowCount(pagination, rowCountParameterIndex.get(), (StandardParameterBuilder) parameterBuilder, sqlStatementContext);
+            rewriteRowCount(pagination, rowCountParameterIndex.get(), (StandardParameterBuilder) parameterBuilder, selectStatementContext);
         }
     }
     

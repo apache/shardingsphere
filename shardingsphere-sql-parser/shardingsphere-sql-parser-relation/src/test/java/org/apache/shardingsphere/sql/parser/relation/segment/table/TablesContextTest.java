@@ -43,14 +43,6 @@ import static org.mockito.Mockito.when;
 public final class TablesContextTest {
     
     @Test
-    public void assertGetSingleTableName() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertThat(tablesContext.getSingleTableName(), is("table"));
-    }
-    
-    @Test
     public void assertGetTableNames() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));

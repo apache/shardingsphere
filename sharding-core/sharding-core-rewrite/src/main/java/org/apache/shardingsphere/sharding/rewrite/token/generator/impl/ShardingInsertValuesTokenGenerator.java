@@ -41,7 +41,7 @@ import java.util.List;
  * Insert values token generator for sharding.
  */
 @Setter
-public final class ShardingInsertValuesTokenGenerator implements OptionalSQLTokenGenerator, ShardingRouteContextAware {
+public final class ShardingInsertValuesTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, ShardingRouteContextAware {
     
     private ShardingRouteContext shardingRouteContext;
     
@@ -51,12 +51,12 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
     }
     
     @Override
-    public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Collection<InsertValuesSegment> insertValuesSegments = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getValues();
+    public InsertValuesToken generateSQLToken(final InsertStatementContext insertStatementContext) {
+        Collection<InsertValuesSegment> insertValuesSegments = (insertStatementContext.getSqlStatement()).getValues();
         InsertValuesToken result = new ShardingInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         Iterator<ShardingCondition> shardingConditionIterator = null == shardingRouteContext || shardingRouteContext.getShardingConditions().getConditions().isEmpty()
                 ? null : shardingRouteContext.getShardingConditions().getConditions().iterator();
-        for (InsertValueContext each : ((InsertStatementContext) sqlStatementContext).getInsertValueContexts()) {
+        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
             Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
             result.getInsertValues().add(new ShardingInsertValue(expressionSegments, dataNodes));

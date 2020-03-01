@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -66,16 +65,6 @@ public final class TablesContext {
             return ((DeleteStatement) sqlStatement).getTables();
         }
         return sqlStatement.getAllTables();
-    }
-    
-    /**
-     * Get single table name.
-     *
-     * @return single table name
-     */
-    public String getSingleTableName() {
-        Preconditions.checkArgument(!tables.isEmpty());
-        return tables.iterator().next().getName();
     }
     
     /**
@@ -129,7 +118,7 @@ public final class TablesContext {
      */
     public Optional<String> findTableName(final ColumnSegment columnSegment, final RelationMetas relationMetas) {
         if (isSingleTable()) {
-            return Optional.of(getSingleTableName());
+            return Optional.of(tables.iterator().next().getName());
         }
         if (columnSegment.getOwner().isPresent()) {
             Optional<Table> table = find(columnSegment.getOwner().get().getIdentifier().getValue());

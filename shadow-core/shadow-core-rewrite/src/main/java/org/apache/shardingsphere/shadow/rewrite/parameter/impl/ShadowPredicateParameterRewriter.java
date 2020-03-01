@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * Predicate parameter rewriter for shadow.
  */
-public final class ShadowPredicateParameterRewriter extends ShadowParameterRewriter {
+public final class ShadowPredicateParameterRewriter extends ShadowParameterRewriter<SQLStatementContext> {
     
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
