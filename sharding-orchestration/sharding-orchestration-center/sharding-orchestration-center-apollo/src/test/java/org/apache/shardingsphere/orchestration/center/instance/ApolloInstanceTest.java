@@ -46,7 +46,7 @@ public final class ApolloInstanceTest {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
     }
-    
+
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
 
