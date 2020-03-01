@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 
 /**
  * Shorthand projection segment.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegmentAvai
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class ShorthandProjectionSegment implements ProjectionSegment, OwnerSegmentAvailable {
+public final class ShorthandProjectionSegment implements ProjectionSegment, OwnerAvailable {
     
     private final int startIndex;
     

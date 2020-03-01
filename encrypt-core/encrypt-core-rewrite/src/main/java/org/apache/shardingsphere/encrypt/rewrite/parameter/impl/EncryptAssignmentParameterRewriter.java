@@ -21,6 +21,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -43,11 +45,11 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
     
     @Override
     protected boolean isNeedRewriteForEncrypt(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getSqlStatement() instanceof UpdateStatement) {
+        if (sqlStatementContext instanceof UpdateStatementContext) {
             return true;
         }
-        if (sqlStatementContext.getSqlStatement() instanceof InsertStatement) {
-            return ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent();
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            return (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getSetAssignment().isPresent();
         }
         return false;
     }

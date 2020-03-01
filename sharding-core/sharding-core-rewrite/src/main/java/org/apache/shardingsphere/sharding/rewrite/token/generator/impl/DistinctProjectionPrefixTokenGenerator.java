@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.DistinctProjectionPrefixToken;
@@ -30,11 +30,11 @@ public final class DistinctProjectionPrefixTokenGenerator implements OptionalSQL
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectSQLStatementContext && !((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
     }
     
     @Override
     public DistinctProjectionPrefixToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return new DistinctProjectionPrefixToken(((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStartIndex());
+        return new DistinctProjectionPrefixToken(((SelectStatementContext) sqlStatementContext).getProjectionsContext().getStartIndex());
     }
 }

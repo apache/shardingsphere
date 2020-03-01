@@ -460,6 +460,10 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
+        IdentifierContext identifierContext = ctx.identifier();
+        if (null != identifierContext) {
+            return new KeywordValue(identifierContext.getText());
+        }
         return new KeywordValue(ctx.getText());
     }
     

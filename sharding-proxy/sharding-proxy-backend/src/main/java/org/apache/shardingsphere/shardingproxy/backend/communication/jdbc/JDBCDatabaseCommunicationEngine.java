@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
 import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
@@ -92,8 +93,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
         if (isExecuteDDLInXATransaction(sqlStatementContext.getSqlStatement())) {
-            return new ErrorResponse(new TableModifyInTransactionException(
-                    sqlStatementContext.getTablesContext().isSingleTable() ? sqlStatementContext.getTablesContext().getSingleTableName() : "unknown_table"));
+            return new ErrorResponse(new TableModifyInTransactionException(getTableName(sqlStatementContext)));
         }
         response = executeEngine.execute(executionContext);
         if (logicSchema instanceof ShardingSchema) {
@@ -105,6 +105,16 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
         BackendConnection connection = executeEngine.getBackendConnection();
         return TransactionType.XA == connection.getTransactionType() && sqlStatement instanceof DDLStatement && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
+    }
+    
+    private String getTableName(final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext instanceof TableSegmentsAvailable) {
+            if (((TableSegmentsAvailable) sqlStatementContext).getAllTables().isEmpty()) {
+                return "unknown_table";
+            }
+            return ((TableSegmentsAvailable) sqlStatementContext).getAllTables().iterator().next().getIdentifier().getValue();
+        }
+        return "unknown_table";
     }
     
     private BackendResponse merge(final SQLStatementContext sqlStatementContext) throws SQLException {

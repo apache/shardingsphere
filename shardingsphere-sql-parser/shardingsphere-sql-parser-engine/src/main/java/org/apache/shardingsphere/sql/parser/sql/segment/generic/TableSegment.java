@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class TableSegment implements OwnerSegmentAvailable, AliasAvailable {
+public final class TableSegment implements OwnerAvailable, AliasAvailable {
     
     private final int startIndex;
     

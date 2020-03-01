@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.generic;
+package org.apache.shardingsphere.sql.parser.relation.statement;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
- * Owner available.
- *
+ * Common SQL statement context.
+ * 
+ * @param <T> type of SQL statement
  */
-public interface OwnerSegmentAvailable extends SQLSegment {
+@Getter
+@ToString
+public class CommonSQLStatementContext<T extends SQLStatement> implements SQLStatementContext<T> {
     
-    /**
-     * Get owner.
-     *
-     * @return owner
-     */
-    Optional<OwnerSegment> getOwner();
+    private final T sqlStatement;
     
-    /**
-     * Set owner.
-     *
-     * @param owner owner
-     */
-    void setOwner(OwnerSegment owner);
+    private final TablesContext tablesContext;
+    
+    public CommonSQLStatementContext(final T sqlStatement) {
+        this.sqlStatement = sqlStatement;
+        tablesContext = new TablesContext(sqlStatement);
+    }
 }

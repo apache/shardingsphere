@@ -30,7 +30,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
@@ -60,10 +61,9 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test(expected = ShardingSphereException.class)
     public void assertRouteByUnsupported() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
         TablesContext tablesContext = mock(TablesContext.class);
-        when(tablesContext.isSingleTable()).thenReturn(false);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null, new ShardingSphereProperties(new Properties()));
         standardRoutingEngine.route(mock(ShardingRule.class));
@@ -192,7 +192,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     private ShardingStandardRoutingEngine createShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions) {
-        return new ShardingStandardRoutingEngine(logicTableName, new SelectSQLStatementContext(new SelectStatement(),
+        return new ShardingStandardRoutingEngine(logicTableName, new SelectStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
                 new PaginationContext(null, null, Collections.emptyList())), shardingConditions, new ShardingSphereProperties(new Properties()));

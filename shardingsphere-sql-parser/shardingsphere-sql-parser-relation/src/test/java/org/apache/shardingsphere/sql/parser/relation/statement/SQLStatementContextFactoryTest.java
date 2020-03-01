@@ -19,9 +19,8 @@ package org.apache.shardingsphere.sql.parser.relation.statement;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -57,7 +56,7 @@ public final class SQLStatementContextFactoryTest {
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, selectStatement);
         assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof SelectSQLStatementContext);
+        assertTrue(sqlStatementContext instanceof SelectStatementContext);
     }
     
     @Test
@@ -68,7 +67,7 @@ public final class SQLStatementContextFactoryTest {
         insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, insertStatement);
         assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof InsertSQLStatementContext);
+        assertTrue(sqlStatementContext instanceof InsertStatementContext);
     }
     
     @Test

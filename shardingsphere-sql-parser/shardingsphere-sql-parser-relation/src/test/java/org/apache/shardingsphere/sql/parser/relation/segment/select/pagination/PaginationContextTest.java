@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
@@ -126,7 +126,7 @@ public final class PaginationContextTest {
     
     @Test
     public void getRevisedRowCount() {
-        SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
+        SelectStatementContext selectSQLStatementContext = mock(SelectStatementContext.class);
         when(selectSQLStatementContext.getProjectionsContext()).thenReturn(mock(ProjectionsContext.class));
         when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.<OrderByItem>emptyList(), 0));
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is(50L));
@@ -134,7 +134,7 @@ public final class PaginationContextTest {
     
     @Test
     public void getRevisedRowCountWithMax() {
-        SelectSQLStatementContext selectSQLStatementContext = mock(SelectSQLStatementContext.class);
+        SelectStatementContext selectSQLStatementContext = mock(SelectStatementContext.class);
         when(selectSQLStatementContext.getProjectionsContext()).thenReturn(mock(ProjectionsContext.class));
         when(selectSQLStatementContext.getGroupByContext()).thenReturn(new GroupByContext(Collections.singletonList(mock(OrderByItem.class)), 1));
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectSQLStatementContext), is((long) Integer.MAX_VALUE));
