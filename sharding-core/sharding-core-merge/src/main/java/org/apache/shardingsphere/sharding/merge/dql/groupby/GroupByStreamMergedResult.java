@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.Aggregat
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
@@ -41,14 +41,14 @@ import java.util.Map.Entry;
  */
 public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
-    private final SelectSQLStatementContext selectSQLStatementContext;
+    private final SelectStatementContext selectSQLStatementContext;
     
     private final List<Object> currentRow;
     
     private List<?> currentGroupByValues;
     
     public GroupByStreamMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectStatementContext selectSQLStatementContext) throws SQLException {
         super(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
         this.selectSQLStatementContext = selectSQLStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());

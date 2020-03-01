@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.D
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
@@ -56,9 +56,9 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         Preconditions.checkState(result.isPresent());
         Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
         int count = 0;
-        for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
+        for (InsertValueContext each : ((InsertStatementContext) sqlStatementContext).getInsertValueContexts()) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);
-            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression((InsertSQLStatementContext) sqlStatementContext, count)
+            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression((InsertStatementContext) sqlStatementContext, count)
                     ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParametersCount());
             insertValueToken.getValues().add(expressionSegment);
             count++;
@@ -75,7 +75,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         return Optional.absent();
     }
     
-    private boolean isToAddDerivedLiteralExpression(final InsertSQLStatementContext insertSQLStatementContext, final int insertValueCount) {
+    private boolean isToAddDerivedLiteralExpression(final InsertStatementContext insertSQLStatementContext, final int insertValueCount) {
         return insertSQLStatementContext.getGroupedParameters().get(insertValueCount).isEmpty();
     }
 }

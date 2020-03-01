@@ -43,55 +43,6 @@ import static org.mockito.Mockito.when;
 public final class TablesContextTest {
     
     @Test
-    public void assertIsEmpty() {
-        TablesContext tablesContext = new TablesContext(new SelectStatement());
-        assertTrue(tablesContext.isEmpty());
-    }
-    
-    @Test
-    public void assertIsNotEmpty() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertFalse(tablesContext.isEmpty());
-    }
-    
-    @Test
-    public void assertIsSingleTable() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertTrue(tablesContext.isSingleTable());
-    }
-    
-    @Test
-    public void assertIsSingleTableWithCaseSensitiveNames() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        selectStatement.getTables().add(createTableSegment("Table", null));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertTrue(tablesContext.isSingleTable());
-    }
-    
-    @Test
-    public void assertIsSingleTableWithNameConflictAlias() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table", "tbl"));
-        selectStatement.getTables().add(createTableSegment("tbl", null));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertTrue(tablesContext.isSingleTable());
-    }
-    
-    @Test
-    public void assertIsNotSingleTable() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertFalse(tablesContext.isSingleTable());
-    }
-    
-    @Test
     public void assertGetSingleTableName() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getTables().add(createTableSegment("table", "tbl"));
@@ -180,13 +131,6 @@ public final class TablesContextTest {
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
         assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, relationMetas).isPresent());
-    }
-    
-    @Test
-    public void assertGetSchema() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        assertFalse(new TablesContext(selectStatement).getSchema().isPresent());
     }
     
     @Test
