@@ -18,11 +18,6 @@
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,31 +40,6 @@ public final class TablesContext {
         for (TableSegment each : tableSegments) {
             tables.add(new Table(each.getTableName().getIdentifier().getValue(), each.getAlias().orNull()));
         }
-    }
-    
-    public TablesContext(final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof TableSegmentsAvailable)) {
-            tables = Collections.emptyList();
-            return;
-        }
-        Collection<TableSegment> tableSegments = getAllTables((TableSegmentsAvailable) sqlStatement);
-        tables = new ArrayList<>(tableSegments.size());
-        for (TableSegment each : tableSegments) {
-            tables.add(new Table(each.getTableName().getIdentifier().getValue(), each.getAlias().orNull()));
-        }
-    }
-    
-    private Collection<TableSegment> getAllTables(final TableSegmentsAvailable sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return ((SelectStatement) sqlStatement).getTables();
-        }
-        if (sqlStatement instanceof UpdateStatement) {
-            return ((UpdateStatement) sqlStatement).getTables();
-        }
-        if (sqlStatement instanceof DeleteStatement) {
-            return ((DeleteStatement) sqlStatement).getTables();
-        }
-        return sqlStatement.getAllTables();
     }
     
     /**
