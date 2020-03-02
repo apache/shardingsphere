@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
- * Variable segment.
+ * Time zone segment.
  */
 @RequiredArgsConstructor
 @Getter
