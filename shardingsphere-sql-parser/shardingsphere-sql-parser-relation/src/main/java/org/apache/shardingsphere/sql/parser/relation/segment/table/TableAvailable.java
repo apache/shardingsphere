@@ -22,9 +22,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import java.util.Collection;
 
 /**
- * Table segments available.
+ * Table available.
  */
-public interface TableSegmentsAvailable {
+public interface TableAvailable {
     
     /**
      * Get all table segments.

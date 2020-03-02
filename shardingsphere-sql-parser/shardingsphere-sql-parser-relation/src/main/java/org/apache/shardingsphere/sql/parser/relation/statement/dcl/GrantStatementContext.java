@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 
@@ -30,7 +30,7 @@ import java.util.Collection;
  * Grant statement context.
  */
 @Getter
-public final class GrantStatementContext extends CommonSQLStatementContext<GrantStatement> implements TableSegmentsAvailable {
+public final class GrantStatementContext extends CommonSQLStatementContext<GrantStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     

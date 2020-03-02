@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -57,7 +57,7 @@ public final class EncryptAssignmentParameterRewriter extends EncryptParameterRe
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
-        String tableName = ((TableSegmentsAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+        String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             if (each.getValue() instanceof ParameterMarkerExpressionSegment && getEncryptRule().findEncryptor(tableName, each.getColumn().getIdentifier().getValue()).isPresent()) {
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
