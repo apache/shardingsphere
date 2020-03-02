@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * MySQL server info.
  */
-@Data
+@Setter
+@Getter
 public class ServerInfo {
 
     private ServerVersion serverVersion;

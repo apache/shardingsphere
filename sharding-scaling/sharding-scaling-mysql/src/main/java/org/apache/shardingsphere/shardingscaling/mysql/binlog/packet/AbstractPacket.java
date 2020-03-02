@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet;
 
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract packet.
@@ -28,13 +29,15 @@ import lombok.Data;
  *     But we no need to implement both of method in this project.
  * </p>
  */
-@Data
+@Setter
+@Getter
 public abstract class AbstractPacket implements Packet {
     
     private byte sequenceNumber;
 
     /**
      * empty implement method,throw {@code UnsupportedOperationException}.
+     *
      * @param data buffer
      */
     @Override
@@ -44,6 +47,7 @@ public abstract class AbstractPacket implements Packet {
 
     /**
      * empty implement method,throw {@code UnsupportedOperationException}.
+     *
      * @return data buffer
      */
     @Override

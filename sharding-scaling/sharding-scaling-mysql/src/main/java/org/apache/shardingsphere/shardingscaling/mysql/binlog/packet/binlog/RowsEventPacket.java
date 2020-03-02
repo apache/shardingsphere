@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCod
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DecimalValueDecoder;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.JsonValueDecoder;
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,10 +33,13 @@ import java.util.List;
 
 /**
  * Rows event.
- * https://dev.mysql.com/doc/internals/en/rows-event.html
+ *
+ * <p>
+ *     https://dev.mysql.com/doc/internals/en/rows-event.html
+ * </p>
  */
-@Data
-public class RowsEvent {
+@Getter
+public class RowsEventPacket {
 
     private final BinlogEventHeader binlogEventHeader;
 
@@ -52,7 +55,7 @@ public class RowsEvent {
 
     private List<Serializable[]> rows2 = new ArrayList<>();
 
-    public RowsEvent(final BinlogEventHeader binlogEventHeader) {
+    public RowsEventPacket(final BinlogEventHeader binlogEventHeader) {
         this.binlogEventHeader = binlogEventHeader;
     }
 

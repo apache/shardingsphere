@@ -22,7 +22,8 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCod
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.AbstractPacket;
 
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * MySQL handshake initialization packet.
@@ -46,7 +47,8 @@ import lombok.Data;
  *     1           \0 byte, terminating the second part of a scramble
  * </p>
  */
-@Data
+@Setter
+@Getter
 public final class HandshakeInitializationPacket extends AbstractPacket {
     
     private short protocolVersion = 0x0a;

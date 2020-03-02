@@ -26,7 +26,7 @@ import lombok.Getter;
  * Rotate event.
  */
 @Getter
-public class RotateEvent {
+public class RotateEventPacket {
 
     private long position;
 
