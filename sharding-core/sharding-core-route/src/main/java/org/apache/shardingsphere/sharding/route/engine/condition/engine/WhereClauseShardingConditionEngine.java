@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.predicate.PredicateFinder;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
@@ -84,10 +84,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final WhereSegmentAvailable sqlStatementContext, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
+    private Collection<ShardingCondition> createShardingConditions(final WhereSegmentAvailable sqlStatement, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
-            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
+            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatement, each, parameters);
             if (routeValueMap.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -96,10 +96,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Map<Column, Collection<RouteValue>> createRouteValueMap(final WhereSegmentAvailable sqlStatementContext, final AndPredicate andPredicate, final List<Object> parameters) {
+    private Map<Column, Collection<RouteValue>> createRouteValueMap(final WhereSegmentAvailable sqlStatement, final AndPredicate andPredicate, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = new PredicateFinder(relationMetas, sqlStatementContext.getTables()).findTableName(each);
+            Optional<String> tableName = new TablesContext(sqlStatement.getTables()).findTableName(each, relationMetas);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName.get())) {
                 continue;
             }

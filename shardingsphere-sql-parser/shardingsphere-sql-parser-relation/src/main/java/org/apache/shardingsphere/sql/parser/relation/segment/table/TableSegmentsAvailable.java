@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
@@ -38,5 +38,5 @@ public interface TableSegmentsAvailable {
      * 
      * @return tables context
      */
-    Object getTablesContext();
+    TablesContext getTablesContext();
 }

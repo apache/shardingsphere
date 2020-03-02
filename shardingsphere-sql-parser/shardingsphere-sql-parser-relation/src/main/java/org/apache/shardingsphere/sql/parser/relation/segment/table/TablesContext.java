@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
@@ -47,5 +50,40 @@ public final class TablesContext {
             result.add(each.getTableName().getIdentifier().getValue());
         }
         return result;
+    }
+    
+    /**
+     * Find table name.
+     *
+     * @param predicate predicate
+     * @param relationMetas relation metas
+     * @return table name
+     */
+    public Optional<String> findTableName(final PredicateSegment predicate, final RelationMetas relationMetas) {
+        if (1 == tables.size()) {
+            return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
+        }
+        if (predicate.getColumn().getOwner().isPresent()) {
+            return Optional.of(findTableNameFromSQL(predicate.getColumn().getOwner().get().getIdentifier().getValue()));
+        }
+        return findTableNameFromMetaData(predicate.getColumn().getIdentifier().getValue(), relationMetas);
+    }
+    
+    private String findTableNameFromSQL(final String tableNameOrAlias) {
+        for (TableSegment each : tables) {
+            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orNull())) {
+                return each.getTableName().getIdentifier().getValue();
+            }
+        }
+        throw new IllegalStateException("Can not find owner from table.");
+    }
+    
+    private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {
+        for (TableSegment each : tables) {
+            if (relationMetas.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
+                return Optional.of(each.getTableName().getIdentifier().getValue());
+            }
+        }
+        return Optional.absent();
     }
 }

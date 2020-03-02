@@ -17,7 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -29,7 +34,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class TablesContextTest {
     
@@ -46,10 +57,60 @@ public final class TablesContextTest {
         new TablesContext(Collections.singletonList(tableSegment));
     }
     
+    @Test
+    public void assertFindTableNameWhenSingleTable() {
+        TableSegment tableSegment = createTableSegment("table_1", "tbl_1");
+        PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
+        Optional<String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableName(predicateSegment, mock(RelationMetas.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("table_1"));
+    }
+    
+    @Test
+    public void assertFindTableNameWhenColumnSegmentOwnerPresent() {
+        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        ColumnSegment columnSegment = createColumnSegment();
+        columnSegment.setOwner(new OwnerSegment(0, 10, new IdentifierValue("table_1")));
+        PredicateSegment predicateSegment = createPredicateSegment(columnSegment);
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(RelationMetas.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("table_1"));
+    }
+    
+    @Test
+    public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
+        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(RelationMetas.class));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndRelationMetasContainsColumn() {
+        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
+        RelationMetas relationMetas = mock(RelationMetas.class);
+        when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, relationMetas);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("table_1"));
+    }
+    
     private TableSegment createTableSegment(final String tableName, final String alias) {
         TableSegment result = new TableSegment(0, 0, new IdentifierValue(tableName));
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
         result.setAlias(aliasSegment);
         return result;
+    }
+    
+    private PredicateSegment createPredicateSegment(final ColumnSegment columnSegment) {
+        return new PredicateSegment(0, 0, columnSegment, mock(PredicateRightValue.class));
+    }
+    
+    private ColumnSegment createColumnSegment() {
+        return new ColumnSegment(0, 0, new IdentifierValue("col"));
     }
 }
