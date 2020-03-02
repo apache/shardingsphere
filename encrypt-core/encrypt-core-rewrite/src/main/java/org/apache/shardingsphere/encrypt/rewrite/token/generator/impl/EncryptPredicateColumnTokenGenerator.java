@@ -24,7 +24,6 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAwar
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.predicate.PredicateFinder;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
@@ -65,7 +64,7 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<EncryptTable> encryptTable = findEncryptTable((WhereSegmentAvailable) sqlStatementContext.getSqlStatement(), each);
+            Optional<EncryptTable> encryptTable = findEncryptTable(sqlStatementContext, each);
             if (!encryptTable.isPresent() || !encryptTable.get().findEncryptor(each.getColumn().getIdentifier().getValue()).isPresent()) {
                 continue;
             }
@@ -86,8 +85,8 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return result;
     }
     
-    private Optional<EncryptTable> findEncryptTable(final WhereSegmentAvailable sqlStatementContext, final PredicateSegment segment) {
-        Optional<String> tableName = new PredicateFinder(relationMetas, sqlStatementContext.getTables()).findTableName(segment);
+    private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final PredicateSegment segment) {
+        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(segment, relationMetas);
         return tableName.isPresent() ? getEncryptRule().findEncryptTable(tableName.get()) : Optional.<EncryptTable>absent();
     }
 }

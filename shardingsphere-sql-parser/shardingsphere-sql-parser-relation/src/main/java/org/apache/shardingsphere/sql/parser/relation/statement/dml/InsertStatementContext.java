@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatemen
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 @Getter
 @ToString(callSuper = true)
-public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableSegmentsAvailable {
+public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     

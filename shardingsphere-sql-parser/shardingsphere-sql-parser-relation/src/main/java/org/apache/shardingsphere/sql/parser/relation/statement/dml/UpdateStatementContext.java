@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
  */
 @Getter
 @ToString(callSuper = true)
-public final class UpdateStatementContext extends CommonSQLStatementContext<UpdateStatement> implements TableSegmentsAvailable {
+public final class UpdateStatementContext extends CommonSQLStatementContext<UpdateStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     

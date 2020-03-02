@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCond
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.predicate.PredicateFinder;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -68,7 +67,7 @@ public final class EncryptConditionEngine {
         }
         List<EncryptCondition> result = new LinkedList<>();
         for (AndPredicate each : whereSegment.get().getAndPredicates()) {
-            result.addAll(createEncryptConditions((WhereSegmentAvailable) sqlStatementContext.getSqlStatement(), each));
+            result.addAll(createEncryptConditions(sqlStatementContext, each));
         }
         // FIXME process subquery
 //        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
@@ -79,7 +78,7 @@ public final class EncryptConditionEngine {
         return result;
     }
     
-    private Collection<EncryptCondition> createEncryptConditions(final WhereSegmentAvailable sqlStatementContext, final AndPredicate andPredicate) {
+    private Collection<EncryptCondition> createEncryptConditions(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
         Collection<EncryptCondition> result = new LinkedList<>();
         Collection<Integer> stopIndexes = new HashSet<>();
         for (PredicateSegment predicate : andPredicate.getPredicates()) {
@@ -93,8 +92,8 @@ public final class EncryptConditionEngine {
         return result;
     }
     
-    private Optional<EncryptCondition> createEncryptCondition(final WhereSegmentAvailable sqlStatementContext, final PredicateSegment predicateSegment) {
-        Optional<String> tableName = new PredicateFinder(relationMetas, sqlStatementContext.getTables()).findTableName(predicateSegment);
+    private Optional<EncryptCondition> createEncryptCondition(final SQLStatementContext sqlStatementContext, final PredicateSegment predicateSegment) {
+        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(predicateSegment, relationMetas);
         return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), predicateSegment.getColumn().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(predicateSegment, tableName.get()) : Optional.<EncryptCondition>absent();
     }

@@ -17,31 +17,26 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
-import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+
+import java.util.Collection;
 
 /**
- * Table.
+ * Table available.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class Table {
-    
-    private final String name;
-    
-    private final String alias;
+public interface TableAvailable {
     
     /**
-     * Get alias.
+     * Get all table segments.
      * 
-     * @return alias
+     * @return all table segments
      */
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
+    Collection<TableSegment> getAllTables();
+    
+    /**
+     * Get tables context.
+     * 
+     * @return tables context
+     */
+    TablesContext getTablesContext();
 }

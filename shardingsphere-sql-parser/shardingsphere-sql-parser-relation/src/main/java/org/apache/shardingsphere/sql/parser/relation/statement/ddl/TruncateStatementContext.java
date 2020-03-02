@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 
@@ -30,7 +30,7 @@ import java.util.Collection;
  * Truncate statement context.
  */
 @Getter
-public final class TruncateStatementContext extends CommonSQLStatementContext<TruncateStatement> implements TableSegmentsAvailable {
+public final class TruncateStatementContext extends CommonSQLStatementContext<TruncateStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     

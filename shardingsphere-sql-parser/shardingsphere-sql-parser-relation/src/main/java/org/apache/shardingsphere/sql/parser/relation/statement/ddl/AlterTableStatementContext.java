@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyC
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +35,7 @@ import java.util.LinkedList;
  * Alter table statement context.
  */
 @Getter
-public final class AlterTableStatementContext extends CommonSQLStatementContext<AlterTableStatement> implements TableSegmentsAvailable {
+public final class AlterTableStatementContext extends CommonSQLStatementContext<AlterTableStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
