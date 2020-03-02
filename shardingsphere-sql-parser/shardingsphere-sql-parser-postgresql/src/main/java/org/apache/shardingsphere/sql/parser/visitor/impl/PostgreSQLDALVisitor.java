@@ -56,7 +56,7 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
             VariableExprContext variableExprContext = ctx.variableExpr();
             VariableSegment variableSegment = null;
             VariableValueSegment variableValueSegment = null;
-            String scopeType = variableExprContext.scopeKeyword() == null ? null : variableExprContext.scopeKeyword().getText();
+            String scopeType = variableExprContext.scope() == null ? null : variableExprContext.scope().getText();
             if (null != variableExprContext.timeZone()) {
                 TimeZoneSegment timeZoneSegment = (TimeZoneSegment) visitTimeZone(variableExprContext.timeZone());
                 variableSegment = new VariableSegment(timeZoneSegment.getStartIndex(), timeZoneSegment.getStopIndex(), timeZoneSegment.getVariable());

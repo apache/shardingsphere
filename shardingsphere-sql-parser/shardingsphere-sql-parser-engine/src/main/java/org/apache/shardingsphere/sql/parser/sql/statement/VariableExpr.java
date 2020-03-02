@@ -21,9 +21,14 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+/**
+ * Variable expr.
+ */
+@Setter
+@Getter
 @AllArgsConstructor
 public class VariableExpr {
     

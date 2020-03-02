@@ -110,10 +110,10 @@ unreservedWord
     ;
 
 variable
-    : (AT_? AT_)? scopeKeyword? DOT_? identifier
+    : (AT_? AT_)? scope? DOT_? identifier
     ;
 	
-scopeKeyword
+scope
     : (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)
 	;
 	

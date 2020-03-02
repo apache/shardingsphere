@@ -159,7 +159,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
                 VariableExprContext variableExprContext = variableExprContextList.get(i);
                 VariableSegment variableSegment = (VariableSegment) visitVariable(variableExprContext.variable());
                 VariableValueSegment variableValueSegment = (VariableValueSegment) visitVariableValue(variableExprContext.variableValue());
-                String scopeType = variableExprContext.variable().scopeKeyword() == null ? null : variableExprContext.variable().scopeKeyword().getText();
+                String scopeType = variableExprContext.variable().scope() == null ? null : variableExprContext.variable().scope().getText();
                 VariableExpr variableExpr = new VariableExpr(variableSegment, variableValueSegment, scopeType);
                 variableExprList.add(variableExpr);
             }

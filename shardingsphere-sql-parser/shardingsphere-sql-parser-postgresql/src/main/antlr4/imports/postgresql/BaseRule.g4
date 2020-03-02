@@ -327,7 +327,7 @@ ignoredIdentifiers_
     ;
 
 variableExpr
-    : ((scopeKeyword? variable (TO | EQ_) variableValue) | (scopeKeyword? timeZone variableValue))
+    : ((scope? variable (TO | EQ_) variableValue) | (scope? timeZone variableValue))
     ;
 
 variableValue
@@ -342,6 +342,6 @@ variable
     : identifier
     ;
 	
-scopeKeyword
+scope
     : (SESSION | LOCAL)
     ;
