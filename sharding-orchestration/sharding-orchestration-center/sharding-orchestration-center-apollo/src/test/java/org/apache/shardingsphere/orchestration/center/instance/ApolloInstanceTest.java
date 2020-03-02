@@ -38,9 +38,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ApolloInstanceTest {
     
@@ -51,11 +49,11 @@ public final class ApolloInstanceTest {
     
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
-
+    
     private static ConfigCenterRepository configCenterRepository = new ApolloInstance();
-
+    
     private static ApolloOpenApiWrapper openApiWrapper = mock(ApolloOpenApiWrapper.class);
-
+    
     @BeforeClass
     @SneakyThrows
     public static void init() {
@@ -91,20 +89,19 @@ public final class ApolloInstanceTest {
         assertThat(changeEvent.getValue(), is("value3"));
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertGetWithNonExistentKey() {
-        when(openApiWrapper.getValue(eq("test.nonExistentKey"))).thenReturn(null);
         assertNull(configCenterRepository.get("/test/nonExistentKey"));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertUpdate() {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
         configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
-
+    
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 future.set(dataChangedEvent);
@@ -116,13 +113,13 @@ public final class ApolloInstanceTest {
         assertThat(changeEvent.getValue(), is("newValue1"));
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertWatchDeletedChangedType() {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
         configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
-
+    
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 future.set(dataChangedEvent);
@@ -134,7 +131,7 @@ public final class ApolloInstanceTest {
         assertNull(changeEvent.getValue());
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
     }
-
+    
     @Test
     @SneakyThrows
     public void assertWatchAddChangedType() {
