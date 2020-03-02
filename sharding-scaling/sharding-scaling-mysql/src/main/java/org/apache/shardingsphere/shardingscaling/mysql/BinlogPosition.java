@@ -20,13 +20,15 @@ package org.apache.shardingsphere.shardingscaling.mysql;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * Binlog Position.
  */
-@Data
+@Getter
+@Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class BinlogPosition implements LogPosition<BinlogPosition> {

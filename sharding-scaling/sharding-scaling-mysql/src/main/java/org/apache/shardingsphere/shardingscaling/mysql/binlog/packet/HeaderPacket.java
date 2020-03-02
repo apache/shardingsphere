@@ -20,7 +20,8 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * MySQL packet header.
@@ -30,7 +31,8 @@ import lombok.Data;
  *     https://dev.mysql.com/doc/internals/en/mysql-packet.html
  * </p>
  */
-@Data
+@Setter
+@Getter
 public final class HeaderPacket implements Packet {
 
     private int packetBodyLength;

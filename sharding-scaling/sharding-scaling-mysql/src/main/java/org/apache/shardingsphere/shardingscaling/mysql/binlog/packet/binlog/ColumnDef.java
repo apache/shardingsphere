@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Column definition.
  */
-@Data
+@Setter
+@Getter
 public class ColumnDef {
 
     private int type;

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.event;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.BitSet;
@@ -26,7 +27,8 @@ import java.util.List;
 /**
  * Update rows event.
  */
-@Data
+@Setter
+@Getter
 public final class UpdateRowsEvent extends AbstractRowsEvent {
     
     private List<Serializable[]> beforeRows;

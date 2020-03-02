@@ -20,7 +20,8 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
 
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Binlog event header.
@@ -33,7 +34,8 @@ import lombok.Data;
  *     +---------+---------+---------+------------+-----------+-------+
  * </p>
  */
-@Data
+@Setter
+@Getter
 public final class BinlogEventHeader {
     
     private long timeStamp;

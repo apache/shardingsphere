@@ -19,12 +19,14 @@ package org.apache.shardingsphere.shardingscaling.core.config;
 
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Global server configuration.
  */
-@Data
+@Setter
+@Getter
 public class ServerConfiguration implements YamlConfiguration {
 
     private int port = 8080;

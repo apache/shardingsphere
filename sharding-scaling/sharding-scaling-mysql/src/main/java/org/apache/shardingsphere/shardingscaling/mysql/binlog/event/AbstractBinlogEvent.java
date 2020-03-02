@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.event;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract binlog event.
  */
-@Data
+@Setter
+@Getter
 public abstract class AbstractBinlogEvent {
     
     private long serverId;

@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command;
 
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.AbstractPacket;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract command packet.
  */
-@Data
+@Setter
+@Getter
 public abstract class AbstractCommandPacket extends AbstractPacket {
     
     private byte command;
