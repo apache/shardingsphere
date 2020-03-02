@@ -1,8 +1,7 @@
 package org.apache.shardingsphere.orchestration.center.yaml.config;
 
-
-
 import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 
