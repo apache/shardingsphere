@@ -24,7 +24,10 @@ import lombok.Getter;
 
 /**
  * Table map event.
- * https://dev.mysql.com/doc/internals/en/table-map-event.html
+ *
+ * <p>
+ *     https://dev.mysql.com/doc/internals/en/table-map-event.html
+ * </p>
  */
 @Getter
 public class TableMapEventPacket {

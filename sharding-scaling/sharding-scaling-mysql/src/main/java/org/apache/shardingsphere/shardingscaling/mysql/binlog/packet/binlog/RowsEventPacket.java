@@ -33,7 +33,10 @@ import java.util.List;
 
 /**
  * Rows event.
- * https://dev.mysql.com/doc/internals/en/rows-event.html
+ *
+ * <p>
+ *     https://dev.mysql.com/doc/internals/en/rows-event.html
+ * </p>
  */
 @Data
 public class RowsEventPacket {

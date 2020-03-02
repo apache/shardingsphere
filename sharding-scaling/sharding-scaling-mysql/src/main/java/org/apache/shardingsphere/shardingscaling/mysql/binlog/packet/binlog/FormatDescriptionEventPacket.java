@@ -24,9 +24,13 @@ import lombok.Getter;
 
 /**
  * Format description event.
- * https://dev.mysql.com/doc/internals/en/format-description-event.html
- * Checksum in format description event include algorithm information.
- * https://dev.mysql.com/worklog/task/?id=2540#tabs-2540-4
+ *
+ * <p>
+ *     https://dev.mysql.com/doc/internals/en/format-description-event.html
+ *
+ *     Checksum in format description event include algorithm information.
+ *     https://dev.mysql.com/worklog/task/?id=2540#tabs-2540-4
+ * </p>
  */
 @Getter
 public class FormatDescriptionEventPacket {
