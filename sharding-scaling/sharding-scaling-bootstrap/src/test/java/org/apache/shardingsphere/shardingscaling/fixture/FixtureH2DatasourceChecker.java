@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.fixture;
+package org.apache.shardingsphere.shardingscaling.fixture;
 
 import java.util.Collection;
 

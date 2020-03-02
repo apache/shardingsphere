@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.web.util;
+package org.apache.shardingsphere.shardingscaling.core.config.utils;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;

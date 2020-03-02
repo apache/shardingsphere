@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.web.entity;
+package org.apache.shardingsphere.shardingscaling.web.entity;
 
 /**
  * Http response code.

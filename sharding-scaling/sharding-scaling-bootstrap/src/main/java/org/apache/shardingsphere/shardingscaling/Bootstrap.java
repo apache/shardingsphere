@@ -30,7 +30,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.web.HttpServerInitializer;
+import org.apache.shardingsphere.shardingscaling.web.HttpServerInitializer;
 import org.apache.shardingsphere.shardingscaling.utils.RuntimeUtil;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
