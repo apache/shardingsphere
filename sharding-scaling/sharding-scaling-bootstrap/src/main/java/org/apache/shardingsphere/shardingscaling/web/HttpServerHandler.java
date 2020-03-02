@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.web;
+package org.apache.shardingsphere.shardingscaling.web;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -43,8 +43,8 @@ import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFou
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.CheckerFactory;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.web.util.ResponseContentUtil;
-import org.apache.shardingsphere.shardingscaling.core.web.util.SyncConfigurationUtil;
+import org.apache.shardingsphere.shardingscaling.utils.ResponseContentUtil;
+import org.apache.shardingsphere.shardingscaling.core.config.utils.SyncConfigurationUtil;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;

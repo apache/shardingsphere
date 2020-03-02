@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.web.util;
+package org.apache.shardingsphere.shardingscaling.utils;
 
-import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseContent;
-import org.apache.shardingsphere.shardingscaling.core.web.entity.ResponseCode;
+import org.apache.shardingsphere.shardingscaling.web.entity.ResponseContent;
+import org.apache.shardingsphere.shardingscaling.web.entity.ResponseCode;
 
 /**
  * Http response util.

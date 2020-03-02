@@ -22,9 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.utils.SyncConfigurationUtil;
 import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
-import org.apache.shardingsphere.shardingscaling.core.web.HttpServerHandlerTest;
-import org.apache.shardingsphere.shardingscaling.core.web.util.SyncConfigurationUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,7 +74,7 @@ public class DataSourceManagerTest {
     }
 
     private void initConfig(final String configFile) {
-        InputStream fileInputStream = HttpServerHandlerTest.class.getResourceAsStream(configFile);
+        InputStream fileInputStream = DataSourceManagerTest.class.getResourceAsStream(configFile);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
         ScalingConfiguration scalingConfiguration = GSON.fromJson(inputStreamReader, ScalingConfiguration.class);
         syncConfigurations = (List<SyncConfiguration>) SyncConfigurationUtil.toSyncConfigurations(scalingConfiguration);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.web;
+package org.apache.shardingsphere.shardingscaling.web;
 
 import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
@@ -60,7 +60,7 @@ public class HttpServerHandlerTest {
     private ScalingConfiguration scalingConfiguration;
 
     @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
+    public void setUp() {
         initConfig("/config.json");
         httpServerHandler = new HttpServerHandler();
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.fixture;
+package org.apache.shardingsphere.shardingscaling.fixture;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
@@ -28,7 +28,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends JDBCReader> getJdbcReaderClass() {
-        return FixtureH2JDBCReader.class;
+        return null;
     }
     
     @Override
@@ -43,12 +43,12 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends Writer> getWriterClass() {
-        return FixtureNopWriter.class;
+        return null;
     }
 
     @Override
     public Class<? extends DatasourceChecker> getCheckerClass() {
-        return null;
+        return FixtureH2DatasourceChecker.class;
     }
 
     @Override

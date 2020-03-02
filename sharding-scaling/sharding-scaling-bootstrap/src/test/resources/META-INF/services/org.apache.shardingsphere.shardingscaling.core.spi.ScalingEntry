@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shardingscaling.postgresql.PostgreSQLScalingEntry
+org.apache.shardingsphere.shardingscaling.fixture.FixtureH2ScalingEntry

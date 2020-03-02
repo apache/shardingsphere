@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.core.web;
+package org.apache.shardingsphere.shardingscaling.web.entity;
 
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
+import lombok.Setter;
 
 /**
- * Http server initializer.
+ * Http response content.
  */
-public final class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
+@Setter
+public class ResponseContent<T> {
 
-    @Override
-    protected void initChannel(final SocketChannel socketChannel) {
-        ChannelPipeline channelPipeline = socketChannel.pipeline();
-        channelPipeline.addLast(new HttpServerCodec());
-        channelPipeline.addLast(new HttpObjectAggregator(65536));
-        channelPipeline.addLast(new HttpServerHandler());
-    }
+    private boolean success = true;
+
+    private int errorCode;
+
+    private String errorMsg;
+
+    private T model;
 }
