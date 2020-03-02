@@ -28,14 +28,14 @@ import static org.junit.Assert.assertThat;
 public final class YamlOrchestrationConfigurationTest {
     
     @Test
-    public void assertInstanceConfigurationMap() {
+    public void assertInstanceConfigurationMapWithConstructMethod() {
         Map<String, YamlInstanceConfiguration> instanceConfigurationMap = new HashMap<>();
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = new YamlOrchestrationConfiguration(instanceConfigurationMap);
         assertThat(yamlOrchestrationConfiguration.getInstanceConfigurationMap(), is(instanceConfigurationMap));
     }
     
     @Test
-    public void assertSetInstanceConfigurationMap() {
+    public void assertInstanceConfigurationMapWithSetMethod() {
         Map<String, YamlInstanceConfiguration> instanceConfigurationMap = new HashMap<>();
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = new YamlOrchestrationConfiguration();
         yamlOrchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
