@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Assist query and plain insert columns token generator.
  */
-public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
+public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
@@ -46,11 +46,11 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     }
     
     @Override
-    public Collection<InsertColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<InsertColumnsToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Collection<InsertColumnsToken> result = new LinkedList<>();
-        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
         Preconditions.checkState(encryptTable.isPresent());
-        for (ColumnSegment each : (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getColumns()) {
+        for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> columns = getColumns(encryptTable.get(), each);
             if (!columns.isEmpty()) {
                 result.add(new InsertColumnsToken(each.getStopIndex() + 1, columns));

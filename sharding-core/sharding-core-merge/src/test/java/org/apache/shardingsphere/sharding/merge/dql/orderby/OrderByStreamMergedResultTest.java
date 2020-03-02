@@ -48,11 +48,11 @@ import static org.mockito.Mockito.when;
 
 public final class OrderByStreamMergedResultTest {
     
-    private SelectStatementContext selectSQLStatementContext;
+    private SelectStatementContext selectStatementContext;
     
     @Before
     public void setUp() {
-        selectSQLStatementContext = new SelectStatementContext(new SelectStatement(), 
+        selectStatementContext = new SelectStatementContext(new SelectStatement(), 
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), 
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), false), 
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
@@ -62,7 +62,7 @@ public final class OrderByStreamMergedResultTest {
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
         assertFalse(actual.next());
     }
     
@@ -74,7 +74,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -94,7 +94,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -123,7 +123,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
         assertTrue(actual.next());
@@ -148,7 +148,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectSQLStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("a"));
         assertTrue(actual.next());

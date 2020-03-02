@@ -120,7 +120,7 @@ public final class ShardingRouteEngineFactory {
     private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof TableSegmentsAvailable) {
             TableSegmentsAvailable tableSegmentsAvailable = (TableSegmentsAvailable) sqlStatementContext;
-            return 1 == tableSegmentsAvailable.getAllTables().size() && !"*".equals(tableSegmentsAvailable.getAllTables().iterator().next().getIdentifier().getValue());
+            return 1 == tableSegmentsAvailable.getAllTables().size() && !"*".equals(tableSegmentsAvailable.getAllTables().iterator().next().getTableName().getIdentifier().getValue());
         }
         return false;
     }

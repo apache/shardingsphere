@@ -38,7 +38,7 @@ import java.util.LinkedList;
  * Projection token generator for encrypt.
  */
 @Setter
-public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, QueryWithCipherColumnAware {
+public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<SelectStatementContext>, QueryWithCipherColumnAware {
     
     private boolean queryWithCipherColumn;
     
@@ -48,13 +48,11 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     @Override
-    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof SelectStatementContext)) {
-            return Collections.emptyList();
-        }
+    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        ProjectionsSegment projectionsSegment = (((SelectStatementContext) sqlStatementContext).getSqlStatement()).getProjections();
-        String tableName = sqlStatementContext.getTablesContext().getSingleTableName();
+        ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
+        // TODO process multiple tables
+        String tableName = selectStatementContext.getSqlStatement().getTables().iterator().next().getTableName().getIdentifier().getValue();
         Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();

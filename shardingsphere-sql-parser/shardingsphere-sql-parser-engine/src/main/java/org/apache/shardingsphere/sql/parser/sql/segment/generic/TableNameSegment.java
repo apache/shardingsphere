@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.sql.token.generator;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
- * SQL token generator for optional.
- * 
- * @param <T> type of SQL statement context
+ * Table name segment.
  */
-public interface OptionalSQLTokenGenerator<T extends SQLStatementContext> extends SQLTokenGenerator {
+@RequiredArgsConstructor
+@Getter
+public final class TableNameSegment implements SQLSegment {
     
-    /**
-     * Generate SQL token.
-     * 
-     * @param sqlStatementContext SQL statement context
-     * @return SQL token
-     */
-    SQLToken generateSQLToken(T sqlStatementContext);
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final IdentifierValue identifier;
 }

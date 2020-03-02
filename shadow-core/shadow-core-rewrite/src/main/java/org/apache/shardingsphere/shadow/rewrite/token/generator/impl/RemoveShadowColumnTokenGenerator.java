@@ -33,7 +33,7 @@ import java.util.LinkedList;
 /**
  * Remove shadow column token generator.
  */
-public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGenerator implements CollectionSQLTokenGenerator {
+public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
@@ -45,8 +45,8 @@ public final class RemoveShadowColumnTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     @Override
-    public Collection<RemoveToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Optional<InsertColumnsSegment> sqlSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns();
+    public Collection<RemoveToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
+        Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
         Collection<RemoveToken> result = new LinkedList<>();
         LinkedList<ColumnSegment> columns = (LinkedList<ColumnSegment>) sqlSegment.get().getColumns();

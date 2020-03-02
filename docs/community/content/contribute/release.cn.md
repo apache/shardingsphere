@@ -135,6 +135,7 @@ https://github.com/apache/incubator-shardingsphere/blob/master/RELEASE-NOTES.md
 创建`${RELEASE.VERSION}-release`分支，接下来的操作都在该分支进行。
 
 ```shell
+git clone -b ${branch} https://github.com/apache/incubator-shardingsphere.git ~/incubator-shardingsphere
 cd ~/incubator-shardingsphere/
 git pull
 git checkout -b ${RELEASE.VERSION}-release

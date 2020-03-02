@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.relation.predicate.PredicateFinder;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
@@ -70,14 +70,13 @@ public final class WhereClauseShardingConditionEngine {
         }
         List<ShardingCondition> result = new ArrayList<>();
         Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatement).getWhere();
-        TablesContext tablesContext = new TablesContext(sqlStatement);
         if (whereSegment.isPresent()) {
-            result.addAll(createShardingConditions(tablesContext, whereSegment.get().getAndPredicates(), parameters));
+            result.addAll(createShardingConditions((WhereSegmentAvailable) sqlStatement, whereSegment.get().getAndPredicates(), parameters));
         }
         // FIXME process subquery
 //        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatement.findSQLSegments(SubqueryPredicateSegment.class);
 //        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
-//            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions(tablesContext, each.getAndPredicates(), parameters);
+//            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions((WhereSegmentAvailable) sqlStatement, each.getAndPredicates(), parameters);
 //            if (!result.containsAll(subqueryShardingConditions)) {
 //                result.addAll(subqueryShardingConditions);
 //            }
@@ -85,10 +84,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final TablesContext tablesContext, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
+    private Collection<ShardingCondition> createShardingConditions(final WhereSegmentAvailable sqlStatementContext, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
-            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(tablesContext, each, parameters);
+            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
             if (routeValueMap.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -97,10 +96,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Map<Column, Collection<RouteValue>> createRouteValueMap(final TablesContext tablesContext, final AndPredicate andPredicate, final List<Object> parameters) {
+    private Map<Column, Collection<RouteValue>> createRouteValueMap(final WhereSegmentAvailable sqlStatementContext, final AndPredicate andPredicate, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = tablesContext.findTableName(each.getColumn(), relationMetas);
+            Optional<String> tableName = new PredicateFinder(relationMetas, sqlStatementContext.getTables()).findTableName(each);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName.get())) {
                 continue;
             }

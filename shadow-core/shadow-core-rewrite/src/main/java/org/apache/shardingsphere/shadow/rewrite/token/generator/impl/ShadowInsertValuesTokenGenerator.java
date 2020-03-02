@@ -35,7 +35,7 @@ import java.util.Iterator;
  * Insert values token generator for shadow.
  */
 @Setter
-public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGenerator implements OptionalSQLTokenGenerator {
+public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
@@ -43,20 +43,16 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
     }
     
     @Override
-    public InsertValuesToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return generateNewSQLToken((InsertStatementContext) sqlStatementContext);
-    }
-    
-    private InsertValuesToken generateNewSQLToken(final InsertStatementContext sqlStatementContext) {
-        Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().getValues();
+    public InsertValuesToken generateSQLToken(final InsertStatementContext insertStatementContext) {
+        Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new ShadowInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
+        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
-            Iterator<String> descendingColumnNames = sqlStatementContext.getDescendingColumnNames();
+            Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
             while (descendingColumnNames.hasNext()) {
                 String columnName = descendingColumnNames.next();
                 if (getShadowRule().getColumn().equals(columnName)) {
-                    removeValueToken(insertValueToken, sqlStatementContext, columnName);
+                    removeValueToken(insertValueToken, insertStatementContext, columnName);
                 }
             }
             result.getInsertValues().add(insertValueToken);
@@ -64,8 +60,8 @@ public final class ShadowInsertValuesTokenGenerator extends BaseShadowSQLTokenGe
         return result;
     }
     
-    private void removeValueToken(final InsertValue insertValueToken, final InsertStatementContext sqlStatementContext, final String columnName) {
-        int columnIndex = sqlStatementContext.getColumnNames().indexOf(columnName);
+    private void removeValueToken(final InsertValue insertValueToken, final InsertStatementContext insertStatementContext, final String columnName) {
+        int columnIndex = insertStatementContext.getColumnNames().indexOf(columnName);
         insertValueToken.getValues().remove(columnIndex);
     }
     
