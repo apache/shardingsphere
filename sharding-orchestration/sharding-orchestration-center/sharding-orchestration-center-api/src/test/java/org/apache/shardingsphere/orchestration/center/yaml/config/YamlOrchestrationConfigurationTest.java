@@ -33,4 +33,12 @@ public final class YamlOrchestrationConfigurationTest {
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = new YamlOrchestrationConfiguration(instanceConfigurationMap);
         assertThat(yamlOrchestrationConfiguration.getInstanceConfigurationMap(), is(instanceConfigurationMap));
     }
+
+    @Test
+    public void assertSetInstanceConfigurationMap() {
+        Map<String, YamlInstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        YamlOrchestrationConfiguration yamlOrchestrationConfiguration = new YamlOrchestrationConfiguration();
+        yamlOrchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
+        assertThat(yamlOrchestrationConfiguration.getInstanceConfigurationMap(), is(instanceConfigurationMap));
+    }
 }
