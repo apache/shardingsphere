@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +40,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class InsertStatement extends DMLStatement implements TableSegmentsAvailable {
+public final class InsertStatement extends DMLStatement {
     
     private TableSegment table;
     
@@ -170,10 +169,5 @@ public final class InsertStatement extends DMLStatement implements TableSegments
             result.add(each.getValue());
         }
         return result;
-    }
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return Collections.singletonList(table);
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.dcl;
 
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
@@ -27,10 +29,14 @@ import java.util.Collection;
 /**
  * Grant statement context.
  */
+@Getter
 public final class GrantStatementContext extends CommonSQLStatementContext<GrantStatement> implements TableSegmentsAvailable {
+    
+    private final TablesContext tablesContext;
     
     public GrantStatementContext(final GrantStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTables());
     }
     
     @Override

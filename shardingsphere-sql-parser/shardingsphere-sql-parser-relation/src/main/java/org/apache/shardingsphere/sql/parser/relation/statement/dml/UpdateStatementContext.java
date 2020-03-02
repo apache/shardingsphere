@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.relation.statement.dml;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
@@ -38,8 +39,11 @@ import java.util.LinkedList;
 @ToString(callSuper = true)
 public final class UpdateStatementContext extends CommonSQLStatementContext<UpdateStatement> implements TableSegmentsAvailable {
     
+    private final TablesContext tablesContext;
+    
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTables());
     }
     
     @Override

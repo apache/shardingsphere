@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
@@ -28,10 +30,14 @@ import java.util.Collections;
 /**
  * Create index statement context.
  */
+@Getter
 public final class CreateIndexStatementContext extends CommonSQLStatementContext<CreateIndexStatement> implements TableSegmentsAvailable {
+    
+    private final TablesContext tablesContext;
     
     public CreateIndexStatementContext(final CreateIndexStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override

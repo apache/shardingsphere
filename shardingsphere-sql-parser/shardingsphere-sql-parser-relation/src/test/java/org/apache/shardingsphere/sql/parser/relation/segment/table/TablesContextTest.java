@@ -21,13 +21,13 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.assertThat;
 
@@ -35,20 +35,15 @@ public final class TablesContextTest {
     
     @Test
     public void assertGetTableNames() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getTables().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
+        TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"), createTableSegment("table_2", "tbl_2")));
         assertThat(tablesContext.getTableNames(), CoreMatchers.<Collection<String>>is(Sets.newHashSet("table_1", "table_2")));
     }
     
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
-        InsertStatement sqlStatement = new InsertStatement();
         TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
-        sqlStatement.setTable(tableSegment);
-        new TablesContext(sqlStatement);
+        new TablesContext(Collections.singletonList(tableSegment));
     }
     
     private TableSegment createTableSegment(final String tableName, final String alias) {

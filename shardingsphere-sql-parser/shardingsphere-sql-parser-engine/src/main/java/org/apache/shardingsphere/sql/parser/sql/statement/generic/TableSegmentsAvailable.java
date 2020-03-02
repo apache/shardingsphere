@@ -32,4 +32,11 @@ public interface TableSegmentsAvailable {
      * @return all table segments
      */
     Collection<TableSegment> getAllTables();
+    
+    /**
+     * Get tables context.
+     * 
+     * @return tables context
+     */
+    Object getTablesContext();
 }
