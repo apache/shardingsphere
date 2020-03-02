@@ -24,14 +24,14 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class FormatDescriptionEventTest {
+public class FormatDescriptionEventPacketTest {
     
     @Test
     public void assertParseWithoutChecksum() {
         int eventLength = 2 + 50 + 4 + 1 + (EventTypes.FORMAT_DESCRIPTION_EVENT - 1) + 1 + 23;
         ByteBuf byteBuf = Unpooled.buffer(eventLength);
         writeInfoIntoBuffer(byteBuf, eventLength);
-        FormatDescriptionEvent actual = new FormatDescriptionEvent();
+        FormatDescriptionEventPacket actual = new FormatDescriptionEventPacket();
         actual.parse(byteBuf);
         assertThat(actual.getBinlogVersion(), is(4));
         String expectedServerVersion = "5.7.14-log" + new String(new byte[40]);
@@ -49,7 +49,7 @@ public class FormatDescriptionEventTest {
         writeInfoIntoBuffer(byteBuf, eventLength);
         byteBuf.writeByte(1);
         byteBuf.writeBytes(new byte[4]);
-        FormatDescriptionEvent actual = new FormatDescriptionEvent();
+        FormatDescriptionEventPacket actual = new FormatDescriptionEventPacket();
         actual.parse(byteBuf);
         assertThat(actual.getBinlogVersion(), is(4));
         String expectedServerVersion = "5.7.14-log" + new String(new byte[40]);

@@ -24,14 +24,14 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RotateEventTest {
+public class RotateEventPacketTest {
     
     @Test
     public void assertParse() {
         ByteBuf rotateEventByteBuf = Unpooled.buffer();
         rotateEventByteBuf.writeLongLE(Long.MAX_VALUE);
         rotateEventByteBuf.writeBytes("binlog-000001".getBytes());
-        RotateEvent actual = new RotateEvent();
+        RotateEventPacket actual = new RotateEventPacket();
         actual.parse(rotateEventByteBuf);
         assertThat(actual.getPosition(), is(Long.MAX_VALUE));
         assertThat(actual.getNextFileName(), is("binlog-000001"));

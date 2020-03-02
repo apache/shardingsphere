@@ -25,7 +25,7 @@ import io.netty.buffer.Unpooled;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class TableMapEventTest {
+public class TableMapEventPacketTest {
     
     private static final String TEST_SCHEMA = "test_schema";
     
@@ -36,7 +36,7 @@ public class TableMapEventTest {
         ByteBuf headerBuffer = Unpooled.buffer(8);
         headerBuffer.writeBytes(new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06});
         headerBuffer.writeShortLE(0);
-        TableMapEvent actual = new TableMapEvent();
+        TableMapEventPacket actual = new TableMapEventPacket();
         actual.parsePostHeader(headerBuffer);
         assertThat(actual.getTableId(), is(0x0000060504030201L));
         assertThat(actual.getFlags(), is(0));
@@ -64,7 +64,7 @@ public class TableMapEventTest {
         payload.writeShort(2);
         payload.writeShortLE(3);
         payload.writeBytes(new byte[bitmapSize]);
-        TableMapEvent actual = new TableMapEvent();
+        TableMapEventPacket actual = new TableMapEventPacket();
         actual.parsePayload(payload);
         assertThat(actual.getSchemaName(), is(TEST_SCHEMA));
         assertThat(actual.getTableName(), is(TEST_TABLE));

@@ -29,7 +29,7 @@ import lombok.Getter;
  * https://dev.mysql.com/worklog/task/?id=2540#tabs-2540-4
  */
 @Getter
-public class FormatDescriptionEvent {
+public class FormatDescriptionEventPacket {
 
     private int binlogVersion;
 

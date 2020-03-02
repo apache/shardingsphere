@@ -24,10 +24,10 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.PlaceholderE
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.EventTypes;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.FormatDescriptionEvent;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.RotateEvent;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.RowsEvent;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEvent;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.FormatDescriptionEventPacket;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.RotateEventPacket;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.RowsEventPacket;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEventPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -107,39 +107,39 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
 
     private void decodeRotateEvent(final ByteBuf in) {
-        RotateEvent rotateEvent = new RotateEvent();
-        rotateEvent.parse(in);
-        binlogContext.setFileName(rotateEvent.getNextFileName());
+        RotateEventPacket rotateEventPacket = new RotateEventPacket();
+        rotateEventPacket.parse(in);
+        binlogContext.setFileName(rotateEventPacket.getNextFileName());
     }
 
     private DeleteRowsEvent decodeDeleteRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
-        RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
-        rowsEvent.parsePostHeader(in);
-        rowsEvent.parsePayload(binlogContext, in);
+        RowsEventPacket rowsEventPacket = new RowsEventPacket(binlogEventHeader);
+        rowsEventPacket.parsePostHeader(in);
+        rowsEventPacket.parsePayload(binlogContext, in);
         DeleteRowsEvent result = new DeleteRowsEvent();
-        initRowsEvent(result, binlogEventHeader, rowsEvent.getTableId());
-        result.setBeforeRows(rowsEvent.getRows1());
+        initRowsEvent(result, binlogEventHeader, rowsEventPacket.getTableId());
+        result.setBeforeRows(rowsEventPacket.getRows1());
         return result;
     }
 
     private UpdateRowsEvent decodeUpdateRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
-        RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
-        rowsEvent.parsePostHeader(in);
-        rowsEvent.parsePayload(binlogContext, in);
+        RowsEventPacket rowsEventPacket = new RowsEventPacket(binlogEventHeader);
+        rowsEventPacket.parsePostHeader(in);
+        rowsEventPacket.parsePayload(binlogContext, in);
         UpdateRowsEvent result = new UpdateRowsEvent();
-        initRowsEvent(result, binlogEventHeader, rowsEvent.getTableId());
-        result.setBeforeRows(rowsEvent.getRows1());
-        result.setAfterRows(rowsEvent.getRows2());
+        initRowsEvent(result, binlogEventHeader, rowsEventPacket.getTableId());
+        result.setBeforeRows(rowsEventPacket.getRows1());
+        result.setAfterRows(rowsEventPacket.getRows2());
         return result;
     }
 
     private WriteRowsEvent decodeWriteRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
-        RowsEvent rowsEvent = new RowsEvent(binlogEventHeader);
-        rowsEvent.parsePostHeader(in);
-        rowsEvent.parsePayload(binlogContext, in);
+        RowsEventPacket rowsEventPacket = new RowsEventPacket(binlogEventHeader);
+        rowsEventPacket.parsePostHeader(in);
+        rowsEventPacket.parsePayload(binlogContext, in);
         WriteRowsEvent result = new WriteRowsEvent();
-        initRowsEvent(result, binlogEventHeader, rowsEvent.getTableId());
-        result.setAfterRows(rowsEvent.getRows1());
+        initRowsEvent(result, binlogEventHeader, rowsEventPacket.getTableId());
+        result.setAfterRows(rowsEventPacket.getRows1());
         return result;
     }
 
@@ -161,15 +161,15 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
 
     private void decodeTableMapEvent(final ByteBuf in) {
-        TableMapEvent tableMapLogEvent = new TableMapEvent();
+        TableMapEventPacket tableMapLogEvent = new TableMapEventPacket();
         tableMapLogEvent.parsePostHeader(in);
         tableMapLogEvent.parsePayload(in);
         binlogContext.putTableMapEvent(tableMapLogEvent.getTableId(), tableMapLogEvent);
     }
 
     private void decodeFormatDescriptionEvent(final ByteBuf in) {
-        FormatDescriptionEvent formatDescriptionEvent = new FormatDescriptionEvent();
-        formatDescriptionEvent.parse(in);
-        binlogContext.setChecksumLength(formatDescriptionEvent.getChecksumLength());
+        FormatDescriptionEventPacket formatDescriptionEventPacket = new FormatDescriptionEventPacket();
+        formatDescriptionEventPacket.parse(in);
+        binlogContext.setChecksumLength(formatDescriptionEventPacket.getChecksumLength());
     }
 }

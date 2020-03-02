@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.DeleteRowsEv
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.WriteRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.EventTypes;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEvent;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEventPacket;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
 
 import org.junit.Before;
@@ -93,14 +93,14 @@ public class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(0));
         assertThat(binlogContext.getTableMap().size(), is(1));
-        assertThat(binlogContext.getTableMap().get(0L), instanceOf(TableMapEvent.class));
+        assertThat(binlogContext.getTableMap().get(0L), instanceOf(TableMapEventPacket.class));
     }
     
     @Test
     public void assertDecodeWriteRowEvent() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, EventTypes.WRITE_ROWS_EVENT_V2);
         when(byteBuf.readUnsignedShortLE()).thenReturn(2);
-        binlogContext.getTableMap().put(0L, new TableMapEvent());
+        binlogContext.getTableMap().put(0L, new TableMapEventPacket());
         List<Object> decodedEvents = new ArrayList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
@@ -111,7 +111,7 @@ public class MySQLBinlogEventPacketDecoderTest {
     public void assertDecodeUpdateRowEvent() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, EventTypes.UPDATE_ROWS_EVENT_V2);
         when(byteBuf.readUnsignedShortLE()).thenReturn(2);
-        binlogContext.getTableMap().put(0L, new TableMapEvent());
+        binlogContext.getTableMap().put(0L, new TableMapEventPacket());
         List<Object> decodedEvents = new ArrayList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
@@ -122,7 +122,7 @@ public class MySQLBinlogEventPacketDecoderTest {
     public void assertDecodeDeleteRowEvent() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0, EventTypes.DELETE_ROWS_EVENT_V2);
         when(byteBuf.readUnsignedShortLE()).thenReturn(2);
-        binlogContext.getTableMap().put(0L, new TableMapEvent());
+        binlogContext.getTableMap().put(0L, new TableMapEventPacket());
         List<Object> decodedEvents = new ArrayList<>();
         binlogEventPacketDecoder.decode(null, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));

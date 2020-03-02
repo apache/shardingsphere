@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.ColumnDef;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEvent;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEventPacket;
 import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,16 +33,16 @@ public class BinlogContext {
 
     private int checksumLength;
 
-    private Map<Long, TableMapEvent> tableMap = new HashMap<>();
+    private Map<Long, TableMapEventPacket> tableMap = new HashMap<>();
     
     /**
      * Cache table map event.
      *
      * @param tableId table id
-     * @param tableMapEvent table map event
+     * @param tableMapEventPacket table map event
      */
-    public void putTableMapEvent(final long tableId, final TableMapEvent tableMapEvent) {
-        tableMap.put(tableId, tableMapEvent);
+    public void putTableMapEvent(final long tableId, final TableMapEventPacket tableMapEventPacket) {
+        tableMap.put(tableId, tableMapEventPacket);
     }
     
     /**

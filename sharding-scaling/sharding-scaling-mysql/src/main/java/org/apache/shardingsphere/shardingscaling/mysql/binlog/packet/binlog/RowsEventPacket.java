@@ -36,7 +36,7 @@ import java.util.List;
  * https://dev.mysql.com/doc/internals/en/rows-event.html
  */
 @Data
-public class RowsEvent {
+public class RowsEventPacket {
 
     private final BinlogEventHeader binlogEventHeader;
 
@@ -52,7 +52,7 @@ public class RowsEvent {
 
     private List<Serializable[]> rows2 = new ArrayList<>();
 
-    public RowsEvent(final BinlogEventHeader binlogEventHeader) {
+    public RowsEventPacket(final BinlogEventHeader binlogEventHeader) {
         this.binlogEventHeader = binlogEventHeader;
     }
 

@@ -27,7 +27,7 @@ import lombok.Getter;
  * https://dev.mysql.com/doc/internals/en/table-map-event.html
  */
 @Getter
-public class TableMapEvent {
+public class TableMapEventPacket {
 
     private long tableId;
 

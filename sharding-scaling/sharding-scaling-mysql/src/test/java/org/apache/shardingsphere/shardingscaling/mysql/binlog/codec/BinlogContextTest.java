@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
 
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.BinlogContext;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.ColumnDef;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEvent;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEventPacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,35 +40,35 @@ public class BinlogContextTest {
     private static final long TEST_TABLE_ID = 1L;
     
     @Mock
-    private TableMapEvent tableMapEvent;
+    private TableMapEventPacket tableMapEventPacket;
     
     private BinlogContext binlogContext;
     
     @Before
     public void setUp() {
         binlogContext = new BinlogContext();
-        when(tableMapEvent.getSchemaName()).thenReturn(TEST_SCHEMA);
-        when(tableMapEvent.getTableName()).thenReturn(TEST_TABLE);
+        when(tableMapEventPacket.getSchemaName()).thenReturn(TEST_SCHEMA);
+        when(tableMapEventPacket.getTableName()).thenReturn(TEST_TABLE);
     }
 
     @Test
     public void assertGetTableName() {
-        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEvent);
+        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         assertThat(binlogContext.getTableName(TEST_TABLE_ID), is(TEST_TABLE));
     }
     
     @Test
     public void assertGetSchemaName() {
-        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEvent);
+        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         assertThat(binlogContext.getSchemaName(TEST_TABLE_ID), is(TEST_SCHEMA));
     }
     
     @Test
     public void assertGetColumnDefs() {
-        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEvent);
+        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         ColumnDef[] columnDefs = new ColumnDef[1];
         columnDefs[0] = new ColumnDef();
-        when(tableMapEvent.getColumnDefs()).thenReturn(columnDefs);
+        when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         assertThat(binlogContext.getColumnDefs(TEST_TABLE_ID), is(columnDefs));
     }
 }
