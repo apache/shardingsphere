@@ -329,32 +329,13 @@
                 <version>${apache-rat-plugin.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/target/**</exclude>
-                        <exclude>**/logs/**</exclude>
-                        <exclude>**/*.log</exclude>
-                        <!-- IDE files -->
-                        <exclude>**/*.iml</exclude>
-                        <exclude>**/.idea/**</exclude>
-                        <exclude>**/*.classpath</exclude>
-                        <exclude>**/.project</exclude>
-                        <exclude>**/.settings/**</exclude>
-                        <exclude>**/dependency-reduced-pom.xml</exclude>
-                        <!-- git files -->
-                        <exclude>**/.gitignore</exclude>
-                        <exclude>**/.gitmodules</exclude>
-                        <exclude>**/.git/**</exclude>
-                        <!-- CI files -->
-                        <exclude>**/.travis.yml</exclude>
-                        <exclude>**/.mvn/jvm.config</exclude>
-                        <exclude>**/.mvn/wrapper/maven-wrapper.properties</exclude>
-                        <!-- GitHub files -->
-                        <exclude>**/.github/**</exclude>
-                        <!-- document files -->
+                        <exclude>**/target/**/*</exclude>
                         <exclude>**/*.md</exclude>
-                        <excldue>**/*.MD</excldue>
-                        <exclude>**/*.txt</exclude>
-                        <exclude>**/docs/**</exclude>
+                        <exclude>**/*.iml</exclude>
+                        <exclude>**/.idea/**/*</exclude>
                     </excludes>
+                    <excludeSubProjects>false</excludeSubProjects>
+                    <useDefaultExcludes>false</useDefaultExcludes>
                 </configuration>
                 <executions>
                     <execution>
