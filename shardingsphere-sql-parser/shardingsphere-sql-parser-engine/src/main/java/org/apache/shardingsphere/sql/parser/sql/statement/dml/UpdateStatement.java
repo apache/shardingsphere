@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
@@ -34,18 +33,13 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class UpdateStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
+public final class UpdateStatement extends DMLStatement implements WhereSegmentAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
     private SetAssignmentSegment setAssignment;
     
     private WhereSegment where;
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return tables;
-    }
     
     @Override
     public Optional<WhereSegment> getWhere() {

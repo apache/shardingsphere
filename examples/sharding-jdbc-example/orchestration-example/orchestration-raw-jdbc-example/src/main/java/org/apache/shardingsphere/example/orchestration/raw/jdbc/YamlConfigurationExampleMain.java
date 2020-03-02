@@ -34,8 +34,8 @@ import java.sql.SQLException;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
- * 2. Please make sure sharding-orchestration-reg-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
- * 3. Please make sure sharding-orchestration-reg-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
+ * 2. Please make sure sharding-orchestration-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
+ * 3. Please make sure sharding-orchestration-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
 public class YamlConfigurationExampleMain {
     
@@ -48,7 +48,7 @@ public class YamlConfigurationExampleMain {
     
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.NACOS;
-
+    
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(registryCenterType, loadConfigFromRegCenter, shardingType);
         try {
@@ -76,7 +76,7 @@ public class YamlConfigurationExampleMain {
     }
     
     private static File getFile(final String fileName) {
-        return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
+        return new File(YamlConfigurationExampleMain.class.getResource(fileName).getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

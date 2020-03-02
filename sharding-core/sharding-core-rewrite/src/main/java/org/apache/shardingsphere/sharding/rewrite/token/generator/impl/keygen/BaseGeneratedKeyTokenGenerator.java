@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
@@ -32,23 +32,23 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
  * Base generated key token generator.
  */
 @Setter
-public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator, ShardingRouteContextAware {
+public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, ShardingRouteContextAware {
     
     private ShardingRouteContext shardingRouteContext;
     
     @Override
     public final boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && shardingRouteContext.getGeneratedKey().isPresent()
-                && shardingRouteContext.getGeneratedKey().get().isGenerated() && isGenerateSQLToken((InsertStatement) sqlStatementContext.getSqlStatement());
+        return sqlStatementContext instanceof InsertStatementContext && shardingRouteContext.getGeneratedKey().isPresent()
+                && shardingRouteContext.getGeneratedKey().get().isGenerated() && isGenerateSQLToken(((InsertStatementContext) sqlStatementContext).getSqlStatement());
     }
     
     protected abstract boolean isGenerateSQLToken(InsertStatement insertStatement);
     
     @Override
-    public final SQLToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public final SQLToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Preconditions.checkState(shardingRouteContext.getGeneratedKey().isPresent());
-        return generateSQLToken(sqlStatementContext, shardingRouteContext.getGeneratedKey().get());
+        return generateSQLToken(insertStatementContext, shardingRouteContext.getGeneratedKey().get());
     }
     
-    protected abstract SQLToken generateSQLToken(SQLStatementContext sqlStatementContext, GeneratedKey generatedKey);
+    protected abstract SQLToken generateSQLToken(InsertStatementContext insertStatementContext, GeneratedKey generatedKey);
 }

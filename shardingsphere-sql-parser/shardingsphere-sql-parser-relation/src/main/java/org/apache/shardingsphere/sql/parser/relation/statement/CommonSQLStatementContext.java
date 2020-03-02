@@ -15,33 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.relation.segment.table;
+package org.apache.shardingsphere.sql.parser.relation.statement;
 
-import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+
+import java.util.Collections;
 
 /**
- * Table.
+ * Common SQL statement context.
+ * 
+ * @param <T> type of SQL statement
  */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
-public final class Table {
+public class CommonSQLStatementContext<T extends SQLStatement> implements SQLStatementContext<T> {
     
-    private final String name;
+    private final T sqlStatement;
     
-    private final String alias;
+    private final TablesContext tablesContext;
     
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
+    public CommonSQLStatementContext(final T sqlStatement) {
+        this.sqlStatement = sqlStatement;
+        tablesContext = new TablesContext(Collections.<TableSegment>emptyList());
     }
 }

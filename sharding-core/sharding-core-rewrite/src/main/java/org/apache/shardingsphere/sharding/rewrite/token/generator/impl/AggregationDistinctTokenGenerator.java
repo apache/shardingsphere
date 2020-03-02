@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.AggregationDis
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 
 import java.util.Collection;
@@ -36,13 +36,13 @@ public final class AggregationDistinctTokenGenerator implements CollectionSQLTok
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectSQLStatementContext;
+        return sqlStatementContext instanceof SelectStatementContext;
     }
     
     @Override
     public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
-        for (AggregationDistinctProjection each : ((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections()) {
+        for (AggregationDistinctProjection each : ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections()) {
             result.add(generateSQLToken(each));
         }
         return result;

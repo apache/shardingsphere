@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.relation.statement.impl;
+package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+
+import java.util.Collection;
 
 /**
- * Common SQL statement context.
+ * Truncate statement context.
  */
 @Getter
-@ToString
-public class CommonSQLStatementContext implements SQLStatementContext {
-    
-    private final SQLStatement sqlStatement;
+public final class TruncateStatementContext extends CommonSQLStatementContext<TruncateStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public CommonSQLStatementContext(final SQLStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-        tablesContext = new TablesContext(sqlStatement);
+    public TruncateStatementContext(final TruncateStatement sqlStatement) {
+        super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTables());
+    }
+    
+    @Override
+    public Collection<TableSegment> getAllTables() {
+        return getSqlStatement().getTables();
     }
 }

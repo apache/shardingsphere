@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.Lim
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
@@ -38,7 +37,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class SelectStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
+public final class SelectStatement extends DMLStatement implements WhereSegmentAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
@@ -55,16 +54,6 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     private SelectStatement parentStatement;
     
     private LockSegment lock;
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return tables;
-    }
-    
-    @Override
-    public Optional<WhereSegment> getWhere() {
-        return Optional.fromNullable(where);
-    }
     
     /**
      * Get group by segment.
@@ -100,5 +89,10 @@ public final class SelectStatement extends DMLStatement implements TableSegments
      */
     public Optional<LockSegment> getLock() {
         return Optional.fromNullable(lock);
+    }
+    
+    @Override
+    public Optional<WhereSegment> getWhere() {
+        return Optional.fromNullable(where);
     }
 }

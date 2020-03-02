@@ -19,13 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +33,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterTableStatement extends DDLStatement implements TableSegmentsAvailable {
+public final class AlterTableStatement extends DDLStatement {
     
     private final TableSegment table;
     
@@ -46,24 +44,4 @@ public final class AlterTableStatement extends DDLStatement implements TableSegm
     private final Collection<DropColumnDefinitionSegment> dropColumnDefinitions = new LinkedList<>();
     
     private final Collection<ConstraintDefinitionSegment> addConstraintDefinitions = new LinkedList<>();
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        Collection<TableSegment> result = new LinkedList<>();
-        result.add(table);
-        for (AddColumnDefinitionSegment each : addColumnDefinitions) {
-            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
-                result.addAll(columnDefinition.getReferencedTables());
-            }
-        }
-        for (ModifyColumnDefinitionSegment each : modifyColumnDefinitions) {
-            result.addAll(each.getColumnDefinition().getReferencedTables());
-        }
-        for (ConstraintDefinitionSegment each : addConstraintDefinitions) {
-            if (each.getReferencedTable().isPresent()) {
-                result.add(each.getReferencedTable().get());
-            }
-        }
-        return result;
-    }
 }
