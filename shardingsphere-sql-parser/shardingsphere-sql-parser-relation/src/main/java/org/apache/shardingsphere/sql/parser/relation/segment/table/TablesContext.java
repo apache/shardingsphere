@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -27,19 +27,13 @@ import java.util.LinkedHashSet;
 /**
  * Tables context.
  */
+@RequiredArgsConstructor
 public final class TablesContext {
     
-    private final Collection<Table> tables;
+    private final Collection<TableSegment> tables;
     
     public TablesContext(final TableSegment tableSegment) {
         this(null == tableSegment ? Collections.<TableSegment>emptyList() : Collections.singletonList(tableSegment));
-    }
-    
-    public TablesContext(final Collection<TableSegment> tableSegments) {
-        tables = new ArrayList<>(tableSegments.size());
-        for (TableSegment each : tableSegments) {
-            tables.add(new Table(each.getTableName().getIdentifier().getValue(), each.getAlias().orNull()));
-        }
     }
     
     /**
@@ -49,8 +43,8 @@ public final class TablesContext {
      */
     public Collection<String> getTableNames() {
         Collection<String> result = new LinkedHashSet<>(tables.size(), 1);
-        for (Table each : tables) {
-            result.add(each.getName());
+        for (TableSegment each : tables) {
+            result.add(each.getTableName().getIdentifier().getValue());
         }
         return result;
     }
