@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.dcl;
 
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DenyUserStatement;
@@ -28,10 +30,14 @@ import java.util.Collections;
 /**
  * Deny user statement context.
  */
+@Getter
 public final class DenyUserStatementContext extends CommonSQLStatementContext<DenyUserStatement> implements TableSegmentsAvailable {
+    
+    private final TablesContext tablesContext;
     
     public DenyUserStatementContext(final DenyUserStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override

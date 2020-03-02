@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -40,12 +41,15 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableSegmentsAvailable {
     
+    private final TablesContext tablesContext;
+    
     private final List<String> columnNames;
     
     private final List<InsertValueContext> insertValueContexts;
     
     public InsertStatementContext(final RelationMetas relationMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTable());
         columnNames = sqlStatement.useDefaultColumns() ? relationMetas.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
         insertValueContexts = getInsertValueContexts(parameters);
     }

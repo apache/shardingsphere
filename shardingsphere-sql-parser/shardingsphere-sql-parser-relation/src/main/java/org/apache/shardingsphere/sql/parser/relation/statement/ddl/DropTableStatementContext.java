@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
@@ -27,10 +29,14 @@ import java.util.Collection;
 /**
  * Drop table statement context.
  */
+@Getter
 public final class DropTableStatementContext extends CommonSQLStatementContext<DropTableStatement> implements TableSegmentsAvailable {
+    
+    private final TablesContext tablesContext;
     
     public DropTableStatementContext(final DropTableStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTables());
     }
     
     @Override
