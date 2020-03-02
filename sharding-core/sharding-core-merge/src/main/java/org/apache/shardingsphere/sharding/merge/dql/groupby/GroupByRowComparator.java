@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.CompareUtil;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
 
 import java.util.Collection;
@@ -34,16 +34,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class GroupByRowComparator implements Comparator<MemoryQueryResultRow> {
     
-    private final SelectSQLStatementContext selectSQLStatementContext;
+    private final SelectStatementContext selectStatementContext;
     
     private final List<Boolean> valueCaseSensitive;
     
     @Override
     public int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2) {
-        if (!selectSQLStatementContext.getOrderByContext().getItems().isEmpty()) {
-            return compare(o1, o2, selectSQLStatementContext.getOrderByContext().getItems());
+        if (!selectStatementContext.getOrderByContext().getItems().isEmpty()) {
+            return compare(o1, o2, selectStatementContext.getOrderByContext().getItems());
         }
-        return compare(o1, o2, selectSQLStatementContext.getGroupByContext().getItems());
+        return compare(o1, o2, selectStatementContext.getGroupByContext().getItems());
     }
     
     private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final Collection<OrderByItem> orderByItems) {

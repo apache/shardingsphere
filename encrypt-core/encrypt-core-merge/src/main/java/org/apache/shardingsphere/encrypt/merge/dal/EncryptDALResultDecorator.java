@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.merge.dal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.merge.dal.impl.DecoratedDescribeTableMergedResult;
-import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedDescribeTableMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.impl.DecoratedEncryptColumnsMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -41,19 +41,16 @@ public final class EncryptDALResultDecorator implements ResultDecorator {
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
-        if (dalStatement instanceof DescribeStatement || dalStatement instanceof ShowColumnsStatement) {
-            return new MergedDescribeTableMergedResult(queryResult, sqlStatementContext, encryptRule);
-        }
-        return new TransparentMergedResult(queryResult);
+        return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement())
+                ? new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, encryptRule) : new TransparentMergedResult(queryResult);
     }
     
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
-        SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
-        if (dalStatement instanceof DescribeStatement || dalStatement instanceof ShowColumnsStatement) {
-            return new DecoratedDescribeTableMergedResult(mergedResult, sqlStatementContext, encryptRule);
-        }
-        return mergedResult;
+        return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement()) ? new DecoratedEncryptColumnsMergedResult(mergedResult, sqlStatementContext, encryptRule) : mergedResult;
+    }
+    
+    private boolean isNeedMergeEncryptColumns(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DescribeStatement || sqlStatement instanceof ShowColumnsStatement;
     }
 }

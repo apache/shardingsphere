@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
@@ -50,7 +51,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SelectSQLStatementContextTest {
+public final class SelectStatementContextTest {
     
     private static final String INDEX_ORDER_BY = "IndexOrderBy";
     
@@ -62,38 +63,38 @@ public final class SelectSQLStatementContextTest {
     
     @Test
     public void assertSetIndexForItemsByIndexOrderBy() {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(INDEX_ORDER_BY), createProjectionsContext(), null);
-        selectSQLStatementContext.setIndexes(Collections.<String, Integer>emptyMap());
-        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(4));
+        selectStatementContext.setIndexes(Collections.<String, Integer>emptyMap());
+        assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(4));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithOwner() {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_OWNER), createProjectionsContext(), null);
-        selectSQLStatementContext.setIndexes(Collections.<String, Integer>emptyMap());
-        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(1));
+        selectStatementContext.setIndexes(Collections.<String, Integer>emptyMap());
+        assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(1));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithAlias() {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITH_ALIAS), createProjectionsContext(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("n", 2);
-        selectSQLStatementContext.setIndexes(columnLabelIndexMap);
-        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(2));
+        selectStatementContext.setIndexes(columnLabelIndexMap);
+        assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(2));
     }
     
     @Test
     public void assertSetIndexForItemsByColumnOrderByWithoutAlias() {
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), createProjectionsContext(), null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
-        selectSQLStatementContext.setIndexes(columnLabelIndexMap);
-        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
+        selectStatementContext.setIndexes(columnLabelIndexMap);
+        assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
     
     @Test
@@ -102,16 +103,16 @@ public final class SelectSQLStatementContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
-        assertTrue(selectSQLStatementContext.isSameGroupByAndOrderByItems());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(null, "", Collections.emptyList(), selectStatement);
+        assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
     @Test
     public void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
-        assertFalse(selectSQLStatementContext.isSameGroupByAndOrderByItems());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(null, "", Collections.emptyList(), selectStatement);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
     @Test
@@ -120,8 +121,8 @@ public final class SelectSQLStatementContextTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.<OrderByItemSegment>singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(null, "", Collections.emptyList(), selectStatement);
-        assertFalse(selectSQLStatementContext.isSameGroupByAndOrderByItems());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(null, "", Collections.emptyList(), selectStatement);
+        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
     @Test
@@ -131,12 +132,12 @@ public final class SelectSQLStatementContextTest {
         when(projectionsContext.getAggregationProjections()).thenReturn(Collections.singletonList(aggregationProjection));
         when(aggregationProjection.getDerivedAggregationProjections()).thenReturn(Collections.singletonList(aggregationProjection));
         when(aggregationProjection.getColumnLabel()).thenReturn("id");
-        SelectSQLStatementContext selectSQLStatementContext = new SelectSQLStatementContext(
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), projectionsContext, null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
         columnLabelIndexMap.put("id", 3);
-        selectSQLStatementContext.setIndexes(columnLabelIndexMap);
-        assertThat(selectSQLStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
+        selectStatementContext.setIndexes(columnLabelIndexMap);
+        assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
     
     private OrderByContext createOrderBy(final String type) {
