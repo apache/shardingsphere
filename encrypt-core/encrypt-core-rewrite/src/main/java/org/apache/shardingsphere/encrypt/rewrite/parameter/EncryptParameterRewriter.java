@@ -26,10 +26,12 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
 
 /**
  * Parameter rewriter for encrypt.
+ * 
+ * @param <T> type of SQL statement context
  */
 @Getter
 @Setter
-public abstract class EncryptParameterRewriter implements ParameterRewriter, EncryptRuleAware {
+public abstract class EncryptParameterRewriter<T extends SQLStatementContext> implements ParameterRewriter<T>, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     

@@ -23,14 +23,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 /**
  * Show columns statement.
  */
 @Getter
 @Setter
-public final class ShowColumnsStatement extends DALStatement implements TableSegmentAvailable {
+public final class ShowColumnsStatement extends DALStatement {
     
     private TableSegment table;
     

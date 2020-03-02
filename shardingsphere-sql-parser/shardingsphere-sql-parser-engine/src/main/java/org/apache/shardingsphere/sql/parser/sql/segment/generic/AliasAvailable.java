@@ -37,5 +37,5 @@ public interface AliasAvailable extends SQLSegment {
      *
      * @param alias alias
      */
-    void setAlias(String alias);
+    void setAlias(AliasSegment alias);
 }

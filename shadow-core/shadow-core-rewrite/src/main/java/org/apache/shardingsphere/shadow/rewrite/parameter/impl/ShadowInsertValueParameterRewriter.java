@@ -19,8 +19,7 @@ package org.apache.shardingsphere.shadow.rewrite.parameter.impl;
 
 import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriter;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -31,19 +30,19 @@ import java.util.List;
 /**
  * Insert value parameter rewriter for shadow.
  */
-public final class ShadowInsertValueParameterRewriter extends ShadowParameterRewriter {
+public final class ShadowInsertValueParameterRewriter extends ShadowParameterRewriter<InsertStatementContext> {
     
     @Override
     protected boolean isNeedRewriteForShadow(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertSQLStatementContext && ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumnNames().contains(getShadowRule().getColumn());
+        return sqlStatementContext instanceof InsertStatementContext && (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getColumnNames().contains(getShadowRule().getColumn());
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         String columnName = getShadowRule().getColumn();
-        int columnIndex = getColumnIndex((GroupedParameterBuilder) parameterBuilder, (InsertSQLStatementContext) sqlStatementContext, columnName);
+        int columnIndex = getColumnIndex((GroupedParameterBuilder) parameterBuilder, insertStatementContext, columnName);
         int count = 0;
-        for (List<Object> each : ((InsertSQLStatementContext) sqlStatementContext).getGroupedParameters()) {
+        for (List<Object> each : insertStatementContext.getGroupedParameters()) {
             if (!each.isEmpty()) {
                 StandardParameterBuilder standardParameterBuilder = ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count);
                 standardParameterBuilder.addRemovedParameters(columnIndex);
@@ -52,13 +51,13 @@ public final class ShadowInsertValueParameterRewriter extends ShadowParameterRew
         }
     }
     
-    private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertSQLStatementContext sqlStatementContext, final String shadowColumnName) {
+    private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final String shadowColumnName) {
         List<String> columnNames;
         if (parameterBuilder.getDerivedColumnName().isPresent()) {
-            columnNames = new ArrayList<>(sqlStatementContext.getColumnNames());
+            columnNames = new ArrayList<>(insertStatementContext.getColumnNames());
             columnNames.remove(parameterBuilder.getDerivedColumnName().get());
         } else {
-            columnNames = sqlStatementContext.getColumnNames();
+            columnNames = insertStatementContext.getColumnNames();
         }
         return columnNames.indexOf(shadowColumnName);
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
@@ -29,18 +29,18 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.OffsetToken;
 /**
  * Offset token generator.
  */
-public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class OffsetTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectSQLStatementContext
-                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().isPresent()
-                && ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment;
+        return sqlStatementContext instanceof SelectStatementContext
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().isPresent()
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().getOffsetSegment().get() instanceof NumberLiteralPaginationValueSegment;
     }
     
     @Override
-    public OffsetToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        PaginationContext pagination = ((SelectSQLStatementContext) sqlStatementContext).getPaginationContext();
+    public OffsetToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        PaginationContext pagination = selectStatementContext.getPaginationContext();
         Preconditions.checkState(pagination.getOffsetSegment().isPresent());
         return new OffsetToken(pagination.getOffsetSegment().get().getStartIndex(), pagination.getOffsetSegment().get().getStopIndex(), pagination.getRevisedOffset());
     }

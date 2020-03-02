@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
-import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.example.config.ExampleConfiguration;
+import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -35,10 +35,16 @@ import java.util.Properties;
 
 public final class LocalShardingDatabasesConfiguration implements ExampleConfiguration {
     
-    private final RegistryCenterConfiguration registryCenterConfig;
+    private final Map<String, InstanceConfiguration> instanceConfigurationMap;
     
-    public LocalShardingDatabasesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
-        this.registryCenterConfig = registryCenterConfig;
+    public LocalShardingDatabasesConfiguration(final Map<String, InstanceConfiguration> instanceConfigurationMap) {
+        this.instanceConfigurationMap = instanceConfigurationMap;
+    }
+    
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        Properties properties = new Properties();
+        properties.setProperty("worker.id", "123");
+        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", properties);
     }
     
     @Override
@@ -49,7 +55,7 @@ public final class LocalShardingDatabasesConfiguration implements ExampleConfigu
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBroadcastTables().add("t_address");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-db-data-source", registryCenterConfig, true);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(instanceConfigurationMap);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties(), orchestrationConfig);
     }
     
@@ -68,11 +74,5 @@ public final class LocalShardingDatabasesConfiguration implements ExampleConfigu
         result.put("demo_ds_0", DataSourceUtil.createDataSource("demo_ds_0"));
         result.put("demo_ds_1", DataSourceUtil.createDataSource("demo_ds_1"));
         return result;
-    }
-    
-    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        Properties properties = new Properties();
-        properties.setProperty("worker.id", "123");
-        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", properties);
     }
 }

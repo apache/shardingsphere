@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 
-import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
-import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
+import org.apache.shardingsphere.example.config.ExampleConfiguration;
+import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -36,10 +36,10 @@ import java.util.Properties;
 
 public final class LocalShardingTablesConfiguration implements ExampleConfiguration {
     
-    private final RegistryCenterConfiguration registryCenterConfig;
+    private final Map<String, InstanceConfiguration> instanceConfigurationMap;
     
-    public LocalShardingTablesConfiguration(final RegistryCenterConfiguration registryCenterConfig) {
-        this.registryCenterConfig = registryCenterConfig;
+    public LocalShardingTablesConfiguration(final Map<String, InstanceConfiguration> instanceConfigurationMap) {
+        this.instanceConfigurationMap = instanceConfigurationMap;
     }
     
     @Override
@@ -50,7 +50,7 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
         shardingRuleConfig.getBroadcastTables().add("t_address");
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-sharding-tbl-data-source", registryCenterConfig, true);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(instanceConfigurationMap);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties(), orchestrationConfig);
     }
     

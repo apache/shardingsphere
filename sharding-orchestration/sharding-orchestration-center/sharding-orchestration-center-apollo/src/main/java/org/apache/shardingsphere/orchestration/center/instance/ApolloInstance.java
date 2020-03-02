@@ -26,7 +26,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloOpenApiWrapper;
@@ -43,7 +43,7 @@ import java.util.Properties;
  * Config center for Apollo.
  */
 @Slf4j
-public final class ApolloInstance implements ConfigCenter {
+public final class ApolloInstance implements ConfigCenterRepository {
     
     private final Map<String, DataChangedEventListener> caches = new HashMap<>();
     

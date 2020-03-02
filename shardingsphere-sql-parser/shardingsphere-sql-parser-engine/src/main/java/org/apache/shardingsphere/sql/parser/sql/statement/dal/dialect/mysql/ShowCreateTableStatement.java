@@ -21,14 +21,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 /**
  * Show create table statement.
  */
 @Getter
 @Setter
-public final class ShowCreateTableStatement extends DALStatement implements TableSegmentAvailable {
+public final class ShowCreateTableStatement extends DALStatement {
     
     private TableSegment table;
 }

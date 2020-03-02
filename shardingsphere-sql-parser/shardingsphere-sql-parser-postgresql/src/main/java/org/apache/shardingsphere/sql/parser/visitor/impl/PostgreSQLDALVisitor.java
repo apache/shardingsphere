@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.DALVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConfigurationParameterClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ResetParameterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ShowContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
 import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitor;
@@ -39,7 +41,16 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     
     @Override
     public ASTNode visitSet(final SetContext ctx) {
-        return new SetStatement();
+        SetStatement result = new SetStatement();
+        if (null != ctx.configurationParameterClause()) {
+            result.setVariable((VariableSegment) visit(ctx.configurationParameterClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitConfigurationParameterClause(final ConfigurationParameterClauseContext ctx) {
+        return new VariableSegment(ctx.identifier(0).getStart().getStartIndex(), ctx.identifier(0).getStop().getStopIndex(), ctx.identifier(0).getText());
     }
     
     @Override

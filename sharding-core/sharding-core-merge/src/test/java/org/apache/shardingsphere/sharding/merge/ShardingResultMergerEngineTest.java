@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -52,7 +52,7 @@ public final class ShardingResultMergerEngineTest {
     @Test
     public void assertNewInstanceWithSelectStatement() {
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
-        SQLStatementContext sqlStatementContext = new SelectSQLStatementContext(new SelectStatement(),
+        SQLStatementContext sqlStatementContext = new SelectStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
@@ -68,10 +68,10 @@ public final class ShardingResultMergerEngineTest {
     @Test
     public void assertNewInstanceWithOtherStatement() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getAllSQLSegments().add(new TableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
+        insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        SQLStatementContext sqlStatementContext = new InsertSQLStatementContext(null, Collections.emptyList(), insertStatement);
+        SQLStatementContext sqlStatementContext = new InsertStatementContext(null, Collections.emptyList(), insertStatement);
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentResultMerger.class));
     }

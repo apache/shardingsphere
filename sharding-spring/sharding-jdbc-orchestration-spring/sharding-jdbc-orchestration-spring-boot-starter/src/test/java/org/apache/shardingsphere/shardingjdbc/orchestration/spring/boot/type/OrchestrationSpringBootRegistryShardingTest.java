@@ -30,7 +30,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenter;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepositoryRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.junit.BeforeClass;
@@ -58,7 +58,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestCenter testCenter = new TestCenter();
+        TestCenterRepositoryRepository testCenter = new TestCenterRepositoryRepository();
         testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", "ds: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"

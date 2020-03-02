@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
@@ -27,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
  * Expression projection segment.
  */
 @Getter
-public final class ExpressionProjectionSegment implements ProjectionSegment, ComplexExpressionSegment {
+public final class ExpressionProjectionSegment implements ProjectionSegment, ComplexExpressionSegment, AliasAvailable {
     
     private final int startIndex;
     
@@ -35,6 +37,7 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     
     private final String text;
     
+    @Setter
     private AliasSegment alias;
     
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text) {
@@ -43,19 +46,8 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
         this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
     }
     
-    /**
-     * Get alias.
-     * @return alias
-     */
+    @Override
     public Optional<String> getAlias() {
         return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
-    }
-    
-    /**
-     * Set alias.
-     * @param alias alias
-     */
-    public void setAlias(final AliasSegment alias) {
-        this.alias = alias;
     }
 }

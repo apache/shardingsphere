@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.i
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ProjectionsToken;
@@ -36,22 +36,22 @@ import java.util.LinkedList;
 /**
  * Projections token generator.
  */
-public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectSQLStatementContext && !getDerivedProjectionTexts((SelectSQLStatementContext) sqlStatementContext).isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext && !getDerivedProjectionTexts((SelectStatementContext) sqlStatementContext).isEmpty();
     }
     
     @Override
-    public ProjectionsToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        Collection<String> derivedProjectionTexts = getDerivedProjectionTexts((SelectSQLStatementContext) sqlStatementContext);
-        return new ProjectionsToken(((SelectSQLStatementContext) sqlStatementContext).getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts);
+    public ProjectionsToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        Collection<String> derivedProjectionTexts = getDerivedProjectionTexts(selectStatementContext);
+        return new ProjectionsToken(selectStatementContext.getProjectionsContext().getStopIndex() + 1 + " ".length(), derivedProjectionTexts);
     }
     
-    private Collection<String> getDerivedProjectionTexts(final SelectSQLStatementContext selectSQLStatementContext) {
+    private Collection<String> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext) {
         Collection<String> result = new LinkedList<>();
-        for (Projection each : selectSQLStatementContext.getProjectionsContext().getProjections()) {
+        for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
             if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty()) {
                 result.addAll(Lists.transform(((AggregationProjection) each).getDerivedAggregationProjections(), new Function<AggregationProjection, String>() {
                     

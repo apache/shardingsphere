@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config;
 
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.example.type.ShardingType;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class RegistryCenterConfigurationUtil {
@@ -31,20 +34,58 @@ public class RegistryCenterConfigurationUtil {
 
     private static final String NACOS_NAMESPACE = "";
     
-    public static RegistryCenterConfiguration getZooKeeperConfiguration() {
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration("zookeeper");
+    public static Map<String, InstanceConfiguration> getZooKeeperConfiguration(String overwrite, ShardingType shardingType) {
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<String, InstanceConfiguration>();
+        Properties properties = new Properties();
+        properties.setProperty("overwrite", overwrite);
+        InstanceConfiguration result = new InstanceConfiguration("zookeeper", properties);
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);
-        return result;
+        result.setOrchestrationType("registry_center,config_center");
+        switch (shardingType) {
+            case SHARDING_DATABASES_AND_TABLES:
+                instanceConfigurationMap.put("orchestration-sharding-data-source", result);
+                break;
+            case MASTER_SLAVE:
+                instanceConfigurationMap.put("orchestration-ms-data-source", result);
+                break;
+            case ENCRYPT:
+                instanceConfigurationMap.put("orchestration-encrypt-data-source", result);
+                break;
+        }
+        return instanceConfigurationMap;
     }
     
-    public static RegistryCenterConfiguration getNacosConfiguration() {
-        Properties properties = new Properties();
-        properties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
-        properties.setProperty("timeout", "3000");
-        RegistryCenterConfiguration result = new RegistryCenterConfiguration("nacos", properties);
-        result.setServerLists(NACOS_CONNECTION_STRING);
-        result.setNamespace(NACOS_NAMESPACE);
-        return result;
+    public static Map<String, InstanceConfiguration> getNacosConfiguration(String overwrite, ShardingType shardingType) {
+        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<String, InstanceConfiguration>();
+        Properties nacosProperties = new Properties();
+        nacosProperties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
+        nacosProperties.setProperty("timeout", "3000");
+        nacosProperties.setProperty("overwrite", overwrite);
+        InstanceConfiguration nacosResult = new InstanceConfiguration("nacos", nacosProperties);
+        nacosResult.setServerLists(NACOS_CONNECTION_STRING);
+        nacosResult.setNamespace(NACOS_NAMESPACE);
+        nacosResult.setOrchestrationType("config_center");
+        Properties zookeeperProperties = new Properties();
+        zookeeperProperties.setProperty("overwrite", overwrite);
+        InstanceConfiguration zookeeperResult = new InstanceConfiguration("zookeeper", zookeeperProperties);
+        zookeeperResult.setServerLists(ZOOKEEPER_CONNECTION_STRING);
+        zookeeperResult.setNamespace(NAMESPACE);
+        zookeeperResult.setOrchestrationType("registry_center");
+        switch (shardingType) {
+            case SHARDING_DATABASES_AND_TABLES:
+                instanceConfigurationMap.put("orchestration-sharding-data-source", nacosResult);
+                instanceConfigurationMap.put("orchestration-zookeeper-sharding-data-source", zookeeperResult);
+                break;
+            case MASTER_SLAVE:
+                instanceConfigurationMap.put("orchestration-ms-data-source", nacosResult);
+                instanceConfigurationMap.put("orchestration-zookeeper-ms-data-source", zookeeperResult);
+                break;
+            case ENCRYPT:
+                instanceConfigurationMap.put("orchestration-encrypt-data-source", nacosResult);
+                instanceConfigurationMap.put("orchestration-zookeeper-encrypt-data-source", zookeeperResult);
+                break;
+        }
+        return instanceConfigurationMap;
     }
 }

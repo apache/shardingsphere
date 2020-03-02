@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
@@ -27,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
  * Aggregation projection segment.
  */
 @Getter
-public class AggregationProjectionSegment implements ProjectionSegment {
+public class AggregationProjectionSegment implements ProjectionSegment, AliasAvailable {
     
     private final int startIndex;
     
@@ -39,6 +41,7 @@ public class AggregationProjectionSegment implements ProjectionSegment {
     
     private final int innerExpressionStartIndex;
     
+    @Setter
     private AliasSegment alias;
     
     public AggregationProjectionSegment(final int startIndex, final int stopIndex, final String text, final AggregationType type, final int innerExpressionStartIndex) {
@@ -49,19 +52,8 @@ public class AggregationProjectionSegment implements ProjectionSegment {
         this.innerExpressionStartIndex = innerExpressionStartIndex;
     }
     
-    /**
-     * Get alias.
-     * @return alias
-     */
+    @Override
     public Optional<String> getAlias() {
         return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
-    }
-    
-    /**
-     * Set alias.
-     * @param alias alias
-     */
-    public void setAlias(final AliasSegment alias) {
-        this.alias = alias;
     }
 }

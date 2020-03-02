@@ -22,14 +22,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 /**
  * Alter index statement.
  */
 @Getter
 @Setter
-public final class AlterIndexStatement extends DDLStatement implements TableSegmentAvailable, IndexSegmentAvailable {
+public final class AlterIndexStatement extends DDLStatement implements IndexSegmentAvailable {
     
     private IndexSegment index;
     
