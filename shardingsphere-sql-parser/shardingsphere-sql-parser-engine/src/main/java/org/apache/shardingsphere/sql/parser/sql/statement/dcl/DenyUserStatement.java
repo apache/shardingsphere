@@ -20,27 +20,13 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Deny user statement.
  */
 @Getter
 @Setter
-public final class DenyUserStatement extends DCLStatement implements TableSegmentsAvailable {
+public final class DenyUserStatement extends DCLStatement {
     
     private TableSegment table;
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
-    }
-    
-    @Override
-    public Object getTablesContext() {
-        return null;
-    }
 }

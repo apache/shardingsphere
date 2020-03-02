@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,17 +27,7 @@ import java.util.LinkedList;
  * Truncate table statement.
  */
 @Getter
-public final class TruncateStatement extends DDLStatement implements TableSegmentsAvailable {
+public final class TruncateStatement extends DDLStatement {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return tables;
-    }
-    
-    @Override
-    public Object getTablesContext() {
-        return null;
-    }
 }

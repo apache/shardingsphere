@@ -21,27 +21,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Describe statement.
  */
 @Getter
 @Setter
-public final class DescribeStatement extends DALStatement implements TableSegmentsAvailable {
-
+public final class DescribeStatement extends DALStatement {
+    
     private TableSegment table;
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
-    }
-    
-    @Override
-    public Object getTablesContext() {
-        return null;
-    }
 }
