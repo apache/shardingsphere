@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.sharding;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -64,12 +63,7 @@ public final class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends
         if (hasDataSource) {
             dataSource = YamlOrchestrationShardingDataSourceFactory.createDataSource(yamlFile);
         } else {
-            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), new Function<String, DataSource>() {
-                @Override
-                public DataSource apply(final String key) {
-                    return AbstractYamlDataSourceTest.createDataSource(key);
-                }
-            });
+            Map<String, DataSource> dataSourceMap = Maps.asMap(Sets.newHashSet("db0_master", "db0_slave", "db1_master", "db1_slave"), AbstractYamlDataSourceTest::createDataSource);
             Map<String, DataSource> result = new HashMap<>();
             for (Entry<String, DataSource> each : dataSourceMap.entrySet()) {
                 result.put(each.getKey(), each.getValue());

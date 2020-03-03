@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
@@ -33,6 +29,9 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAda
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -144,12 +143,6 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     private synchronized Map<String, DataSourceConfiguration> getAddedDataSources(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        return Maps.filterEntries(dataSourceConfigurations, new Predicate<Entry<String, DataSourceConfiguration>>() {
-            
-            @Override
-            public boolean apply(final Entry<String, DataSourceConfiguration> input) {
-                return !AbstractOrchestrationDataSource.this.dataSourceConfigurations.containsKey(input.getKey());
-            }
-        });
+        return Maps.filterEntries(dataSourceConfigurations, input -> !AbstractOrchestrationDataSource.this.dataSourceConfigurations.containsKey(input.getKey()));
     }
 }

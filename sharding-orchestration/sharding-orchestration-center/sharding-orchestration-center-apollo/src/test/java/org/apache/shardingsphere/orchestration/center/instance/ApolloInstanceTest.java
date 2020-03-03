@@ -24,7 +24,6 @@ import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -69,13 +68,7 @@ public final class ApolloInstanceTest {
     @SneakyThrows
     public void assertWatch() {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                future.set(dataChangedEvent);
-            }
-        });
+        configCenterRepository.watch("/test/children/1", future::set);
         embeddedApollo.addOrModifyProperty("orchestration", "test.children.1", "value3");
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is("/test/children/1"));

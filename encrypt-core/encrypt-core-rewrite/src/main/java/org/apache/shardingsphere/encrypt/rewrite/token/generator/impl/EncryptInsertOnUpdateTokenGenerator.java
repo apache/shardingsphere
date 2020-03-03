@@ -96,10 +96,7 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     }
     
     private void addPlainColumn(final String tableName, final String columnName, final EncryptParameterAssignmentToken token) {
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
-        if (plainColumn.isPresent()) {
-            token.addColumnName(plainColumn.get());
-        }
+        getEncryptRule().findPlainColumn(tableName, columnName).ifPresent(token::addColumnName);
     }
     
     private void addCipherAssignment(final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
@@ -110,9 +107,6 @@ public final class EncryptInsertOnUpdateTokenGenerator extends BaseEncryptSQLTok
     
     private void addPlainAssignment(final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, assignmentSegment.getColumn().getIdentifier().getValue());
-        if (plainColumn.isPresent()) {
-            token.addAssignment(plainColumn.get(), originalValue);
-        }
+        getEncryptRule().findPlainColumn(tableName, assignmentSegment.getColumn().getIdentifier().getValue()).ifPresent(plainColumn -> token.addAssignment(plainColumn, originalValue));
     }
 }

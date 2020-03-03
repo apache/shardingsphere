@@ -68,7 +68,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     }
     
     private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext insertStatementContext, final String tableName) {
-        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
+        java.util.Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         List<String> columnNames = getColumnNames(insertStatementContext, encryptTable.get(), previousSQLToken.getColumns());
         previousSQLToken.getColumns().clear();
@@ -78,7 +78,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertStatementContext insertStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
+        java.util.Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, encryptTable.get(), insertStatementContext.getColumnNames()));
     }
@@ -99,17 +99,11 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     }
     
     private void addPlainColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        Optional<String> plainColumn = encryptTable.findPlainColumn(columnName);
-        if (plainColumn.isPresent()) {
-            columnNames.add(columnIndex + 1, plainColumn.get());
-        }
+        encryptTable.findPlainColumn(columnName).ifPresent(plainColumn -> columnNames.add(columnIndex + 1, plainColumn));
     }
     
     private void addAssistedQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnName);
-        if (assistedQueryColumn.isPresent()) {
-            columnNames.add(columnIndex + 1, assistedQueryColumn.get());
-        }
+        encryptTable.findAssistedQueryColumn(columnName).ifPresent(assistedQueryColumn -> columnNames.add(columnIndex + 1, assistedQueryColumn));
     }
     
     private void setCipherColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {

@@ -109,7 +109,7 @@ public final class WhereClauseShardingConditionEngine {
                 continue;
             }
             if (!result.containsKey(column)) {
-                result.put(column, new LinkedList<RouteValue>());
+                result.put(column, new LinkedList<>());
             }
             result.get(column).add(routeValue.get());
         }

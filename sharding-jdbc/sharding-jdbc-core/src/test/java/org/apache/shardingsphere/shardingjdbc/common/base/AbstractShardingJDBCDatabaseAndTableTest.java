@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -79,13 +78,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), new Predicate<String>() {
-            
-            @Override
-            public boolean apply(final String input) {
-                return SHARDING_DB_NAMES.contains(input);
-            }
-        });
+        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
     }
     
     @Before
