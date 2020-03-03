@@ -24,24 +24,24 @@ import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
  * Sync task interface.
  */
 public interface SyncTask {
-
+    
     /**
      * Prepare to start synchronize data.
      */
     void prepare();
-
+    
     /**
      * Start synchronize data.
      *
      * @param callback invoke when sync task exit.
      */
     void start(ReportCallback callback);
-
+    
     /**
      * Stop synchronize data.
      */
     void stop();
-
+    
     /**
      * Get synchronize progress.
      *

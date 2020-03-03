@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 
 /**
- * DatasourceChecker factory.
+ * Datasource checker factory.
  */
-public class CheckerFactory {
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CheckerFactory {
+    
     /**
      * New instance of checker.
      *

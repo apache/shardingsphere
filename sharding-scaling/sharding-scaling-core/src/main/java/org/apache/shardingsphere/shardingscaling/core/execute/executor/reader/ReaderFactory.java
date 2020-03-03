@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
@@ -25,8 +27,9 @@ import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 /**
- * reader factory.
+ * Reader factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReaderFactory {
     
     /**

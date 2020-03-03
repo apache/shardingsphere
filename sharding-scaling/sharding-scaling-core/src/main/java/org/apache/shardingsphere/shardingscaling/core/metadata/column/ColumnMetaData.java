@@ -25,11 +25,11 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class ColumnMetaData {
-
+public final class ColumnMetaData {
+    
     private String columnName;
-
+    
     private int columnType;
-
+    
     private String columnTypeName;
 }

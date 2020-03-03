@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.position;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
@@ -26,8 +28,9 @@ import javax.sql.DataSource;
 /**
  * Log manager factory.
  */
-public class LogPositionManagerFactory {
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LogPositionManagerFactory {
+    
     /**
      * New instance of log manager.
      *

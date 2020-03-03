@@ -25,9 +25,9 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class Event {
-
+public final class Event {
+    
     private final String taskId;
-
+    
     private final EventType eventType;
 }

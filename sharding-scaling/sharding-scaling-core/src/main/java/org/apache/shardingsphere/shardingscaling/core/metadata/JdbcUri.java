@@ -27,13 +27,13 @@ import java.util.Map;
  * Jdbc uri.
  */
 public final class JdbcUri {
-
+    
     private final URI jdbcUri;
-
+    
     public JdbcUri(final String jdbcUrl) {
         this.jdbcUri = URI.create(jdbcUrl.substring(5));
     }
-
+    
     /**
      * Get scheme.
      *
@@ -42,7 +42,7 @@ public final class JdbcUri {
     public String getScheme() {
         return jdbcUri.getScheme();
     }
-
+    
     /**
      * Get hostname.
      *
@@ -51,7 +51,7 @@ public final class JdbcUri {
     public String getHostname() {
         return jdbcUri.getHost();
     }
-
+    
     /**
      * Get port.
      *
@@ -60,7 +60,7 @@ public final class JdbcUri {
     public int getPort() {
         return -1 == jdbcUri.getPort() ? 3306 : jdbcUri.getPort();
     }
-
+    
     /**
      * Get host.
      *
@@ -69,7 +69,7 @@ public final class JdbcUri {
     public String getHost() {
         return String.format("%s:%d", getHostname(), getPort());
     }
-
+    
     /**
      * Get database name.
      * @return database name
@@ -77,7 +77,7 @@ public final class JdbcUri {
     public String getDatabase() {
         return jdbcUri.getPath().replaceFirst("/", "");
     }
-
+    
     /**
      * Get parameters.
      *

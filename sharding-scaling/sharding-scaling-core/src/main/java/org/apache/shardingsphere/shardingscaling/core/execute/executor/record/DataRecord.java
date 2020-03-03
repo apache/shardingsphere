@@ -30,18 +30,18 @@ import java.util.List;
 @Setter
 @Getter
 public final class DataRecord extends Record {
-
+    
     private String type;
-
+    
     private String tableName;
     
     private final List<Column> columns;
-
+    
     public DataRecord(final LogPosition logPosition, final int columnCount) {
         super(logPosition);
         columns = new ArrayList<>(columnCount);
     }
-
+    
     /**
      * Add a column to record.
      *
@@ -50,7 +50,7 @@ public final class DataRecord extends Record {
     public void addColumn(final Column data) {
         columns.add(data);
     }
-
+    
     /**
      * Return column count.
      *
@@ -59,7 +59,7 @@ public final class DataRecord extends Record {
     public int getColumnCount() {
         return columns.size();
     }
-
+    
     /**
      * Get column by index.
      *

@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public final class RealTimeDataSyncTaskProgress implements SyncProgress {
-
+    
     private final String id;
     
     private final long delayMillisecond;

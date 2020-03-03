@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
  * Sync task factory.
  */
 public interface SyncTaskFactory {
-
+    
     /**
      * Create history data sync task group.
      *
@@ -36,7 +36,7 @@ public interface SyncTaskFactory {
      * @return history data sync task group
      */
     HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
-
+    
     /**
      * Create history data sync task.
      *
@@ -45,7 +45,7 @@ public interface SyncTaskFactory {
      * @return history data sync task
      */
     HistoryDataSyncTask createHistoryDataSyncTask(SyncConfiguration syncConfiguration, DataSourceManager dataSourceManager);
-
+    
     /**
      * Create realtime data sync task.
      *

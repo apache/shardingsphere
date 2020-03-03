@@ -21,17 +21,17 @@ import javax.sql.DataSource;
 import java.util.Collection;
 
 /**
- * DatasourceChecker.
+ * Datasource checker.
  */
 public interface DatasourceChecker {
-
+    
     /**
      * Check datasource connections.
      *
      * @param dataSources datasource connections
      */
     void checkConnection(Collection<DataSource> dataSources);
-
+    
     /**
      * Check user's privileges.
      *

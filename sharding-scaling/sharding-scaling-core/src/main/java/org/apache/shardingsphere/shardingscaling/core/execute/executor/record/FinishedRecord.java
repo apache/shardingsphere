@@ -22,8 +22,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.
 /**
  * Finished record.
  */
-public class FinishedRecord extends Record {
-
+public final class FinishedRecord extends Record {
+    
     public FinishedRecord(final LogPosition logPosition) {
         super(logPosition);
     }

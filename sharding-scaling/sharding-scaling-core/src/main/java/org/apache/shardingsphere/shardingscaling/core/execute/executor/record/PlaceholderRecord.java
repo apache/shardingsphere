@@ -22,8 +22,8 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.
 /**
  * Placeholder record.
  */
-public class PlaceholderRecord extends Record {
-
+public final class PlaceholderRecord extends Record {
+    
     public PlaceholderRecord(final LogPosition logPosition) {
         super(logPosition);
     }

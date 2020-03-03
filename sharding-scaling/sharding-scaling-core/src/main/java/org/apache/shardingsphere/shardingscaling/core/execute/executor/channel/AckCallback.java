@@ -25,7 +25,7 @@ import java.util.List;
  * Record acknowledged callback.
  */
 public interface AckCallback {
-
+    
     /**
      * Call after record acknowledged.
      *

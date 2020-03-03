@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultSyncTaskExecuteEngineTest {
-
+public final class DefaultSyncTaskExecuteEngineTest {
+    
     @Mock
     private SyncExecutor syncExecutor;
-
+    
     @Test(expected = RejectedExecutionException.class)
     public void assertSubmitThrowRejectedExecutionException() {
         List<SyncExecutor> executors = new ArrayList<>(11);

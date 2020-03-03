@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class DataSourceManagerTest {
+public final class DataSourceManagerTest {
 
     private static final Gson GSON = new Gson();
 

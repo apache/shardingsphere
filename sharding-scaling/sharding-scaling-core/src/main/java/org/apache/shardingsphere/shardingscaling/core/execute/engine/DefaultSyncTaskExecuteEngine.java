@@ -88,12 +88,12 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
     
     private void addReleaseWorkerThreadCallback(final ListenableFuture listenableFuture) {
         Futures.addCallback(listenableFuture, new FutureCallback() {
-        
+            
             @Override
             public void onSuccess(final Object r) {
                 releaseWorkerThread();
             }
-        
+            
             @Override
             public void onFailure(final Throwable t) {
                 releaseWorkerThread();

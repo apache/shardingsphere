@@ -25,12 +25,12 @@ import lombok.Setter;
 /**
  * Record interface.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public abstract class Record {
-
-    private final LogPosition logPosition;
     
+    private final LogPosition logPosition;
+        
     private long commitTime;
 }

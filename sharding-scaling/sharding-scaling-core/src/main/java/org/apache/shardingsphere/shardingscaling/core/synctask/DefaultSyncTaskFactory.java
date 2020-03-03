@@ -27,17 +27,17 @@ import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManag
  * Default sync task factory.
  */
 public final class DefaultSyncTaskFactory implements SyncTaskFactory {
-
+    
     @Override
     public HistoryDataSyncTaskGroup createHistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         return new HistoryDataSyncTaskGroup(syncConfiguration, dataSourceManager);
     }
-
+    
     @Override
     public HistoryDataSyncTask createHistoryDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         return new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
     }
-
+    
     @Override
     public RealtimeDataSyncTask createRealtimeDataSyncTask(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         return new RealtimeDataSyncTask(syncConfiguration, dataSourceManager);
