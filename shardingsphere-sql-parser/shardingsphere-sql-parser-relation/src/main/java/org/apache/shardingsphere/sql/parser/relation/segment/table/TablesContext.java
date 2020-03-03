@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
-import lombok.ToString;
+import com.google.common.base.Optional;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -33,34 +30,13 @@ import java.util.LinkedHashSet;
 /**
  * Tables context.
  */
-@ToString
+@RequiredArgsConstructor
 public final class TablesContext {
     
-    private final Collection<Table> tables;
+    private final Collection<TableSegment> tables;
     
-    public TablesContext(final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof TableSegmentsAvailable)) {
-            tables = Collections.emptyList();
-            return;
-        }
-        Collection<TableSegment> tableSegments = getAllTables((TableSegmentsAvailable) sqlStatement);
-        tables = new ArrayList<>(tableSegments.size());
-        for (TableSegment each : tableSegments) {
-            tables.add(new Table(each.getTableName().getIdentifier().getValue(), each.getAlias().orNull()));
-        }
-    }
-    
-    private Collection<TableSegment> getAllTables(final TableSegmentsAvailable sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return ((SelectStatement) sqlStatement).getTables();
-        }
-        if (sqlStatement instanceof UpdateStatement) {
-            return ((UpdateStatement) sqlStatement).getTables();
-        }
-        if (sqlStatement instanceof DeleteStatement) {
-            return ((DeleteStatement) sqlStatement).getTables();
-        }
-        return sqlStatement.getAllTables();
+    public TablesContext(final TableSegment tableSegment) {
+        this(null == tableSegment ? Collections.<TableSegment>emptyList() : Collections.singletonList(tableSegment));
     }
     
     /**
@@ -70,9 +46,44 @@ public final class TablesContext {
      */
     public Collection<String> getTableNames() {
         Collection<String> result = new LinkedHashSet<>(tables.size(), 1);
-        for (Table each : tables) {
-            result.add(each.getName());
+        for (TableSegment each : tables) {
+            result.add(each.getTableName().getIdentifier().getValue());
         }
         return result;
+    }
+    
+    /**
+     * Find table name.
+     *
+     * @param predicate predicate
+     * @param relationMetas relation metas
+     * @return table name
+     */
+    public Optional<String> findTableName(final PredicateSegment predicate, final RelationMetas relationMetas) {
+        if (1 == tables.size()) {
+            return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
+        }
+        if (predicate.getColumn().getOwner().isPresent()) {
+            return Optional.of(findTableNameFromSQL(predicate.getColumn().getOwner().get().getIdentifier().getValue()));
+        }
+        return findTableNameFromMetaData(predicate.getColumn().getIdentifier().getValue(), relationMetas);
+    }
+    
+    private String findTableNameFromSQL(final String tableNameOrAlias) {
+        for (TableSegment each : tables) {
+            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orNull())) {
+                return each.getTableName().getIdentifier().getValue();
+            }
+        }
+        throw new IllegalStateException("Can not find owner from table.");
+    }
+    
+    private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {
+        for (TableSegment each : tables) {
+            if (relationMetas.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
+                return Optional.of(each.getTableName().getIdentifier().getValue());
+            }
+        }
+        return Optional.absent();
     }
 }

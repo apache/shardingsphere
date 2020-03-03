@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -118,8 +118,8 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof TableSegmentsAvailable) {
-            TableSegmentsAvailable tableSegmentsAvailable = (TableSegmentsAvailable) sqlStatementContext;
+        if (sqlStatementContext instanceof TableAvailable) {
+            TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
             return 1 == tableSegmentsAvailable.getAllTables().size() && !"*".equals(tableSegmentsAvailable.getAllTables().iterator().next().getTableName().getIdentifier().getValue());
         }
         return false;

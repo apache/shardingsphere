@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
 
 /**
- * Table segments available.
+ * Table available.
  */
-public interface TableSegmentsAvailable {
+public interface TableAvailable {
     
     /**
      * Get all table segments.
@@ -32,4 +32,11 @@ public interface TableSegmentsAvailable {
      * @return all table segments
      */
     Collection<TableSegment> getAllTables();
+    
+    /**
+     * Get tables context.
+     * 
+     * @return tables context
+     */
+    TablesContext getTablesContext();
 }

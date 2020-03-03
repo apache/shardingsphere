@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
@@ -66,7 +66,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
-        if (isDMLForModify(sqlStatementContext) && 1 != ((TableSegmentsAvailable) sqlStatementContext).getAllTables().size()) {
+        if (isDMLForModify(sqlStatementContext) && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
             throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", sqlStatementContext.getSqlStatement());
         }
         return generateRouteResult(getDataNodes(shardingRule, shardingRule.getTableRule(logicTableName)));
