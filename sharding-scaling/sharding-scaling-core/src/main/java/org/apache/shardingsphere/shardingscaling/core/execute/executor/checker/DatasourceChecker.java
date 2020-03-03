@@ -33,7 +33,7 @@ public interface DatasourceChecker {
     void checkConnection(Collection<DataSource> dataSources);
     
     /**
-     * Check user's privileges.
+     * Check user privileges.
      *
      * @param dataSources datasource connections
      */

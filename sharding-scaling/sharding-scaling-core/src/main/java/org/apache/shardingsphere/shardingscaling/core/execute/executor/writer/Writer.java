@@ -33,7 +33,7 @@ public interface Writer extends SyncExecutor {
     void setChannel(Channel channel);
     
     /**
-     * write data to channel.
+     * Write data to channel.
      */
     void write();
 }
