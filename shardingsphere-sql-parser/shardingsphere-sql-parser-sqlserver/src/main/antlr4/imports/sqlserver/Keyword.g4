@@ -535,3 +535,39 @@ DECIMAL
 TYPE
     : T Y P E
     ;
+
+BIT
+    : B I T
+    ;
+
+SMALLINT
+    : S M A L L I N T
+    ;
+
+INT
+    : I N T
+    ;
+
+TINYINT
+    : T I N Y I N T
+    ;
+
+NUMERIC
+    : N U M E R I C
+    ;
+
+FLOAT
+    : F L O A T
+    ;
+
+BIGINT
+    : B I G I N T
+    ;
+
+TEXT
+    : T E X T
+    ;
+
+VARCHAR
+    : V A R C H A R
+    ;
