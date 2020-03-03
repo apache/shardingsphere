@@ -38,22 +38,22 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     public Class<? extends LogReader> getLogReaderClass() {
         return PostgreSQLWalReader.class;
     }
-
+    
     @Override
     public Class<? extends LogPositionManager> getLogPositionManager() {
         return PostgreSQLLogPositionManager.class;
     }
-
+    
     @Override
     public Class<? extends Writer> getWriterClass() {
         return PostgreSQLWriter.class;
     }
-
+    
     @Override
     public Class<? extends DatasourceChecker> getCheckerClass() {
         return PostgreSQLDatasourceChecker.class;
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "PostgreSQL";

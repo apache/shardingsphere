@@ -27,7 +27,7 @@ import org.postgresql.replication.LogSequenceNumber;
 
 import java.nio.ByteBuffer;
 
-public class TestDecodingPluginTest {
+public final class TestDecodingPluginTest {
     
     @Test
     public void assertDecodeWriteRowEvent() {

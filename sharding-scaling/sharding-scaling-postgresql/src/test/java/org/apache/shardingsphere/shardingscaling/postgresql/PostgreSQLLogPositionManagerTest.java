@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PostgreSQLLogPositionManagerTest {
+public final class PostgreSQLLogPositionManagerTest {
     
     private static final String POSTGRESQL_96_LSN = "0/14EFDB8";
     

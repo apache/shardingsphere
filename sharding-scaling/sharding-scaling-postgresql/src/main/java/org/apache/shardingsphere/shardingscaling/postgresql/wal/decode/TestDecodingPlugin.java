@@ -95,25 +95,25 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private AbstractRowEvent readUpdateRowEvent(final ByteBuffer data) {
-        UpdateRowEvent updateRowEvent = new UpdateRowEvent();
+        UpdateRowEvent result = new UpdateRowEvent();
         List<Object> afterColumns = new LinkedList<>();
         
         while (data.hasRemaining()) {
             afterColumns.add(readColumn(data));
         }
-        updateRowEvent.setAfterRow(afterColumns);
-        return updateRowEvent;
+        result.setAfterRow(afterColumns);
+        return result;
     }
     
     private AbstractRowEvent readDeleteRowEvent(final ByteBuffer data) {
-        DeleteRowEvent deleteRowEvent = new DeleteRowEvent();
+        DeleteRowEvent result = new DeleteRowEvent();
         List<Object> afterColumns = new LinkedList<>();
         
         while (data.hasRemaining()) {
             afterColumns.add(readColumn(data));
         }
-        deleteRowEvent.setPrimaryKeys(afterColumns);
-        return deleteRowEvent;
+        result.setPrimaryKeys(afterColumns);
+        return result;
     }
     
     private String readTableName(final ByteBuffer data) {
@@ -191,7 +191,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 default:
                     return readNextString(data);
             }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             System.out.println(new String(data.array()));
             throw ex;
         }
