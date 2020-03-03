@@ -62,7 +62,7 @@ createDatabaseSpecification_
     | DEFAULT ENCRYPTION EQ_ Y_N_
     ;
 
-dropDatabse
+dropDatabase
     : DROP (DATABASE | SCHEMA) (IF EXISTS)? schemaName
     ;
 

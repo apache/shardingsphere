@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-grammar SQL92Statement;
+package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement;
-
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createDatabase
-    | dropDatabase
-    | createTable
-    | alterTable
-    | dropTable
-    | createView
-    | dropView
-    | setTransaction
-    | commit
-    | rollback
-    | grant
-    | revoke
-    ) SEMI_?
-    ;
+/**
+ * Create database statement.
+ */
+public final class CreateDatabaseStatement extends DDLStatement {
+}

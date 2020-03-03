@@ -35,7 +35,7 @@ createDatabase
     : CREATE SCHEMA schemaName createDatabaseSpecification_*
     ;
 
-dropDatabse
+dropDatabase
     : DROP SCHEMA schemaName dropBehaviour_
     ;
 
