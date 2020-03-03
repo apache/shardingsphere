@@ -76,7 +76,7 @@ public final class ApolloInstanceTest {
     @Test
     @SneakyThrows
     public void assertWatch() {
-        assertWatchUpdateChangedType("/test/children/1","value3");
+        assertWatchUpdateChangedType("/test/children/1", "value3");
     }
     
     @Test
@@ -88,8 +88,8 @@ public final class ApolloInstanceTest {
     @Test
     @SneakyThrows
     public void assertUpdate() {
-        assertWatchUpdateChangedType("/test/children/2","newValue2");
-        assertThat(configCenterRepository.get("/test/children/2"),is("newValue2"));
+        assertWatchUpdateChangedType("/test/children/1", "newValue1");
+        assertThat(configCenterRepository.get("/test/children/1"), is("newValue1"));
     }
     
     @Test
@@ -114,11 +114,11 @@ public final class ApolloInstanceTest {
     @Test
     @SneakyThrows
     public void assertWatchAddChangedType() {
-        assertWatchUpdateChangedType("/test/children/newKey","newVaule");
+        assertWatchUpdateChangedType("/test/children/newKey", "newVaule");
     }
     
     @SneakyThrows
-    private void assertWatchUpdateChangedType(String key, String newVaule) {
+    private void assertWatchUpdateChangedType(final String key, final String newVaule) {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
         configCenterRepository.watch(key, new DataChangedEventListener() {
         
