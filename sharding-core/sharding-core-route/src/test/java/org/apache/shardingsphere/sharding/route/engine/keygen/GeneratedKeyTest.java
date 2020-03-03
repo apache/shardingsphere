@@ -62,14 +62,14 @@ public final class GeneratedKeyTest {
     
     @Test
     public void assertGetGenerateKeyWithoutGenerateKeyColumnConfiguration() {
-        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(java.util.Optional.empty());
+        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.empty());
         assertFalse(GeneratedKey.getGenerateKey(shardingRule, tableMetas, Collections.singletonList(1), insertStatement).isPresent());
     }
     
     @Test
     public void assertGetGenerateKeyWhenCreateWithGenerateKeyColumnConfiguration() {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
-        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(java.util.Optional.of("id1"));
+        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id1"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, tableMetas, Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
@@ -81,7 +81,7 @@ public final class GeneratedKeyTest {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, 100))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, "value"))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
-        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(java.util.Optional.of("id"));
+        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
         Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, tableMetas, Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));

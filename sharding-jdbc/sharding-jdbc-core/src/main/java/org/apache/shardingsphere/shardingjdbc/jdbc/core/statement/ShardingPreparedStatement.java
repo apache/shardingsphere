@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
@@ -57,6 +56,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * PreparedStatement that support sharding.
@@ -202,7 +202,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private Optional<GeneratedKey> getGeneratedKey() {
         return null != shardingExecutionContext && shardingExecutionContext.getSqlStatementContext() instanceof InsertStatementContext
-                ? shardingExecutionContext.getGeneratedKey() : Optional.absent();
+                ? shardingExecutionContext.getGeneratedKey() : Optional.empty();
     }
     
     private void initPreparedStatementExecutor() throws SQLException {
@@ -240,10 +240,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private void shard() {
         shardingExecutionContext = (ShardingExecutionContext) shardingEngine.shard(sql, getParameters());
-        Optional<GeneratedKey> generatedKey = shardingExecutionContext.getGeneratedKey();
-        if (generatedKey.isPresent()) {
-            generatedValues.add(generatedKey.get().getGeneratedValues().getLast());
-        }
+        shardingExecutionContext.getGeneratedKey().ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
     }
     
     @Override

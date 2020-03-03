@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
-import com.google.common.base.Optional;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -38,6 +37,7 @@ import java.lang.reflect.Field;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -94,7 +94,7 @@ public final class MySQLAuthenticationEngineTest {
     @Test
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login(any(MySQLHandshakeResponse41Packet.class))).thenReturn(Optional.<MySQLServerErrorCode>absent());
+        when(authenticationHandler.login(any(MySQLHandshakeResponse41Packet.class))).thenReturn(Optional.empty());
         setLogicSchemas(Collections.singletonMap("sharding_db", mock(LogicSchema.class)));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse), mock(BackendConnection.class));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));

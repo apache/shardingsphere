@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
@@ -38,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Assignment parameter rewriter for encrypt.

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -46,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Sharding condition engine for where clause.

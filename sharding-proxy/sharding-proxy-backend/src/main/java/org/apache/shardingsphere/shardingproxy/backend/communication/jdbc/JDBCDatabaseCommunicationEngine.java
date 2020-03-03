@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
@@ -60,6 +59,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database access engine for JDBC.
@@ -216,7 +216,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             Object value = mergedResult.getValue(columnIndex, Object.class);
             if (isQueryWithCipherColumn && encryptRule.isPresent()) {
                 QueryHeader queryHeader = ((QueryResponse) response).getQueryHeaders().get(columnIndex - 1);
-                java.util.Optional<Encryptor> encryptor = encryptRule.get().findEncryptor(queryHeader.getTable(), queryHeader.getColumnName());
+                Optional<Encryptor> encryptor = encryptRule.get().findEncryptor(queryHeader.getTable(), queryHeader.getColumnName());
                 if (encryptor.isPresent()) {
                     value = encryptor.get().decrypt(getCiphertext(value));
                 }
@@ -233,7 +233,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (logicSchema instanceof EncryptSchema) {
             return Optional.of(((EncryptSchema) logicSchema).getEncryptRule());
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private String getCiphertext(final Object value) {

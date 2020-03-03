@@ -118,7 +118,7 @@ public final class ShardingRouter implements DateNodeRouter {
     
     private void checkSubqueryShardingValues(final SQLStatementContext sqlStatementContext, final ShardingConditions shardingConditions) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            java.util.Optional<TableRule> tableRule = shardingRule.findTableRule(each);
+            Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent() && isRoutingByHint(tableRule.get()) && !HintManager.getDatabaseShardingValues(each).isEmpty() && !HintManager.getTableShardingValues(each).isEmpty()) {
                 return;
             }
@@ -167,7 +167,7 @@ public final class ShardingRouter implements DateNodeRouter {
     }
     
     private boolean isBindingTable(final ListRouteValue shardingValue1, final ListRouteValue shardingValue2) {
-        java.util.Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getTableName());
+        Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getTableName());
         return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
     }
     

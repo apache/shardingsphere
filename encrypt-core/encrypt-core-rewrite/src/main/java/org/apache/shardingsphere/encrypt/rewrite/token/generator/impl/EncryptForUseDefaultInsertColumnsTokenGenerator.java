@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.UseDe
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Use default insert columns token generator for encrypt.
@@ -64,11 +64,11 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
                 return Optional.of((UseDefaultInsertColumnsToken) each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext insertStatementContext, final String tableName) {
-        java.util.Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         List<String> columnNames = getColumnNames(insertStatementContext, encryptTable.get(), previousSQLToken.getColumns());
         previousSQLToken.getColumns().clear();
@@ -78,7 +78,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     private UseDefaultInsertColumnsToken generateNewSQLToken(final InsertStatementContext insertStatementContext, final String tableName) {
         Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        java.util.Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
         Preconditions.checkState(encryptTable.isPresent());
         return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, encryptTable.get(), insertStatementContext.getColumnNames()));
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Subst
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Predicate column token generator for encrypt.
@@ -64,29 +64,29 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            java.util.Optional<EncryptTable> encryptTable = findEncryptTable(sqlStatementContext, each);
+            Optional<EncryptTable> encryptTable = findEncryptTable(sqlStatementContext, each);
             if (!encryptTable.isPresent() || !encryptTable.get().findEncryptor(each.getColumn().getIdentifier().getValue()).isPresent()) {
                 continue;
             }
             int startIndex = each.getColumn().getOwner().isPresent() ? each.getColumn().getOwner().get().getStopIndex() + 2 : each.getColumn().getStartIndex();
             int stopIndex = each.getColumn().getStopIndex();
             if (!queryWithCipherColumn) { 
-                java.util.Optional<String> plainColumn = encryptTable.get().findPlainColumn(each.getColumn().getIdentifier().getValue());
+                Optional<String> plainColumn = encryptTable.get().findPlainColumn(each.getColumn().getIdentifier().getValue());
                 if (plainColumn.isPresent()) {
                     result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, plainColumn.get()));
                     continue;
                 }
             }
-            java.util.Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getColumn().getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.isPresent() ? new SubstitutableColumnNameToken(startIndex, stopIndex, assistedQueryColumn.get())
-                    : new SubstitutableColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(each.getColumn().getIdentifier().getValue()));
+            Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getColumn().getIdentifier().getValue());
+            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> new SubstitutableColumnNameToken(startIndex, stopIndex, columnName))
+                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(each.getColumn().getIdentifier().getValue())));
             result.add(encryptColumnNameToken);
         }
         return result;
     }
     
-    private java.util.Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final PredicateSegment segment) {
+    private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final PredicateSegment segment) {
         Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(segment, relationMetas);
-        return tableName.isPresent() ? getEncryptRule().findEncryptTable(tableName.get()) : java.util.Optional.empty();
+        return tableName.isPresent() ? getEncryptRule().findEncryptTable(tableName.get()) : Optional.empty();
     }
 }

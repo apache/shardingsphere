@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLParser;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddDatabaseShardingValueCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintAddTableShardingValueCommand;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.c
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowStatusCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.command.HintShowTableStatusCommand;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,7 +92,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
         if (errorParameterMatcher.find()) {
             return Optional.of(new ShardingCTLHintStatement(new HintErrorParameterCommand()));
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private Optional<ShardingCTLHintStatement> parseUpdateShardingCTLHintStatement() {
@@ -117,7 +117,7 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
         if (clearMatcher.find()) {
             return Optional.of(new ShardingCTLHintStatement(new HintClearCommand()));
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private Optional<ShardingCTLHintStatement> parseQueryShardingCTLHintStatement() {
@@ -127,6 +127,6 @@ public final class ShardingCTLHintParser implements ShardingCTLParser<ShardingCT
         if (showTableStatusMatcher.find()) {
             return Optional.of(new ShardingCTLHintStatement(new HintShowTableStatusCommand()));
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

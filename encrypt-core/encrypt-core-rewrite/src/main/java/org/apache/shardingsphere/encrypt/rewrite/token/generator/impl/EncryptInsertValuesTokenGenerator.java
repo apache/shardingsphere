@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
@@ -43,6 +42,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.UseDe
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert values token generator for encrypt.
@@ -73,7 +73,7 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private void processPreviousSQLToken(final InsertStatementContext insertStatementContext, final InsertValuesToken insertValuesToken) {
@@ -118,10 +118,10 @@ public final class EncryptInsertValuesTokenGenerator extends BaseEncryptSQLToken
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            java.util.Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
+            Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
-                int columnIndex = useDefaultInsertColumnsToken.isPresent()
-                        ? ((UseDefaultInsertColumnsToken) useDefaultInsertColumnsToken.get()).getColumns().indexOf(columnName) : insertStatementContext.getColumnNames().indexOf(columnName);
+                int columnIndex = useDefaultInsertColumnsToken.map(sqlToken -> ((UseDefaultInsertColumnsToken) sqlToken).getColumns().indexOf(columnName))
+                        .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
                 Object originalValue = insertValueContext.getValue(columnIndex);
                 addPlainColumn(insertValueToken, columnIndex, tableName, columnName, insertValueContext, originalValue);
                 addAssistedQueryColumn(insertValueToken, encryptor.get(), columnIndex, tableName, columnName, insertValueContext, originalValue);

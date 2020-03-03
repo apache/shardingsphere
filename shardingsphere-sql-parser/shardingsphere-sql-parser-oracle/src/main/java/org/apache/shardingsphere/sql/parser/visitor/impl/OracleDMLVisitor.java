@@ -116,7 +116,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
             result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList()));
+            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
@@ -270,7 +270,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     
     private boolean isTable(final TableSegment owner, final Collection<TableSegment> tableSegments) {
         for (TableSegment each : tableSegments) {
-            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orNull())) {
+            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }
         }
