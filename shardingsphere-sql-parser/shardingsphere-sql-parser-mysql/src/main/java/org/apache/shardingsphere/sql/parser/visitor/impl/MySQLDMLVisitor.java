@@ -117,19 +117,16 @@ import java.util.List;
  */
 public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCall(final CallContext ctx) {
         return new CallStatement();
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
         return new DoStatement();
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.

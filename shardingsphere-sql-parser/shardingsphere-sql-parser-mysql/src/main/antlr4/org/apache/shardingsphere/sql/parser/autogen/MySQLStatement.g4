@@ -27,7 +27,10 @@ execute
     | replace
     | createTable
     | alterTable
+    | repairTable
+    | renameTableSpecification
     | dropTable
+    | dropDatabase
     | truncateTable
     | createIndex
     | dropIndex
@@ -60,5 +63,7 @@ execute
     | setVariable
     | call
     | changeMasterTo
+    | startSlave
+    | stopSlave
     ) SEMI_?
     ;
