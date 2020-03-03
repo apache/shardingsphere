@@ -23,17 +23,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Show columns statement.
  */
 @Getter
 @Setter
-public final class ShowIndexStatement extends DALStatement implements TableSegmentsAvailable {
+public final class ShowIndexStatement extends DALStatement {
     
     private TableSegment table;
     
@@ -46,10 +42,5 @@ public final class ShowIndexStatement extends DALStatement implements TableSegme
      */
     public Optional<SchemaSegment> getSchema() {
         return Optional.fromNullable(schema);
-    }
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
     }
 }

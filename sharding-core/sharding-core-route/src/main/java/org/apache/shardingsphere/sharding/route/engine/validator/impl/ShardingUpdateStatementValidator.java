@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -44,7 +43,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     
     @Override
     public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement, final List<Object> parameters) {
-        String tableName = new TablesContext(sqlStatement).getSingleTableName();
+        String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {

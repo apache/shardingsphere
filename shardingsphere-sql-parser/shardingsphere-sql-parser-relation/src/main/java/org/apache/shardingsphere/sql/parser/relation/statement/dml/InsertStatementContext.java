@@ -21,11 +21,12 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +39,9 @@ import java.util.List;
  */
 @Getter
 @ToString(callSuper = true)
-public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableSegmentsAvailable {
+public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable {
+    
+    private final TablesContext tablesContext;
     
     private final List<String> columnNames;
     
@@ -46,7 +49,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     public InsertStatementContext(final RelationMetas relationMetas, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
-        columnNames = sqlStatement.useDefaultColumns() ? relationMetas.getAllColumnNames(getTablesContext().getSingleTableName()) : sqlStatement.getColumnNames();
+        tablesContext = new TablesContext(sqlStatement.getTable());
+        columnNames = sqlStatement.useDefaultColumns() ? relationMetas.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
         insertValueContexts = getInsertValueContexts(parameters);
     }
     

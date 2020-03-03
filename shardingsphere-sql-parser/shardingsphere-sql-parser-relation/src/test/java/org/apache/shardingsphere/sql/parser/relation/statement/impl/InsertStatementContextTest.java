@@ -37,10 +37,10 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class InsertSQLStatementContextTest {
+public final class InsertStatementContextTest {
     
     @Test
-    public void assertInsertSQLStatementContextWithColumnNames() {
+    public void assertInsertStatementContextWithColumnNames() {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
@@ -48,18 +48,18 @@ public final class InsertSQLStatementContextTest {
         insertStatement.setInsertColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = new InsertStatementContext(mock(RelationMetas.class), Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
-        assertInsertSQLStatementContext(actual);
+        assertInsertStatementContext(actual);
     }
     
     @Test
-    public void assertInsertSQLStatementContextWithoutColumnNames() {
+    public void assertInsertStatementContextWithoutColumnNames() {
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
         InsertStatementContext actual = new InsertStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry"), insertStatement);
-        assertInsertSQLStatementContext(actual);
+        assertInsertStatementContext(actual);
     }
     
     @Test
@@ -80,8 +80,7 @@ public final class InsertSQLStatementContextTest {
                 new ParameterMarkerExpressionSegment(0, 0, 3), new ParameterMarkerExpressionSegment(0, 0, 4), new LiteralExpressionSegment(0, 0, "init"))));
     }
     
-    private void assertInsertSQLStatementContext(final InsertStatementContext actual) {
-        assertThat(actual.getTablesContext().getSingleTableName(), is("tbl"));
+    private void assertInsertStatementContext(final InsertStatementContext actual) {
         assertThat(actual.getColumnNames(), is(Arrays.asList("id", "name", "status")));
         assertThat(actual.getInsertValueContexts().size(), is(2));
         assertThat(actual.getInsertValueContexts().get(0).getValue(0), is((Object) 1));

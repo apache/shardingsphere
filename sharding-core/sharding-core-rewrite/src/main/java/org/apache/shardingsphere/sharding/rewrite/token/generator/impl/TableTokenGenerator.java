@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.TableToken;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 
 import java.util.Collection;
@@ -45,14 +45,14 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
     
     @Override
     public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof TableSegmentsAvailable ? generateSQLTokens((TableSegmentsAvailable) sqlStatementContext) : Collections.<TableToken>emptyList();
+        return sqlStatementContext instanceof TableAvailable ? generateSQLTokens((TableAvailable) sqlStatementContext) : Collections.<TableToken>emptyList();
     }
     
-    private Collection<TableToken> generateSQLTokens(final TableSegmentsAvailable sqlStatementContext) {
+    private Collection<TableToken> generateSQLTokens(final TableAvailable sqlStatementContext) {
         Collection<TableToken> result = new LinkedList<>();
         for (TableSegment each : sqlStatementContext.getAllTables()) {
-            if (shardingRule.findTableRule(each.getIdentifier().getValue()).isPresent()) {
-                result.add(new TableToken(each.getStartIndex(), each.getStopIndex(), each.getIdentifier()));
+            if (shardingRule.findTableRule(each.getTableName().getIdentifier().getValue()).isPresent()) {
+                result.add(new TableToken(each.getStartIndex(), each.getStopIndex(), each.getTableName().getIdentifier()));
             }
         }
         return result;

@@ -279,7 +279,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     
     private boolean isTable(final TableSegment owner, final Collection<TableSegment> tableSegments) {
         for (TableSegment each : tableSegments) {
-            if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
+            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orNull())) {
                 return false;
             }
         }

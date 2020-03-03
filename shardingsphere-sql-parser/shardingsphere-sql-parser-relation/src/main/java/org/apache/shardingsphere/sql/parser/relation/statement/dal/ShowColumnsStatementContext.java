@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.dal;
 
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,10 +30,14 @@ import java.util.Collections;
 /**
  * Show columns statement context.
  */
-public final class ShowColumnsStatementContext extends CommonSQLStatementContext<ShowColumnsStatement> implements TableSegmentsAvailable {
+@Getter
+public final class ShowColumnsStatementContext extends CommonSQLStatementContext<ShowColumnsStatement> implements TableAvailable {
+    
+    private final TablesContext tablesContext;
     
     public ShowColumnsStatementContext(final ShowColumnsStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override

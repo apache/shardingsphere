@@ -35,7 +35,7 @@ import java.util.List;
  * Sharding generated key insert value parameter rewriter.
  */
 @Setter
-public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter, ShardingRouteContextAware {
+public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, ShardingRouteContextAware {
     
     private ShardingRouteContext shardingRouteContext;
     
@@ -45,14 +45,14 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
         Preconditions.checkState(shardingRouteContext.getGeneratedKey().isPresent());
         ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(shardingRouteContext.getGeneratedKey().get().getColumnName());
         Iterator<Comparable<?>> generatedValues = shardingRouteContext.getGeneratedKey().get().getGeneratedValues().descendingIterator();
         int count = 0;
         int parametersCount = 0;
-        for (List<Object> each : ((InsertStatementContext) sqlStatementContext).getGroupedParameters()) {
-            parametersCount += ((InsertStatementContext) sqlStatementContext).getInsertValueContexts().get(count).getParametersCount();
+        for (List<Object> each : insertStatementContext.getGroupedParameters()) {
+            parametersCount += insertStatementContext.getInsertValueContexts().get(count).getParametersCount();
             Comparable<?> generatedValue = generatedValues.next();
             if (!each.isEmpty()) {
                 ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parametersCount, Lists.<Object>newArrayList(generatedValue));

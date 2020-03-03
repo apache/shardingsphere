@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.relation.segment.table;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import com.google.common.base.Optional;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
- * Table.
+ * Table name segment.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class Table {
+public final class TableNameSegment implements SQLSegment {
     
-    private final String name;
+    private final int startIndex;
     
-    private final String alias;
+    private final int stopIndex;
     
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
+    private final IdentifierValue identifier;
 }

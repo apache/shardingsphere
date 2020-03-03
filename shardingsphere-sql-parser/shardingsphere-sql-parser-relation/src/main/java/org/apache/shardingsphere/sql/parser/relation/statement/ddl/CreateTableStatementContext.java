@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,10 +32,14 @@ import java.util.LinkedList;
 /**
  * Create table statement context.
  */
-public final class CreateTableStatementContext extends CommonSQLStatementContext<CreateTableStatement> implements TableSegmentsAvailable {
+@Getter
+public final class CreateTableStatementContext extends CommonSQLStatementContext<CreateTableStatement> implements TableAvailable {
+    
+    private final TablesContext tablesContext;
     
     public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override
