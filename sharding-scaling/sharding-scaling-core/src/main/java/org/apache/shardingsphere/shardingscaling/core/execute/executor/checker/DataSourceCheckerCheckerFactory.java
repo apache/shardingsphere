@@ -17,25 +17,27 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
+import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 
 /**
- * Datasource checker.
+ * Data source checker factory.
  */
-public interface DatasourceChecker {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DataSourceCheckerCheckerFactory {
     
     /**
-     * Check datasource connections.
+     * New instance of data source checker.
      *
-     * @param dataSources datasource connections
+     * @param databaseType database type
+     * @return data source checker
      */
-    void checkConnection(Collection<DataSource> dataSources);
-    
-    /**
-     * Check user privileges.
-     *
-     * @param dataSources datasource connections
-     */
-    void checkPrivilege(Collection<DataSource> dataSources);
+    @SneakyThrows
+    public static DataSourceChecker newInstanceDataSourceChecker(final String databaseType) {
+        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
+        return scalingEntry.getCheckerClass().getConstructor().newInstance();
+    }
 }

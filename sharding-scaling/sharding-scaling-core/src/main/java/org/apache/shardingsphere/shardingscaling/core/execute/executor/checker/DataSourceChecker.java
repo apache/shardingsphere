@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
 
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
-
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Generic checker implement.
+ * Data source checker.
  */
-public abstract class AbstractDatasourceChecker implements DatasourceChecker {
+public interface DataSourceChecker {
     
-    @Override
-    public final void checkConnection(final Collection<DataSource> dataSources) {
-        try {
-            for (DataSource dataSource : dataSources) {
-                dataSource.getConnection();
-            }
-        } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Datasources check failed!");
-        }
-    }
+    /**
+     * Check datasource connections.
+     *
+     * @param dataSources datasource connections
+     */
+    void checkConnection(Collection<DataSource> dataSources);
+    
+    /**
+     * Check user privileges.
+     *
+     * @param dataSources datasource connections
+     */
+    void checkPrivilege(Collection<DataSource> dataSources);
 }

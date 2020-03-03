@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingscaling.mysql;
 
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDatasourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -27,9 +27,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Datasource checker for MySQL.
+ * Data source checker for MySQL.
  */
-public final class MySQLDatasourceChecker extends AbstractDatasourceChecker {
+public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     @Override
     public void checkPrivilege(final Collection<DataSource> dataSources) {

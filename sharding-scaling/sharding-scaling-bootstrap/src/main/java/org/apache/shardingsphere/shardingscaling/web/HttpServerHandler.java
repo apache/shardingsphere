@@ -40,8 +40,8 @@ import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobContr
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.CheckerFactory;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.utils.ResponseContentUtil;
 import org.apache.shardingsphere.shardingscaling.core.config.utils.SyncConfigurationUtil;
@@ -114,14 +114,14 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     private void checkDatasources(final List<SyncConfiguration> syncConfigurations, final DataSourceManager dataSourceManager) {
         try {
-            DatasourceChecker datasourceChecker = CheckerFactory.newInstanceDatasourceChecker(
+            DataSourceChecker dataSourceChecker = DataSourceCheckerCheckerFactory.newInstanceDataSourceChecker(
                     syncConfigurations.get(0).getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName());
             Collection<DataSource> dataSourceCollection = new ArrayList<>();
             dataSourceCollection.addAll(dataSourceManager.getCachedDataSources().values());
-            datasourceChecker.checkConnection(dataSourceCollection);
+            dataSourceChecker.checkConnection(dataSourceCollection);
             Collection<DataSource> sourcesDatasourceCollection = new ArrayList<>();
             sourcesDatasourceCollection.addAll(dataSourceManager.getSourceDatasources().values());
-            datasourceChecker.checkPrivilege(sourcesDatasourceCollection);
+            dataSourceChecker.checkPrivilege(sourcesDatasourceCollection);
         } finally {
             dataSourceManager.close();
         }

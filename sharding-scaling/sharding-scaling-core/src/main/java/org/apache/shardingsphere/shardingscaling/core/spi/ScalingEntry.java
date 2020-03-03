@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.spi;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JDBCReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
@@ -61,5 +61,5 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      * Get checker type.
      * @return checker type
      */
-    Class<? extends DatasourceChecker> getCheckerClass();
+    Class<? extends DataSourceChecker> getCheckerClass();
 }
