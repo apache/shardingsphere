@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Generat
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameColumnSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameTableSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StorageOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
@@ -65,6 +66,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
@@ -78,6 +80,11 @@ import java.util.LinkedList;
  * DDL visitor for MySQL.
  */
 public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
+    
+    @Override
+    public ASTNode visitRenameTableSpecification(final RenameTableSpecificationContext ctx) {
+        return new RenameTableStatement();
+    }
     
     @SuppressWarnings("unchecked")
     @Override

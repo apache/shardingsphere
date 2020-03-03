@@ -23,8 +23,10 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Assignm
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
@@ -57,7 +59,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableRe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
@@ -90,11 +91,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
@@ -117,6 +119,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     @Override
     public ASTNode visitCall(final CallContext ctx) {
         return new CallStatement();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitDoStatement(final DoStatementContext ctx) {
+        return new DoStatement();
     }
     
     @SuppressWarnings("unchecked")

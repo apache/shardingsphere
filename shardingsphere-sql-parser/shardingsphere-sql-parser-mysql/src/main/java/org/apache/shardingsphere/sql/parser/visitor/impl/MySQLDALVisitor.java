@@ -18,9 +18,17 @@
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.DALVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DescContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FlushContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.FromTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.InstallPluginContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KillContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadIndexInfoContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptimizeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowColumnsContext;
@@ -33,8 +41,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTab
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
@@ -45,7 +51,13 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.CacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.FlushStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.InstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.KillStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.LoadIndexInfoStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
@@ -71,6 +83,36 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     @Override
     public ASTNode visitCacheIndex(final CacheIndexContext ctx) {
         return new CacheIndexStatement();
+    }
+    
+    @Override
+    public ASTNode visitChecksumTable(final ChecksumTableContext ctx) {
+        return new ChecksumTableStatement();
+    }
+    
+    @Override
+    public ASTNode visitFlush(final FlushContext ctx) {
+        return new FlushStatement();
+    }
+    
+    @Override
+    public ASTNode visitKill(final KillContext ctx) {
+        return new KillStatement();
+    }
+    
+    @Override
+    public ASTNode visitLoadIndexInfo(final LoadIndexInfoContext ctx) {
+        return new LoadIndexInfoStatement();
+    }
+    
+    @Override
+    public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
+        return new InstallPluginStatement();
+    }
+    
+    @Override
+    public ASTNode visitOptimizeTable(final OptimizeTableContext ctx) {
+        return new OptimizeTableStatement();
     }
     
     @Override
