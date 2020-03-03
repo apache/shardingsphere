@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-grammar SQL92Statement;
+package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createDatabase
-    | dropDatabase
-    | createTable
-    | alterTable
-    | dropTable
-    | createView
-    | dropView
-    | setTransaction
-    | commit
-    | rollback
-    | grant
-    | revoke
-    ) SEMI_?
-    ;
+/**
+ * Show status statement.
+ */
+public final class ShowStatusStatement extends DALStatement {
+}

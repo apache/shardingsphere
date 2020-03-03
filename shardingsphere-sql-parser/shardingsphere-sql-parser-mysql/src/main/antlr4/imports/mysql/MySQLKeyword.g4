@@ -2043,3 +2043,55 @@ GEOMETRY
 JSON
     : J S O N
     ;
+
+IO_THREAD
+    : I O UL_ T H R E A D
+    ;
+
+SQL_THREAD
+    : S Q L UL_ T H R E A D
+    ;
+
+SQL_BEFORE_GTIDS
+    : S Q L UL_ B E F O R E UL_ G T I D S
+    ;
+
+SQL_AFTER_GTIDS
+    : S Q L UL_ A F T E R UL_ G T I D S
+    ;
+
+MASTER_LOG_FILE
+    : M A S T E R UL_ L O G UL_ F I L E
+    ;
+
+MASTER_LOG_POS
+    : M A S T E R UL_ L O G UL_ P O S
+    ;
+
+RELAY_LOG_FILE
+    : R E L A Y UL_ L O G UL_ F I L E
+    ;
+
+RELAY_LOG_POS
+    : R E L A Y UL_ L O G UL_ P O S
+    ;
+
+SQL_AFTER_MTS_GAPS
+    : S Q L UL_ A F T E R UL_ M T S UL_ G A P S
+    ;
+
+UNTIL
+    : U N T I L
+    ;
+
+DEFAULT_AUTH
+    : D E F A U L T UL_ A U T H
+    ;
+
+PLUGIN_DIR
+    : P L U G I N UL_ D I R
+    ;
+
+STOP
+    : S T O P
+    ;

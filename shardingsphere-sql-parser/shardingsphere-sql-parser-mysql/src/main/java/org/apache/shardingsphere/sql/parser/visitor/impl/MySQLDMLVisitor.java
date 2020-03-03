@@ -23,8 +23,10 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Assignm
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
@@ -45,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderBy
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QualifiedShorthandContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
@@ -89,8 +92,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
@@ -111,7 +117,16 @@ import java.util.List;
  */
 public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
-    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitCall(final CallContext ctx) {
+        return new CallStatement();
+    }
+    
+    @Override
+    public ASTNode visitDoStatement(final DoStatementContext ctx) {
+        return new DoStatement();
+    }
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
@@ -124,6 +139,22 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         }
         if (null != ctx.onDuplicateKeyClause()) {
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
+        }
+        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setParametersCount(getCurrentParameterIndex());
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitReplace(final ReplaceContext ctx) {
+        // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
+        ReplaceStatement result;
+        if (null != ctx.insertValuesClause()) {
+            result = (ReplaceStatement) visit(ctx.insertValuesClause());
+        } else {
+            result = new ReplaceStatement();
+            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         result.setTable((TableSegment) visit(ctx.tableName()));
         result.setParametersCount(getCurrentParameterIndex());

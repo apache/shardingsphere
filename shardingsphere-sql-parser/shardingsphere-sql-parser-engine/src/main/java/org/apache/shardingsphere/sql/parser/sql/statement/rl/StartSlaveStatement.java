@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-grammar SQL92Statement;
+package org.apache.shardingsphere.sql.parser.sql.statement.rl;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement;
-
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createDatabase
-    | dropDatabase
-    | createTable
-    | alterTable
-    | dropTable
-    | createView
-    | dropView
-    | setTransaction
-    | commit
-    | rollback
-    | grant
-    | revoke
-    ) SEMI_?
-    ;
+/**
+ * Start slave statement.
+ */
+public final class StartSlaveStatement extends RLStatement {
+}
