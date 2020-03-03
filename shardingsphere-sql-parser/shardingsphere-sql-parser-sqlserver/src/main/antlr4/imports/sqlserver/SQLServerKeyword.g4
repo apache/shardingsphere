@@ -854,3 +854,63 @@ FIRST
 ONLY
     : O N L Y
     ;
+
+MONEY
+    : M O N E Y
+    ;
+
+SMALLMONEY
+    : S M A L L M O N E Y
+    ;
+
+DATETIMEOFFSET
+    : D A T E T I M E O F F S E T
+    ;
+
+DATETIME
+    : D A T E T I M E [2]?
+    ;
+
+SMALLDATETIME
+    : S M A L L D A T E T I M E
+    ;
+
+NCHAR
+    : N C H A R
+    ;
+
+NVARCHAR
+    : N V A R C H A R
+    ;
+
+NTEXT
+    : N T E X T
+    ;
+
+VARBINARY
+    : V A R B I N A R Y
+    ;
+
+IMAGE
+    : I M A G E
+    ;
+
+SQL_VARIANT
+    : S Q L UL_ V A R I A N T
+    ;
+
+UNIQUEIDENTIFIER
+    : U N I Q U E I D E N T I F I E R
+    ;
+
+HIERARCHYID
+    : H I E R A R C H Y I D
+    ;
+
+GEOMETRY
+    : G E O M E T R Y
+    ;
+
+GEOGRAPHY
+    : G E O G R A P H Y
+    ;
