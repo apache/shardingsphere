@@ -24,19 +24,18 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecu
  * Reader interface.
  */
 public interface Reader extends SyncExecutor {
-
+    
     /**
      * Set channel.
      *
      * @param channel channel
      */
     void setChannel(Channel channel);
-
+    
     /**
      * Read Record to channel.
      *
      * @param channel channel
      */
     void read(Channel channel);
-    
 }

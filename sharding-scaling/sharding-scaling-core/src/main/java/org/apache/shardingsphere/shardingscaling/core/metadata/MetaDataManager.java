@@ -32,7 +32,7 @@ public final class MetaDataManager {
     private Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     private TableMetaDataLoader tableMetaDataLoader;
-
+    
     public MetaDataManager(final DataSource dataSource) {
         this.tableMetaDataLoader = new TableMetaDataLoader(dataSource);
     }

@@ -21,5 +21,4 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.reader;
  * Log reader.
  */
 public interface LogReader extends Reader {
-
 }

@@ -38,18 +38,18 @@ import java.sql.Statement;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class HistoryDataSyncTaskTest {
-
+public final class HistoryDataSyncTaskTest {
+    
     private static String dataSourceUrl = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
-
+    
     private static String userName = "root";
-
+    
     private static String password = "password";
-
+    
     private SyncConfiguration syncConfiguration;
     
     private DataSourceManager dataSourceManager;
-
+    
     @Before
     public void setUp() {
         RdbmsConfiguration readerConfig = mockReaderConfig();
@@ -64,13 +64,13 @@ public class HistoryDataSyncTaskTest {
     public void tearDown() {
         dataSourceManager.close();
     }
-
+    
     @Test
     public void assertGetProgress() {
         initTableData(syncConfiguration.getReaderConfiguration());
         HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
         historyDataSyncTask.start(new ReportCallback() {
-
+            
             @Override
             public void report(final Event event) {
 
@@ -78,7 +78,7 @@ public class HistoryDataSyncTaskTest {
         });
         assertThat(((HistoryDataSyncTaskProgress) historyDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
     }
-
+    
     @SneakyThrows
     private void initTableData(final RdbmsConfiguration readerConfig) {
         DataSource dataSource = dataSourceManager.getDataSource(readerConfig.getDataSourceConfiguration());
@@ -89,7 +89,7 @@ public class HistoryDataSyncTaskTest {
             statement.execute("INSERT INTO t_order (id, user_id) values (1, 'xxx'), (999, 'yyy')");
         }
     }
-
+    
     private RdbmsConfiguration mockReaderConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
         RdbmsConfiguration result = new RdbmsConfiguration();
@@ -97,7 +97,7 @@ public class HistoryDataSyncTaskTest {
         result.setTableName("t_order");
         return result;
     }
-
+    
     private RdbmsConfiguration mockWriterConfig() {
         DataSourceConfiguration dataSourceConfiguration = new JDBCDataSourceConfiguration(dataSourceUrl, userName, password);
         RdbmsConfiguration result = new RdbmsConfiguration();

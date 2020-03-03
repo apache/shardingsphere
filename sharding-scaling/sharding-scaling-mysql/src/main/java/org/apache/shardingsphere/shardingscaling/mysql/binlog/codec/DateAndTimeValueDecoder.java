@@ -34,15 +34,15 @@ import java.util.TimeZone;
  * </p>
  */
 public final class DateAndTimeValueDecoder {
-
+    
     public static final String ZERO_OF_TIME = "00:00:00";
-
+    
     public static final String ZERO_OF_DATE = "0000-00-00";
-
+    
     public static final String YEAR_OF_ZERO = "0000";
-
+    
     public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
-
+    
     public static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {
@@ -51,7 +51,7 @@ public final class DateAndTimeValueDecoder {
             return sdf;
         }
     };
-
+    
     /**
      * Decode time.
      *
@@ -70,7 +70,7 @@ public final class DateAndTimeValueDecoder {
         int second = minuteSecond % 100;
         return String.format("%02d:%02d:%02d", hour, minute, second);
     }
-
+    
     /**
      * Decode time2.
      *
@@ -89,7 +89,7 @@ public final class DateAndTimeValueDecoder {
         return (timeValue.nonNegative ? "" : "-") + String.format("%02d:%02d:%02d%s", hour, minute, second,
                 0 < meta ? "." + alignMillisecond(meta, timeValue.fraction) : "");
     }
-
+    
     private static TimeValue decodeTime2Value(final int meta, final ByteBuf in) {
         // first bit for sign (1 = non negative, 0 = negative)
         // reverse first bit
@@ -124,7 +124,7 @@ public final class DateAndTimeValueDecoder {
         }
         return new TimeValue(signedTime > 0, Math.abs(signedTime) >> 8, Math.abs(fraction));
     }
-
+    
     /**
      * Decode date.
      *
@@ -142,7 +142,7 @@ public final class DateAndTimeValueDecoder {
                 date / 32 % 16,
                 date % 32);
     }
-
+    
     /**
      * Decode year.
      *
@@ -157,7 +157,7 @@ public final class DateAndTimeValueDecoder {
         }
         return Integer.toString(value + 1900);
     }
-
+    
     /**
      * Decode timestamp.
      *
@@ -172,7 +172,7 @@ public final class DateAndTimeValueDecoder {
         }
         return TIMESTAMP_FORMAT.get().format(new Timestamp(second * 1000));
     }
-
+    
     /**
      * Decode timestamp2.
      *
@@ -191,7 +191,7 @@ public final class DateAndTimeValueDecoder {
         }
         return secondStr;
     }
-
+    
     /**
      * Decode datetime.
      *
@@ -214,7 +214,7 @@ public final class DateAndTimeValueDecoder {
         final int second = t % 100;
         return String.format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
     }
-
+    
     /**
      * Decode datetime2.
      *
@@ -240,7 +240,7 @@ public final class DateAndTimeValueDecoder {
                 hms % (1 << 6),
                 0 < meta ? "." + alignMillisecond(meta, readMillisecond(meta, in)) : "");
     }
-
+    
     private static int readMillisecond(final int meta, final ByteBuf in) {
         switch (meta) {
             case 1:
@@ -256,7 +256,7 @@ public final class DateAndTimeValueDecoder {
                 throw new UnsupportedOperationException();
         }
     }
-
+    
     private static String alignMillisecond(final int meta, final int fraction) {
         int value = 0;
         switch (meta) {
@@ -277,7 +277,7 @@ public final class DateAndTimeValueDecoder {
         }
         return alignMillisecond0(meta, value);
     }
-
+    
     private static String alignMillisecond0(final int meta, final int fraction) {
         StringBuilder result = new StringBuilder(6);
         String str = Integer.toString(fraction);
@@ -288,15 +288,15 @@ public final class DateAndTimeValueDecoder {
         result.append(str);
         return result.substring(0, meta);
     }
-
-    @Getter
+    
     @AllArgsConstructor
+    @Getter
     private static class TimeValue {
-
+        
         private boolean nonNegative;
-
+        
         private int time;
-
+        
         private int fraction;
     }
 }

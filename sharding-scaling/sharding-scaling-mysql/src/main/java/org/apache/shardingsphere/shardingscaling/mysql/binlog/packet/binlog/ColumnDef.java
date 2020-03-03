@@ -25,10 +25,9 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class ColumnDef {
-
-    private int type;
-
-    private int meta;
+public final class ColumnDef {
     
+    private int type;
+    
+    private int meta;
 }

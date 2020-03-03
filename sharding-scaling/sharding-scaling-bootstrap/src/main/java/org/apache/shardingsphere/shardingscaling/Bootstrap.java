@@ -41,12 +41,12 @@ import java.io.IOException;
  * Bootstrap of ShardingScaling.
  */
 @Slf4j
-public class Bootstrap {
+public final class Bootstrap {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/";
     
     private static final String DEFAULT_CONFIG_FILE_NAME = "server.yaml";
-
+    
     /**
      * Main entry.
      *
@@ -60,8 +60,7 @@ public class Bootstrap {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            ServerBootstrap bootstrap =
-                    new ServerBootstrap();
+            ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
@@ -76,7 +75,7 @@ public class Bootstrap {
             workerGroup.shutdownGracefully();
         }
     }
-
+    
     private static void initServerConfig() throws IOException {
         File yamlFile = new File(RuntimeUtil.getResourcePath(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME));
         ServerConfiguration serverConfiguration = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);

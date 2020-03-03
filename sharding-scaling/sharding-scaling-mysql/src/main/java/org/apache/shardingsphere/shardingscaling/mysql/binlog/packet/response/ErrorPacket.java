@@ -42,7 +42,7 @@ public final class ErrorPacket extends AbstractPacket {
     private byte[] sqlState;
     
     private String message;
-
+    
     @Override
     public void fromByteBuf(final ByteBuf data) {
         this.fieldCount = DataTypesCodec.readUnsignedInt1(data);

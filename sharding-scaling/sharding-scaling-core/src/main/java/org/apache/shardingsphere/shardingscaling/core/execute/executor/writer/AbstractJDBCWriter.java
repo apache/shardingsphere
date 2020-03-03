@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abstract JDBC writer implement.
+ * Abstract JDBC writer implementation.
  */
 @Slf4j
 public abstract class AbstractJDBCWriter extends AbstractSyncExecutor implements Writer {

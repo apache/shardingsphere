@@ -56,7 +56,7 @@ public final class FieldPacket extends AbstractPacket {
     private short decimals;
     
     private String definition;
-
+    
     @Override
     public void fromByteBuf(final ByteBuf data) {
         catalog = DataTypesCodec.readLengthCodedString(data);

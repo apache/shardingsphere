@@ -26,7 +26,7 @@ import java.util.Collection;
  * Datasource checker for PostgreSQL.
  */
 public final class PostgreSQLDatasourceChecker extends AbstractDatasourceChecker {
-
+    
     @Override
     public void checkPrivilege(final Collection<DataSource> dataSources) {
     }

@@ -30,18 +30,18 @@ import lombok.Getter;
  * </p>
  */
 @Getter
-public class TableMapEventPacket {
-
+public final class TableMapEventPacket {
+    
     private long tableId;
-
+    
     private int flags;
-
+    
     private String schemaName;
-
+    
     private String tableName;
-
+    
     private ColumnDef[] columnDefs;
-
+    
     /**
      * Parse post header.
      *
@@ -51,7 +51,7 @@ public class TableMapEventPacket {
         tableId = DataTypesCodec.readUnsignedInt6LE(in);
         flags = DataTypesCodec.readUnsignedInt2LE(in);
     }
-
+    
     /**
      * Parse payload.
      *
@@ -70,20 +70,20 @@ public class TableMapEventPacket {
         // skip null bitmap
         DataTypesCodec.readBitmap((int) columnCount, in);
     }
-
+    
     private void initColumnDefs(final int columnCount) {
         columnDefs = new ColumnDef[columnCount];
         for (int i = 0; i < columnCount; i++) {
             columnDefs[i] = new ColumnDef();
         }
     }
-
+    
     private void decodeColumnType(final ByteBuf in) {
         for (ColumnDef columnDef : columnDefs) {
             columnDef.setType(DataTypesCodec.readUnsignedInt1(in));
         }
     }
-
+    
     private void decodeColumnMeta(final ByteBuf in) {
         for (ColumnDef columnDef : columnDefs) {
             switch (columnDef.getType()) {

@@ -32,26 +32,26 @@ import java.util.concurrent.TimeUnit;
  * Memory channel.
  */
 public final class MemoryChannel implements Channel {
-
+    
     private static final int PUSH_TIMEOUT = ScalingContext.getInstance().getServerConfiguration().getPushTimeout();
-
+    
     private final BlockingQueue<Record> queue = new ArrayBlockingQueue<>(ScalingContext.getInstance().getServerConfiguration().getBlockQueueSize());
-
+    
     private final AckCallback ackCallback;
-
+    
     private List<Record> toBeAcknowledgeRecords = new LinkedList<>();
     
     public MemoryChannel(final AckCallback ackCallback) {
         this.ackCallback = ackCallback;
     }
-
+    
     @Override
     public void pushRecord(final Record dataRecord) throws InterruptedException {
         if (!queue.offer(dataRecord, PUSH_TIMEOUT, TimeUnit.HOURS)) {
             throw new RuntimeException();
         }
     }
-
+    
     @Override
     public List<Record> fetchRecords(final int batchSize, final int timeout) {
         List<Record> records = new ArrayList<>(batchSize);
@@ -70,7 +70,7 @@ public final class MemoryChannel implements Channel {
         toBeAcknowledgeRecords.addAll(records);
         return records;
     }
-
+    
     @Override
     public void ack() {
         if (toBeAcknowledgeRecords.size() > 0) {

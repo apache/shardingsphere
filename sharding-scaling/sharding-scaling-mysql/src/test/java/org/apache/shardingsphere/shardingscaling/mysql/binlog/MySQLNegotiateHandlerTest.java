@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLNegotiateHandlerTest {
+public final class MySQLNegotiateHandlerTest {
     
     private static final String SERVER_VERSION = "5.7.13-log";
     

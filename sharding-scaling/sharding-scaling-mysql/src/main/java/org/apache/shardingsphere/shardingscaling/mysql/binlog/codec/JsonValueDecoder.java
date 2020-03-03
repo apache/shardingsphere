@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -28,8 +30,9 @@ import java.io.Serializable;
  *     https://github.com/mysql/mysql-server/blob/5.7/sql/json_binary.h
  * </p>
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JsonValueDecoder {
-
+    
     /**
      * Decode mysql json binary data to json string.
      *
@@ -42,7 +45,7 @@ public final class JsonValueDecoder {
         decodeValue(valueType, 1, in, result);
         return result.toString();
     }
-
+    
     private static void decodeValue(final int type, final int offset, final ByteBuf in, final StringBuilder out) {
         int oldOffset = in.readerIndex();
         // set reader index to entry start position
@@ -92,7 +95,7 @@ public final class JsonValueDecoder {
             in.readerIndex(oldOffset);
         }
     }
-
+    
     private static void decodeJsonObject(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
         out.append('{');
         int count = getIntBasedObjectSize(in, isSmall);
@@ -228,45 +231,45 @@ public final class JsonValueDecoder {
     }
     
     class JsonValueTypes {
-    
+        
         public static final byte SMALL_JSON_OBJECT = 0x00;
-    
+        
         public static final byte LARGE_JSON_OBJECT = 0x01;
-    
+        
         public static final byte SMALL_JSON_ARRAY = 0x02;
-
+        
         public static final byte LARGE_JSON_ARRAY = 0x03;
-
+        
         /**
          * Literal(true/false/null).
          */
         public static final byte LITERAL = 0x04;
-
+        
         public static final byte LITERAL_NULL = 0x00;
-
+        
         public static final byte LITERAL_TRUE = 0x01;
-
+        
         public static final byte LITERAL_FALSE = 0x02;
-
+        
         public static final byte INT16 = 0x05;
-
+        
         public static final byte UINT16 = 0x06;
-
+        
         public static final byte INT32 = 0x07;
-
+        
         public static final byte UINT32 = 0x08;
-
+        
         public static final byte INT64 = 0x09;
-
+        
         public static final byte UINT64 = 0x0a;
-
+        
         public static final byte DOUBLE = 0x0b;
-
+        
         /**
          * Utf8mb4 string.
          */
         public static final byte STRING = 0x0c;
-
+        
         /**
          * Custom data (any MySQL data type).
          */

@@ -23,20 +23,19 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Wr
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 
 public final class FixtureNopWriter implements Writer {
-
+    
     private boolean running;
-
+    
     private Channel channel;
-
+    
     public FixtureNopWriter(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
-
     }
-
+    
     @Override
     public void setChannel(final Channel channel) {
         this.channel = channel;
     }
-
+    
     @Override
     public void write() {
         while (running) {
@@ -44,17 +43,17 @@ public final class FixtureNopWriter implements Writer {
             channel.ack();
         }
     }
-
+    
     @Override
     public void start() {
         running = true;
     }
-
+    
     @Override
     public void stop() {
         running = false;
     }
-
+    
     @Override
     public void run() {
         start();

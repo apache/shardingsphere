@@ -52,24 +52,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public final class HistoryDataSyncTaskGroup implements SyncTask {
-
+    
     private final SyncConfiguration syncConfiguration;
     
     private final DataSourceManager dataSourceManager;
-
+    
     private final List<SyncTask> syncTasks = new LinkedList<>();
     
     private final String syncTaskId;
     
     private final Queue<SyncTask> submitFailureTasks = new LinkedList<>();
-
+    
     public HistoryDataSyncTaskGroup(final SyncConfiguration syncConfiguration, final DataSourceManager dataSourceManager) {
         this.syncConfiguration = syncConfiguration;
         this.dataSourceManager = dataSourceManager;
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("historyGroup-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
-
+    
     @Override
     public void prepare() {
         List<SyncConfiguration> tableSliceConfigurations = split(syncConfiguration);
@@ -80,7 +80,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
             syncTasks.add(syncTask);
         }
     }
-
+    
     private List<SyncConfiguration> split(final SyncConfiguration syncConfiguration) {
         List<SyncConfiguration> result = new LinkedList<>();
         DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
@@ -158,7 +158,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
         }
         return result;
     }
-
+    
     @Override
     public void start(final ReportCallback callback) {
         final AtomicInteger finishedTask = new AtomicInteger();
@@ -197,7 +197,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
             each.stop();
         }
     }
-
+    
     @Override
     public SyncProgress getProgress() {
         HistoryDataSyncTaskProgressGroup result = new HistoryDataSyncTaskProgressGroup();

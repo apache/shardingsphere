@@ -25,7 +25,7 @@ import java.util.List;
  * Channel.
  */
 public interface Channel {
-
+    
     /**
      * push a {@code DataRecord} to channel.
      *
@@ -33,7 +33,7 @@ public interface Channel {
      * @throws InterruptedException if thread interrupted
      */
     void pushRecord(Record dataRecord) throws InterruptedException;
-
+    
     /**
      * fetch {@code Record} from channel, if the timeout also returns the record.
      *
@@ -42,7 +42,7 @@ public interface Channel {
      * @return record
      */
     List<Record> fetchRecords(int batchSize, int timeout);
-
+    
     /**
      * Ack the last batch.
      */

@@ -45,12 +45,12 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     public Class<? extends Writer> getWriterClass() {
         return FixtureNopWriter.class;
     }
-
+    
     @Override
     public Class<? extends DatasourceChecker> getCheckerClass() {
         return null;
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "H2";

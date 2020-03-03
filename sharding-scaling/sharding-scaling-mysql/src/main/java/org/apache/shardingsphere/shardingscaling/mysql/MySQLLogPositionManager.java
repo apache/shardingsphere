@@ -31,11 +31,11 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 public final class MySQLLogPositionManager implements LogPositionManager<BinlogPosition> {
-
+    
     private final DataSource dataSource;
     
     private BinlogPosition currentPosition;
-
+    
     @Override
     public BinlogPosition getCurrentPosition() {
         if (null == currentPosition) {

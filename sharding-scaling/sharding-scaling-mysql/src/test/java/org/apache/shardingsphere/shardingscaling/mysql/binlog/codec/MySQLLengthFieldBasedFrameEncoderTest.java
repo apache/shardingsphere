@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLLengthFieldBasedFrameEncoderTest {
+public final class MySQLLengthFieldBasedFrameEncoderTest {
     
     @Mock
     private AbstractPacket packet;
@@ -44,7 +44,7 @@ public class MySQLLengthFieldBasedFrameEncoderTest {
     private ByteBuf outByteBuf;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(packet.toByteBuf()).thenReturn(packetByteBuf);
     }
     

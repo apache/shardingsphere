@@ -38,22 +38,22 @@ public final class MySQLScalingEntry implements ScalingEntry {
     public Class<? extends LogReader> getLogReaderClass() {
         return MySQLBinlogReader.class;
     }
-
+    
     @Override
     public Class<? extends LogPositionManager> getLogPositionManager() {
         return MySQLLogPositionManager.class;
     }
-
+    
     @Override
     public Class<? extends Writer> getWriterClass() {
         return MySQLWriter.class;
     }
-
+    
     @Override
     public Class<? extends DatasourceChecker> getCheckerClass() {
         return MySQLDatasourceChecker.class;
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "MySQL";

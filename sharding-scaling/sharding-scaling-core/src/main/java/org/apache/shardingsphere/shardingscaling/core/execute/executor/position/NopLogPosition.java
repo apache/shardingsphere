@@ -20,12 +20,12 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.position
 /**
  * Nop log position.
  */
-public class NopLogPosition implements LogPosition<NopLogPosition> {
+public final class NopLogPosition implements LogPosition<NopLogPosition> {
     
     private static final long serialVersionUID = 1946907178847169020L;
     
     @Override
-    public final int compareTo(final NopLogPosition nopLogPosition) {
+    public int compareTo(final NopLogPosition nopLogPosition) {
         return 0;
     }
 }

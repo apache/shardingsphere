@@ -40,14 +40,14 @@ import java.util.List;
  */
 @Slf4j
 public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
-
+    
     private final BinlogContext binlogContext;
-
+    
     public MySQLBinlogEventPacketDecoder(final int checksumLength) {
         binlogContext = new BinlogContext();
         binlogContext.setChecksumLength(checksumLength);
     }
-
+    
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         checkError(in);
@@ -84,7 +84,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             throw new UnsupportedOperationException();
         }
     }
-
+    
     private void checkError(final ByteBuf in) {
         short errorCode = DataTypesCodec.readUnsignedInt1(in);
         if (0 == errorCode) {
@@ -98,20 +98,20 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 String.format("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, DataTypesCodec.readFixedLengthString(in.readableBytes(), in)));
         }
     }
-
+    
     private void removeChecksum(final short eventType, final ByteBuf in) {
         if (0 < binlogContext.getChecksumLength()
                 && EventTypes.FORMAT_DESCRIPTION_EVENT != eventType) {
             in.writerIndex(in.writerIndex() - binlogContext.getChecksumLength());
         }
     }
-
+    
     private void decodeRotateEvent(final ByteBuf in) {
         RotateEventPacket rotateEventPacket = new RotateEventPacket();
         rotateEventPacket.parse(in);
         binlogContext.setFileName(rotateEventPacket.getNextFileName());
     }
-
+    
     private DeleteRowsEvent decodeDeleteRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
         RowsEventPacket rowsEventPacket = new RowsEventPacket(binlogEventHeader);
         rowsEventPacket.parsePostHeader(in);
@@ -121,7 +121,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         result.setBeforeRows(rowsEventPacket.getRows1());
         return result;
     }
-
+    
     private UpdateRowsEvent decodeUpdateRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
         RowsEventPacket rowsEventPacket = new RowsEventPacket(binlogEventHeader);
         rowsEventPacket.parsePostHeader(in);
@@ -132,7 +132,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         result.setAfterRows(rowsEventPacket.getRows2());
         return result;
     }
-
+    
     private WriteRowsEvent decodeWriteRowsEventV2(final BinlogEventHeader binlogEventHeader, final ByteBuf in) {
         RowsEventPacket rowsEventPacket = new RowsEventPacket(binlogEventHeader);
         rowsEventPacket.parsePostHeader(in);
@@ -142,7 +142,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         result.setAfterRows(rowsEventPacket.getRows1());
         return result;
     }
-
+    
     private void initRowsEvent(final AbstractRowsEvent rowsEvent, final BinlogEventHeader binlogEventHeader, final long tableId) {
         rowsEvent.setSchemaName(binlogContext.getSchemaName(tableId));
         rowsEvent.setTableName(binlogContext.getTableName(tableId));
@@ -159,14 +159,14 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         result.setTimestamp(binlogEventHeader.getTimeStamp());
         return result;
     }
-
+    
     private void decodeTableMapEvent(final ByteBuf in) {
         TableMapEventPacket tableMapLogEvent = new TableMapEventPacket();
         tableMapLogEvent.parsePostHeader(in);
         tableMapLogEvent.parsePayload(in);
         binlogContext.putTableMapEvent(tableMapLogEvent.getTableId(), tableMapLogEvent);
     }
-
+    
     private void decodeFormatDescriptionEvent(final ByteBuf in) {
         FormatDescriptionEventPacket formatDescriptionEventPacket = new FormatDescriptionEventPacket();
         formatDescriptionEventPacket.parse(in);

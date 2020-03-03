@@ -45,15 +45,15 @@ import java.util.List;
  */
 @Slf4j
 public final class RealtimeDataSyncTask implements SyncTask {
-
+    
     private final SyncConfiguration syncConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
     private final String syncTaskId;
-
+    
     private LogPositionManager logPositionManager;
-
+    
     private Reader reader;
     
     private long delayMillisecond;
@@ -64,7 +64,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
         DataSourceMetaData dataSourceMetaData = syncConfiguration.getReaderConfiguration().getDataSourceConfiguration().getDataSourceMetaData();
         syncTaskId = String.format("realtime-%s", null != dataSourceMetaData.getCatalog() ? dataSourceMetaData.getCatalog() : dataSourceMetaData.getSchema());
     }
-
+    
     @Override
     public void prepare() {
         this.logPositionManager = instanceLogPositionManager();
@@ -124,7 +124,7 @@ public final class RealtimeDataSyncTask implements SyncTask {
             reader = null;
         }
     }
-
+    
     @Override
     public SyncProgress getProgress() {
         return new RealTimeDataSyncTaskProgress(syncTaskId, delayMillisecond, logPositionManager.getCurrentPosition());

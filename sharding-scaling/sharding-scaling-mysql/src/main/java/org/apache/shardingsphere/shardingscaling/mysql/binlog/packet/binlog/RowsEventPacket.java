@@ -39,26 +39,26 @@ import java.util.List;
  * </p>
  */
 @Getter
-public class RowsEventPacket {
-
+public final class RowsEventPacket {
+    
     private final BinlogEventHeader binlogEventHeader;
-
+    
     private long tableId;
-
+    
     private int flags;
-
+    
     private BitSet columnsPresentBitmap;
-
+    
     private BitSet columnsPresentBitmap2;
-
+    
     private List<Serializable[]> rows1 = new ArrayList<>();
-
+    
     private List<Serializable[]> rows2 = new ArrayList<>();
-
+    
     public RowsEventPacket(final BinlogEventHeader binlogEventHeader) {
         this.binlogEventHeader = binlogEventHeader;
     }
-
+    
     /**
      * Parse post header.
      *
@@ -75,7 +75,7 @@ public class RowsEventPacket {
             DataTypesCodec.readBytes(extraDataLength, in);
         }
     }
-
+    
     /**
      * Parse payload.
      *
@@ -117,7 +117,7 @@ public class RowsEventPacket {
             }
         }
     }
-
+    
     private Serializable decodeColumnValue(final ColumnDef columnDef, final ByteBuf in) {
         switch (columnDef.getType()) {
             case ColumnTypes.MYSQL_TYPE_LONG:
@@ -165,35 +165,35 @@ public class RowsEventPacket {
                 throw new UnsupportedOperationException();
         }
     }
-
+    
     private Serializable decodeLong(final int meta, final ByteBuf in) {
         return DataTypesCodec.readInt4LE(in);
     }
-
+    
     private Serializable decodeTiny(final int meta, final ByteBuf in) {
         return DataTypesCodec.readInt1(in);
     }
-
+    
     private Serializable decodeShort(final int meta, final ByteBuf in) {
         return DataTypesCodec.readInt2LE(in);
     }
-
+    
     private Serializable decodeInt24(final int meta, final ByteBuf in) {
         return DataTypesCodec.readInt3LE(in);
     }
-
+    
     private Serializable decodeLonglong(final int meta, final ByteBuf in) {
         return DataTypesCodec.readInt8LE(in);
     }
-
+    
     private Serializable decodeFloat(final int meta, final ByteBuf in) {
         return DataTypesCodec.readFloatLE(in);
     }
-
+    
     private Serializable decodeNewDecimal(final int meta, final ByteBuf in) {
         return DecimalValueDecoder.decodeNewDecimal(meta, in);
     }
-
+    
     private Serializable decodeEnumValue(final int meta, final ByteBuf in) {
         switch (meta) {
             case 1:
@@ -204,7 +204,7 @@ public class RowsEventPacket {
                 throw new UnsupportedOperationException();
         }
     }
-
+    
     private Serializable decodeVarString(final int meta, final ByteBuf in) {
         int length = 0;
         if (256 > meta) {
@@ -214,7 +214,7 @@ public class RowsEventPacket {
         }
         return new String(DataTypesCodec.readBytes(length, in));
     }
-
+    
     private Serializable decodeString(final int meta, final ByteBuf in) {
         switch (meta >> 8) {
             case ColumnTypes.MYSQL_TYPE_ENUM:
@@ -229,7 +229,7 @@ public class RowsEventPacket {
                 throw new UnsupportedOperationException();
         }
     }
-
+    
     private Serializable decodeJson(final int meta, final ByteBuf in) {
         int length = 0;
         switch (meta) {

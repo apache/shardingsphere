@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.shardingscaling.core.synctask.history;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 /**
  * History data sync task progress.
  */
+@RequiredArgsConstructor
 @Getter
-@AllArgsConstructor
 public final class HistoryDataSyncTaskProgress implements SyncProgress {
-
+    
     private final String id;
-
+    
     private final long estimatedRows;
-
+    
     private final long syncedRows;
 }

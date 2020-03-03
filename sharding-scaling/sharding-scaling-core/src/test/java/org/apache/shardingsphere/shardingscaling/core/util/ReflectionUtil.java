@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.shardingscaling.core.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.lang.reflect.Field;
 
-public class ReflectionUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ReflectionUtil {
     
     /**
      * Get field from class.
@@ -31,7 +35,7 @@ public class ReflectionUtil {
      * @throws NoSuchFieldException no such field exception
      */
     public static Field getFieldFromClass(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
-        Field targetField = null;
+        Field targetField;
         if (isDeclared) {
             targetField = targetClass.getDeclaredField(fieldName);
         } else {

@@ -32,8 +32,8 @@ import java.util.List;
 public final class UpdateRowsEvent extends AbstractRowsEvent {
     
     private List<Serializable[]> beforeRows;
-
+    
     private List<Serializable[]> afterRows;
-
+    
     private BitSet changedBitmap;
 }

@@ -21,12 +21,12 @@ package org.apache.shardingsphere.shardingscaling.core.execute.engine;
  * Sync task execute callback.
  */
 public interface ExecuteCallback {
-
+    
     /**
      * Callback when execute success.
      */
     void onSuccess();
-
+    
     /**
      * Callback when execute failure.
      *

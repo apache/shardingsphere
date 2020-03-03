@@ -22,7 +22,7 @@ package org.apache.shardingsphere.shardingscaling.core.execute.executor.position
  * Such as mysql binlog, postgreSQL wal.
  */
 public interface LogPositionManager<T extends LogPosition> {
-
+    
     /**
      * Get current log position.
      *

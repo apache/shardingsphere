@@ -44,7 +44,7 @@ public final class OkPacket extends AbstractPacket {
     private int warningCount;
     
     private String message;
-
+    
     @Override
     public void fromByteBuf(final ByteBuf data) {
         this.fieldCount = DataTypesCodec.readUnsignedInt1(data);

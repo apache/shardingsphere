@@ -76,15 +76,13 @@ public final class MySQLJdbcReader extends AbstractJDBCReader {
     }
     
     private boolean isDateTimeValue(final int columnType) {
-        return Types.TIME == columnType
-                || Types.DATE == columnType
-                || Types.TIMESTAMP == columnType;
+        return Types.TIME == columnType || Types.DATE == columnType || Types.TIMESTAMP == columnType;
     }
     
     @Override
     protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        ps.setFetchSize(Integer.MIN_VALUE);
-        return ps;
+        PreparedStatement result = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        result.setFetchSize(Integer.MIN_VALUE);
+        return result;
     }
 }

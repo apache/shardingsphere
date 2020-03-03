@@ -30,15 +30,15 @@ import java.sql.SQLException;
  * PostgreSQL JDBC reader.
  */
 public final class PostgreSQLJdbcReader extends AbstractJDBCReader {
-
+    
     public PostgreSQLJdbcReader(final RdbmsConfiguration rdbmsConfiguration, final DataSourceManager dataSourceManager) {
         super(rdbmsConfiguration, dataSourceManager);
     }
     
     @Override
     protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        ps.setFetchSize(1);
-        return ps;
+        PreparedStatement result = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        result.setFetchSize(1);
+        return result;
     }
 }

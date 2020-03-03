@@ -24,10 +24,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * generic checker implement.
+ * Generic checker implement.
  */
 public abstract class AbstractDatasourceChecker implements DatasourceChecker {
-
+    
     @Override
     public final void checkConnection(final Collection<DataSource> dataSources) {
         try {

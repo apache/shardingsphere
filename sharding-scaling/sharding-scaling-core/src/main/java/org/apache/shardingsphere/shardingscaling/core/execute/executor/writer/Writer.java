@@ -24,14 +24,14 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.C
  * Writer.
  */
 public interface Writer extends SyncExecutor {
-
+    
     /**
      * Set channel.
      *
      * @param channel channel
      */
     void setChannel(Channel channel);
-
+    
     /**
      * write data to channel.
      */

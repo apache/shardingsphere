@@ -51,15 +51,15 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Slf4j
 public final class HistoryDataSyncTask implements SyncTask {
-
+    
     private final SyncConfiguration syncConfiguration;
     
     private final DataSourceManager dataSourceManager;
     
     private final String syncTaskId;
-
+    
     private long estimatedRows;
-
+    
     private AtomicLong syncedRows = new AtomicLong();
     
     private Reader reader;
@@ -79,7 +79,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     @Override
     public void prepare() {
     }
-
+    
     @Override
     public void start(final ReportCallback callback) {
         getEstimatedRows();
@@ -129,7 +129,7 @@ public final class HistoryDataSyncTask implements SyncTask {
             }
         });
     }
-
+    
     @Override
     public void stop() {
         if (null != reader) {
@@ -137,7 +137,7 @@ public final class HistoryDataSyncTask implements SyncTask {
             reader = null;
         }
     }
-
+    
     @Override
     public SyncProgress getProgress() {
         return new HistoryDataSyncTaskProgress(syncTaskId, estimatedRows, syncedRows.get());

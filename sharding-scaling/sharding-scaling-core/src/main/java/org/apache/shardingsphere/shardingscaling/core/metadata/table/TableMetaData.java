@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.core.metadata.table;
 
+import lombok.Getter;
 import org.apache.shardingsphere.shardingscaling.core.metadata.column.ColumnMetaData;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,13 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import lombok.Getter;
-
 /**
  * Table meta data.
  */
 public final class TableMetaData {
-
+    
     private final List<ColumnMetaData> columnMetaData = new ArrayList<>();
     
     @Getter

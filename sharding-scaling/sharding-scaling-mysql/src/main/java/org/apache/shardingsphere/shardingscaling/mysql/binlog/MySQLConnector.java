@@ -51,30 +51,30 @@ import java.util.concurrent.ExecutionException;
 /**
  * MySQL Connector.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class MySQLConnector {
-
+    
     private final int serverId;
-
+    
     private final String host;
-
+    
     private final int port;
-
+    
     private final String username;
-
+    
     private final String password;
-
+    
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
-
+    
     private Channel channel;
-
+    
     private Promise<Object> responseCallback;
-
+    
     private ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue(1000);
-
+    
     private ServerInfo serverInfo;
-
+    
     /**
      * Connect to MySQL.
      */
@@ -97,7 +97,7 @@ public final class MySQLConnector {
                 .connect(host, port).channel();
         serverInfo = waitExpectedResponse(ServerInfo.class);
     }
-
+    
     /**
      * Execute command.
      *
@@ -111,7 +111,7 @@ public final class MySQLConnector {
         channel.writeAndFlush(queryCommandPacket);
         return null != waitExpectedResponse(OkPacket.class);
     }
-
+    
     /**
      * Execute update.
      *
@@ -125,7 +125,7 @@ public final class MySQLConnector {
         channel.writeAndFlush(queryCommandPacket);
         return (int) waitExpectedResponse(OkPacket.class).getAffectedRows();
     }
-
+    
     /**
      * Execute query.
      *
@@ -139,7 +139,7 @@ public final class MySQLConnector {
         channel.writeAndFlush(queryCommandPacket);
         return waitExpectedResponse(InternalResultSet.class);
     }
-
+    
     /**
      * Start dump binlog.
      *
@@ -205,7 +205,7 @@ public final class MySQLConnector {
     public synchronized AbstractBinlogEvent poll() {
         return blockingEventQueue.poll();
     }
-
+    
     private <T> T waitExpectedResponse(final Class<T> type) {
         try {
             Object response = responseCallback.get();
@@ -223,7 +223,7 @@ public final class MySQLConnector {
             throw new RuntimeException(e);
         }
     }
-
+    
     class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
@@ -231,7 +231,7 @@ public final class MySQLConnector {
                 responseCallback.setSuccess(msg);
             }
         }
-
+        
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             if (null != responseCallback) {
@@ -240,7 +240,7 @@ public final class MySQLConnector {
             }
         }
     }
-
+    
     class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
@@ -248,7 +248,7 @@ public final class MySQLConnector {
                 blockingEventQueue.put((AbstractBinlogEvent) msg);
             }
         }
-
+        
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
             log.error("protocol resolution error", cause);

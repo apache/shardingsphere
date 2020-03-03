@@ -21,6 +21,6 @@ package org.apache.shardingsphere.shardingscaling.core.execute;
  * Event type.
  */
 public enum EventType {
-    FINISHED,
-    EXCEPTION_EXIT
+    
+    FINISHED, EXCEPTION_EXIT
 }

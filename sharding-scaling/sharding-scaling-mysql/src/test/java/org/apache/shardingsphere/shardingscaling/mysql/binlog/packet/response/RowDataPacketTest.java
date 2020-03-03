@@ -24,7 +24,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RowDataPacketTest {
+public final class RowDataPacketTest {
     
     private static final String VALUE_1 = "value_1";
     

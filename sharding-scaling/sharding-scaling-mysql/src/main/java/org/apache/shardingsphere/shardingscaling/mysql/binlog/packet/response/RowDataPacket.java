@@ -37,7 +37,7 @@ import java.util.List;
 public final class RowDataPacket extends AbstractPacket {
     
     private List<String> columns = new ArrayList<>();
-
+    
     @Override
     public void fromByteBuf(final ByteBuf data) {
         while (data.isReadable()) {
