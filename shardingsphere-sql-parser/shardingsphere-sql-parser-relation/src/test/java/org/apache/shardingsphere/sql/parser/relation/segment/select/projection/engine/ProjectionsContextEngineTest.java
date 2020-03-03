@@ -148,17 +148,16 @@ public final class ProjectionsContextEngineTest {
     @Test
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent() {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getTables()).thenReturn(Collections.singletonList(new TableSegment(0, 0, new IdentifierValue("name"))));
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("name"));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
+        when(selectStatement.getTables()).thenReturn(Collections.singletonList(tableSegment));
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
         TableSegment table = new TableSegment(0, 10, new IdentifierValue("name"));
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         table.setOwner(new OwnerSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);
-        when(selectStatement.getAllTables()).thenReturn(Collections.singletonList(tableSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         columnSegment.setOwner(owner);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.Constrain
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateTableStatement extends DDLStatement implements TableSegmentsAvailable, IndexSegmentsAvailable {
+public final class CreateTableStatement extends DDLStatement implements IndexSegmentsAvailable {
     
     private final TableSegment table;
     
@@ -43,19 +42,4 @@ public final class CreateTableStatement extends DDLStatement implements TableSeg
     private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        Collection<TableSegment> result = new LinkedList<>();
-        result.add(table);
-        for (ColumnDefinitionSegment each : columnDefinitions) {
-            result.addAll(each.getReferencedTables());
-        }
-        for (ConstraintDefinitionSegment each : constraintDefinitions) {
-            if (each.getReferencedTable().isPresent()) {
-                result.add(each.getReferencedTable().get());
-            }
-        }
-        return result;
-    }
 }

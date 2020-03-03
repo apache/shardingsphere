@@ -58,7 +58,7 @@ public class ExampleMain {
     }
     
     private static File getFile(final String configFile) {
-        return new File(Thread.currentThread().getClass().getResource(configFile).getFile());
+        return new File(ExampleMain.class.getResource(configFile).getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
