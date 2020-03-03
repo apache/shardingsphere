@@ -24,7 +24,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class HeaderPacketTest {
+public final class HeaderPacketTest {
     
     private static final int PACKET_LENGTH = 0x00101010;
     

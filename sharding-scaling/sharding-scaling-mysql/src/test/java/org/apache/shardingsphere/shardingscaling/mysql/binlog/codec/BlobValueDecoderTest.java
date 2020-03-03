@@ -24,7 +24,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BlobValueDecoderTest {
+public final class BlobValueDecoderTest {
 
     @Test
     public void assertDecodeBlob() {

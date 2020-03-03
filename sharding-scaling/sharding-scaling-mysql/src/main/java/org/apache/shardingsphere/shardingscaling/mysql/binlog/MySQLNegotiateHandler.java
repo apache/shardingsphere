@@ -31,15 +31,15 @@ import io.netty.util.concurrent.Promise;
  */
 @RequiredArgsConstructor
 public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
-
+    
     private final String username;
     
     private final String password;
     
     private final Promise<Object> authResultCallback;
-
+    
     private ServerInfo serverInfo;
-
+    
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         if (msg instanceof HandshakeInitializationPacket) {
@@ -68,7 +68,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         ctx.channel().close();
         throw new RuntimeException(error.getMessage());
     }
-
+    
     private byte[] joinAndCreateAuthPluginData(final HandshakeInitializationPacket handshakePacket) {
         byte[] result = new byte[handshakePacket.getAuthPluginDataPart1().length + handshakePacket.getAuthPluginDataPart2().length];
         System.arraycopy(handshakePacket.getAuthPluginDataPart1(), 0, result, 0, handshakePacket.getAuthPluginDataPart1().length);

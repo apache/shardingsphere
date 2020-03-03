@@ -23,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class MySQLPasswordEncryptorTest {
+public final class MySQLPasswordEncryptorTest {
     
     @Test
     public void assertEncryptWithMySQL41() throws NoSuchAlgorithmException {

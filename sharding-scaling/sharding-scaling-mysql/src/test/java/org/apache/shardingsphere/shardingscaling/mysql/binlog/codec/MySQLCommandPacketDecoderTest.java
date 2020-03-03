@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLCommandPacketDecoderTest {
+public final class MySQLCommandPacketDecoderTest {
     
     @Mock
     private ByteBuf byteBuf;

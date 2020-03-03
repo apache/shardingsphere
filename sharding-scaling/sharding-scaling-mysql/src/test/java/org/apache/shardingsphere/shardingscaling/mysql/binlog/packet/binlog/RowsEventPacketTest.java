@@ -40,12 +40,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class RowsEventPacketTest {
-
+public final class RowsEventPacketTest {
+    
     private BinlogEventHeader binlogEventHeader;
-
+    
     private BinlogContext binlogContext;
-
+    
     @Before
     public void setUp() {
         binlogContext = new BinlogContext();
@@ -53,7 +53,7 @@ public class RowsEventPacketTest {
         binlogContext.getTableMap().put(0L, new TableMapEventPacket());
         binlogEventHeader = new BinlogEventHeader();
     }
-
+    
     @Test
     public void assertParsePostHeader() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -66,7 +66,7 @@ public class RowsEventPacketTest {
         assertThat(actual.getFlags(), is(2));
         verify(postHeader).readBytes(ArgumentMatchers.any(byte[].class), ArgumentMatchers.eq(0), ArgumentMatchers.eq(0));
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteNullRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -81,7 +81,7 @@ public class RowsEventPacketTest {
         assertThat(actual.getColumnsPresentBitmap(), is(expectedBitSet));
         assertColumnValue(actual.getRows1(), null);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateNullRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -96,7 +96,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), null);
         assertColumnValue(actual.getRows2(), null);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteLongRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -108,7 +108,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), Integer.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateLongRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -123,7 +123,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), Integer.MAX_VALUE);
         assertColumnValue(actual.getRows2(), Integer.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteTinyRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -135,7 +135,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), (byte) 0x80);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateTinyRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -150,7 +150,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), (byte) 0x79);
         assertColumnValue(actual.getRows2(), (byte) 0x80);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteShortRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -162,7 +162,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), Short.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateShortRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -177,7 +177,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), Short.MAX_VALUE);
         assertColumnValue(actual.getRows2(), Short.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteInt24Row() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -189,7 +189,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), -0x800000);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateInt24Row() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -204,7 +204,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), 0x7f0000);
         assertColumnValue(actual.getRows2(), -0x800000);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteLongLongRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -216,7 +216,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), Long.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateLongLongRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -231,7 +231,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), Long.MAX_VALUE);
         assertColumnValue(actual.getRows2(), Long.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteFloatRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -243,7 +243,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), Float.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateFloatRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -258,7 +258,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), Float.MAX_VALUE);
         assertColumnValue(actual.getRows2(), Float.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteNewDecimalRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -270,7 +270,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), new BigDecimal("-1234567890.1234"));
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateNewDecimalRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -285,7 +285,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), new BigDecimal("1234567890.1234"));
         assertColumnValue(actual.getRows2(), new BigDecimal("-1234567890.1234"));
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteDoubleRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -297,7 +297,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), Double.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateDoubleRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -312,7 +312,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), Double.MAX_VALUE);
         assertColumnValue(actual.getRows2(), Double.MIN_VALUE);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteTimestampRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -324,7 +324,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), "0000-00-00 00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateTimestampRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -339,7 +339,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), "2019-10-16 08:32:13");
         assertColumnValue(actual.getRows2(), "0000-00-00 00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteTimestamp2Row() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -351,7 +351,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), "0000-00-00 00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateTimestamp2Row() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -366,7 +366,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), "2019-10-16 08:32:13");
         assertColumnValue(actual.getRows2(), "0000-00-00 00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteDatetimeRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -378,7 +378,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), "0000-00-00 00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateDatetimeRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -393,7 +393,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), "2019-10-17 11:15:00");
         assertColumnValue(actual.getRows2(), "0000-00-00 00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteDatetiem2Row() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -405,7 +405,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), "0000-00-00 00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateDatetime2Row() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -420,7 +420,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), "2019-10-16 16:48:37");
         assertColumnValue(actual.getRows2(), "0000-00-00 00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteTiemRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -432,7 +432,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), "00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateTimeRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -447,7 +447,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), "10:15:31");
         assertColumnValue(actual.getRows2(), "00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteTiem2Row() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -459,7 +459,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), "00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateTime2Row() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -474,7 +474,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), "10:43:23");
         assertColumnValue(actual.getRows2(), "00:00:00");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteDateRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -486,7 +486,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), "0000-00-00");
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateDateRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -501,7 +501,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), "2019-10-17");
         assertColumnValue(actual.getRows2(), "0000-00-00");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteYearRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -513,7 +513,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), "0000");
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateYearRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -528,7 +528,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), "2155");
         assertColumnValue(actual.getRows2(), "0000");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteBlobRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -540,7 +540,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), new byte[0]);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateBlobRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -557,7 +557,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), value1);
         assertColumnValue(actual.getRows2(), new byte[0]);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteVarCharRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -571,7 +571,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), value);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateVarCharRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -588,7 +588,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), value1);
         assertColumnValue(actual.getRows2(), "");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteVarStringRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -602,7 +602,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), value);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateVarStringRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -619,7 +619,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), value1);
         assertColumnValue(actual.getRows2(), "");
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteEnumRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -639,7 +639,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), 256);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateEnumRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -654,7 +654,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), (short) 255);
         assertColumnValue(actual.getRows2(), (short) 0);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteSetRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -666,7 +666,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), (byte) -128);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateSetRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -681,7 +681,7 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), (byte) 127);
         assertColumnValue(actual.getRows2(), (byte) -128);
     }
-
+    
     @Test
     public void assertParsePayloadWithWriteStringRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
@@ -695,7 +695,7 @@ public class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), value);
     }
-
+    
     @Test
     public void assertParsePayloadWithUpdateStringRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
@@ -714,13 +714,13 @@ public class RowsEventPacketTest {
         assertColumnValue(actual.getRows1(), value1);
         assertColumnValue(actual.getRows2(), value2);
     }
-
+    
     private void assertColumnValue(final List<Serializable[]> actual, final Serializable value) {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).length, is(1));
         assertThat(actual.get(0)[0], is(value));
     }
-
+    
     private void mockTableMapEvent(final int meta, final int columnType) {
         TableMapEventPacket result = mock(TableMapEventPacket.class);
         ColumnDef longColumnDef = new ColumnDef();

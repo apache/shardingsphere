@@ -34,11 +34,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public final class HeaderPacket implements Packet {
-
+    
     private int packetBodyLength;
     
     private byte packetSequenceNumber;
-
+    
     @Override
     public ByteBuf toByteBuf() {
         ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer(4);
@@ -48,7 +48,7 @@ public final class HeaderPacket implements Packet {
         result.writeByte(getPacketSequenceNumber());
         return result;
     }
-
+    
     @Override
     public void fromByteBuf(final ByteBuf data) {
         this.packetBodyLength = DataTypesCodec.readUnsignedInt3LE(data);

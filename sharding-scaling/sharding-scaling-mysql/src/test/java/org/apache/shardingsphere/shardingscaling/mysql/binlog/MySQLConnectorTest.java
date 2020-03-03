@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLConnectorTest {
+public final class MySQLConnectorTest {
     
     @Mock
     private Channel channel;

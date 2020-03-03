@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
 
 import io.netty.buffer.ByteBuf;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -26,12 +28,13 @@ import java.math.BigDecimal;
 /**
  * Decimal Value decoder.
  */
-public class DecimalValueDecoder {
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DecimalValueDecoder {
+    
     private static final int DEC_BYTE_SIZE = 4;
     
     private static final int DIG_PER_DEC = 9;
-
+    
     private static final int[] DIG_TO_BYTES = {0, 1, 1, 2, 2, 3, 3, 4, 4, 4};
     
     /**

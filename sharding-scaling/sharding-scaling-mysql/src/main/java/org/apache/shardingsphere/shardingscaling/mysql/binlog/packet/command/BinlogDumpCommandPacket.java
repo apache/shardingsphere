@@ -38,11 +38,11 @@ public final class BinlogDumpCommandPacket extends AbstractCommandPacket {
     private int slaveServerId;
     
     private String binlogFileName;
-
+    
     public BinlogDumpCommandPacket() {
         setCommand((byte) 0x12);
     }
-
+    
     @Override
     public ByteBuf toByteBuf() {
         ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();

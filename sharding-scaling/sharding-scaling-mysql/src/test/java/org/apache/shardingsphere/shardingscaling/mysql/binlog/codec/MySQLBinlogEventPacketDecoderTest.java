@@ -25,23 +25,22 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.WriteRowsEve
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.EventTypes;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEventPacket;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLBinlogEventPacketDecoderTest {
+public final class MySQLBinlogEventPacketDecoderTest {
     
     @Mock
     private ByteBuf byteBuf;

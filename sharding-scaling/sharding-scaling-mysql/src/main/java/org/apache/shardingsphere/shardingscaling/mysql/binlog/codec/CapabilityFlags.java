@@ -76,5 +76,4 @@ public final class CapabilityFlags {
     public static final int CLIENT_SESSION_TRACK = 0x00800000;
     
     public static final int CLIENT_DEPRECATE_EOF = 0x01000000;
-    
 }

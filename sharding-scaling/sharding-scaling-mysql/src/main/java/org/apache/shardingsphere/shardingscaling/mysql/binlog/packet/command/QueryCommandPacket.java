@@ -29,13 +29,13 @@ import java.nio.charset.StandardCharsets;
  */
 @Setter
 public final class QueryCommandPacket extends AbstractCommandPacket {
-
+    
     private String queryString;
-
+    
     public QueryCommandPacket() {
         setCommand((byte) 0x03);
     }
-
+    
     @Override
     public ByteBuf toByteBuf() {
         ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();

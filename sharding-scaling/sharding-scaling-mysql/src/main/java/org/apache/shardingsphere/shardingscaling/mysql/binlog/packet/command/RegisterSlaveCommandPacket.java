@@ -38,11 +38,11 @@ public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {
     private String reportPassword;
     
     private int serverId;
-
+    
     public RegisterSlaveCommandPacket() {
         setCommand((byte) 0x15);
     }
-
+    
     @Override
     public ByteBuf toByteBuf() {
         ByteBuf result = ByteBufAllocator.DEFAULT.heapBuffer();

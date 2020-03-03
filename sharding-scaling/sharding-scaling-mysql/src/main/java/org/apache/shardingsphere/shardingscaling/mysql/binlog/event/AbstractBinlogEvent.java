@@ -28,11 +28,10 @@ import lombok.Setter;
 public abstract class AbstractBinlogEvent {
     
     private long serverId;
-
+    
     private String fileName;
-
+    
     private long position;
     
     private long timestamp;
-
 }

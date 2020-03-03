@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
+import org.junit.Test;
 
-public class BinlogEventHeaderTest {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class BinlogEventHeaderTest {
     
     @Test
     public void assertFromBytes() {

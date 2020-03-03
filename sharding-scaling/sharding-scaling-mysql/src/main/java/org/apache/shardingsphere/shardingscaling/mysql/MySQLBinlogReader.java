@@ -49,16 +49,16 @@ import java.io.Serializable;
  */
 @Slf4j
 public final class MySQLBinlogReader extends AbstractSyncExecutor implements LogReader {
-
+    
     private final BinlogPosition binlogPosition;
-
+    
     private final RdbmsConfiguration rdbmsConfiguration;
     
     private final MetaDataManager metaDataManager;
-
+    
     @Setter
     private Channel channel;
-
+    
     public MySQLBinlogReader(final RdbmsConfiguration rdbmsConfiguration, final LogPosition binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
         if (!JDBCDataSourceConfiguration.class.equals(rdbmsConfiguration.getDataSourceConfiguration().getClass())) {
@@ -67,13 +67,13 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
         this.rdbmsConfiguration = rdbmsConfiguration;
         this.metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(rdbmsConfiguration.getDataSourceConfiguration()));
     }
-
+    
     @Override
     public void run() {
         start();
         read(channel);
     }
-
+    
     @Override
     public void read(final Channel channel) {
         JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
@@ -102,7 +102,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
         }
         pushRecord(channel, new FinishedRecord(new NopLogPosition()));
     }
-
+    
     private void handleWriteRowsEvent(final Channel channel, final JdbcUri uri, final WriteRowsEvent event) {
         if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
             createPlaceholderRecord(channel, event);
@@ -118,7 +118,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
             pushRecord(channel, record);
         }
     }
-
+    
     private void handleUpdateRowsEvent(final Channel channel, final JdbcUri uri, final UpdateRowsEvent event) {
         if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
             createPlaceholderRecord(channel, event);
@@ -138,7 +138,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
             pushRecord(channel, record);
         }
     }
-
+    
     private void handleDeleteRowsEvent(final Channel channel, final JdbcUri uri, final DeleteRowsEvent event) {
         if (filter(uri.getDatabase(), event.getSchemaName(), event.getTableName())) {
             createPlaceholderRecord(channel, event);
@@ -161,20 +161,20 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }
-
+    
     private void createPlaceholderRecord(final Channel channel, final AbstractBinlogEvent event) {
         PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
         record.setCommitTime(event.getTimestamp() * 1000);
         pushRecord(channel, record);
     }
-
+    
     private void pushRecord(final Channel channel, final Record record) {
         try {
             channel.pushRecord(record);
         } catch (InterruptedException ignored) {
         }
     }
-
+    
     private boolean filter(final String database, final String schemaName, final String tableName) {
         return !schemaName.equals(database) || !rdbmsConfiguration.getTableNameMap().containsKey(tableName);
     }

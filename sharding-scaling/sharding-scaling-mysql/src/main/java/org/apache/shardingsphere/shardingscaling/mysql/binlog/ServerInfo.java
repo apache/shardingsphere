@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class ServerInfo {
-
+public final class ServerInfo {
+    
     private ServerVersion serverVersion;
 }

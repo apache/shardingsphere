@@ -23,8 +23,8 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BinlogPositionTest {
-
+public final class BinlogPositionTest {
+    
     @Test
     public void assertCompareTo() {
         int position = 10;

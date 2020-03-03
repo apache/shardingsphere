@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLLogPositionManagerTest {
+public final class MySQLLogPositionManagerTest {
     
     private static final String LOG_FILE_NAME = "binlog-000001";
     
@@ -59,7 +59,7 @@ public class MySQLLogPositionManagerTest {
     }
     
     @Test
-    public void assertGetCurrentPosition() throws NoSuchFieldException, IllegalAccessException {
+    public void assertGetCurrentPosition() {
         MySQLLogPositionManager mySQLLogManager = new MySQLLogPositionManager(dataSource);
         BinlogPosition actual = mySQLLogManager.getCurrentPosition();
         assertThat(actual.getServerId(), is(SERVER_ID));

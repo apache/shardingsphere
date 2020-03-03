@@ -54,7 +54,7 @@ public class BinlogPosition implements LogPosition<BinlogPosition> {
             return -1;
         }
     }
-
+    
     private long toLong() {
         return Long.valueOf(filename.substring(filename.lastIndexOf(".") + 1)) << 32 | position;
     }

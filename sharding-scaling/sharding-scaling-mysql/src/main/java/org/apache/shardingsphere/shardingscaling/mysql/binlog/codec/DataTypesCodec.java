@@ -30,19 +30,19 @@ import java.util.BitSet;
  * </p>
  */
 public final class DataTypesCodec {
-
+    
     private static final BigInteger MAX_BIG_INTEGER_VALUE = new BigInteger("18446744073709551615");
-
+    
     /**
      * Skip length byte in {@code ByteBuf}.
      *
      * @param length to skip
-     * @param in     byte buffer
+     * @param in byte buffer
      */
     public static void skipBytes(final int length, final ByteBuf in) {
         in.skipBytes(length);
     }
-
+    
     /**
      * Read nul from {@code ByteBuf}.
      *
@@ -51,7 +51,7 @@ public final class DataTypesCodec {
     public static void readNul(final ByteBuf in) {
         in.readByte();
     }
-
+    
     /**
      * Read little endian byte order float from {@code ByteBuf}.
      *
@@ -61,7 +61,7 @@ public final class DataTypesCodec {
     public static float readFloatLE(final ByteBuf in) {
         return in.readFloatLE();
     }
-
+    
     /**
      * Read little endian byte order double from {@code ByteBuf}.
      *
@@ -71,7 +71,7 @@ public final class DataTypesCodec {
     public static double readDoubleLE(final ByteBuf in) {
         return in.readDoubleLE();
     }
-
+    
     /**
      * Read bitmap from {@code ByteBuf}.
      *
@@ -93,7 +93,7 @@ public final class DataTypesCodec {
         }
         return bitSet;
     }
-
+    
     /**
      * Read 1 byte integer from {@code ByteBuf}.
      *
@@ -103,7 +103,7 @@ public final class DataTypesCodec {
     public static byte readInt1(final ByteBuf in) {
         return in.readByte();
     }
-
+    
     /**
      * Read little endian byte order 2 byte integer from {@code ByteBuf}.
      *
@@ -113,7 +113,7 @@ public final class DataTypesCodec {
     public static short readInt2LE(final ByteBuf in) {
         return in.readShortLE();
     }
-
+    
     /**
      * Read little endian byte order 3 byte integer from {@code ByteBuf}.
      *
@@ -123,7 +123,7 @@ public final class DataTypesCodec {
     public static int readInt3LE(final ByteBuf in) {
         return in.readMediumLE();
     }
-
+    
     /**
      * Read little endian byte order 4 byte integer from {@code ByteBuf}.
      *
@@ -133,7 +133,7 @@ public final class DataTypesCodec {
     public static int readInt4LE(final ByteBuf in) {
         return in.readIntLE();
     }
-
+    
     /**
      * Read little endian byte order 8 byte integer from {@code ByteBuf}.
      *
@@ -143,7 +143,7 @@ public final class DataTypesCodec {
     public static long readInt8LE(final ByteBuf in) {
         return in.readLongLE();
     }
-
+    
     /**
      * Read unsigned ittle endian byte order 1 byte integer from {@code ByteBuf}.
      *
@@ -153,7 +153,7 @@ public final class DataTypesCodec {
     public static short readUnsignedInt1(final ByteBuf in) {
         return in.readUnsignedByte();
     }
-
+    
     /**
      * Read unsigned big endian byte order 2 byte integer from {@code ByteBuf}.
      *
@@ -163,7 +163,7 @@ public final class DataTypesCodec {
     public static int readUnsignedInt2BE(final ByteBuf in) {
         return in.readUnsignedShort();
     }
-
+    
     /**
      * Read unsigned little endian byte order 2 byte integer from {@code ByteBuf}.
      *
@@ -173,7 +173,7 @@ public final class DataTypesCodec {
     public static int readUnsignedInt2LE(final ByteBuf in) {
         return in.readUnsignedShortLE();
     }
-
+    
     /**
      * Read unsigned big endian byte order 3 byte integer from {@code ByteBuf}.
      *
@@ -183,7 +183,7 @@ public final class DataTypesCodec {
     public static int readUnsignedInt3BE(final ByteBuf in) {
         return in.readUnsignedMedium();
     }
-
+    
     /**
      * Read unsigned little endian byte order 3 byte integer from {@code ByteBuf}.
      *
@@ -193,7 +193,7 @@ public final class DataTypesCodec {
     public static int readUnsignedInt3LE(final ByteBuf in) {
         return in.readUnsignedMediumLE();
     }
-
+    
     /**
      * Read unsigned big endian byte order 4 byte integer from {@code ByteBuf}.
      *
@@ -203,7 +203,7 @@ public final class DataTypesCodec {
     public static long readUnsignedInt4BE(final ByteBuf in) {
         return in.readUnsignedInt();
     }
-
+    
     /**
      * Read unsigned little endian byte order 4 byte integer from {@code ByteBuf}.
      *
@@ -213,7 +213,7 @@ public final class DataTypesCodec {
     public static long readUnsignedInt4LE(final ByteBuf in) {
         return in.readUnsignedIntLE();
     }
-
+    
     /**
      * Read unsigned big endian byte order 5 byte integer from {@code ByteBuf}.
      *
@@ -227,7 +227,7 @@ public final class DataTypesCodec {
         }
         return result;
     }
-
+    
     /**
      * Read unsigned little endian byte order 6 byte integer from {@code ByteBuf}.
      *
@@ -241,7 +241,7 @@ public final class DataTypesCodec {
         }
         return result;
     }
-
+    
     /**
      * Read unsigned little endian byte order 8 byte integer from {@code ByteBuf}.
      *
@@ -252,7 +252,7 @@ public final class DataTypesCodec {
         long value = readInt8LE(in);
         return 0 <= value ? BigInteger.valueOf(value) : MAX_BIG_INTEGER_VALUE.add(BigInteger.valueOf(1 + value));
     }
-
+    
     /**
      * Read unsigned little endian byte order length coded integer from {@code ByteBuf}.
      *
@@ -274,7 +274,7 @@ public final class DataTypesCodec {
                 return firstByte;
         }
     }
-
+    
     /**
      * Read byte array from {@code ByteBuf}.
      *
@@ -287,7 +287,7 @@ public final class DataTypesCodec {
         in.readBytes(buffer, 0, length);
         return buffer;
     }
-
+    
     /**
      * Read fixed length string from {@code ByteBuf}.
      *
@@ -300,7 +300,7 @@ public final class DataTypesCodec {
         in.readBytes(buffer, 0, length);
         return new String(buffer);
     }
-
+    
     /**
      * Read length coded string from {@code ByteBuf}.
      *
@@ -311,7 +311,7 @@ public final class DataTypesCodec {
         int length = (int) readLengthCodedIntLE(in);
         return readFixedLengthString(length, in);
     }
-
+    
     /**
      * Read nul terminated string from {@code ByteBuf}.
      *
@@ -324,7 +324,7 @@ public final class DataTypesCodec {
         readNul(in);
         return str;
     }
-
+    
     /**
      * Write byte array to {@code ByteBuf}.
      *
@@ -334,7 +334,7 @@ public final class DataTypesCodec {
     public static void writeByte(final byte data, final ByteBuf out) {
         out.writeByte(data);
     }
-
+    
     /**
      * Write big endian byte order 5 byte integer to {@code ByteBuf}.
      *
@@ -346,7 +346,7 @@ public final class DataTypesCodec {
             out.writeByte((byte) (data >> (8 * i)));
         }
     }
-
+    
     /**
      * Write big endian byte order n byte integer to {@code ByteBuf}.
      *
@@ -359,7 +359,7 @@ public final class DataTypesCodec {
             out.writeByte((byte) (data >> (8 * i)));
         }
     }
-
+    
     /**
      * Write little endian byte order 2 byte integer to {@code ByteBuf}.
      *
@@ -369,7 +369,7 @@ public final class DataTypesCodec {
     public static void writeInt2LE(final short data, final ByteBuf out) {
         out.writeShortLE(data);
     }
-
+    
     /**
      * Write little endian byte order 4 byte integer to {@code ByteBuf}.
      *
@@ -379,7 +379,7 @@ public final class DataTypesCodec {
     public static void writeInt4LE(final int data, final ByteBuf out) {
         out.writeIntLE(data);
     }
-
+    
     /**
      * Write little endian byte order n byte integer to {@code ByteBuf}.
      *
@@ -392,7 +392,7 @@ public final class DataTypesCodec {
             out.writeByte((byte) (data >> (8 * i)));
         }
     }
-
+    
     /**
      * Write little endian byte order length coded integer to {@code ByteBuf}.
      *
@@ -413,7 +413,7 @@ public final class DataTypesCodec {
             out.writeIntLE(data);
         }
     }
-
+    
     /**
      * Write byte array to {@code ByteBuf}.
      *
@@ -423,7 +423,7 @@ public final class DataTypesCodec {
     public static void writeBytes(final byte[] data, final ByteBuf out) {
         out.writeBytes(data);
     }
-
+    
     /**
      * Write nul terminated string to {@code ByteBuf}.
      *
@@ -434,7 +434,7 @@ public final class DataTypesCodec {
         out.writeBytes(data.getBytes());
         out.writeByte(0x00);
     }
-
+    
     /**
      * Write length coded binary to {@code ByteBuf}.
      *

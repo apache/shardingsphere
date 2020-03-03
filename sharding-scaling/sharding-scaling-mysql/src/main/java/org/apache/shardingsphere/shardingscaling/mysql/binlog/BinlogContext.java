@@ -30,12 +30,12 @@ import java.util.Map;
  */
 @Setter
 @Getter
-public class BinlogContext {
-
+public final class BinlogContext {
+    
     private String fileName;
-
+    
     private int checksumLength;
-
+    
     private Map<Long, TableMapEventPacket> tableMap = new HashMap<>();
     
     /**

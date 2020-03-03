@@ -33,26 +33,26 @@ import lombok.Getter;
  * </p>
  */
 @Getter
-public class FormatDescriptionEventPacket {
-
+public final class FormatDescriptionEventPacket {
+    
     private int binlogVersion;
-
+    
     private String mysqlServerVersion;
-
+    
     private long createTimestamp;
-
+    
     private short eventHeaderLength;
-
+    
     private short checksumType;
-
+    
     private int checksumLength;
-
+    
     /**
      * Parse format description event from {@code ByteBuf}.
      *
      * @param in buffer
      */
-    public final void parse(final ByteBuf in) {
+    public void parse(final ByteBuf in) {
         binlogVersion = DataTypesCodec.readUnsignedInt2LE(in);
         mysqlServerVersion = DataTypesCodec.readFixedLengthString(50, in);
         createTimestamp = DataTypesCodec.readUnsignedInt4LE(in);

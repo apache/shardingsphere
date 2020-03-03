@@ -38,7 +38,7 @@ public final class EofPacket extends AbstractPacket {
     private int warningCount;
     
     private int statusFlag;
-
+    
     @Override
     public void fromByteBuf(final ByteBuf data) {
         fieldCount = DataTypesCodec.readUnsignedInt1(data);

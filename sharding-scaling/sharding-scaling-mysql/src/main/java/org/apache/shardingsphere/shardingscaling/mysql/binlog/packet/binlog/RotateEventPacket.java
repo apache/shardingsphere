@@ -26,12 +26,12 @@ import lombok.Getter;
  * Rotate event.
  */
 @Getter
-public class RotateEventPacket {
-
+public final class RotateEventPacket {
+    
     private long position;
-
+    
     private String nextFileName;
-
+    
     /**
      * Parse rotate event from {@code ByteBuf}.
      * @param in buffer

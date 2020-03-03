@@ -30,7 +30,7 @@ import java.util.Collection;
  * Datasource checker for MySQL.
  */
 public final class MySQLDatasourceChecker extends AbstractDatasourceChecker {
-
+    
     @Override
     public void checkPrivilege(final Collection<DataSource> dataSources) {
         try {

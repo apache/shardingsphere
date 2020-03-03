@@ -43,7 +43,7 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     private States currentState = States.Initiate;
     
     private InternalResultSet internalResultSet;
-
+    
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         // first packet from server is handshake initialization packet

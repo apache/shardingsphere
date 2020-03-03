@@ -79,7 +79,7 @@ public final class ClientAuthenticationPacket extends AbstractPacket {
             this.clientCapability |= CapabilityFlags.CLIENT_PLUGIN_AUTH;
         }
     }
-
+    
     @Override
     @SneakyThrows
     public ByteBuf toByteBuf() {

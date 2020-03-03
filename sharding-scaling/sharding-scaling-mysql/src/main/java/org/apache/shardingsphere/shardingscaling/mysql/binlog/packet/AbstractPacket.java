@@ -34,7 +34,7 @@ import lombok.Setter;
 public abstract class AbstractPacket implements Packet {
     
     private byte sequenceNumber;
-
+    
     /**
      * empty implement method,throw {@code UnsupportedOperationException}.
      *
@@ -44,7 +44,7 @@ public abstract class AbstractPacket implements Packet {
     public void fromByteBuf(final ByteBuf data) {
         throw new UnsupportedOperationException();
     }
-
+    
     /**
      * empty implement method,throw {@code UnsupportedOperationException}.
      *

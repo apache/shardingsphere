@@ -26,7 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public class HandshakeInitializationPacketTest {
+public final class HandshakeInitializationPacketTest {
     
     @Test
     public void assertFromByteBufWithoutClientPluginAuth() {

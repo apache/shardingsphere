@@ -25,7 +25,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class QueryCommandPacketTest {
+public final class QueryCommandPacketTest {
     
     @Test
     public void assertToByteBuf() {

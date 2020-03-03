@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BinlogContextTest {
+public final class BinlogContextTest {
     
     private static final String TEST_SCHEMA = "test_schema";
     
