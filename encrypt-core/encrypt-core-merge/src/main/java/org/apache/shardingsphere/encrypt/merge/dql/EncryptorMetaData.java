@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Encryptor meta data.

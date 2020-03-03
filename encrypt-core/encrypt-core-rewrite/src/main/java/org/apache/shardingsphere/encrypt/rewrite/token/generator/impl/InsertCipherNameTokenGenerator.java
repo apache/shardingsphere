@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Subst
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Insert cipher column name token generator.

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.UseDe
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Use default insert columns token generator for encrypt.
@@ -64,7 +64,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
                 return Optional.of((UseDefaultInsertColumnsToken) each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private void processPreviousSQLToken(final UseDefaultInsertColumnsToken previousSQLToken, final InsertStatementContext insertStatementContext, final String tableName) {
@@ -99,17 +99,11 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator extends BaseE
     }
     
     private void addPlainColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        Optional<String> plainColumn = encryptTable.findPlainColumn(columnName);
-        if (plainColumn.isPresent()) {
-            columnNames.add(columnIndex + 1, plainColumn.get());
-        }
+        encryptTable.findPlainColumn(columnName).ifPresent(plainColumn -> columnNames.add(columnIndex + 1, plainColumn));
     }
     
     private void addAssistedQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnName);
-        if (assistedQueryColumn.isPresent()) {
-            columnNames.add(columnIndex + 1, assistedQueryColumn.get());
-        }
+        encryptTable.findAssistedQueryColumn(columnName).ifPresent(assistedQueryColumn -> columnNames.add(columnIndex + 1, assistedQueryColumn));
     }
     
     private void setCipherColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {

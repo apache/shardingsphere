@@ -67,7 +67,7 @@ public final class TableAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableSegment actual, final ExpectedTable expected) {
         assertThat(assertContext.getText("Table name assertion error: "), actual.getTableName().getIdentifier().getValue(), is(expected.getName()));
-        assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+        assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             // TODO OwnerAssert is necessary.

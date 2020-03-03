@@ -19,13 +19,10 @@ package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
-import java.lang.reflect.Field;
-import java.util.Properties;
 import com.alibaba.nacos.api.exception.NacosException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.junit.Before;
@@ -33,18 +30,21 @@ import org.junit.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.stubbing.VoidAnswer3;
 
+import java.lang.reflect.Field;
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.doThrow;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public final class NacosConfigInstanceTest {
     
@@ -96,13 +96,7 @@ public final class NacosConfigInstanceTest {
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
             .when(configService)
             .addListener(anyString(), anyString(), any(Listener.class));
-        DataChangedEventListener listener = new DataChangedEventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                actualValue[0] = dataChangedEvent.getValue();
-            }
-        };
+        DataChangedEventListener listener = dataChangedEvent -> actualValue[0] = dataChangedEvent.getValue();
         nacosConfigCenterRepository.watch("/sharding/test", listener);
         assertThat(actualValue[0], is(expectValue));
     }
@@ -137,13 +131,9 @@ public final class NacosConfigInstanceTest {
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(expectValue)))
                 .when(configService)
                 .addListener(anyString(), anyString(), any(Listener.class));
-        DataChangedEventListener listener = new DataChangedEventListener() {
-    
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                actualValue[0] = dataChangedEvent.getValue();
-                actualType[0] = dataChangedEvent.getChangedType();
-            }
+        DataChangedEventListener listener = dataChangedEvent -> {
+            actualValue[0] = dataChangedEvent.getValue();
+            actualType[0] = dataChangedEvent.getChangedType();
         };
         nacosConfigCenterRepository.watch("/sharding/test", listener);
         assertThat(actualValue[0], is(expectValue));
@@ -157,24 +147,12 @@ public final class NacosConfigInstanceTest {
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null)))
                 .when(configService)
                 .addListener(anyString(), anyString(), any(Listener.class));
-        DataChangedEventListener listener = new DataChangedEventListener() {
-    
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                actualType[0] = dataChangedEvent.getChangedType();
-            }
-        };
+        DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
         nacosConfigCenterRepository.watch("/sharding/test", listener);
         assertThat(actualType[0], is(ChangedType.UPDATED));
     }
     
     private VoidAnswer3 getListenerAnswer(final String expectValue) {
-        return new VoidAnswer3<String, String, Listener>() {
-            
-            @Override
-            public void answer(final String dataId, final String group, final Listener listener) {
-                listener.receiveConfigInfo(expectValue);
-            }
-        };
+        return (VoidAnswer3<String, String, Listener>) (dataId, group, listener) -> listener.receiveConfigInfo(expectValue);
     }
 }

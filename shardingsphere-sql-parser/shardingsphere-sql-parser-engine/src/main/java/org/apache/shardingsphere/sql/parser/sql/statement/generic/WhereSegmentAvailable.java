@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.generic;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Where segment available.

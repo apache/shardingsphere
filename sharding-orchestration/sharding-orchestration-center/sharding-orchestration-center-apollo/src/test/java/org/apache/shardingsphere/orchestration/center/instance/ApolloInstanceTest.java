@@ -25,8 +25,10 @@ import org.apache.shardingsphere.orchestration.center.configuration.InstanceConf
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
+
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.center.util.ConfigKeyUtils;
+
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -104,6 +106,7 @@ public final class ApolloInstanceTest {
             }
         });
         embeddedApollo.deleteProperty("orchestration", "test.children.1");
+        embeddedApollo.addOrModifyProperty("orchestration", "test.children.1", "value3");
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is("/test/children/1"));
         assertNull(changeEvent.getValue());

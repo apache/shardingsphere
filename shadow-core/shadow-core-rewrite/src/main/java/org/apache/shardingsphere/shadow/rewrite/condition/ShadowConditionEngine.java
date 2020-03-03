@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rewrite.condition;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * Shadow condition engine.
@@ -50,11 +50,11 @@ public final class ShadowConditionEngine {
      */
     public Optional<ShadowCondition> createShadowCondition(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable)) {
-            return Optional.absent();
+            return Optional.empty();
         }
         Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere();
         if (!whereSegment.isPresent()) {
-            return Optional.absent();
+            return Optional.empty();
         }
         for (AndPredicate each : whereSegment.get().getAndPredicates()) {
             Optional<ShadowCondition> condition = createShadowCondition(each);
@@ -71,7 +71,7 @@ public final class ShadowConditionEngine {
 //                }
 //            }
 //        }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private Optional<ShadowCondition> createShadowCondition(final AndPredicate andPredicate) {
@@ -79,19 +79,19 @@ public final class ShadowConditionEngine {
             Collection<Integer> stopIndexes = new HashSet<>();
             if (stopIndexes.add(predicate.getStopIndex())) {
                 Optional<ShadowCondition> condition = shadowRule.getColumn().equals(predicate.getColumn().getIdentifier().getValue())
-                        ? createShadowCondition(predicate) : Optional.<ShadowCondition>absent();
+                        ? createShadowCondition(predicate) : Optional.empty();
                 if (condition.isPresent()) {
                     return condition;
                 }
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private Optional<ShadowCondition> createShadowCondition(final PredicateSegment predicateSegment) {
         if (predicateSegment.getRightValue() instanceof PredicateCompareRightValue) {
             PredicateCompareRightValue compareRightValue = (PredicateCompareRightValue) predicateSegment.getRightValue();
-            return isSupportedOperator(compareRightValue.getOperator()) ? createCompareShadowCondition(predicateSegment, compareRightValue) : Optional.<ShadowCondition>absent();
+            return isSupportedOperator(compareRightValue.getOperator()) ? createCompareShadowCondition(predicateSegment, compareRightValue) : Optional.empty();
         }
         if (predicateSegment.getRightValue() instanceof PredicateInRightValue) {
             throw new ShardingSphereException("The SQL clause 'IN...' is unsupported in shadow rule.");
@@ -99,14 +99,14 @@ public final class ShadowConditionEngine {
         if (predicateSegment.getRightValue() instanceof PredicateBetweenRightValue) {
             throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in shadow rule.");
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private static Optional<ShadowCondition> createCompareShadowCondition(final PredicateSegment predicateSegment, final PredicateCompareRightValue compareRightValue) {
         return compareRightValue.getExpression() instanceof SimpleExpressionSegment
                 ? Optional.of(new ShadowCondition(predicateSegment.getColumn().getIdentifier().getValue(), compareRightValue.getExpression().getStartIndex(),
                 predicateSegment.getStopIndex(), compareRightValue.getExpression()))
-                : Optional.<ShadowCondition>absent();
+                : Optional.empty();
     }
     
     private boolean isSupportedOperator(final String operator) {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.engine;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -49,7 +49,7 @@ public final class OrderByContextEngineTest {
         OrderByItem orderByItem2 = mock(OrderByItem.class);
         Collection<OrderByItem> orderByItems = Arrays.asList(orderByItem1, orderByItem2);
         when(groupByContext.getItems()).thenReturn(orderByItems);
-        when(selectStatement.getOrderBy()).thenReturn(Optional.<OrderBySegment>absent());
+        when(selectStatement.getOrderBy()).thenReturn(Optional.empty());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems(), is(orderByItems));
         assertTrue(actualOrderByContext.isGenerated());
@@ -71,7 +71,7 @@ public final class OrderByContextEngineTest {
         orderByItem1.setIndex(2);
         OrderByItem orderByItem2 = new OrderByItem(indexOrderByItemSegment2);
         orderByItem2.setIndex(3);
-        assertThat(actualOrderByContext.getItems(), is((Collection<OrderByItem>) Arrays.asList(new OrderByItem(columnOrderByItemSegment), orderByItem1, orderByItem2)));
+        assertThat(actualOrderByContext.getItems(), is(Arrays.asList(new OrderByItem(columnOrderByItemSegment), orderByItem1, orderByItem2)));
         assertFalse(actualOrderByContext.isGenerated());
         List<OrderByItem> results = new ArrayList<>(actualOrderByContext.getItems());
         assertThat(results.get(0).getIndex(), is(0));

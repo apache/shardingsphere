@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.service;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -87,15 +86,7 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
             Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = Maps.transformValues(dataSourceConfigurations,
-                    new Function<DataSourceConfiguration, YamlDataSourceConfiguration>() {
-                        
-                        @Override
-                        public YamlDataSourceConfiguration apply(final DataSourceConfiguration input) {
-                            return new DataSourceConfigurationYamlSwapper().swap(input);
-                        }
-                    }
-            );
+            Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = Maps.transformValues(dataSourceConfigurations, new DataSourceConfigurationYamlSwapper()::swap);
             configCenterRepository.persist(configNode.getDataSourcePath(shardingSchemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
         }
     }
@@ -227,13 +218,7 @@ public final class ConfigurationService {
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(configCenterRepository.get(configNode.getDataSourcePath(shardingSchemaName)));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
-        return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
-            
-            @Override
-            public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
-                return new DataSourceConfigurationYamlSwapper().swap(input);
-            }
-        });
+        return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swap);
     }
     
     /**

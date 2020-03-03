@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.sharding.rewrite.sql;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.LogicAndActualTablesAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.impl.AbstractSQLBuilder;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.route.context.TableUnit;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,10 +71,8 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     
     private Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, final TableUnit tableUnit, final Collection<String> tableNames) {
         Map<String, String> result = new LinkedHashMap<>();
-        Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(tableUnit.getLogicTableName());
-        if (bindingTableRule.isPresent()) {
-            result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableUnit, tableNames, bindingTableRule.get()));
-        }
+        shardingRule.findBindingTableRule(tableUnit.getLogicTableName()).ifPresent(
+            bindingTableRule -> result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableUnit, tableNames, bindingTableRule)));
         return result;
     }
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl;
 
-import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Aggregation projection.
@@ -57,7 +57,7 @@ public class AggregationProjection implements Projection {
 
     @Override
     public final Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
+        return Optional.ofNullable(alias);
     }
 
     /**
@@ -67,6 +67,6 @@ public class AggregationProjection implements Projection {
      */
     @Override
     public String getColumnLabel() {
-        return getAlias().or(getExpression());
+        return getAlias().orElse(getExpression());
     }
 }

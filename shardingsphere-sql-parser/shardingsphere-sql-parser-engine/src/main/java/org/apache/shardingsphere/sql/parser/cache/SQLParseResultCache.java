@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.cache;
 
-import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+
+import java.util.Optional;
 
 /**
  * SQL parse result cache.
@@ -46,7 +47,7 @@ public final class SQLParseResultCache {
      * @return SQL statement
      */
     public Optional<SQLStatement> getSQLStatement(final String sql) {
-        return Optional.fromNullable(cache.getIfPresent(sql));
+        return Optional.ofNullable(cache.getIfPresent(sql));
     }
     
     /**

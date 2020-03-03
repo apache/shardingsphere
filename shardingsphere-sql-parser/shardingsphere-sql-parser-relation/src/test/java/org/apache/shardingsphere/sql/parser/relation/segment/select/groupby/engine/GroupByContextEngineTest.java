@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.engine;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
@@ -28,8 +27,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,7 +41,7 @@ public final class GroupByContextEngineTest {
     @Test
     public void assertCreateGroupByContextWithoutGroupBy() {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getGroupBy()).thenReturn(Optional.<GroupBySegment>absent());
+        when(selectStatement.getGroupBy()).thenReturn(Optional.empty());
         GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         assertTrue(actualGroupByContext.getItems().isEmpty());
         assertThat(actualGroupByContext.getLastIndex(), is(0));
@@ -65,7 +64,7 @@ public final class GroupByContextEngineTest {
         orderByItem1.setIndex(2);
         OrderByItem orderByItem2 = new OrderByItem(indexOrderByItemSegment2);
         orderByItem2.setIndex(3);
-        assertThat(actualGroupByContext.getItems(), is((Collection<OrderByItem>) Arrays.asList(new OrderByItem(columnOrderByItemSegment), orderByItem1, orderByItem2)));
+        assertThat(actualGroupByContext.getItems(), is(Arrays.asList(new OrderByItem(columnOrderByItemSegment), orderByItem1, orderByItem2)));
         assertThat(actualGroupByContext.getLastIndex(), is(10));
         List<OrderByItem> results = new ArrayList<>(actualGroupByContext.getItems());
         assertThat(results.get(0).getIndex(), is(0));

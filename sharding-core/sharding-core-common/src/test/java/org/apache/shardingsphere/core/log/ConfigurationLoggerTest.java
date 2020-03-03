@@ -32,9 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Field;
@@ -166,14 +164,10 @@ public final class ConfigurationLoggerTest {
     }
     
     private void assertLogInfo(final String type, final String logContent) {
-        doAnswer(new Answer() {
-            
-            @Override
-            public Void answer(final InvocationOnMock invocationOnMock) {
-                assertThat(invocationOnMock.getArgument(1).toString(), is(type));
-                assertThat(invocationOnMock.getArgument(2).toString(), is(logContent));
-                return null;
-            }
+        doAnswer(invocationOnMock -> {
+            assertThat(invocationOnMock.getArgument(1).toString(), is(type));
+            assertThat(invocationOnMock.getArgument(2).toString(), is(logContent));
+            return null;
         }).when(log).info(anyString(), anyString(), anyString());
     }
 }
