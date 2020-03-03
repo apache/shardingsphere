@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteCont
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
-import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
@@ -53,6 +51,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sharding router.
@@ -72,14 +71,11 @@ public final class ShardingRouter implements DateNodeRouter {
     @SuppressWarnings("unchecked")
     public ShardingRouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
         SQLStatement sqlStatement = parse(sql, useCache);
-        Optional<ShardingStatementValidator> shardingStatementValidator = ShardingStatementValidatorFactory.newInstance(sqlStatement);
-        if (shardingStatementValidator.isPresent()) {
-            shardingStatementValidator.get().validate(shardingRule, sqlStatement, parameters);
-        }
+        ShardingStatementValidatorFactory.newInstance(sqlStatement).ifPresent(shardingStatementValidator -> shardingStatementValidator.validate(shardingRule, sqlStatement, parameters));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getRelationMetas(), sql, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
-                ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.absent();
-        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orNull(), metaData.getRelationMetas());
+                ? GeneratedKey.getGenerateKey(shardingRule, metaData.getTables(), parameters, (InsertStatement) sqlStatement) : Optional.empty();
+        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orElse(null), metaData.getRelationMetas());
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext);
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatementContext, shardingConditions);
@@ -90,7 +86,7 @@ public final class ShardingRouter implements DateNodeRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routeResult.getRouteUnits().size(), "Must have one sharding with subquery.");
         }
-        return new ShardingRouteContext(sqlStatementContext, routeResult, shardingConditions, generatedKey.orNull());
+        return new ShardingRouteContext(sqlStatementContext, routeResult, shardingConditions, generatedKey.orElse(null));
     }
     
     /*
