@@ -56,4 +56,13 @@ public final class OrchestrationShardingSchemaGroupTest {
         assertTrue(actual.getDataSourceNames("test").contains("ds_0"));
         assertTrue(actual.getDataSourceNames("test").contains("ds_1"));
     }
+    
+    @Test
+    public void assertGetDataSourceNames() {
+        OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
+        actual.add(new OrchestrationShardingSchema("test_0.ds_0"));
+        actual.add(new OrchestrationShardingSchema("test_1.ds_1"));
+        assertTrue(actual.getDataSourceNames("test_0").contains("ds_0"));
+        assertTrue(actual.getDataSourceNames("test_1").contains("ds_1"));
+    }
 }

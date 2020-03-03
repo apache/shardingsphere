@@ -49,4 +49,18 @@ public final class PostShardingConfigCenterRepositoryEventListenerTest {
         postShardingConfigCenterEventListener.watch();
         verify(configCenterRepository).watch(eq("test"), ArgumentMatchers.<DataChangedEventListener>any());
     }
+    
+    @Test
+    public void assertWatchMultipleKey() {
+        PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenterRepository, Lists.newArrayList("test", "dev")) {
+
+            @Override
+            protected ShardingOrchestrationEvent createShardingOrchestrationEvent(DataChangedEvent event) {
+                return mock(ShardingOrchestrationEvent.class);
+            }
+        };
+        postShardingConfigCenterEventListener.watch();
+        verify(configCenterRepository).watch(eq("test"), ArgumentMatchers.<DataChangedEventListener>any());
+        verify(configCenterRepository).watch(eq("dev"), ArgumentMatchers.<DataChangedEventListener>any());
+    }
 }
