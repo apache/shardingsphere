@@ -46,7 +46,9 @@ curl -X POST \
    }
 }'
 ```
-注意：上述需要修改`ruleConfiguration.sourceDatasource`和`ruleConfiguration.sourceRule`分别为源端sharding-proxy数据源和数据表规则相关配置，以及`ruleConfiguration.destinationDataSources`中目标端sharding-proxy的相关信息。
+注意：上述需要修改`ruleConfiguration.sourceDatasource`和`ruleConfiguration.sourceRule`，分别为源端ShardingSphere数据源和数据表规则相关配置；
+
+以及`ruleConfiguration.destinationDataSources`中目标端sharding-proxy的相关信息。
 
 返回如下信息，表示任务创建成功：
 ```
