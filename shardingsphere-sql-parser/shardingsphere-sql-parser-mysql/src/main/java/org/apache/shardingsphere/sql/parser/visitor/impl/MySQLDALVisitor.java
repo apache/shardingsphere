@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOth
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
@@ -85,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowWarningsStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
@@ -94,6 +96,11 @@ import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
  * DAL visitor for MySQL.
  */
 public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
+    
+    @Override
+    public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
+        return new UninstallPluginStatement();
+    }
     
     @Override
     public ASTNode visitShowBinaryLogs(final ShowBinaryLogsContext ctx) {
