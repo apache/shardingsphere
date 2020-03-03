@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.prepare;
 
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.CacheIndexStatement;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowErrorsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowWarningsStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.DropUserStatement;
@@ -54,13 +56,17 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.rl.ChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.rl.StartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.rl.StopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 
 import java.util.Arrays;
@@ -86,7 +92,17 @@ public final class MySQLComStmtPrepareChecker {
             OptimizeTableStatement.class, RenameTableStatement.class, RepairTableStatement.class, ReplaceStatement.class, ResetStatement.class,
             RevokeStatement.class, SelectStatement.class, SetStatement.class, ShowWarningsStatement.class, ShowErrorsStatement.class,
             ShowBinlogStatement.class, ShowCreateProcedureStatement.class, ShowCreateFunctionStatement.class, ShowCreateEventStatement.class,
-            ShowCreateTableStatement.class, ShowCreateViewStatement.class, ShowBinaryLogsStatement.class, ShowStatusStatement.class
-        ));
+            ShowCreateTableStatement.class, ShowCreateViewStatement.class, ShowBinaryLogsStatement.class, ShowStatusStatement.class,
+            StartSlaveStatement.class, StopSlaveStatement.class, TruncateStatement.class, UninstallPluginStatement.class, UpdateStatement.class));
+    }
+    
+    /**
+     * Judge if SQL statement is allowed.
+     *
+     * @param sqlStatement SQL statement
+     * @return sql statement is allowed or not
+     */
+    public static boolean isStatementAllowed(final SQLStatement sqlStatement) {
+        return SQL_STATEMENTS_ALLOWED.contains(sqlStatement.getClass());
     }
 }
