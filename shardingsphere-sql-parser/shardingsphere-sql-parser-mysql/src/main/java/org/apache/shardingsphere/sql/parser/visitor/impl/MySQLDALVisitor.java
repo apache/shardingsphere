@@ -29,16 +29,26 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Install
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.KillContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadIndexInfoContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptimizeTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepairTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ResetStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetVariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinaryLogsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowBinlogEventsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowColumnsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateEventContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowCreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowDatabasesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowErrorsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowOtherContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTableStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowTablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
@@ -58,13 +68,23 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Inst
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.KillStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.LoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.RepairTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ResetStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowBinaryLogsStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowBinlogStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateEventStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowErrorsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowOtherStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowWarningsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
@@ -74,6 +94,56 @@ import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
  * DAL visitor for MySQL.
  */
 public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
+    
+    @Override
+    public ASTNode visitShowBinaryLogs(final ShowBinaryLogsContext ctx) {
+        return new ShowBinaryLogsStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowCreateView(final ShowCreateViewContext ctx) {
+        return new ShowCreateViewStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowCreateEvent(final ShowCreateEventContext ctx) {
+        return new ShowCreateEventStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowCreateFunction(final ShowCreateFunctionContext ctx) {
+        return new ShowCreateFunctionStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowCreateProcedure(final ShowCreateProcedureContext ctx) {
+        return new ShowCreateProcedureStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowBinlogEvents(final ShowBinlogEventsContext ctx) {
+        return new ShowBinlogStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowErrors(final ShowErrorsContext ctx) {
+        return new ShowErrorsStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowWarnings(final ShowWarningsContext ctx) {
+        return new ShowWarningsStatement();
+    }
+    
+    @Override
+    public ASTNode visitResetStatement(final ResetStatementContext ctx) {
+        return new ResetStatement();
+    }
+    
+    @Override
+    public ASTNode visitRepairTable(final RepairTableContext ctx) {
+        return new RepairTableStatement();
+    }
     
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
