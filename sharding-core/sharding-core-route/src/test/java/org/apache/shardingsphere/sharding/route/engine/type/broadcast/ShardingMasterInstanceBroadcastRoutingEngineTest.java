@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
@@ -29,6 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

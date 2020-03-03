@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.spring.boot.datasource;
 
-import com.google.common.base.Optional;
 import com.zaxxer.hikari.HikariDataSource;
-
 import org.junit.Test;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.Group
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert on duplicate key update parameter rewriter for encrypt.

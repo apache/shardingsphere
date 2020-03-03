@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -223,12 +222,6 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private synchronized Map<String, YamlDataSourceParameter> getAddedDataSources(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
-        return Maps.filterEntries(dataSourceParameters, new Predicate<Entry<String, YamlDataSourceParameter>>() {
-            
-            @Override
-            public boolean apply(final Entry<String, YamlDataSourceParameter> input) {
-                return !getDataSourceParameters().containsKey(input.getKey());
-            }
-        });
+        return Maps.filterEntries(dataSourceParameters, input -> !getDataSourceParameters().containsKey(input.getKey()));
     }
 }

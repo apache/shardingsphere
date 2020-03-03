@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.underlying.route.context.TableUnit;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Sharding broadcast routing engine for tables.
@@ -75,7 +75,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private Collection<RouteUnit> getAllRouteUnits(final ShardingRule shardingRule, final String logicTableName) {

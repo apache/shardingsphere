@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
@@ -42,6 +39,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
@@ -49,6 +47,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -60,6 +59,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database access engine for JDBC.
@@ -233,7 +233,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         if (logicSchema instanceof EncryptSchema) {
             return Optional.of(((EncryptSchema) logicSchema).getEncryptRule());
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private String getCiphertext(final Object value) {

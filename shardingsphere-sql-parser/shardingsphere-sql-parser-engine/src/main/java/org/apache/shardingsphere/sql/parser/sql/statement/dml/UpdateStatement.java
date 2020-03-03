@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAv
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Update statement.
@@ -43,6 +43,6 @@ public final class UpdateStatement extends DMLStatement implements WhereSegmentA
     
     @Override
     public Optional<WhereSegment> getWhere() {
-        return Optional.fromNullable(where);
+        return Optional.ofNullable(where);
     }
 }
