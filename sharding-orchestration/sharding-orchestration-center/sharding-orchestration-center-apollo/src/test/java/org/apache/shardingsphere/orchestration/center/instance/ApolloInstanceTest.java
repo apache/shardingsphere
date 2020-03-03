@@ -26,6 +26,7 @@ import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloCon
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.orchestration.center.util.ConfigKeyUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -75,19 +76,7 @@ public final class ApolloInstanceTest {
     @Test
     @SneakyThrows
     public void assertWatch() {
-        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                future.set(dataChangedEvent);
-            }
-        });
-        embeddedApollo.addOrModifyProperty("orchestration", "test.children.1", "value3");
-        DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
-        assertThat(changeEvent.getKey(), is("/test/children/1"));
-        assertThat(changeEvent.getValue(), is("value3"));
-        assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
+        assertWatchUpdateChangedType("/test/children/1","value3");
     }
     
     @Test
@@ -99,19 +88,8 @@ public final class ApolloInstanceTest {
     @Test
     @SneakyThrows
     public void assertUpdate() {
-        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
-    
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                future.set(dataChangedEvent);
-            }
-        });
-        embeddedApollo.addOrModifyProperty("orchestration", "test.children.1", "newValue1");
-        DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
-        assertThat(changeEvent.getKey(), is("/test/children/1"));
-        assertThat(changeEvent.getValue(), is("newValue1"));
-        assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
+        assertWatchUpdateChangedType("/test/children/2","newValue2");
+        assertThat(configCenterRepository.get("/test/children/2"),is("newValue2"));
     }
     
     @Test
@@ -130,23 +108,29 @@ public final class ApolloInstanceTest {
         assertThat(changeEvent.getKey(), is("/test/children/1"));
         assertNull(changeEvent.getValue());
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
+        assertNull(configCenterRepository.get("/test/children/1"));
     }
     
     @Test
     @SneakyThrows
     public void assertWatchAddChangedType() {
+        assertWatchUpdateChangedType("/test/children/newKey","newVaule");
+    }
+    
+    @SneakyThrows
+    private void assertWatchUpdateChangedType(String key, String newVaule) {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch("/test/children/newKey", new DataChangedEventListener() {
-
+        configCenterRepository.watch(key, new DataChangedEventListener() {
+        
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 future.set(dataChangedEvent);
             }
         });
-        embeddedApollo.addOrModifyProperty("orchestration", "test.children.newKey", "newVaule");
+        embeddedApollo.addOrModifyProperty("orchestration", ConfigKeyUtils.path2Key(key), newVaule);
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
-        assertThat(changeEvent.getKey(), is("/test/children/newKey"));
-        assertThat(changeEvent.getValue(), is("newVaule"));
+        assertThat(changeEvent.getKey(), is(key));
+        assertThat(changeEvent.getValue(), is(newVaule));
         assertThat(changeEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
     }
 }
