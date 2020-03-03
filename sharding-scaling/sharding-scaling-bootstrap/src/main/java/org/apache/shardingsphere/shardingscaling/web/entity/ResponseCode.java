@@ -21,8 +21,8 @@ package org.apache.shardingsphere.shardingscaling.web.entity;
  * Http response code.
  */
 public final class ResponseCode {
-
+    
     public static final int BAD_REQUEST = 400;
-
+    
     public static final int SERVER_ERROR = 500;
 }

@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.shardingscaling.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.Bootstrap;
 
 /**
  * Runtime util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuntimeUtil {
-
+    
     /**
      * Get runtime classpath.
      *

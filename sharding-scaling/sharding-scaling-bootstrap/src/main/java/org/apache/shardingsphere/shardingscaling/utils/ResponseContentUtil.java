@@ -17,14 +17,17 @@
 
 package org.apache.shardingsphere.shardingscaling.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.web.entity.ResponseContent;
 import org.apache.shardingsphere.shardingscaling.web.entity.ResponseCode;
 
 /**
  * Http response util.
  */
-public class ResponseContentUtil {
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ResponseContentUtil {
+    
     /**
      * Build the successful response without data model.
      *
@@ -33,7 +36,7 @@ public class ResponseContentUtil {
     public static ResponseContent success() {
         return build(null);
     }
-
+    
     /**
      * Build the successful response with data model.
      *
@@ -47,7 +50,7 @@ public class ResponseContentUtil {
         result.setModel(model);
         return result;
     }
-
+    
     /**
      * Build the bad request response.
      *
@@ -61,7 +64,7 @@ public class ResponseContentUtil {
         result.setErrorMsg(errorMsg);
         return result;
     }
-
+    
     /**
      * Build the error response of exception.
      *

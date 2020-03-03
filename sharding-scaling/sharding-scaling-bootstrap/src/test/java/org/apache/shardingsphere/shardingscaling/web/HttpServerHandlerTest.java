@@ -47,24 +47,24 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HttpServerHandlerTest {
-
+    
     private static final Gson GSON = new Gson();
-
+    
     @Mock
     private ChannelHandlerContext channelHandlerContext;
-
+    
     private FullHttpRequest fullHttpRequest;
-
+    
     private HttpServerHandler httpServerHandler;
-
+    
     private ScalingConfiguration scalingConfiguration;
-
+    
     @Before
     public void setUp() {
         initConfig("/config.json");
         httpServerHandler = new HttpServerHandler();
     }
-
+    
     @Test
     @Ignore
     // TODO ignore the test because spi reason temporarily.
@@ -77,7 +77,7 @@ public class HttpServerHandlerTest {
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Datasources check failed!"));
     }
-
+    
     @Test
     public void assertChannelReadStartSuccess() {
         scalingConfiguration.getRuleConfiguration().setSourceDatasource("ds_0: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n  "
@@ -95,7 +95,7 @@ public class HttpServerHandlerTest {
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
     }
-
+    
     @Test
     public void assertChannelReadProgress() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/shardingscaling/job/progress/2");
@@ -105,7 +105,7 @@ public class HttpServerHandlerTest {
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Can't find scaling job id 2"));
     }
-
+    
     @Test
     public void assertChannelReadStop() {
         Map<String, Integer> map = new HashMap<>();
@@ -118,7 +118,7 @@ public class HttpServerHandlerTest {
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
     }
-
+    
     @Test
     public void assertChannelReadList() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/shardingscaling/job/list");
@@ -128,7 +128,7 @@ public class HttpServerHandlerTest {
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("{\"success\":true"));
     }
-
+    
     @Test
     public void assertChannelReadUnsupportedUrl() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/1");
@@ -138,7 +138,7 @@ public class HttpServerHandlerTest {
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Not support request!"));
     }
-
+    
     @Test
     public void assertChannelReadUnsupportedMethod() {
         fullHttpRequest = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.DELETE, "/shardingscaling/job/stop");
@@ -148,14 +148,14 @@ public class HttpServerHandlerTest {
         FullHttpResponse fullHttpResponse = (FullHttpResponse) argumentCaptor.getValue();
         assertTrue(fullHttpResponse.content().toString(CharsetUtil.UTF_8).contains("Not support request!"));
     }
-
+    
     @Test
     public void assertExceptionCaught() {
         Throwable throwable = mock(Throwable.class);
         httpServerHandler.exceptionCaught(channelHandlerContext, throwable);
         verify(channelHandlerContext).close();
     }
-
+    
     private void initConfig(final String configFile) {
         InputStream fileInputStream = HttpServerHandlerTest.class.getResourceAsStream(configFile);
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);

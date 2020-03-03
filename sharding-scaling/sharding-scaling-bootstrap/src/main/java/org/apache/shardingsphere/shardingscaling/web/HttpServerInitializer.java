@@ -27,7 +27,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
  * Http server initializer.
  */
 public final class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
-
+    
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
         ChannelPipeline channelPipeline = socketChannel.pipeline();

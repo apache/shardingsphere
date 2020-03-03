@@ -24,12 +24,12 @@ import lombok.Setter;
  */
 @Setter
 public class ResponseContent<T> {
-
+    
     private boolean success = true;
-
+    
     private int errorCode;
-
+    
     private String errorMsg;
-
+    
     private T model;
 }
