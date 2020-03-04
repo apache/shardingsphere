@@ -1,6 +1,6 @@
 +++
 pre = "<b>2. </b>"
-title = "Powered By ShardingSphere"
+title = "ShardingSphere Users"
 weight = 2
 chapter = true
 +++
@@ -13,7 +13,7 @@ Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues
 
 ## Who uses ShardingSphere?
  
-![user-wall](https://shardingsphere.apache.org/community/image/poweredby/user-wall.png)
+![user-wall](https://shardingsphere.apache.org/community/image/users/user-wall.png)
 
 The list here will be shown in the alphabetical order.
 
