@@ -55,7 +55,7 @@ public final class PostShardingConfigCenterRepositoryEventListenerTest {
         PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenterRepository, Lists.newArrayList("test", "dev")) {
 
             @Override
-            protected ShardingOrchestrationEvent createShardingOrchestrationEvent(DataChangedEvent event) {
+            protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
                 return mock(ShardingOrchestrationEvent.class);
             }
         };
