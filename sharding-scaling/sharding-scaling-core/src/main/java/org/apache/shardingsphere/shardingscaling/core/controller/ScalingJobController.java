@@ -30,12 +30,12 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Scaling job controller.
  */
-public class ScalingJobController {
+public final class ScalingJobController {
     
     private final ConcurrentMap<Integer, ShardingScalingJob> scalingJobMap = new ConcurrentHashMap<>();
     
     private final ConcurrentMap<Integer, List<SyncTaskController>> syncTaskControllerMaps = new ConcurrentHashMap<>();
-
+    
     /**
      * Start data nodes migrate.
      *
@@ -51,7 +51,7 @@ public class ScalingJobController {
         scalingJobMap.put(shardingScalingJob.getJobId(), shardingScalingJob);
         syncTaskControllerMaps.put(shardingScalingJob.getJobId(), syncTaskControllers);
     }
-
+    
     /**
      * Stop data nodes migrate.
      *
@@ -66,7 +66,7 @@ public class ScalingJobController {
         }
         scalingJobMap.get(shardingScalingJobId).setStatus("STOPPED");
     }
-
+    
     /**
      * Get data nodes migrate progresses.
      *
@@ -86,7 +86,7 @@ public class ScalingJobController {
         }
         return result;
     }
-
+    
     /**
      * List all sharding scaling jobs.
      *

@@ -17,25 +17,27 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.checker;
 
-import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Collection;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntry;
+import org.apache.shardingsphere.shardingscaling.core.spi.ScalingEntryLoader;
 
 /**
- * Generic checker implement.
+ * Data source checker factory.
  */
-public abstract class AbstractDatasourceChecker implements DatasourceChecker {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DataSourceCheckerCheckerFactory {
     
-    @Override
-    public final void checkConnection(final Collection<DataSource> dataSources) {
-        try {
-            for (DataSource dataSource : dataSources) {
-                dataSource.getConnection();
-            }
-        } catch (SQLException e) {
-            throw new DatasourceCheckFailedException("Datasources check failed!");
-        }
+    /**
+     * New instance of data source checker.
+     *
+     * @param databaseType database type
+     * @return data source checker
+     */
+    @SneakyThrows
+    public static DataSourceChecker newInstanceDataSourceChecker(final String databaseType) {
+        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
+        return scalingEntry.getCheckerClass().getConstructor().newInstance();
     }
 }

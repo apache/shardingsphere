@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.fixture;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JDBCReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
@@ -47,10 +47,10 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
 
     @Override
-    public Class<? extends DatasourceChecker> getCheckerClass() {
-        return FixtureH2DatasourceChecker.class;
+    public Class<? extends DataSourceChecker> getCheckerClass() {
+        return FixtureH2DataSourceChecker.class;
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "H2";

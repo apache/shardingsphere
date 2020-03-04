@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.fixture;
+package org.apache.shardingsphere.shardingscaling.postgresql;
 
-import java.util.Collection;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DatasourceChecker;
-
-public final class FixtureH2DatasourceChecker implements DatasourceChecker {
-    
-    @Override
-    public void checkConnection(final Collection<DataSource> dataSources) {
-    }
+/**
+ * Data source checker for PostgreSQL.
+ */
+public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     
     @Override
     public void checkPrivilege(final Collection<DataSource> dataSources) {

@@ -46,16 +46,16 @@ public final class MySQLLogPositionManager implements LogPositionManager<BinlogP
     
     private void getCurrentPositionFromSource() {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement("show master status");
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            currentPosition = new BinlogPosition(rs.getString(1), rs.getLong(2));
-            ps = connection.prepareStatement("show variables like 'server_id'");
-            rs = ps.executeQuery();
-            rs.next();
-            currentPosition.setServerId(rs.getLong(2));
-        } catch (SQLException e) {
-            throw new RuntimeException("markPosition error", e);
+            PreparedStatement preparedStatement = connection.prepareStatement("show master status");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            currentPosition = new BinlogPosition(resultSet.getString(1), resultSet.getLong(2));
+            preparedStatement = connection.prepareStatement("show variables like 'server_id'");
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            currentPosition.setServerId(resultSet.getLong(2));
+        } catch (final SQLException ex) {
+            throw new RuntimeException("markPosition error", ex);
         }
     }
     
