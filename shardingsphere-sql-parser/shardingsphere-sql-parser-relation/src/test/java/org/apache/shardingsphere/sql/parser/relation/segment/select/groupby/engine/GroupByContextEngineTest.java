@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -61,7 +60,7 @@ public final class GroupByContextEngineTest {
         expectedOrderByItem2.setIndex(2);
         OrderByItem expectedOrderByItem3 = new OrderByItem(indexOrderByItemSegment2);
         expectedOrderByItem3.setIndex(3);
-        assertThat(actualGroupByContext.getItems(), is((Collection<OrderByItem>) Arrays.asList(expectedOrderByItem1, expectedOrderByItem2, expectedOrderByItem3)));
+        assertThat(actualGroupByContext.getItems(), is(Arrays.asList(expectedOrderByItem1, expectedOrderByItem2, expectedOrderByItem3)));
         assertThat(actualGroupByContext.getLastIndex(), is(10));
     }
 }

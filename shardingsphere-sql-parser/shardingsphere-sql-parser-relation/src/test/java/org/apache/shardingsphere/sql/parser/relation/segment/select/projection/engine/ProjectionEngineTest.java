@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ProjectionEngineTest {
-
+    
     @Test
     public void assertCreateProjectionWhenProjectionSegmentNotMatched() {
         assertFalse(new ProjectionEngine().createProjection(null, null).isPresent());
@@ -68,7 +68,7 @@ public final class ProjectionEngineTest {
     }
 
     @Test
-    public void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionegment() {
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionSegment() {
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text");
         Optional<Projection> actual = new ProjectionEngine().createProjection(null, expressionProjectionSegment);
         assertTrue(actual.isPresent());

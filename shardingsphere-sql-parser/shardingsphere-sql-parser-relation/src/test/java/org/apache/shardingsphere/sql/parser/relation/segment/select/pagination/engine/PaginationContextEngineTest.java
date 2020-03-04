@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.engine;
 
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
@@ -64,7 +63,7 @@ public final class PaginationContextEngineTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setWhere(new WhereSegment(0, 10));
         
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList(), Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
@@ -74,7 +73,7 @@ public final class PaginationContextEngineTest {
     public void assertCreatePaginationContextWhenResultIsPaginationContext() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList(), Collections.emptyList());
         assertThat(new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList()), instanceOf(PaginationContext.class));
     }
 }

@@ -61,7 +61,7 @@ public final class OrderByContextEngineTest {
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, OrderDirection.DESC);
         OrderBySegment orderBySegment = new OrderBySegment(0, 1, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
         selectStatement.setOrderBy(orderBySegment);
-        GroupByContext emptyGroupByContext = new GroupByContext(Collections.<OrderByItem>emptyList(), 0);
+        GroupByContext emptyGroupByContext = new GroupByContext(Collections.emptyList(), 0);
 
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, emptyGroupByContext);
 
@@ -70,7 +70,7 @@ public final class OrderByContextEngineTest {
         expectedOrderByItem2.setIndex(2);
         OrderByItem expectedOrderByItem3 = new OrderByItem(indexOrderByItemSegment2);
         expectedOrderByItem3.setIndex(3);
-        assertThat(actualOrderByContext.getItems(), is((Collection<OrderByItem>) Arrays.asList(expectedOrderByItem1, expectedOrderByItem2, expectedOrderByItem3)));
+        assertThat(actualOrderByContext.getItems(), is(Arrays.asList(expectedOrderByItem1, expectedOrderByItem2, expectedOrderByItem3)));
         assertFalse(actualOrderByContext.isGenerated());
     }
 }
