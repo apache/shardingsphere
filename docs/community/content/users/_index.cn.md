@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用ShardingSphere?
 
-![user-wall](https://shardingsphere.apache.org/community/image/poweredby/user-wall.png)
+![user-wall](https://shardingsphere.apache.org/community/image/users/user-wall.png)
 
 采用公司列表按字母排序展示。
 
