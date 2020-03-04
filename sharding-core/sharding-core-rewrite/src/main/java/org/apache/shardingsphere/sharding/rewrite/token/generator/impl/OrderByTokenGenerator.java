@@ -59,15 +59,15 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
         return result;
     }
 
-    private int generateOrderByIndex(final SelectStatementContext selectStatementContext){
-        if (selectStatementContext.getGroupByContext().getLastIndex()>0) {
+    private int generateOrderByIndex(final SelectStatementContext selectStatementContext) {
+        if (selectStatementContext.getGroupByContext().getLastIndex() > 0) {
             return selectStatementContext.getGroupByContext().getLastIndex() + 1;
         }
         SelectStatement selectStatement = selectStatementContext.getSqlStatement();
-        if(selectStatement.getWhere().isPresent()){
+        if (selectStatement.getWhere().isPresent()) {
             return selectStatement.getWhere().get().getStopIndex() + 1;
         } else {
-            return selectStatement.getTables().stream().mapToInt(TableSegment::getStopIndex).max().getAsInt()+1;
+            return selectStatement.getTables().stream().mapToInt(TableSegment::getStopIndex).max().getAsInt() + 1;
         }
     }
 }
