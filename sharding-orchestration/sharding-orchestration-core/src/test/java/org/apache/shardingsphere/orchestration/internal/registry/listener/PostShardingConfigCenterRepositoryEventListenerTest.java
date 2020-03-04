@@ -53,7 +53,7 @@ public final class PostShardingConfigCenterRepositoryEventListenerTest {
     @Test
     public void assertWatchMultipleKey() {
         PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenterRepository, Lists.newArrayList("test", "dev")) {
-
+            
             @Override
             protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
                 return mock(ShardingOrchestrationEvent.class);
