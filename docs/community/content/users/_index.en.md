@@ -1,6 +1,6 @@
 +++
 pre = "<b>2. </b>"
-title = "Powered By ShardingSphere"
+title = "ShardingSphere Users"
 weight = 2
 chapter = true
 +++
