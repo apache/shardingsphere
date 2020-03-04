@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.shardingscaling.web.entity;
 
+import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Http response content.
  */
 @Setter
+@Getter
 public class ResponseContent<T> {
     
     private boolean success = true;
