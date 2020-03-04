@@ -89,7 +89,7 @@ public final class ApolloInstanceTest {
     
     @Test
     @SneakyThrows
-    public void assertUpdate() {
+    public void assertWatchUpdateChangedTypeWithExistedKey() {
         assertWatchUpdateChangedType("/test/children/1", "newValue1");
         assertThat(configCenterRepository.get("/test/children/1"), is("newValue1"));
     }
@@ -99,14 +99,13 @@ public final class ApolloInstanceTest {
     public void assertWatchDeletedChangedType() {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
         configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
-    
+            
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 future.set(dataChangedEvent);
             }
         });
         embeddedApollo.deleteProperty("orchestration", "test.children.1");
-        embeddedApollo.addOrModifyProperty("orchestration", "test.children.1", "value3");
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is("/test/children/1"));
         assertNull(changeEvent.getValue());
@@ -116,7 +115,7 @@ public final class ApolloInstanceTest {
     
     @Test
     @SneakyThrows
-    public void assertWatchAddChangedType() {
+    public void assertWatchUpdateChangedTypeWithNotExistedKey() {
         assertWatchUpdateChangedType("/test/children/newKey", "newVaule");
     }
     
@@ -124,7 +123,7 @@ public final class ApolloInstanceTest {
     private void assertWatchUpdateChangedType(final String key, final String newVaule) {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
         configCenterRepository.watch(key, new DataChangedEventListener() {
-        
+            
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 future.set(dataChangedEvent);
