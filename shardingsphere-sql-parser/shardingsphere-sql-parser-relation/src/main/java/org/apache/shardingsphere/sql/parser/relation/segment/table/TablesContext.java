@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 
 /**
  * Tables context.
@@ -36,7 +36,7 @@ public final class TablesContext {
     private final Collection<TableSegment> tables;
     
     public TablesContext(final TableSegment tableSegment) {
-        this(null == tableSegment ? Collections.<TableSegment>emptyList() : Collections.singletonList(tableSegment));
+        this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment));
     }
     
     /**
@@ -71,7 +71,7 @@ public final class TablesContext {
     
     private String findTableNameFromSQL(final String tableNameOrAlias) {
         for (TableSegment each : tables) {
-            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orNull())) {
+            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
                 return each.getTableName().getIdentifier().getValue();
             }
         }
@@ -84,6 +84,6 @@ public final class TablesContext {
                 return Optional.of(each.getTableName().getIdentifier().getValue());
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

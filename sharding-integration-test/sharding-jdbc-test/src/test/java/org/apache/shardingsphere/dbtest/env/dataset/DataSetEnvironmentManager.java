@@ -91,7 +91,7 @@ public final class DataSetEnvironmentManager {
         for (DataSetRow each : dataSet.getRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {
-                result.put(dataNode, new LinkedList<DataSetRow>());
+                result.put(dataNode, new LinkedList<>());
             }
             result.get(dataNode).add(each);
         }
@@ -154,7 +154,7 @@ public final class DataSetEnvironmentManager {
         for (DataSetMetadata each : dataSet.getMetadataList()) {
             for (Entry<String, Collection<String>> entry : getDataNodeMap(each).entrySet()) {
                 if (!result.containsKey(entry.getKey())) {
-                    result.put(entry.getKey(), new LinkedList<String>());
+                    result.put(entry.getKey(), new LinkedList<>());
                 }
                 result.get(entry.getKey()).addAll(entry.getValue());
             }
@@ -167,7 +167,7 @@ public final class DataSetEnvironmentManager {
         for (String each : new InlineExpressionParser(dataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             if (!result.containsKey(dataNode.getDataSourceName())) {
-                result.put(dataNode.getDataSourceName(), new LinkedList<String>());
+                result.put(dataNode.getDataSourceName(), new LinkedList<>());
             }
             result.get(dataNode.getDataSourceName()).add(dataNode.getTableName());
         }

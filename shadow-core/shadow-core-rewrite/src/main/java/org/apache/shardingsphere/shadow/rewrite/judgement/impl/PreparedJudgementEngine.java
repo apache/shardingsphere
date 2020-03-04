@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShadowRule;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAv
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Shadow judgement engine for prepared.

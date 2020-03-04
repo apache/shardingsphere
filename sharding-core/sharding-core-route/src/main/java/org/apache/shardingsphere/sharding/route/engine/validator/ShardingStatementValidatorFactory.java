@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingInsertStatementValidator;
+import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingUpdateStatementValidator;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingInsertStatementValidator;
-import org.apache.shardingsphere.sharding.route.engine.validator.impl.ShardingUpdateStatementValidator;
+
+import java.util.Optional;
 
 /**
  * Sharding statement validator factory.
@@ -40,11 +41,11 @@ public final class ShardingStatementValidatorFactory {
      */
     public static Optional<ShardingStatementValidator> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof InsertStatement) {
-            return Optional.<ShardingStatementValidator>of(new ShardingInsertStatementValidator());
+            return Optional.of(new ShardingInsertStatementValidator());
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return Optional.<ShardingStatementValidator>of(new ShardingUpdateStatementValidator());
+            return Optional.of(new ShardingUpdateStatementValidator());
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

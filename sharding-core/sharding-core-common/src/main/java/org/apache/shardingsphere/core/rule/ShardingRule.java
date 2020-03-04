@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeSet;
 
 /**
@@ -151,7 +151,7 @@ public class ShardingRule implements BaseRule {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**
@@ -166,7 +166,7 @@ public class ShardingRule implements BaseRule {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**
@@ -243,7 +243,7 @@ public class ShardingRule implements BaseRule {
                 return result;
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**
@@ -258,7 +258,7 @@ public class ShardingRule implements BaseRule {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**
@@ -359,7 +359,7 @@ public class ShardingRule implements BaseRule {
                 return Optional.of(each.getGenerateKeyColumn());
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**
@@ -441,7 +441,7 @@ public class ShardingRule implements BaseRule {
     public Optional<String> findActualDefaultDataSourceName() {
         String defaultDataSourceName = shardingDataSourceNames.getDefaultDataSourceName();
         if (Strings.isNullOrEmpty(defaultDataSourceName)) {
-            return Optional.absent();
+            return Optional.empty();
         }
         Optional<String> masterDefaultDataSourceName = findMasterDataSourceName(defaultDataSourceName);
         return masterDefaultDataSourceName.isPresent() ? masterDefaultDataSourceName : Optional.of(defaultDataSourceName);
@@ -453,7 +453,7 @@ public class ShardingRule implements BaseRule {
                 return Optional.of(each.getMasterDataSourceName());
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**
@@ -468,7 +468,7 @@ public class ShardingRule implements BaseRule {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**

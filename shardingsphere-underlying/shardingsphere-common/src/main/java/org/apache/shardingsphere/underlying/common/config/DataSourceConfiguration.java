@@ -20,7 +20,6 @@ package org.apache.shardingsphere.underlying.common.config;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source configuration.
@@ -50,7 +50,7 @@ public final class DataSourceConfiguration {
     private static final Collection<String> SKIPPED_PROPERTY_NAMES;
     
     static {
-        GENERAL_CLASS_TYPE = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
+        GENERAL_CLASS_TYPE = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
         SKIPPED_PROPERTY_NAMES = Sets.newHashSet("loginTimeout");
     }
     
@@ -120,7 +120,7 @@ public final class DataSourceConfiguration {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     @Override

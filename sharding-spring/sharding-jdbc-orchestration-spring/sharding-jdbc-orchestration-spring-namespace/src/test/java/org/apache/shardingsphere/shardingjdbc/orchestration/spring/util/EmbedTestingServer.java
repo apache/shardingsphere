@@ -50,16 +50,12 @@ public final class EmbedTestingServer {
                 throw new RuntimeException(ex);
             }
         } finally {
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-            
-                @Override
-                public void run() {
-                    try {
-                        testingServer.close();
-                    } catch (final IOException ignored) {
-                    }
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    testingServer.close();
+                } catch (final IOException ignored) {
                 }
-            });
+            }));
         }
     }
     

@@ -66,13 +66,7 @@ public final class ApolloConfigWrapperTest {
     @Test
     public void assertAddChangeListener() throws Exception {
         final SettableFuture<ConfigChangeEvent> future = SettableFuture.create();
-        ConfigChangeListener listener = new ConfigChangeListener() {
-            
-            @Override
-            public void onChange(final ConfigChangeEvent changeEvent) {
-                future.set(changeEvent);
-            }
-        };
+        ConfigChangeListener listener = future::set;
         configWrapper.addChangeListener(listener, Sets.newHashSet("test.children.2"));
         embeddedApollo.addOrModifyProperty("orchestration", "test.children.2", "value3");
         ConfigChangeEvent changeEvent = future.get(5, TimeUnit.SECONDS);
@@ -85,13 +79,7 @@ public final class ApolloConfigWrapperTest {
     @Test
     public void assertAddChangeListenerWithInterestedKeyPrefixes() throws Exception {
         final SettableFuture<ConfigChangeEvent> future = SettableFuture.create();
-        ConfigChangeListener listener = new ConfigChangeListener() {
-            
-            @Override
-            public void onChange(final ConfigChangeEvent changeEvent) {
-                future.set(changeEvent);
-            }
-        };
+        ConfigChangeListener listener = future::set;
         configWrapper.addChangeListener(listener, Sets.newHashSet("test.children.1"), Sets.newHashSet("test.children.2"));
         embeddedApollo.addOrModifyProperty("orchestration", "test.children.2.1", "value4");
         ConfigChangeEvent changeEvent = future.get(5, TimeUnit.SECONDS);

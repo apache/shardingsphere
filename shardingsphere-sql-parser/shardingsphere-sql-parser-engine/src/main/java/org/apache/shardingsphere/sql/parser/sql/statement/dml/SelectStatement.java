@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAv
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Select statement.
@@ -61,7 +61,7 @@ public final class SelectStatement extends DMLStatement implements WhereSegmentA
      * @return group by segment
      */
     public Optional<GroupBySegment> getGroupBy() {
-        return Optional.fromNullable(groupBy);
+        return Optional.ofNullable(groupBy);
     }
     
     /**
@@ -70,7 +70,7 @@ public final class SelectStatement extends DMLStatement implements WhereSegmentA
      * @return order by segment
      */
     public Optional<OrderBySegment> getOrderBy() {
-        return Optional.fromNullable(orderBy);
+        return Optional.ofNullable(orderBy);
     }
     
     /**
@@ -79,7 +79,7 @@ public final class SelectStatement extends DMLStatement implements WhereSegmentA
      * @return order by segment
      */
     public Optional<LimitSegment> getLimit() {
-        return Optional.fromNullable(limit);
+        return Optional.ofNullable(limit);
     }
     
     /**
@@ -88,11 +88,11 @@ public final class SelectStatement extends DMLStatement implements WhereSegmentA
      * @return lock segment
      */
     public Optional<LockSegment> getLock() {
-        return Optional.fromNullable(lock);
+        return Optional.ofNullable(lock);
     }
     
     @Override
     public Optional<WhereSegment> getWhere() {
-        return Optional.fromNullable(where);
+        return Optional.ofNullable(where);
     }
 }

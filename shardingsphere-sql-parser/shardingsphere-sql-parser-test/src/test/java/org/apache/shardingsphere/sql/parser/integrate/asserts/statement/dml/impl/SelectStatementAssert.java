@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.groupby.GroupByClauseAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.limit.LimitClauseAssert;
-import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -96,8 +97,8 @@ public final class SelectStatementAssert {
         Optional<LimitSegment> limitSegment = actual.getLimit();
         if (null != expected.getLimitClause()) {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
-            LimitClauseAssert.assertOffset(assertContext, limitSegment.get().getOffset().orNull(), expected.getLimitClause().getOffset());
-            LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orNull(), expected.getLimitClause().getRowCount());
+            LimitClauseAssert.assertOffset(assertContext, limitSegment.get().getOffset().orElse(null), expected.getLimitClause().getOffset());
+            LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orElse(null), expected.getLimitClause().getRowCount());
             SQLSegmentAssert.assertIs(assertContext, limitSegment.get(), expected.getLimitClause());
         } else {
             assertFalse(assertContext.getText("Actual limit segment should not exist."), limitSegment.isPresent());

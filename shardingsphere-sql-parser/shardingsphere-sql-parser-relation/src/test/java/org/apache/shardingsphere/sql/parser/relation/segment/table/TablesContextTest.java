@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -27,12 +26,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -47,7 +45,7 @@ public final class TablesContextTest {
     @Test
     public void assertGetTableNames() {
         TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"), createTableSegment("table_2", "tbl_2")));
-        assertThat(tablesContext.getTableNames(), CoreMatchers.<Collection<String>>is(Sets.newHashSet("table_1", "table_2")));
+        assertThat(tablesContext.getTableNames(), is(Sets.newHashSet("table_1", "table_2")));
     }
     
     @Test

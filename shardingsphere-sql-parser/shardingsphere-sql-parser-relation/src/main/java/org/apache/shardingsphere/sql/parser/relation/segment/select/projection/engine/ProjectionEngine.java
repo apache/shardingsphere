@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.engine;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
@@ -33,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProje
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+
+import java.util.Optional;
 
 /**
  * Projection engine.
@@ -52,22 +53,22 @@ public final class ProjectionEngine {
      */
     public Optional<Projection> createProjection(final String sql, final ProjectionSegment projectionSegment) {
         if (projectionSegment instanceof ShorthandProjectionSegment) {
-            return Optional.<Projection>of(createProjection((ShorthandProjectionSegment) projectionSegment));
+            return Optional.of(createProjection((ShorthandProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof ColumnProjectionSegment) {
-            return Optional.<Projection>of(createProjection((ColumnProjectionSegment) projectionSegment));
+            return Optional.of(createProjection((ColumnProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof ExpressionProjectionSegment) {
-            return Optional.<Projection>of(createProjection((ExpressionProjectionSegment) projectionSegment));
+            return Optional.of(createProjection((ExpressionProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof AggregationDistinctProjectionSegment) {
-            return Optional.<Projection>of(createProjection(sql, (AggregationDistinctProjectionSegment) projectionSegment));
+            return Optional.of(createProjection(sql, (AggregationDistinctProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof AggregationProjectionSegment) {
-            return Optional.<Projection>of(createProjection(sql, (AggregationProjectionSegment) projectionSegment));
+            return Optional.of(createProjection(sql, (AggregationProjectionSegment) projectionSegment));
         }
         // TODO subquery
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
@@ -77,16 +78,16 @@ public final class ProjectionEngine {
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
         String owner = projectionSegment.getOwner().isPresent() ? projectionSegment.getOwner().get().getIdentifier().getValue() : null;
-        return new ColumnProjection(owner, projectionSegment.getIdentifier().getValue(), projectionSegment.getAlias().orNull());
+        return new ColumnProjection(owner, projectionSegment.getIdentifier().getValue(), projectionSegment.getAlias().orElse(null));
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
-        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orNull());
+        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
     }
     
     private AggregationDistinctProjection createProjection(final String sql, final AggregationDistinctProjectionSegment projectionSegment) {
         String innerExpression = sql.substring(projectionSegment.getInnerExpressionStartIndex(), projectionSegment.getStopIndex() + 1);
-        String alias = projectionSegment.getAlias().or(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
+        String alias = projectionSegment.getAlias().orElse(DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression());
         if (AggregationType.AVG == result.getType()) {
@@ -97,7 +98,7 @@ public final class ProjectionEngine {
     
     private AggregationProjection createProjection(final String sql, final AggregationProjectionSegment projectionSegment) {
         String innerExpression = sql.substring(projectionSegment.getInnerExpressionStartIndex(), projectionSegment.getStopIndex() + 1);
-        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), innerExpression, projectionSegment.getAlias().orNull());
+        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), innerExpression, projectionSegment.getAlias().orElse(null));
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
             // TODO replace avg to constant, avoid calculate useless avg
