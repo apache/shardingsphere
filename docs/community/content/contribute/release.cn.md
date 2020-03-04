@@ -301,7 +301,7 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 ### 检查发布文件内容
 
-#### 对比源码文件差异内容
+#### 对比源码包与Github上tag的内容差异
 
 ```
 curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/incubator-shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
