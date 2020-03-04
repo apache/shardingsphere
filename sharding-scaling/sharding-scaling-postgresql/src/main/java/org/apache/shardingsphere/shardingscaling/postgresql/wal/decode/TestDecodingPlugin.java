@@ -43,13 +43,10 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     public AbstractWalEvent decode(final ByteBuffer data, final LogSequenceNumber logSequenceNumber) {
         AbstractWalEvent result;
         String eventType = readEventType(data);
-        switch (eventType) {
-            case "table":
-                result = readTableEvent(data);
-                break;
-            default:
-                result = new PlaceholderEvent();
-                break;
+        if ("table".equals(eventType)) {
+            result = readTableEvent(data);
+        } else {
+            result = new PlaceholderEvent();
         }
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
@@ -77,8 +74,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 throw new SyncTaskExecuteException("");
         }
         String[] tableMetadata = tableName.split("\\.");
-        //result.setSchemaName(tableMetadata[0]);
-        result.setSchemaName("test");
+        result.setSchemaName(tableMetadata[0]);
         result.setTableName(tableMetadata[1].substring(0, tableMetadata[1].length() - 1));
         return result;
     }
@@ -122,14 +118,12 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private String readRowEventType(final ByteBuffer data) {
         String result = readNextSegment(data);
-        // remove ":"
         return result.substring(0, result.length() - 1);
     }
     
     private Object readColumn(final ByteBuffer data) {
         String columnName = readColumnName(data);
         String columnType = readColumnType(data);
-        // remove ":"
         data.get();
         return readColumnData(data, columnType);
     }
@@ -158,7 +152,6 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         return eventType.toString();
     }
     
-    // CHECKSTYLE:OFF
     private Object readColumnData(final ByteBuffer data, final String columnType) {
         if (columnType.startsWith("numeric")) {
             return new BigDecimal(readNextSegment(data));
@@ -166,38 +159,31 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         if (columnType.startsWith("bit") || columnType.startsWith("bit varying")) {
             return readNextSegment(data);
         }
-        try {
-            switch (columnType) {
-                case "smallint":
-                    return Short.parseShort(readNextSegment(data));
-                case "integer":
-                    return Integer.parseInt(readNextSegment(data));
-                case "bigint":
-                    return Long.parseLong(readNextSegment(data));
-                case "real":
-                    return Float.parseFloat(readNextSegment(data));
-                case "double precision":
-                    return Double.parseDouble(readNextSegment(data));
-                case "boolean":
-                    return Boolean.parseBoolean(readNextSegment(data));
-                case "time without time zone":
-                    return Time.valueOf(readNextString(data).substring(0, 7));
-                case "date":
-                    return Date.valueOf(readNextString(data));
-                case "timestamp without time zone":
-                    return Timestamp.valueOf(readNextString(data));
-                case "bytea":
-                    return decodeHex(readNextString(data).substring(2).toCharArray());
-                default:
-                    return readNextString(data);
-            }
-        } catch (final Exception ex) {
-            System.out.println(new String(data.array()));
-            throw ex;
+        switch (columnType) {
+            case "smallint":
+                return Short.parseShort(readNextSegment(data));
+            case "integer":
+                return Integer.parseInt(readNextSegment(data));
+            case "bigint":
+                return Long.parseLong(readNextSegment(data));
+            case "real":
+                return Float.parseFloat(readNextSegment(data));
+            case "double precision":
+                return Double.parseDouble(readNextSegment(data));
+            case "boolean":
+                return Boolean.parseBoolean(readNextSegment(data));
+            case "time without time zone":
+                return Time.valueOf(readNextString(data).substring(0, 7));
+            case "date":
+                return Date.valueOf(readNextString(data));
+            case "timestamp without time zone":
+                return Timestamp.valueOf(readNextString(data));
+            case "bytea":
+                return decodeHex(readNextString(data).substring(2));
+            default:
+                return readNextString(data);
         }
     }
-    
-    // CHECKSTYLE:ON
     
     private String readNextSegment(final ByteBuffer data) {
         StringBuilder eventType = new StringBuilder();
@@ -213,7 +199,6 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private String readNextString(final ByteBuffer data) {
         StringBuilder result = new StringBuilder();
-        // remove start "'"
         data.get();
         while (data.hasRemaining()) {
             char c = (char) data.get();
@@ -222,43 +207,38 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                     return result.toString();
                 }
                 char c2 = (char) data.get();
-                // CHECKSTYLE:OFF
-                if ('\'' == c2) {
-                    // ignored
-                } else if (' ' == c2) {
+                if (' ' == c2) {
                     return result.toString();
-                } else {
+                } else if ('\'' != c2) {
                     throw new SyncTaskExecuteException("Read character varying data unexpected exception");
                 }
-                // CHECKSTYLE:ON
             }
             result.append(c);
         }
         return result.toString();
     }
     
-    private static byte[] decodeHex(final char[] data) {
-        int len = data.length;
-        if ((len & 0x01) != 0) {
-            throw new RuntimeException("未知的字符");
+    private byte[] decodeHex(final String hexString) {
+        int dataLength = hexString.length();
+        if (0 != (dataLength & 1)) {
+            throw new IllegalArgumentException(String.format("Illegal hex data %s", hexString));
         }
-        byte[] out = new byte[len >> 1];
-        for (int i = 0, j = 0; j < len; i++) {
-            int f = toDigit(data[j], j) << 4;
-            j++;
-            f = f | toDigit(data[j], j);
-            j++;
-            out[i] = (byte) (f & 0xFF);
+        if (0 == dataLength) {
+            return new byte[0];
         }
-        return out;
+        byte[] result = new byte[dataLength >>> 1];
+        for (int i = 0; i < dataLength; i += 2) {
+            result[i >>> 1] = decodeHexByte(hexString, i);
+        }
+        return result;
     }
     
-    private static int toDigit(final char ch, final int index) {
-        int digit = Character.digit(ch, 16);
-        if (digit == -1) {
-            throw new RuntimeException("非法16进制字符 " + ch
-                    + " 在索引 " + index);
+    private byte decodeHexByte(final String hexString, final int index) {
+        int firstHexChar = Character.digit(hexString.charAt(index), 16);
+        int secondHexChar = Character.digit(hexString.charAt(index + 1), 16);
+        if (-1 == firstHexChar || -1 == secondHexChar) {
+            throw new IllegalArgumentException(String.format("Illegal hex byte '%s' in index %d", hexString, index));
         }
-        return digit;
+        return (byte) ((firstHexChar << 4) + secondHexChar);
     }
 }

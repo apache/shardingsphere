@@ -20,12 +20,12 @@ package org.apache.shardingsphere.shardingscaling.postgresql.wal.decode;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.WriteRowEvent;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
-
 import java.nio.ByteBuffer;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class TestDecodingPluginTest {
     
@@ -34,9 +34,9 @@ public final class TestDecodingPluginTest {
         LogSequenceNumber lsn = LogSequenceNumber.valueOf("0/14EFDB8");
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[character varying]:'1 2 3'''".getBytes());
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin().decode(data, lsn);
-        Assert.assertThat(actual.getLogSequenceNumber(), Matchers.is(lsn));
-        Assert.assertThat(actual.getTableName(), Matchers.is("test"));
-        Assert.assertThat((String) actual.getAfterRow().get(0), Matchers.is("1 2 3'"));
+        assertThat(actual.getLogSequenceNumber(), is(lsn));
+        assertThat(actual.getTableName(), is("test"));
+        assertThat((String) actual.getAfterRow().get(0), is("1 2 3'"));
     }
     
     @Test
@@ -44,9 +44,9 @@ public final class TestDecodingPluginTest {
         LogSequenceNumber lsn = LogSequenceNumber.valueOf("0/14EFDB8");
         ByteBuffer data = ByteBuffer.wrap("table public.test: UPDATE: data[character varying]:'1 2 3'''".getBytes());
         UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin().decode(data, lsn);
-        Assert.assertThat(actual.getLogSequenceNumber(), Matchers.is(lsn));
-        Assert.assertThat(actual.getTableName(), Matchers.is("test"));
-        Assert.assertThat((String) actual.getAfterRow().get(0), Matchers.is("1 2 3'"));
+        assertThat(actual.getLogSequenceNumber(), is(lsn));
+        assertThat(actual.getTableName(), is("test"));
+        assertThat((String) actual.getAfterRow().get(0), is("1 2 3'"));
     }
     
     @Test
@@ -54,8 +54,18 @@ public final class TestDecodingPluginTest {
         LogSequenceNumber lsn = LogSequenceNumber.valueOf("0/14EFDB8");
         ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes());
         DeleteRowEvent actual = (DeleteRowEvent) new TestDecodingPlugin().decode(data, lsn);
-        Assert.assertThat(actual.getLogSequenceNumber(), Matchers.is(lsn));
-        Assert.assertThat(actual.getTableName(), Matchers.is("test"));
-        Assert.assertThat((Integer) actual.getPrimaryKeys().get(0), Matchers.is(1));
+        assertThat(actual.getLogSequenceNumber(), is(lsn));
+        assertThat(actual.getTableName(), is("test"));
+        assertThat((Integer) actual.getPrimaryKeys().get(0), is(1));
+    }
+    
+    @Test
+    public void assertDecodeWriteRowEventWithByteA() {
+        LogSequenceNumber lsn = LogSequenceNumber.valueOf("0/14EFDB8");
+        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[bytea]:'\\xff00ab'".getBytes());
+        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin().decode(data, lsn);
+        assertThat(actual.getLogSequenceNumber(), is(lsn));
+        assertThat(actual.getTableName(), is("test"));
+        assertThat((byte[]) actual.getAfterRow().get(0), is(new byte[] {(byte) 0xff, (byte) 0, (byte) 0xab}));
     }
 }
