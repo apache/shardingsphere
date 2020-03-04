@@ -36,15 +36,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.ShardingScalingJob;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
+import org.apache.shardingsphere.shardingscaling.core.config.utils.SyncConfigurationUtil;
 import org.apache.shardingsphere.shardingscaling.core.controller.ScalingJobController;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.DatasourceCheckFailedException;
 import org.apache.shardingsphere.shardingscaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceChecker;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceCheckerCheckerFactory;
-import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.utils.ResponseContentUtil;
-import org.apache.shardingsphere.shardingscaling.core.config.utils.SyncConfigurationUtil;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
