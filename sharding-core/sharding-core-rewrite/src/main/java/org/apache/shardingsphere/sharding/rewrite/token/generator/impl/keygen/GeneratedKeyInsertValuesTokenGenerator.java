@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Inser
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert values token generator for sharding.
@@ -70,7 +70,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
                 return Optional.of((InsertValuesToken) each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private boolean isToAddDerivedLiteralExpression(final InsertStatementContext insertStatementContext, final int insertValueCount) {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -64,7 +63,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             }
         }
         setAggregationValueToMemoryRow(selectStatementContext, dataMap, aggregationMap);
-        List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.<Boolean>emptyList() : getValueCaseSensitive(queryResults.iterator().next());
+        List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.emptyList() : getValueCaseSensitive(queryResults.iterator().next());
         return getMemoryResultSetRows(selectStatementContext, dataMap, valueCaseSensitive);
     }
     
@@ -75,14 +74,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             dataMap.put(groupByValue, new MemoryQueryResultRow(queryResult));
         }
         if (!aggregationMap.containsKey(groupByValue)) {
-            Map<AggregationProjection, AggregationUnit> map = Maps.toMap(
-                    selectStatementContext.getProjectionsContext().getAggregationProjections(), new Function<AggregationProjection, AggregationUnit>() {
-                        
-                        @Override
-                        public AggregationUnit apply(final AggregationProjection input) {
-                            return AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection);
-                        }
-                    });
+            Map<AggregationProjection, AggregationUnit> map = Maps.toMap(selectStatementContext.getProjectionsContext().getAggregationProjections(), 
+                input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection));
             aggregationMap.put(groupByValue, map);
         }
     }
@@ -128,7 +121,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext, 
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         List<MemoryQueryResultRow> result = new ArrayList<>(dataMap.values());
-        Collections.sort(result, new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
+        result.sort(new GroupByRowComparator(selectStatementContext, valueCaseSensitive));
         return result;
     }
 }

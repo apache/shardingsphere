@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
@@ -39,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -96,7 +96,7 @@ public final class MasterSlaveRouteDecoratorTest {
     @Test
     public void assertDecorateToSlave() {
         RouteContext routeContext = mockSQLRouteContext(selectStatement);
-        when(selectStatement.getLock()).thenReturn(Optional.<LockSegment>absent());
+        when(selectStatement.getLock()).thenReturn(Optional.empty());
         RouteContext actual = routeDecorator.decorate(routeContext);
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));

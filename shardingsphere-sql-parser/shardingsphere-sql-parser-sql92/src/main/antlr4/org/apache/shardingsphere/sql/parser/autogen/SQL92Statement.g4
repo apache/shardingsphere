@@ -25,7 +25,7 @@ execute
     | update
     | delete
     | createDatabase
-    | dropDatabse
+    | dropDatabase
     | createTable
     | alterTable
     | dropTable

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.core.constant;
 
-import com.google.common.base.Optional;
-
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.TreeSet;
 
 /**
@@ -49,6 +48,6 @@ public enum LogicalOperator {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

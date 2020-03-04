@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Inser
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Assist query and plain insert columns token generator.
@@ -61,14 +61,8 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     
     private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         List<String> result = new LinkedList<>();
-        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue());
-        if (assistedQueryColumn.isPresent()) {
-            result.add(assistedQueryColumn.get());
-        }
-        Optional<String> plainColumn = encryptTable.findPlainColumn(columnSegment.getIdentifier().getValue());
-        if (plainColumn.isPresent()) {
-            result.add(plainColumn.get());
-        }
+        encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
+        encryptTable.findPlainColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         return result;
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * Sharding CTL parser interface.

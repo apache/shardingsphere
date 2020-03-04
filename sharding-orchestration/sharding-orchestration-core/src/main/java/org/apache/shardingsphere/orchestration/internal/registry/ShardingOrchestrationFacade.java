@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -41,6 +40,7 @@ import org.apache.shardingsphere.underlying.common.constant.properties.Orchestra
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -121,14 +121,14 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     
     private Optional<String> getInstanceNameByOrchestrationType(final Map<String, InstanceConfiguration> map, final String type) {
         if (null == map || 0 == map.size() || null == type) {
-            return Optional.absent();
+            return Optional.empty();
         }
         for (Entry<String, InstanceConfiguration> entry : map.entrySet()) {
             if (contains(entry.getValue().getOrchestrationType(), type)) {
                 return Optional.of(entry.getKey());
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private boolean contains(final String collection, final String element) {

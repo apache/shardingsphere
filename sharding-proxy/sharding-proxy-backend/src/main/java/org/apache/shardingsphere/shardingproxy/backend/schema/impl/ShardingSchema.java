@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -64,6 +63,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Sharding schema.
@@ -200,6 +200,6 @@ public final class ShardingSchema extends LogicSchema {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

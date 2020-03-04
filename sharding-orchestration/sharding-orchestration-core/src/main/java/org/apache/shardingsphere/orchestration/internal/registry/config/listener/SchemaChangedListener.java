@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -45,7 +44,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.PostSh
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
@@ -93,11 +91,11 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
     private ShardingOrchestrationEvent createSchemaNamesUpdatedEvent(final String shardingSchemaNames) {
         Collection<String> persistShardingSchemaNames = configurationNode.splitShardingSchemaName(shardingSchemaNames);
         Set<String> addedSchemaNames = Sets.difference(Sets.newHashSet(persistShardingSchemaNames), Sets.newHashSet(existedSchemaNames));
-        if (addedSchemaNames != null && addedSchemaNames.size() > 0) {
+        if (!addedSchemaNames.isEmpty()) {
             return createUpdatedEventForNewSchema(addedSchemaNames.iterator().next());
         }
         Set<String> deletedSchemaNames = Sets.difference(Sets.newHashSet(existedSchemaNames), Sets.newHashSet(persistShardingSchemaNames));
-        if (deletedSchemaNames != null && deletedSchemaNames.size() > 0) {
+        if (!deletedSchemaNames.isEmpty()) {
             return createDeletedEvent(deletedSchemaNames.iterator().next());
         }
         return new IgnoredShardingOrchestrationEvent();
@@ -120,13 +118,7 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for orchestration.");
-        return new DataSourceChangedEvent(shardingSchemaName, Maps.transformValues(dataSourceConfigurations, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
-            
-            @Override
-            public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
-                return new DataSourceConfigurationYamlSwapper().swap(input);
-            }
-        }));
+        return new DataSourceChangedEvent(shardingSchemaName, Maps.transformValues(dataSourceConfigurations, new DataSourceConfigurationYamlSwapper()::swap));
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Constraint definition segment.
@@ -51,6 +51,6 @@ public final class ConstraintDefinitionSegment implements CreateDefinitionSegmen
      * @return referenced table
      */
     public Optional<TableSegment> getReferencedTable() {
-        return Optional.fromNullable(referencedTable);
+        return Optional.ofNullable(referencedTable);
     }
 }

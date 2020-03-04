@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+
+import java.util.Optional;
 
 /**
  * Show tables statement.
@@ -36,6 +37,6 @@ public final class ShowTablesStatement extends DALStatement {
      * @return from schema
      */
     public Optional<RemoveAvailable> getFromSchema() {
-        return Optional.fromNullable(fromSchema);
+        return Optional.ofNullable(fromSchema);
     }
 }
