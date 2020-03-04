@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.engine;
 
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -41,6 +45,18 @@ public final class OrderByContextEngine {
      */
     public OrderByContext createOrderBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
         if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
+            if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
+                int index = 0;
+                List<OrderByItem> orderByItems = new LinkedList<>();
+                for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
+                    ColumnProjectionSegment segment = (ColumnProjectionSegment) projectionSegment;
+                    ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(segment, OrderDirection.ASC);
+                    OrderByItem item = new OrderByItem(columnOrderByItemSegment);
+                    item.setIndex(index++);
+                    orderByItems.add(item);
+                }
+                return new OrderByContext(orderByItems, true);
+            }
             return new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
         }
         List<OrderByItem> orderByItems = new LinkedList<>();

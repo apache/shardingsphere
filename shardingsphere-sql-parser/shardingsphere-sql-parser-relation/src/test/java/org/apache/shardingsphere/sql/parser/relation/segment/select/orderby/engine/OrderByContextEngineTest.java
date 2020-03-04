@@ -20,17 +20,14 @@ package org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.eng
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -77,5 +74,19 @@ public final class OrderByContextEngineTest {
         assertThat(results.get(0).getIndex(), is(0));
         assertThat(results.get(1).getIndex(), is(2));
         assertThat(results.get(2).getIndex(), is(3));
+    }
+
+    @Test
+    public void assertCreateOrderInDistinctByWithoutOrderBy() {
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        GroupByContext groupByContext = mock(GroupByContext.class);
+        ProjectionsSegment projections = mock(ProjectionsSegment.class);
+        when(selectStatement.getProjections()).thenReturn(projections);
+        when(projections.isDistinctRow()).thenReturn(true);
+        when(groupByContext.getItems()).thenReturn(Collections.emptyList());
+        when(selectStatement.getOrderBy()).thenReturn(Optional.empty());
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
+        assertThat(actualOrderByContext.getItems(), is(Collections.emptyList()));
+        assertTrue(actualOrderByContext.isGenerated());
     }
 }
