@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.relation.statement.impl;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
@@ -48,8 +49,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class SelectStatementContextTest {
     
@@ -127,11 +126,10 @@ public final class SelectStatementContextTest {
     
     @Test
     public void assertSetIndexWhenAggregationProjectionsPresent() {
-        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
-        AggregationProjection aggregationProjection = mock(AggregationProjection.class);
-        when(projectionsContext.getAggregationProjections()).thenReturn(Collections.singletonList(aggregationProjection));
-        when(aggregationProjection.getDerivedAggregationProjections()).thenReturn(Collections.singletonList(aggregationProjection));
-        when(aggregationProjection.getColumnLabel()).thenReturn("id");
+        AggregationProjection aggregationProjection = new AggregationProjection(AggregationType.MAX, "", "id");
+        aggregationProjection.getDerivedAggregationProjections().addAll(Collections.singletonList(aggregationProjection));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(aggregationProjection), Collections.emptyList());
+        
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.<OrderByItem>emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), projectionsContext, null);
         Map<String, Integer> columnLabelIndexMap = new HashMap<>();
