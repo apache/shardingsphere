@@ -159,8 +159,8 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement((TableSegment) visit(ctx.tableName()));
-        if (null != ctx.alterDefinitionClause()) {
-            for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
+        for (AlterDefinitionClauseContext alterDefinitionClauseContext : ctx.alterDefinitionClause()) {
+            for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(alterDefinitionClauseContext)).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
                     result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
                 } else if (each instanceof ModifyColumnDefinitionSegment) {
