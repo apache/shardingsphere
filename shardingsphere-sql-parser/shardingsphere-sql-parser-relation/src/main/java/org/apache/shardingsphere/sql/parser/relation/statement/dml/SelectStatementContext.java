@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
@@ -64,7 +65,7 @@ import java.util.Optional;
  */
 @Getter
 @ToString(callSuper = true)
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
@@ -259,5 +260,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             }
         }
         return true;
+    }
+    
+    @Override
+    public Optional<WhereSegment> getWhere() {
+        return getSqlStatement().getWhere();
     }
 }

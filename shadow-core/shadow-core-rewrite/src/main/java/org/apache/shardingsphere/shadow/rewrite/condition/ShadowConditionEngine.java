@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.Collection;
@@ -49,10 +49,10 @@ public final class ShadowConditionEngine {
      * @return shadow condition
      */
     public Optional<ShadowCondition> createShadowCondition(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable)) {
+        if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Optional.empty();
         }
-        Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere();
+        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
         if (!whereSegment.isPresent()) {
             return Optional.empty();
         }

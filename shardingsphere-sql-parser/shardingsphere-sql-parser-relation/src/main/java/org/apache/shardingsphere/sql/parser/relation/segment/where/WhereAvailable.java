@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.relation.segment.where;
 
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Where segment available.
+ * Where available.
  */
-public interface WhereSegmentAvailable {
+public interface WhereAvailable {
     
     /**
      * Get where segment.
@@ -34,18 +32,4 @@ public interface WhereSegmentAvailable {
      * @return where segment
      */
     Optional<WhereSegment> getWhere();
-    
-    /**
-     * Set where segment.
-     * 
-     * @param where where segment
-     */
-    void setWhere(WhereSegment where);
-    
-    /**
-     * Get tables.
-     * 
-     * @return tables
-     */
-    Collection<TableSegment> getTables();
 }
