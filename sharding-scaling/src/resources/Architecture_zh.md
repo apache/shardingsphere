@@ -12,6 +12,8 @@
 
 增量方案：
 
+- MySQL：伪装成从机，读取解析源端binlog日志来进行增量数据同步。
+- PostgreSQL：采用官方[test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)来进行增量数据同步。
 
 ## 路线图
 ![应用路线图](https://github.com/apache/incubator-shardingsphere/blob/sharding-scaling/sharding-scaling/src/resources/roadmap.png)
