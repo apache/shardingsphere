@@ -441,9 +441,6 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
                 result.getValue().add(createTableSegment(((ColumnSegment) predicate.getRightValue()).getOwner().get()));
             }
-            if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
-                result.getValue().add(createTableSegment(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get()));
-            }
         }
         return result;
     }
