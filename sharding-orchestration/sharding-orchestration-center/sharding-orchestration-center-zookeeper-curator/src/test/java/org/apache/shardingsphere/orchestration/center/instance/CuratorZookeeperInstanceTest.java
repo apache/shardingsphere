@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.google.common.util.concurrent.SettableFuture;
-import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -39,7 +38,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class CuratorZookeeperInstanceTest {
+public final class CuratorZookeeperInstanceTest {
     
     private static CuratorZookeeperInstance curatorZookeeperInstance = new CuratorZookeeperInstance();
     
@@ -85,8 +84,7 @@ public class CuratorZookeeperInstanceTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchUpdatedChangedType() {
+    public void assertWatchUpdatedChangedType() throws Exception {
         curatorZookeeperInstance.persist("/test/children/1", "value1");
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
         curatorZookeeperInstance.watch("/test/children", dataChangedEvent -> future.set(dataChangedEvent));
@@ -100,8 +98,7 @@ public class CuratorZookeeperInstanceTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchDeletedChangedType() {
+    public void assertWatchDeletedChangedType() throws Exception {
         curatorZookeeperInstance.persist("/test/children/5", "value5");
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
         curatorZookeeperInstance.watch("/test/children/5", dataChangedEvent -> future.set(dataChangedEvent));
@@ -114,12 +111,11 @@ public class CuratorZookeeperInstanceTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertWatchAddedChangedType() {
+    public void assertWatchAddedChangedType() throws InterruptedException {
         curatorZookeeperInstance.persist("/test/children/4", "value4");
         final AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
         curatorZookeeperInstance.watch("/test/children", dataChangedEvent -> actualDataChangedEvent.set(dataChangedEvent));
-        Thread.sleep(2000);
+        Thread.sleep(2000L);
         assertNull(actualDataChangedEvent.get());
     }
     
