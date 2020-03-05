@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.rl;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.AbstractSQLStatement;
 
 /**
  * Replication statement.
