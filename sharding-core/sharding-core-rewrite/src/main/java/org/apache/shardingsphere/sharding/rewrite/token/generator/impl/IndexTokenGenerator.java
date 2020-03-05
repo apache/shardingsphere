@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.IndexToken;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.index.IndexAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 
 import java.util.Collection;
@@ -34,14 +34,14 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof IndexSegmentsAvailable && !((IndexSegmentsAvailable) sqlStatementContext).getIndexes().isEmpty();
+        return sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
     }
     
     @Override
     public Collection<IndexToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<IndexToken> result = new LinkedList<>();
-        if (sqlStatementContext instanceof IndexSegmentsAvailable) {
-            for (SQLSegment each : ((IndexSegmentsAvailable) sqlStatementContext).getIndexes()) {
+        if (sqlStatementContext instanceof IndexAvailable) {
+            for (SQLSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
                 result.add(new IndexToken(each.getStartIndex(), each.getStopIndex(), ((IndexSegment) each).getIdentifier()));
             }
         }

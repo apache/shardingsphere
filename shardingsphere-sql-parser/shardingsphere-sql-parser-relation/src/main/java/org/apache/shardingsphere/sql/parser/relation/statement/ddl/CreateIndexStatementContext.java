@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatemen
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.index.IndexAvailable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import java.util.Collections;
  * Create index statement context.
  */
 @Getter
-public final class CreateIndexStatementContext extends CommonSQLStatementContext<CreateIndexStatement> implements TableAvailable, IndexSegmentsAvailable {
+public final class CreateIndexStatementContext extends CommonSQLStatementContext<CreateIndexStatement> implements TableAvailable, IndexAvailable {
     
     private final TablesContext tablesContext;
     
