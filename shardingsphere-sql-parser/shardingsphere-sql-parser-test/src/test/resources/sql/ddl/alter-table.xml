@@ -78,13 +78,18 @@
     <alter-table sql-case-id="alter_table_add_columns_integer_type_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
-            <column-definition type="TINYINT">
+            <column-definition type="INTEGER">
                 <column name="column4" />
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="MEDIUMINT">
+            <column-definition type="TINYINT">
                 <column name="column5" />
+            </column-definition>
+        </add-column>
+        <add-column>
+            <column-definition type="MEDIUMINT">
+                <column name="column6" />
             </column-definition>
         </add-column>
     </alter-table>
@@ -92,23 +97,18 @@
     <alter-table sql-case-id="alter_table_add_columns_integer_type">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
-            <column-definition type="INTEGER">
+            <column-definition type="INT">
                 <column name="column4" />
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="INT">
+            <column-definition type="SMALLINT">
                 <column name="column5" />
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="SMALLINT">
-                <column name="column6" />
-            </column-definition>
-        </add-column>
-        <add-column>
             <column-definition type="BIGINT">
-                <column name="column7" />
+                <column name="column6" />
             </column-definition>
         </add-column>
     </alter-table>
@@ -180,7 +180,7 @@
         </add-column>
     </alter-table>
 
-    <alter-table sql-case-id="alter_table_add_columns_bit_type_mysql">
+    <alter-table sql-case-id="alter_table_add_columns_bit_type">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
             <column-definition type="bit">
@@ -198,7 +198,7 @@
         </add-column>
     </alter-table>
 
-    <alter-table sql-case-id="alter_table_add_columns_string_type_mysql">
+    <alter-table sql-case-id="alter_table_add_columns_string_type">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
             <column-definition type="CHAR">
@@ -211,63 +211,66 @@
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="BINARY">
+            <column-definition type="TEXT">
                 <column name="column6" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    <alter-table sql-case-id="alter_table_add_columns_string_type_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="BINARY">
+                <column name="column4" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="VARBINARY">
-                <column name="column7" />
+                <column name="column5" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="TINYBLOB">
-                <column name="column8" />
+                <column name="column6" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="TINYTEXT">
-                <column name="column9" />
+                <column name="column7" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="BLOB">
-                <column name="column10" />
-            </column-definition>
-        </add-column>
-        <add-column>
-            <column-definition type="TEXT">
-                <column name="column11" />
+                <column name="column8" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="MEDIUMBLOB">
-                <column name="column12" />
+                <column name="column9" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="MEDIUMTEXT">
-                <column name="column13" />
+                <column name="column10" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="LONGBLOB">
-                <column name="column14" />
+                <column name="column11" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="LONGTEXT">
-                <column name="column15" />
+                <column name="column12" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="ENUM">
-                <column name="column16" />
+                <column name="column13" />
             </column-definition>
         </add-column>
         <add-column>
             <column-definition type="SET">
-                <column name="column17" />
+                <column name="column14" />
             </column-definition>
         </add-column>
     </alter-table>
@@ -275,28 +278,13 @@
     <alter-table sql-case-id="alter_table_add_columns_string_type_postgresql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
-            <column-definition type="VARCHAR">
+            <column-definition type="CHARACTER">
                 <column name="column4" />
             </column-definition>
         </add-column>
         <add-column>
-            <column-definition type="CHARACTER">
-                <column name="column5" />
-            </column-definition>
-        </add-column>
-        <add-column>
-            <column-definition type="CHAR">
-                <column name="column6" />
-            </column-definition>
-        </add-column>
-        <add-column>
-            <column-definition type="TEXT">
-                <column name="column7" />
-            </column-definition>
-        </add-column>
-        <add-column>
             <column-definition type="NAME">
-                <column name="column8" />
+                <column name="column5" />
             </column-definition>
         </add-column>
     </alter-table>

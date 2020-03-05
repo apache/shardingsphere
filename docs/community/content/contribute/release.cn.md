@@ -301,9 +301,15 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 ### 检查发布文件内容
 
-#### 检查源码包的文件内容
+#### 对比源码包与Github上tag的内容差异
 
-解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip`，进行如下检查:
+```
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/incubator-shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
+unzip apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip
+diff -r apache-shardingsphere-incubating-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
+```
+
+#### 检查源码包的文件内容
 
 - 检查源码包是否包含由于包含不必要文件，致使tarball过于庞大
 - 文件夹包含单词`incubating`
@@ -313,7 +319,6 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 - 只存在文本文件，不存在二进制文件
 - 所有文件的开头都有ASF许可证
 - 能够正确编译，单元测试可以通过 (mvn install)
-- 版本内容与Github上tag的内容相符 (diff -r a verify_dir tag_dir)
 - 检查是否有多余文件或文件夹，例如空文件夹等
 
 #### 检查二进制包的文件内容

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
@@ -27,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+
+import java.util.Optional;
 
 /**
  * SQL parser engine.

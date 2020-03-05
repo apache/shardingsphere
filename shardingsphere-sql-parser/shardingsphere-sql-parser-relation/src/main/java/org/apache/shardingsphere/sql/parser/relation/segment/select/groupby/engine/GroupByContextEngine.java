@@ -39,7 +39,7 @@ public final class GroupByContextEngine {
      */
     public GroupByContext createGroupByContext(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupBy().isPresent()) {
-            return new GroupByContext(new LinkedList<OrderByItem>(), 0);
+            return new GroupByContext(new LinkedList<>(), 0);
         }
         Collection<OrderByItem> groupByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getGroupBy().get().getGroupByItems()) {

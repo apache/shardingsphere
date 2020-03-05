@@ -64,8 +64,8 @@ public final class EncryptTableMetaDataDecorator implements TableMetaDataDecorat
             return originalColumnMetaData;
         }
         String logicColumnName = encryptRule.getLogicColumnOfCipher(tableName, originalColumnMetaData.getName());
-        String plainColumnName = encryptRule.findPlainColumn(tableName, logicColumnName).orNull();
-        String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName).orNull();
+        String plainColumnName = encryptRule.findPlainColumn(tableName, logicColumnName).orElse(null);
+        String assistedQueryColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName).orElse(null);
         return new EncryptColumnMetaData(
                 logicColumnName, originalColumnMetaData.getDataType(), originalColumnMetaData.isPrimaryKey(), originalColumnMetaData.getName(), plainColumnName, assistedQueryColumnName);
     }

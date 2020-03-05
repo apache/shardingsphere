@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -41,6 +40,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @TestExecutionListeners(inheritListeners = false, listeners =
     {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class})
@@ -119,7 +119,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     
     private Optional<Field> getField(final Object object, final String name) {
         Class clazz = object.getClass();
-        Optional<Field> result = Optional.absent();
+        Optional<Field> result = Optional.empty();
         while (!result.isPresent() && null != clazz) {
             try {
                 result = Optional.of(clazz.getDeclaredField(name));

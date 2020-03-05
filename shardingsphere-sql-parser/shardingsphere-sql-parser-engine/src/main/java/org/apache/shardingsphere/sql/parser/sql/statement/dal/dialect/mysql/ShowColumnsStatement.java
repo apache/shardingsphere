@@ -17,23 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Show columns statement.
  */
 @Getter
 @Setter
-public final class ShowColumnsStatement extends DALStatement implements TableSegmentsAvailable {
+public final class ShowColumnsStatement extends DALStatement {
     
     private TableSegment table;
     
@@ -45,11 +42,6 @@ public final class ShowColumnsStatement extends DALStatement implements TableSeg
      * @return from schema
      */
     public Optional<RemoveAvailable> getFromSchema() {
-        return Optional.fromNullable(fromSchema);
-    }
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return null == table ? Collections.<TableSegment>emptyList() : Collections.singletonList(table);
+        return Optional.ofNullable(fromSchema);
     }
 }

@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+
+import java.util.Optional;
 
 /**
  * Table segment.
@@ -58,11 +59,11 @@ public final class TableSegment implements OwnerAvailable, AliasAvailable {
     
     @Override
     public Optional<OwnerSegment> getOwner() {
-        return Optional.fromNullable(owner);
+        return Optional.ofNullable(owner);
     }
     
     @Override
     public Optional<String> getAlias() {
-        return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.underlying.common.config;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +33,7 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source configuration.
@@ -121,7 +121,7 @@ public final class DataSourceConfiguration {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     @Override

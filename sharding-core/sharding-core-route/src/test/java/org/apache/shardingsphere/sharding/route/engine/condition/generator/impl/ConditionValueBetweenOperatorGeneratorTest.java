@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.core.strategy.route.value.RangeRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -30,6 +29,7 @@ import org.junit.Test;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

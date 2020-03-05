@@ -62,7 +62,7 @@ createDatabaseSpecification_
     | DEFAULT ENCRYPTION EQ_ Y_N_
     ;
 
-dropDatabse
+dropDatabase
     : DROP (DATABASE | SCHEMA) (IF EXISTS)? schemaName
     ;
 
@@ -362,7 +362,7 @@ alterSpecification
     | ORDER BY columnNames
     | renameColumnSpecification
     | renameIndexSpecification
-    | renameTableSpecification_
+    | renameTableSpecification
     | (WITHOUT | WITH) VALIDATION
     | ADD PARTITION LP_ partitionDefinition_ RP_
     | DROP PARTITION ignoredIdentifiers_
@@ -456,7 +456,7 @@ renameIndexSpecification
     : RENAME (INDEX | KEY) indexName TO indexName
     ;
 
-renameTableSpecification_
+renameTableSpecification
     : RENAME (TO | AS)? identifier
     ;
 

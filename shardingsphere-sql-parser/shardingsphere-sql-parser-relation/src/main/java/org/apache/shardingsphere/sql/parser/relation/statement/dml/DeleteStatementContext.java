@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.relation.statement.dml;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,10 +37,13 @@ import java.util.LinkedList;
  */
 @Getter
 @ToString(callSuper = true)
-public final class DeleteStatementContext extends CommonSQLStatementContext<DeleteStatement> implements TableSegmentsAvailable {
+public final class DeleteStatementContext extends CommonSQLStatementContext<DeleteStatement> implements TableAvailable {
+    
+    private final TablesContext tablesContext;
     
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
+        tablesContext = new TablesContext(sqlStatement.getTables());
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
@@ -28,20 +27,20 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert statement.
  */
 @Getter
 @Setter
-public final class InsertStatement extends DMLStatement implements TableSegmentsAvailable {
+public final class InsertStatement extends DMLStatement {
     
     private TableSegment table;
     
@@ -59,7 +58,7 @@ public final class InsertStatement extends DMLStatement implements TableSegments
      * @return insert columns segment
      */
     public Optional<InsertColumnsSegment> getInsertColumns() {
-        return Optional.fromNullable(insertColumns);
+        return Optional.ofNullable(insertColumns);
     }
     
     /**
@@ -68,7 +67,7 @@ public final class InsertStatement extends DMLStatement implements TableSegments
      * @return columns
      */
     public Collection<ColumnSegment> getColumns() {
-        return null == insertColumns ? Collections.<ColumnSegment>emptyList() : insertColumns.getColumns();
+        return null == insertColumns ? Collections.emptyList() : insertColumns.getColumns();
     }
     
     /**
@@ -77,7 +76,7 @@ public final class InsertStatement extends DMLStatement implements TableSegments
      * @return set assignment segment
      */
     public Optional<SetAssignmentSegment> getSetAssignment() {
-        return Optional.fromNullable(setAssignment);
+        return Optional.ofNullable(setAssignment);
     }
     
     /**
@@ -86,7 +85,7 @@ public final class InsertStatement extends DMLStatement implements TableSegments
      * @return on duplicate key columns segment
      */
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
-        return Optional.fromNullable(onDuplicateKeyColumns);
+        return Optional.ofNullable(onDuplicateKeyColumns);
     }
     
     /**
@@ -170,10 +169,5 @@ public final class InsertStatement extends DMLStatement implements TableSegments
             result.add(each.getValue());
         }
         return result;
-    }
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        return Collections.singletonList(table);
     }
 }

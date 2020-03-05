@@ -17,14 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
@@ -39,40 +34,16 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlSwapper<Ya
     @Override
     public YamlEncryptRuleConfiguration swap(final EncryptRuleConfiguration data) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
-        result.getEncryptors().putAll(Maps.transformValues(data.getEncryptors(), new Function<EncryptorRuleConfiguration, YamlEncryptorRuleConfiguration>() {
-            
-            @Override
-            public YamlEncryptorRuleConfiguration apply(final EncryptorRuleConfiguration input) {
-                return encryptorRuleConfigurationYamlSwapper.swap(input);
-            }
-        }));
-        result.getTables().putAll(Maps.transformValues(data.getTables(), new Function<EncryptTableRuleConfiguration, YamlEncryptTableRuleConfiguration>() {
-            
-            @Override
-            public YamlEncryptTableRuleConfiguration apply(final EncryptTableRuleConfiguration input) {
-                return encryptTableRuleConfigurationYamlSwapper.swap(input);
-            }
-        }));
+        result.getEncryptors().putAll(Maps.transformValues(data.getEncryptors(), encryptorRuleConfigurationYamlSwapper::swap));
+        result.getTables().putAll(Maps.transformValues(data.getTables(), encryptTableRuleConfigurationYamlSwapper::swap));
         return result;
     }
     
     @Override
     public EncryptRuleConfiguration swap(final YamlEncryptRuleConfiguration yamlConfiguration) {
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptors().putAll(Maps.transformValues(yamlConfiguration.getEncryptors(), new Function<YamlEncryptorRuleConfiguration, EncryptorRuleConfiguration>() {
-        
-            @Override
-            public EncryptorRuleConfiguration apply(final YamlEncryptorRuleConfiguration input) {
-                return encryptorRuleConfigurationYamlSwapper.swap(input);
-            }
-        }));
-        result.getTables().putAll(Maps.transformValues(yamlConfiguration.getTables(), new Function<YamlEncryptTableRuleConfiguration, EncryptTableRuleConfiguration>() {
-        
-            @Override
-            public EncryptTableRuleConfiguration apply(final YamlEncryptTableRuleConfiguration input) {
-                return encryptTableRuleConfigurationYamlSwapper.swap(input);
-            }
-        }));
+        result.getEncryptors().putAll(Maps.transformValues(yamlConfiguration.getEncryptors(), encryptorRuleConfigurationYamlSwapper::swap));
+        result.getTables().putAll(Maps.transformValues(yamlConfiguration.getTables(), encryptTableRuleConfigurationYamlSwapper::swap));
         return result;
     }
 }
