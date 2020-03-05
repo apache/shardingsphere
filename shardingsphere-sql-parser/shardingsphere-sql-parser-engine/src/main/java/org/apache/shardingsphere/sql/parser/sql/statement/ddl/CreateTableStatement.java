@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinit
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,7 +32,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateTableStatement extends DDLStatement implements IndexSegmentsAvailable {
+public final class CreateTableStatement extends DDLStatement {
     
     private final TableSegment table;
     
