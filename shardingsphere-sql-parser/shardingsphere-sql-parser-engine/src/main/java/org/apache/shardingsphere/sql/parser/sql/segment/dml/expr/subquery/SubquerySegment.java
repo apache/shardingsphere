@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex;
+package org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Subquery segment.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegme
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SubquerySegment implements ProjectionSegment, ComplexExpressionSegment {
+public class SubquerySegment implements SQLSegment {
     
     private final int startIndex;
     
