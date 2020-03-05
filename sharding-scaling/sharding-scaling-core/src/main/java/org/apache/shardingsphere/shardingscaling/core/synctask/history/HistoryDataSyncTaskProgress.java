@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex;
+package org.apache.shardingsphere.shardingscaling.core.synctask.history;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 
 /**
- * Subquery segment.
+ * History data sync task progress.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class SubquerySegment implements ProjectionSegment, ComplexExpressionSegment {
+public final class HistoryDataSyncTaskProgress implements SyncProgress {
     
-    private final int startIndex;
+    private final String id;
     
-    private final int stopIndex;
+    private final long estimatedRows;
     
-    private final String text;
+    private final long syncedRows;
 }
