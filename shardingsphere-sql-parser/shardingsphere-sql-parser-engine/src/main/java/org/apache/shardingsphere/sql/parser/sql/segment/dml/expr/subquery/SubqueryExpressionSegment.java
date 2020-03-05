@@ -20,20 +20,25 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 
 /**
- * Subquery segment.
+ * Subquery expression segment.
  */
 @RequiredArgsConstructor
-@Getter
 @ToString
-public class SubquerySegment implements SQLSegment, PredicateRightValue {
+public class SubqueryExpressionSegment implements SimpleExpressionSegment {
     
-    private final int startIndex;
+    @Getter
+    private final SubquerySegment subquery;
     
-    private final int stopIndex;
+    @Override
+    public int getStartIndex() {
+        return subquery.getStartIndex();
+    }
     
-    private final String text;
+    @Override
+    public int getStopIndex() {
+        return subquery.getStopIndex();
+    }
 }
