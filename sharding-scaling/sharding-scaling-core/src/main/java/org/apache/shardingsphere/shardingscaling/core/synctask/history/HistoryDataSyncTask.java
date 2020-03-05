@@ -91,7 +91,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     private void getEstimatedRows() {
         DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection()) {
-            ResultSet resultSet = connection.prepareStatement(String.format("select count(*) from %s %s",
+            ResultSet resultSet = connection.prepareStatement(String.format("SELECT COUNT(*) FROM %s %s",
                     syncConfiguration.getReaderConfiguration().getTableName(),
                     syncConfiguration.getReaderConfiguration().getWhereCondition()))
                     .executeQuery();

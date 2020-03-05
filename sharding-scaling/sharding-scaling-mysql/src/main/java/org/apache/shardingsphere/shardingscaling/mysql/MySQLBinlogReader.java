@@ -111,7 +111,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
-            record.setType("insert");
+            record.setType("INSERT");
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getColumnName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }
@@ -129,7 +129,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
             DataRecord record = createDataRecord(event, beforeValues.length);
-            record.setType("update");
+            record.setType("UPDATE");
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = beforeValues[j];
                 Object newValue = afterValues[j];
@@ -147,7 +147,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(event.getTableName());
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
-            record.setType("delete");
+            record.setType("DELETE");
             for (int i = 0; i < each.length; i++) {
                 record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getColumnName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }

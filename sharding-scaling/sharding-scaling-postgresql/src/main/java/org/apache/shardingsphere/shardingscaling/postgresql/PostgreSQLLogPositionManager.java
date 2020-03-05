@@ -76,9 +76,9 @@ public final class PostgreSQLLogPositionManager implements LogPositionManager<Wa
     private WalPosition getCurrentLsn(final Connection connection) throws SQLException {
         String sql = "";
         if (9 == connection.getMetaData().getDatabaseMajorVersion() && 6 <= connection.getMetaData().getDatabaseMinorVersion()) {
-            sql = "select pg_current_xlog_location()";
+            sql = "SELECT PG_CURRENT_XLOG_LOCATION()";
         } else if (10 <= connection.getMetaData().getDatabaseMajorVersion()) {
-            sql = "select pg_current_wal_lsn()";
+            sql = "SELECT PG_CURRENT_WAL_LSN()";
         } else {
             throw new RuntimeException("Not support postgrsql version:" + connection.getMetaData().getDatabaseProductVersion());
         }

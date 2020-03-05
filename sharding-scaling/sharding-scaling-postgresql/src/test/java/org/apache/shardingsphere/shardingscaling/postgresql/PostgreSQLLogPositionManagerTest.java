@@ -59,9 +59,9 @@ public final class PostgreSQLLogPositionManagerTest {
         PreparedStatement postgreSQL96LsnPs = mockPostgreSQL96Lsn();
         when(connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot('sharding_scaling', 'test_decoding')"))
                 .thenReturn(mock(PreparedStatement.class));
-        when(connection.prepareStatement("select pg_current_xlog_location()")).thenReturn(postgreSQL96LsnPs);
+        when(connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()")).thenReturn(postgreSQL96LsnPs);
         PreparedStatement postgreSQL10LsnPs = mockPostgreSQL10Lsn();
-        when(connection.prepareStatement("select pg_current_wal_lsn()")).thenReturn(postgreSQL10LsnPs);
+        when(connection.prepareStatement("SELECT PG_CURRENT_WAL_LSN()")).thenReturn(postgreSQL10LsnPs);
     }
     
     @Test
