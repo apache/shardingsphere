@@ -15,10 +15,21 @@
  * limitations under the License.
  */
 
-const HOST = ''
-const OTHERHOST = ''
+package org.apache.shardingsphere.ui.common.domain;
 
-export default {
-  HOST,
-  OTHERHOST
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * Forward service config.
+ */
+@Setter
+@Getter
+public final class ForwardServiceConfig {
+    
+    private String serviceName;
+    
+    private String serviceType;
+    
+    private String serviceUrl;
 }

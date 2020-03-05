@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.ui.repository.impl;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
-import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
-import org.apache.shardingsphere.ui.repository.RegistryCenterConfigsRepository;
-import org.springframework.stereotype.Repository;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,42 +25,46 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfigs;
+import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
+import org.apache.shardingsphere.ui.repository.ForwardServiceConfigsRepository;
+import org.springframework.stereotype.Repository;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+
 /**
- * Implementation of Registry center configs repository.
+ * Implementation of forward service configs repository.
  */
 @Repository
-public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCenterConfigsRepository {
+public final class YamlForwardServiceConfigsRepositoryImpl implements ForwardServiceConfigsRepository {
     
     private final File file;
     
-    public YamlRegistryCenterConfigsRepositoryImpl() {
-        file = new File(new File(System.getProperty("user.home")), "shardingsphere-ui-configs.yaml");
+    public YamlForwardServiceConfigsRepositoryImpl() {
+        file = new File(new File(System.getProperty("user.home")), "shardingsphere-ui-forward-services.yaml");
     }
     
     @Override
-    public RegistryCenterConfigs load() {
+    public ForwardServiceConfigs load() {
         if (!file.exists()) {
-            return new RegistryCenterConfigs();
+            return new ForwardServiceConfigs();
         }
-        
         try (FileInputStream fileInputStream = new FileInputStream(file);
-             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8)) {
-            return new Yaml(new Constructor(RegistryCenterConfigs.class)).loadAs(inputStreamReader, RegistryCenterConfigs.class);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8)) {
+            return new Yaml(new Constructor(ForwardServiceConfigs.class)).loadAs(inputStreamReader, ForwardServiceConfigs.class);
         } catch (IOException e) {
-            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "load registry config error");
+            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "load forward services config error");
         }
-        
     }
     
     @Override
-    public void save(final RegistryCenterConfigs registryCenterConfigs) {
+    public void save(final ForwardServiceConfigs forwardServiceConfigs) {
         Yaml yaml = new Yaml();
         try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file))) {
-            bufferedOutputStream.write(yaml.dumpAsMap(registryCenterConfigs).getBytes());
+            bufferedOutputStream.write(yaml.dumpAsMap(forwardServiceConfigs).getBytes());
             bufferedOutputStream.flush();
         } catch (IOException e) {
             throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "save registry config error");
         }
     }
-    
 }

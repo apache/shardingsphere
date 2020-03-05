@@ -15,10 +15,24 @@
  * limitations under the License.
  */
 
-const HOST = ''
-const OTHERHOST = ''
+package org.apache.shardingsphere.ui.repository;
 
-export default {
-  HOST,
-  OTHERHOST
+/**
+ * Configs repository.
+ */
+public interface ConfigsRepository<T> {
+    
+    /**
+     * Load configs.
+     *
+     * @return configs
+     */
+    T load();
+    
+    /**
+     * Save configs.
+     *
+     * @param configs configs
+     */
+    void save(T configs);
 }

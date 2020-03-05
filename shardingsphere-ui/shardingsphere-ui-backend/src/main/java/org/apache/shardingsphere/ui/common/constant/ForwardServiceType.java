@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-const HOST = ''
-const OTHERHOST = ''
+package org.apache.shardingsphere.ui.common.constant;
 
-export default {
-  HOST,
-  OTHERHOST
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Forward service type.
+ */
+@RequiredArgsConstructor
+@Getter
+public enum ForwardServiceType {
+    
+    /**
+     * sharding scaling forward service.
+     */
+    SHARDING_SCALING("ShardingScaling");
+    
+    private final String name;
 }

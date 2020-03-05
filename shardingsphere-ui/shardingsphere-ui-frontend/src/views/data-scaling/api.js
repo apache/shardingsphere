@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-const HOST = ''
-const OTHERHOST = ''
+import API from '@/utils/api'
+import ruleConfigApi from '@/views/rule-config/api'
+
+const { getSchema, getSchemaDataSource, getSchemaRule } = ruleConfigApi
 
 export default {
-  HOST,
-  OTHERHOST
+  getJobServer: (params = {}) => API.get(`/api/shardingscaling`, params),
+  postJobServer: (params = {}) => API.post(`/api/shardingscaling`, params),
+  getJobStart: (params = {}) =>
+    API.post(`/api/shardingscaling/job/start`, params),
+  getJobList: (params = {}) =>
+    API.get(`/api/shardingscaling/job/list`, params),
+  getJobProgress: jobId =>
+    API.get(`/api/shardingscaling/job/progress/${jobId}`),
+  postJobStop: (params = {}) =>
+    API.post(`/api/shardingscaling/job/stop`, params),
+  getSchema,
+  getSchemaDataSource,
+  getSchemaRule
 }

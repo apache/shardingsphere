@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-const HOST = ''
-const OTHERHOST = ''
+package org.apache.shardingsphere.ui.repository;
 
-export default {
-  HOST,
-  OTHERHOST
+import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfigs;
+
+/**
+ * Sharding scaling config repository.
+ */
+public interface ForwardServiceConfigsRepository extends ConfigsRepository<ForwardServiceConfigs> {
 }
