@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.relation.segment.index;
 
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 
+import java.util.Collection;
+
 /**
- * Index segment available.
+ * Index available.
  */
-public interface IndexSegmentAvailable {
+public interface IndexAvailable {
     
     /**
-     * Get index segment.
+     * Get index segments.
      * 
-     * @return index segment
+     * @return index segments
      */
-    IndexSegment getIndex();
-    
-    /**
-     * Set index segment.
-     * 
-     * @param index index segment
-     */
-    void setIndex(IndexSegment index);
+    Collection<IndexSegment> getIndexes();
 }

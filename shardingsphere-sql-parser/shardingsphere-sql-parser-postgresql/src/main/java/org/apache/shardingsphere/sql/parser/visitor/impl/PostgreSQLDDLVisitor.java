@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.visitor.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
@@ -236,6 +237,15 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
         result.setTable((TableSegment) visit(ctx.tableName()));
+        if (null != ctx.indexName()) {
+            result.setIndex((IndexSegment) visit(ctx.indexName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
+        CreateIndexStatement result = new CreateIndexStatement();
         result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }

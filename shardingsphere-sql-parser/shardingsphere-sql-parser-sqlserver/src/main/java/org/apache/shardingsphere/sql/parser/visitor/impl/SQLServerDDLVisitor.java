@@ -245,6 +245,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
         result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
