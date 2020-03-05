@@ -36,7 +36,6 @@ public class RdbmsConfiguration implements Cloneable {
 
     private String tableName;
 
-    //todo
     private String whereCondition;
     
     private int spiltNum;
