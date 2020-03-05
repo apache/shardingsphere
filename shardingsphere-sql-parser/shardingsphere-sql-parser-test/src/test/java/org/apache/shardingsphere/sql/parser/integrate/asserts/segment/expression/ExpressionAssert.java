@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.e
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -92,9 +93,9 @@ public final class ExpressionAssert {
      * @param actual actual subquery segment
      * @param expected expected subquery expression
      */
-    public static void assertSubquery(final SQLCaseAssertContext assertContext, final ComplexExpressionSegment actual, final ExpectedSubquery expected) {
+    public static void assertSubquery(final SQLCaseAssertContext assertContext, final SubqueryExpressionSegment actual, final ExpectedSubquery expected) {
         assertNotNull(assertContext.getText("Expected subquery expression should exist."));
-        assertThat(assertContext.getText("Subquery text assertion error: "), actual.getText(), is(expected.getText()));
+        assertThat(assertContext.getText("Subquery text assertion error: "), actual.getSubquery().getText(), is(expected.getText()));
         // TODO assert start index and stop index
 //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
