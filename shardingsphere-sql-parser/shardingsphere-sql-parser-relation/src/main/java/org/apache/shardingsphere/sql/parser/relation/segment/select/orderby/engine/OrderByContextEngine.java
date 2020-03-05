@@ -45,19 +45,8 @@ public final class OrderByContextEngine {
      */
     public OrderByContext createOrderBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
         if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
-            if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
-                int index = 0;
-                List<OrderByItem> orderByItems = new LinkedList<>();
-                for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
-                    ColumnProjectionSegment segment = (ColumnProjectionSegment) projectionSegment;
-                    ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(segment, OrderDirection.ASC);
-                    OrderByItem item = new OrderByItem(columnOrderByItemSegment);
-                    item.setIndex(index++);
-                    orderByItems.add(item);
-                }
-                return new OrderByContext(orderByItems, true);
-            }
-            return new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
+            OrderByContext orderByItems = createOrderByContextForDistinctRowWithoutGroupBy(selectStatement, groupByContext);
+            return orderByItems != null ? orderByItems : new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
         }
         List<OrderByItem> orderByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getOrderBy().get().getOrderByItems()) {
@@ -68,5 +57,25 @@ public final class OrderByContextEngine {
             orderByItems.add(orderByItem);
         }
         return new OrderByContext(orderByItems, false);
+    }
+
+    private OrderByContext createOrderByContextForDistinctRowWithoutGroupBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
+        if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
+            int index = 0;
+            List<OrderByItem> orderByItems = new LinkedList<>();
+            for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
+                if (projectionSegment instanceof ColumnProjectionSegment) {
+                    ColumnProjectionSegment segment = (ColumnProjectionSegment) projectionSegment;
+                    ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(segment, OrderDirection.ASC);
+                    OrderByItem item = new OrderByItem(columnOrderByItemSegment);
+                    item.setIndex(index++);
+                    orderByItems.add(item);
+                }
+            }
+            if (orderByItems.size() > 0) {
+                return new OrderByContext(orderByItems, true);
+            }
+        }
+        return null;
     }
 }

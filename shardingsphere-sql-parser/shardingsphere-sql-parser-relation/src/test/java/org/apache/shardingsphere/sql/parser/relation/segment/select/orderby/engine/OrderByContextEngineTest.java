@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.eng
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -85,13 +87,19 @@ public final class OrderByContextEngineTest {
     public void assertCreateOrderInDistinctByWithoutOrderBy() {
         SelectStatement selectStatement = mock(SelectStatement.class);
         GroupByContext groupByContext = mock(GroupByContext.class);
-        ProjectionsSegment projections = mock(ProjectionsSegment.class);
-        when(selectStatement.getProjections()).thenReturn(projections);
-        when(projections.isDistinctRow()).thenReturn(true);
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        List<ProjectionSegment> list = Arrays.asList(mock(ColumnProjectionSegment.class), mock(ColumnProjectionSegment.class));
+        when(projectionsSegment.getProjections()).thenReturn(list);
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        when(projectionsSegment.isDistinctRow()).thenReturn(true);
         when(groupByContext.getItems()).thenReturn(Collections.emptyList());
         when(selectStatement.getOrderBy()).thenReturn(Optional.empty());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
-        assertThat(actualOrderByContext.getItems(), is(Collections.emptyList()));
+        assertThat(actualOrderByContext.getItems().size(), is(list.size()));
+        ColumnOrderByItemSegment item = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
+        assertThat(item.getColumn(), is(list.get(0)));
+        item = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
+        assertThat(item.getColumn(), is(list.get(1)));
         assertTrue(actualOrderByContext.isGenerated());
     }
 }
