@@ -22,11 +22,13 @@ import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.RLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDALVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDCLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDDLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLDMLVisitor;
+import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLRLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.MySQLTCLVisitor;
 
 /**
@@ -57,5 +59,10 @@ public final class MySQLVisitorFacade implements ParseTreeVisitorFacade {
     @Override
     public Class<? extends DALVisitor> getDALVisitorClass() {
         return MySQLDALVisitor.class;
+    }
+    
+    @Override
+    public Class<? extends RLVisitor> getRLVisitorClass() {
+        return MySQLRLVisitor.class;
     }
 }
