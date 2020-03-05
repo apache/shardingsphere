@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 @RequiredArgsConstructor
 @Getter
 @ToString
-public class SubquerySegment implements SQLSegment, PredicateRightValue {
+public final class SubquerySegment implements SQLSegment, PredicateRightValue {
     
     private final int startIndex;
     
