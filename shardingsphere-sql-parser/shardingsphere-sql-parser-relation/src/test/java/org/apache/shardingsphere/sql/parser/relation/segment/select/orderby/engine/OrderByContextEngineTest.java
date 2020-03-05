@@ -96,10 +96,9 @@ public final class OrderByContextEngineTest {
         when(selectStatement.getOrderBy()).thenReturn(Optional.empty());
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems().size(), is(list.size()));
-        ColumnOrderByItemSegment item = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
-        assertThat(item.getColumn(), is(list.get(0)));
-        item = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
-        assertThat(item.getColumn(), is(list.get(1)));
+        List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
+        assertThat(((ColumnOrderByItemSegment) items.get(0).getSegment()).getColumn(), is(list.get(0)));
+        assertThat(((ColumnOrderByItemSegment) items.get(1).getSegment()).getColumn(), is(list.get(1)));
         assertTrue(actualOrderByContext.isGenerated());
     }
 }
