@@ -24,12 +24,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
  * Show create table statement.
- *
- * @author zhangliang
  */
 @Getter
 @Setter
 public final class ShowCreateTableStatement extends DALStatement {
-
+    
     private TableSegment table;
 }

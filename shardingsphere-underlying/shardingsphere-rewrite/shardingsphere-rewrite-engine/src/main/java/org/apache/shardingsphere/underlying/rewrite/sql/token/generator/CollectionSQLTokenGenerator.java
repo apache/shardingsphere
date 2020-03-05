@@ -24,11 +24,10 @@ import java.util.Collection;
 
 /**
  * SQL token generator for collection.
- *
- * @author zhangliang
- * @author panjuan
+ * 
+ * @param <T> type of SQL statement context
  */
-public interface CollectionSQLTokenGenerator extends SQLTokenGenerator {
+public interface CollectionSQLTokenGenerator<T extends SQLStatementContext> extends SQLTokenGenerator {
     
     /**
      * Generate SQL tokens.
@@ -36,5 +35,5 @@ public interface CollectionSQLTokenGenerator extends SQLTokenGenerator {
      * @param sqlStatementContext SQL statement context
      * @return SQL tokens
      */
-    Collection<? extends SQLToken> generateSQLTokens(SQLStatementContext sqlStatementContext);
+    Collection<? extends SQLToken> generateSQLTokens(T sqlStatementContext);
 }

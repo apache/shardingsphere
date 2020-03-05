@@ -19,8 +19,6 @@ package org.apache.shardingsphere.api.sharding;
 
 /**
  * Sharding algorithm.
- * 
- * @author zhangliang
  */
 public interface ShardingAlgorithm {
 }

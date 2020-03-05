@@ -25,8 +25,6 @@ import java.util.Map;
 
 /**
  * Orchestration sharding schema group.
- *
- * @author zhangliang
  */
 public final class OrchestrationShardingSchemaGroup {
     
@@ -40,7 +38,7 @@ public final class OrchestrationShardingSchemaGroup {
     public void add(final OrchestrationShardingSchema orchestrationShardingSchema) {
         String schemaName = orchestrationShardingSchema.getSchemaName();
         if (!schemaGroup.containsKey(schemaName)) {
-            schemaGroup.put(schemaName, new LinkedList<String>());
+            schemaGroup.put(schemaName, new LinkedList<>());
         }
         schemaGroup.get(schemaName).add(orchestrationShardingSchema.getDataSourceName());
     }
@@ -62,6 +60,6 @@ public final class OrchestrationShardingSchemaGroup {
      * @return data source names
      */
     public Collection<String> getDataSourceNames(final String shardingSchemaName) {
-        return schemaGroup.containsKey(shardingSchemaName) ? schemaGroup.get(shardingSchemaName) : Collections.<String>emptyList();
+        return schemaGroup.containsKey(shardingSchemaName) ? schemaGroup.get(shardingSchemaName) : Collections.emptyList();
     }
 }

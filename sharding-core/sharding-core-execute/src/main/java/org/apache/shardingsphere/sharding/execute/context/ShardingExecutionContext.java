@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.sharding.execute.context;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 
+import java.util.Optional;
+
 /**
  * Sharding execution context.
- *
- * @author zhangliang
  */
 public final class ShardingExecutionContext extends ExecutionContext {
     
@@ -42,6 +41,6 @@ public final class ShardingExecutionContext extends ExecutionContext {
      * @return generated key
      */
     public Optional<GeneratedKey> getGeneratedKey() {
-        return Optional.fromNullable(generatedKey);
+        return Optional.ofNullable(generatedKey);
     }
 }

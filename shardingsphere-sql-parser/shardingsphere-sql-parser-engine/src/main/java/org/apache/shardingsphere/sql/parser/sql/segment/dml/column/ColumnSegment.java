@@ -17,39 +17,34 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.column;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+
+import java.util.Optional;
 
 /**
  * Column segment.
- *
- * @author duhongjun
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
-public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable<TableSegment> {
+public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String name;
+    private final IdentifierValue identifier;
     
-    private final QuoteCharacter quoteCharacter;
-    
-    private TableSegment owner;
+    private OwnerSegment owner;
     
     /**
      * Get qualified name.
@@ -57,11 +52,11 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
      * @return qualified name
      */
     public final String getQualifiedName() {
-        return null == owner ? name : owner.getTableName() + "." + name;
+        return null == owner ? identifier.getValue() : owner.getIdentifier().getValue() + "." + identifier.getValue();
     }
 
     @Override
-    public final Optional<TableSegment> getOwner() {
-        return Optional.fromNullable(owner);
+    public final Optional<OwnerSegment> getOwner() {
+        return Optional.ofNullable(owner);
     }
 }

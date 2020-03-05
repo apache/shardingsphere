@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.column;
 
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,14 +28,14 @@ public final class ColumnSegmentTest {
     
     @Test
     public void assertGetQualifiedNameWithoutOwner() {
-        ColumnSegment actual = new ColumnSegment(0, 0, "col", QuoteCharacter.NONE);
+        ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("col"));
         assertThat(actual.getQualifiedName(), is("col"));
     }
     
     @Test
     public void assertGetQualifiedNameWithOwner() {
-        ColumnSegment actual = new ColumnSegment(0, 0, "col", QuoteCharacter.NONE);
-        actual.setOwner(new TableSegment(0, 0, "tbl", QuoteCharacter.NONE));
+        ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("col"));
+        actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
         assertThat(actual.getQualifiedName(), is("tbl.col"));
     }
 }

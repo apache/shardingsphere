@@ -24,8 +24,6 @@ import lombok.RequiredArgsConstructor;
  * Status flags are a bit-field for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/status-flags.html#packet-Protocol::StatusFlags">StatusFlags</a>
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

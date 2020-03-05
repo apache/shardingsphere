@@ -31,11 +31,6 @@ import java.util.Properties;
 
 /**
  * Context of Sharding-Proxy.
- *
- * @author chenqingyang
- * @author panjuan
- * @author zhangliang
- * @author sunbufu
  */
 @Getter
 public final class ShardingProxyContext {

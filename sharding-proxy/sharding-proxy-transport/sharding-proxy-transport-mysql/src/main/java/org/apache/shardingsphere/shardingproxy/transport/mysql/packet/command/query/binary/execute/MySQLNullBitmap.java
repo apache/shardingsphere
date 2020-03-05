@@ -23,8 +23,6 @@ import lombok.Getter;
  * Null bitmap for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/null-bitmap.html">NULL-Bitmap</a>
- * 
- * @author zhangyonglun
  */
 public final class MySQLNullBitmap {
     

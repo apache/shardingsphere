@@ -41,8 +41,6 @@ import java.util.Collections;
 
 /**
  * Circuit breaker preparedStatement.
- * 
- * @author caohao
  */
 @Getter
 public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOperationPreparedStatement {

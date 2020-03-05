@@ -21,8 +21,6 @@ import lombok.ToString;
 
 /**
  * Always false sharding condition.
- *
- * @author maxiaoguang
  */
 @ToString
 public final class AlwaysFalseShardingCondition extends ShardingCondition {

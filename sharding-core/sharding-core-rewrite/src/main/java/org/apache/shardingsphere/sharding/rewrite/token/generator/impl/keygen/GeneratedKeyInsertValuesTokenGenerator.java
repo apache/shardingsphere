@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
@@ -25,11 +24,8 @@ import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueC
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedSimpleExpressionSegment;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
@@ -37,31 +33,30 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Inser
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert values token generator for sharding.
- *
- * @author panjuan
  */
 @Setter
-public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedKeyTokenGenerator implements OptionalSQLTokenGenerator, PreviousSQLTokensAware {
+public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedKeyTokenGenerator implements PreviousSQLTokensAware {
     
     private List<SQLToken> previousSQLTokens;
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatement insertStatement) {
-        return !insertStatement.findSQLSegments(InsertValuesSegment.class).isEmpty();
+        return !insertStatement.getValues().isEmpty();
     }
     
     @Override
-    protected SQLToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+    protected SQLToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
         Optional<InsertValuesToken> result = findPreviousSQLToken();
         Preconditions.checkState(result.isPresent());
         Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
         int count = 0;
-        for (InsertValueContext each : ((InsertSQLStatementContext) sqlStatementContext).getInsertValueContexts()) {
+        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);
-            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression((InsertSQLStatementContext) sqlStatementContext, count)
+            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(insertStatementContext, count)
                     ? new DerivedLiteralExpressionSegment(generatedValues.next()) : new DerivedParameterMarkerExpressionSegment(each.getParametersCount());
             insertValueToken.getValues().add(expressionSegment);
             count++;
@@ -75,10 +70,10 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
                 return Optional.of((InsertValuesToken) each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
-    private boolean isToAddDerivedLiteralExpression(final InsertSQLStatementContext insertSQLStatementContext, final int insertValueCount) {
-        return insertSQLStatementContext.getGroupedParameters().get(insertValueCount).isEmpty();
+    private boolean isToAddDerivedLiteralExpression(final InsertStatementContext insertStatementContext, final int insertValueCount) {
+        return insertStatementContext.getGroupedParameters().get(insertValueCount).isEmpty();
     }
 }

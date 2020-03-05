@@ -17,12 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Properties;
-import javax.sql.DataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -36,12 +30,15 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlIn
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * Orchestration master-slave data source factory for YAML.
- *
- * @author zhangliang
- * @author caohao
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationMasterSlaveDataSourceFactory {

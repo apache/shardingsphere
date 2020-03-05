@@ -19,8 +19,6 @@ package org.apache.shardingsphere.spi.database.metadata;
 
 /**
  * Memorized data source meta data.
- *
- * @author zhangliang
  */
 public interface MemorizedDataSourceMetaData extends DataSourceMetaData {
 }

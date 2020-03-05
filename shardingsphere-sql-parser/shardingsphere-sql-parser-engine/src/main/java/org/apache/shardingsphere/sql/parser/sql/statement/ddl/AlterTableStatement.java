@@ -18,30 +18,30 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.TreeSet;
 
 /**
  * Alter table statement.
- * 
- * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class AlterTableStatement extends DDLStatement implements TableSegmentAvailable {
+public final class AlterTableStatement extends DDLStatement {
     
-    private TableSegment table;
+    private final TableSegment table;
     
-    private final Collection<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();
+    private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
-    private final Collection<ColumnPositionSegment> changedPositionColumns = new TreeSet<>();
+    private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();
     
-    private final Collection<String> droppedColumnNames = new LinkedList<>();
+    private final Collection<DropColumnDefinitionSegment> dropColumnDefinitions = new LinkedList<>();
+    
+    private final Collection<ConstraintDefinitionSegment> addConstraintDefinitions = new LinkedList<>();
 }

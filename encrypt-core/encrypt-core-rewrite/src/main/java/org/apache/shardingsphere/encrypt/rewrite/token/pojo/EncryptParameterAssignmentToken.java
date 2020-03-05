@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 
@@ -26,8 +25,6 @@ import java.util.LinkedList;
 
 /**
  * Parameter assignment token for encrypt.
- *
- * @author panjuan
  */
 public final class EncryptParameterAssignmentToken extends EncryptAssignmentToken {
     
@@ -48,13 +45,7 @@ public final class EncryptParameterAssignmentToken extends EncryptAssignmentToke
     
     @Override
     public String toString() {
-        Collection<String> items = Collections2.transform(columnNames, new Function<String, String>() {
-            
-            @Override
-            public String apply(final String input) {
-                return String.format("%s = ?", input);
-            }
-        });
+        Collection<String> items = Collections2.transform(columnNames, input -> String.format("%s = ?", input));
         return Joiner.on(", ").join(items);
     }
 }

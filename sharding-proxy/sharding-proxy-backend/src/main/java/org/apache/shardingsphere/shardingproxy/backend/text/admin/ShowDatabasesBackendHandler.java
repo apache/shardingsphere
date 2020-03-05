@@ -37,10 +37,6 @@ import java.util.LinkedList;
 
 /**
  * Show databases backend handler.
- *
- * @author chenqingyang
- * @author zhaojun
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class ShowDatabasesBackendHandler implements TextProtocolBackendHandler {

@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl;
 
-import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 
+import java.util.Optional;
+
 /**
  * Common projection.
- *
- * @author zhangliang
- * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
@@ -49,11 +47,11 @@ public final class ColumnProjection implements Projection {
 
     @Override
     public String getColumnLabel() {
-        return getAlias().or(name);
+        return getAlias().orElse(name);
     }
 
     @Override
     public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
+        return Optional.ofNullable(alias);
     }
 }

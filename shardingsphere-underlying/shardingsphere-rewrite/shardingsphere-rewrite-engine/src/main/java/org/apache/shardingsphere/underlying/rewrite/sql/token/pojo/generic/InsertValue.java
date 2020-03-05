@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * Insert value.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

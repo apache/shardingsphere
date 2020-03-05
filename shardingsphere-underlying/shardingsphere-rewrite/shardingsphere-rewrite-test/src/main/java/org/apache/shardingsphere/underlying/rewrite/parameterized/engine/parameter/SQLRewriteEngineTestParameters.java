@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Test parameters for SQL rewrite engine.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

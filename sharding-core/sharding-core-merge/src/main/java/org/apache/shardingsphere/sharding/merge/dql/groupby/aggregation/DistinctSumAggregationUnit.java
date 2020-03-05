@@ -26,8 +26,6 @@ import java.util.List;
 
 /**
  * Distinct sum aggregation unit.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class DistinctSumAggregationUnit implements AggregationUnit {

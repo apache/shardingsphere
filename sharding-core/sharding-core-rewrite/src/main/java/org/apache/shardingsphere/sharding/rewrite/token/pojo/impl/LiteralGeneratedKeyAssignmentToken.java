@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
 
 /**
  * Generated key assignment token for literal.
- *
- * @author panjuan
  */
 public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     

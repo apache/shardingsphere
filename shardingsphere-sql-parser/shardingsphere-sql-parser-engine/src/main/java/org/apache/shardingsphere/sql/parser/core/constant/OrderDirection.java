@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.core.constant;
 
 /**
  * Order direction.
- *
- * @author zhangliang
  */
 public enum OrderDirection {
     

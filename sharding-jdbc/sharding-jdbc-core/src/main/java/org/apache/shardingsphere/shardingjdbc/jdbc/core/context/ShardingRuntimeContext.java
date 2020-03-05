@@ -41,10 +41,6 @@ import java.util.Properties;
 
 /**
  * Runtime context for sharding.
- * 
- * @author gaohongtao
- * @author panjuan
- * @author zhangliang
  */
 @Getter
 public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeContext<ShardingRule> {

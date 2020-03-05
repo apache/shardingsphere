@@ -29,8 +29,6 @@ import java.sql.SQLException;
 
 /**
  * XAResourceRecoveryHelper implementation which gets XIDs, which needs to be recovered, from the database.
- *
- * @author Gytis Trikleris
  */
 @Slf4j
 public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecoveryHelper, XAResource {

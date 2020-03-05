@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.text;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.frontend.postgresql.PostgreSQLErrPacketFactory;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -30,6 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.PostgreSQLErrPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -38,18 +36,17 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Command query executor for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
@@ -66,18 +63,18 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         if (ShardingProxyContext.getInstance().isCircuitBreak()) {
-            return Collections.<DatabasePacket>singletonList(new PostgreSQLErrorResponsePacket());
+            return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
             isErrorResponse = true;
-            return Collections.<DatabasePacket>singletonList(createErrorPacket((ErrorResponse) backendResponse));
+            return Collections.singletonList(createErrorPacket((ErrorResponse) backendResponse));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Collections.<DatabasePacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
+            return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
         Optional<PostgreSQLRowDescriptionPacket> result = createQueryPacket((QueryResponse) backendResponse);
-        return result.isPresent() ? Collections.<DatabasePacket>singletonList(result.get()) : Collections.<DatabasePacket>emptyList();
+        return result.<List<DatabasePacket>>map(Collections::singletonList).orElseGet(Collections::emptyList);
     }
     
     private PostgreSQLErrorResponsePacket createErrorPacket(final ErrorResponse errorResponse) {
@@ -92,7 +89,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
         isQuery = !columnDescriptions.isEmpty();
         if (columnDescriptions.isEmpty()) {
-            return Optional.absent();
+            return Optional.empty();
         }
         return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.Post
 
 /**
  * Parameter status packet for PostgreSQL.
- *
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 public final class PostgreSQLParameterStatusPacket implements PostgreSQLPacket {

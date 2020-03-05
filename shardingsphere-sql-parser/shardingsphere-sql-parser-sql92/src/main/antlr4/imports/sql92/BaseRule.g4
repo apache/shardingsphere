@@ -63,14 +63,10 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord_
+    : IDENTIFIER_ | unreservedWord
     ;
 
-variable_
-    : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
-    ;
-
-unreservedWord_
+unreservedWord
     : ADA
     | C92 | CATALOG_NAME | CHARACTER_SET_CATALOG | CHARACTER_SET_NAME | CHARACTER_SET_SCHEMA
     | CLASS_ORIGIN | COBOL | COLLATION_CATALOG | COLLATION_NAME | COLLATION_SCHEMA
@@ -86,6 +82,10 @@ unreservedWord_
     | SCALE | SCHEMA_NAME | SERIALIZABLE | SERVER_NAME | SUBCLASS_ORIGIN
     | TABLE_NAME | TYPE
     | UNCOMMITTED | UNNAMED
+    ;
+
+variable
+    : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
     ;
 
 schemaName
@@ -182,13 +182,13 @@ simpleExpr
     | literals
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier)
-    | variable_
+    | variable
     | (PLUS_ | MINUS_ | TILDE_ | NOT_) simpleExpr
     | LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | matchExpression_
-    | caseExpression_
+    | caseExpression
     | intervalExpression
     ;
 
@@ -197,10 +197,10 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName_ LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
-aggregationFunctionName_
+aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG
     ;
 
@@ -248,7 +248,7 @@ matchExpression_
     : literals MATCH UNIQUE? (PARTIAL | FULL)  subquery
     ;
 
-caseExpression_
+caseExpression
     : CASE simpleExpr? caseWhen_+ caseElse_? END
     ;
 
@@ -281,11 +281,11 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName_ dataTypeLength? characterSet_? collateClause_? | dataTypeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet_? collateClause_? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-dataTypeName_
-    : identifier identifier?
+dataTypeName
+    : identifier
     ;
 
 dataTypeLength

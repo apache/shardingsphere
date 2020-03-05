@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
 
 /**
  * String literal value.
- *
- * @author panjuan
  */
 @Getter
 public final class StringLiteralValue implements LiteralValue<String> {

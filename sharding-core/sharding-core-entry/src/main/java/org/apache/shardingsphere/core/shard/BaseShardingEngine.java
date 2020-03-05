@@ -31,7 +31,7 @@ import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContex
 import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -53,9 +53,6 @@ import java.util.Map;
 
 /**
  * Base sharding engine.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 public abstract class BaseShardingEngine {
@@ -71,11 +68,11 @@ public abstract class BaseShardingEngine {
     
     private final SPIRoutingHook routingHook;
     
-    public BaseShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
+    public BaseShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         this.shardingRule = shardingRule;
         this.properties = properties;
         this.metaData = metaData;
-        shardingRouter = new ShardingRouter(shardingRule, properties, metaData, sqlParseEngine);
+        shardingRouter = new ShardingRouter(shardingRule, properties, metaData, sqlParserEngine);
         routingHook = new SPIRoutingHook();
     }
     
@@ -89,7 +86,7 @@ public abstract class BaseShardingEngine {
     public ExecutionContext shard(final String sql, final List<Object> parameters) {
         List<Object> clonedParameters = cloneParameters(parameters);
         ShardingRouteContext shardingRouteContext = executeRoute(sql, clonedParameters);
-        ShardingExecutionContext result = new ShardingExecutionContext(shardingRouteContext.getSqlStatementContext(), shardingRouteContext.getGeneratedKey().orNull());
+        ShardingExecutionContext result = new ShardingExecutionContext(shardingRouteContext.getSqlStatementContext(), shardingRouteContext.getGeneratedKey().orElse(null));
         result.getExecutionUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, shardingRouteContext) : rewriteAndConvert(sql, clonedParameters, shardingRouteContext));
         boolean showSQL = properties.getValue(PropertiesConstant.SQL_SHOW);
         if (showSQL) {

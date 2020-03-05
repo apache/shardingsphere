@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.merge;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeader;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Encryptor meta data for query header.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class QueryHeaderEncryptorMetaData implements EncryptorMetaData {
@@ -43,6 +41,6 @@ public final class QueryHeaderEncryptorMetaData implements EncryptorMetaData {
         QueryHeader queryHeader = queryHeaders.get(columnIndex - 1);
         String tableName = queryHeader.getTable();
         String columnName = queryHeader.getColumnName();
-        return encryptRule.isCipherColumn(tableName, columnName) ? encryptRule.findEncryptor(tableName, encryptRule.getLogicColumnOfCipher(tableName, columnName)) : Optional.<Encryptor>absent();
+        return encryptRule.isCipherColumn(tableName, columnName) ? encryptRule.findEncryptor(tableName, encryptRule.getLogicColumnOfCipher(tableName, columnName)) : Optional.empty();
     }
 }

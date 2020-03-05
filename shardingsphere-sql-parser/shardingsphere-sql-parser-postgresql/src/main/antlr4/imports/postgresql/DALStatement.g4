@@ -24,7 +24,7 @@ show
     ;
 
 set
-    : SET runtimeScope_? (timeZoneClause_ | configurationParameterClause_)
+    : SET runtimeScope_? (timeZoneClause_ | configurationParameterClause)
     ;
 
 runtimeScope_
@@ -35,7 +35,7 @@ timeZoneClause_
     : TIME ZONE (numberLiterals | LOCAL | DEFAULT)
     ;
 
-configurationParameterClause_
+configurationParameterClause
     : identifier (TO | EQ_) (identifier | STRING_ | DEFAULT)
     ;
 

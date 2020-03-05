@@ -24,9 +24,6 @@ import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 /**
  * Sharding broadcast routing engine for databases.
- * 
- * @author zhangliang
- * @author maxiaoguang
  */
 public final class ShardingDatabaseBroadcastRoutingEngine implements ShardingRouteEngine {
     

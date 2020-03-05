@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 
 /**
  * Aggregation distinct projection.
- *
- * @author panjuan
  */
 @Getter
 public final class AggregationDistinctProjection extends AggregationProjection {
@@ -48,6 +46,6 @@ public final class AggregationDistinctProjection extends AggregationProjection {
      * @return distinct column label
      */
     public String getDistinctColumnLabel() {
-        return getAlias().or(distinctInnerExpression);
+        return getAlias().orElse(distinctInnerExpression);
     }
 }

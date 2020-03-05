@@ -19,10 +19,9 @@ package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
 import com.google.common.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 
 import java.util.Arrays;
@@ -30,17 +29,13 @@ import java.util.Collection;
 
 /**
  * Post sharding orchestration event listener.
- *
- * @author zhangliang
- * @author panjuan
- * @author wangguangyuan
  */
 @RequiredArgsConstructor
 public abstract class PostShardingConfigCenterEventListener implements ShardingOrchestrationListener {
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
-    private final ConfigCenter configCenter;
+    private final ConfigCenterRepository configCenterRepository;
     
     private final Collection<String> watchKeys;
     
@@ -53,13 +48,9 @@ public abstract class PostShardingConfigCenterEventListener implements ShardingO
     }
     
     private void watch(final String watchKey, final Collection<ChangedType> watchedChangedTypeList) {
-        configCenter.watch(watchKey, new DataChangedEventListener() {
-        
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
-                    eventBus.post(createShardingOrchestrationEvent(dataChangedEvent));
-                }
+        configCenterRepository.watch(watchKey, dataChangedEvent -> {
+            if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
+                eventBus.post(createShardingOrchestrationEvent(dataChangedEvent));
             }
         });
     }

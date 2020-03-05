@@ -38,8 +38,6 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.e
 
 /**
  * Hint command executor factory.
- *
- * @author liya
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintCommandExecutorFactory {

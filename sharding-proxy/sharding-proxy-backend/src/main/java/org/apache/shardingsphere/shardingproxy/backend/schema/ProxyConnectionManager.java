@@ -26,8 +26,6 @@ import java.sql.SQLException;
 
 /**
  * Connection manager of proxy.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ProxyConnectionManager implements ConnectionManager {

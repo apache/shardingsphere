@@ -29,8 +29,6 @@ import java.util.Collection;
 
 /**
  * Query header.
- *
- * @author zhangliang
  */
 @AllArgsConstructor
 @Getter

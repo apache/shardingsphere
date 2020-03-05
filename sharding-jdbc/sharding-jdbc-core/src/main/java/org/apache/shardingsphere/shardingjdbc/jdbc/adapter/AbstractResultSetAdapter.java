@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
@@ -41,9 +40,6 @@ import java.util.Map;
 
 /**
  * Adapter for {@code ResultSet}.
- * 
- * @author zhangliang
- * @author panjuan
  */
 public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperationResultSet {
     
@@ -116,13 +112,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Override
     public final void close() throws SQLException {
         closed = true;
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.close();
-            }
-        });
+        forceExecuteTemplate.execute(resultSets, ResultSet::close);
     }
     
     @Override
@@ -132,13 +122,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setFetchDirection(final int direction) throws SQLException {
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.setFetchDirection(direction);
-            }
-        });
+        forceExecuteTemplate.execute(resultSets, resultSet -> resultSet.setFetchDirection(direction));
     }
     
     @Override
@@ -148,13 +132,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void setFetchSize(final int rows) throws SQLException {
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.setFetchSize(rows);
-            }
-        });
+        forceExecuteTemplate.execute(resultSets, resultSet -> resultSet.setFetchSize(rows));
     }
     
     @Override
@@ -179,13 +157,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final void clearWarnings() throws SQLException {
-        forceExecuteTemplate.execute(resultSets, new ForceExecuteCallback<ResultSet>() {
-            
-            @Override
-            public void execute(final ResultSet resultSet) throws SQLException {
-                resultSet.clearWarnings();
-            }
-        });
+        forceExecuteTemplate.execute(resultSets, ResultSet::clearWarnings);
     }
     
     protected final String getActualColumnLabel(final String columnLabel) {

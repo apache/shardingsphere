@@ -21,12 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ColumnDefinitionAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,8 +35,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Create table statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateTableStatementAssert {
@@ -50,12 +49,12 @@ public final class CreateTableStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertColumnDefinitions(assertContext, actual, expected);
+        assertConstraintDefinitions(assertContext, actual, expected);
         assertIndexes(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
-        // TODO split table and fk table
-        TableAssert.assertIs(assertContext, actual.findSQLSegments(TableSegment.class), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
     }
     
     private static void assertColumnDefinitions(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
@@ -63,6 +62,15 @@ public final class CreateTableStatementAssert {
         int count = 0;
         for (ColumnDefinitionSegment each : actual.getColumnDefinitions()) {
             ColumnDefinitionAssert.assertIs(assertContext, each, expected.getColumnDefinitions().get(count));
+            count++;
+        }
+    }
+    
+    private static void assertConstraintDefinitions(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Constraint definitions size assertion error: "), actual.getConstraintDefinitions().size(), is(expected.getConstraintDefinitions().size()));
+        int count = 0;
+        for (ConstraintDefinitionSegment each : actual.getConstraintDefinitions()) {
+            ConstraintDefinitionAssert.assertIs(assertContext, each, expected.getConstraintDefinitions().get(count));
             count++;
         }
     }

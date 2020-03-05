@@ -23,8 +23,6 @@ import java.util.Collection;
 
 /**
  * SQL token generator builder.
- *
- * @author zhangliang
  */
 public interface SQLTokenGeneratorBuilder {
     

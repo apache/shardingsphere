@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -28,12 +27,10 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.i
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Projections context.
- *
- * @author zhangliang
- * @author sunbufu
  */
 @RequiredArgsConstructor
 @Getter
@@ -75,7 +72,7 @@ public final class ProjectionsContext {
                 return each.getAlias();
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**
@@ -92,7 +89,7 @@ public final class ProjectionsContext {
             }
             result++;
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**

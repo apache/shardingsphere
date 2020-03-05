@@ -19,8 +19,6 @@ package org.apache.shardingsphere.encrypt.strategy.spi;
 
 /**
  * Query assisted encryptor.
- *
- * @author panjuan
  */
 public interface QueryAssistedEncryptor extends Encryptor {
     

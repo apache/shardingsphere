@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Alter role statement.
- *
- * @author zhangliang
  */
 public final class AlterRoleStatement extends DCLStatement {
 }

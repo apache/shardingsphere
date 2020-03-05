@@ -34,8 +34,6 @@ import java.util.Properties;
 
 /**
  * Runtime context for encrypt.
- *
- * @author zhangliang
  */
 public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<EncryptRule> {
     

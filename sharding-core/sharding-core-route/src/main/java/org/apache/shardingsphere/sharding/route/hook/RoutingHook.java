@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteCont
 
 /**
  * Routing hook.
- *
- * @author zhaojun
  */
 public interface RoutingHook {
     

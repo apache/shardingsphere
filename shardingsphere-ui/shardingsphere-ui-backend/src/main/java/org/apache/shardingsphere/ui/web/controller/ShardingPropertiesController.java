@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * RESTful API of sharding properties.
- * 
- * @author chenqingyang
  */
 @RestController
 @RequestMapping("/api/props")

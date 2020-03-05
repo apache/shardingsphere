@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
@@ -25,12 +24,10 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterB
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Grouped parameter builder.
- *
- * @author panjuan
- * @author zhangliang
  */
 public final class GroupedParameterBuilder implements ParameterBuilder {
     
@@ -78,6 +75,6 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
      * @return derived column name
      */
     public Optional<String> getDerivedColumnName() {
-        return Optional.fromNullable(derivedColumnName);
+        return Optional.ofNullable(derivedColumnName);
     }
 }

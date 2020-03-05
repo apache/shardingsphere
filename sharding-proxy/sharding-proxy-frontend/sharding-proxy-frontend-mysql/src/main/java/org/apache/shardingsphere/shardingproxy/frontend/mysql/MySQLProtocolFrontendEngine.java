@@ -28,11 +28,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacket
 
 /**
  * Frontend engine for MySQL protocol.
- *
- * @author zhangliang
- * @author panjuan
- * @author wangkai
- * @author zhangyonglun
  */
 @Getter
 public final class MySQLProtocolFrontendEngine implements DatabaseProtocolFrontendEngine {

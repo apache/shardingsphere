@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.merge.engine;
 
 /**
  * Result process engine.
- *
- * @author zhangliang
  */
 public interface ResultProcessEngine {
 }

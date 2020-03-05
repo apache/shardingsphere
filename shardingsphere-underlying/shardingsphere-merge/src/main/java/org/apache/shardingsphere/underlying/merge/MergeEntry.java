@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.merge;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
@@ -27,9 +26,9 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
-import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMergerEngine;
-import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecoratorEngine;
+import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMerger;
+import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMergerEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
@@ -37,11 +36,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Merge entry.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MergeEntry {
@@ -65,7 +63,7 @@ public final class MergeEntry {
     public MergedResult process(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
         Optional<MergedResult> mergedResult = merge(queryResults, sqlStatementContext);
         Optional<MergedResult> result = mergedResult.isPresent() ? Optional.of(decorate(mergedResult.get(), sqlStatementContext)) : decorate(queryResults.get(0), sqlStatementContext);
-        return result.isPresent() ? result.get() : new TransparentMergedResult(queryResults.get(0));
+        return result.orElseGet(() -> new TransparentMergedResult(queryResults.get(0)));
     }
     
     @SuppressWarnings("unchecked")
@@ -76,7 +74,7 @@ public final class MergeEntry {
                 return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, relationMetas));
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     @SuppressWarnings("unchecked")
@@ -100,6 +98,6 @@ public final class MergeEntry {
                 result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, relationMetas) : resultDecorator.decorate(result, sqlStatementContext, relationMetas);
             }
         }
-        return Optional.fromNullable(result);
+        return Optional.ofNullable(result);
     }
 }

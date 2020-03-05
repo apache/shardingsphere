@@ -30,8 +30,6 @@ import java.util.Properties;
 
 /**
  * Master slave load balance strategy bean parser for spring namespace.
- *®
- * @author zhaojun
  */
 public final class MasterSlaveLoadBalanceStrategyBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

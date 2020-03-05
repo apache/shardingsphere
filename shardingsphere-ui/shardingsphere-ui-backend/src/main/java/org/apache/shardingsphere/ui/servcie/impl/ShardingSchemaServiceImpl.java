@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * Implementation of sharding schema service.
- *
- * @author chenqingyang
  */
 @Service
 public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
@@ -79,7 +77,7 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
         try {
             if (configData.contains("encryptors:\n")) {
                 ConfigurationYamlConverter.loadEncryptRuleConfiguration(configData);
-            } else if (configData.contains("tables:\n")) {
+            } else if (configData.contains("tables:\n") || configData.contains("defaultTableStrategy:\n")) {
                 ConfigurationYamlConverter.loadShardingRuleConfiguration(configData);
             } else {
                 ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(configData);

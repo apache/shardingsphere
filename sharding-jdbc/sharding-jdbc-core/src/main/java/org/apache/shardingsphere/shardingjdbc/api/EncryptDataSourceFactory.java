@@ -29,8 +29,6 @@ import java.util.Properties;
 
 /**
  * Encrypt data source factory.
- * 
- * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptDataSourceFactory {

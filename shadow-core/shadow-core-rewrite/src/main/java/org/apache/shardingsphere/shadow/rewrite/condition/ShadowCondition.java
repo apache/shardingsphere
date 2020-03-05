@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * Shadow condition.
- *
- * @author zhyee
  */
 @Getter
 @EqualsAndHashCode

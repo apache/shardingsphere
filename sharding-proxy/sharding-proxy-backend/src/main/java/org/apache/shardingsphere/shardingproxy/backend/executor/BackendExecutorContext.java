@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
 /**
  * Backend executor context.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter

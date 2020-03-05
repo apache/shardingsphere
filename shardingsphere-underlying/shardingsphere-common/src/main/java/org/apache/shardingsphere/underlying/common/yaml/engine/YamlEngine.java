@@ -39,8 +39,6 @@ import java.util.Properties;
 
 /**
  * YAML engine.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlEngine {

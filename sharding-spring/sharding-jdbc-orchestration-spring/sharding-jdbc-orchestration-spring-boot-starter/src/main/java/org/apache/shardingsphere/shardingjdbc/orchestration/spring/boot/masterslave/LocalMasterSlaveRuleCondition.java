@@ -24,8 +24,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Local master-slave rule condition.
- *
- * @author yangyi
  */
 public final class LocalMasterSlaveRuleCondition extends SpringBootCondition {
     

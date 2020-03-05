@@ -28,8 +28,6 @@ import java.util.ServiceLoader;
 
 /**
  * JDBC driver URL recognizer engine.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCDriverURLRecognizerEngine {

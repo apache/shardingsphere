@@ -30,10 +30,6 @@ import java.util.Properties;
 
 /**
  * Master-slave data source.
- *
- * @author zhangliang
- * @author panjuan
- * @author zhaojun
  */
 @Getter
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {

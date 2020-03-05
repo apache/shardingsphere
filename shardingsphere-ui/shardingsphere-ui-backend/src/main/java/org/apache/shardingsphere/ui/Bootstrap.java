@@ -22,8 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * bootstrap of ShardingSphere UI.
- *
- * @author chenqingyang
  */
 @SpringBootApplication
 public class Bootstrap {

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 
 /**
  * Commit statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommitStatementAssert {

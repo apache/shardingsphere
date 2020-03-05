@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Rewrite assertion entity for JAXB.
- *
- * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter

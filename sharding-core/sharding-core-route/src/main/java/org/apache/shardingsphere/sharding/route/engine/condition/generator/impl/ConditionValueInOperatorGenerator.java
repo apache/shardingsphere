@@ -17,24 +17,22 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
+import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Condition value generator for in operator.
- *
- * @author zhangliang
  */
 public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<PredicateInRightValue> {
     
@@ -52,6 +50,6 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
                 routeValues.add(timeService.getTime());
             }
         }
-        return routeValues.isEmpty() ? Optional.<RouteValue>absent() : Optional.<RouteValue>of(new ListRouteValue<>(column.getName(), column.getTableName(), routeValues));
+        return routeValues.isEmpty() ? Optional.empty() : Optional.of(new ListRouteValue<>(column.getName(), column.getTableName(), routeValues));
     }
 }

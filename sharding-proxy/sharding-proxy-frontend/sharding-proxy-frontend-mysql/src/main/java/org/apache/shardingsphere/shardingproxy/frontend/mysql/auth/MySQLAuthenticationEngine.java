@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -38,8 +38,6 @@ import java.net.SocketAddress;
 
 /**
  * Authentication engine for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     

@@ -32,8 +32,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Set clause assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SetClauseAssert {
@@ -46,7 +44,7 @@ public final class SetClauseAssert {
      * @param expected expected set clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetAssignmentSegment actual, final ExpectedSetClause expected) {
-        assertNotNull(assertContext.getText("Assignments should existed."), expected);
+        assertNotNull(assertContext.getText("Assignments should exist."), expected);
         assertThat(assertContext.getText("Assignments size assertion error: "), actual.getAssignments().size(), is(expected.getAssignments().size()));
         int count = 0;
         for (AssignmentSegment each : actual.getAssignments()) {

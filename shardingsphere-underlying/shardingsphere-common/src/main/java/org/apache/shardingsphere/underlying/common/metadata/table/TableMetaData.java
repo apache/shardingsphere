@@ -30,8 +30,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Table meta data.
- *
- * @author panjuan
  */
 @Getter
 @EqualsAndHashCode

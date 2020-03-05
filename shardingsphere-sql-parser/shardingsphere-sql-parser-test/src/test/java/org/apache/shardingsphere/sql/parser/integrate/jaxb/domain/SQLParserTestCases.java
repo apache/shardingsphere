@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowTableStatusStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.UseStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowColumnsStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.SetVariableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.AlterLoginStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.AlterRoleStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl.AlterUserStatementTestCase;
@@ -74,8 +76,6 @@ import java.util.Map;
 
 /**
  * SQL parser test cases.
- * 
- * @author zhangliang 
  */
 @XmlRootElement(name = "sql-parser-test-cases")
 @Getter
@@ -193,19 +193,22 @@ public final class SQLParserTestCases {
     private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-columns")
-    private final List<ShowTablesStatementTestCase> showColumnsTestCases = new LinkedList<>();
+    private final List<ShowColumnsStatementTestCase> showColumnsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-create-table")
     private final List<ShowCreateTableStatementTestCase> showCreateTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-table-status")
     private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-index")
     private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "show")
     private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "set-variable")
+    private final List<SetVariableStatementTestCase> setVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
@@ -259,6 +262,7 @@ public final class SQLParserTestCases {
         putAll(showTableStatusTestCases, result);
         putAll(showIndexTestCases, result);
         putAll(showTestCases, result);
+        putAll(setVariableTestCases, result);
         putAll(commonTestCases, result);
         return result;
     }

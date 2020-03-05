@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
  * Encrypt column configuration YAML swapper.
- *
- * @author panjuan
  */
 public final class EncryptColumnRuleConfigurationYamlSwapper implements YamlSwapper<YamlEncryptColumnRuleConfiguration, EncryptColumnRuleConfiguration> {
     

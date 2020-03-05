@@ -30,8 +30,6 @@ import java.util.Map.Entry;
 
 /**
  * Data source utility class.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceUtil {

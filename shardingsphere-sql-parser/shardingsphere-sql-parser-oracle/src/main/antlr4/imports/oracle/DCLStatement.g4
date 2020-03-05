@@ -20,15 +20,15 @@ grammar DCLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 grant
-    : GRANT (objectPrivilegeClause_ | systemPrivilegeClause_ | roleClause_) 
+    : GRANT (objectPrivilegeClause | systemPrivilegeClause_ | roleClause_) 
     ;
 
 revoke
-    : REVOKE (objectPrivilegeClause_ | systemPrivilegeClause_ | roleClause_)
+    : REVOKE (objectPrivilegeClause | systemPrivilegeClause_ | roleClause_)
     ;
 
-objectPrivilegeClause_
-    : objectPrivileges_ ON onObjectClause_
+objectPrivilegeClause
+    : objectPrivileges_ ON onObjectClause
     ;
 
 systemPrivilegeClause_
@@ -67,7 +67,7 @@ objectPrivilegeType_
     | MERGE VIEW
     ;
 
-onObjectClause_
+onObjectClause
     : USER | DIRECTORY | EDITION | MINING MODEL | SQL TRANSLATION PROFILE
     | JAVA (SOURCE | RESOURCE) tableName
     | tableName

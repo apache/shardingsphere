@@ -21,9 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
  * Pagination value segment.
- * 
- * @author zhangliang
- * @author panjuan
  */
 public interface PaginationValueSegment extends SQLSegment {
     

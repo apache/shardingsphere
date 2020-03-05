@@ -27,11 +27,6 @@ import java.util.Map;
 
 /**
  * Config center configuration.
- *
- * @author zhangliang
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 @Getter
 @Setter

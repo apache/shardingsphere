@@ -27,8 +27,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected column order by item.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

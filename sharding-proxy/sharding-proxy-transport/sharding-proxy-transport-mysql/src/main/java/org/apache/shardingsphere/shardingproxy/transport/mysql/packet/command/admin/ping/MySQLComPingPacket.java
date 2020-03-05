@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.My
  * COM_PING command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-ping.html">COM_PING</a>
- *
- * @author zhangyonglun
  */
 public final class MySQLComPingPacket extends MySQLCommandPacket {
     

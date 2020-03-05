@@ -26,8 +26,6 @@ import java.sql.Statement;
 
 /**
  * JDBC executor wrapper.
- *
- * @author zhangliang
  */
 public interface JDBCExecutorWrapper {
     

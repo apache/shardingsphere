@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
-import com.google.common.base.Optional;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.underlying.common.database.metadata.dialect.SQLServerDataSourceMetaData;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
  * XA data source definition for SQLServer.
- *
- * @author zhaojun
  */
 public final class SQLServerXADataSourceDefinition implements XADataSourceDefinition {
     
@@ -48,7 +46,7 @@ public final class SQLServerXADataSourceDefinition implements XADataSourceDefini
         Properties result = new Properties();
         SQLServerDataSourceMetaData dataSourceMetaData = new SQLServerDataSourceMetaData(databaseAccessConfiguration.getUrl());
         result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
+        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
         result.setProperty("serverName", dataSourceMetaData.getHostName());
         result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
         result.setProperty("databaseName", dataSourceMetaData.getCatalog());

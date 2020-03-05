@@ -26,20 +26,12 @@ import java.sql.SQLException;
 
 /**
  * Executor runtime exception handler.
- * 
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ExecutorExceptionHandler {
     
-    private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = new ThreadLocal<Boolean>() {
-        
-        @Override
-        protected Boolean initialValue() { 
-            return true;
-        }
-    };
+    private static final ThreadLocal<Boolean> IS_EXCEPTION_THROWN = ThreadLocal.withInitial(() -> true);
     
     /**
      * Set throw exception if error occur or not.

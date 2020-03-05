@@ -26,9 +26,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Root configuration properties.
- *
- * @author zhangliang
- * @author sunbufu
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter

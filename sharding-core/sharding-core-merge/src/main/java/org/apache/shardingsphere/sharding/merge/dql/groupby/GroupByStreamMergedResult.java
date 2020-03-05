@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
@@ -25,7 +24,7 @@ import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.Aggregat
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
@@ -38,24 +37,22 @@ import java.util.Map.Entry;
 
 /**
  * Stream merged result for group by.
- *
- * @author zhangliang
  */
 public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
-    private final SelectSQLStatementContext selectSQLStatementContext;
+    private final SelectStatementContext selectStatementContext;
     
     private final List<Object> currentRow;
     
     private List<?> currentGroupByValues;
     
     public GroupByStreamMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectSQLStatementContext selectSQLStatementContext) throws SQLException {
-        super(queryResults, selectSQLStatementContext.getOrderByContext().getItems());
-        this.selectSQLStatementContext = selectSQLStatementContext;
+            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext) throws SQLException {
+        super(queryResults, selectStatementContext.getOrderByContext().getItems());
+        this.selectStatementContext = selectStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
-                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues();
+                ? Collections.emptyList() : new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues();
     }
     
     @Override
@@ -68,7 +65,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
             super.next();
         }
         if (aggregateCurrentGroupByRowAndNext()) {
-            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues();
+            currentGroupByValues = new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues();
         }
         return true;
     }
@@ -76,14 +73,8 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     private boolean aggregateCurrentGroupByRowAndNext() throws SQLException {
         boolean result = false;
         Map<AggregationProjection, AggregationUnit> aggregationUnitMap = Maps.toMap(
-                selectSQLStatementContext.getProjectionsContext().getAggregationProjections(), new Function<AggregationProjection, AggregationUnit>() {
-                    
-                    @Override
-                    public AggregationUnit apply(final AggregationProjection input) {
-                        return AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection);
-                    }
-                });
-        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectSQLStatementContext.getGroupByContext().getItems()).getGroupValues())) {
+                selectStatementContext.getProjectionsContext().getAggregationProjections(), input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection));
+        while (currentGroupByValues.equals(new GroupByValue(getCurrentQueryResult(), selectStatementContext.getGroupByContext().getItems()).getGroupValues())) {
             aggregate(aggregationUnitMap);
             cacheCurrentRow();
             result = super.next();

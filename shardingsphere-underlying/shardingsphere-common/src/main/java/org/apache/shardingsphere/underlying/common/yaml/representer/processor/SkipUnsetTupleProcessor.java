@@ -26,8 +26,6 @@ import org.yaml.snakeyaml.nodes.Tag;
 
 /**
  * Skip unset tuple processor. 
- *
- * @author yangyi
  */
 public final class SkipUnsetTupleProcessor implements TupleProcessor {
     

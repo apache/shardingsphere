@@ -21,8 +21,6 @@ import lombok.Getter;
 
 /**
  * SQL parser test cases registry factory.
- *
- * @author zhangliang
  */
 public final class SQLParserTestCasesRegistryFactory {
     

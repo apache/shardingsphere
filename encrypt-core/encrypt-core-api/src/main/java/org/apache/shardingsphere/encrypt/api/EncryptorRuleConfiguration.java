@@ -24,8 +24,6 @@ import java.util.Properties;
 
 /**
  * Encryptor configuration.
- *
- * @author panjuan
  */
 @Getter
 public final class EncryptorRuleConfiguration extends TypeBasedSPIConfiguration {

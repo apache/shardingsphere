@@ -19,17 +19,29 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
+import java.util.Optional;
+
 /**
  * Show columns statement.
- *
- * @author zhangyonglun
  */
 @Getter
 @Setter
 public final class ShowIndexStatement extends DALStatement {
-
+    
     private TableSegment table;
+    
+    private SchemaSegment schema;
+    
+    /**
+     * Get schema.
+     * 
+     * @return schema
+     */
+    public Optional<SchemaSegment> getSchema() {
+        return Optional.ofNullable(schema);
+    }
 }

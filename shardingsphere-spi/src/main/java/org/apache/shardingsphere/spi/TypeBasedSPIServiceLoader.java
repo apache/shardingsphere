@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spi;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 
@@ -26,9 +25,6 @@ import java.util.Properties;
 
 /**
  * Type based SPI service loader.
- * 
- * @author panjuan
- * @author zhangliang
  * 
  * @param <T> type of algorithm class
  */
@@ -66,13 +62,7 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     }
     
     private Collection<T> loadTypeBasedServices(final String type) {
-        return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(classType), new Predicate<T>() {
-            
-            @Override
-            public boolean apply(final T input) {
-                return type.equalsIgnoreCase(input.getType());
-            }
-        });
+        return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(classType), input -> type.equalsIgnoreCase(input.getType()));
     }
     
     private T loadFirstTypeBasedService() {

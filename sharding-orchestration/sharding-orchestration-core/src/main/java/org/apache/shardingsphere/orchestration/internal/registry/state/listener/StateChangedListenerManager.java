@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 
 /**
  * State changed listener manager.
- *
- * @author zhangliang
- * @author wangguangyuan
  */
 public final class StateChangedListenerManager {
     
@@ -32,7 +29,7 @@ public final class StateChangedListenerManager {
     
     private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
-    public StateChangedListenerManager(final String name, final RegistryCenter regCenter) {
+    public StateChangedListenerManager(final String name, final RegistryCenterRepository regCenter) {
         instanceStateChangedListener = new InstanceStateChangedListener(name, regCenter);
         dataSourceStateChangedListener = new DataSourceStateChangedListener(name, regCenter);
     }

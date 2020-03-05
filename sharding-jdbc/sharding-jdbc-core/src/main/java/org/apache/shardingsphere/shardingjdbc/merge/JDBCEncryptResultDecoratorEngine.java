@@ -27,8 +27,6 @@ import java.sql.ResultSetMetaData;
 
 /**
  * JDBC result decorator engine for encrypt.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class JDBCEncryptResultDecoratorEngine extends EncryptResultDecoratorEngine {

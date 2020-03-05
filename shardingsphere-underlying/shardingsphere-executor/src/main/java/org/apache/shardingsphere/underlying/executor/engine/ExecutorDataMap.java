@@ -25,20 +25,11 @@ import java.util.Map;
 
 /**
  * Executor data map for thread local even cross multiple threads.
- *
- * @author caohao
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecutorDataMap {
     
-    private static ThreadLocal<Map<String, Object>> dataMap = new ThreadLocal<Map<String, Object>>() {
-        
-        @Override
-        protected Map<String, Object> initialValue() {
-            return new LinkedHashMap<>();
-        }
-    };
+    private static ThreadLocal<Map<String, Object>> dataMap = ThreadLocal.withInitial(LinkedHashMap::new);
     
     /**
      * Get value.

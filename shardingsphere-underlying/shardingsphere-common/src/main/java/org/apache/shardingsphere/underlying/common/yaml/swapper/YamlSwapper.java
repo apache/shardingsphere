@@ -22,8 +22,6 @@ import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration
 /**
  * YAML configuration swapper.
  *
- * @author zhangliang
- * 
  * @param <Y> type of YAML configuration
  * @param <T> type of swapped object
  */

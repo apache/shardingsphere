@@ -25,9 +25,6 @@ import java.util.List;
 
 /**
  * Sharding conditions.
- *
- * @author zhangliang
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 @Getter

@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Binding table rule.
  * 
  * <p>Binding table is same sharding rule with different tables, use one of them can deduce other name of actual tables and data sources.</p>
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
@@ -82,12 +79,6 @@ public final class BindingTableRule {
     }
     
     Collection<String> getAllLogicTables() {
-        return Lists.transform(tableRules, new Function<TableRule, String>() {
-            
-            @Override
-            public String apply(final TableRule input) {
-                return input.getLogicTable().toLowerCase();
-            }
-        });
+        return tableRules.stream().map(input -> input.getLogicTable().toLowerCase()).collect(Collectors.toList());
     }
 }

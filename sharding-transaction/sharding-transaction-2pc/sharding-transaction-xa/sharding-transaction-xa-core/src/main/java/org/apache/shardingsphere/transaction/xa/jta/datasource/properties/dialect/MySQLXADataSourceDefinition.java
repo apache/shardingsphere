@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
  * XA data source definition for MySQL.
- *
- * @author zhaojun
  */
 public final class MySQLXADataSourceDefinition implements XADataSourceDefinition {
     
@@ -46,7 +44,7 @@ public final class MySQLXADataSourceDefinition implements XADataSourceDefinition
     public Properties getXAProperties(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
         result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
+        result.setProperty("password", Optional.ofNullable(databaseAccessConfiguration.getPassword()).orElse(""));
         result.setProperty("URL", databaseAccessConfiguration.getUrl());
         result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
         result.setProperty("autoReconnect", Boolean.TRUE.toString());

@@ -27,8 +27,6 @@ import java.util.Map;
 
 /**
  * Binary protocol value factory for MySQL.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLBinaryProtocolValueFactory {

@@ -17,12 +17,26 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql;
 
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.RemoveAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+
+import java.util.Optional;
 
 /**
  * Show tables statement.
- *
- * @author zhangliang
  */
+@Setter
 public final class ShowTablesStatement extends DALStatement {
+    
+    private RemoveAvailable fromSchema;
+    
+    /**
+     * Get from schema.
+     * 
+     * @return from schema
+     */
+    public Optional<RemoveAvailable> getFromSchema() {
+        return Optional.ofNullable(fromSchema);
+    }
 }

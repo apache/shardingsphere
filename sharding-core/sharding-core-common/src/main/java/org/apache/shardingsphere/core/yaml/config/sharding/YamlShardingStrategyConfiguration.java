@@ -28,9 +28,6 @@ import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandard
 
 /**
  * Sharding strategy configuration for YAML.
- *
- * @author caohao
- * @author panjuan
  */
 @Getter
 @Setter

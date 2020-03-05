@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.ddl;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedColumnDefinition;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedConstraintDefinition;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.index.ExpectedIndex;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
@@ -29,17 +31,19 @@ import java.util.List;
 
 /**
  * Create table statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
+@Setter
 public final class CreateTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
+    private ExpectedTable table;
     
     @XmlElement(name = "column-definition")
     private final List<ExpectedColumnDefinition> columnDefinitions = new LinkedList<>();
+    
+    @XmlElement(name = "constraint-definition")
+    private final List<ExpectedConstraintDefinition> constraintDefinitions = new LinkedList<>();
     
     @XmlElement(name = "index")
     private final List<ExpectedIndex> indexes = new LinkedList<>();

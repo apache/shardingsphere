@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * Merged result for multiple local data.
- *
- * @author zhangliang
  */
 public final class MultipleLocalDataMergedResult implements MergedResult {
     

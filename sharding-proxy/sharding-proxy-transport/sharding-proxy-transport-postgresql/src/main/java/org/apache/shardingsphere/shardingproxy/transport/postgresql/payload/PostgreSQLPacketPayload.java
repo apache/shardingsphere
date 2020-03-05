@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
  * Payload operation for PostgreSQL packet data types.
  *
  * @see <a href="https://www.postgresql.org/docs/current/protocol-message-types.html">Message Data Types</a>
- * 
- * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter

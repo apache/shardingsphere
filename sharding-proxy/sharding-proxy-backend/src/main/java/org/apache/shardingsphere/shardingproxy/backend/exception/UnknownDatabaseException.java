@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Unknown database exception.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

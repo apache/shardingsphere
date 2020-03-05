@@ -22,11 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Data changed event.
- *
- * @author junxiong
- * @author sunbufu
- * @author dongzonglei
- * @author wangguangyuan
  */
 @RequiredArgsConstructor
 @Getter

@@ -24,8 +24,6 @@ import java.util.Collection;
 
 /**
  * Parsing hook for SPI.
- *
- * @author zhangliang
  */
 public final class SPIParsingHook implements ParsingHook {
     

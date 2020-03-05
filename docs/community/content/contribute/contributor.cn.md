@@ -61,6 +61,16 @@ git push origin issueNo
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了ShardingSphere的官方贡献者！
 
+### 删除分支
+
+ - 在导师将pull request合并到ShardingSphere的master分支中之后，您就可以将远程的分支（origin/issueNo）及与远程分支（origin/issueNo）关联的本地分支（issueNo）删除。
+ 
+```shell
+git checkout master
+git branch -d issueNo
+git push origin --delete issueNo
+```
+
 ### 注意
 
  为了让您的id显示在contributor列表中，别忘了以下设置：

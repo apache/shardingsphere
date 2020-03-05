@@ -44,8 +44,6 @@ import java.util.LinkedList;
 
 /**
  * SQL token generator builder for sharding.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuilder {

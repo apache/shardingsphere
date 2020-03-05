@@ -19,8 +19,6 @@ package org.apache.shardingsphere.spi.database.type;
 
 /**
  * Database type aware SPI.
- * 
- * @author zhangliang
  */
 public interface DatabaseTypeAwareSPI {
     

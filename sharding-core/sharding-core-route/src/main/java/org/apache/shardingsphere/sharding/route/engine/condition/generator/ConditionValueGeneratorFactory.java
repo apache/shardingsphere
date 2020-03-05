@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.ConditionValueBetweenOperatorGenerator;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.impl.ConditionValueCompareOperatorGenerator;
@@ -28,14 +28,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Condition value generator factory.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConditionValueGeneratorFactory {
@@ -58,6 +56,6 @@ public final class ConditionValueGeneratorFactory {
         if (predicateRightValue instanceof PredicateBetweenRightValue) {
             return new ConditionValueBetweenOperatorGenerator().generate((PredicateBetweenRightValue) predicateRightValue, column, parameters);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

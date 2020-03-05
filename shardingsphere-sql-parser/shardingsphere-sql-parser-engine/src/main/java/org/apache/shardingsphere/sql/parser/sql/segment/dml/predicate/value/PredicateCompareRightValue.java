@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 
 /**
  * Predicate right value for compare operator.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

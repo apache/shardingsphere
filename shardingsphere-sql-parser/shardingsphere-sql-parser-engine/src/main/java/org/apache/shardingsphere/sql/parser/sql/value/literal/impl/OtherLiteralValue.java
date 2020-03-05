@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
 
 /**
  * Other literal value.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

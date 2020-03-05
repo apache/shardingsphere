@@ -31,8 +31,6 @@ import java.util.Date;
 
 /**
  * ResultSet utility class.
- * 
- * @author gaohongtao
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResultSetUtil {

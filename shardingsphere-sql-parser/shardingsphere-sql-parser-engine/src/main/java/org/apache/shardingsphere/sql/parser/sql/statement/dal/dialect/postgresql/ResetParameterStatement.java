@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
  * Reset parameter statement.
- *
- * @author loxp
  */
 public final class ResetParameterStatement extends DALStatement {
 }

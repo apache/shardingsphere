@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -29,11 +28,10 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLSer
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Authentication handler for MySQL.
- *
- * @author panjuan
  */
 @Getter
 public final class MySQLAuthenticationHandler {
@@ -56,7 +54,7 @@ public final class MySQLAuthenticationHandler {
         if (!isAuthorizedSchema(user.get().getAuthorizedSchemas(), response41.getDatabase())) {
             return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     private boolean isPasswordRight(final String password, final byte[] authResponse) {
@@ -73,7 +71,7 @@ public final class MySQLAuthenticationHandler {
                 return Optional.of(entry.getValue());
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private byte[] getAuthCipherBytes(final String password) {

@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLParser;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Sharding CTL show parser.
- *
- * @author zhaojun
  */
 public final class ShardingCTLShowParser implements ShardingCTLParser<ShardingCTLShowStatement> {
     
@@ -46,6 +44,6 @@ public final class ShardingCTLShowParser implements ShardingCTLParser<ShardingCT
             Preconditions.checkNotNull(value, "sctl show value cannot be null.");
             return Optional.of(new ShardingCTLShowStatement(value));
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

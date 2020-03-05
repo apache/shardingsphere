@@ -26,8 +26,6 @@ import java.util.ServiceLoader;
 
 /**
  * Data source property provider loader.
- *
- * @author zhangliang
  */
 public final class DataSourcePropertyProviderLoader {
     

@@ -26,9 +26,6 @@ import java.util.List;
 
 /**
  * Insert values segment.
- *
- * @author duhongjun
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

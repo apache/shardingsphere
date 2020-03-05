@@ -28,8 +28,6 @@ import java.util.Properties;
 
 /**
  * Master-slave datasource for spring namespace.
- *
- * @author zhangliang
  */
 public final class SpringMasterSlaveDataSource extends MasterSlaveDataSource {
     

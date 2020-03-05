@@ -27,8 +27,6 @@ import java.util.Calendar;
 
 /**
  * Decorator merged result.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

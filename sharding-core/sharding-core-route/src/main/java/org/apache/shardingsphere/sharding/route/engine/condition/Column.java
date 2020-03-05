@@ -24,9 +24,6 @@ import lombok.ToString;
 
 /**
  * Column.
- *
- * @author zhangliang
- * @author caohao
  */
 @RequiredArgsConstructor
 @Getter

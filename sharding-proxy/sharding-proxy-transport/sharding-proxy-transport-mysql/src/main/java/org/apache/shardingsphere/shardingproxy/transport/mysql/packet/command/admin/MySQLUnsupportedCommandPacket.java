@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.My
 
 /**
  * Unsupported command packet for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLUnsupportedCommandPacket extends MySQLCommandPacket {
     

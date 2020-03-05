@@ -1979,3 +1979,119 @@ ST_X
 ST_Y
     : S T UL_ Y
     ;
+
+BIT
+    : B I T
+    ;
+
+BOOL
+    : B O O L
+    ;
+
+DEC
+    : D E C
+    ;
+
+VARCHAR
+    : V A R C H A R
+    ;
+
+VARBINARY
+    : V A R B I N A R Y
+    ;
+
+TINYBLOB
+    : T I N Y B L O B
+    ;
+
+TINYTEXT
+    : T I N Y T E X T
+    ;
+
+BLOB
+    : B L O B
+    ;
+
+TEXT
+    : T E X T
+    ;
+
+MEDIUMBLOB
+    : M E D I U M B L O B
+    ;
+
+MEDIUMTEXT
+    : M E D I U M T E X T
+    ;
+
+LONGBLOB
+    : L O N G B L O B
+    ;
+
+LONGTEXT
+    : L O N G T E X T
+    ;
+
+ENUM
+    : E N U M
+    ;
+
+GEOMETRY
+    : G E O M E T R Y
+    ;
+
+JSON
+    : J S O N
+    ;
+
+IO_THREAD
+    : I O UL_ T H R E A D
+    ;
+
+SQL_THREAD
+    : S Q L UL_ T H R E A D
+    ;
+
+SQL_BEFORE_GTIDS
+    : S Q L UL_ B E F O R E UL_ G T I D S
+    ;
+
+SQL_AFTER_GTIDS
+    : S Q L UL_ A F T E R UL_ G T I D S
+    ;
+
+MASTER_LOG_FILE
+    : M A S T E R UL_ L O G UL_ F I L E
+    ;
+
+MASTER_LOG_POS
+    : M A S T E R UL_ L O G UL_ P O S
+    ;
+
+RELAY_LOG_FILE
+    : R E L A Y UL_ L O G UL_ F I L E
+    ;
+
+RELAY_LOG_POS
+    : R E L A Y UL_ L O G UL_ P O S
+    ;
+
+SQL_AFTER_MTS_GAPS
+    : S Q L UL_ A F T E R UL_ M T S UL_ G A P S
+    ;
+
+UNTIL
+    : U N T I L
+    ;
+
+DEFAULT_AUTH
+    : D E F A U L T UL_ A U T H
+    ;
+
+PLUGIN_DIR
+    : P L U G I N UL_ D I R
+    ;
+
+STOP
+    : S T O P
+    ;

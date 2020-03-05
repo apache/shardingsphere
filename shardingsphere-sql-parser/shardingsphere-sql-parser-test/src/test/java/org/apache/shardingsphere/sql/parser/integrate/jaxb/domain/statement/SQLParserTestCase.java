@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * SQL parser test case.
- * 
- * @author zhangliang 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter

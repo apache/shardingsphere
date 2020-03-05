@@ -17,20 +17,17 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.encrypt.strategy.spi.loader.EncryptorServiceLoader;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
+import org.apache.shardingsphere.encrypt.strategy.spi.loader.EncryptorServiceLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.Collection;
@@ -40,11 +37,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Encrypt rule.
- *
- * @author panjuan
  */
 public final class EncryptRule implements BaseRule {
     
@@ -111,7 +108,7 @@ public final class EncryptRule implements BaseRule {
      * @return encrypt table
      */
     public Optional<EncryptTable> findEncryptTable(final String logicTable) {
-        return Optional.fromNullable(tables.get(logicTable));
+        return Optional.ofNullable(tables.get(logicTable));
     }
     
     /**
@@ -134,7 +131,7 @@ public final class EncryptRule implements BaseRule {
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
         Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
-        return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.<String>absent();
+        return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
     }
 
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
@@ -143,7 +140,7 @@ public final class EncryptRule implements BaseRule {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**
@@ -176,7 +173,7 @@ public final class EncryptRule implements BaseRule {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findAssistedQueryColumn(logicColumn) : Optional.<String>absent();
+        return tables.containsKey(logicTable) ? tables.get(logicTable).findAssistedQueryColumn(logicColumn) : Optional.empty();
     }
     
     /**
@@ -186,7 +183,7 @@ public final class EncryptRule implements BaseRule {
      * @return assisted query columns
      */
     public Collection<String> getAssistedQueryColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getAssistedQueryColumns() : Collections.<String>emptyList();
+        return tables.containsKey(logicTable) ? tables.get(logicTable).getAssistedQueryColumns() : Collections.emptyList();
     }
     
     /**
@@ -203,7 +200,7 @@ public final class EncryptRule implements BaseRule {
     }
     
     private Collection<String> getPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumns() : Collections.<String>emptyList();
+        return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumns() : Collections.emptyList();
     }
     
     /**
@@ -213,7 +210,7 @@ public final class EncryptRule implements BaseRule {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndCipherColumns() : Collections.<String, String>emptyMap();
+        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndCipherColumns() : Collections.emptyMap();
     }
     
     /**
@@ -223,7 +220,7 @@ public final class EncryptRule implements BaseRule {
      * @return logic and plain columns
      */
     public Map<String, String> getLogicAndPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndPlainColumns() : Collections.<String, String>emptyMap();
+        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndPlainColumns() : Collections.emptyMap();
     }
     
     /**
@@ -235,16 +232,10 @@ public final class EncryptRule implements BaseRule {
      * @return assisted query values
      */
     public List<Object> getEncryptAssistedQueryValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        final Optional<Encryptor> encryptor = findEncryptor(logicTable, logicColumn);
+        Optional<Encryptor> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent() && encryptor.get() instanceof QueryAssistedEncryptor,
                 String.format("Can not find QueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
-        return Lists.transform(originalValues, new Function<Object, Object>() {
-            
-            @Override
-            public Object apply(final Object input) {
-                return null == input ? null : ((QueryAssistedEncryptor) encryptor.get()).queryAssistedEncrypt(input.toString());
-            }
-        });
+        return originalValues.stream().map(input -> null == input ? null : ((QueryAssistedEncryptor) encryptor.get()).queryAssistedEncrypt(input.toString())).collect(Collectors.toList());
     }
     
     /**
@@ -256,15 +247,9 @@ public final class EncryptRule implements BaseRule {
      * @return encrypt values
      */
     public List<Object> getEncryptValues(final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        final Optional<Encryptor> encryptor = findEncryptor(logicTable, logicColumn);
+        Optional<Encryptor> encryptor = findEncryptor(logicTable, logicColumn);
         Preconditions.checkArgument(encryptor.isPresent(), String.format("Can not find QueryAssistedEncryptor by %s.%s.", logicTable, logicColumn));
-        return Lists.transform(originalValues, new Function<Object, Object>() {
-            
-            @Override
-            public Object apply(final Object input) {
-                return null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()));
-            }
-        });
+        return originalValues.stream().map(input -> null == input ? null : String.valueOf(encryptor.get().encrypt(input.toString()))).collect(Collectors.toList());
     }
     
     /**
@@ -276,10 +261,10 @@ public final class EncryptRule implements BaseRule {
      */
     public Optional<Encryptor> findEncryptor(final String logicTable, final String logicColumn) {
         if (!tables.containsKey(logicTable)) {
-            return Optional.absent();
+            return Optional.empty();
         }
         Optional<String> encryptor = tables.get(logicTable).findEncryptor(logicColumn);
-        return encryptor.isPresent() ? Optional.of(encryptors.get(encryptor.get())) : Optional.<Encryptor>absent();
+        return encryptor.map(encryptors::get);
     }
     
     /**

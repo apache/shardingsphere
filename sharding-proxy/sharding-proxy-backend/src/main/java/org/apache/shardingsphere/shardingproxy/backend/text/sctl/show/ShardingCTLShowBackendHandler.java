@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.show;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
@@ -34,11 +33,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Sharding CTL show backend handler.
- *
- * @author zhaojun
  */
 public final class ShardingCTLShowBackendHandler implements TextProtocolBackendHandler {
     

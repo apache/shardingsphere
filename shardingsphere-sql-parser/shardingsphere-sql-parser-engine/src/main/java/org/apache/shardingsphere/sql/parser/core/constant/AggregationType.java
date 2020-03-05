@@ -19,9 +19,6 @@ package org.apache.shardingsphere.sql.parser.core.constant;
 
 /**
  * Aggregation function enum.
- *
- * @author zhangliang
- * @author panjuan
  */
 public enum AggregationType {
     

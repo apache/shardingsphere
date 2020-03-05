@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Set auto commit statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

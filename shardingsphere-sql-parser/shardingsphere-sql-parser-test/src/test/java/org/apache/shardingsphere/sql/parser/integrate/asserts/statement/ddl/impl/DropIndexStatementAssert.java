@@ -29,8 +29,6 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Drop index statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DropIndexStatementAssert {

@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.sharding.merge.dal.show;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryMergedResult;
-import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryMergedResult;
+import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
 
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Logic tables merged result.
- *
- * @author zhangliang
  */
 public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     

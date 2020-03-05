@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter;
 
-import com.google.common.base.Function;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,11 +36,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Test parameters for SQL rewrite engine builder.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLRewriteEngineTestParametersBuilder {
@@ -87,14 +84,10 @@ public final class SQLRewriteEngineTestParametersBuilder {
         if (null == inputParameters) {
             return Collections.emptyList();
         } else {
-            return Lists.transform(Splitter.on(",").trimResults().splitToList(inputParameters), new Function<String, Object>() {
-                
-                @Override
-                public Object apply(final String input) {
-                    Object result = Ints.tryParse(input);
-                    return result == null ? input : result;
-                }
-            });
+            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(input -> {
+                Object result = Ints.tryParse(input);
+                return result == null ? input : result;
+            }).collect(Collectors.toList());
         }
     }
     
@@ -109,7 +102,7 @@ public final class SQLRewriteEngineTestParametersBuilder {
     private static List<List<String>> createOutputGroupedParameters(final List<RewriteOutputEntity> outputs) {
         List<List<String>> result = new ArrayList<>(outputs.size());
         for (RewriteOutputEntity each : outputs) {
-            result.add(null == each.getParameters() ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(each.getParameters()));
+            result.add(null == each.getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(each.getParameters()));
         }
         return result;
     }

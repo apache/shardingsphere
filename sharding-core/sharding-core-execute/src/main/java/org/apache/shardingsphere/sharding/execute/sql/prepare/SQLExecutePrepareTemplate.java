@@ -36,11 +36,6 @@ import java.util.Map.Entry;
 
 /**
  * SQL execute prepare template.
- *
- * @author zhaojun
- * @author zhangliang
- * @author panjuan
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class SQLExecutePrepareTemplate {
@@ -73,7 +68,7 @@ public final class SQLExecutePrepareTemplate {
         Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
         for (ExecutionUnit each : executionUnits) {
             if (!result.containsKey(each.getDataSourceName())) {
-                result.put(each.getDataSourceName(), new LinkedList<SQLUnit>());
+                result.put(each.getDataSourceName(), new LinkedList<>());
             }
             result.get(each.getDataSourceName()).add(each.getSqlUnit());
         }

@@ -43,8 +43,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.tcl.TCLStatement;
 
 /**
  * TCL statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TCLStatementAssert {

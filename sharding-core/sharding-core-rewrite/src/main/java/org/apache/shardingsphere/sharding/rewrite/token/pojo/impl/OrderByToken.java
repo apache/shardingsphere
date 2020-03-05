@@ -27,9 +27,6 @@ import java.util.List;
 
 /**
  * Order by token.
- *
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 public final class OrderByToken extends SQLToken implements Attachable {

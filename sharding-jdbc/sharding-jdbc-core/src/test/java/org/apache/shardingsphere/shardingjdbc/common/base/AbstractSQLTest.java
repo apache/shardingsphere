@@ -61,13 +61,7 @@ public abstract class AbstractSQLTest {
     }
     
     private static void createDataSources(final String dbName, final DatabaseType databaseType) {
-        Map<String, DataSource> dataSourceMap = databaseTypeMap.get(databaseType);
-        if (null == dataSourceMap) {
-            dataSourceMap = new LinkedHashMap<>();
-            databaseTypeMap.put(databaseType, dataSourceMap);
-        }
-        BasicDataSource result = buildDataSource(dbName, databaseType);
-        dataSourceMap.put(dbName, result);
+        databaseTypeMap.computeIfAbsent(databaseType, k -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
         createSchema(dbName, databaseType);
     }
     

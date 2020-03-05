@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * Sharding data unit node.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

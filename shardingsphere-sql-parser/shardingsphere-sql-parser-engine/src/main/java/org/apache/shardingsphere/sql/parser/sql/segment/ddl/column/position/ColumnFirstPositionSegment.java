@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position;
 
 /**
  * Column first position segment.
- * 
- * @author zhangliang
  */
 public final class ColumnFirstPositionSegment extends ColumnPositionSegment {
     

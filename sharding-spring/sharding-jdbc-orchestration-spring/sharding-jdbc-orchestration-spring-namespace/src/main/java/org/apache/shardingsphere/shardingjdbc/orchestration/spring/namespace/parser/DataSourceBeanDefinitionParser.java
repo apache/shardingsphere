@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring.namespace.pa
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import java.util.List;
-import java.util.Map;
 import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringEncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringMasterSlaveDataSource;
@@ -36,11 +34,11 @@ import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Data source parser for spring namespace.
- * 
- * @author panjuan
- * @author sunbufu
  */
 public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinitionParser {
     

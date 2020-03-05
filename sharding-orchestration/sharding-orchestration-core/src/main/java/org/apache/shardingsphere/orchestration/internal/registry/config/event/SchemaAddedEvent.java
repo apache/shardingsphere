@@ -27,8 +27,6 @@ import java.util.Map;
 
 /**
  * Schema added event.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

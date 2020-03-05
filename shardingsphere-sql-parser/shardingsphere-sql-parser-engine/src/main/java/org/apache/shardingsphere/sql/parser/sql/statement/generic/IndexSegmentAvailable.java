@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 
 /**
  * Index segment available.
- *
- * @author zhangliang
  */
 public interface IndexSegmentAvailable {
     

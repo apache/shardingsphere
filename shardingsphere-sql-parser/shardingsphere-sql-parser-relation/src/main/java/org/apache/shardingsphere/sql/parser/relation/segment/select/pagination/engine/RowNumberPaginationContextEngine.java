@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.engine;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -34,11 +33,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Pagination context engine for row number.
- *
- * @author zhangliang
  */
 public final class RowNumberPaginationContextEngine {
     
@@ -86,11 +84,11 @@ public final class RowNumberPaginationContextEngine {
                 return result;
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private boolean isRowNumberColumn(final PredicateSegment predicate, final String rowNumberAlias) {
-        return ROW_NUMBER_IDENTIFIERS.contains(predicate.getColumn().getName()) || predicate.getColumn().getName().equalsIgnoreCase(rowNumberAlias);
+        return ROW_NUMBER_IDENTIFIERS.contains(predicate.getColumn().getIdentifier().getValue()) || predicate.getColumn().getIdentifier().getValue().equalsIgnoreCase(rowNumberAlias);
     }
     
     private boolean isCompareCondition(final PredicateSegment predicate) {

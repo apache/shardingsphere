@@ -23,8 +23,6 @@ import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
  * Authentication engine.
- *
- * @author zhangliang
  */
 public interface AuthenticationEngine {
     

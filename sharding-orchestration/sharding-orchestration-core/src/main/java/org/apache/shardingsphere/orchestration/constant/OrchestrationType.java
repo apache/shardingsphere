@@ -22,19 +22,13 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Orchestration type.
- *
- * @author zhangliang
- * @author dongzonglei
- * @author wangguangyuan
- * @author sunbufu
  */
 @Getter
 @RequiredArgsConstructor
 public enum OrchestrationType {
     
     REGISTRY_CENTER("registry_center"),
-    CONFIG_CENTER("config_center"),
-    DISTRIBUTED_LOCK_MANAGER("distributed_lock_manager");
+    CONFIG_CENTER("config_center");
     
     private final String value;
     

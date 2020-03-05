@@ -29,8 +29,6 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Create index statement assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CreateIndexStatementAssert {

@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.explain;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLParser;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Sharding CTL explain parser.
- *
- * @author Wen
  */
 public final class ShardingCTLExplainParser implements ShardingCTLParser<ShardingCTLExplainStatement> {
     
@@ -46,6 +44,6 @@ public final class ShardingCTLExplainParser implements ShardingCTLParser<Shardin
             Preconditions.checkNotNull(value, "sctl explain sql cannot be null.");
             return Optional.of(new ShardingCTLExplainStatement(value));
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

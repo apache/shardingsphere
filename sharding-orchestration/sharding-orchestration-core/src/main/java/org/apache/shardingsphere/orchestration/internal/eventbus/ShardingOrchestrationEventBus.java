@@ -23,8 +23,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Sharding orchestration event bus.
- * 
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingOrchestrationEventBus {

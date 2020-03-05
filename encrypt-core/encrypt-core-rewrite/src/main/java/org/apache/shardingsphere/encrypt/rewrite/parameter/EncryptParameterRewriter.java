@@ -20,18 +20,18 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 
 /**
  * Parameter rewriter for encrypt.
- *
- * @author zhangliang
+ * 
+ * @param <T> type of SQL statement context
  */
 @Getter
 @Setter
-public abstract class EncryptParameterRewriter implements ParameterRewriter, EncryptRuleAware {
+public abstract class EncryptParameterRewriter<T extends SQLStatementContext> implements ParameterRewriter<T>, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     

@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.api.hint.HintManager;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.LinkedList;
 import java.util.List;
 
+@Ignore("Can not support subquery at current")
 public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     
     @Test(expected = IllegalStateException.class)

@@ -26,8 +26,6 @@ import java.util.Properties;
 
 /**
  * MD5 encryptor.
- *
- * @author panjuan
  */
 @Getter
 @Setter

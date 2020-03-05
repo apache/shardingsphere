@@ -44,8 +44,6 @@ import java.util.jar.JarFile;
 
 /**
  * SQL test cases loader.
- * 
- * @author zhangliang 
  */
 public final class SQLCasesLoader {
     

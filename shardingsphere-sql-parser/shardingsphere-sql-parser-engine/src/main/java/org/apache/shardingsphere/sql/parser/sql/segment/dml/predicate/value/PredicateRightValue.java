@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value;
 
 /**
  * Predicate right value.
- * 
- * @author zhanglaing
  */
 public interface PredicateRightValue {
 }

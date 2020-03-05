@@ -35,8 +35,6 @@ import java.util.LinkedList;
 
 /**
  * Parameter rewriter builder for encrypt.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class EncryptParameterRewriterBuilder implements ParameterRewriterBuilder {

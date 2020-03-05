@@ -24,10 +24,10 @@ import java.util.List;
 
 /**
  * Parameter rewriter.
- *
- * @author zhangliang
+ * 
+ * @param <T> type of SQL statement context
  */
-public interface ParameterRewriter {
+public interface ParameterRewriter<T extends SQLStatementContext> {
     
     /**
      * Judge whether need rewrite.
@@ -44,5 +44,5 @@ public interface ParameterRewriter {
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      */
-    void rewrite(ParameterBuilder parameterBuilder, SQLStatementContext sqlStatementContext, List<Object> parameters);
+    void rewrite(ParameterBuilder parameterBuilder, T sqlStatementContext, List<Object> parameters);
 }

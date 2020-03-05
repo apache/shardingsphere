@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected limit clause.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

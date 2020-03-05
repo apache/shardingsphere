@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
@@ -25,32 +24,31 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertVal
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentAvailable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert statement.
- *
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @Getter
 @Setter
-public final class InsertStatement extends DMLStatement implements TableSegmentAvailable {
+public final class InsertStatement extends DMLStatement {
     
     private TableSegment table;
     
-    private InsertColumnsSegment columns;
+    private InsertColumnsSegment insertColumns;
     
     private SetAssignmentSegment setAssignment;
+    
+    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
@@ -60,7 +58,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return insert columns segment
      */
     public Optional<InsertColumnsSegment> getInsertColumns() {
-        return Optional.fromNullable(columns);
+        return Optional.ofNullable(insertColumns);
     }
     
     /**
@@ -69,7 +67,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return columns
      */
     public Collection<ColumnSegment> getColumns() {
-        return null == columns ? Collections.<ColumnSegment>emptyList() : columns.getColumns();
+        return null == insertColumns ? Collections.emptyList() : insertColumns.getColumns();
     }
     
     /**
@@ -78,7 +76,16 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
      * @return set assignment segment
      */
     public Optional<SetAssignmentSegment> getSetAssignment() {
-        return Optional.fromNullable(setAssignment);
+        return Optional.ofNullable(setAssignment);
+    }
+    
+    /**
+     * Get on duplicate key columns segment.
+     *
+     * @return on duplicate key columns segment
+     */
+    public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
+        return Optional.ofNullable(onDuplicateKeyColumns);
     }
     
     /**
@@ -102,7 +109,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     private List<String> getColumnNamesForInsertColumns() {
         List<String> result = new LinkedList<>();
         for (ColumnSegment each : getColumns()) {
-            result.add(each.getName().toLowerCase());
+            result.add(each.getIdentifier().getValue().toLowerCase());
         }
         return result;
     }
@@ -110,7 +117,7 @@ public final class InsertStatement extends DMLStatement implements TableSegmentA
     private List<String> getColumnNamesForSetAssignment() {
         List<String> result = new LinkedList<>();
         for (AssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getColumn().getName().toLowerCase());
+            result.add(each.getColumn().getIdentifier().getValue().toLowerCase());
         }
         return result;
     }

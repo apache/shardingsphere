@@ -28,8 +28,6 @@ import java.util.Map;
 
 /**
  * Shadow rule configuration.
- *
- * @author xiayan
  */
 @Getter
 @Setter

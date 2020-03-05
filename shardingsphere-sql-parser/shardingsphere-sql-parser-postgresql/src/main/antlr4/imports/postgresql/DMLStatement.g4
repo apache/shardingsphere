@@ -125,7 +125,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery columnNames? | LP_ tableReferences RP_
+    : tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
     ;
 
 joinedTable
@@ -150,11 +150,11 @@ havingClause
     ;
 
 limitClause
-    : limitRowCountSyntax_ limitOffsetSyntax_?
-    | limitOffsetSyntax_ limitRowCountSyntax_?
+    : limitRowCountSyntax limitOffsetSyntax?
+    | limitOffsetSyntax limitRowCountSyntax?
     ;
 
-limitRowCountSyntax_
+limitRowCountSyntax
     : LIMIT (ALL | limitRowCount)
     ;
 
@@ -162,7 +162,7 @@ limitRowCount
     : numberLiterals | parameterMarker
     ;
 
-limitOffsetSyntax_
+limitOffsetSyntax
     : OFFSET limitOffset (ROW | ROWS)?
     ;
 

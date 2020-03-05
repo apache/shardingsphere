@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingproxy.transport.packet;
 
 /**
  * Command packet type.
- *
- * @author zhangliang
  */
 public interface CommandPacketType {
 }

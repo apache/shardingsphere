@@ -26,9 +26,6 @@ import java.util.Collection;
 
 /**
  * Group by segment.
- * 
- * @author duhongjun
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

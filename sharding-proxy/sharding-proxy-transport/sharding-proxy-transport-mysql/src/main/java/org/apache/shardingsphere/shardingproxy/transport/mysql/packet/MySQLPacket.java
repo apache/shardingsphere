@@ -22,8 +22,6 @@ import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 
 /**
  * Database packet for MySQL.
- *
- * @author zhangliang
  */
 public interface MySQLPacket extends DatabasePacket<MySQLPacketPayload> {
     

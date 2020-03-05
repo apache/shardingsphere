@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 
 /**
  * Order by item segment for text.
- * 
- * @author zhangliang
  */
 public abstract class TextOrderByItemSegment extends OrderByItemSegment {
     

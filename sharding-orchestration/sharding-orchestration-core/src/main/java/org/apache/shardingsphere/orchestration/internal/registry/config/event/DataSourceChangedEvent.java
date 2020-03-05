@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Data source changed event.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

@@ -34,9 +34,6 @@ import java.util.Collection;
 
 /**
  * Use database backend handler.
- *
- * @author chenqingyang
- * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class UseDatabaseBackendHandler implements TextProtocolBackendHandler {

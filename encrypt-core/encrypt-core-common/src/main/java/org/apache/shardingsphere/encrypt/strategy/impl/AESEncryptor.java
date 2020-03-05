@@ -37,8 +37,6 @@ import java.util.Properties;
 
 /**
  * AES encryptor.
- *
- * @author panjuan
  */
 @Getter
 @Setter

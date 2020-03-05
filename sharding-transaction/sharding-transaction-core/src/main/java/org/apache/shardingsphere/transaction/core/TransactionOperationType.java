@@ -19,9 +19,6 @@ package org.apache.shardingsphere.transaction.core;
 
 /**
  * Transaction operation type.
- *
- * @author zhaojun
- * @author maxiaoguang
  */
 public enum TransactionOperationType {
     

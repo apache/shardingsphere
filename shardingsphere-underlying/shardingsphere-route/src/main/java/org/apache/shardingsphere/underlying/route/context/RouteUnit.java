@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.route.context;
 
-import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +25,11 @@ import lombok.ToString;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Route unit.
- * 
- * @author zhangliang
- * @author maxiaoguang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -65,7 +61,7 @@ public final class RouteUnit {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**

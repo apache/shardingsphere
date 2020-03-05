@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
-import com.google.common.base.Optional;
+import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
-import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Condition value generator.
  *
- * @author zhangliang
- * 
  * @param <T> type of predicate right value
  */
 public interface ConditionValueGenerator<T extends PredicateRightValue> {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.shard;
 
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
@@ -35,13 +35,11 @@ import java.util.List;
  *       for MyQL is COM_QUERY; 
  *       for PostgreSQL is Simple Query;
  * </pre>
- *
- * @author zhangliang
  */
 public final class SimpleQueryShardingEngine extends BaseShardingEngine {
     
-    public SimpleQueryShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParseEngine sqlParseEngine) {
-        super(shardingRule, properties, metaData, sqlParseEngine);
+    public SimpleQueryShardingEngine(final ShardingRule shardingRule, final ShardingSphereProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+        super(shardingRule, properties, metaData, sqlParserEngine);
     }
     
     @Override

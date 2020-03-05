@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.config.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.internal.registry.state.listener.StateChangedListenerManager;
 
@@ -26,10 +26,6 @@ import java.util.Collection;
 
 /**
  * Sharding orchestration listener manager.
- *
- * @author caohao
- * @author panjuan
- * @author wangguangyuan
  */
 public final class ShardingOrchestrationListenerManager {
     
@@ -37,10 +33,10 @@ public final class ShardingOrchestrationListenerManager {
     
     private final StateChangedListenerManager stateChangedListenerManager;
     
-    public ShardingOrchestrationListenerManager(final String regCenterName, final RegistryCenter regCenter,
-                                                final String configCenterName, final ConfigCenter configCenter,
+    public ShardingOrchestrationListenerManager(final String regCenterName, final RegistryCenterRepository regCenter,
+                                                final String configCenterName, final ConfigCenterRepository configCenterRepository,
                                                 final Collection<String> shardingSchemaNames) {
-        configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterName, configCenter, shardingSchemaNames);
+        configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterName, configCenterRepository, shardingSchemaNames);
         stateChangedListenerManager = new StateChangedListenerManager(regCenterName, regCenter);
     }
     

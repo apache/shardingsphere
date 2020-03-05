@@ -19,18 +19,15 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  * Grant statement.
- *
- * @author zhangliang
  */
 @Getter
-public final class GrantStatement extends DCLStatement implements TableSegmentsAvailable {
+public final class GrantStatement extends DCLStatement {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
 }

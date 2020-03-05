@@ -21,7 +21,7 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
@@ -50,7 +50,7 @@ public final class ShardingOrchestrationFacadeTest {
     private ShardingOrchestrationFacade shardingOrchestrationFacade;
     
     @Mock
-    private RegistryCenter regCenter;
+    private RegistryCenterRepository registryCenterRepository;
     
     @Mock
     private ConfigurationService configService;
@@ -75,7 +75,7 @@ public final class ShardingOrchestrationFacadeTest {
         OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
         orchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
-        FieldUtil.setField(shardingOrchestrationFacade, "regCenter", regCenter);
+        FieldUtil.setField(shardingOrchestrationFacade, "registryCenterRepository", registryCenterRepository);
         FieldUtil.setField(shardingOrchestrationFacade, "configService", configService);
         FieldUtil.setField(shardingOrchestrationFacade, "stateService", stateService);
         FieldUtil.setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
@@ -107,13 +107,13 @@ public final class ShardingOrchestrationFacadeTest {
     @Test
     public void assertCloseSuccess() {
         shardingOrchestrationFacade.close();
-        verify(regCenter).close();
+        verify(registryCenterRepository).close();
     }
     
     @Test
     public void assertCloseFailure() {
-        doThrow(new RuntimeException()).when(regCenter).close();
+        doThrow(new RuntimeException()).when(registryCenterRepository).close();
         shardingOrchestrationFacade.close();
-        verify(regCenter).close();
+        verify(registryCenterRepository).close();
     }
 }

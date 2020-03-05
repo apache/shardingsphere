@@ -51,8 +51,6 @@ import java.util.Map;
 
 /**
  * Shadow statement.
- *
- * @author zhyee
  */
 @Slf4j
 public final class ShadowStatement extends AbstractStatementAdapter {
@@ -180,7 +178,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     }
     
     private Statement getStatementAndReplay(final String sql) throws SQLException {
-        SQLStatement sqlStatement = connection.getRuntimeContext().getParseEngine().parse(sql, false);
+        SQLStatement sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(getRelationMetas(connection.getRuntimeContext().getMetaData().getTables()), sql, Collections.emptyList(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext);
         isShadowSQL = shadowJudgementEngine.isShadowSQL();

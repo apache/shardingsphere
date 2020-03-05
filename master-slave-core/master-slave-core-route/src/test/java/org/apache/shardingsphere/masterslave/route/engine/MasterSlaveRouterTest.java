@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.sql.parser.SQLParseEngine;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
@@ -35,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -54,7 +53,7 @@ public final class MasterSlaveRouterTest {
     private static final String SLAVE_DATASOURCE = "query";
     
     @Mock
-    private SQLParseEngine sqlParseEngine;
+    private SQLParserEngine sqlParserEngine;
     
     @Mock
     private InsertStatement insertStatement;
@@ -69,10 +68,10 @@ public final class MasterSlaveRouterTest {
     
     @Before
     public void setUp() {
-        masterSlaveRouter = new MasterSlaveRouter(masterSlaveRule, sqlParseEngine, true);
-        when(sqlParseEngine.parse(QUERY_SQL, false)).thenReturn(selectStatement);
-        when(sqlParseEngine.parse(INSERT_SQL, false)).thenReturn(insertStatement);
-        when(selectStatement.getLock()).thenReturn(Optional.<LockSegment>absent());
+        masterSlaveRouter = new MasterSlaveRouter(masterSlaveRule, sqlParserEngine, true);
+        when(sqlParserEngine.parse(QUERY_SQL, false)).thenReturn(selectStatement);
+        when(sqlParserEngine.parse(INSERT_SQL, false)).thenReturn(insertStatement);
+        when(selectStatement.getLock()).thenReturn(Optional.empty());
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getLoadBalanceAlgorithm()).thenReturn(new RandomMasterSlaveLoadBalanceAlgorithm());
         when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.bind;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -48,12 +47,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Command bind executor for PostgreSQL.
- *
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     
@@ -74,7 +71,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         if (ShardingProxyContext.getInstance().isCircuitBreak()) {
-            return Collections.<DatabasePacket>singletonList(new PostgreSQLErrorResponsePacket());
+            return Collections.singletonList(new PostgreSQLErrorResponsePacket());
         }
         List<DatabasePacket> result = new LinkedList<>();
         result.add(new PostgreSQLBindCompletePacket());
@@ -90,10 +87,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
             result.add(createUpdatePacket((UpdateResponse) backendResponse));
         }
         if (backendResponse instanceof QueryResponse) {
-            Optional<PostgreSQLRowDescriptionPacket> postgreSQLRowDescriptionPacket = createQueryPacket((QueryResponse) backendResponse);
-            if (postgreSQLRowDescriptionPacket.isPresent()) {
-                result.add(postgreSQLRowDescriptionPacket.get());
-            }
+            createQueryPacket((QueryResponse) backendResponse).ifPresent(result::add);
         }
         return result;
     }
@@ -110,7 +104,7 @@ public final class PostgreSQLComBindExecutor implements QueryCommandExecutor {
         List<PostgreSQLColumnDescription> columnDescriptions = getPostgreSQLColumnDescriptions(queryResponse);
         isQuery = !columnDescriptions.isEmpty();
         if (columnDescriptions.isEmpty() || packet.isBinaryRowData()) {
-            return Optional.absent();
+            return Optional.empty();
         }
         return Optional.of(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
     }

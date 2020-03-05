@@ -28,8 +28,6 @@ import java.util.List;
 
 /**
  * Proxy result decorator engine for encrypt.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ProxyResultDecoratorEngine extends EncryptResultDecoratorEngine {

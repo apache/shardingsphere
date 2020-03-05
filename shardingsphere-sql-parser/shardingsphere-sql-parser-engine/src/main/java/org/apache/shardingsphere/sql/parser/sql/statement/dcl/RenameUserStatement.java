@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Rename user statement.
- *
- * @author zhangliang
  */
 public final class RenameUserStatement extends DCLStatement {
 }

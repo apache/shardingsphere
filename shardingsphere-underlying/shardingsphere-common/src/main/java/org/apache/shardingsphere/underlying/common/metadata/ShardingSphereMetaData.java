@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * ShardingSphere meta data.
- *
- * @author zhangliang
  */
 @Getter
 public final class ShardingSphereMetaData {

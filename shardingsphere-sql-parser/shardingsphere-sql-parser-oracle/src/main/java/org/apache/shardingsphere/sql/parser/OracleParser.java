@@ -19,12 +19,10 @@ package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
-import org.apache.shardingsphere.sql.parser.api.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 /**
  * SQL parser for Oracle.
- * 
- * @author duhongjun
  */
 public final class OracleParser extends OracleStatementParser implements SQLParser {
     

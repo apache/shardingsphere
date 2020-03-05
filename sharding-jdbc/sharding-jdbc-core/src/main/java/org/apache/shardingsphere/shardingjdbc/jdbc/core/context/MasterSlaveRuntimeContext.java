@@ -38,8 +38,6 @@ import java.util.Properties;
 
 /**
  * Runtime context for master-slave.
- * 
- * @author zhangliang
  */
 @Getter
 public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeContext<MasterSlaveRule> {

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.underlying.common.exception;
 
 /**
  * Basic exception for ShardingSphere.
- * 
- * @author zhangliang
  */
 public class ShardingSphereException extends RuntimeException {
     

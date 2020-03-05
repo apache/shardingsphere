@@ -31,6 +31,10 @@
         <module>sharding-jdbc-test</module>
     </modules>
     
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+    
     <build>
         <plugins>
             <plugin>

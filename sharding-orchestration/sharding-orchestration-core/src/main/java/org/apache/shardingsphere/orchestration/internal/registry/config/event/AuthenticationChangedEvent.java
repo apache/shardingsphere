@@ -24,8 +24,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 
 /**
  * Authentication changed event.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

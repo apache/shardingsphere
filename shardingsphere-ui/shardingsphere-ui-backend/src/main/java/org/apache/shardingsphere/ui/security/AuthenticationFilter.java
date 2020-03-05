@@ -36,8 +36,6 @@ import java.util.Map;
 
 /**
  * Authentication filter.
- *
- * @author chenqingyang
  */
 public final class AuthenticationFilter implements Filter {
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Drop user statement.
- *
- * @author zhangliang
  */
 public final class DropUserStatement extends DCLStatement {
 }

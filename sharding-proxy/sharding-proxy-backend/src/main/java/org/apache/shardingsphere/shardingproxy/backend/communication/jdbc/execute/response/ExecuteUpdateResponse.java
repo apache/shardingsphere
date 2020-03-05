@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Execute update response.
- * 
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

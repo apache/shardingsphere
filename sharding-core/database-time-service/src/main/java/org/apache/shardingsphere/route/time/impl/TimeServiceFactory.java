@@ -23,8 +23,6 @@ import org.apache.shardingsphere.route.time.spi.SPIDataBaseSQLEntry;
 
 /**
  * Time service factory.
- *
- * @author chenchuangliu
  */
 public final class TimeServiceFactory {
     

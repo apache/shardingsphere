@@ -157,7 +157,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         assertTrue(showSql);
         int executorSize = properties.getValue(PropertiesConstant.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
-        assertNull(PropertiesConstant.findByKey("foo"));
+        assertNull(properties.findByKey("foo"));
     }
 
     @Test

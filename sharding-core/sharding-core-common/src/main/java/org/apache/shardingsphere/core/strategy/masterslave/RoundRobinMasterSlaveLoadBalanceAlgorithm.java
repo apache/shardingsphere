@@ -28,8 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Round-robin slave database load-balance algorithm.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

@@ -25,8 +25,6 @@ import java.util.Properties;
 
 /**
  * Properties configuration properties.
- *
- * @author zhangliang
  */
 @ConfigurationProperties(prefix = "spring.shardingsphere")
 @Getter

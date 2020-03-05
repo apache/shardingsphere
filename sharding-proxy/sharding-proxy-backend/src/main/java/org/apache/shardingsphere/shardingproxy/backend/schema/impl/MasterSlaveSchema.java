@@ -50,9 +50,6 @@ import java.util.Map;
 
 /**
  * Master-slave schema.
- *
- * @author panjuan
- * @author sunbufu
  */
 @Getter
 public final class MasterSlaveSchema extends LogicSchema {

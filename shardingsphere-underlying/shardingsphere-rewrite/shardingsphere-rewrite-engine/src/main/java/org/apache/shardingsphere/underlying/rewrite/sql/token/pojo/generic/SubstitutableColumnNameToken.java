@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable
 
 /**
  * Substitutable column name token.
- *
- * @author zhangliang
  */
 @EqualsAndHashCode
 public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable {

@@ -17,22 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitValueSegment;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Pagination context.
- *
- * @author zhangliang
- * @author caohao
- * @author zhangyonglun
  */
 public final class PaginationContext {
     
@@ -70,7 +66,7 @@ public final class PaginationContext {
      * @return offset segment
      */
     public Optional<PaginationValueSegment> getOffsetSegment() {
-        return Optional.fromNullable(offsetSegment);
+        return Optional.ofNullable(offsetSegment);
     }
     
     /**
@@ -79,7 +75,7 @@ public final class PaginationContext {
      * @return row count segment
      */
     public Optional<PaginationValueSegment> getRowCountSegment() {
-        return Optional.fromNullable(rowCountSegment);
+        return Optional.ofNullable(rowCountSegment);
     }
     
     /**
@@ -101,7 +97,7 @@ public final class PaginationContext {
      */
     public Optional<Long> getActualRowCount() {
         if (null == rowCountSegment) {
-            return Optional.absent();
+            return Optional.empty();
         }
         return Optional.of(rowCountSegment.isBoundOpened() ? actualRowCount + 1 : actualRowCount);
     }
@@ -112,7 +108,7 @@ public final class PaginationContext {
      * @return offset parameter index
      */
     public Optional<Integer> getOffsetParameterIndex() {
-        return offsetSegment instanceof ParameterMarkerPaginationValueSegment ? Optional.of(((ParameterMarkerPaginationValueSegment) offsetSegment).getParameterIndex()) : Optional.<Integer>absent();
+        return offsetSegment instanceof ParameterMarkerPaginationValueSegment ? Optional.of(((ParameterMarkerPaginationValueSegment) offsetSegment).getParameterIndex()) : Optional.empty();
     }
     
     /**
@@ -122,7 +118,7 @@ public final class PaginationContext {
      */
     public Optional<Integer> getRowCountParameterIndex() {
         return rowCountSegment instanceof ParameterMarkerPaginationValueSegment
-                ? Optional.of(((ParameterMarkerPaginationValueSegment) rowCountSegment).getParameterIndex()) : Optional.<Integer>absent();
+                ? Optional.of(((ParameterMarkerPaginationValueSegment) rowCountSegment).getParameterIndex()) : Optional.empty();
     }
     
     /**
@@ -140,14 +136,14 @@ public final class PaginationContext {
      * @param shardingStatement sharding optimized statement
      * @return revised row count
      */
-    public long getRevisedRowCount(final SelectSQLStatementContext shardingStatement) {
+    public long getRevisedRowCount(final SelectStatementContext shardingStatement) {
         if (isMaxRowCount(shardingStatement)) {
             return Integer.MAX_VALUE;
         }
         return rowCountSegment instanceof LimitValueSegment ? actualOffset + actualRowCount : actualRowCount;
     }
     
-    private boolean isMaxRowCount(final SelectSQLStatementContext shardingStatement) {
+    private boolean isMaxRowCount(final SelectStatementContext shardingStatement) {
         return (!shardingStatement.getGroupByContext().getItems().isEmpty()
                 || !shardingStatement.getProjectionsContext().getAggregationProjections().isEmpty()) && !shardingStatement.isSameGroupByAndOrderByItems();
     }

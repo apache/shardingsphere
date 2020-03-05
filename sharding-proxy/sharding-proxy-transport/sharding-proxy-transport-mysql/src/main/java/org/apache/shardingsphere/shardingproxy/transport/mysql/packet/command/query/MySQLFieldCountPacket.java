@@ -26,8 +26,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPack
  * COM_QUERY response field count packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html">COM_QUERY field count</a>
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter

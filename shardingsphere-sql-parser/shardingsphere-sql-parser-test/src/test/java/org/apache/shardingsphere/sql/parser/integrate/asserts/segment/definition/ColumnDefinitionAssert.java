@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.definitio
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 
@@ -28,8 +29,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Column definition assert.
- * 
- * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnDefinitionAssert {
@@ -43,8 +42,11 @@ public final class ColumnDefinitionAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
         assertThat(assertContext.getText("Column definition name assertion error: "), actual.getColumnName(), is(expected.getColumn().getName()));
-        // TODO assert start index and stop index
         assertThat(assertContext.getText("Column definition data type assertion error: "), actual.getDataType(), is(expected.getType()));
         assertThat(assertContext.getText("Column definition primary key assertion error: "), actual.isPrimaryKey(), is(expected.isPrimaryKey()));
+        TableAssert.assertIs(assertContext, actual.getReferencedTables(), expected.getReferencedTables());
+        // TODO assert start index and stop index
+//        assertThat(assertContext.getText("Column definition start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+//        assertThat(assertContext.getText("Column definition stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
 }

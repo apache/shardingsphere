@@ -25,9 +25,6 @@ import java.util.LinkedList;
 
 /**
  * Default SQL token generator builder.
- *
- * @author panjuan
- * @author zhangliang
  */
 public final class DefaultTokenGeneratorBuilder implements SQLTokenGeneratorBuilder {
     

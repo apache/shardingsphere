@@ -29,8 +29,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  *  SQL segment assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLSegmentAssert {

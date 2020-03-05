@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Encrypt rule configuration.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -38,6 +36,6 @@ public final class EncryptRuleConfiguration implements RuleConfiguration {
     private final Map<String, EncryptTableRuleConfiguration> tables;
     
     public EncryptRuleConfiguration() {
-        this(new LinkedHashMap<String, EncryptorRuleConfiguration>(), new LinkedHashMap<String, EncryptTableRuleConfiguration>());
+        this(new LinkedHashMap<>(), new LinkedHashMap<>());
     }
 }

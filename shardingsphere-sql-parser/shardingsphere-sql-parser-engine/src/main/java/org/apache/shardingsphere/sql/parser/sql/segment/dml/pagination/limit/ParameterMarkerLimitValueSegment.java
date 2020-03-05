@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.Parameter
 
 /**
  * Limit value segment for parameter marker.
- * 
- * @author zhangliang
  */
 @Getter
 public final class ParameterMarkerLimitValueSegment extends LimitValueSegment implements ParameterMarkerPaginationValueSegment {

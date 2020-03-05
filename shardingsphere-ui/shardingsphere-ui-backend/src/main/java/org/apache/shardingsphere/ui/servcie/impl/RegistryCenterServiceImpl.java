@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.ui.servcie.impl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterConfigService;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
-import org.apache.shardingsphere.ui.util.RegistryCenterFactory;
+import org.apache.shardingsphere.ui.util.RegistryCenterRepositoryFactory;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +31,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Implementation of Registry center service.
- * 
- * @author chenqingyang
  */
 @Service
 public final class RegistryCenterServiceImpl implements RegistryCenterService {
@@ -41,10 +39,10 @@ public final class RegistryCenterServiceImpl implements RegistryCenterService {
     private RegistryCenterConfigService registryCenterConfigService;
     
     @Override
-    public RegistryCenter getActivatedRegistryCenter() {
+    public RegistryCenterRepository getActivatedRegistryCenter() {
         Optional<RegistryCenterConfig> optional = registryCenterConfigService.loadActivated();
         if (optional.isPresent()) {
-            return RegistryCenterFactory.createRegistryCenter(optional.get());
+            return RegistryCenterRepositoryFactory.createRegistryCenter(optional.get());
         }
         throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "No activated registry center!");
     }

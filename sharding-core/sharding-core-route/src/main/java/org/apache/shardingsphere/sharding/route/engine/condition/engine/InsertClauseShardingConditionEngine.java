@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -41,8 +41,6 @@ import java.util.List;
 
 /**
  * Sharding condition engine for insert clause.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class InsertClauseShardingConditionEngine {
@@ -52,16 +50,16 @@ public final class InsertClauseShardingConditionEngine {
     /**
      * Create sharding conditions.
      * 
-     * @param insertSQLStatementContext insert SQL statement context
+     * @param insertStatementContext insert statement context
      * @param generatedKey generated key
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
-        String tableName = insertSQLStatementContext.getTablesContext().getSingleTableName();
-        Collection<String> columnNames = getColumnNames(insertSQLStatementContext, generatedKey);
-        for (InsertValueContext each : insertSQLStatementContext.getInsertValueContexts()) {
+        String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        Collection<String> columnNames = getColumnNames(insertStatementContext, generatedKey);
+        for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
         }
         if (null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName)) {
@@ -70,11 +68,11 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<String> getColumnNames(final InsertSQLStatementContext insertSQLStatementContext, final GeneratedKey generatedKey) {
+    private Collection<String> getColumnNames(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
         if (null == generatedKey || !generatedKey.isGenerated()) {
-            return insertSQLStatementContext.getColumnNames();
+            return insertStatementContext.getColumnNames();
         }
-        Collection<String> result = new LinkedList<>(insertSQLStatementContext.getColumnNames());
+        Collection<String> result = new LinkedList<>(insertStatementContext.getColumnNames());
         result.remove(generatedKey.getColumnName());
         return result;
     }

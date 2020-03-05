@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.DescribeStatementAssert;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.SetVariableStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowColumnsStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowCreateTableStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.ShowDatabasesStatementAssert;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dal.impl.UseStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.DescribeStatementTestCase;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.SetVariableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowColumnsStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowCreateTableStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowDatabasesStatementTestCase;
@@ -40,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.ShowTablesStatementTestCase;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal.UseStatementTestCase;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
@@ -52,8 +55,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql
 
 /**
  * DAL statement assert.
- *
- * @author zhangliang
  */
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -85,6 +86,8 @@ public final class DALStatementAssert {
             ShowIndexStatementAssert.assertIs(assertContext, (ShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
         } else if (actual instanceof ShowStatement) {
             ShowStatementAssert.assertIs(assertContext, (ShowStatement) actual, (ShowStatementTestCase) expected);
+        } else if (actual instanceof SetStatement) {
+            SetVariableStatementAssert.assertIs(assertContext, (SetStatement) actual, (SetVariableStatementTestCase) expected);
         }
     }
 }

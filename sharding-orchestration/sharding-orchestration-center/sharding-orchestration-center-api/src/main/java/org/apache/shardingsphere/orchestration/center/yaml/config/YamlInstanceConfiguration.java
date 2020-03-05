@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.center.yaml.config;
 
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.underlying.common.yaml.config.YamlConfiguration;
 
+import java.util.Properties;
+
 /**
  * Orchestration instance configuration for YAML.
- *
- * @author zhangliang
- * @author dongzonglei
- * @author wangguangyuan
- * @author sunbufu
  */
 @Getter
 @Setter

@@ -34,8 +34,6 @@ import java.sql.Statement;
 
 /**
  * Encrypt connection.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

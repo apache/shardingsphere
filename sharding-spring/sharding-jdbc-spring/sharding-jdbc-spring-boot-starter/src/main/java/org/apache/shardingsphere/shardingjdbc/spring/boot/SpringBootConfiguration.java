@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.boot;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.ShadowRuleCondi
 import org.apache.shardingsphere.shardingjdbc.spring.boot.shadow.SpringBootShadowRuleConfigurationProperties;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.ShardingRuleCondition;
 import org.apache.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRuleConfigurationProperties;
-import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetter;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSetterHolder;
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
@@ -66,10 +64,6 @@ import java.util.Map;
 
 /**
  * Spring boot starter configuration.
- *
- * @author caohao
- * @author panjuan
- * @author yangyi
  */
 @Configuration
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")
@@ -173,10 +167,8 @@ public class SpringBootConfiguration implements EnvironmentAware {
             return getJndiDataSource(dataSourceProps.get(jndiName).toString());
         }
         DataSource result = DataSourceUtil.getDataSource(dataSourceProps.get("type").toString(), dataSourceProps);
-        Optional<DataSourcePropertiesSetter> dataSourcePropertiesSetter = DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get("type").toString());
-        if (dataSourcePropertiesSetter.isPresent()) {
-            dataSourcePropertiesSetter.get().propertiesSet(environment, prefix, dataSourceName, result);
-        }
+        DataSourcePropertiesSetterHolder.getDataSourcePropertiesSetterByType(dataSourceProps.get("type").toString()).ifPresent(
+            dataSourcePropertiesSetter -> dataSourcePropertiesSetter.propertiesSet(environment, prefix, dataSourceName, result));
         return result;
     }
     

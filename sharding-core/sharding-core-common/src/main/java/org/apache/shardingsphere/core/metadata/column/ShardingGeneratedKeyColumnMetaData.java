@@ -24,8 +24,6 @@ import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaDat
 
 /**
  * Column meta data for sharding generated key.
- *
- * @author zhangliang
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)

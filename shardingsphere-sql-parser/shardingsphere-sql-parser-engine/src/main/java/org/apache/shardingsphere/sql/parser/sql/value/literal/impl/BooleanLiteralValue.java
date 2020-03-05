@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.LiteralValue;
 
 /**
  * Boolean literal value.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 public final class BooleanLiteralValue implements LiteralValue<Boolean> {

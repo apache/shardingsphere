@@ -26,8 +26,6 @@ import java.util.Collections;
 
 /**
  * COM_QUIT executor for MySQL.
- *
- * @author zhangliang
  */
 public final class MySQLComQuitExecutor implements CommandExecutor {
     

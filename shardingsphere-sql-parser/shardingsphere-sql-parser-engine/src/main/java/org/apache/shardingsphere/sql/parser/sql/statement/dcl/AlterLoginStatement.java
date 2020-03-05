@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Alter login statement.
- *
- * @author zhangliang
  */
 public final class AlterLoginStatement extends DCLStatement {
 }

@@ -29,8 +29,6 @@ import java.util.Collections;
 
 /**
  * Unsupported command packet executor for MySQL.
- *
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class MySQLUnsupportedCommandExecutor implements CommandExecutor {

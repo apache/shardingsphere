@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+
+import java.util.Optional;
 
 /**
  * Expression projection segment.
- * 
- * @author zhangliang
  */
 @Getter
 public final class ExpressionProjectionSegment implements ProjectionSegment, ComplexExpressionSegment, AliasAvailable {
@@ -37,7 +38,8 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     
     private final String text;
     
-    private String alias;
+    @Setter
+    private AliasSegment alias;
     
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text) {
         this.startIndex = startIndex;
@@ -47,11 +49,6 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     
     @Override
     public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
-    
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = SQLUtil.getExactlyValue(alias);
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
 }

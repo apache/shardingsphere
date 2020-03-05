@@ -27,8 +27,6 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Parameter marker assert.
- *
- * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParameterMarkerAssert {

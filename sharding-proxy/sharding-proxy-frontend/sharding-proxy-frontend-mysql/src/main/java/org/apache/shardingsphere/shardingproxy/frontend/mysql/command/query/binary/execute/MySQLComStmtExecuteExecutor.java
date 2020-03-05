@@ -50,9 +50,6 @@ import java.util.List;
 
 /**
  * COM_STMT_EXECUTE command executor for MySQL.
- * 
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     

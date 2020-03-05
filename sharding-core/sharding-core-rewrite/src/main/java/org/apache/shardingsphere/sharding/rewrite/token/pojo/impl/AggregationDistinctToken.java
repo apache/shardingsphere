@@ -23,8 +23,6 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable
 
 /**
  * Aggregation distinct token.
- *
- * @author panjuan
  */
 public final class AggregationDistinctToken extends SQLToken implements Substitutable {
     

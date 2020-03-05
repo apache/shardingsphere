@@ -23,26 +23,17 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.Abstra
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Expected where clause.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedWhereClause extends AbstractExpectedSQLSegment {
-    
-    @XmlAttribute(name = "parameters-count")
-    private int parametersCount;
-    
-    @XmlAttribute(name = "parameter-marker-start-index")
-    private int parameterMarkerStartIndex;
     
     @XmlElement(name = "and-predicate")
     private final List<ExpectedAndPredicate> andPredicates = new LinkedList<>();

@@ -26,8 +26,6 @@ import java.util.Collection;
 
 /**
  * Order by segment.
- * 
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter

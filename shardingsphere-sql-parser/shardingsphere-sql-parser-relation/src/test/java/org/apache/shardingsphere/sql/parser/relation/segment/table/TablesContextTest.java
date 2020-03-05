@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.table;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.hamcrest.CoreMatchers;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -44,169 +43,72 @@ import static org.mockito.Mockito.when;
 public final class TablesContextTest {
     
     @Test
-    public void assertIsEmpty() {
-        TablesContext tablesContext = new TablesContext(new SelectStatement());
-        assertTrue(tablesContext.isEmpty());
-    }
-    
-    @Test
-    public void assertIsNotEmpty() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertFalse(tablesContext.isEmpty());
-    }
-    
-    @Test
-    public void assertIsSingleTable() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertTrue(tablesContext.isSingleTable());
-    }
-    
-    @Test
-    public void assertIsSingleTableWithCaseSensitiveNames() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("Table", null));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertTrue(tablesContext.isSingleTable());
-    }
-    
-    @Test
-    public void assertIsSingleTableWithNameConflictAlias() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("tbl", null));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertTrue(tablesContext.isSingleTable());
-    }
-    
-    @Test
-    public void assertIsNotSingleTable() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertFalse(tablesContext.isSingleTable());
-    }
-    
-    @Test
-    public void assertGetSingleTableName() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table", "tbl"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertThat(tablesContext.getSingleTableName(), is("table"));
-    }
-    
-    @Test
     public void assertGetTableNames() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        assertThat(tablesContext.getTableNames(), CoreMatchers.<Collection<String>>is(Sets.newHashSet("table_1", "table_2")));
-    }
-    
-    @Test
-    public void assertFindTableWithName() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        Optional<Table> table = tablesContext.find("table_1");
-        assertTrue(table.isPresent());
-        assertThat(table.get().getName(), is("table_1"));
-        assertThat(table.get().getAlias().orNull(), is("tbl_1"));
-    }
-    
-    @Test
-    public void assertFindTableWithAlias() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        Optional<Table> table = tablesContext.find("tbl_1");
-        assertTrue(table.isPresent());
-        assertThat(table.get().getName(), is("table_1"));
-        assertThat(table.get().getAlias().orNull(), is("tbl_1"));
-    }
-    
-    @Test
-    public void assertNotFoundTable() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        Optional<Table> table = tablesContext.find("table_3");
-        assertFalse(table.isPresent());
-    }
-    
-    @Test
-    public void assertFindTableNameWhenSingleTable() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        assertTrue(new TablesContext(selectStatement).findTableName(null, null).isPresent());
-    }
-    
-    @Test
-    public void assertFindTableNameWhenColumnSegmentOwnerPresent() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 10, "table_1", QuoteCharacter.NONE)));
-        assertTrue(tablesContext.findTableName(columnSegment, null).isPresent());
-    }
-    
-    @Test
-    public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        TablesContext tablesContext = new TablesContext(selectStatement);
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
-        RelationMetas relationMetas = mock(RelationMetas.class);
-        assertFalse(tablesContext.findTableName(columnSegment, relationMetas).isPresent());
-    }
-    
-    @Test
-    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndRelationMetasContainsColumn() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_2", "tbl_2"));
-        ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
-        when(columnSegment.getName()).thenReturn("columnName");
-        RelationMetas relationMetas = mock(RelationMetas.class);
-        when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
-        assertTrue(new TablesContext(selectStatement).findTableName(columnSegment, relationMetas).isPresent());
-    }
-    
-    @Test
-    public void assertGetSchema() {
-        SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getAllSQLSegments().add(createTableSegment("table_1", "tbl_1"));
-        assertFalse(new TablesContext(selectStatement).getSchema().isPresent());
+        TablesContext tablesContext = new TablesContext(Arrays.asList(createTableSegment("table_1", "tbl_1"), createTableSegment("table_2", "tbl_2")));
+        assertThat(tablesContext.getTableNames(), is(Sets.newHashSet("table_1", "table_2")));
     }
     
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        TableSegment tableSegment = new TableSegment(0, 10, "TableSegmentName", QuoteCharacter.NONE);
-        SchemaSegment schemaSegment = mock(SchemaSegment.class);
-        when(schemaSegment.getName()).thenReturn("SchemaSegmentName");
-        tableSegment.setOwner(schemaSegment);
-        when(sqlStatement.findSQLSegments(TableAvailable.class)).thenReturn(Collections.singletonList((TableAvailable) tableSegment));
-        new TablesContext(sqlStatement);
+        TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
+        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
+        new TablesContext(Collections.singletonList(tableSegment));
+    }
+    
+    @Test
+    public void assertFindTableNameWhenSingleTable() {
+        TableSegment tableSegment = createTableSegment("table_1", "tbl_1");
+        PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
+        Optional<String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableName(predicateSegment, mock(RelationMetas.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("table_1"));
+    }
+    
+    @Test
+    public void assertFindTableNameWhenColumnSegmentOwnerPresent() {
+        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        ColumnSegment columnSegment = createColumnSegment();
+        columnSegment.setOwner(new OwnerSegment(0, 10, new IdentifierValue("table_1")));
+        PredicateSegment predicateSegment = createPredicateSegment(columnSegment);
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(RelationMetas.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("table_1"));
+    }
+    
+    @Test
+    public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
+        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(RelationMetas.class));
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndRelationMetasContainsColumn() {
+        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
+        RelationMetas relationMetas = mock(RelationMetas.class);
+        when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, relationMetas);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("table_1"));
     }
     
     private TableSegment createTableSegment(final String tableName, final String alias) {
-        TableSegment result = new TableSegment(0, 0, tableName, QuoteCharacter.NONE);
-        result.setAlias(alias);
+        TableSegment result = new TableSegment(0, 0, new IdentifierValue(tableName));
+        AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
+        result.setAlias(aliasSegment);
         return result;
+    }
+    
+    private PredicateSegment createPredicateSegment(final ColumnSegment columnSegment) {
+        return new PredicateSegment(0, 0, columnSegment, mock(PredicateRightValue.class));
+    }
+    
+    private ColumnSegment createColumnSegment() {
+        return new ColumnSegment(0, 0, new IdentifierValue("col"));
     }
 }

@@ -96,7 +96,7 @@ public final class ExecutorEngineTest {
     @Test
     public void assertInputGroupIsEmpty() throws SQLException {
         CountDownLatch latch = new CountDownLatch(1);
-        List<String> actual = executorEngine.execute(new LinkedList<InputGroup<Object>>(), new GroupedCallbackFixture(latch));
+        List<String> actual = executorEngine.execute(new LinkedList<>(), new GroupedCallbackFixture(latch));
         latch.countDown();
         assertThat(actual.size(), is(0));
     }

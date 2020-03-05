@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected schema.
- * 
- * @author zhangliang 
  */
 @Getter
 @Setter

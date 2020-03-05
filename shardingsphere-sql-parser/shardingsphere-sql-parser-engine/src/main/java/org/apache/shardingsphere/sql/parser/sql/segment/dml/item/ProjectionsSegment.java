@@ -27,9 +27,6 @@ import java.util.LinkedList;
 
 /**
  * projections segment.
- * 
- * @author duhongjun
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

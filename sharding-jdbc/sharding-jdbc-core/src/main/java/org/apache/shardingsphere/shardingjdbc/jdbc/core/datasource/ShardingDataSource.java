@@ -32,10 +32,6 @@ import java.util.Properties;
 
 /**
  * Sharding data source.
- *
- * @author zhangliang
- * @author zhaojun
- * @author panjuan
  */
 @Getter
 public class ShardingDataSource extends AbstractDataSourceAdapter {

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLP
 
 /**
  * Set role statement test case.
- * 
- * @author zhangliang 
  */
 public final class SetRoleStatementTestCase extends SQLParserTestCase {
 }

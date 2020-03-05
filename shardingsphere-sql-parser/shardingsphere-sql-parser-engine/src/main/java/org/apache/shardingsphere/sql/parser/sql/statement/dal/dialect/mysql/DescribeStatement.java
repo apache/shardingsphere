@@ -24,12 +24,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 
 /**
  * Describe statement.
- *
- * @author zhangliang
  */
 @Getter
 @Setter
 public final class DescribeStatement extends DALStatement {
-
+    
     private TableSegment table;
 }

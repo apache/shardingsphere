@@ -29,8 +29,6 @@ import java.util.Properties;
 
 /**
  * Orchestration encrypt data source factory.
- *
- * @author yangyi
  */
 public final class OrchestrationEncryptDataSourceFactory {
     

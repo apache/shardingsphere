@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.context;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
@@ -25,12 +24,10 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
+import java.util.Optional;
+
 /**
  * SQL route context.
- * 
- * @author gaohongtao
- * @author zhangliang
- * @author zhaojun
  */
 @Getter
 public final class ShardingRouteContext extends RouteContext {
@@ -55,6 +52,6 @@ public final class ShardingRouteContext extends RouteContext {
      * @return generated key
      */
     public Optional<GeneratedKey> getGeneratedKey() {
-        return Optional.fromNullable(generatedKey);
+        return Optional.ofNullable(generatedKey);
     }
 }

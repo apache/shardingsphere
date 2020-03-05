@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.underlying.route.context.TableUnit;
@@ -36,13 +33,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Sharding cartesian routing engine.
- * 
- * @author zhangliang
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine {
@@ -97,13 +93,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     private List<Set<TableUnit>> toRoutingTableGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
         List<Set<TableUnit>> result = new ArrayList<>(actualTableGroups.size());
         for (Set<String> each : actualTableGroups) {
-            result.add(new HashSet<>(Lists.transform(new ArrayList<>(each), new Function<String, TableUnit>() {
-    
-                @Override
-                public TableUnit apply(final String input) {
-                    return findRoutingTable(dataSource, input);
-                }
-            })));
+            result.add(new HashSet<>(new ArrayList<>(each).stream().map(input -> findRoutingTable(dataSource, input)).collect(Collectors.toList())));
         }
         return result;
     }

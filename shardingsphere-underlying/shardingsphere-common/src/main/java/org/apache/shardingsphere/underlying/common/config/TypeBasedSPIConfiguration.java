@@ -25,8 +25,6 @@ import java.util.Properties;
 
 /**
  * Type based SPI configuration.
- * 
- * @author zhangliang
  */
 @Getter
 public abstract class TypeBasedSPIConfiguration {

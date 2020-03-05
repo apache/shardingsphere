@@ -23,8 +23,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 
 /**
  * Circuit state event.
- *
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

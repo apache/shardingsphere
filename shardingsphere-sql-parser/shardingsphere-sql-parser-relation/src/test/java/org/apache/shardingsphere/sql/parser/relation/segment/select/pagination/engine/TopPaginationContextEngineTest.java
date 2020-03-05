@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.engine;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -32,12 +30,14 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -49,6 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TopPaginationContextEngineTest {
+    
     private TopPaginationContextEngine topPaginationContextEngine;
     
     @Before
@@ -79,7 +80,7 @@ public final class TopPaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenPredicateInRightValue() {
         String name = "rowNumberAlias";
-        ColumnSegment columnSegment = new ColumnSegment(0, 10, name, QuoteCharacter.NONE);
+        ColumnSegment columnSegment = new ColumnSegment(0, 10, new IdentifierValue(name));
         PredicateSegment predicateSegment = new PredicateSegment(0, 10, columnSegment, mock(PredicateInRightValue.class));
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(predicateSegment);
@@ -94,7 +95,7 @@ public final class TopPaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenParameterMarkerRowNumberValueSegment() {
         String name = "rowNumberAlias";
-        ColumnSegment columnSegment = new ColumnSegment(0, 10, name, QuoteCharacter.NONE);
+        ColumnSegment columnSegment = new ColumnSegment(0, 10, new IdentifierValue(name));
         PredicateCompareRightValue predicateCompareRightValue = mock(PredicateCompareRightValue.class);
         when(predicateCompareRightValue.getOperator()).thenReturn(">");
         when(predicateCompareRightValue.getExpression()).thenReturn(new ParameterMarkerExpressionSegment(0, 10, 0));
@@ -104,8 +105,7 @@ public final class TopPaginationContextEngineTest {
         Collection<AndPredicate> andPredicates = Collections.singleton(andPredicate);
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(
-                new TopProjectionSegment(0, 10, "text", null, name), andPredicates, Collections.<Object>singletonList(1));
+        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, "text", null, name), andPredicates, Collections.singletonList(1));
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
         assertThat(paginationValueSegment, instanceOf(ParameterMarkerRowNumberValueSegment.class));
@@ -118,7 +118,7 @@ public final class TopPaginationContextEngineTest {
     
     private void assertCreatePaginationContextWhenRowNumberPredicatePresentAndWithGivenOperator(final String operator) {
         String name = "rowNumberAlias";
-        ColumnSegment columnSegment = new ColumnSegment(0, 10, name, QuoteCharacter.NONE);
+        ColumnSegment columnSegment = new ColumnSegment(0, 10, new IdentifierValue(name));
         PredicateCompareRightValue predicateCompareRightValue = mock(PredicateCompareRightValue.class);
         when(predicateCompareRightValue.getOperator()).thenReturn(operator);
         when(predicateCompareRightValue.getExpression()).thenReturn(new LiteralExpressionSegment(0, 10, 100));

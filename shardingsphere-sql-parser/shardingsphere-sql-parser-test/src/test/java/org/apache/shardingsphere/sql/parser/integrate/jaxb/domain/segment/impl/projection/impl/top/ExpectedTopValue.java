@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Expected top value.
- *
- * @author zhangliang
  */
 @Getter
 @Setter

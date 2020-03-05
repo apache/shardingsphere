@@ -32,8 +32,6 @@ import java.util.Map;
 
 /**
  * SQL parser test cases registry.
- *
- * @author zhangliang
  */
 public final class SQLParserTestCasesRegistry {
     

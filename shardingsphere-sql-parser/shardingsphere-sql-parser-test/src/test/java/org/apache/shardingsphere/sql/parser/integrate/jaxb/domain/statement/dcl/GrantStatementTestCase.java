@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Grant statement test case.
- * 
- * @author zhangliang 
  */
 @Getter
 public final class GrantStatementTestCase extends SQLParserTestCase {

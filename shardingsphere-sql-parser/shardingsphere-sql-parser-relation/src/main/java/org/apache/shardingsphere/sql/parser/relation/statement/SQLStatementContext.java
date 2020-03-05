@@ -22,17 +22,17 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * SQL statement context.
- *
- * @author zhangliang
+ * 
+ * @param <T> type of SQL statement
  */
-public interface SQLStatementContext {
+public interface SQLStatementContext<T extends SQLStatement> {
     
     /**
      * Get SQL statement.
      * 
      * @return SQL statement
      */
-    SQLStatement getSqlStatement();
+    T getSqlStatement();
     
     /**
      * Get tables context.

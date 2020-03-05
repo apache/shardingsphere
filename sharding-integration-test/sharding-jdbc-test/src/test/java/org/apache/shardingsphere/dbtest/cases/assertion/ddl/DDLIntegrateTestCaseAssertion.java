@@ -24,8 +24,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * JAXB definition of DDL integrate test case assertion.
- * 
- * @author zhangliang 
  */
 @Getter
 public class DDLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {

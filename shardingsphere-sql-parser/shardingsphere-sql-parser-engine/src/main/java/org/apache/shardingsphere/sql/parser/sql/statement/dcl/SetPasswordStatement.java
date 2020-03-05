@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Set password statement.
- *
- * @author zhangliang
  */
 public final class SetPasswordStatement extends DCLStatement {
 }

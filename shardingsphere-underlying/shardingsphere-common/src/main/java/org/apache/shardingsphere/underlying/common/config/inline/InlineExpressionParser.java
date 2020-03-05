@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.config.inline;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
@@ -37,9 +36,6 @@ import java.util.Set;
 
 /**
  * Inline expression parser.
- * 
- * @author gaohongtao
- * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class InlineExpressionParser {
@@ -179,13 +175,7 @@ public final class InlineExpressionParser {
                 continue;
             }
             if (each instanceof Collection) {
-                result.add(Sets.newLinkedHashSet(Collections2.transform((Collection<Object>) each, new Function<Object, String>() {
-                    
-                    @Override
-                    public String apply(final Object input) {
-                        return input.toString();
-                    }
-                })));
+                result.add(Sets.newLinkedHashSet(Collections2.transform((Collection<Object>) each, Object::toString)));
             } else {
                 result.add(Sets.newHashSet(each.toString()));
             }

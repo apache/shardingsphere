@@ -23,8 +23,6 @@ import java.util.Collection;
 
 /**
  * Root invoke hook for SPI.
- *
- * @author zhangliang
  */
 public final class SPIRootInvokeHook implements RootInvokeHook {
     

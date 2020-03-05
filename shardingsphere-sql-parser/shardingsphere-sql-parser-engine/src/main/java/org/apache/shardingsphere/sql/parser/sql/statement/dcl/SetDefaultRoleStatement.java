@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 /**
  * Set default role statement.
- *
- * @author duanchao
  */
 public final class SetDefaultRoleStatement extends DCLStatement {
 }

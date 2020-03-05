@@ -30,8 +30,6 @@ import java.util.Map;
 
 /**
  * RESTful API of sharding proxy authentication.
- *
- * @author chenqingyang
  */
 @RestController
 @RequestMapping("/api/authentication")

@@ -21,18 +21,10 @@ package org.apache.shardingsphere.masterslave.route.engine.impl;
  * Master data source visited manager.
  * 
  * <p>Trace master data source visited or not in current thread.</p>
- * 
- * @author zhangliang
  */
 public final class MasterVisitedManager {
     
-    private static final ThreadLocal<Boolean> MASTER_VISITED = new ThreadLocal<Boolean>() {
-        
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
+    private static final ThreadLocal<Boolean> MASTER_VISITED = ThreadLocal.withInitial(() -> false);
     
     /**
      * Judge master data source visited in current thread.

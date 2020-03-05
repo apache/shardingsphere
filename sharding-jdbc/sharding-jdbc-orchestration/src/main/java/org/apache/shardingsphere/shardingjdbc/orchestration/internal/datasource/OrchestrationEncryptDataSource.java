@@ -43,8 +43,6 @@ import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 
 /**
  * Orchestration encrypt data source.
- *
- * @author yangyi
  */
 @Getter(AccessLevel.PROTECTED)
 public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSource {

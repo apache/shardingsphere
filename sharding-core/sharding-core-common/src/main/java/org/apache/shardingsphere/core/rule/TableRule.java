@@ -45,8 +45,6 @@ import java.util.Set;
 
 /**
  * Table rule.
- *
- * @author zhangliang
  */
 @Getter
 @ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDatasourceNames", "datasourceToTablesMap"})
@@ -128,12 +126,7 @@ public final class TableRule {
     }
     
     private void addActualTable(final String datasourceName, final String tableName) {
-        Collection<String> actualTables = datasourceToTablesMap.get(datasourceName);
-        if (null == actualTables) {
-            actualTables = new LinkedHashSet<>();
-            datasourceToTablesMap.put(datasourceName, actualTables);
-        }
-        actualTables.add(tableName);
+        datasourceToTablesMap.computeIfAbsent(datasourceName, k -> new LinkedHashSet<>()).add(tableName);
     }
     
     private boolean containsKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
@@ -192,7 +185,7 @@ public final class TableRule {
         for (DataNode each : actualDataNodes) {
             String dataSourceName = each.getDataSourceName();
             if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<DataNode>());
+                result.put(dataSourceName, new LinkedList<>());
             }
             result.get(dataSourceName).add(each);
         }
@@ -223,8 +216,7 @@ public final class TableRule {
     }
     
     int findActualTableIndex(final String dataSourceName, final String actualTableName) {
-        DataNode dataNode = new DataNode(dataSourceName, actualTableName);
-        return dataNodeIndexMap.containsKey(dataNode) ? dataNodeIndexMap.get(dataNode) : -1;
+        return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, actualTableName), -1);
     }
     
     boolean isExisted(final String actualTableName) {

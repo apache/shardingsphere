@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.generic;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Where segment available.
- *
- * @author zhangliang
  */
 public interface WhereSegmentAvailable {
     
@@ -40,4 +41,11 @@ public interface WhereSegmentAvailable {
      * @param where where segment
      */
     void setWhere(WhereSegment where);
+    
+    /**
+     * Get tables.
+     * 
+     * @return tables
+     */
+    Collection<TableSegment> getTables();
 }

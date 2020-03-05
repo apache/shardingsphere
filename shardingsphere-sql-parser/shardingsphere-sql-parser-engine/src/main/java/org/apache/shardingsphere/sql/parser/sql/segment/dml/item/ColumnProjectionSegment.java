@@ -17,27 +17,28 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+
+import java.util.Optional;
 
 /**
  * Column projection segment.
- * 
- * @author zhangliang
  */
 public final class ColumnProjectionSegment extends ColumnSegment implements ProjectionSegment, AliasAvailable {
     
     @Getter
     private final String text;
     
-    private String alias;
+    @Setter
+    private AliasSegment alias;
     
     public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
-        super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), new IdentifierValue(columnSegment.getName()).getValue(), new IdentifierValue(columnSegment.getName()).getQuoteCharacter());
+        super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getIdentifier());
         this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
         if (columnSegment.getOwner().isPresent()) {
             setOwner(columnSegment.getOwner().get());
@@ -46,11 +47,6 @@ public final class ColumnProjectionSegment extends ColumnSegment implements Proj
     
     @Override
     public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
-    
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = SQLUtil.getExactlyValue(alias);
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
 }

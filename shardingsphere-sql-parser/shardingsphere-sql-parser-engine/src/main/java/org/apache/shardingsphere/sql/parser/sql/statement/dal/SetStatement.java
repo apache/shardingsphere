@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dal;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
+
 /**
  * Set statement.
- * 
- * @author chenqingyang
- * @author maxiaoguang
  */
+@Getter
+@Setter
 public final class SetStatement extends DALStatement {
+    
+    private VariableSegment variable;
 }

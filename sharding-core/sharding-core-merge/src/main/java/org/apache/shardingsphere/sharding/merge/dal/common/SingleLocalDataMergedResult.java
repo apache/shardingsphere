@@ -28,8 +28,6 @@ import java.util.Iterator;
 
 /**
  * Merged result for single local data.
- *
- * @author zhangliang
  */
 public final class SingleLocalDataMergedResult implements MergedResult {
     

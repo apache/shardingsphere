@@ -21,8 +21,6 @@ import lombok.Getter;
 
 /**
  * ShardingSphere UI system exception.
- *
- * @author chenqingyang
  */
 @Getter
 public final class ShardingSphereUIException extends RuntimeException {

@@ -27,8 +27,6 @@ import java.util.regex.Pattern;
 
 /**
  * Data source meta data for Oracle.
- *
- * @author panjuan
  */
 @Getter
 public final class OracleDataSourceMetaData implements DataSourceMetaData {

@@ -21,10 +21,6 @@ import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
 
 /**
  * Registry center configs repository interface.
- *
- * @author chenqingyang
- * @author yangyi
  */
 public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
-
 }

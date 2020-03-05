@@ -25,9 +25,6 @@ import java.util.Calendar;
 
 /**
  * Binary protocol value for time for MySQL.
- * 
- * @author zhangyonglun
- * @author zhangliang
  */
 public final class MySQLTimeBinaryProtocolValue implements MySQLBinaryProtocolValue {
     

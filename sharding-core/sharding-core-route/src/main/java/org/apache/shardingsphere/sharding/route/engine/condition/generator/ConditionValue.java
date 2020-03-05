@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Condition value.
- *
- * @author zhangliang
  */
 public final class ConditionValue {
     
@@ -66,6 +64,6 @@ public final class ConditionValue {
      * @return condition value
      */
     public Optional<Comparable> getValue() {
-        return Optional.fromNullable(value);
+        return Optional.ofNullable(value);
     }
 }

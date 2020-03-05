@@ -20,21 +20,22 @@ package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+
+import java.util.Collection;
 
 /**
  * Drop column definition segment.
- *
- * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class DropColumnDefinitionSegment implements SQLSegment {
+public final class DropColumnDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String columnName;
+    private final Collection<ColumnSegment> columns;
 }

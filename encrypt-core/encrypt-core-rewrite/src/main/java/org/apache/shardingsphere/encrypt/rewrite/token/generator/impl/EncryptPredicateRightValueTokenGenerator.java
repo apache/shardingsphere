@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
@@ -40,16 +39,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Predicate right value token generator for encrypt.
- *
- * @author panjuan
- * @author zhangliang
  */
 @Setter
-public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, 
-        RelationMetasAware, ParametersAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator 
+        implements CollectionSQLTokenGenerator, RelationMetasAware, ParametersAware, QueryWithCipherColumnAware {
     
     private RelationMetas relationMetas;
     
@@ -65,7 +62,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), relationMetas).createEncryptConditions(sqlStatementContext);
-        return encryptConditions.isEmpty() ? Collections.<SQLToken>emptyList() : generateSQLTokens(encryptConditions);
+        return encryptConditions.isEmpty() ? Collections.emptyList() : generateSQLTokens(encryptConditions);
     }
     
     private Collection<SQLToken> generateSQLTokens(final List<EncryptCondition> encryptConditions) {
@@ -78,7 +75,7 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     private SQLToken generateSQLToken(final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
-        int startIndex = encryptCondition instanceof EncryptInCondition ? encryptCondition.getStartIndex() - 1 : encryptCondition.getStartIndex();
+        int startIndex = encryptCondition.getStartIndex();
         return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(encryptCondition, originalValues, startIndex)
                 : generateSQLTokenForQueryWithoutCipherColumn(encryptCondition, originalValues, startIndex);
     }

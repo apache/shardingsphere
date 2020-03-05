@@ -17,30 +17,27 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Select statement.
- *
- * @author zhangliang
- * @author panjuan
  */
 @Getter
 @Setter
-public final class SelectStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
+public final class SelectStatement extends DMLStatement implements WhereSegmentAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
@@ -52,14 +49,11 @@ public final class SelectStatement extends DMLStatement implements TableSegments
     
     private OrderBySegment orderBy;
     
-    private SelectStatement parentStatement;
-
-    private LockSegment lockSegment;
+    private LimitSegment limit;
     
-    @Override
-    public Optional<WhereSegment> getWhere() {
-        return Optional.fromNullable(where);
-    }
+    private SelectStatement parentStatement;
+    
+    private LockSegment lock;
     
     /**
      * Get group by segment.
@@ -67,7 +61,7 @@ public final class SelectStatement extends DMLStatement implements TableSegments
      * @return group by segment
      */
     public Optional<GroupBySegment> getGroupBy() {
-        return Optional.fromNullable(groupBy);
+        return Optional.ofNullable(groupBy);
     }
     
     /**
@@ -76,15 +70,29 @@ public final class SelectStatement extends DMLStatement implements TableSegments
      * @return order by segment
      */
     public Optional<OrderBySegment> getOrderBy() {
-        return Optional.fromNullable(orderBy);
+        return Optional.ofNullable(orderBy);
     }
-
+    
+    /**
+     * Get order by segment.
+     *
+     * @return order by segment
+     */
+    public Optional<LimitSegment> getLimit() {
+        return Optional.ofNullable(limit);
+    }
+    
     /**
      * Get lock segment.
      *
      * @return lock segment
      */
     public Optional<LockSegment> getLock() {
-        return Optional.fromNullable(lockSegment);
+        return Optional.ofNullable(lock);
+    }
+    
+    @Override
+    public Optional<WhereSegment> getWhere() {
+        return Optional.ofNullable(where);
     }
 }

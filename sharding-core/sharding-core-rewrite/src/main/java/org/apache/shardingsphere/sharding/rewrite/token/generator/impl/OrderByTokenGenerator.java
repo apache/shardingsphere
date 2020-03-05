@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
@@ -29,24 +29,22 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.OrderByToken;
 
 /**
  * Order by token generator.
- *
- * @author zhangliang
  */
-public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator, IgnoreForSingleRoute {
+public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<SelectStatementContext>, IgnoreForSingleRoute {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectSQLStatementContext && ((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().isGenerated();
+        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getOrderByContext().isGenerated();
     }
     
     @Override
-    public OrderByToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
-        OrderByToken result = new OrderByToken(((SelectSQLStatementContext) sqlStatementContext).getGroupByContext().getLastIndex() + 1);
+    public OrderByToken generateSQLToken(final SelectStatementContext selectStatementContext) {
+        OrderByToken result = new OrderByToken(selectStatementContext.getGroupByContext().getLastIndex() + 1);
         String columnLabel;
-        for (OrderByItem each : ((SelectSQLStatementContext) sqlStatementContext).getOrderByContext().getItems()) {
+        for (OrderByItem each : selectStatementContext.getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) each.getSegment();
-                QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getQuoteCharacter();
+                QuoteCharacter quoteCharacter = columnOrderByItemSegment.getColumn().getIdentifier().getQuoteCharacter();
                 columnLabel = quoteCharacter.getStartDelimiter() + columnOrderByItemSegment.getText() + quoteCharacter.getEndDelimiter();
             } else if (each.getSegment() instanceof ExpressionOrderByItemSegment) {
                 columnLabel = ((ExpressionOrderByItemSegment) each.getSegment()).getText();

@@ -31,8 +31,6 @@ import java.sql.Connection;
 
 /**
  * XA connection factory.
- *
- * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XAConnectionFactory {

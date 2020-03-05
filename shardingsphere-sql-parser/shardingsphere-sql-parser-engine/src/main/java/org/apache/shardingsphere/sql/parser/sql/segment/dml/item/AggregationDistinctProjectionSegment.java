@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
  * Aggregation distinct projection segment.
- * 
- * @author zhangliang
  */
 @Getter
 public final class AggregationDistinctProjectionSegment extends AggregationProjectionSegment {

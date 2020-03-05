@@ -39,9 +39,6 @@ import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
  * Orchestration sharding data source factory for YAML.
- *
- * @author zhangliang
- * @author caohao
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationShardingDataSourceFactory {

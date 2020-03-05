@@ -25,9 +25,6 @@ import java.util.Collection;
 
 /**
  * Set assignment segment.
- *
- * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

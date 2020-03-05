@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,14 +27,14 @@ public final class TableSegmentTest {
     
     @Test
     public void getStartIndexWithoutOwner() {
-        TableSegment tableSegment = new TableSegment(10, 13, "tbl", QuoteCharacter.NONE);
+        TableSegment tableSegment = new TableSegment(10, 13, new IdentifierValue("tbl"));
         assertThat(tableSegment.getStartIndex(), is(10));
     }
     
     @Test
     public void getStartIndexWithOwner() {
-        TableSegment tableSegment = new TableSegment(10, 13, "tbl", QuoteCharacter.NONE);
-        tableSegment.setOwner(new SchemaSegment(7, 8, "o", QuoteCharacter.NONE));
+        TableSegment tableSegment = new TableSegment(10, 13, new IdentifierValue("tbl"));
+        tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("o")));
         assertThat(tableSegment.getStartIndex(), is(7));
     }
 }
