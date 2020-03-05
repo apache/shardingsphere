@@ -17,51 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.generic;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * SQL statement abstract class.
  */
+@Getter
+@Setter
 public abstract class AbstractSQLStatement implements SQLStatement {
     
-    private final Collection<SQLSegment> sqlSegments = new LinkedList<>();
-    
-    @Getter
-    @Setter
     private int parametersCount;
-    
-    @Override
-    public final Collection<SQLSegment> getAllSQLSegments() {
-        return sqlSegments;
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public final <T extends SQLSegment> Optional<T> findSQLSegment(final Class<T> sqlSegmentType) {
-        for (SQLSegment each : sqlSegments) {
-            if (sqlSegmentType.isAssignableFrom(each.getClass())) {
-                return Optional.of((T) each);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public final <T extends SQLSegment> Collection<T> findSQLSegments(final Class<T> sqlSegmentType) {
-        Collection<T> result = new LinkedList<>();
-        for (SQLSegment each : sqlSegments) {
-            if (sqlSegmentType.isAssignableFrom(each.getClass())) {
-                result.add((T) each);
-            }
-        }
-        return result;
-    }
 }

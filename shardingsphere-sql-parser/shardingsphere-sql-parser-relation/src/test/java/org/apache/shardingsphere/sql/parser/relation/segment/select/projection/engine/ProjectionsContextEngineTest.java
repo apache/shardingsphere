@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.engine;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
@@ -26,19 +26,19 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.Orde
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -61,10 +61,9 @@ public final class ProjectionsContextEngineTest {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
-        TableSegment owner = new TableSegment(0, 10, new IdentifierValue("name"));
-        owner.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
+        OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.<ProjectionSegment>singleton(shorthandProjectionSegment));
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singleton(shorthandProjectionSegment));
         ProjectionsContext actual = new ProjectionsContextEngine(mock(RelationMetas.class)).createProjectionsContext(null, selectStatement, mock(GroupByContext.class), mock(OrderByContext.class));
         assertNotNull(actual);
     }
@@ -75,10 +74,9 @@ public final class ProjectionsContextEngineTest {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
-        TableSegment owner = new TableSegment(0, 10, new IdentifierValue("name"));
-        owner.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
+        OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.<ProjectionSegment>singleton(shorthandProjectionSegment));
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singleton(shorthandProjectionSegment));
         OrderByContext orderByContext = mock(OrderByContext.class);
         OrderByItem orderByItem = mock(OrderByItem.class);
         when(orderByItem.getSegment()).thenReturn(mock(IndexOrderByItemSegment.class));
@@ -93,10 +91,9 @@ public final class ProjectionsContextEngineTest {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
-        TableSegment owner = new TableSegment(0, 10, new IdentifierValue("name"));
-        owner.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
+        OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.<ProjectionSegment>singleton(shorthandProjectionSegment));
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singleton(shorthandProjectionSegment));
         OrderByContext orderByContext = mock(OrderByContext.class);
         OrderByItem orderByItem = mock(OrderByItem.class);
         when(orderByItem.getSegment()).thenReturn(mock(TextOrderByItemSegment.class));
@@ -108,20 +105,19 @@ public final class ProjectionsContextEngineTest {
     @Test
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent() {
         SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getTables()).thenReturn(Collections.singletonList(new TableSegment(0, 0, new IdentifierValue("name"))));
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
-        TableSegment owner = new TableSegment(0, 10, new IdentifierValue("name"));
-        owner.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
+        OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.<ProjectionSegment>singleton(shorthandProjectionSegment));
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singleton(shorthandProjectionSegment));
         OrderByContext orderByContext = mock(OrderByContext.class);
-        OrderByItem orderByItem = mock(OrderByItem.class);
+        OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.<TableSegment>absent());
+        when(columnSegment.getOwner()).thenReturn(Optional.empty());
         when(columnOrderByItemSegment.getColumn()).thenReturn(columnSegment);
-        when(orderByItem.getSegment()).thenReturn(columnOrderByItemSegment);
         when(orderByContext.getItems()).thenReturn(Collections.singletonList(orderByItem));
         ProjectionsContext actual = new ProjectionsContextEngine(mock(RelationMetas.class)).createProjectionsContext(null, selectStatement, mock(GroupByContext.class), orderByContext);
         assertNotNull(actual);
@@ -130,20 +126,19 @@ public final class ProjectionsContextEngineTest {
     @Test
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent() {
         SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getTables()).thenReturn(Collections.singletonList(new TableSegment(0, 0, new IdentifierValue("name"))));
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
-        TableSegment owner = new TableSegment(0, 10, new IdentifierValue("name"));
-        owner.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
+        OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.<ProjectionSegment>singleton(shorthandProjectionSegment));
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singleton(shorthandProjectionSegment));
         OrderByContext orderByContext = mock(OrderByContext.class);
-        OrderByItem orderByItem = mock(OrderByItem.class);
+        OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
         ColumnSegment columnSegment = mock(ColumnSegment.class);
-        when(columnSegment.getOwner()).thenReturn(Optional.of(new TableSegment(0, 0, new IdentifierValue("tbl"))));
+        when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("tbl"))));
         when(columnOrderByItemSegment.getColumn()).thenReturn(columnSegment);
-        when(orderByItem.getSegment()).thenReturn(columnOrderByItemSegment);
         when(orderByContext.getItems()).thenReturn(Collections.singletonList(orderByItem));
         ProjectionsContext actual = new ProjectionsContextEngine(mock(RelationMetas.class)).createProjectionsContext(null, selectStatement, mock(GroupByContext.class), orderByContext);
         assertNotNull(actual);
@@ -152,26 +147,25 @@ public final class ProjectionsContextEngineTest {
     @Test
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent() {
         SelectStatement selectStatement = mock(SelectStatement.class);
+        TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("name"));
+        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
+        when(selectStatement.getTables()).thenReturn(Collections.singletonList(tableSegment));
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("name"));
-        SchemaSegment schemaSegment = new SchemaSegment(0, 0, new IdentifierValue("schema"));
-        tableSegment.setOwner(schemaSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
-        TableSegment owner = new TableSegment(0, 10, new IdentifierValue("name"));
-        owner.setOwner(new SchemaSegment(0, 10, new IdentifierValue("name")));
+        TableSegment table = new TableSegment(0, 10, new IdentifierValue("name"));
+        OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
+        table.setOwner(new OwnerSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);
-        when(selectStatement.getTables()).thenReturn(Collections.singletonList(tableSegment));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
-        columnSegment.setOwner(tableSegment);
+        columnSegment.setOwner(owner);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);
         columnProjectionSegment.setOwner(owner);
-        when(projectionsSegment.getProjections()).thenReturn(Lists.<ProjectionSegment>newArrayList(columnProjectionSegment, shorthandProjectionSegment));
+        when(projectionsSegment.getProjections()).thenReturn(Lists.newArrayList(columnProjectionSegment, shorthandProjectionSegment));
         OrderByContext orderByContext = mock(OrderByContext.class);
-        OrderByItem orderByItem = mock(OrderByItem.class);
+        OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));
         ColumnOrderByItemSegment columnOrderByItemSegment = mock(ColumnOrderByItemSegment.class);
         when(columnOrderByItemSegment.getColumn()).thenReturn(columnSegment);
-        when(orderByItem.getSegment()).thenReturn(columnOrderByItemSegment);
         when(orderByContext.getItems()).thenReturn(Collections.singletonList(orderByItem));
         ProjectionsContext actual = new ProjectionsContextEngine(mock(RelationMetas.class)).createProjectionsContext(null, selectStatement, mock(GroupByContext.class), orderByContext);
         assertNotNull(actual);

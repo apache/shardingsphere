@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.service;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.state.instance.OrchestrationInstance;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNode;
 
@@ -28,11 +28,11 @@ public final class StateService {
     
     private final StateNode stateNode;
     
-    private final RegistryCenter regCenter;
+    private final RegistryCenterRepository regCenter;
     
     private final OrchestrationInstance instance;
     
-    public StateService(final String name, final RegistryCenter regCenter) {
+    public StateService(final String name, final RegistryCenterRepository regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
         instance = OrchestrationInstance.getInstance();

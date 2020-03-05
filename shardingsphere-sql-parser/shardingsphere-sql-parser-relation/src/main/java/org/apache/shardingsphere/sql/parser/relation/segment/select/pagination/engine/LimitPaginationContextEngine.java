@@ -35,6 +35,6 @@ public final class LimitPaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final LimitSegment limitSegment, final List<Object> parameters) {
-        return new PaginationContext(limitSegment.getOffset().orNull(), limitSegment.getRowCount().orNull(), parameters);
+        return new PaginationContext(limitSegment.getOffset().orElse(null), limitSegment.getRowCount().orElse(null), parameters);
     }
 }

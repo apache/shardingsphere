@@ -136,6 +136,7 @@ Suppose ShardingSphere source codes downloaded from github is under `~/incubator
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
+git clone -b ${branch} https://github.com/apache/incubator-shardingsphere.git ~/incubator-shardingsphere
 cd ~/incubator-shardingsphere/
 git pull
 git checkout -b ${RELEASE.VERSION}-release
@@ -303,9 +304,15 @@ gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin
 
 ### Check Released Files
 
-#### Check source package
+#### compare release source with github tag
 
-Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip` and check the following items:
+```
+curl -Lo tag-${RELEASE.VERSION}.zip https://github.com/apache/incubator-shardingsphere/archive/${RELEASE.VERSION}.zip | unzip
+unzip apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip
+diff -r apache-shardingsphere-incubating-${RELEASE.VERSION}-src tag-${RELEASE.VERSION}
+```
+
+#### Check source package
 
 *   Check whether source tarball is oversized for including nonessential files
 *   The release files have the word `incubating` in their name
@@ -315,7 +322,6 @@ Decompress `apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip` and che
 *   There is only text files but no binary files
 *   All source files have ASF headers
 *   Codes can be compiled and pass the unit tests (mvn install)
-*   The contents of the release match with what's tagged in version control (diff -r a verify_dir tag_dir)
 *   Check if there is any extra files or folders, empty folders for example
 
 #### Check binary packages

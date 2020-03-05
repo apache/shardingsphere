@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.GeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.LiteralGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ParameterMarkerGeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
 
@@ -43,9 +43,9 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
     }
     
     @Override
-    protected GeneratedKeyAssignmentToken generateSQLToken(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
-        Preconditions.checkState(((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().isPresent());
-        int startIndex = ((InsertStatement) sqlStatementContext.getSqlStatement()).getSetAssignment().get().getStopIndex() + 1;
+    protected GeneratedKeyAssignmentToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
+        Preconditions.checkState(insertStatementContext.getSqlStatement().getSetAssignment().isPresent());
+        int startIndex = insertStatementContext.getSqlStatement().getSetAssignment().get().getStopIndex() + 1;
         return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName(), generatedKey.getGeneratedValues().getLast())
                 : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName());
     }

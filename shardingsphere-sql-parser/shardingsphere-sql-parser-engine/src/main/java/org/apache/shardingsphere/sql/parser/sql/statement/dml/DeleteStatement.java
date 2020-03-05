@@ -17,23 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Delete statement.
  */
 @Getter
 @Setter
-public final class DeleteStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
+public final class DeleteStatement extends DMLStatement implements WhereSegmentAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
@@ -41,6 +40,6 @@ public final class DeleteStatement extends DMLStatement implements TableSegments
     
     @Override
     public Optional<WhereSegment> getWhere() {
-        return Optional.fromNullable(where);
+        return Optional.ofNullable(where);
     }
 }

@@ -24,12 +24,12 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.core.shard.fixture.PreciseShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ public final class ShardingRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewShardingRuleWithEmptyDataSourceNames() {
-        new ShardingRule(new ShardingRuleConfiguration(), Collections.<String>emptyList());
+        new ShardingRule(new ShardingRuleConfiguration(), Collections.emptyList());
     }
     
     @Test
@@ -59,7 +59,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getTableRules().size(), is(2));
         assertThat(actual.getBindingTableRules().size(), is(1));
         assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
-        assertThat(actual.getBroadcastTables(), CoreMatchers.<Collection<String>>is(Collections.singletonList("BROADCAST_TABLE")));
+        assertThat(actual.getBroadcastTables(), CoreMatchers.is(Collections.singletonList("BROADCAST_TABLE")));
         assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(actual.getDefaultShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
@@ -152,7 +152,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsAllBindingTableWhenLogicTablesIsEmpty() {
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.<String>emptyList()));
+        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.emptyList()));
     }
     
     @Test
@@ -170,7 +170,7 @@ public final class ShardingRuleTest {
         assertTrue(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_Table", "sub_Logic_Table")));
         assertTrue(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table")));
         assertFalse(createMaximumShardingRule().isAllBindingTables(Arrays.asList("logic_table", "sub_logic_Table", "new_table")));
-        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.<String>emptyList()));
+        assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.emptyList()));
         assertFalse(createMaximumShardingRule().isAllBindingTables(Collections.singletonList("new_Table")));
     }
     
@@ -193,7 +193,7 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsAllBroadcastTableWhenLogicTablesIsEmpty() {
-        assertFalse(createMaximumShardingRule().isAllBroadcastTables(Collections.<String>emptyList()));
+        assertFalse(createMaximumShardingRule().isAllBroadcastTables(Collections.emptyList()));
     }
     
     @Test
@@ -355,7 +355,7 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetShardingLogicTableNames() {
         ShardingRule actual = createMaximumShardingRule();
-        assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), CoreMatchers.<Collection<String>>is(Collections.singletonList("LOGIC_TABLE")));
+        assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), CoreMatchers.is(Collections.singletonList("LOGIC_TABLE")));
     }
     
     @Test(expected = IllegalArgumentException.class)

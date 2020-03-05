@@ -35,7 +35,7 @@ createDatabase
     : CREATE SCHEMA schemaName createDatabaseSpecification_*
     ;
 
-dropDatabse
+dropDatabase
     : DROP SCHEMA schemaName dropBehaviour_
     ;
 
@@ -66,16 +66,18 @@ createDefinition
     ;
 
 columnDefinition
-    : columnName dataType (inlineDataType* | generatedDataType*)
+    : columnName dataType dataTypeOption*
     ;
 
-inlineDataType
-    : commonDataTypeOption
-    | DEFAULT (literals | expr)
-    ;
-
-commonDataTypeOption
-    : primaryKey | UNIQUE KEY? | NOT? NULL | collateClause_ | checkConstraintDefinition_ | referenceDefinition | STRING_
+dataTypeOption
+    : primaryKey 
+    | UNIQUE KEY? 
+    | NOT? NULL 
+    | collateClause_ 
+    | checkConstraintDefinition_ 
+    | referenceDefinition 
+    | DEFAULT (literals | expr) 
+    | STRING_
     ;
 
 checkConstraintDefinition_
@@ -90,10 +92,6 @@ referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
-generatedDataType
-    : commonDataTypeOption
-    ;
-
 keyParts_
     : LP_ keyPart_ (COMMA_ keyPart_)* RP_
     ;
@@ -103,10 +101,10 @@ keyPart_
     ;
 
 constraintDefinition
-    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption)
+    : (CONSTRAINT ignoredIdentifier_?)? (primaryKeyOption | uniqueOption_ | foreignKeyOption)
     ;
 
-primaryKeyOption_
+primaryKeyOption
     : primaryKey columnNames
     ;
 

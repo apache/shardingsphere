@@ -67,23 +67,4 @@ public class CuratorZookeeperInstanceTest {
         List<String> childrenKeys = curatorZookeeperInstance.getChildrenKeys("/test/children");
         assertThat(childrenKeys.size(), is(3));
     }
-    
-    @Test
-    public void assertLock() {
-        curatorZookeeperInstance.initLock("/test/lock1");
-        assertThat(curatorZookeeperInstance.tryLock(), is(true));
-    }
-    
-    @Test
-    public void assertRelease() {
-        curatorZookeeperInstance.initLock("/test/lock2");
-        curatorZookeeperInstance.tryLock();
-        curatorZookeeperInstance.tryRelease();
-    }
-    
-    @Test(expected = IllegalMonitorStateException.class)
-    public void assertReleaseWithoutLock() {
-        curatorZookeeperInstance.initLock("/test/lock3");
-        curatorZookeeperInstance.tryRelease();
-    }
 }

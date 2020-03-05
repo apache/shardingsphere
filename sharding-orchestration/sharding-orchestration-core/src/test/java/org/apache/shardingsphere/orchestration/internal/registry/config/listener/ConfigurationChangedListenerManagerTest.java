@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 public final class ConfigurationChangedListenerManagerTest {
     
     @Mock
-    private ConfigCenter configCenter;
+    private ConfigCenterRepository configCenterRepository;
     
     @Mock
     private SchemaChangedListener schemaChangedListener;
@@ -46,7 +46,7 @@ public final class ConfigurationChangedListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        ConfigurationChangedListenerManager actual = new ConfigurationChangedListenerManager("test", configCenter, Arrays.asList("sharding_db", "masterslave_db"));
+        ConfigurationChangedListenerManager actual = new ConfigurationChangedListenerManager("test", configCenterRepository, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(actual, "schemaChangedListener", schemaChangedListener);
         FieldUtil.setField(actual, "propertiesChangedListener", propertiesChangedListener);
         FieldUtil.setField(actual, "authenticationChangedListener", authenticationChangedListener);

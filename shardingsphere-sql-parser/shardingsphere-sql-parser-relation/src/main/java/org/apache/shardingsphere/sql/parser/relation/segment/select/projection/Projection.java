@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * Projection interface.

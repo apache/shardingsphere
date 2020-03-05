@@ -20,13 +20,12 @@ package org.apache.shardingsphere.orchestration.center.instance;
 import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigChange;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenter;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloOpenApiWrapper;
@@ -43,7 +42,7 @@ import java.util.Properties;
  * Config center for Apollo.
  */
 @Slf4j
-public final class ApolloInstance implements ConfigCenter {
+public final class ApolloInstance implements ConfigCenterRepository {
     
     private final Map<String, DataChangedEventListener> caches = new HashMap<>();
     
@@ -88,21 +87,17 @@ public final class ApolloInstance implements ConfigCenter {
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         String apolloKey = ConfigKeyUtils.path2Key(key);
         caches.put(apolloKey, dataChangedEventListener);
-        ConfigChangeListener listener = new ConfigChangeListener() {
-
-            @Override
-            public void onChange(final ConfigChangeEvent changeEvent) {
-                for (String changeKey : changeEvent.changedKeys()) {
-                    ConfigChange change = changeEvent.getChange(changeKey);
-                    DataChangedEvent.ChangedType changedType = getChangedType(change.getChangeType());
-                    if (DataChangedEvent.ChangedType.IGNORED == changedType) {
-                        continue;
-                    }
-                    if (caches.get(changeKey) == null) {
-                        continue;
-                    }
-                    caches.get(changeKey).onChange(new DataChangedEvent(ConfigKeyUtils.key2Path(changeKey), change.getNewValue(), changedType));
+        ConfigChangeListener listener = changeEvent -> {
+            for (String changeKey : changeEvent.changedKeys()) {
+                ConfigChange change = changeEvent.getChange(changeKey);
+                DataChangedEvent.ChangedType changedType = getChangedType(change.getChangeType());
+                if (DataChangedEvent.ChangedType.IGNORED == changedType) {
+                    continue;
                 }
+                if (caches.get(changeKey) == null) {
+                    continue;
+                }
+                caches.get(changeKey).onChange(new DataChangedEvent(ConfigKeyUtils.key2Path(changeKey), change.getNewValue(), changedType));
             }
         };
         configWrapper.addChangeListener(listener, Sets.newHashSet(apolloKey), Sets.newHashSet(apolloKey));
@@ -122,7 +117,6 @@ public final class ApolloInstance implements ConfigCenter {
     
     @Override
     public void close() {
-
     }
     
     @Override

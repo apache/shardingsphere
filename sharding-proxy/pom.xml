@@ -28,6 +28,10 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+    
     <modules>
         <module>sharding-proxy-common</module>
         <module>sharding-proxy-transport</module>

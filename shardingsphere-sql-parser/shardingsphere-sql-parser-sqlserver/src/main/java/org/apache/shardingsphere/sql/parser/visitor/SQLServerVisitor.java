@@ -60,7 +60,6 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
@@ -82,10 +81,12 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.OtherLiteralValue;
@@ -184,10 +185,10 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
-        TableSegment result = new TableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
+        TableSegment result = new TableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new SchemaSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
     }
@@ -197,7 +198,7 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new TableSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
     }
@@ -218,11 +219,11 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     @Override
     public final ASTNode visitColumnNames(final ColumnNamesContext ctx) {
-        Collection<ColumnSegment> columnSegments = new LinkedList<>();
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (ColumnNameWithSortContext each : ctx.columnNameWithSort()) {
-            columnSegments.add((ColumnSegment) visit(each.columnName()));
+            result.getValue().add((ColumnSegment) visit(each));
         }
-        return new InsertColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments);
+        return result;
     }
     
     @Override
@@ -432,7 +433,7 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        return new IdentifierValue(ctx.IDENTIFIER_().getText());
+        return new KeywordValue(ctx.getText());
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date

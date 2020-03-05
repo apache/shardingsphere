@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.ColumnPositionSegment;
+
+import java.util.Optional;
 
 /**
  * Modify column definition segment.
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.Colu
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class ModifyColumnDefinitionSegment implements SQLSegment {
+public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
@@ -47,6 +48,6 @@ public final class ModifyColumnDefinitionSegment implements SQLSegment {
      * @return column position
      */
     public Optional<ColumnPositionSegment> getColumnPosition() {
-        return Optional.fromNullable(columnPosition);
+        return Optional.ofNullable(columnPosition);
     }
 }

@@ -21,14 +21,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
-import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.underlying.common.hook.RootInvokeHook;
+import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
+import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -59,7 +58,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private boolean autoCommit = true;
     
-    private boolean readOnly = true;
+    private boolean readOnly;
     
     private volatile boolean closed;
     
@@ -165,35 +164,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private void setAutoCommitForLocalTransaction(final boolean autoCommit) throws SQLException {
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
-        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
-            @Override
-            public void execute(final Connection connection) throws SQLException {
-                connection.setAutoCommit(autoCommit);
-            }
-        });
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setAutoCommit(autoCommit));
     }
     
     @Override
     public void commit() throws SQLException {
-        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-        
-            @Override
-            public void execute(final Connection connection) throws SQLException {
-                connection.commit();
-            }
-        });
+        forceExecuteTemplate.execute(cachedConnections.values(), Connection::commit);
     }
     
     @Override
     public void rollback() throws SQLException {
-        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-        
-            @Override
-            public void execute(final Connection connection) throws SQLException {
-                connection.rollback();
-            }
-        });
+        forceExecuteTemplate.execute(cachedConnections.values(), Connection::rollback);
     }
     
     @Override
@@ -203,13 +184,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         TransactionTypeHolder.clear();
         int connectionSize = cachedConnections.size();
         try {
-            forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Entry<String, Connection>>() {
-        
-                @Override
-                public void execute(final Entry<String, Connection> cachedConnections) throws SQLException {
-                    cachedConnections.getValue().close();
-                }
-            });
+            forceExecuteTemplateForClose.execute(cachedConnections.entries(), cachedConnections -> cachedConnections.getValue().close());
         } finally {
             cachedConnections.clear();
             rootInvokeHook.finish(connectionSize);
@@ -230,13 +205,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setReadOnly(final boolean readOnly) throws SQLException {
         this.readOnly = readOnly;
         recordMethodInvocation(Connection.class, "setReadOnly", new Class[]{boolean.class}, new Object[]{readOnly});
-        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
-            @Override
-            public void execute(final Connection connection) throws SQLException {
-                connection.setReadOnly(readOnly);
-            }
-        });
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setReadOnly(readOnly));
     }
     
     @Override
@@ -251,13 +220,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setTransactionIsolation(final int level) throws SQLException {
         transactionIsolation = level;
         recordMethodInvocation(Connection.class, "setTransactionIsolation", new Class[]{int.class}, new Object[]{level});
-        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-            
-            @Override
-            public void execute(final Connection connection) throws SQLException {
-                connection.setTransactionIsolation(level);
-            }
-        });
+        forceExecuteTemplate.execute(cachedConnections.values(), connection -> connection.setTransactionIsolation(level));
     }
     
     // ------- Consist with MySQL driver implementation -------

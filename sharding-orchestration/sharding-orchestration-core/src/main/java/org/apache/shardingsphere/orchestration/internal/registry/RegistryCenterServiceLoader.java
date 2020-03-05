@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.internal.registry;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenter;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
@@ -28,14 +28,14 @@ import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
  * Registry center loader from SPI.
  */
 @Slf4j
-public final class RegistryCenterServiceLoader extends TypeBasedSPIServiceLoader<RegistryCenter> {
+public final class RegistryCenterServiceLoader extends TypeBasedSPIServiceLoader<RegistryCenterRepository> {
     
     static {
-        NewInstanceServiceLoader.register(RegistryCenter.class);
+        NewInstanceServiceLoader.register(RegistryCenterRepository.class);
     }
     
     public RegistryCenterServiceLoader() {
-        super(RegistryCenter.class);
+        super(RegistryCenterRepository.class);
     }
     
     /**
@@ -44,9 +44,9 @@ public final class RegistryCenterServiceLoader extends TypeBasedSPIServiceLoader
      * @param config configuration for registry center
      * @return registry center
      */
-    public RegistryCenter load(final InstanceConfiguration config) {
+    public RegistryCenterRepository load(final InstanceConfiguration config) {
         Preconditions.checkNotNull(config, "Registry center configuration cannot be null.");
-        RegistryCenter result = newService(config.getType(), config.getProperties());
+        RegistryCenterRepository result = newService(config.getType(), config.getProperties());
         result.init(config);
         return result;
     }

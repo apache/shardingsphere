@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentsAvailable;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,12 +31,15 @@ import java.util.LinkedList;
 /**
  * Create table statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class CreateTableStatement extends DDLStatement implements TableSegmentsAvailable, IndexSegmentsAvailable {
+public final class CreateTableStatement extends DDLStatement implements IndexSegmentsAvailable {
     
-    private final Collection<TableSegment> tables = new LinkedList<>();
+    private final TableSegment table;
     
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+    
+    private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
 }

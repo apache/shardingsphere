@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.SelectSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -38,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -49,15 +45,15 @@ public final class SQLStatementContextFactoryTest {
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getGroupBy()).thenReturn(Optional.<GroupBySegment>absent());
-        when(selectStatement.getOrderBy()).thenReturn(Optional.<OrderBySegment>absent());
+        when(selectStatement.getGroupBy()).thenReturn(Optional.empty());
+        when(selectStatement.getOrderBy()).thenReturn(Optional.empty());
         when(selectStatement.getLimit()).thenReturn(Optional.of(new LimitSegment(0, 10, null, null)));
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.<ProjectionSegment>emptyList());
+        when(projectionsSegment.getProjections()).thenReturn(Collections.emptyList());
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, selectStatement);
         assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof SelectSQLStatementContext);
+        assertTrue(sqlStatementContext instanceof SelectStatementContext);
     }
     
     @Test
@@ -68,7 +64,7 @@ public final class SQLStatementContextFactoryTest {
         insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, insertStatement);
         assertNotNull(sqlStatementContext);
-        assertTrue(sqlStatementContext instanceof InsertSQLStatementContext);
+        assertTrue(sqlStatementContext instanceof InsertStatementContext);
     }
     
     @Test

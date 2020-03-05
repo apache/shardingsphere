@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+
+import java.util.Optional;
 
 /**
  * Table segment.
@@ -31,36 +31,39 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class TableSegment implements OwnerAvailable<SchemaSegment>, AliasAvailable {
+public final class TableSegment implements OwnerAvailable, AliasAvailable {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final IdentifierValue identifier;
+    private final TableNameSegment tableName;
     
     @Setter
-    private SchemaSegment owner;
+    private OwnerSegment owner;
     
-    private String alias;
+    @Setter
+    private AliasSegment alias;
     
-    @Override
-    public int getStartIndex() {
-        return null == owner ? startIndex : owner.getStartIndex(); 
+    public TableSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue) {
+        tableName = new TableNameSegment(startIndex, stopIndex, identifierValue);
     }
     
     @Override
-    public Optional<SchemaSegment> getOwner() {
-        return Optional.fromNullable(owner);
+    public int getStartIndex() {
+        return null == owner ? tableName.getStartIndex() : owner.getStartIndex(); 
+    }
+    
+    @Override
+    public int getStopIndex() {
+        return tableName.getStopIndex();
+        //FIXME: Rewriter need to handle alias as well
+//        return null == alias ? tableName.getStopIndex() : alias.getStopIndex();
+    }
+    
+    @Override
+    public Optional<OwnerSegment> getOwner() {
+        return Optional.ofNullable(owner);
     }
     
     @Override
     public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
-    
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = SQLUtil.getExactlyValue(alias);
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
 }

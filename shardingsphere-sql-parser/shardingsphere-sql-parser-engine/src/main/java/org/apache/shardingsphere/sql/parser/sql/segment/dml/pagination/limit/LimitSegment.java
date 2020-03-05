@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.PaginationValueSegment;
+
+import java.util.Optional;
 
 /**
  * Limit segment.
@@ -44,7 +45,7 @@ public final class LimitSegment implements SQLSegment {
      * @return offset
      */
     public Optional<PaginationValueSegment> getOffset() {
-        return Optional.fromNullable(offset);
+        return Optional.ofNullable(offset);
     }
     
     /**
@@ -53,6 +54,6 @@ public final class LimitSegment implements SQLSegment {
      * @return row count
      */
     public Optional<PaginationValueSegment> getRowCount() {
-        return Optional.fromNullable(rowCount);
+        return Optional.ofNullable(rowCount);
     }
 }

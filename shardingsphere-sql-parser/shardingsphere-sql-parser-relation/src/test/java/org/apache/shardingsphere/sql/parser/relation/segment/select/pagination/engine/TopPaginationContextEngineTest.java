@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.engine;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -38,6 +37,7 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -49,6 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TopPaginationContextEngineTest {
+    
     private TopPaginationContextEngine topPaginationContextEngine;
     
     @Before
@@ -104,8 +105,7 @@ public final class TopPaginationContextEngineTest {
         Collection<AndPredicate> andPredicates = Collections.singleton(andPredicate);
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
         when(projectionsContext.findAlias(anyString())).thenReturn(Optional.of("predicateRowNumberAlias"));
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(
-                new TopProjectionSegment(0, 10, "text", null, name), andPredicates, Collections.<Object>singletonList(1));
+        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, "text", null, name), andPredicates, Collections.singletonList(1));
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
         assertThat(paginationValueSegment, instanceOf(ParameterMarkerRowNumberValueSegment.class));

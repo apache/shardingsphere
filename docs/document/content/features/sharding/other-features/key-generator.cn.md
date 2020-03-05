@@ -11,7 +11,7 @@ weight = 2
 虽然可通过约束自增主键初始值和步长的方式避免碰撞，但需引入额外的运维规则，使解决方案缺乏完整性和可扩展性。
 
 目前有许多第三方解决方案可以完美解决这个问题，如UUID等依靠特定算法自生成不重复键，或者通过引入主键生成服务等。为了方便用户使用、满足不同用户不同使用场景的需求，
-ShardingSphere不仅提供了内置的分布式主键生成器，例如UUID、SNOWFLAKE、LEAF(进行中)，还抽离出分布式主键生成器的接口，方便用户自行实现自定义的自增主键生成器。
+ShardingSphere不仅提供了内置的分布式主键生成器，例如UUID、SNOWFLAKE，还抽离出分布式主键生成器的接口，方便用户自行实现自定义的自增主键生成器。
 
 ## 内置的主键生成器
 
@@ -34,9 +34,9 @@ ShardingSphere提供灵活的配置分布式主键生成策略方式。
  - 符号位(1bit)
 
 预留的符号位，恒为零。
- 
+
  - 时间戳位(41bit)
- 
+
 41位的时间戳可以容纳的毫秒数是2的41次幂，一年所使用的毫秒数是：`365 * 24 * 60 * 60 * 1000`。通过计算可知：
 
 ```java
@@ -65,5 +65,7 @@ Math.pow(2, 41) / (365 * 24 * 60 * 60 * 1000L);
 
 ### LEAF
 
-借鉴[Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html), 主要分为Leaf-segment和Leaf-snowflake两种方案。
-ShardingSphere在4.0.0-RC2-release版本中实现了Leaf-segment,在4.0.0-RC3-release版本中实现了Leaf-snowflake。
+在5.0.0版本之前，借鉴[Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html)，主要分为Leaf-segment和Leaf-snowflake两种方案。ShardingSphere在4.0.0-RC2-release版本中实现了Leaf-segment，在4.0.0-RC3-release版本中实现了Leaf-snowflake。
+
+从5.0.0版本起，以上两个实现从ShardingSphere中移除。我们重新适配了第三方的[Leaf开源实现](https://github.com/Meituan-Dianping/Leaf)，并移动到[OpenSharding](https://github.com/opensharding/sharding-keygen-leaf)仓库中。具体使用方式，请参考[OpenSharding/sharding-keygen-leaf](https://github.com/opensharding/sharding-keygen-leaf)项目。
+

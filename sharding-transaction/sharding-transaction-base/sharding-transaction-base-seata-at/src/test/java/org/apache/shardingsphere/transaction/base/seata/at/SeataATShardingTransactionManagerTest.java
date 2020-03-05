@@ -72,12 +72,7 @@ public final class SeataATShardingTransactionManagerTest {
     @BeforeClass
     @SneakyThrows
     public static void before() {
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                MOCK_SEATA_SERVER.start();
-            }
-        });
+        Executors.newSingleThreadExecutor().submit(MOCK_SEATA_SERVER::start);
         while (true) {
             if (MOCK_SEATA_SERVER.getInitialized().get()) {
                 return;

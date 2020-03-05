@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.impl.InsertSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -31,26 +30,27 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Inser
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Assist query and plain insert columns token generator.
  */
-public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator {
+public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof InsertSQLStatementContext)) {
-            return false;
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            return (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns().isPresent() && !((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
         }
-        return ((InsertStatement) sqlStatementContext.getSqlStatement()).getInsertColumns().isPresent() && !((InsertStatement) sqlStatementContext.getSqlStatement()).useDefaultColumns();
+        return false;
     }
     
     @Override
-    public Collection<InsertColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<InsertColumnsToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Collection<InsertColumnsToken> result = new LinkedList<>();
-        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(sqlStatementContext.getTablesContext().getSingleTableName());
+        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
         Preconditions.checkState(encryptTable.isPresent());
-        for (ColumnSegment each : ((InsertStatement) sqlStatementContext.getSqlStatement()).getColumns()) {
+        for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> columns = getColumns(encryptTable.get(), each);
             if (!columns.isEmpty()) {
                 result.add(new InsertColumnsToken(each.getStopIndex() + 1, columns));
@@ -61,14 +61,8 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator extends BaseEn
     
     private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         List<String> result = new LinkedList<>();
-        Optional<String> assistedQueryColumn = encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue());
-        if (assistedQueryColumn.isPresent()) {
-            result.add(assistedQueryColumn.get());
-        }
-        Optional<String> plainColumn = encryptTable.findPlainColumn(columnSegment.getIdentifier().getValue());
-        if (plainColumn.isPresent()) {
-            result.add(plainColumn.get());
-        }
+        encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
+        encryptTable.findPlainColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         return result;
     }
 }

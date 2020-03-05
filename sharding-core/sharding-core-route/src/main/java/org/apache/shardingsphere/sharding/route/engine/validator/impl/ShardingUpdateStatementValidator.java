@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.impl;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -36,6 +34,7 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sharding update statement validator.
@@ -44,12 +43,12 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
     
     @Override
     public void validate(final ShardingRule shardingRule, final UpdateStatement sqlStatement, final List<Object> parameters) {
-        String tableName = new TablesContext(sqlStatement).getSingleTableName();
+        String tableName = sqlStatement.getTables().iterator().next().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             String shardingColumn = each.getColumn().getIdentifier().getValue();
             if (shardingRule.isShardingColumn(shardingColumn, tableName)) {
                 Optional<Object> shardingColumnSetAssignmentValue = getShardingColumnSetAssignmentValue(each, parameters);
-                Optional<Object> shardingValue = Optional.absent();
+                Optional<Object> shardingValue = Optional.empty();
                 Optional<WhereSegment> whereSegmentOptional = sqlStatement.getWhere();
                 if (whereSegmentOptional.isPresent()) {
                     shardingValue = getShardingValue(whereSegmentOptional.get(), parameters, shardingColumn);
@@ -72,7 +71,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
             return Optional.of(((LiteralExpressionSegment) segment).getLiterals());
         }
         if (-1 == shardingSetAssignIndex || shardingSetAssignIndex > parameters.size() - 1) {
-            return Optional.absent();
+            return Optional.empty();
         }
         return Optional.of(parameters.get(shardingSetAssignIndex));
     }
@@ -81,7 +80,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
         for (AndPredicate each : whereSegment.getAndPredicates()) {
             return getShardingValue(each, parameters, shardingColumn);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private Optional<Object> getShardingValue(final AndPredicate andPredicate, final List<Object> parameters, final String shardingColumn) {
@@ -99,7 +98,7 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
                 return getPredicateInShardingValue(segments, parameters);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private Optional<Object> getPredicateCompareShardingValue(final ExpressionSegment segment, final List<Object> parameters) {
@@ -107,14 +106,14 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
         if (segment instanceof ParameterMarkerExpressionSegment) {
             shardingValueParameterMarkerIndex = ((ParameterMarkerExpressionSegment) segment).getParameterMarkerIndex();
             if (-1 == shardingValueParameterMarkerIndex || shardingValueParameterMarkerIndex > parameters.size() - 1) {
-                return Optional.absent();
+                return Optional.empty();
             }
             return Optional.of(parameters.get(shardingValueParameterMarkerIndex));
         }
         if (segment instanceof LiteralExpressionSegment) {
             return Optional.of(((LiteralExpressionSegment) segment).getLiterals());
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private Optional<Object> getPredicateInShardingValue(final Collection<ExpressionSegment> segments, final List<Object> parameters) {
@@ -131,6 +130,6 @@ public final class ShardingUpdateStatementValidator implements ShardingStatement
                 return Optional.of(((LiteralExpressionSegment) each).getLiterals());
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }
