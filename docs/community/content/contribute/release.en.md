@@ -136,7 +136,8 @@ Suppose ShardingSphere source codes downloaded from github is under `~/incubator
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
-git clone -b ${branch} https://github.com/apache/incubator-shardingsphere.git ~/incubator-shardingsphere
+## ${name} is the properly branch, e.g. master, dev-4.x
+git clone --branch ${name} https://github.com/apache/incubator-shardingsphere.git ~/incubator-shardingsphere
 cd ~/incubator-shardingsphere/
 git pull
 git checkout -b ${RELEASE.VERSION}-release
