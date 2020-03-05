@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.column;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+
+import java.util.Optional;
 
 /**
  * Column segment.
@@ -35,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue
 @Getter
 @Setter
 @ToString
-public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
+public final class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
     
     private final int startIndex;
     
@@ -50,12 +51,12 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
      *
      * @return qualified name
      */
-    public final String getQualifiedName() {
+    public String getQualifiedName() {
         return null == owner ? identifier.getValue() : owner.getIdentifier().getValue() + "." + identifier.getValue();
     }
 
     @Override
-    public final Optional<OwnerSegment> getOwner() {
-        return Optional.fromNullable(owner);
+    public Optional<OwnerSegment> getOwner() {
+        return Optional.ofNullable(owner);
     }
 }

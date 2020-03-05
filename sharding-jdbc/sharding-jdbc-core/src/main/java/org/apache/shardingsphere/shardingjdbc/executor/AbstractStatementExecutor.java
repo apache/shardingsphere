@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,7 +63,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Abstract statement executor.
@@ -122,20 +121,8 @@ public abstract class AbstractStatementExecutor {
     
     protected final void cacheStatements() {
         for (InputGroup<StatementExecuteUnit> each : inputGroups) {
-            statements.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, Statement>() {
-                
-                @Override
-                public Statement apply(final StatementExecuteUnit input) {
-                    return input.getStatement();
-                }
-            }));
-            parameterSets.addAll(Lists.transform(each.getInputs(), new Function<StatementExecuteUnit, List<Object>>() {
-                
-                @Override
-                public List<Object> apply(final StatementExecuteUnit input) {
-                    return input.getExecutionUnit().getSqlUnit().getParameters();
-                }
-            }));
+            statements.addAll(each.getInputs().stream().map(StatementExecuteUnit::getStatement).collect(Collectors.toList()));
+            parameterSets.addAll(each.getInputs().stream().map(input -> input.getExecutionUnit().getSqlUnit().getParameters()).collect(Collectors.toList()));
         }
     }
     
@@ -255,7 +242,7 @@ public abstract class AbstractStatementExecutor {
                 return Optional.of(each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry() {

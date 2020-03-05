@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.UseDe
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Generated key for use default insert columns token generator.

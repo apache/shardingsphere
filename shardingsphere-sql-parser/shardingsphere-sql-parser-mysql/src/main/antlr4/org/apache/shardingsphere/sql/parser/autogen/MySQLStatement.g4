@@ -17,7 +17,7 @@
 
 grammar MySQLStatement;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure, RLStatement;
 
 execute
     : (select
@@ -27,7 +27,10 @@ execute
     | replace
     | createTable
     | alterTable
+    | repairTable
+    | renameTableSpecification
     | dropTable
+    | dropDatabase
     | truncateTable
     | createIndex
     | dropIndex
@@ -59,5 +62,8 @@ execute
     | showOther
     | setVariable
     | call
+    | changeMasterTo
+    | startSlave
+    | stopSlave
     ) SEMI_?
     ;

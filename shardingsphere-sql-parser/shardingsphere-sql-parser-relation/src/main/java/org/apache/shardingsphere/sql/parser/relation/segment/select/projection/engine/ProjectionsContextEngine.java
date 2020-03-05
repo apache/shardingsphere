@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.engine;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
@@ -43,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Projections context engine.
@@ -76,10 +76,7 @@ public final class ProjectionsContextEngine {
     private Collection<Projection> getProjections(final String sql, final ProjectionsSegment projectionsSegment) {
         Collection<Projection> result = new LinkedList<>();
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
-            Optional<Projection> projection = projectionEngine.createProjection(sql, each);
-            if (projection.isPresent()) {
-                result.add(projection.get());
-            }
+            projectionEngine.createProjection(sql, each).ifPresent(result::add);
         }
         return result;
     }
@@ -103,7 +100,7 @@ public final class ProjectionsContextEngine {
     
     private Collection<String> getQualifiedShorthandColumnLabels(final Collection<TableSegment> tables, final String owner) {
         for (TableSegment each : tables) {
-            if (owner.equalsIgnoreCase(each.getAlias().or(each.getTableName().getIdentifier().getValue()))) {
+            if (owner.equalsIgnoreCase(each.getAlias().orElse(each.getTableName().getIdentifier().getValue()))) {
                 return relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue());
             }
         }
@@ -185,7 +182,7 @@ public final class ProjectionsContextEngine {
                 return Optional.of(shorthandProjection);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private boolean containsItemWithoutOwnerInShorthandProjections(final Collection<Projection> projections, final OrderByItemSegment orderItem, final SelectStatement selectStatement) {
@@ -228,7 +225,7 @@ public final class ProjectionsContextEngine {
     
     private TableSegment find(final String tableNameOrAlias, final SelectStatement selectStatement) {
         for (TableSegment each : selectStatement.getTables()) {
-            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orNull())) {
+            if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
                 return each;
             }
         }

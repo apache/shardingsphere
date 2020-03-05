@@ -57,14 +57,15 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
@@ -116,7 +117,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
             result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList()));
+            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
@@ -270,7 +271,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     
     private boolean isTable(final TableSegment owner, final Collection<TableSegment> tableSegments) {
         for (TableSegment each : tableSegments) {
-            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orNull())) {
+            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }
         }
@@ -352,7 +353,10 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             return result;
         }
         if (projection instanceof SubquerySegment) {
-            return new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText());
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(
+                    new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText()));
+            result.setAlias(alias);
+            return result;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
@@ -440,9 +444,6 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             }
             if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
                 result.getValue().add(createTableSegment(((ColumnSegment) predicate.getRightValue()).getOwner().get()));
-            }
-            if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
-                result.getValue().add(createTableSegment(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get()));
             }
         }
         return result;

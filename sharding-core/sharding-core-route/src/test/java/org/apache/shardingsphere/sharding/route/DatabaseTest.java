@@ -97,11 +97,11 @@ public final class DatabaseTest {
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         ShardingRouteContext actual = new ShardingRouter(shardingRule, properties, getMetaDataForPagination(), sqlParserEngine).route(originSQL, Collections.emptyList(), false);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(0L));
-        assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(5L));
+        assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orElse(null), is(5L));
         originSQL = "select user_id from tbl_pagination limit 5,5";
         actual = new ShardingRouter(shardingRule, properties, getMetaDataForPagination(), sqlParserEngine).route(originSQL, Collections.emptyList(), false);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
-        assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(5L));
+        assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orElse(null), is(5L));
     }
     
     private ShardingSphereMetaData getMetaDataForPagination() {
@@ -134,13 +134,13 @@ public final class DatabaseTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getTables()).thenReturn(mock(TableMetas.class));
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
-        ShardingRouteContext actual = new ShardingRouter(rule, properties, metaData, sqlParserEngine).route(originSQL, Lists.<Object>newArrayList(13, 173), false);
+        ShardingRouteContext actual = new ShardingRouter(rule, properties, metaData, sqlParserEngine).route(originSQL, Lists.newArrayList(13, 173), false);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
-        assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));
+        assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orElse(null), is(10L));
         assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
         originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
-        actual = new ShardingRouter(rule, properties, metaData, sqlParserEngine).route(originSQL, Lists.<Object>newArrayList(89, 84), false);
+        actual = new ShardingRouter(rule, properties, metaData, sqlParserEngine).route(originSQL, Lists.newArrayList(89, 84), false);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
-        assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orNull(), is(10L));
+        assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orElse(null), is(10L));
     }
 }

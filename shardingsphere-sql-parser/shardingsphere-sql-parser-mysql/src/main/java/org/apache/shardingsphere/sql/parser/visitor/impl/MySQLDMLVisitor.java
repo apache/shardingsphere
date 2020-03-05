@@ -23,8 +23,10 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Assignm
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BlobValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ExprContext;
@@ -45,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderBy
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.QualifiedShorthandContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReplaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
@@ -66,7 +69,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
@@ -74,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProje
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
@@ -89,8 +93,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.ReplaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
@@ -111,7 +118,16 @@ import java.util.List;
  */
 public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
-    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitCall(final CallContext ctx) {
+        return new CallStatement();
+    }
+    
+    @Override
+    public ASTNode visitDoStatement(final DoStatementContext ctx) {
+        return new DoStatement();
+    }
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
@@ -132,6 +148,22 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @SuppressWarnings("unchecked")
     @Override
+    public ASTNode visitReplace(final ReplaceContext ctx) {
+        // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
+        ReplaceStatement result;
+        if (null != ctx.insertValuesClause()) {
+            result = (ReplaceStatement) visit(ctx.insertValuesClause());
+        } else {
+            result = new ReplaceStatement();
+            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        }
+        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setParametersCount(getCurrentParameterIndex());
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         InsertStatement result = new InsertStatement();
         if (null != ctx.columnNames()) {
@@ -139,7 +171,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
             result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.<ColumnSegment>emptyList()));
+            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
@@ -313,7 +345,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     private boolean isTable(final TableSegment owner, final Collection<TableSegment> tableSegments) {
         for (TableSegment each : tableSegments) {
-            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orNull())) {
+            if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }
         }
@@ -412,7 +444,10 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             return result;
         }
         if (projection instanceof SubquerySegment) {
-            return new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText());
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(
+                    new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText()));
+            result.setAlias(alias);
+            return result;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
@@ -505,9 +540,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             }
             if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
                 result.getValue().add(createTableSegment(((ColumnSegment) predicate.getRightValue()).getOwner().get()));
-            }
-            if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
-                result.getValue().add(createTableSegment(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get()));
             }
         }
         return result;

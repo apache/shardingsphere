@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShadowRule;
@@ -30,10 +29,11 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Shadow judgement engine for prepared.
@@ -61,8 +61,8 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
             }
             return false;
         }
-        if (sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable) {
-            Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere();
+        if (sqlStatementContext instanceof WhereAvailable) {
+            Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
             if (!whereSegment.isPresent()) {
                 return false;
             }

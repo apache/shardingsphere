@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -30,12 +29,11 @@ import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.ArrayList;
@@ -46,6 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Sharding condition engine for where clause.
@@ -60,23 +59,23 @@ public final class WhereClauseShardingConditionEngine {
     /**
      * Create sharding conditions.
      * 
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final SQLStatement sqlStatement, final List<Object> parameters) {
-        if (!(sqlStatement instanceof WhereSegmentAvailable)) {
+    public List<ShardingCondition> createShardingConditions(final SQLStatementContext sqlStatementContext, final List<Object> parameters) {
+        if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();
         }
         List<ShardingCondition> result = new ArrayList<>();
-        Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatement).getWhere();
+        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
         if (whereSegment.isPresent()) {
-            result.addAll(createShardingConditions((WhereSegmentAvailable) sqlStatement, whereSegment.get().getAndPredicates(), parameters));
+            result.addAll(createShardingConditions(sqlStatementContext, whereSegment.get().getAndPredicates(), parameters));
         }
         // FIXME process subquery
-//        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatement.findSQLSegments(SubqueryPredicateSegment.class);
+//        Collection<SubqueryPredicateSegment> subqueryPredicateSegments = sqlStatementContext.findSQLSegments(SubqueryPredicateSegment.class);
 //        for (SubqueryPredicateSegment each : subqueryPredicateSegments) {
-//            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions((WhereSegmentAvailable) sqlStatement, each.getAndPredicates(), parameters);
+//            Collection<ShardingCondition> subqueryShardingConditions = createShardingConditions((WhereSegmentAvailable) sqlStatementContext, each.getAndPredicates(), parameters);
 //            if (!result.containsAll(subqueryShardingConditions)) {
 //                result.addAll(subqueryShardingConditions);
 //            }
@@ -84,10 +83,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<ShardingCondition> createShardingConditions(final WhereSegmentAvailable sqlStatement, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
+    private Collection<ShardingCondition> createShardingConditions(final SQLStatementContext sqlStatementContext, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
-            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatement, each, parameters);
+            Map<Column, Collection<RouteValue>> routeValueMap = createRouteValueMap(sqlStatementContext, each, parameters);
             if (routeValueMap.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -96,10 +95,10 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Map<Column, Collection<RouteValue>> createRouteValueMap(final WhereSegmentAvailable sqlStatement, final AndPredicate andPredicate, final List<Object> parameters) {
+    private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = new TablesContext(sqlStatement.getTables()).findTableName(each, relationMetas);
+            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(each, relationMetas);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName.get())) {
                 continue;
             }
@@ -109,7 +108,7 @@ public final class WhereClauseShardingConditionEngine {
                 continue;
             }
             if (!result.containsKey(column)) {
-                result.put(column, new LinkedList<RouteValue>());
+                result.put(column, new LinkedList<>());
             }
             result.get(column).add(routeValue.get());
         }

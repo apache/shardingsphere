@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.merge;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementConte
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Encryptor meta data for query header.
@@ -43,12 +43,11 @@ public final class ResultSetEncryptorMetaData implements EncryptorMetaData {
     public Optional<Encryptor> findEncryptor(final int columnIndex) throws SQLException {
         String columnName = resultSetMetaData.getColumnName(columnIndex);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            Optional<Encryptor> result = encryptRule.isCipherColumn(each, columnName)
-                    ? encryptRule.findEncryptor(each, encryptRule.getLogicColumnOfCipher(each, columnName)) : Optional.<Encryptor>absent();
+            Optional<Encryptor> result = encryptRule.isCipherColumn(each, columnName) ? encryptRule.findEncryptor(each, encryptRule.getLogicColumnOfCipher(each, columnName)) : Optional.empty();
             if (result.isPresent()) {
                 return result;
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

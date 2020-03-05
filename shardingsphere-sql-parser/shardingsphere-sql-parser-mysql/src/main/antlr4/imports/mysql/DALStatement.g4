@@ -289,7 +289,7 @@ optimizeTable
     : OPTIMIZE (NO_WRITE_TO_BINLOG | LOCAL)? TABLE tableNames
     ;
 
-repaidTable
+repairTable
     : REPAIR (NO_WRITE_TO_BINLOG | LOCAL)? TABLE tableNames QUICK? EXTENDED? USE_FRM?
     ;
 
@@ -358,7 +358,7 @@ resetStatement
     ;
 
 resetOption_
-    : MASTER | SLAVE
+    : MASTER | SLAVE | QUERY CACHE
     ;
 
 resetPersist

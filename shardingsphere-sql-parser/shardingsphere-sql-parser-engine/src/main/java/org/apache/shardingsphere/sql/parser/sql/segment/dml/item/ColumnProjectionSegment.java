@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -25,10 +24,15 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
+import java.util.Optional;
+
 /**
  * Column projection segment.
  */
-public final class ColumnProjectionSegment extends ColumnSegment implements ProjectionSegment, AliasAvailable {
+public final class ColumnProjectionSegment implements ProjectionSegment, AliasAvailable {
+    
+    @Getter
+    private final ColumnSegment column;
     
     @Getter
     private final String text;
@@ -37,15 +41,24 @@ public final class ColumnProjectionSegment extends ColumnSegment implements Proj
     private AliasSegment alias;
     
     public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
-        super(columnSegment.getStartIndex(), columnSegment.getStopIndex(), columnSegment.getIdentifier());
+        column = columnSegment;
         this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
-        if (columnSegment.getOwner().isPresent()) {
-            setOwner(columnSegment.getOwner().get());
-        }
     }
     
     @Override
     public Optional<String> getAlias() {
-        return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+    }
+    
+    @Override
+    public int getStartIndex() {
+        return column.getStartIndex();
+    }
+    
+    @Override
+    public int getStopIndex() {
+        return column.getStopIndex();
+        // TODO
+        // return null == alias ? alias.getStopIndex() : column.getStopIndex();
     }
 }

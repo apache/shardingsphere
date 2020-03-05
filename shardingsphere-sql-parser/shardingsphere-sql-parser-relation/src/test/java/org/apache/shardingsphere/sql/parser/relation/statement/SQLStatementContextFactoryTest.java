@@ -17,17 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -41,19 +37,15 @@ import java.util.Collections;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class SQLStatementContextFactoryTest {
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getGroupBy()).thenReturn(Optional.<GroupBySegment>absent());
-        when(selectStatement.getOrderBy()).thenReturn(Optional.<OrderBySegment>absent());
-        when(selectStatement.getLimit()).thenReturn(Optional.of(new LimitSegment(0, 10, null, null)));
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.<ProjectionSegment>emptyList());
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLimit(new LimitSegment(0, 10, null, null));
+        selectStatement.setProjections(projectionsSegment);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, selectStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof SelectStatementContext);

@@ -27,8 +27,6 @@ import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
@@ -42,7 +40,6 @@ import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -60,8 +57,6 @@ public final class CuratorZookeeperInstance implements ConfigCenterRepository, R
     private final Map<String, TreeCache> caches = new HashMap<>();
     
     private CuratorFramework client;
-    
-    private InterProcessMutex leafLock;
     
     @Getter
     @Setter
@@ -209,13 +204,7 @@ public final class CuratorZookeeperInstance implements ConfigCenterRepository, R
     public List<String> getChildrenKeys(final String key) {
         try {
             List<String> result = client.getChildren().forPath(key);
-            Collections.sort(result, new Comparator<String>() {
-                
-                @Override
-                public int compare(final String o1, final String o2) {
-                    return o2.compareTo(o1);
-                }
-            });
+            result.sort(Comparator.reverseOrder());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -232,18 +221,14 @@ public final class CuratorZookeeperInstance implements ConfigCenterRepository, R
             addCacheData(key);
         }
         TreeCache cache = caches.get(path);
-        cache.getListenable().addListener(new TreeCacheListener() {
-            
-            @Override
-            public void childEvent(final CuratorFramework client, final TreeCacheEvent event) throws UnsupportedEncodingException {
-                ChildData data = event.getData();
-                if (null == data || null == data.getPath()) {
-                    return;
-                }
-                DataChangedEvent.ChangedType changedType = getChangedType(event);
-                if (DataChangedEvent.ChangedType.IGNORED != changedType) {
-                    dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8"), changedType));
-                }
+        cache.getListenable().addListener((client, event) -> {
+            ChildData data = event.getData();
+            if (null == data || null == data.getPath()) {
+                return;
+            }
+            DataChangedEvent.ChangedType changedType = getChangedType(event);
+            if (DataChangedEvent.ChangedType.IGNORED != changedType) {
+                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8"), changedType));
             }
         });
     }

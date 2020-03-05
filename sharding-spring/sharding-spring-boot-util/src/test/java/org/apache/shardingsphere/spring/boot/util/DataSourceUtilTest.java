@@ -19,11 +19,14 @@ package org.apache.shardingsphere.spring.boot.util;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -118,5 +121,16 @@ public final class DataSourceUtilTest {
         BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
         assertThat(actual.getTimeBetweenEvictionRunsMillis(), is(16L));
         assertThat(actual.getMinEvictableIdleTimeMillis(), is(4000L));
+    }
+    
+    @Test
+    public void assertDataSourceForListValue() throws ReflectiveOperationException {
+        Map<String, Object> dataSourceProperties = new HashMap<>(3, 1);
+        dataSourceProperties.put("connectionInitSqls", "set names utf8mb4;,set names utf8;");
+        BasicDataSource actual = (BasicDataSource) DataSourceUtil.getDataSource(BasicDataSource.class.getName(), dataSourceProperties);
+        assertThat(actual.getConnectionInitSqls(), CoreMatchers.<List<String>>instanceOf(List.class));
+        assertThat(actual.getConnectionInitSqls().size(), is(2));
+        assertThat(actual.getConnectionInitSqls(), hasItem("set names utf8mb4;"));
+        assertThat(actual.getConnectionInitSqls(), hasItem("set names utf8;"));
     }
 }

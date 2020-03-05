@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqua
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
@@ -40,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Predicate right value token generator for encrypt.
@@ -56,13 +56,13 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent();
+        return sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent();
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), relationMetas).createEncryptConditions(sqlStatementContext);
-        return encryptConditions.isEmpty() ? Collections.<SQLToken>emptyList() : generateSQLTokens(encryptConditions);
+        return encryptConditions.isEmpty() ? Collections.emptyList() : generateSQLTokens(encryptConditions);
     }
     
     private Collection<SQLToken> generateSQLTokens(final List<EncryptCondition> encryptConditions) {

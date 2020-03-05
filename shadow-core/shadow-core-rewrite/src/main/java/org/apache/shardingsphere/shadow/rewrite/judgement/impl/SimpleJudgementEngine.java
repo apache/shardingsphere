@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.condition.ShadowCondition;
@@ -26,11 +25,12 @@ import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Simple shadow judgement engine.
@@ -52,7 +52,7 @@ public final class SimpleJudgementEngine implements ShadowJudgementEngine {
             }
             return false;
         }
-        if (sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable) {
+        if (sqlStatementContext instanceof WhereAvailable) {
             Optional<ShadowCondition> shadowCondition = new ShadowConditionEngine(shadowRule).createShadowCondition(sqlStatementContext);
             if (!shadowCondition.isPresent()) {
                 return false;

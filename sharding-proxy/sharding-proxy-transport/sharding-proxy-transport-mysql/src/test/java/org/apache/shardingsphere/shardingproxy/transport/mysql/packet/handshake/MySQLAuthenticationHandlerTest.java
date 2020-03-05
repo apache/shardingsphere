@@ -40,7 +40,7 @@ public final class MySQLAuthenticationHandlerTest {
     private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     
     private final byte[] part1 = {84, 85, 115, 77, 68, 116, 85, 78};
-
+    
     private final byte[] part2 = {83, 121, 75, 81, 87, 56, 120, 112, 73, 109, 77, 69};
     
     @Before
@@ -62,19 +62,19 @@ public final class MySQLAuthenticationHandlerTest {
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertFalse(authenticationHandler.login(getResponse41("root", authResponse, "db1")).isPresent());
     }
-
+    
     @Test
     public void assertLoginWithAbsentUser() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login(getResponse41("root1", authResponse, "db1")).orNull(), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login(getResponse41("root1", authResponse, "db1")).orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
-
+    
     @Test
     public void assertLoginWithIncorrectPassword() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login(getResponse41("root", authResponse, "db1")).orNull(), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login(getResponse41("root", authResponse, "db1")).orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
@@ -83,14 +83,14 @@ public final class MySQLAuthenticationHandlerTest {
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertFalse(authenticationHandler.login(getResponse41("root", authResponse, "db1")).isPresent());
     }
-
+    
     @Test
     public void assertLoginWithUnauthorizedSchema() {
         setAuthentication(new ProxyUser("root", Collections.singleton("db1")));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login(getResponse41("root", authResponse, "db2")).orNull(), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login(getResponse41("root", authResponse, "db2")).orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
     }
-
+    
     private MySQLHandshakeResponse41Packet getResponse41(final String userName, final byte[] authResponse, final String database) {
         MySQLHandshakeResponse41Packet result = mock(MySQLHandshakeResponse41Packet.class);
         doReturn(userName).when(result).getUsername();
@@ -98,7 +98,7 @@ public final class MySQLAuthenticationHandlerTest {
         doReturn(database).when(result).getDatabase();
         return result;
     }
-
+    
     @SneakyThrows
     private void setAuthentication(final ProxyUser proxyUser) {
         Authentication authentication = new Authentication();

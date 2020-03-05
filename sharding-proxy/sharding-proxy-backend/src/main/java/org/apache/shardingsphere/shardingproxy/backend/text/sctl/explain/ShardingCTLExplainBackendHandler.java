@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.text.sctl.explain;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.StatementExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
@@ -29,11 +27,13 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sharding CTL explain backend handler.

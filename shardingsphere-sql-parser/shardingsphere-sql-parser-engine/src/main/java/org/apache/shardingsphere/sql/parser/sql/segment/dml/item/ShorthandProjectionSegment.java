@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+
+import java.util.Optional;
 
 /**
  * Shorthand projection segment.
@@ -42,6 +43,6 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     
     @Override
     public Optional<OwnerSegment> getOwner() {
-        return Optional.fromNullable(owner);
+        return Optional.ofNullable(owner);
     }
 }

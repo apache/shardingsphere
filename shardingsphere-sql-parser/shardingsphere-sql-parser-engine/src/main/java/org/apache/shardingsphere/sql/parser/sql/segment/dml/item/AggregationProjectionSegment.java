@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.dml.item;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+
+import java.util.Optional;
 
 /**
  * Aggregation projection segment.
@@ -54,6 +55,6 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     @Override
     public Optional<String> getAlias() {
-        return null == alias ? Optional.<String>absent() : Optional.fromNullable(alias.getIdentifier().getValue());
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
 }

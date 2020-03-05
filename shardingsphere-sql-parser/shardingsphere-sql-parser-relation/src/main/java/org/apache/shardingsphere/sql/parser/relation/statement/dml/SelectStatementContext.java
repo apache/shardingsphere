@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.statement.dml;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
@@ -33,9 +32,11 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -50,20 +51,21 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Select SQL statement context.
  */
 @Getter
 @ToString(callSuper = true)
-public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
@@ -145,8 +147,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                     continue;
                 }
             }
-            Optional<String> alias = getAlias(((TextOrderByItemSegment) each.getSegment()).getText());
-            String columnLabel = alias.isPresent() ? alias.get() : getOrderItemText((TextOrderByItemSegment) each.getSegment());
+            String columnLabel = getAlias(((TextOrderByItemSegment) each.getSegment()).getText()).orElseGet(() -> getOrderItemText((TextOrderByItemSegment) each.getSegment()));
             Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
             if (columnLabelIndexMap.containsKey(columnLabel)) {
                 each.setIndex(columnLabelIndexMap.get(columnLabel));
@@ -156,18 +157,18 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private Optional<String> getAlias(final String name) {
         if (projectionsContext.isUnqualifiedShorthandProjection()) {
-            return Optional.absent();
+            return Optional.empty();
         }
         String rawName = SQLUtil.getExactlyValue(name);
         for (Projection each : projectionsContext.getProjections()) {
             if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }
-            if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
+            if (rawName.equalsIgnoreCase(each.getAlias().orElse(null))) {
                 return Optional.of(rawName);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
@@ -213,14 +214,28 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private Collection<TableSegment> getAllTablesFromProjections(final ProjectionsSegment projections) {
         Collection<TableSegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections.getProjections()) {
-            if (each instanceof OwnerAvailable) {
-                Optional<OwnerSegment> owner = ((OwnerAvailable) each).getOwner();
-                if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getTables())) {
-                    result.add(new TableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
-                }
-            }
+            Optional<TableSegment> table = getTableSegment(each);
+            table.ifPresent(result::add);
         }
         return result;
+    }
+    
+    private Optional<TableSegment> getTableSegment(final ProjectionSegment each) {
+        Optional<OwnerSegment> owner = getTableOwner(each);
+        if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getTables())) {
+            return Optional .of(new TableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<OwnerSegment> getTableOwner(final ProjectionSegment each) {
+        if (each instanceof OwnerAvailable) {
+            return ((OwnerAvailable) each).getOwner();
+        }
+        if (each instanceof ColumnProjectionSegment) { 
+            return ((ColumnProjectionSegment) each).getColumn().getOwner();
+        }
+        return Optional.empty();
     }
     
     private Collection<TableSegment> getAllTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
@@ -240,10 +255,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private boolean isTable(final OwnerSegment owner, final Collection<TableSegment> tables) {
         for (TableSegment each : tables) {
-            if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
+            if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }
         }
         return true;
+    }
+    
+    @Override
+    public Optional<WhereSegment> getWhere() {
+        return getSqlStatement().getWhere();
     }
 }
