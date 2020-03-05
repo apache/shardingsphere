@@ -39,7 +39,7 @@ public final class RdbmsConfigurationTest {
     public void assertGetWhereCondition() {
         RdbmsConfiguration rdbmsConfiguration = new RdbmsConfiguration();
         assertThat(rdbmsConfiguration.getWhereCondition(), is(""));
-        rdbmsConfiguration.setWhereCondition("where 1=1");
-        assertThat(rdbmsConfiguration.getWhereCondition(), is("where 1=1"));
+        rdbmsConfiguration.setWhereCondition("WHERE 1=1");
+        assertThat(rdbmsConfiguration.getWhereCondition(), is("WHERE 1=1"));
     }
 }

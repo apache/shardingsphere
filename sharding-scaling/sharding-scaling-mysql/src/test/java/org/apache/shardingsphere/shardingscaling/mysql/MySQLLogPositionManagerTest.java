@@ -53,9 +53,9 @@ public final class MySQLLogPositionManagerTest {
     public void setUp() throws Exception {
         when(dataSource.getConnection()).thenReturn(connection);
         PreparedStatement positionStatement = mockPositionStatement();
-        when(connection.prepareStatement("show master status")).thenReturn(positionStatement);
+        when(connection.prepareStatement("SHOW MASTER STATUS")).thenReturn(positionStatement);
         PreparedStatement serverIdStatement = mockServerIdStatement();
-        when(connection.prepareStatement("show variables like 'server_id'")).thenReturn(serverIdStatement);
+        when(connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'")).thenReturn(serverIdStatement);
     }
     
     @Test

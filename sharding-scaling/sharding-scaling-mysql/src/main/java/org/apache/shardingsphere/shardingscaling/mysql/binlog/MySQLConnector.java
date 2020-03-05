@@ -164,7 +164,7 @@ public final class MySQLConnector {
     
     private void initDumpConnectSession() {
         if (serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
-            execute("set @master_binlog_checksum= @@global.binlog_checksum");
+            execute("SET @MASTER_BINLOG_CHECKSUM= @@GLOBAL.BINLOG_CHECKSUM");
         }
     }
     
@@ -172,7 +172,7 @@ public final class MySQLConnector {
         if (!serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
             return 0;
         }
-        InternalResultSet resultSet = executeQuery("select @@global.binlog_checksum");
+        InternalResultSet resultSet = executeQuery("SELECT @@GLOBAL.BINLOG_CHECKSUM");
         String checksumType = resultSet.getFieldValues().get(0).getColumns().get(0);
         switch (checksumType) {
             case "None":

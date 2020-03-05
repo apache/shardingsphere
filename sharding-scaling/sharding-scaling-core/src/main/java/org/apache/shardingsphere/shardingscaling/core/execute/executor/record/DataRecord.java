@@ -30,7 +30,7 @@ import java.util.List;
 @Setter
 @Getter
 public final class DataRecord extends Record {
-    
+
     private String type;
     
     private String tableName;

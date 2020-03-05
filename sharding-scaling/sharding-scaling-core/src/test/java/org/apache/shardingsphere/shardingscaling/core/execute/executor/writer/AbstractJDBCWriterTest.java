@@ -93,20 +93,20 @@ public final class AbstractJDBCWriterTest {
     @Test
     @SneakyThrows
     public void assertWriteInsertDataRecord() {
-        DataRecord insertRecord = getDataRecord("insert");
+        DataRecord insertRecord = getDataRecord("INSERT");
         when(sqlBuilder.buildInsertSQL(insertRecord)).thenReturn(INSERT_SQL);
         when(connection.prepareStatement(INSERT_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(insertRecord));
         jdbcWriter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
-        verify(preparedStatement).setObject(3, "insert");
+        verify(preparedStatement).setObject(3, "INSERT");
         verify(preparedStatement).execute();
     }
     
     @Test
     public void assertDeleteDataRecord() throws SQLException {
-        DataRecord deleteRecord = getDataRecord("delete");
+        DataRecord deleteRecord = getDataRecord("DELETE");
         when(sqlBuilder.buildDeleteSQL(deleteRecord)).thenReturn(DELETE_SQL);
         when(connection.prepareStatement(DELETE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(deleteRecord));
@@ -117,13 +117,13 @@ public final class AbstractJDBCWriterTest {
     
     @Test
     public void assertUpdateDataRecord() throws SQLException {
-        DataRecord updateRecord = getDataRecord("update");
+        DataRecord updateRecord = getDataRecord("UPDATE");
         when(sqlBuilder.buildUpdateSQL(updateRecord)).thenReturn(UPDATE_SQL);
         when(connection.prepareStatement(UPDATE_SQL)).thenReturn(preparedStatement);
         when(channel.fetchRecords(100, 3)).thenReturn(mockRecords(updateRecord));
         jdbcWriter.run();
         verify(preparedStatement).setObject(1, 10);
-        verify(preparedStatement).setObject(2, "update");
+        verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
         verify(preparedStatement).execute();
     }
