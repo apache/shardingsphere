@@ -66,7 +66,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpr;
+import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpression;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.CacheIndexStatement;
@@ -291,17 +291,16 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
-        
         List<VariableExprContext> variableExprContextList = ctx.variableExpr();
         if (null != variableExprContextList) {
-            List<VariableExpr> variableExprList = new ArrayList<VariableExpr>(variableExprContextList.size());
+            List<VariableExpression> variableExprList = new ArrayList<VariableExpression>(variableExprContextList.size());
             for (int i = 0; i < variableExprContextList.size(); i++) {
                 VariableExprContext variableExprContext = variableExprContextList.get(i);
                 VariableSegment variableSegment = (VariableSegment) visitVariable(variableExprContext.variable());
                 VariableValueSegment variableValueSegment = (VariableValueSegment) visitVariableValue(variableExprContext.variableValue());
-                String scopeType = variableExprContext.variable().scope() == null ? null : variableExprContext.variable().scope().getText();
-                VariableExpr variableExpr = new VariableExpr(variableSegment, variableValueSegment, scopeType);
-                variableExprList.add(variableExpr);
+                String scope = variableExprContext.variable().scope() == null ? null : variableExprContext.variable().scope().getText();
+                VariableExpression variableExpression = new VariableExpression(variableSegment, variableValueSegment, scope);
+                variableExprList.add(variableExpression);
             }
             result.setVariableExprList(variableExprList);
         }
@@ -310,7 +309,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     
     @Override
     public ASTNode visitVariableValue(final VariableValueContext ctx) {
-        return new VariableValueSegment(ctx.getText());
+        return new VariableValueSegment(ctx.getStart().getStartIndex(), ctx.getStart().getStopIndex(), ctx.getText());
     }
     
     @Override

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Collections;
 import org.apache.shardingsphere.sql.parser.api.visitor.DALVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ResetParameterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetVariableContext;
@@ -32,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.TimeZoneSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableValueSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpr;
+import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpression;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
@@ -52,11 +50,10 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         SetStatement result = new SetStatement();
         if (null != ctx.variableExpr()) {
-            List<VariableExpr> variableExprList = new ArrayList<VariableExpr>(1);
             VariableExprContext variableExprContext = ctx.variableExpr();
             VariableSegment variableSegment = null;
             VariableValueSegment variableValueSegment = null;
-            String scopeType = variableExprContext.scope() == null ? null : variableExprContext.scope().getText();
+            String scope = null == variableExprContext.scope() ? null : variableExprContext.scope().getText();
             if (null != variableExprContext.timeZone()) {
                 TimeZoneSegment timeZoneSegment = (TimeZoneSegment) visitTimeZone(variableExprContext.timeZone());
                 variableSegment = new VariableSegment(timeZoneSegment.getStartIndex(), timeZoneSegment.getStopIndex(), timeZoneSegment.getVariable());
@@ -64,16 +61,15 @@ public final class PostgreSQLDALVisitor extends PostgreSQLVisitor implements DAL
                 variableSegment = (VariableSegment) visitVariable(variableExprContext.variable());
             }
             variableValueSegment = (VariableValueSegment) visitVariableValue(variableExprContext.variableValue());
-            VariableExpr variableExpr = new VariableExpr(variableSegment, variableValueSegment, scopeType);
-            variableExprList.add(variableExpr);
-            result.setVariableExprList(variableExprList);
+            VariableExpression variableExpression = new VariableExpression(variableSegment, variableValueSegment, scope);
+            result.setVariableExprList(Collections.singletonList(variableExpression));
         }
         return result;
     }
 
     @Override
     public ASTNode visitVariableValue(final VariableValueContext ctx) {
-        return new VariableValueSegment(ctx.getText());
+        return new VariableValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
 
     @Override

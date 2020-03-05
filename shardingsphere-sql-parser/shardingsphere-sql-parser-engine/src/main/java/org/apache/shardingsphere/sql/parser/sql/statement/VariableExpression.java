@@ -30,12 +30,12 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-public class VariableExpr {
+public class VariableExpression {
     
     private VariableSegment variable;
     
     private VariableValueSegment variableValue;
     
-    private String scopeType;
+    private String scope;
     
 }

@@ -330,7 +330,7 @@ ignoredIdentifiers_
     ;
 
 variableExpr
-    : ((scope? variable (TO | EQ_) variableValue) | (scope? timeZone variableValue))
+    : (scope? variable (TO | EQ_) variableValue) | (scope? timeZone variableValue)
     ;
 
 variableValue

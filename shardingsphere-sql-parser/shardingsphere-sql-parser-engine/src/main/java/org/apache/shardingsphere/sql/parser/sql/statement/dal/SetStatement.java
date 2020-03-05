@@ -22,7 +22,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpr;
+import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpression;
 
 /**
  * Set statement.
@@ -31,6 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.VariableExpr;
 @Setter
 public final class SetStatement extends DALStatement {
     
-    private List<VariableExpr> variableExprList;
+    private List<VariableExpression> variableExprList;
     
 }

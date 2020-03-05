@@ -92,7 +92,7 @@ variableExpr
     ;
 
 variableValue
-    : (identifier | NUMBER_ | STRING_ | DEFAULT | numberLiterals | LOCAL )
+    : (identifier | NUMBER_ | (MINUS_ NUMBER_) | STRING_ | DEFAULT | numberLiterals | LOCAL )
     ;
 	
 showBinaryLogs

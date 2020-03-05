@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 /**
@@ -29,13 +29,19 @@ import org.apache.shardingsphere.sql.parser.util.SQLUtil;
  */
 @RequiredArgsConstructor
 @Getter
-public final class VariableValueSegment implements ValueASTNode<String> {
-    
+public final class VariableValueSegment implements SQLSegment {
+
+    private final int startIndex;
+
+    private final int stopIndex;
+
     private final String value;
-    
+
     private final QuoteCharacter quoteCharacter;
-    
-    public VariableValueSegment(final String text) {
+
+    public VariableValueSegment(final int startIndex, final int stopIndex, final String text) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
         value = SQLUtil.getExactlyValue(text);
         quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
     }
