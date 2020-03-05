@@ -17,15 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import com.google.common.base.Optional;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
@@ -44,6 +35,16 @@ import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguratio
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -135,7 +136,7 @@ public final class OrchestrationEncryptDataSourceTest {
     @Test
     public void assertRenewDataSourceWithError() {
         try {
-            encryptDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, Collections.<String, DataSourceConfiguration>emptyMap()));
+            encryptDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, Collections.emptyMap()));
         } catch (IllegalStateException ex) {
             assertThat(ex.getMessage(), is("There should be only one datasource for encrypt, but now has 0 datasource(s)"));
         }

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+
+import java.util.Optional;
 
 /**
  * Owner available.

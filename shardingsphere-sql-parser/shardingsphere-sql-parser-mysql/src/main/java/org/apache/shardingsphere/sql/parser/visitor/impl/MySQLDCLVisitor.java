@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateRoleContext;
@@ -47,6 +46,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetPasswordStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitor;
 
+import java.util.Optional;
+
 /**
  * DCL visitor for MySQL.
  */
@@ -55,20 +56,16 @@ public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
-        Optional<TableSegment> tableSegment = null == ctx.privilegeClause() ? Optional.<TableSegment>absent() : getTableFromPrivilegeClause(ctx.privilegeClause());
-        if (tableSegment.isPresent()) {
-            result.getTables().add(tableSegment.get());
-        }
+        Optional<TableSegment> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
+        tableSegmentOptional.ifPresent(tableSegment -> result.getTables().add(tableSegment));
         return result;
     }
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
-        Optional<TableSegment> tableSegment = null == ctx.privilegeClause() ? Optional.<TableSegment>absent() : getTableFromPrivilegeClause(ctx.privilegeClause());
-        if (tableSegment.isPresent()) {
-            result.getTables().add(tableSegment.get());
-        }
+        Optional<TableSegment> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
+        tableSegmentOptional.ifPresent(tableSegment -> result.getTables().add(tableSegment));
         return result;
     }
     
@@ -79,7 +76,7 @@ public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
                 return Optional.of((TableSegment) visitTableName(tableName));
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     @Override

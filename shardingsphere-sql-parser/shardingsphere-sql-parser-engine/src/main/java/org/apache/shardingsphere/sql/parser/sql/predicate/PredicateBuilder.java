@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.predicate;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.core.constant.LogicalOperator;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Predicate builder.

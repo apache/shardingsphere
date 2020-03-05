@@ -17,27 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.TableSegmentsAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Update statement.
  */
 @Getter
 @Setter
-public final class UpdateStatement extends DMLStatement implements TableSegmentsAvailable, WhereSegmentAvailable {
+public final class UpdateStatement extends DMLStatement implements WhereSegmentAvailable {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
@@ -47,25 +43,6 @@ public final class UpdateStatement extends DMLStatement implements TableSegments
     
     @Override
     public Optional<WhereSegment> getWhere() {
-        return Optional.fromNullable(where);
-    }
-    
-    @Override
-    public Collection<TableSegment> getAllTables() {
-        Collection<TableSegment> result = new LinkedList<>(tables);
-        if (null != where) {
-            result.addAll(getAllTablesFromWhere());
-        }
-        return result;
-    }
-    
-    private Collection<TableSegment> getAllTablesFromWhere() {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (AndPredicate each : where.getAndPredicates()) {
-            for (PredicateSegment predicate : each.getPredicates()) {
-                result.addAll(new PredicateExtractor(tables, predicate).extractTables());
-            }
-        }
-        return result;
+        return Optional.ofNullable(where);
     }
 }

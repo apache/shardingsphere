@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.ExpectedSQLSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.column.ExpectedColumnProjection;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.p
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,13 +82,7 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
         result.addAll(aggregationDistinctProjections);
         result.addAll(expressionProjections);
         result.addAll(topProjections);
-        Collections.sort(result, new Comparator<ExpectedProjection>() {
-            
-            @Override
-            public int compare(final ExpectedProjection o1, final ExpectedProjection o2) {
-                return o1.getStartIndex() - o2.getStartIndex();
-            }
-        });
+        result.sort(Comparator.comparingInt(ExpectedSQLSegment::getStartIndex));
         return result;
     }
 }

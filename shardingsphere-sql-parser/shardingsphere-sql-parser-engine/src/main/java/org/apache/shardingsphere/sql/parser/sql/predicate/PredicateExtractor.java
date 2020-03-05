@@ -79,7 +79,7 @@ public final class PredicateExtractor {
     
     private boolean isTable(final OwnerSegment owner) {
         for (TableSegment each : tables) {
-            if (owner.getIdentifier().getValue().equals(each.getAlias().orNull())) {
+            if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }
         }

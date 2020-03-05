@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.route.context;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -73,7 +73,7 @@ public final class RouteResult {
                 return result;
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     /**

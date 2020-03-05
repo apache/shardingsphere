@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.engine;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Pagination context engine for top.
@@ -49,9 +49,9 @@ public final class TopPaginationContextEngine {
      */
     public PaginationContext createPaginationContext(final TopProjectionSegment topProjectionSegment, final Collection<AndPredicate> andPredicates, final List<Object> parameters) {
         Optional<PredicateSegment> rowNumberPredicate = getRowNumberPredicate(andPredicates, topProjectionSegment.getAlias());
-        Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.<PaginationValueSegment>absent();
+        Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.empty();
         PaginationValueSegment rowCount = topProjectionSegment.getTop();
-        return new PaginationContext(offset.orNull(), rowCount, parameters);
+        return new PaginationContext(offset.orElse(null), rowCount, parameters);
     }
     
     private Optional<PredicateSegment> getRowNumberPredicate(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
@@ -62,7 +62,7 @@ public final class TopPaginationContextEngine {
                 }
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private boolean isRowNumberColumn(final PredicateSegment predicate, final String rowNumberAlias) {
@@ -81,11 +81,11 @@ public final class TopPaginationContextEngine {
         ExpressionSegment expression = ((PredicateCompareRightValue) predicateSegment.getRightValue()).getExpression();
         switch (((PredicateCompareRightValue) predicateSegment.getRightValue()).getOperator()) {
             case ">":
-                return Optional.<PaginationValueSegment>of(createRowNumberValueSegment(expression, false));
+                return Optional.of(createRowNumberValueSegment(expression, false));
             case ">=":
-                return Optional.<PaginationValueSegment>of(createRowNumberValueSegment(expression, true));
+                return Optional.of(createRowNumberValueSegment(expression, true));
             default:
-                return Optional.absent();
+                return Optional.empty();
         }
     }
     

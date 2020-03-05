@@ -169,12 +169,12 @@ public final class UnsupportedGeneratedKeysResultSetTest {
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void getObject() throws SQLException {
-        new GeneratedKeysResultSet().getObject(1, new HashMap<String, Class<?>>());
+        new GeneratedKeysResultSet().getObject(1, new HashMap<>());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void getObject1() throws SQLException {
-        new GeneratedKeysResultSet().getObject("", new HashMap<String, Class<?>>());
+        new GeneratedKeysResultSet().getObject("", new HashMap<>());
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)

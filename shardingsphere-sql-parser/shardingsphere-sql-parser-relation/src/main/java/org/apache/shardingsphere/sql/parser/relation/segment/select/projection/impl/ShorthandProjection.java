@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
+
+import java.util.Optional;
 
 /**
  * Shorthand projection.
@@ -43,12 +44,12 @@ public final class ShorthandProjection implements Projection {
     
     @Override
     public Optional<String> getAlias() {
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
     public String getColumnLabel() {
-        return getAlias().or("*");
+        return getAlias().orElse("*");
     }
 
     /**
@@ -57,6 +58,6 @@ public final class ShorthandProjection implements Projection {
      * @return owner
      */
     public Optional<String> getOwner() {
-        return Optional.fromNullable(owner);
+        return Optional.ofNullable(owner);
     }
 }

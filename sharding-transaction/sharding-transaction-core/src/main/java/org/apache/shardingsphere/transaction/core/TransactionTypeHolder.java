@@ -22,13 +22,7 @@ package org.apache.shardingsphere.transaction.core;
  */
 public final class TransactionTypeHolder {
     
-    private static final ThreadLocal<TransactionType> CONTEXT = new ThreadLocal<TransactionType>() {
-        
-        @Override
-        protected TransactionType initialValue() {
-            return TransactionType.LOCAL;
-        }
-    };
+    private static final ThreadLocal<TransactionType> CONTEXT = ThreadLocal.withInitial(() -> TransactionType.LOCAL);
     
     /**
      * Get transaction type for current thread.
