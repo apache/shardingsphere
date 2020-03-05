@@ -34,8 +34,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  * Implementation of forward service configs repository.
- *
- * @author yangyi
  */
 @Repository
 public final class YamlForwardServiceConfigsRepositoryImpl implements ForwardServiceConfigsRepository {

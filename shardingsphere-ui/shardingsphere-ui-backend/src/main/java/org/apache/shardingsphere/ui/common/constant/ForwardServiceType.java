@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Forward service type.
- *
- * @author yangyi
  */
 @RequiredArgsConstructor
 @Getter

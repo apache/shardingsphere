@@ -19,8 +19,6 @@ package org.apache.shardingsphere.ui.servcie.forward;
 
 /**
  * Forward server of sharding scaling.
- *
- * @author yangyi
  */
 public interface ShardingScalingForwardService {
     

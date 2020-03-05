@@ -35,8 +35,6 @@ import com.google.common.base.Optional;
 
 /**
  * Sharding scaling forward controller.
- *
- * @author yangyi
  */
 @RestController
 @RequestMapping("/api/shardingscaling")

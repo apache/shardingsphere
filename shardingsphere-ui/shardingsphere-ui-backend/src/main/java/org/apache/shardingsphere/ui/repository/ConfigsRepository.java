@@ -19,8 +19,6 @@ package org.apache.shardingsphere.ui.repository;
 
 /**
  * Configs repository.
- *
- * @author yangyi
  */
 public interface ConfigsRepository<T> {
     

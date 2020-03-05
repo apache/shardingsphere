@@ -21,8 +21,6 @@ import org.apache.shardingsphere.ui.common.domain.ForwardServiceConfigs;
 
 /**
  * Sharding scaling config repository.
- *
- * @author yangyi
  */
 public interface ForwardServiceConfigsRepository extends ConfigsRepository<ForwardServiceConfigs> {
 }

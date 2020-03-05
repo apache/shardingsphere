@@ -26,8 +26,6 @@ import lombok.Setter;
 
 /**
  * Forward service configs.
- *
- * @author yangyi
  */
 @Getter
 @Setter

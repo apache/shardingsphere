@@ -32,8 +32,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Implementation of forward server for sharding scaling.
- *
- * @author yangyi
  */
 @Service
 public final class ShardingScalingForwardServiceImpl implements ShardingScalingForwardService {

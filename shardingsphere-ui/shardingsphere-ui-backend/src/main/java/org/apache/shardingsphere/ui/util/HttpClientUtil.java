@@ -42,8 +42,6 @@ import org.apache.http.util.EntityUtils;
 
 /**
  * Http client util.
- *
- * @author yangyi
  */
 public final class HttpClientUtil {
     
