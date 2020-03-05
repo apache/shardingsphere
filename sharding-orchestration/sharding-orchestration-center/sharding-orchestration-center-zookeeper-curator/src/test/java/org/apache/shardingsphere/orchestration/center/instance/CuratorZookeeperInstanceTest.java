@@ -27,7 +27,6 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
