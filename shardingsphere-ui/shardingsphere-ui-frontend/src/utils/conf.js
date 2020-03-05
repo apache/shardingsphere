@@ -16,7 +16,9 @@
  */
 
 const HOST = ''
+const OTHERHOST = ''
 
 export default {
-  HOST
+  HOST,
+  OTHERHOST
 }
