@@ -51,7 +51,7 @@ public final class DataSourceConfiguration {
     private static final Collection<String> SKIPPED_PROPERTY_NAMES;
     
     static {
-        GENERAL_CLASS_TYPE = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class);
+        GENERAL_CLASS_TYPE = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class);
         SKIPPED_PROPERTY_NAMES = Sets.newHashSet("loginTimeout");
     }
     
