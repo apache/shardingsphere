@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.predicate;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
@@ -55,11 +54,6 @@ public final class PredicateExtractor {
             OwnerSegment segment = ((ColumnSegment) predicate.getRightValue()).getOwner().get();
             result.add(new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
         }
-        if (isToGenerateTableTokenForProjection()) {
-            Preconditions.checkState(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent());
-            OwnerSegment segment = ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get();
-            new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
-        }
         return result;
     }
     
@@ -70,11 +64,6 @@ public final class PredicateExtractor {
     private boolean isToGenerateTableTokenForRightValue() {
         return predicate.getRightValue() instanceof ColumnSegment
                 && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent() && isTable(((ColumnSegment) predicate.getRightValue()).getOwner().get());
-    }
-    
-    private boolean isToGenerateTableTokenForProjection() {
-        return predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()
-                && isTable(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
     }
     
     private boolean isTable(final OwnerSegment owner) {

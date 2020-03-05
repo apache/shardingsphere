@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailabl
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -212,14 +213,28 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private Collection<TableSegment> getAllTablesFromProjections(final ProjectionsSegment projections) {
         Collection<TableSegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections.getProjections()) {
-            if (each instanceof OwnerAvailable) {
-                Optional<OwnerSegment> owner = ((OwnerAvailable) each).getOwner();
-                if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getTables())) {
-                    result.add(new TableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
-                }
-            }
+            Optional<TableSegment> table = getTableSegment(each);
+            table.ifPresent(result::add);
         }
         return result;
+    }
+    
+    private Optional<TableSegment> getTableSegment(final ProjectionSegment each) {
+        Optional<OwnerSegment> owner = getTableOwner(each);
+        if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getTables())) {
+            return Optional .of(new TableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<OwnerSegment> getTableOwner(final ProjectionSegment each) {
+        if (each instanceof OwnerAvailable) {
+            return ((OwnerAvailable) each).getOwner();
+        }
+        if (each instanceof ColumnProjectionSegment) { 
+            return ((ColumnProjectionSegment) each).getColumn().getOwner();
+        }
+        return Optional.empty();
     }
     
     private Collection<TableSegment> getAllTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
