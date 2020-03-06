@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.TableToken;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;

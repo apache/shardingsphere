@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.relation.segment.index;
+package org.apache.shardingsphere.sql.parser.relation.type;
 
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 

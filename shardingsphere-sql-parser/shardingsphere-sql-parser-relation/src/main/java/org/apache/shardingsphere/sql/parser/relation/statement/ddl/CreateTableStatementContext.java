@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.Constrain
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.index.IndexAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.IndexAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
