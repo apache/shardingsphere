@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.Nu
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.List;
 
@@ -104,7 +104,7 @@ public final class ProjectionAssert {
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             OwnerSegment owner = actual.getOwner().get();
-            TableAssert.assertOwner(assertContext, new TableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
@@ -121,7 +121,7 @@ public final class ProjectionAssert {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
             // TODO OwnerAssert is needed.
             OwnerSegment owner = actual.getColumn().getOwner().get();
-            TableAssert.assertOwner(assertContext, new TableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }

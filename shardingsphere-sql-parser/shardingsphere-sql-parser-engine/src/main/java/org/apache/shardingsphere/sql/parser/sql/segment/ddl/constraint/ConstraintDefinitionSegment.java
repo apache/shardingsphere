@@ -23,7 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,14 +43,14 @@ public final class ConstraintDefinitionSegment implements CreateDefinitionSegmen
     
     private final Collection<ColumnSegment> primaryKeyColumns = new LinkedList<>();
     
-    private TableSegment referencedTable;
+    private SimpleTableSegment referencedTable;
     
     /**
      * Get referenced table.
      * 
      * @return referenced table
      */
-    public Optional<TableSegment> getReferencedTable() {
+    public Optional<SimpleTableSegment> getReferencedTable() {
         return Optional.ofNullable(referencedTable);
     }
 }

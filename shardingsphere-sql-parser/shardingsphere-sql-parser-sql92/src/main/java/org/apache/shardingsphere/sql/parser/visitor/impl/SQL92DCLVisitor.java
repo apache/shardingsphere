@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GrantCo
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.visitor.SQL92Visitor;
@@ -39,7 +39,7 @@ public final class SQL92DCLVisitor extends SQL92Visitor implements DCLVisitor {
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
         if (null != ctx.privilegeClause()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
+            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
                 result.getTables().add(each);
             }
         }
@@ -50,14 +50,14 @@ public final class SQL92DCLVisitor extends SQL92Visitor implements DCLVisitor {
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
         if (null != ctx.privilegeClause()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
+            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
                 result.getTables().add(each);
             }
         }
         return result;
     }
     
-    private Collection<TableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
-        return Collections.singletonList((TableSegment) visit(ctx.onObjectClause().privilegeLevel().tableName()));
+    private Collection<SimpleTableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
+        return Collections.singletonList((SimpleTableSegment) visit(ctx.onObjectClause().privilegeLevel().tableName()));
     }
 }

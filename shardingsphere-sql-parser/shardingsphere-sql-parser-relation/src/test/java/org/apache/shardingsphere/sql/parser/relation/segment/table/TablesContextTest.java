@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Test;
 
@@ -50,14 +50,14 @@ public final class TablesContextTest {
     
     @Test
     public void assertInstanceCreatedWhenNoExceptionThrown() {
-        TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("tbl"));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(0, 10, new IdentifierValue("tbl"));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         new TablesContext(Collections.singletonList(tableSegment));
     }
     
     @Test
     public void assertFindTableNameWhenSingleTable() {
-        TableSegment tableSegment = createTableSegment("table_1", "tbl_1");
+        SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
         PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
         Optional<String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableName(predicateSegment, mock(RelationMetas.class));
         assertTrue(actual.isPresent());
@@ -66,8 +66,8 @@ public final class TablesContextTest {
     
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerPresent() {
-        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
-        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         ColumnSegment columnSegment = createColumnSegment();
         columnSegment.setOwner(new OwnerSegment(0, 10, new IdentifierValue("table_1")));
         PredicateSegment predicateSegment = createPredicateSegment(columnSegment);
@@ -78,8 +78,8 @@ public final class TablesContextTest {
     
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsent() {
-        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
-        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
         Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(RelationMetas.class));
         assertFalse(actual.isPresent());
@@ -87,8 +87,8 @@ public final class TablesContextTest {
     
     @Test
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndRelationMetasContainsColumn() {
-        TableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
-        TableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
+        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
+        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
         RelationMetas relationMetas = mock(RelationMetas.class);
         when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
@@ -97,8 +97,8 @@ public final class TablesContextTest {
         assertThat(actual.get(), is("table_1"));
     }
     
-    private TableSegment createTableSegment(final String tableName, final String alias) {
-        TableSegment result = new TableSegment(0, 0, new IdentifierValue(tableName));
+    private SimpleTableSegment createTableSegment(final String tableName, final String alias) {
+        SimpleTableSegment result = new SimpleTableSegment(0, 0, new IdentifierValue(tableName));
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue(alias));
         result.setAlias(aliasSegment);
         return result;

@@ -15,55 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.generic;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 
 import java.util.Optional;
 
 /**
- * Table segment.
+ * Subquery table segment.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class TableSegment implements OwnerAvailable, AliasAvailable {
+public final class SubqueryTableSegment implements TableSegment, AliasAvailable {
     
-    private final TableNameSegment tableName;
-    
-    @Setter
-    private OwnerSegment owner;
+    private final SubquerySegment subquery;
     
     @Setter
     private AliasSegment alias;
     
-    public TableSegment(final int startIndex, final int stopIndex, final IdentifierValue identifierValue) {
-        tableName = new TableNameSegment(startIndex, stopIndex, identifierValue);
+    @Override
+    public Optional<String> getAlias() {
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
     
     @Override
     public int getStartIndex() {
-        return null == owner ? tableName.getStartIndex() : owner.getStartIndex(); 
+        return subquery.getStartIndex();
     }
     
     @Override
     public int getStopIndex() {
-        return tableName.getStopIndex();
-        //FIXME: Rewriter need to handle alias as well
-//        return null == alias ? tableName.getStopIndex() : alias.getStopIndex();
-    }
-    
-    @Override
-    public Optional<OwnerSegment> getOwner() {
-        return Optional.ofNullable(owner);
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+        return subquery.getStopIndex();
+        // TODO
+        // return null == alias ? alias.getStopIndex() : column.getStopIndex();
     }
 }

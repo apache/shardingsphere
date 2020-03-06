@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.Expressio
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 
@@ -96,7 +96,7 @@ public final class OrderByItemAssert {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
             // TODO OwnerAssert is needed.
             OwnerSegment owner = actual.getColumn().getOwner().get();
-            TableAssert.assertOwner(assertContext, new TableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }

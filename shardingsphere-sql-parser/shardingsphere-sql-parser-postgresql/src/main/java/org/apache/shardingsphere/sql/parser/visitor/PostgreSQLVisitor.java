@@ -85,8 +85,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
@@ -188,7 +188,7 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
-        TableSegment result = new TableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
@@ -213,9 +213,9 @@ public abstract class PostgreSQLVisitor extends PostgreSQLStatementBaseVisitor<A
     
     @Override
     public final ASTNode visitTableNames(final TableNamesContext ctx) {
-        CollectionValue<TableSegment> result = new CollectionValue<>();
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
-            result.getValue().add((TableSegment) visit(each));
+            result.getValue().add((SimpleTableSegment) visit(each));
         }
         return result;
     }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinit
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 
@@ -45,8 +45,8 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext<
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
-        Collection<TableSegment> result = new LinkedList<>();
+    public Collection<SimpleTableSegment> getAllTables() {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
         result.add(getSqlStatement().getTable());
         for (AddColumnDefinitionSegment each : getSqlStatement().getAddColumnDefinitions()) {
             for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {

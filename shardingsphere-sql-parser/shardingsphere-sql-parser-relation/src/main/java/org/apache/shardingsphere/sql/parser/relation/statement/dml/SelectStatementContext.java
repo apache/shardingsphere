@@ -49,7 +49,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
@@ -186,8 +186,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
-        Collection<TableSegment> result = new LinkedList<>(getSqlStatement().getTables());
+    public Collection<SimpleTableSegment> getAllTables() {
+        Collection<SimpleTableSegment> result = new LinkedList<>(getSqlStatement().getTables());
         if (getSqlStatement().getWhere().isPresent()) {
             result.addAll(getAllTablesFromWhere(getSqlStatement().getWhere().get()));
         }
@@ -201,8 +201,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return result;
     }
     
-    private Collection<TableSegment> getAllTablesFromWhere(final WhereSegment where) {
-        Collection<TableSegment> result = new LinkedList<>();
+    private Collection<SimpleTableSegment> getAllTablesFromWhere(final WhereSegment where) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 result.addAll(new PredicateExtractor(getSqlStatement().getTables(), predicate).extractTables());
@@ -211,19 +211,19 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return result;
     }
     
-    private Collection<TableSegment> getAllTablesFromProjections(final ProjectionsSegment projections) {
-        Collection<TableSegment> result = new LinkedList<>();
+    private Collection<SimpleTableSegment> getAllTablesFromProjections(final ProjectionsSegment projections) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
         for (ProjectionSegment each : projections.getProjections()) {
-            Optional<TableSegment> table = getTableSegment(each);
+            Optional<SimpleTableSegment> table = getTableSegment(each);
             table.ifPresent(result::add);
         }
         return result;
     }
     
-    private Optional<TableSegment> getTableSegment(final ProjectionSegment each) {
+    private Optional<SimpleTableSegment> getTableSegment(final ProjectionSegment each) {
         Optional<OwnerSegment> owner = getTableOwner(each);
         if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getTables())) {
-            return Optional .of(new TableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
+            return Optional .of(new SimpleTableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
         }
         return Optional.empty();
     }
@@ -238,23 +238,23 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         return Optional.empty();
     }
     
-    private Collection<TableSegment> getAllTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
-        Collection<TableSegment> result = new LinkedList<>();
+    private Collection<SimpleTableSegment> getAllTablesFromOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
                 Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
                 if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getTables())) {
                     Preconditions.checkState(((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent());
                     OwnerSegment segment = ((ColumnOrderByItemSegment) each).getColumn().getOwner().get();
-                    result.add(new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+                    result.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
                 }
             }
         }
         return result;
     }
     
-    private boolean isTable(final OwnerSegment owner, final Collection<TableSegment> tables) {
-        for (TableSegment each : tables) {
+    private boolean isTable(final OwnerSegment owner, final Collection<SimpleTableSegment> tables) {
+        for (SimpleTableSegment each : tables) {
             if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }
