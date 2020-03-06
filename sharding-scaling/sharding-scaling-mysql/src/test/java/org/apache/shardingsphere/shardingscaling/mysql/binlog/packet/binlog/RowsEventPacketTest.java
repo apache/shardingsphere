@@ -49,7 +49,7 @@ public final class RowsEventPacketTest {
     @Before
     public void setUp() {
         binlogContext = new BinlogContext();
-        binlogContext.setTableMap(new HashMap<Long, TableMapEventPacket>());
+        binlogContext.setTableMap(new HashMap<>());
         binlogContext.getTableMap().put(0L, new TableMapEventPacket());
         binlogEventHeader = new BinlogEventHeader();
     }
