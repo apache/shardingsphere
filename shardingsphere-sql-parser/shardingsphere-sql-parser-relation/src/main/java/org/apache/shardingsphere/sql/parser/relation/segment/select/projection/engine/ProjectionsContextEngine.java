@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.engine;
 
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
@@ -37,22 +36,23 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrder
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Projections context engine.
  */
-@RequiredArgsConstructor
 public final class ProjectionsContextEngine {
     
     private final RelationMetas relationMetas;
     
-    private final ProjectionEngine projectionEngine = new ProjectionEngine();
+    private final ProjectionEngine projectionEngine;
+    
+    public ProjectionsContextEngine(final RelationMetas relationMetas) {
+        this.relationMetas = relationMetas;
+        projectionEngine = new ProjectionEngine(relationMetas);
+    }
     
     /**
      * Create projections context.
@@ -65,52 +65,17 @@ public final class ProjectionsContextEngine {
      */
     public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
         ProjectionsSegment projectionsSegment = selectStatement.getProjections();
-        Collection<Projection> projections = getProjections(sql, projectionsSegment);
-        ProjectionsContext result = new ProjectionsContext(
-                projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections, getColumnLabels(selectStatement.getTables(), projections));
+        Collection<Projection> projections = getProjections(sql, selectStatement.getTables(), projectionsSegment);
+        ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
         result.getProjections().addAll(getDerivedGroupByColumns(projections, groupByContext, selectStatement));
         result.getProjections().addAll(getDerivedOrderByColumns(projections, orderByContext, selectStatement));
         return result;
     }
     
-    private Collection<Projection> getProjections(final String sql, final ProjectionsSegment projectionsSegment) {
+    private Collection<Projection> getProjections(final String sql, final Collection<SimpleTableSegment> tableSegments, final ProjectionsSegment projectionsSegment) {
         Collection<Projection> result = new LinkedList<>();
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
-            projectionEngine.createProjection(sql, each).ifPresent(result::add);
-        }
-        return result;
-    }
-    
-    private List<String> getColumnLabels(final Collection<SimpleTableSegment> tables, final Collection<Projection> projections) {
-        List<String> result = new ArrayList<>(projections.size());
-        for (Projection each : projections) {
-            if (each instanceof ShorthandProjection) {
-                result.addAll(getShorthandColumnLabels(tables, (ShorthandProjection) each));
-            } else {
-                result.add(each.getColumnLabel());
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getShorthandColumnLabels(final Collection<SimpleTableSegment> tables, final ShorthandProjection shorthandProjection) {
-        return shorthandProjection.getOwner().isPresent()
-                ? getQualifiedShorthandColumnLabels(tables, shorthandProjection.getOwner().get()) : getUnqualifiedShorthandColumnLabels(tables);
-    }
-    
-    private Collection<String> getQualifiedShorthandColumnLabels(final Collection<SimpleTableSegment> tables, final String owner) {
-        for (SimpleTableSegment each : tables) {
-            if (owner.equalsIgnoreCase(each.getAlias().orElse(each.getTableName().getIdentifier().getValue()))) {
-                return relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue());
-            }
-        }
-        return Collections.emptyList();
-    }
-    
-    private Collection<String> getUnqualifiedShorthandColumnLabels(final Collection<SimpleTableSegment> tables) {
-        Collection<String> result = new LinkedList<>();
-        for (SimpleTableSegment each : tables) {
-            result.addAll(relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue()));
+            projectionEngine.createProjection(sql, tableSegments, each).ifPresent(result::add);
         }
         return result;
     }

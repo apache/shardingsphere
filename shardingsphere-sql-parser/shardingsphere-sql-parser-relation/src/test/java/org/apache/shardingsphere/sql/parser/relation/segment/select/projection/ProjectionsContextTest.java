@@ -38,46 +38,46 @@ public final class ProjectionsContextTest {
     
     @Test
     public void assertUnqualifiedShorthandProjectionWithEmptyItems() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptySet(), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptySet());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
     public void assertUnqualifiedShorthandProjectionWithWrongProjection() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getColumnProjection()), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getColumnProjection()));
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
     public void assertUnqualifiedShorthandProjectionWithWrongShortProjection() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getShorthandProjection()), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getShorthandProjection()));
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
     public void assertUnqualifiedShorthandProjection() {
-        Projection projection = new ShorthandProjection(null);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.emptyList());
+        Projection projection = new ShorthandProjection(null, Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         assertTrue(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
     public void assertFindAliasWithOutAlias() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptyList(), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptyList());
         assertFalse(projectionsContext.findAlias("").isPresent());
     }
     
     @Test
     public void assertFindAlias() {
         Projection projection = getColumnProjectionWithAlias();
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         assertTrue(projectionsContext.findAlias(projection.getExpression()).isPresent());
     }
     
     @Test
     public void assertFindProjectionIndex() {
         Projection projection = getColumnProjection();
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         Optional<Integer> actual = projectionsContext.findProjectionIndex(projection.getExpression());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(1));
@@ -86,7 +86,7 @@ public final class ProjectionsContextTest {
     @Test
     public void assertFindProjectionIndexFailure() {
         Projection projection = getColumnProjection();
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         Optional<Integer> actual = projectionsContext.findProjectionIndex("");
         assertFalse(actual.isPresent());
     }
@@ -94,7 +94,7 @@ public final class ProjectionsContextTest {
     @Test
     public void assertGetAggregationProjections() {
         Projection projection = getAggregationProjection();
-        List<AggregationProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection()), Collections.emptyList()).getAggregationProjections();
+        List<AggregationProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationProjections();
         assertTrue(items.contains(projection));
         assertThat(items.size(), is(1));
     }
@@ -102,13 +102,13 @@ public final class ProjectionsContextTest {
     @Test
     public void assertGetAggregationDistinctProjections() {
         Projection projection = getAggregationDistinctProjection();
-        List<AggregationDistinctProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection()), Collections.emptyList()).getAggregationDistinctProjections();
+        List<AggregationDistinctProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationDistinctProjections();
         assertTrue(items.contains(projection));
         assertThat(items.size(), is(1));
     }
     
     private ShorthandProjection getShorthandProjection() {
-        return new ShorthandProjection("table");
+        return new ShorthandProjection("table", Collections.emptyList());
     }
     
     private ColumnProjection getColumnProjection() {
@@ -125,5 +125,13 @@ public final class ProjectionsContextTest {
     
     private AggregationDistinctProjection getAggregationDistinctProjection() {
         return new AggregationDistinctProjection(0, 0, AggregationType.COUNT, "(DISTINCT column)", "c", "column");
+    }
+    
+    @Test
+    public void assertGetActualProjectionCount() {
+        ColumnProjection columnProjection = new ColumnProjection(null, "col", null);
+        ShorthandProjection shorthandProjection = new ShorthandProjection(null, Arrays.asList(new ColumnProjection(null, "col1", null), new ColumnProjection(null, "col2", null)));
+        ProjectionsContext actual = new ProjectionsContext(0, 0, false, Arrays.asList(columnProjection, shorthandProjection));
+        assertThat(actual.getActualProjectionCount(), is(3));
     }
 }

@@ -21,12 +21,10 @@ import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -53,8 +51,8 @@ public final class ShardingResultMergerEngineTest {
     public void assertNewInstanceWithSelectStatement() {
         ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
         SQLStatementContext sqlStatementContext = new SelectStatementContext(new SelectStatement(),
-                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()), new PaginationContext(null, null, Collections.emptyList()));
+                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }
     

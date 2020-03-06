@@ -95,7 +95,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private void setGroupByForDistinctRow(final SelectStatementContext selectStatementContext) {
-        for (int index = 1; index <= selectStatementContext.getProjectionsContext().getColumnLabels().size(); index++) {
+        for (int index = 1; index <= selectStatementContext.getProjectionsContext().getActualProjectionCount(); index++) {
             OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, OrderDirection.ASC));
             orderByItem.setIndex(index);
             selectStatementContext.getGroupByContext().getItems().add(orderByItem);

@@ -33,16 +33,16 @@ import java.util.Optional;
 @EqualsAndHashCode
 @ToString
 public final class DerivedProjection implements Projection {
-
+    
     private final String expression;
-
+    
     private final String alias;
-
+    
     @Override
     public Optional<String> getAlias() {
         return Optional.ofNullable(alias);
     }
-
+    
     @Override
     public String getColumnLabel() {
         return getAlias().orElse(getExpression());

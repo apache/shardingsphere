@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
@@ -25,12 +24,12 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.Grou
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Test;
@@ -80,19 +79,19 @@ public final class GroupByStreamMergedResultTest {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(2));
-        assertThat((Date) actual.getCalendarValue(4, Date.class, Calendar.getInstance()), is(new Date(0L)));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(4)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(3, Object.class), is(2));
+        assertThat(actual.getCalendarValue(4, Date.class, Calendar.getInstance()), is(new Date(0L)));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(4)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(40)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(30)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(3));
-        assertThat((Date) actual.getCalendarValue(4, Date.class, Calendar.getInstance()), is(new Date(0L)));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(3)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(30)));
+        assertThat(actual.getValue(3, Object.class), is(3));
+        assertThat(actual.getCalendarValue(4, Date.class, Calendar.getInstance()), is(new Date(0L)));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(3)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(30)));
         assertFalse(actual.next());
     }
     
@@ -122,29 +121,29 @@ public final class GroupByStreamMergedResultTest {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(10)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(10)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(1));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(1)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(10)));
+        assertThat(actual.getValue(3, Object.class), is(1));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(1)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(10)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(2));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(4)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(3, Object.class), is(2));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(4)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(40)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(60)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(60)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(3));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(6)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(60)));
+        assertThat(actual.getValue(3, Object.class), is(3));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(6)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(60)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(4));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(4)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(3, Object.class), is(4));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(4)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(40)));
         assertFalse(actual.next());
     }
     
@@ -159,7 +158,7 @@ public final class GroupByStreamMergedResultTest {
         AggregationProjection derivedAggregationProjection2 = new AggregationProjection(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationProjection2.setIndex(6);
         aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection2);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.<Projection>asList(aggregationProjection1, aggregationProjection2), Collections.<String>emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(aggregationProjection1, aggregationProjection2));
         return new SelectStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),

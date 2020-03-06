@@ -50,7 +50,7 @@ public final class RowNumberPaginationContextEngineTest {
     
     @Test
     public void assertCreatePaginationContextWhenRowNumberAliasNotPresent() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList(), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(null, projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
@@ -59,7 +59,7 @@ public final class RowNumberPaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesIsEmpty() {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
@@ -88,7 +88,7 @@ public final class RowNumberPaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmpty() {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         AndPredicate andPredicate = new AndPredicate();
         PredicateSegment predicateSegment = new PredicateSegment(0, 0, new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME)), null);
         andPredicate.getPredicates().addAll(Collections.singleton(predicateSegment));
@@ -103,7 +103,7 @@ public final class RowNumberPaginationContextEngineTest {
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME)), predicateCompareRightValue));
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         
         PaginationContext paginationContext = new RowNumberPaginationContextEngine()
                 .createPaginationContext(Collections.singleton(andPredicate), projectionsContext, Collections.singletonList(1));
@@ -118,7 +118,7 @@ public final class RowNumberPaginationContextEngineTest {
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME)), predicateCompareRightValue));
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.singleton(andPredicate), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
@@ -137,7 +137,7 @@ public final class RowNumberPaginationContextEngineTest {
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(new PredicateSegment(0, 10, new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME)), predicateCompareRightValue));
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         
         PaginationContext rowNumberPaginationContextEngine = new RowNumberPaginationContextEngine()
                 .createPaginationContext(Collections.singleton(andPredicate), projectionsContext, Collections.emptyList());
