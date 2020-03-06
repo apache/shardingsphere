@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.relation.statement;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.Collections;
@@ -40,6 +39,6 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     
     public CommonSQLStatementContext(final T sqlStatement) {
         this.sqlStatement = sqlStatement;
-        tablesContext = new TablesContext(Collections.<TableSegment>emptyList());
+        tablesContext = new TablesContext(Collections.emptyList());
     }
 }

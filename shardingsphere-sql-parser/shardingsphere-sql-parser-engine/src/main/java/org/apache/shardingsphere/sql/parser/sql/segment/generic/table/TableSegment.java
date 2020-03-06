@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic.table;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
 /**
- * SQL statement abstract class.
+ * Table segment.
  */
-@Getter
-@Setter
-public abstract class AbstractSQLStatement implements SQLStatement {
-    
-    private int parametersCount;
+public interface TableSegment extends SQLSegment {
 }

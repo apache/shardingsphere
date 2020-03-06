@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Gr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
@@ -52,7 +52,7 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
         if (null != ctx.privilegeClause()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
+            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
                 result.getTables().add(each);
             }
         }
@@ -63,7 +63,7 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
         if (null != ctx.privilegeClause()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
+            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.privilegeClause())) {
                 result.getTables().add(each);
             }
         }
@@ -71,8 +71,8 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<TableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
-        return null == ctx.onObjectClause().tableNames() ? Collections.<TableSegment>emptyList() : ((CollectionValue<TableSegment>) visit(ctx.onObjectClause().tableNames())).getValue();
+    private Collection<SimpleTableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
+        return null == ctx.onObjectClause().tableNames() ? Collections.<SimpleTableSegment>emptyList() : ((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().tableNames())).getValue();
     }
     
     @Override

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.visitor.impl;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
@@ -50,7 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.RenameC
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
@@ -73,7 +74,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement((TableSegment) visit(ctx.tableName()));
+        CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -104,7 +105,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement((TableSegment) visit(ctx.tableNameClause().tableName()));
+        AlterTableStatement result = new AlterTableStatement((SimpleTableSegment) visit(ctx.tableNameClause().tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
@@ -167,7 +168,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
             if (null != each.columnConstraintOption().tableName()) {
-                result.getReferencedTables().add((TableSegment) visit(each.columnConstraintOption().tableName()));
+                result.getReferencedTables().add((SimpleTableSegment) visit(each.columnConstraintOption().tableName()));
             }
         }
         return result;
@@ -190,7 +191,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
             result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.tableConstraintOption().columnNames(0))).getValue());
         }
         if (null != ctx.tableConstraintOption().FOREIGN()) {
-            result.setReferencedTable((TableSegment) visit(ctx.tableConstraintOption().tableName()));
+            result.setReferencedTable((SimpleTableSegment) visit(ctx.tableConstraintOption().tableName()));
         }
         return result;
     }
@@ -220,7 +221,7 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
@@ -228,14 +229,23 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNamesClause())).getValue());
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.indexName()) {
+            result.setIndex((IndexSegment) visit(ctx.indexName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
+        CreateIndexStatement result = new CreateIndexStatement();
         result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
@@ -264,11 +274,11 @@ public final class PostgreSQLDDLVisitor extends PostgreSQLVisitor implements DDL
     
     @Override
     public ASTNode visitTableNamesClause(final TableNamesClauseContext ctx) {
-        Collection<TableSegment> tableSegments = new LinkedList<>();
+        Collection<SimpleTableSegment> tableSegments = new LinkedList<>();
         for (int i = 0; i < ctx.tableNameClause().size(); i++) {
-            tableSegments.add((TableSegment) visit(ctx.tableNameClause(i)));
+            tableSegments.add((SimpleTableSegment) visit(ctx.tableNameClause(i)));
         }
-        CollectionValue<TableSegment> result = new CollectionValue<>();
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         result.getValue().addAll(tableSegments);
         return result;
     }

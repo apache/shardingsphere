@@ -70,13 +70,7 @@ public final class DistributionChannel implements Channel {
     
     private void scheduleAckRecords() {
         this.scheduleAckRecordsExecutor = Executors.newSingleThreadScheduledExecutor();
-        scheduleAckRecordsExecutor.scheduleAtFixedRate(new Runnable() {
-            
-            @Override
-            public void run() {
-                ackRecords0();
-            }
-        }, 5, 1, TimeUnit.SECONDS);
+        scheduleAckRecordsExecutor.scheduleAtFixedRate(this::ackRecords0, 5, 1, TimeUnit.SECONDS);
     }
     
     private void ackRecords0() {

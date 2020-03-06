@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
 
 /**
  * Subquery segment.
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public class SubquerySegment implements SQLSegment {
+public final class SubquerySegment implements SQLSegment, PredicateRightValue {
     
     private final int startIndex;
     

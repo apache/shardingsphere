@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.sql.statement;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Index segment available.
+ * SQL statement abstract class.
  */
-public interface IndexSegmentAvailable {
+@Getter
+@Setter
+public abstract class AbstractSQLStatement implements SQLStatement {
     
-    /**
-     * Get index segment.
-     * 
-     * @return index segment
-     */
-    IndexSegment getIndex();
-    
-    /**
-     * Set index segment.
-     * 
-     * @param index index segment
-     */
-    void setIndex(IndexSegment index);
+    private int parameterCount;
 }

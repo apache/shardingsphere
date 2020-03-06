@@ -20,11 +20,11 @@ package org.apache.shardingsphere.shardingscaling.core.synctask.realtime;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.DistributionChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManagerFactory;
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import java.util.ArrayList;
@@ -107,13 +106,10 @@ public final class RealtimeDataSyncTask implements SyncTask {
     }
     
     private DistributionChannel instanceChannel(final List<Writer> writers) {
-        return new DistributionChannel(writers.size(), new AckCallback() {
-            @Override
-            public void onAck(final List<Record> records) {
-                Record lastHandledRecord = records.get(records.size() - 1);
-                logPositionManager.updateCurrentPosition(lastHandledRecord.getLogPosition());
-                delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
-            }
+        return new DistributionChannel(writers.size(), records -> {
+            Record lastHandledRecord = records.get(records.size() - 1);
+            logPositionManager.updateCurrentPosition(lastHandledRecord.getLogPosition());
+            delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
     }
     

@@ -66,13 +66,13 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private boolean isEncryptLogicColumn(final ProjectionSegment projectionSegment, final EncryptTable encryptTable) {
-        return projectionSegment instanceof ColumnProjectionSegment && encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) projectionSegment).getIdentifier().getValue());
+        return projectionSegment instanceof ColumnProjectionSegment && encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) projectionSegment).getColumn().getIdentifier().getValue());
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName) {
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, segment.getIdentifier().getValue());
-        String columnName = plainColumn.isPresent() && !queryWithCipherColumn ? plainColumn.get() : getEncryptRule().getCipherColumn(tableName, segment.getIdentifier().getValue());
-        return segment.getOwner().isPresent() ? new SubstitutableColumnNameToken(segment.getOwner().get().getStopIndex() + 2, segment.getStopIndex(), columnName)
+        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, segment.getColumn().getIdentifier().getValue());
+        String columnName = plainColumn.isPresent() && !queryWithCipherColumn ? plainColumn.get() : getEncryptRule().getCipherColumn(tableName, segment.getColumn().getIdentifier().getValue());
+        return segment.getColumn().getOwner().isPresent() ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), columnName)
                 : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), columnName);
     }
 }

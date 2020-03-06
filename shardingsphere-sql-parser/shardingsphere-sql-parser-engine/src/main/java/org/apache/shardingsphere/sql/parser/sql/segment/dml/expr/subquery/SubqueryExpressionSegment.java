@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.generic;
+package org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery;
 
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TableSegmentTest {
+/**
+ * Subquery expression segment.
+ */
+@RequiredArgsConstructor
+@ToString
+public class SubqueryExpressionSegment implements SimpleExpressionSegment {
     
-    @Test
-    public void getStartIndexWithoutOwner() {
-        TableSegment tableSegment = new TableSegment(10, 13, new IdentifierValue("tbl"));
-        assertThat(tableSegment.getStartIndex(), is(10));
+    @Getter
+    private final SubquerySegment subquery;
+    
+    @Override
+    public int getStartIndex() {
+        return subquery.getStartIndex();
     }
     
-    @Test
-    public void getStartIndexWithOwner() {
-        TableSegment tableSegment = new TableSegment(10, 13, new IdentifierValue("tbl"));
-        tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("o")));
-        assertThat(tableSegment.getStartIndex(), is(7));
+    @Override
+    public int getStopIndex() {
+        return subquery.getStopIndex();
     }
 }

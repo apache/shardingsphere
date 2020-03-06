@@ -18,13 +18,18 @@
 package org.apache.shardingsphere.underlying.common.config;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -82,5 +87,26 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getProperties().get("password").toString(), is("root"));
         assertThat(actual.getProperties().get("jdbcUrl"), is(actual.getProperties().get("url")));
         assertThat(actual.getProperties().get("username"), is(actual.getProperties().get("user")));
+    }
+    
+    @Test
+    public void assertGetDataSourceConfigurationWithConnectionInitSqls() throws SQLException {
+        BasicDataSource actualDataSource = new BasicDataSource();
+        actualDataSource.setDriverClassName("org.h2.Driver");
+        actualDataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        actualDataSource.setUsername("root");
+        actualDataSource.setPassword("root");
+        actualDataSource.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
+        DataSourceConfiguration actual = DataSourceConfiguration.getDataSourceConfiguration(actualDataSource);
+        assertThat(actual.getDataSourceClassName(), is(BasicDataSource.class.getName()));
+        assertThat(actual.getProperties().get("driverClassName").toString(), is("org.h2.Driver"));
+        assertThat(actual.getProperties().get("url").toString(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+        assertThat(actual.getProperties().get("username").toString(), is("root"));
+        assertThat(actual.getProperties().get("password").toString(), is("root"));
+        assertNull(actual.getProperties().get("loginTimeout"));
+        assertThat(actual.getProperties().get("connectionInitSqls"), instanceOf(List.class));
+        List<String> actualConnectionInitSql = (List<String>) actual.getProperties().get("connectionInitSqls");
+        assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
+        assertThat(actualConnectionInitSql, hasItem("set names utf8;"));
     }
 }

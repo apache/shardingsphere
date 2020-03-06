@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 /**
  * Deny user statement.
@@ -28,5 +28,5 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 @Setter
 public final class DenyUserStatement extends DCLStatement {
     
-    private TableSegment table;
+    private SimpleTableSegment table;
 }

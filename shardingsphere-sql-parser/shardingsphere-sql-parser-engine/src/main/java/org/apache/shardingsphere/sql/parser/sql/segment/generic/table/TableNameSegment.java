@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic.table;
 
-import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 
 /**
- * Indexes segment available.
+ * Table name segment.
  */
-public interface IndexSegmentsAvailable {
+@RequiredArgsConstructor
+@Getter
+public final class TableNameSegment implements SQLSegment {
     
-    /**
-     * Get indexes segment.
-     * 
-     * @return indexes segment
-     */
-    Collection<IndexSegment> getIndexes();
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final IdentifierValue identifier;
 }

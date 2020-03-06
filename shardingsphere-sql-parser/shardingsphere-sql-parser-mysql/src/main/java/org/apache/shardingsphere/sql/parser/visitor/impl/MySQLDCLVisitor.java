@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetPass
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateUserStatement;
@@ -56,7 +56,7 @@ public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
-        Optional<TableSegment> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
+        Optional<SimpleTableSegment> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
         tableSegmentOptional.ifPresent(tableSegment -> result.getTables().add(tableSegment));
         return result;
     }
@@ -64,16 +64,16 @@ public final class MySQLDCLVisitor extends MySQLVisitor implements DCLVisitor {
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
-        Optional<TableSegment> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
+        Optional<SimpleTableSegment> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
         tableSegmentOptional.ifPresent(tableSegment -> result.getTables().add(tableSegment));
         return result;
     }
     
-    private Optional<TableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
+    private Optional<SimpleTableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
         if (null != ctx.onObjectClause()) {
             TableNameContext tableName = ctx.onObjectClause().privilegeLevel().tableName();
             if (null != tableName) {
-                return Optional.of((TableSegment) visitTableName(tableName));
+                return Optional.of((SimpleTableSegment) visitTableName(tableName));
             }
         }
         return Optional.empty();

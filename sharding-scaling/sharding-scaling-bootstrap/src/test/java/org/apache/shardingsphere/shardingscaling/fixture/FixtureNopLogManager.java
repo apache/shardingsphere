@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.generic;
+package org.apache.shardingsphere.shardingscaling.fixture;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
+import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.NopLogPosition;
 
-/**
- * Table name segment.
- */
+import javax.sql.DataSource;
+
 @RequiredArgsConstructor
-@Getter
-public final class TableNameSegment implements SQLSegment {
+public final class FixtureNopLogManager implements LogPositionManager<NopLogPosition> {
     
-    private final int startIndex;
+    private final DataSource dataSource;
     
-    private final int stopIndex;
+    @Override
+    public NopLogPosition getCurrentPosition() {
+        return new NopLogPosition();
+    }
     
-    private final IdentifierValue identifier;
+    @Override
+    public void updateCurrentPosition(final NopLogPosition newLogPosition) {
+    }
 }

@@ -30,7 +30,7 @@ public final class BlobValueDecoder {
      * decode blob value.
      *
      * @param meta meta data
-     * @param in input byte buffur
+     * @param in input byte buffer
      * @return blob value
      */
     public static Serializable decodeBlob(final int meta, final ByteBuf in) {

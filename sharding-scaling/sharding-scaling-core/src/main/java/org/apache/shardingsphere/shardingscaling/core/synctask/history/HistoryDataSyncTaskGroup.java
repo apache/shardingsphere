@@ -135,7 +135,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
         RdbmsConfiguration readerConfiguration = syncConfiguration.getReaderConfiguration();
         String primaryKey = metaDataManager.getTableMetaData(readerConfiguration.getTableName()).getPrimaryKeyColumns().get(0);
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(String.format("select min(%s),max(%s) from %s limit 1", primaryKey, primaryKey, readerConfiguration.getTableName()));
+            PreparedStatement ps = connection.prepareStatement(String.format("SELECT MIN(%s),MAX(%s) FROM %s LIMIT 1", primaryKey, primaryKey, readerConfiguration.getTableName()));
             ResultSet rs = ps.executeQuery();
             rs.next();
             int min = rs.getInt(1);
@@ -144,10 +144,10 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
             for (int i = 0; i < concurrency; i++) {
                 RdbmsConfiguration splitReaderConfig = RdbmsConfiguration.clone(readerConfiguration);
                 if (i < concurrency - 1) {
-                    splitReaderConfig.setWhereCondition(String.format("where %s between %d and %d", primaryKey, min, min + step));
+                    splitReaderConfig.setWhereCondition(String.format("WHERE %s BETWEEN %d AND %d", primaryKey, min, min + step));
                     min = min + step + 1;
                 } else {
-                    splitReaderConfig.setWhereCondition(String.format("where %s between %d and %d", primaryKey, min, max));
+                    splitReaderConfig.setWhereCondition(String.format("WHERE %s BETWEEN %d AND %d", primaryKey, min, max));
                 }
                 splitReaderConfig.setSpiltNum(i);
                 result.add(new SyncConfiguration(concurrency, syncConfiguration.getTableNameMap(),

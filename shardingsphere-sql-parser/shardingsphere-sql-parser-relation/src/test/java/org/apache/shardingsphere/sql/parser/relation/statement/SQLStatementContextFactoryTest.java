@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssign
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -56,7 +56,7 @@ public final class SQLStatementContextFactoryTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
                 Collections.singleton(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")), null))));
-        insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, insertStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof InsertStatementContext);

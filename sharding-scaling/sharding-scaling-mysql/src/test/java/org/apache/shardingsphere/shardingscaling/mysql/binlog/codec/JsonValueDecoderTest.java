@@ -302,8 +302,8 @@ public final class JsonValueDecoderTest {
         ByteBuf result = Unpooled.buffer();
         for (JsonEntry each : jsonEntries) {
             jsonByteBuf.writeByte(each.getType());
-            int offsetOrInlinedValue = getOffsetOrInlineValue(startOffset, result.readableBytes(), each, isSmall);
-            writeInt(jsonByteBuf, offsetOrInlinedValue, isSmall);
+            int offsetOrInlineValue = getOffsetOrInlineValue(startOffset, result.readableBytes(), each, isSmall);
+            writeInt(jsonByteBuf, offsetOrInlineValue, isSmall);
             writeValueToByteBuf(each, result, isSmall);
         }
         return result;

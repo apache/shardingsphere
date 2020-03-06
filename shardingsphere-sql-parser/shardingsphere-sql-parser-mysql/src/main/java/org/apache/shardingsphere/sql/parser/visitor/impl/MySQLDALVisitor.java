@@ -59,7 +59,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.CacheIndexStatement;
@@ -209,7 +209,7 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     @Override
     public ASTNode visitDesc(final DescContext ctx) {
         DescribeStatement result = new DescribeStatement();
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
@@ -265,14 +265,14 @@ public final class MySQLDALVisitor extends MySQLVisitor implements DALVisitor {
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
         ShowCreateTableStatement result = new ShowCreateTableStatement();
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitFromTable(final FromTableContext ctx) {
         FromTableSegment result = new FromTableSegment();
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     

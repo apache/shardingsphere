@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.writer;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.DataRecord;
@@ -110,13 +109,7 @@ public abstract class AbstractSqlBuilder {
     }
     
     private Collection<Column> extractUpdatedColumns(final Collection<Column> columns) {
-        return Collections2.filter(columns, new Predicate<Column>() {
-            
-            @Override
-            public boolean apply(final Column column) {
-                return column.isUpdated();
-            }
-        });
+        return Collections2.filter(columns, Column::isUpdated);
     }
     
     /**

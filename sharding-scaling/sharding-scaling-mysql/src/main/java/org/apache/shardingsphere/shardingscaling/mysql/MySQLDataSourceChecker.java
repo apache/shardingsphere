@@ -43,8 +43,8 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 } else {
                     throw new DatasourceCheckFailedException("No tables find in the source datasource");
                 }
-                connection.prepareStatement(String.format("select * from %s limit 1", tableName)).executeQuery();
-                connection.prepareStatement("show master status").executeQuery();
+                connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
+                connection.prepareStatement("SHOW MASTER STATUS").executeQuery();
             }
         } catch (SQLException e) {
             throw new DatasourceCheckFailedException("Datasources check failed!");

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.junit.Before;
@@ -111,7 +111,7 @@ public final class ProjectionsContextEngineTest {
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().addAll(Collections.singletonList(new TableSegment(0, 0, new IdentifierValue("name"))));
+        selectStatement.getTables().addAll(Collections.singletonList(new SimpleTableSegment(0, 0, new IdentifierValue("name"))));
         selectStatement.setProjections(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
@@ -128,7 +128,7 @@ public final class ProjectionsContextEngineTest {
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().addAll(Collections.singletonList(new TableSegment(0, 0, new IdentifierValue("name"))));
+        selectStatement.getTables().addAll(Collections.singletonList(new SimpleTableSegment(0, 0, new IdentifierValue("name"))));
         selectStatement.setProjections(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
@@ -144,20 +144,20 @@ public final class ProjectionsContextEngineTest {
     @Test
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent() {
         SelectStatement selectStatement = new SelectStatement();
-        TableSegment tableSegment = new TableSegment(0, 10, new IdentifierValue("name"));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(0, 10, new IdentifierValue("name"));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
         selectStatement.getTables().addAll(Collections.singletonList(tableSegment));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
-        TableSegment table = new TableSegment(0, 10, new IdentifierValue("name"));
+        SimpleTableSegment table = new SimpleTableSegment(0, 10, new IdentifierValue("name"));
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         table.setOwner(new OwnerSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         columnSegment.setOwner(owner);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);
-        columnProjectionSegment.setOwner(owner);
+        columnProjectionSegment.getColumn().setOwner(owner);
         projectionsSegment.getProjections().addAll(Lists.newArrayList(columnProjectionSegment, shorthandProjectionSegment));
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));
         OrderByContext orderByContext = new OrderByContext(Collections.singleton(orderByItem), false);

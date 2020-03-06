@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public final class ProjectionsContextEngine {
         return result;
     }
     
-    private List<String> getColumnLabels(final Collection<TableSegment> tables, final Collection<Projection> projections) {
+    private List<String> getColumnLabels(final Collection<SimpleTableSegment> tables, final Collection<Projection> projections) {
         List<String> result = new ArrayList<>(projections.size());
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
@@ -93,13 +93,13 @@ public final class ProjectionsContextEngine {
         return result;
     }
     
-    private Collection<String> getShorthandColumnLabels(final Collection<TableSegment> tables, final ShorthandProjection shorthandProjection) {
+    private Collection<String> getShorthandColumnLabels(final Collection<SimpleTableSegment> tables, final ShorthandProjection shorthandProjection) {
         return shorthandProjection.getOwner().isPresent()
                 ? getQualifiedShorthandColumnLabels(tables, shorthandProjection.getOwner().get()) : getUnqualifiedShorthandColumnLabels(tables);
     }
     
-    private Collection<String> getQualifiedShorthandColumnLabels(final Collection<TableSegment> tables, final String owner) {
-        for (TableSegment each : tables) {
+    private Collection<String> getQualifiedShorthandColumnLabels(final Collection<SimpleTableSegment> tables, final String owner) {
+        for (SimpleTableSegment each : tables) {
             if (owner.equalsIgnoreCase(each.getAlias().orElse(each.getTableName().getIdentifier().getValue()))) {
                 return relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue());
             }
@@ -107,9 +107,9 @@ public final class ProjectionsContextEngine {
         return Collections.emptyList();
     }
     
-    private Collection<String> getUnqualifiedShorthandColumnLabels(final Collection<TableSegment> tables) {
+    private Collection<String> getUnqualifiedShorthandColumnLabels(final Collection<SimpleTableSegment> tables) {
         Collection<String> result = new LinkedList<>();
-        for (TableSegment each : tables) {
+        for (SimpleTableSegment each : tables) {
             result.addAll(relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue()));
         }
         return result;
@@ -171,7 +171,7 @@ public final class ProjectionsContextEngine {
     }
     
     private Optional<ShorthandProjection> findShorthandProjection(final Collection<Projection> projections, final String tableNameOrAlias, final SelectStatement selectStatement) {
-        TableSegment tableSegment = find(tableNameOrAlias, selectStatement);
+        SimpleTableSegment tableSegment = find(tableNameOrAlias, selectStatement);
         for (Projection each : projections) {
             if (!(each instanceof ShorthandProjection)) {
                 continue;
@@ -211,7 +211,7 @@ public final class ProjectionsContextEngine {
     
     private boolean isSameProjection(final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem, final SelectStatement selectStatement) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
-        TableSegment tableSegment = find(shorthandProjection.getOwner().get(), selectStatement);
+        SimpleTableSegment tableSegment = find(shorthandProjection.getOwner().get(), selectStatement);
         return relationMetas.containsColumn(tableSegment.getTableName().getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
     }
     
@@ -223,8 +223,8 @@ public final class ProjectionsContextEngine {
         return !projection.getAlias().isPresent() && projection.getExpression().equalsIgnoreCase(orderItem.getText());
     }
     
-    private TableSegment find(final String tableNameOrAlias, final SelectStatement selectStatement) {
-        for (TableSegment each : selectStatement.getTables()) {
+    private SimpleTableSegment find(final String tableNameOrAlias, final SelectStatement selectStatement) {
+        for (SimpleTableSegment each : selectStatement.getTables()) {
             if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
                 return each;
             }

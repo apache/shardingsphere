@@ -21,6 +21,9 @@ import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -33,6 +36,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -62,9 +66,7 @@ public final class OrderByContextEngineTest {
         OrderBySegment orderBySegment = new OrderBySegment(0, 1, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
         selectStatement.setOrderBy(orderBySegment);
         GroupByContext emptyGroupByContext = new GroupByContext(Collections.emptyList(), 0);
-
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, emptyGroupByContext);
-
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
         OrderByItem expectedOrderByItem2 = new OrderByItem(indexOrderByItemSegment1);
         expectedOrderByItem2.setIndex(2);
@@ -72,5 +74,24 @@ public final class OrderByContextEngineTest {
         expectedOrderByItem3.setIndex(3);
         assertThat(actualOrderByContext.getItems(), is(Arrays.asList(expectedOrderByItem1, expectedOrderByItem2, expectedOrderByItem3)));
         assertFalse(actualOrderByContext.isGenerated());
+    }
+
+    @Test
+    public void assertCreateOrderInDistinctByWithoutOrderBy() {
+        SelectStatement selectStatement = new SelectStatement();
+        ColumnProjectionSegment columnProjectionSegment1 = new ColumnProjectionSegment("column1", new ColumnSegment(0, 1, new IdentifierValue("column1")));
+        ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment("column2", new ColumnSegment(1, 2, new IdentifierValue("column2")));
+        List<ProjectionSegment> list = Arrays.asList(columnProjectionSegment1, columnProjectionSegment2);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
+        projectionsSegment.setDistinctRow(true);
+        projectionsSegment.getProjections().addAll(list);
+        selectStatement.setProjections(projectionsSegment);
+        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
+        assertThat(actualOrderByContext.getItems().size(), is(list.size()));
+        List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
+        assertThat(((ColumnOrderByItemSegment) items.get(0).getSegment()).getColumn(), is(columnProjectionSegment1.getColumn()));
+        assertThat(((ColumnOrderByItemSegment) items.get(1).getSegment()).getColumn(), is(columnProjectionSegment2.getColumn()));
+        assertTrue(actualOrderByContext.isGenerated());
     }
 }

@@ -46,11 +46,11 @@ public final class MySQLLogPositionManager implements LogPositionManager<BinlogP
     
     private void getCurrentPositionFromSource() {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("show master status");
+            PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             currentPosition = new BinlogPosition(resultSet.getString(1), resultSet.getLong(2));
-            preparedStatement = connection.prepareStatement("show variables like 'server_id'");
+            preparedStatement = connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'");
             resultSet = preparedStatement.executeQuery();
             resultSet.next();
             currentPosition.setServerId(resultSet.getLong(2));

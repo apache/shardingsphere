@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.shardingscaling.core.synctask.history;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
+import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.engine.SyncTaskExecuteCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.SyncExecutorGroup;
-import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.AckCallback;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.Reader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.ReaderFactory;
@@ -36,14 +35,12 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.WriterFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
-import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -91,7 +88,7 @@ public final class HistoryDataSyncTask implements SyncTask {
     private void getEstimatedRows() {
         DataSource dataSource = dataSourceManager.getDataSource(syncConfiguration.getReaderConfiguration().getDataSourceConfiguration());
         try (Connection connection = dataSource.getConnection()) {
-            ResultSet resultSet = connection.prepareStatement(String.format("select count(*) from %s %s",
+            ResultSet resultSet = connection.prepareStatement(String.format("SELECT COUNT(*) FROM %s %s",
                     syncConfiguration.getReaderConfiguration().getTableName(),
                     syncConfiguration.getReaderConfiguration().getWhereCondition()))
                     .executeQuery();
@@ -115,18 +112,14 @@ public final class HistoryDataSyncTask implements SyncTask {
     }
     
     private MemoryChannel instanceChannel() {
-        return new MemoryChannel(new AckCallback() {
-    
-            @Override
-            public void onAck(final List<Record> records) {
-                int count = 0;
-                for (Record record : records) {
-                    if (DataRecord.class.equals(record.getClass())) {
-                        count++;
-                    }
+        return new MemoryChannel(records -> {
+            int count = 0;
+            for (Record record : records) {
+                if (DataRecord.class.equals(record.getClass())) {
+                    count++;
                 }
-                syncedRows.addAndGet(count);
             }
+            syncedRows.addAndGet(count);
         });
     }
     

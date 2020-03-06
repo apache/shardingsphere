@@ -46,7 +46,7 @@ public final class DefaultSyncTaskExecuteEngine implements SyncTaskExecuteEngine
     
     public DefaultSyncTaskExecuteEngine(final int maxWorkerThread) {
         executorService = MoreExecutors.listeningDecorator(
-            new ThreadPoolExecutor(maxWorkerThread, maxWorkerThread, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.AbortPolicy()));
+            new ThreadPoolExecutor(maxWorkerThread, maxWorkerThread, 0, TimeUnit.SECONDS, new SynchronousQueue<>(), new ThreadPoolExecutor.AbortPolicy()));
         availableWorkerThread = new AtomicInteger(maxWorkerThread);
     }
     

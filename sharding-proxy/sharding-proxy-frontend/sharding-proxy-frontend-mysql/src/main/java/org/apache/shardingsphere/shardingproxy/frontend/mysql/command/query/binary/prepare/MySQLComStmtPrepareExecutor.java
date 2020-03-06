@@ -64,7 +64,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             result.add(new MySQLErrPacket(++currentSequenceId, MySQLServerErrorCode.ER_UNSUPPORTED_PS));
             return result;
         }
-        int parametersCount = sqlStatement.getParametersCount();
+        int parametersCount = sqlStatement.getParameterCount();
         int columnsCount = getColumnsCount(sqlStatement);
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(packet.getSql(), parametersCount), columnsCount, parametersCount, 0));
         if (parametersCount > 0) {

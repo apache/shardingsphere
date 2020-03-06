@@ -80,13 +80,13 @@ public abstract class AbstractJDBCReader extends AbstractSyncExecutor implements
     @Override
     public final void read(final Channel channel) {
         try (Connection conn = dataSourceManager.getDataSource(rdbmsConfiguration.getDataSourceConfiguration()).getConnection()) {
-            String sql = String.format("select * from %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
+            String sql = String.format("SELECT * FROM %s %s", rdbmsConfiguration.getTableName(), rdbmsConfiguration.getWhereCondition());
             PreparedStatement ps = createPreparedStatement(conn, sql);
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
             while (isRunning() && rs.next()) {
                 DataRecord record = new DataRecord(new NopLogPosition(), metaData.getColumnCount());
-                record.setType("bootstrap-insert");
+                record.setType("BOOTSTRAP-INSERT");
                 record.setTableName(rdbmsConfiguration.getTableNameMap().get(rdbmsConfiguration.getTableName()));
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     record.addColumn(new Column(metaData.getColumnName(i), readValue(rs, i), true, tableMetaData.isPrimaryKey(i)));

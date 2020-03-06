@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +32,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -55,8 +54,7 @@ public final class HistoryDataSyncTaskTest {
         RdbmsConfiguration readerConfig = mockReaderConfig();
         RdbmsConfiguration writerConfig = mockWriterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        syncConfiguration = new SyncConfiguration(3, null,
-                readerConfig, writerConfig);
+        syncConfiguration = new SyncConfiguration(3, Collections.EMPTY_MAP, readerConfig, writerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
@@ -69,13 +67,7 @@ public final class HistoryDataSyncTaskTest {
     public void assertGetProgress() {
         initTableData(syncConfiguration.getReaderConfiguration());
         HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
-        historyDataSyncTask.start(new ReportCallback() {
-            
-            @Override
-            public void report(final Event event) {
-
-            }
-        });
+        historyDataSyncTask.start(event -> { });
         assertThat(((HistoryDataSyncTaskProgress) historyDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
     }
     
@@ -85,8 +77,8 @@ public final class HistoryDataSyncTaskTest {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (id int primary key, user_id varchar(12))");
-            statement.execute("INSERT INTO t_order (id, user_id) values (1, 'xxx'), (999, 'yyy')");
+            statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
     }
     

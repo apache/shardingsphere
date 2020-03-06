@@ -57,14 +57,15 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
@@ -74,7 +75,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateS
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -100,8 +101,8 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         // TODO deal with insert select
         if (null != ctx.insertSingleTable()) {
             InsertStatement result = (InsertStatement) visit(ctx.insertSingleTable().insertValuesClause());
-            result.setTable((TableSegment) visit(ctx.insertSingleTable().insertIntoClause().tableName()));
-            result.setParametersCount(getCurrentParameterIndex());
+            result.setTable((SimpleTableSegment) visit(ctx.insertSingleTable().insertIntoClause().tableName()));
+            result.setParameterCount(getCurrentParameterIndex());
             return result;
         }
         return new InsertStatement();
@@ -134,12 +135,12 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
-        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableReferences())).getValue());
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableReferences())).getValue());
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -182,20 +183,20 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
         if (null != ctx.multipleTablesClause()) {
-            result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.multipleTablesClause())).getValue());
+            result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.multipleTablesClause())).getValue());
         } else {
-            result.getTables().add((TableSegment) visit(ctx.singleTableClause()));
+            result.getTables().add((SimpleTableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
     @Override
     public ASTNode visitSingleTableClause(final SingleTableClauseContext ctx) {
-        TableSegment result = (TableSegment) visit(ctx.tableName());
+        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
         }
@@ -205,17 +206,17 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
-        CollectionValue<TableSegment> result = new CollectionValue<>();
-        result.combine((CollectionValue<TableSegment>) visit(ctx.multipleTableNames()));
-        result.combine((CollectionValue<TableSegment>) visit(ctx.tableReferences()));
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
+        result.combine((CollectionValue<SimpleTableSegment>) visit(ctx.multipleTableNames()));
+        result.combine((CollectionValue<SimpleTableSegment>) visit(ctx.tableReferences()));
         return result;
     }
     
     @Override
     public ASTNode visitMultipleTableNames(final MultipleTableNamesContext ctx) {
-        CollectionValue<TableSegment> result = new CollectionValue<>();
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         for (TableNameContext each : ctx.tableName()) {
-            result.getValue().add((TableSegment) visit(each));
+            result.getValue().add((SimpleTableSegment) visit(each));
         }
         return result;
     }
@@ -224,7 +225,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO : Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.unionClause());
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -243,7 +244,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
         if (null != ctx.fromClause()) {
-            result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.fromClause())).getValue());
+            result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.fromClause())).getValue());
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -258,9 +259,9 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<TableSegment> getTableSegments(final Collection<TableSegment> tableSegments, final JoinedTableContext joinedTable) {
-        Collection<TableSegment> result = new LinkedList<>();
-        for (TableSegment tableSegment : ((CollectionValue<TableSegment>) visit(joinedTable)).getValue()) {
+    private Collection<SimpleTableSegment> getTableSegments(final Collection<SimpleTableSegment> tableSegments, final JoinedTableContext joinedTable) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (SimpleTableSegment tableSegment : ((CollectionValue<SimpleTableSegment>) visit(joinedTable)).getValue()) {
             if (isTable(tableSegment, tableSegments)) {
                 result.add(tableSegment);
             }
@@ -268,8 +269,8 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         return result;
     }
     
-    private boolean isTable(final TableSegment owner, final Collection<TableSegment> tableSegments) {
-        for (TableSegment each : tableSegments) {
+    private boolean isTable(final SimpleTableSegment owner, final Collection<SimpleTableSegment> tableSegments) {
+        for (SimpleTableSegment each : tableSegments) {
             if (owner.getTableName().getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }
@@ -352,7 +353,10 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             return result;
         }
         if (projection instanceof SubquerySegment) {
-            return new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText());
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment(
+                    new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText()));
+            result.setAlias(alias);
+            return result;
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()))
@@ -369,20 +373,20 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
-        CollectionValue<TableSegment> result = new CollectionValue<>();
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         for (TableReferenceContext each : ctx.tableReference()) {
-            result.combine((CollectionValue<TableSegment>) visit(each));
+            result.combine((CollectionValue<SimpleTableSegment>) visit(each));
         }
         return result;
     }
     
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
-        CollectionValue<TableSegment> result = new CollectionValue<>();
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         if (null != ctx.tableFactor()) {
             ASTNode tableFactor = visit(ctx.tableFactor());
-            if (tableFactor instanceof TableSegment) {
-                result.getValue().add((TableSegment) tableFactor);
+            if (tableFactor instanceof SimpleTableSegment) {
+                result.getValue().add((SimpleTableSegment) tableFactor);
             }
         }
         if (null != ctx.joinedTable()) {
@@ -396,7 +400,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.tableName()) {
-            TableSegment result = (TableSegment) visit(ctx.tableName());
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
             }
@@ -411,12 +415,12 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
-        CollectionValue<TableSegment> result = new CollectionValue<>();
-        TableSegment tableSegment = (TableSegment) visit(ctx.tableFactor());
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
+        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.tableFactor());
         result.getValue().add(tableSegment);
         if (null != ctx.joinSpecification()) {
-            Collection<TableSegment> tableSegments = new LinkedList<>();
-            for (TableSegment each : ((CollectionValue<TableSegment>) visit(ctx.joinSpecification())).getValue()) {
+            Collection<SimpleTableSegment> tableSegments = new LinkedList<>();
+            for (SimpleTableSegment each : ((CollectionValue<SimpleTableSegment>) visit(ctx.joinSpecification())).getValue()) {
                 if (isTable(each, Collections.singleton(tableSegment))) {
                     tableSegments.add(each);
                 }
@@ -428,7 +432,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     
     @Override
     public ASTNode visitJoinSpecification(final JoinSpecificationContext ctx) {
-        CollectionValue<TableSegment> result = new CollectionValue<>();
+        CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         if (null == ctx.expr()) {
             return result;
         }
@@ -441,15 +445,12 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
             if (predicate.getRightValue() instanceof ColumnSegment && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent()) {
                 result.getValue().add(createTableSegment(((ColumnSegment) predicate.getRightValue()).getOwner().get()));
             }
-            if (predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()) {
-                result.getValue().add(createTableSegment(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get()));
-            }
         }
         return result;
     }
     
-    private TableSegment createTableSegment(final OwnerSegment ownerSegment) {
-        return new TableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier());
+    private SimpleTableSegment createTableSegment(final OwnerSegment ownerSegment) {
+        return new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier());
     }
     
     @Override
