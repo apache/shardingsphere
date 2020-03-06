@@ -120,11 +120,11 @@ public final class EncryptAssignmentTokenGenerator extends BaseEncryptSQLTokenGe
     private void addAssistedQueryAssignment(final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
         Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
         Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, assignmentSegment.getColumn().getIdentifier().getValue());
-        if (assistedQueryColumn.isPresent()) {
+        assistedQueryColumn.ifPresent(s -> {
             Object assistedQueryValue = getEncryptRule().getEncryptAssistedQueryValues(
                     tableName, assignmentSegment.getColumn().getIdentifier().getValue(), Collections.singletonList(originalValue)).iterator().next();
-            token.addAssignment(assistedQueryColumn.get(), assistedQueryValue);
-        }
+            token.addAssignment(s, assistedQueryValue);
+        });
     }
     
     private void addPlainAssignment(final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {

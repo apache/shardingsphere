@@ -167,8 +167,7 @@ public final class ShardingSchema extends LogicSchema {
             getMetaData().getTables().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().removeAll(indexNames);
         }
         for (String each : indexNames) {
-            Optional<String> logicTableName = findLogicTableName(getMetaData().getTables(), each);
-            if (logicTableName.isPresent()) {
+            if (findLogicTableName(getMetaData().getTables(), each).isPresent()) {
                 getMetaData().getTables().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().remove(each);
             }
         }
