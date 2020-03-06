@@ -319,7 +319,7 @@ public final class ConfigurationServiceTest {
     }
 
     @Test
-    public void assertIsShardingRuleWithDefaultTableStragetyNone() {
+    public void assertIsShardingRuleWithDefaultTableStrategyNone() {
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         assertTrue(configurationService.isShardingRule("sharding_db"));

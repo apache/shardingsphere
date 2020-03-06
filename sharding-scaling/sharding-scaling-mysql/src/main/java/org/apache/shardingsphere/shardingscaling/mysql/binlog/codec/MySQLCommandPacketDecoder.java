@@ -102,19 +102,22 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeResponsePacket(final ByteBuf in, final List<Object> out) {
-        if (PacketConstants.ERR_PACKET_MARK == in.getByte(0)) {
-            ErrorPacket error = new ErrorPacket();
-            error.fromByteBuf(in);
-            out.add(error);
-        } else if (PacketConstants.OK_PACKET_MARK == in.getByte(0)) {
-            OkPacket ok = new OkPacket();
-            ok.fromByteBuf(in);
-            out.add(ok);
-        } else {
-            ResultSetHeaderPacket resultSetHeaderPacket = new ResultSetHeaderPacket();
-            resultSetHeaderPacket.fromByteBuf(in);
-            currentState = States.FieldPacket;
-            internalResultSet = new InternalResultSet(resultSetHeaderPacket);
+        switch (in.getByte(0)) {
+            case PacketConstants.ERR_PACKET_MARK:
+                ErrorPacket error = new ErrorPacket();
+                error.fromByteBuf(in);
+                out.add(error);
+                break;
+            case PacketConstants.OK_PACKET_MARK:
+                OkPacket ok = new OkPacket();
+                ok.fromByteBuf(in);
+                out.add(ok);
+                break;
+            default:
+                ResultSetHeaderPacket resultSetHeaderPacket = new ResultSetHeaderPacket();
+                resultSetHeaderPacket.fromByteBuf(in);
+                currentState = States.FieldPacket;
+                internalResultSet = new InternalResultSet(resultSetHeaderPacket);
         }
     }
 }

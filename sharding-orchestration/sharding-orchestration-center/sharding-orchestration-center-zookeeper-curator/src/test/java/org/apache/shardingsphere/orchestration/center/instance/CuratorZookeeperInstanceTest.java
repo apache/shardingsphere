@@ -86,7 +86,7 @@ public final class CuratorZookeeperInstanceTest {
     public void assertWatchUpdatedChangedType() throws Exception {
         curatorZookeeperInstance.persist("/test/children/1", "value1");
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        curatorZookeeperInstance.watch("/test/children", dataChangedEvent -> future.set(dataChangedEvent));
+        curatorZookeeperInstance.watch("/test/children", future::set);
         curatorZookeeperInstance.persist("/test/children/1", "value2");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
@@ -99,8 +99,8 @@ public final class CuratorZookeeperInstanceTest {
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
         curatorZookeeperInstance.persist("/test/children/5", "value5");
-        final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        curatorZookeeperInstance.watch("/test/children/5", dataChangedEvent -> future.set(dataChangedEvent));
+        SettableFuture<DataChangedEvent> future = SettableFuture.create();
+        curatorZookeeperInstance.watch("/test/children/5", future::set);
         client.delete().forPath("/test/children/5");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
@@ -112,8 +112,8 @@ public final class CuratorZookeeperInstanceTest {
     @Test
     public void assertWatchAddedChangedType() throws InterruptedException {
         curatorZookeeperInstance.persist("/test/children/4", "value4");
-        final AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
-        curatorZookeeperInstance.watch("/test/children", dataChangedEvent -> actualDataChangedEvent.set(dataChangedEvent));
+        AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
+        curatorZookeeperInstance.watch("/test/children", actualDataChangedEvent::set);
         Thread.sleep(2000L);
         assertNull(actualDataChangedEvent.get());
     }

@@ -183,8 +183,8 @@ public final class JsonValueDecoder {
         return isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
     }
     
-    private static void outputLiteral(final int inlinedValue, final StringBuilder out) {
-        switch (inlinedValue) {
+    private static void outputLiteral(final int inlineValue, final StringBuilder out) {
+        switch (inlineValue) {
             case JsonValueTypes.LITERAL_NULL:
                 out.append("null");
                 break;
