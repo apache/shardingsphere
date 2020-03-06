@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.opensharding.orchestration.reg.etcd;
+package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
@@ -33,16 +33,17 @@ import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.grpc.stub.StreamObserver;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EtcdRegistryCenterTest {
+public class EtcdInstanceTest {
     
     @Mock
     private Client client;
@@ -85,20 +86,23 @@ public class EtcdRegistryCenterTest {
     @Mock
     private CompletableFuture putFuture;
     
-    private EtcdRegistryCenter etcdRegistryCenter = new EtcdRegistryCenter();
+    private EtcdInstance etcdInstance = new EtcdInstance();
     
     @Before
     public void setUp() {
         setClient();
-        setConfiguration();
+        setProperties();
     }
     
     @SneakyThrows
     private void setClient() {
         mockClient();
-        Field field = etcdRegistryCenter.getClass().getDeclaredField("client");
-        field.setAccessible(true);
-        field.set(etcdRegistryCenter, client);
+        FieldSetter.setField(etcdInstance, etcdInstance.getClass().getDeclaredField("client"), client);
+    }
+
+    @SneakyThrows
+    private void setProperties() {
+        FieldSetter.setField(etcdInstance, etcdInstance.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
     }
     
     @SneakyThrows
@@ -117,16 +121,9 @@ public class EtcdRegistryCenterTest {
         return client;
     }
     
-    @SneakyThrows
-    private void setConfiguration() {
-        Field field = etcdRegistryCenter.getClass().getDeclaredField("config");
-        field.setAccessible(true);
-        field.set(etcdRegistryCenter, new RegistryCenterConfiguration("etcd"));
-    }
-    
     @Test
     public void assertGetKey() {
-        etcdRegistryCenter.get("key");
+        etcdInstance.get("key");
         verify(kv).get(ByteSequence.from("key", Charsets.UTF_8));
         verify(getResponse).getKvs();
     }
@@ -141,7 +138,7 @@ public class EtcdRegistryCenterTest {
             .setValue(ByteString.copyFromUtf8("value3")).build();
         List<KeyValue> keyValues = Lists.newArrayList(new KeyValue(keyValue1), new KeyValue(keyValue2), new KeyValue(keyValue1));
         when(getResponse.getKvs()).thenReturn(keyValues);
-        List<String> actual = etcdRegistryCenter.getChildrenKeys("/key");
+        List<String> actual = etcdInstance.getChildrenKeys("/key");
         assertThat(actual.size(), is(2));
         Iterator<String> iterator = actual.iterator();
         assertThat(iterator.next(), is("key1"));
@@ -151,7 +148,7 @@ public class EtcdRegistryCenterTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertPersistEphemeral() {
-        etcdRegistryCenter.persistEphemeral("key1", "value1");
+        etcdInstance.persistEphemeral("key1", "value1");
         verify(lease).grant(anyLong());
         verify(lease).keepAlive(anyLong(), any(StreamObserver.class));
         verify(kv).put(any(ByteSequence.class), any(ByteSequence.class), any(PutOption.class));
@@ -159,7 +156,7 @@ public class EtcdRegistryCenterTest {
     
     @Test
     public void assertWatch() {
-        etcdRegistryCenter.watch("key1", dataChangedEvent -> {
+        etcdInstance.watch("key1", dataChangedEvent -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
     }

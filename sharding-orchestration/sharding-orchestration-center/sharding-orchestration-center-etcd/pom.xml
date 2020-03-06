@@ -21,11 +21,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.opensharding</groupId>
-        <artifactId>sharding-orchestration-reg-spi-impl</artifactId>
-        <version>4.0.0-RC3-SNAPSHOT</version>
+        <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>sharding-orchestration-center</artifactId>
+        <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-orchestration-reg-etcd</artifactId>
+    <artifactId>sharding-orchestration-center-etcd</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
@@ -35,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-api</artifactId>
+            <artifactId>sharding-orchestration-center-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

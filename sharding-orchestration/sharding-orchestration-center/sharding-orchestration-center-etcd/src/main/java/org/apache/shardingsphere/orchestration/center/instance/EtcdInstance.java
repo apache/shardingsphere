@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.opensharding.orchestration.reg.etcd;
+package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
@@ -31,10 +31,11 @@ import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
+import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 
 import java.util.List;
 import java.util.Properties;
@@ -42,22 +43,23 @@ import java.util.stream.Collectors;
 
 /**
  * ETCD registry center.
- *
- * @author zhaojun
  */
-public final class EtcdRegistryCenter implements RegistryCenter {
+public final class EtcdInstance implements ConfigCenterRepository, RegistryCenterRepository {
     
     private Client client;
     
-    private RegistryCenterConfiguration config;
+    private InstanceConfiguration config;
     
     @Getter
     @Setter
     private Properties properties;
-    
+
+    private EtcdProperties etcdProperties;
+
     @Override
-    public void init(final RegistryCenterConfiguration config) {
+    public void init(final InstanceConfiguration config) {
         this.config = config;
+        this.etcdProperties = new EtcdProperties(this.properties);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();
     }
     
@@ -66,16 +68,6 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     public String get(final String key) {
         List<KeyValue> keyValues = client.getKVClient().get(ByteSequence.from(key, Charsets.UTF_8)).get().getKvs();
         return keyValues.isEmpty() ? null : keyValues.iterator().next().getValue().toString(Charsets.UTF_8);
-    }
-    
-    @Override
-    public String getDirectly(final String key) {
-        return get(key);
-    }
-    
-    @Override
-    public boolean isExisted(final String key) {
-        return null != get(key);
     }
     
     @Override
@@ -101,14 +93,8 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     
     @Override
     @SneakyThrows
-    public void update(final String key, final String value) {
-        persist(key, value);
-    }
-    
-    @Override
-    @SneakyThrows
     public void persistEphemeral(final String key, final String value) {
-        long leaseId = client.getLeaseClient().grant(config.getTimeToLiveSeconds()).get().getID();
+        long leaseId = client.getLeaseClient().grant(this.etcdProperties.getValue(EtcdPropertiesEnum.TIME_TO_LIVE_SECONDS)).get().getID();
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
         client.getKVClient().put(ByteSequence.from(key, Charsets.UTF_8), ByteSequence.from(value, Charsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
     }
@@ -140,21 +126,6 @@ public final class EtcdRegistryCenter implements RegistryCenter {
     @Override
     public void close() {
         client.close();
-    }
-    
-    @Override
-    public void initLock(String key) {
-    
-    }
-    
-    @Override
-    public boolean tryLock() {
-        return false;
-    }
-    
-    @Override
-    public void tryRelease() {
-    
     }
     
     @Override
