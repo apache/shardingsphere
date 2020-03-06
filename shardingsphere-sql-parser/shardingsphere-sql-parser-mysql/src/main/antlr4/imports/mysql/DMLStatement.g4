@@ -100,8 +100,8 @@ select
     : withClause_? unionClause
     ;
 
-callStatement
-    : CALL identifier (LP_ (identifier | expr)? RP_)?
+call
+    : CALL identifier (LP_ expr (COMMA_ expr)* RP_)?
     ;
 
 doStatement
