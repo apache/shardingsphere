@@ -49,16 +49,16 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
-        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
         // TODO process multiple tables
         String tableName = selectStatementContext.getSqlStatement().getTables().iterator().next().getTableName().getIdentifier().getValue();
-        Optional<EncryptTable> encryptTable = getEncryptRule().findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Collections.emptyList();
-        }
+        return getEncryptRule().findEncryptTable(tableName).map(encryptTable -> generateSQLTokens(projectionsSegment, tableName, encryptTable)).orElseGet(Collections::emptyList);
+    }
+    
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment projectionsSegment, final String tableName, final EncryptTable encryptTable) {
+        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
-            if (isEncryptLogicColumn(each, encryptTable.get())) {
+            if (isEncryptLogicColumn(each, encryptTable)) {
                 result.add(generateSQLToken((ColumnProjectionSegment) each, tableName));
             }
         }
