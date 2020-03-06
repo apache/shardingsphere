@@ -41,8 +41,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ProjectionEngineTest {
     
@@ -53,8 +51,8 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegment() {
-        ShorthandProjectionSegment shorthandProjectionSegment = mock(ShorthandProjectionSegment.class);
-        when(shorthandProjectionSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("tbl"))));
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0, "text");
+        shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
         Optional<Projection> actual = new ProjectionEngine().createProjection(null, shorthandProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
@@ -70,7 +68,7 @@ public final class ProjectionEngineTest {
     }
 
     @Test
-    public void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionegment() {
+    public void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionSegment() {
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text");
         Optional<Projection> actual = new ProjectionEngine().createProjection(null, expressionProjectionSegment);
         assertTrue(actual.isPresent());

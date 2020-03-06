@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause
+    : ALTER TABLE tableName alterDefinitionClause (COMMA_ alterDefinitionClause)*
     ;
 
 alterIndex

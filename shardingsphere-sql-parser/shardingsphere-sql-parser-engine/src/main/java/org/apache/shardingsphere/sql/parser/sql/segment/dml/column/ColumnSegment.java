@@ -36,7 +36,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
-public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
+public final class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvailable {
     
     private final int startIndex;
     
@@ -51,12 +51,12 @@ public class ColumnSegment implements SQLSegment, PredicateRightValue, OwnerAvai
      *
      * @return qualified name
      */
-    public final String getQualifiedName() {
+    public String getQualifiedName() {
         return null == owner ? identifier.getValue() : owner.getIdentifier().getValue() + "." + identifier.getValue();
     }
 
     @Override
-    public final Optional<OwnerSegment> getOwner() {
+    public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
     }
 }

@@ -47,6 +47,12 @@ export const constantRouterMap = [
     component: () => import('@/views/runtime-status'),
     hidden: true,
     name: 'Runtime status'
+  },
+  {
+    path: '/data-scaling',
+    component: () => import('@/views/data-scaling'),
+    hidden: true,
+    name: 'Data scaling'
   }
 ]
 

@@ -124,7 +124,13 @@ public enum RuleName {
     
     RESET_PARAMETER("ResetParameter", SQLStatementType.DAL),
     
-    CALL("Call", SQLStatementType.DAL);
+    CALL("Call", SQLStatementType.DAL),
+    
+    CHANGE_MASTER("ChangeMaster", SQLStatementType.RL), 
+    
+    START_SLAVE("StartSlave", SQLStatementType.RL),
+    
+    STOP_SLAVE("StopSlave", SQLStatementType.RL);
     
     private final String name;
     

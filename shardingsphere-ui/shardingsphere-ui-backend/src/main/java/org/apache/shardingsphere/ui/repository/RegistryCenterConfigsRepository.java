@@ -22,19 +22,5 @@ import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
 /**
  * Registry center configs repository interface.
  */
-public interface RegistryCenterConfigsRepository {
-    
-    /**
-     * Load registry center configs.
-     *
-     * @return registry center configs
-     */
-    RegistryCenterConfigs load();
-    
-    /**
-     * Save registry center configs.
-     *
-     * @param registryCenterConfigs registry center configs
-     */
-    void save(RegistryCenterConfigs registryCenterConfigs);
+public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
 }

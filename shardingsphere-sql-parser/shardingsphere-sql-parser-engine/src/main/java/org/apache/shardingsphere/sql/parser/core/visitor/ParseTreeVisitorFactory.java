@@ -64,6 +64,8 @@ public final class ParseTreeVisitorFactory {
                 return (ParseTreeVisitor) visitorFacade.getDCLVisitorClass().getConstructor().newInstance();
             case DAL:
                 return (ParseTreeVisitor) visitorFacade.getDALVisitorClass().getConstructor().newInstance();
+            case RL:
+                return (ParseTreeVisitor) visitorFacade.getRLVisitorClass().getConstructor().newInstance();
             default:
                 throw new SQLParsingException("Can not support SQL statement type: `%s`", type);
         }

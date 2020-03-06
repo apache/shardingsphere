@@ -111,17 +111,19 @@ public final class ProjectionAssert {
     }
     
     private static void assertColumnProjection(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
-        assertThat(assertContext.getText("Column projection name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
-        assertThat(assertContext.getText("Column projection start delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertContext.getText("Column projection end delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertContext.getText("Column projection name assertion error: "), actual.getColumn().getIdentifier().getValue(), is(expected.getName()));
+        assertThat(assertContext.getText("Column projection start delimiter assertion error: "), 
+                actual.getColumn().getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertContext.getText("Column projection end delimiter assertion error: "), 
+                actual.getColumn().getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
         assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (null != expected.getOwner()) {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
             // TODO OwnerAssert is needed.
-            OwnerSegment owner = actual.getOwner().get();
+            OwnerSegment owner = actual.getColumn().getOwner().get();
             TableAssert.assertOwner(assertContext, new TableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
     }
     

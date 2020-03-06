@@ -65,8 +65,8 @@ public final class OrderByContextEngine {
             List<OrderByItem> orderByItems = new LinkedList<>();
             for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
                 if (projectionSegment instanceof ColumnProjectionSegment) {
-                    ColumnProjectionSegment segment = (ColumnProjectionSegment) projectionSegment;
-                    ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(segment, OrderDirection.ASC);
+                    ColumnProjectionSegment columnProjectionSegment = (ColumnProjectionSegment) projectionSegment;
+                    ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnProjectionSegment.getColumn(), OrderDirection.ASC);
                     OrderByItem item = new OrderByItem(columnOrderByItemSegment);
                     item.setIndex(index++);
                     orderByItems.add(item);
