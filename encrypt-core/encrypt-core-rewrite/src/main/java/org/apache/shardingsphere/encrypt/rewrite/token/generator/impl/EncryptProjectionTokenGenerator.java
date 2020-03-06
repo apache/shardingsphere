@@ -55,9 +55,9 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return getEncryptRule().findEncryptTable(tableName).map(encryptTable -> generateSQLTokens(projectionsSegment, tableName, encryptTable)).orElseGet(Collections::emptyList);
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment projectionsSegment, final String tableName, final EncryptTable encryptTable) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName, final EncryptTable encryptTable) {
         Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
-        for (ProjectionSegment each : projectionsSegment.getProjections()) {
+        for (ProjectionSegment each : segment.getProjections()) {
             if (isEncryptLogicColumn(each, encryptTable)) {
                 result.add(generateSQLToken((ColumnProjectionSegment) each, tableName));
             }
@@ -65,8 +65,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return result;
     }
     
-    private boolean isEncryptLogicColumn(final ProjectionSegment projectionSegment, final EncryptTable encryptTable) {
-        return projectionSegment instanceof ColumnProjectionSegment && encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) projectionSegment).getColumn().getIdentifier().getValue());
+    private boolean isEncryptLogicColumn(final ProjectionSegment segment, final EncryptTable encryptTable) {
+        return segment instanceof ColumnProjectionSegment && encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) segment).getColumn().getIdentifier().getValue());
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName) {
