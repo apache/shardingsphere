@@ -83,12 +83,12 @@ public final class OrderByContextEngineTest {
         ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment("column2", new ColumnSegment(1, 2, new IdentifierValue("column2")));
         List<ProjectionSegment> list = Arrays.asList(columnProjectionSegment1, columnProjectionSegment2);
 
-        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0,1);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(list);
         selectStatement.setProjections(projectionsSegment);
 
+        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
         OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems().size(), is(list.size()));
         List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
