@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.generic;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

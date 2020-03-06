@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -29,5 +29,5 @@ import java.util.LinkedList;
 @Getter
 public final class DropTableStatement extends DDLStatement {
     
-    private final Collection<TableSegment> tables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.relation.statement.dal;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 
@@ -41,7 +41,7 @@ public final class ShowIndexStatementContext extends CommonSQLStatementContext<S
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getAllTables() {
         return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
 }

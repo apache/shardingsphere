@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.Assignmen
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
@@ -55,7 +55,7 @@ public final class ShardingInsertStatementValidatorTest {
     
     private InsertStatement createInsertStatement() {
         InsertStatement result = new InsertStatement();
-        result.setTable(new TableSegment(0, 0, new IdentifierValue("user")));
+        result.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("user")));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         AssignmentSegment assignmentSegment = new AssignmentSegment(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 1));
         result.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));

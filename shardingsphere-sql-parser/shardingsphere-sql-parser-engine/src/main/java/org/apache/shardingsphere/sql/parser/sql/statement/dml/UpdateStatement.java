@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +34,7 @@ import java.util.Optional;
 @Setter
 public final class UpdateStatement extends DMLStatement {
     
-    private final Collection<TableSegment> tables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
     
     private SetAssignmentSegment setAssignment;
     

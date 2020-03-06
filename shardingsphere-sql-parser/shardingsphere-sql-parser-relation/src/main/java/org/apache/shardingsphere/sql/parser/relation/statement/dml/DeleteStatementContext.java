@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
 
@@ -49,16 +49,16 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
-        Collection<TableSegment> result = new LinkedList<>(getSqlStatement().getTables());
+    public Collection<SimpleTableSegment> getAllTables() {
+        Collection<SimpleTableSegment> result = new LinkedList<>(getSqlStatement().getTables());
         if (getSqlStatement().getWhere().isPresent()) {
             result.addAll(getAllTablesFromWhere(getSqlStatement().getWhere().get()));
         }
         return result;
     }
     
-    private Collection<TableSegment> getAllTablesFromWhere(final WhereSegment where) {
-        Collection<TableSegment> result = new LinkedList<>();
+    private Collection<SimpleTableSegment> getAllTablesFromWhere(final WhereSegment where) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
                 result.addAll(new PredicateExtractor(getSqlStatement().getTables(), predicate).extractTables());

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ import java.util.Optional;
 @Setter
 public final class InsertStatement extends DMLStatement {
     
-    private TableSegment table;
+    private SimpleTableSegment table;
     
     private InsertColumnsSegment insertColumns;
     

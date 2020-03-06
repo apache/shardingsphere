@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.relation.type;
 
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 
@@ -32,7 +32,7 @@ public interface TableAvailable {
      * 
      * @return all table segments
      */
-    Collection<TableSegment> getAllTables();
+    Collection<SimpleTableSegment> getAllTables();
     
     /**
      * Get tables context.

@@ -15,18 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.dcl;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.junit.Test;
 
-/**
- * Deny user statement.
- */
-@Getter
-@Setter
-public final class DenyUserStatement extends DCLStatement {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class SimpleTableSegmentTest {
     
-    private SimpleTableSegment table;
+    @Test
+    public void getStartIndexWithoutOwner() {
+        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
+        assertThat(tableSegment.getStartIndex(), is(10));
+    }
+    
+    @Test
+    public void getStartIndexWithOwner() {
+        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
+        tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("o")));
+        assertThat(tableSegment.getStartIndex(), is(7));
+    }
 }

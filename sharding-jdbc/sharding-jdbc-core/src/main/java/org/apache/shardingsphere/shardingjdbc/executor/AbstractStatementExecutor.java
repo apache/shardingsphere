@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.ddl.CreateTableSt
 import org.apache.shardingsphere.sql.parser.relation.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
@@ -201,7 +201,7 @@ public abstract class AbstractStatementExecutor {
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final DropTableStatement dropTableStatement) {
-        for (TableSegment each : dropTableStatement.getTables()) {
+        for (SimpleTableSegment each : dropTableStatement.getTables()) {
             runtimeContext.getMetaData().getTables().remove(each.getTableName().getIdentifier().getValue());
         }
     }

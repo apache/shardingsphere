@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +34,7 @@ import java.util.LinkedList;
 @Getter
 public final class CreateTableStatement extends DDLStatement {
     
-    private final TableSegment table;
+    private final SimpleTableSegment table;
     
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
     
