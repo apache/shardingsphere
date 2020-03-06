@@ -56,4 +56,11 @@ public interface ParseTreeVisitorFacade {
      * @return DAL visitor class
      */
     Class<? extends DALVisitor> getDALVisitorClass();
+    
+    /**
+     * Get RL visitor class.
+     * 
+     * @return RL visitor class
+     */
+    Class<? extends RLVisitor> getRLVisitorClass();
 }

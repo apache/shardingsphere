@@ -110,7 +110,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         // TODO deal with insert select
         InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
         result.setTable((TableSegment) visit(ctx.tableName()));
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -146,7 +146,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -196,7 +196,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -231,7 +231,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO : Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.unionClause());
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     

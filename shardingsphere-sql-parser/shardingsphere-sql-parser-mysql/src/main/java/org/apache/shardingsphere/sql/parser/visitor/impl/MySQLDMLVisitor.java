@@ -142,7 +142,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
         result.setTable((TableSegment) visit(ctx.tableName()));
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -158,7 +158,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         result.setTable((TableSegment) visit(ctx.tableName()));
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -203,7 +203,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -258,7 +258,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -293,7 +293,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO : Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.unionClause());
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     

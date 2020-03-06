@@ -102,7 +102,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         if (null != ctx.insertSingleTable()) {
             InsertStatement result = (InsertStatement) visit(ctx.insertSingleTable().insertValuesClause());
             result.setTable((TableSegment) visit(ctx.insertSingleTable().insertIntoClause().tableName()));
-            result.setParametersCount(getCurrentParameterIndex());
+            result.setParameterCount(getCurrentParameterIndex());
             return result;
         }
         return new InsertStatement();
@@ -140,7 +140,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -190,7 +190,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     
@@ -225,7 +225,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO : Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.unionClause());
-        result.setParametersCount(getCurrentParameterIndex());
+        result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
     

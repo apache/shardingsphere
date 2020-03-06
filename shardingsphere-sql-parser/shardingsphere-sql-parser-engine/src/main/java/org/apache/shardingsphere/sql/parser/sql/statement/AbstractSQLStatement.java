@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.statement.generic;
+package org.apache.shardingsphere.sql.parser.sql.statement;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 /**
  * SQL statement abstract class.
@@ -28,5 +27,5 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 @Setter
 public abstract class AbstractSQLStatement implements SQLStatement {
     
-    private int parametersCount;
+    private int parameterCount;
 }
