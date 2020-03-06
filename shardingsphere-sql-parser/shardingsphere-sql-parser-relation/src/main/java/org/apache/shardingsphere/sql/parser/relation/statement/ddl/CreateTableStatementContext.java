@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatemen
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.relation.type.IndexAvailable;
 
@@ -45,8 +45,8 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
-        Collection<TableSegment> result = new LinkedList<>();
+    public Collection<SimpleTableSegment> getAllTables() {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
         result.add(getSqlStatement().getTable());
         for (ColumnDefinitionSegment each : getSqlStatement().getColumnDefinitions()) {
             result.addAll(each.getReferencedTables());

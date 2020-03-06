@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.relation.type.IndexAvailable;
 
@@ -43,7 +43,7 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext<
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getAllTables() {
         return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
     

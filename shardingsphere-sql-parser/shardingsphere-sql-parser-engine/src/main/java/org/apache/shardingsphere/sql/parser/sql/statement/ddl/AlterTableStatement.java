@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.AddColu
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +35,7 @@ import java.util.LinkedList;
 @Getter
 public final class AlterTableStatement extends DDLStatement {
     
-    private final TableSegment table;
+    private final SimpleTableSegment table;
     
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
