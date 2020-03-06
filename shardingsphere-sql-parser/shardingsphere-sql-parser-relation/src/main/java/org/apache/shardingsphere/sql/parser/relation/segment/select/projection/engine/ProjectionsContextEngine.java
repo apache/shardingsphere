@@ -36,11 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrder
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -69,8 +66,7 @@ public final class ProjectionsContextEngine {
     public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
         ProjectionsSegment projectionsSegment = selectStatement.getProjections();
         Collection<Projection> projections = getProjections(sql, selectStatement.getTables(), projectionsSegment);
-        ProjectionsContext result = new ProjectionsContext(
-                projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections, getColumnLabels(selectStatement.getTables(), projections));
+        ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
         result.getProjections().addAll(getDerivedGroupByColumns(projections, groupByContext, selectStatement));
         result.getProjections().addAll(getDerivedOrderByColumns(projections, orderByContext, selectStatement));
         return result;
@@ -80,40 +76,6 @@ public final class ProjectionsContextEngine {
         Collection<Projection> result = new LinkedList<>();
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
             projectionEngine.createProjection(sql, tableSegments, each).ifPresent(result::add);
-        }
-        return result;
-    }
-    
-    private List<String> getColumnLabels(final Collection<TableSegment> tables, final Collection<Projection> projections) {
-        List<String> result = new ArrayList<>(projections.size());
-        for (Projection each : projections) {
-            if (each instanceof ShorthandProjection) {
-                result.addAll(getShorthandColumnLabels(tables, (ShorthandProjection) each));
-            } else {
-                result.add(each.getColumnLabel());
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getShorthandColumnLabels(final Collection<TableSegment> tables, final ShorthandProjection shorthandProjection) {
-        return shorthandProjection.getOwner().isPresent()
-                ? getQualifiedShorthandColumnLabels(tables, shorthandProjection.getOwner().get()) : getUnqualifiedShorthandColumnLabels(tables);
-    }
-    
-    private Collection<String> getQualifiedShorthandColumnLabels(final Collection<TableSegment> tables, final String owner) {
-        for (TableSegment each : tables) {
-            if (owner.equalsIgnoreCase(each.getAlias().orElse(each.getTableName().getIdentifier().getValue()))) {
-                return relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue());
-            }
-        }
-        return Collections.emptyList();
-    }
-    
-    private Collection<String> getUnqualifiedShorthandColumnLabels(final Collection<TableSegment> tables) {
-        Collection<String> result = new LinkedList<>();
-        for (TableSegment each : tables) {
-            result.addAll(relationMetas.getAllColumnNames(each.getTableName().getIdentifier().getValue()));
         }
         return result;
     }

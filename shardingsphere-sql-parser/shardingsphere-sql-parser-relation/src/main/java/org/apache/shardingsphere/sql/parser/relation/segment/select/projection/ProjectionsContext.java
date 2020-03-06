@@ -45,8 +45,6 @@ public final class ProjectionsContext {
     
     private final Collection<Projection> projections;
     
-    private final List<String> columnLabels;
-    
     /**
      * Judge is unqualified shorthand projection or not.
      * 
@@ -119,6 +117,23 @@ public final class ProjectionsContext {
         for (Projection each : projections) {
             if (each instanceof AggregationDistinctProjection) {
                 result.add((AggregationDistinctProjection) each);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get actual projection count.
+     * 
+     * @return actual projection count
+     */
+    public int getActualProjectionCount() {
+        int result = 0;
+        for (Projection each : projections) {
+            if (each instanceof ShorthandProjection) {
+                result += ((ShorthandProjection) each).getActualColumns().size();
+            } else {
+                result++;
             }
         }
         return result;
