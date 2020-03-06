@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.constant.properties.TypedProp
  */
 @RequiredArgsConstructor
 @Getter
-public enum EtcdPropertiesEnum  implements TypedPropertiesKey {
+public enum EtcdPropertiesEnum implements TypedPropertiesKey {
 
     /**
      * The portal url for apollo open api client.

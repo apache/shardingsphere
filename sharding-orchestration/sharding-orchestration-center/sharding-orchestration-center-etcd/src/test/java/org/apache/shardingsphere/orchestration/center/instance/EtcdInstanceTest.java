@@ -40,7 +40,6 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
