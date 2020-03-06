@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrd
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.TextOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 import java.util.Collection;
@@ -72,7 +72,7 @@ public final class ProjectionsContextEngine {
         return result;
     }
     
-    private Collection<Projection> getProjections(final String sql, final Collection<TableSegment> tableSegments, final ProjectionsSegment projectionsSegment) {
+    private Collection<Projection> getProjections(final String sql, final Collection<SimpleTableSegment> tableSegments, final ProjectionsSegment projectionsSegment) {
         Collection<Projection> result = new LinkedList<>();
         for (ProjectionSegment each : projectionsSegment.getProjections()) {
             projectionEngine.createProjection(sql, tableSegments, each).ifPresent(result::add);
@@ -136,7 +136,7 @@ public final class ProjectionsContextEngine {
     }
     
     private Optional<ShorthandProjection> findShorthandProjection(final Collection<Projection> projections, final String tableNameOrAlias, final SelectStatement selectStatement) {
-        TableSegment tableSegment = find(tableNameOrAlias, selectStatement);
+        SimpleTableSegment tableSegment = find(tableNameOrAlias, selectStatement);
         for (Projection each : projections) {
             if (!(each instanceof ShorthandProjection)) {
                 continue;
@@ -176,7 +176,7 @@ public final class ProjectionsContextEngine {
     
     private boolean isSameProjection(final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem, final SelectStatement selectStatement) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
-        TableSegment tableSegment = find(shorthandProjection.getOwner().get(), selectStatement);
+        SimpleTableSegment tableSegment = find(shorthandProjection.getOwner().get(), selectStatement);
         return relationMetas.containsColumn(tableSegment.getTableName().getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
     }
     
@@ -188,8 +188,8 @@ public final class ProjectionsContextEngine {
         return !projection.getAlias().isPresent() && projection.getExpression().equalsIgnoreCase(orderItem.getText());
     }
     
-    private TableSegment find(final String tableNameOrAlias, final SelectStatement selectStatement) {
-        for (TableSegment each : selectStatement.getTables()) {
+    private SimpleTableSegment find(final String tableNameOrAlias, final SelectStatement selectStatement) {
+        for (SimpleTableSegment each : selectStatement.getTables()) {
             if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
                 return each;
             }

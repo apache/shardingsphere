@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectio
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ShorthandProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -61,7 +61,7 @@ public final class ProjectionEngine {
      * @param projectionSegment projection segment
      * @return projection
      */
-    public Optional<Projection> createProjection(final String sql, final Collection<TableSegment> tableSegments, final ProjectionSegment projectionSegment) {
+    public Optional<Projection> createProjection(final String sql, final Collection<SimpleTableSegment> tableSegments, final ProjectionSegment projectionSegment) {
         if (projectionSegment instanceof ShorthandProjectionSegment) {
             return Optional.of(createProjection(tableSegments, (ShorthandProjectionSegment) projectionSegment));
         }
@@ -81,7 +81,7 @@ public final class ProjectionEngine {
         return Optional.empty();
     }
     
-    private ShorthandProjection createProjection(final Collection<TableSegment> tableSegments, final ShorthandProjectionSegment projectionSegment) {
+    private ShorthandProjection createProjection(final Collection<SimpleTableSegment> tableSegments, final ShorthandProjectionSegment projectionSegment) {
         String owner = projectionSegment.getOwner().map(ownerSegment -> ownerSegment.getIdentifier().getValue()).orElse(null);
         Collection<ColumnProjection> columns = getShorthandColumns(tableSegments, owner);
         return new ShorthandProjection(owner, columns);
@@ -117,12 +117,12 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<ColumnProjection> getShorthandColumns(final Collection<TableSegment> tables, final String owner) {
+    private Collection<ColumnProjection> getShorthandColumns(final Collection<SimpleTableSegment> tables, final String owner) {
         return null == owner ? getUnqualifiedShorthandColumns(tables) : getQualifiedShorthandColumns(tables, owner);
     }
     
-    private Collection<ColumnProjection> getQualifiedShorthandColumns(final Collection<TableSegment> tables, final String owner) {
-        for (TableSegment each : tables) {
+    private Collection<ColumnProjection> getQualifiedShorthandColumns(final Collection<SimpleTableSegment> tables, final String owner) {
+        for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (owner.equalsIgnoreCase(each.getAlias().orElse(tableName))) {
                 return relationMetas.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(tableName, columnName, null)).collect(Collectors.toList());
@@ -131,9 +131,9 @@ public final class ProjectionEngine {
         return Collections.emptyList();
     }
     
-    private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<TableSegment> tables) {
+    private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        for (TableSegment each : tables) {
+        for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             result.addAll(relationMetas.getAllColumnNames(
                     each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(tableName, columnName, null)).collect(Collectors.toList()));
