@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config.utils;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
@@ -47,13 +46,7 @@ public final class ConfigurationYamlConverter {
     public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(data);
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
-        return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
-
-            @Override
-            public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
-                return new DataSourceConfigurationYamlSwapper().swap(input);
-            }
-        });
+        return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swap);
     }
 
     /**

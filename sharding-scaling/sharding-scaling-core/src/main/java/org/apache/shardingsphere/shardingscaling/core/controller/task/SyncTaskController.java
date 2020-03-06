@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.shardingscaling.core.controller.task;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingscaling.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
-import org.apache.shardingsphere.shardingscaling.core.execute.Event;
+import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
-import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Sync task controller, synchronize history data and realtime data.
@@ -95,18 +93,14 @@ public final class SyncTaskController implements Runnable {
         realtimeDataSyncTask.prepare();
         historyDataSyncTaskGroup.prepare();
         syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA;
-        historyDataSyncTaskGroup.start(new ReportCallback() {
-            
-            @Override
-            public void report(final Event event) {
-                log.info("history data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
-                if (EventType.EXCEPTION_EXIT.equals(event.getEventType())) {
-                    stop();
-                    dataSourceManager.close();
-                    syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA_FAILURE;
-                } else {
-                    executeRealTimeSyncTask();
-                }
+        historyDataSyncTaskGroup.start(event -> {
+            log.info("history data migrate task {} finished, execute result: {}", event.getTaskId(), event.getEventType().name());
+            if (EventType.EXCEPTION_EXIT.equals(event.getEventType())) {
+                stop();
+                dataSourceManager.close();
+                syncTaskControlStatus = SyncTaskControlStatus.MIGRATE_HISTORY_DATA_FAILURE;
+            } else {
+                executeRealTimeSyncTask();
             }
         });
     }
@@ -117,14 +111,10 @@ public final class SyncTaskController implements Runnable {
             syncTaskControlStatus = SyncTaskControlStatus.STOPPED;
             return;
         }
-        realtimeDataSyncTask.start(new ReportCallback() {
-            
-            @Override
-            public void report(final Event event) {
-                log.info("realtime data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
-                dataSourceManager.close();
-                syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA_FAILURE;
-            }
+        realtimeDataSyncTask.start(event -> {
+            log.info("realtime data sync task {} finished, execute result: {}", syncTaskId, event.getEventType().name());
+            dataSourceManager.close();
+            syncTaskControlStatus = EventType.FINISHED.equals(event.getEventType()) ? SyncTaskControlStatus.STOPPED : SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA_FAILURE;
         });
         syncTaskControlStatus = SyncTaskControlStatus.SYNCHRONIZE_REALTIME_DATA;
     }

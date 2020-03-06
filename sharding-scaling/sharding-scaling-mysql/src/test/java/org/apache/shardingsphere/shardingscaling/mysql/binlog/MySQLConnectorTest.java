@@ -26,16 +26,14 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.Reg
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -57,7 +55,7 @@ public final class MySQLConnectorTest {
     private MySQLConnector mySQLConnector;
     
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mySQLConnector = new MySQLConnector(1, "host", 3306, "username", "password");
         when(channel.pipeline()).thenReturn(pipeline);
         inetSocketAddress = new InetSocketAddress("host", 3306);
@@ -101,7 +99,7 @@ public final class MySQLConnectorTest {
     }
     
     @Test
-    public void assertSubscribeBelow56Version() throws NoSuchFieldException, IllegalAccessException, ExecutionException, InterruptedException {
+    public void assertSubscribeBelow56Version() throws NoSuchFieldException, IllegalAccessException {
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setServerVersion(new ServerVersion("5.5.0-log"));
         ReflectionUtil.setFieldValueToClass(mySQLConnector, "serverInfo", serverInfo);
@@ -113,17 +111,19 @@ public final class MySQLConnectorTest {
     }
     
     private void mockChannelResponse(final Object response) {
-        new Thread(new Runnable() {
-        
-            @Override
-            @SneakyThrows
-            public void run() {
-                while (true) {
-                    Promise responseCallback = ReflectionUtil.getFieldValueFromClass(mySQLConnector, "responseCallback", Promise.class);
-                    if (null != responseCallback) {
-                        responseCallback.setSuccess(response);
-                        break;
-                    }
+        new Thread(() -> {
+            while (true) {
+                Promise responseCallback = null;
+                try {
+                    responseCallback = ReflectionUtil.getFieldValueFromClass(mySQLConnector, "responseCallback", Promise.class);
+                } catch (final NoSuchFieldException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IllegalAccessException ex) {
+                    Thread.currentThread().interrupt();
+                }
+                if (null != responseCallback) {
+                    responseCallback.setSuccess(response);
+                    break;
                 }
             }
         }).start();

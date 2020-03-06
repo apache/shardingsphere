@@ -43,14 +43,11 @@ public final class DateAndTimeValueDecoder {
     
     public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
     
-    public static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = new ThreadLocal<SimpleDateFormat>() {
-        @Override
-        protected SimpleDateFormat initialValue() {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
-            return sdf;
-        }
-    };
+    public static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = ThreadLocal.withInitial(() -> {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+        return sdf;
+    });
     
     /**
      * Decode time.

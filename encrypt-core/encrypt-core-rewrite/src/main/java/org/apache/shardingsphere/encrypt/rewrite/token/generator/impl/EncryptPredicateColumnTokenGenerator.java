@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
@@ -86,7 +86,6 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     }
     
     private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final PredicateSegment segment) {
-        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(segment, relationMetas);
-        return tableName.isPresent() ? getEncryptRule().findEncryptTable(tableName.get()) : Optional.empty();
+        return sqlStatementContext.getTablesContext().findTableName(segment, relationMetas).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
     }
 }

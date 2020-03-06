@@ -46,12 +46,9 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.D
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.checker.DataSourceCheckerCheckerFactory;
 import org.apache.shardingsphere.shardingscaling.utils.ResponseContentUtil;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
-
 
 /**
  * Http server handler.
@@ -116,12 +113,8 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         try {
             DataSourceChecker dataSourceChecker = DataSourceCheckerCheckerFactory.newInstanceDataSourceChecker(
                     syncConfigurations.get(0).getReaderConfiguration().getDataSourceConfiguration().getDatabaseType().getName());
-            Collection<DataSource> dataSourceCollection = new ArrayList<>();
-            dataSourceCollection.addAll(dataSourceManager.getCachedDataSources().values());
-            dataSourceChecker.checkConnection(dataSourceCollection);
-            Collection<DataSource> sourcesDatasourceCollection = new ArrayList<>();
-            sourcesDatasourceCollection.addAll(dataSourceManager.getSourceDatasources().values());
-            dataSourceChecker.checkPrivilege(sourcesDatasourceCollection);
+            dataSourceChecker.checkConnection(new ArrayList<>(dataSourceManager.getCachedDataSources().values()));
+            dataSourceChecker.checkPrivilege(new ArrayList<>(dataSourceManager.getSourceDatasources().values()));
         } finally {
             dataSourceManager.close();
         }

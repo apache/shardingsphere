@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTok
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;

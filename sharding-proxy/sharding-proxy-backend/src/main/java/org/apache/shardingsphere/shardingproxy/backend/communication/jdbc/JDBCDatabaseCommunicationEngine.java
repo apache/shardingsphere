@@ -39,7 +39,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
 
 import java.util.Collection;
 import java.util.List;

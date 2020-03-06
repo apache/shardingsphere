@@ -97,13 +97,19 @@ public abstract class AbstractJDBCWriter extends AbstractSyncExecutor implements
             for (Record record : buffer) {
                 if (DataRecord.class.equals(record.getClass())) {
                     DataRecord dataRecord = (DataRecord) record;
-                    if ("BOOTSTRAP-INSERT".equals(dataRecord.getType())
-                            || "INSERT".equals(dataRecord.getType())) {
-                        executeInsert(connection, dataRecord);
-                    } else if ("UPDATE".equals(dataRecord.getType())) {
-                        executeUpdate(connection, dataRecord);
-                    } else if ("DELETE".equals(dataRecord.getType())) {
-                        executeDelete(connection, dataRecord);
+                    switch (dataRecord.getType()) {
+                        case "BOOTSTRAP-INSERT":
+                        case "INSERT":
+                            executeInsert(connection, dataRecord);
+                            break;
+                        case "UPDATE":
+                            executeUpdate(connection, dataRecord);
+                            break;
+                        case "DELETE":
+                            executeDelete(connection, dataRecord);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }

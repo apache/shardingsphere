@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.dml;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
@@ -33,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Replace statement.
@@ -55,7 +55,7 @@ public final class ReplaceStatement extends DMLStatement {
      * @return replace columns segment
      */
     public Optional<InsertColumnsSegment> getInsertColumns() {
-        return Optional.fromNullable(replaceColumns);
+        return Optional.ofNullable(replaceColumns);
     }
     
     /**
@@ -64,7 +64,7 @@ public final class ReplaceStatement extends DMLStatement {
      * @return columns
      */
     public Collection<ColumnSegment> getColumns() {
-        return null == replaceColumns ? Collections.<ColumnSegment>emptyList() : replaceColumns.getColumns();
+        return null == replaceColumns ? Collections.emptyList() : replaceColumns.getColumns();
     }
     
     /**
@@ -73,7 +73,7 @@ public final class ReplaceStatement extends DMLStatement {
      * @return set assignment segment
      */
     public Optional<SetAssignmentSegment> getSetAssignment() {
-        return Optional.fromNullable(setAssignment);
+        return Optional.ofNullable(setAssignment);
     }
     
     /**

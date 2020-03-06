@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.P
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
@@ -51,7 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;

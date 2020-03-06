@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.UpdateStatementContext;

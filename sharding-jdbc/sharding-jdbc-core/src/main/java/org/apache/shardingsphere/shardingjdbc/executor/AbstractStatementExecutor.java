@@ -221,8 +221,7 @@ public abstract class AbstractStatementExecutor {
             tableMetaData.getIndexes().removeAll(indexNames);
         }
         for (String each : indexNames) {
-            Optional<String> logicTableName = findLogicTableName(runtimeContext.getMetaData().getTables(), each);
-            if (logicTableName.isPresent()) {
+            if (findLogicTableName(runtimeContext.getMetaData().getTables(), each).isPresent()) {
                 tableMetaData.getIndexes().remove(each);
             }
         }

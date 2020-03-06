@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class BlobValueDecoderTest {
-
+    
     @Test
     public void assertDecodeBlob() {
         byte[] value = new byte[(1 << 8) - 1];
@@ -37,7 +37,7 @@ public final class BlobValueDecoderTest {
         value = new byte[(1 << 32) - 1];
         assertDecodeBlob(4, value, value);
     }
-
+    
     private void assertDecodeBlob(final int meta, final byte[] value, final byte[] expect) {
         ByteBuf byteBuf = Unpooled.buffer();
         DataTypesCodec.writeIntNLE(meta, value.length, byteBuf);

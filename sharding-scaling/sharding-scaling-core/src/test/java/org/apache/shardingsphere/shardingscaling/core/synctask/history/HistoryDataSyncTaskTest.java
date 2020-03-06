@@ -24,8 +24,6 @@ import org.apache.shardingsphere.shardingscaling.core.config.RdbmsConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.ScalingContext;
 import org.apache.shardingsphere.shardingscaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
-import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
-import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.junit.After;
 import org.junit.Before;
@@ -69,13 +67,7 @@ public final class HistoryDataSyncTaskTest {
     public void assertGetProgress() {
         initTableData(syncConfiguration.getReaderConfiguration());
         HistoryDataSyncTask historyDataSyncTask = new HistoryDataSyncTask(syncConfiguration, dataSourceManager);
-        historyDataSyncTask.start(new ReportCallback() {
-            
-            @Override
-            public void report(final Event event) {
-
-            }
-        });
+        historyDataSyncTask.start(event -> { });
         assertThat(((HistoryDataSyncTaskProgress) historyDataSyncTask.getProgress()).getEstimatedRows(), is(2L));
     }
     

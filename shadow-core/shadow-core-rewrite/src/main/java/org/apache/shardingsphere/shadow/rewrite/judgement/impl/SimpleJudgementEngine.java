@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.where.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
 
 import java.util.Collections;
 import java.util.Iterator;
