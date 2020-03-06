@@ -56,7 +56,7 @@ public final class ProjectionsContextTest {
     
     @Test
     public void assertUnqualifiedShorthandProjection() {
-        Projection projection = new ShorthandProjection(null);
+        Projection projection = new ShorthandProjection(null, Collections.emptyList());
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection), Collections.emptyList());
         assertTrue(projectionsContext.isUnqualifiedShorthandProjection());
     }
@@ -108,7 +108,7 @@ public final class ProjectionsContextTest {
     }
     
     private ShorthandProjection getShorthandProjection() {
-        return new ShorthandProjection("table");
+        return new ShorthandProjection("table", Collections.emptyList());
     }
     
     private ColumnProjection getColumnProjection() {

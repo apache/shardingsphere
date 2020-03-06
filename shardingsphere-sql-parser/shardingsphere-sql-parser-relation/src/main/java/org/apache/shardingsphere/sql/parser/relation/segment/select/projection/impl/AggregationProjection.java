@@ -54,12 +54,12 @@ public class AggregationProjection implements Projection {
     public final String getExpression() {
         return SQLUtil.getExactlyValue(type.name() + innerExpression);
     }
-
+    
     @Override
     public final Optional<String> getAlias() {
         return Optional.ofNullable(alias);
     }
-
+    
     /**
      * Get column label.
      *
