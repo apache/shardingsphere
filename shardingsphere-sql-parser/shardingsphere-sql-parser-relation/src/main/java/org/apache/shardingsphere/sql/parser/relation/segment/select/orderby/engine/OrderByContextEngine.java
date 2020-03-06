@@ -46,7 +46,7 @@ public final class OrderByContextEngine {
     public OrderByContext createOrderBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
         if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
             OrderByContext orderByItems = createOrderByContextForDistinctRowWithoutGroupBy(selectStatement, groupByContext);
-            return orderByItems != null ? orderByItems : new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
+            return null != orderByItems ? orderByItems : new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
         }
         List<OrderByItem> orderByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getOrderBy().get().getOrderByItems()) {
@@ -72,7 +72,7 @@ public final class OrderByContextEngine {
                     orderByItems.add(item);
                 }
             }
-            if (orderByItems.size() > 0) {
+            if (!orderByItems.isEmpty()) {
                 return new OrderByContext(orderByItems, true);
             }
         }
