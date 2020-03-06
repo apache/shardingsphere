@@ -22,7 +22,6 @@ import io.netty.buffer.Unpooled;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
@@ -332,15 +331,11 @@ public final class DataTypesCodecTest {
     }
     
     private Answer mockReadBytesAnswer() {
-        return new Answer<ByteBuf>() {
-
-            @Override
-            public ByteBuf answer(final InvocationOnMock invocationOnMock) throws Throwable {
-                byte[] args = invocationOnMock.getArgument(0);
-                byte[] expectedBytes = DataTypesCodecTest.EXPECTED_STRING.getBytes();
-                System.arraycopy(expectedBytes, 0, args, 0, expectedBytes.length);
-                return null;
-            }
+        return (Answer<ByteBuf>) invocationOnMock -> {
+            byte[] args = invocationOnMock.getArgument(0);
+            byte[] expectedBytes = DataTypesCodecTest.EXPECTED_STRING.getBytes();
+            System.arraycopy(expectedBytes, 0, args, 0, expectedBytes.length);
+            return null;
         };
     }
 }

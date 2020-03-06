@@ -25,7 +25,6 @@ import org.apache.shardingsphere.shardingscaling.core.config.SyncConfiguration;
 import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.controller.task.ReportCallback;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.util.ReflectionUtil;
 import org.junit.After;
@@ -123,12 +122,7 @@ public final class HistoryDataSyncTaskGroupTest {
         List<SyncTask> syncTasks = new LinkedList<>();
         syncTasks.add(syncTask);
         ReflectionUtil.setFieldValueToClass(historyDataSyncTaskGroup, "syncTasks", syncTasks);
-        historyDataSyncTaskGroup.start(new ReportCallback() {
-            
-            @Override
-            public void report(final Event event) {
-            }
-        });
+        historyDataSyncTaskGroup.start(event -> { });
         verify(syncTask).start(any(ReportCallback.class));
     }
     
