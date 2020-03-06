@@ -76,6 +76,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -409,7 +410,11 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
         if (null != ctx.tableReferences()) {
             return visit(ctx.tableReferences());
         }
-        return new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        SubqueryTableSegment result = new SubqueryTableSegment(new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()));
+        if (null != ctx.alias()) {
+            result.setAlias((AliasSegment) visit(ctx.alias()));
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")
