@@ -34,6 +34,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -55,8 +56,7 @@ public final class HistoryDataSyncTaskTest {
         RdbmsConfiguration readerConfig = mockReaderConfig();
         RdbmsConfiguration writerConfig = mockWriterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        syncConfiguration = new SyncConfiguration(3, null,
-                readerConfig, writerConfig);
+        syncConfiguration = new SyncConfiguration(3, Collections.EMPTY_MAP, readerConfig, writerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
