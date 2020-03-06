@@ -101,7 +101,7 @@ select
     ;
 
 call
-    : CALL identifier (LP_ (identifier | expr)? RP_)?
+    : CALL identifier (LP_ expr (COMMA_ expr)* RP_)?
     ;
 
 doStatement
