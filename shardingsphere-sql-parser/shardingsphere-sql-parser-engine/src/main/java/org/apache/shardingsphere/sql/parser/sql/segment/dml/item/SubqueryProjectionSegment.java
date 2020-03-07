@@ -34,7 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SubqueryProjectionSegment implements SQLSegment, AliasAvailable {
+public final class SubqueryProjectionSegment implements SQLSegment, ProjectionSegment, AliasAvailable {
     
     private final SubquerySegment subquery;
     
@@ -56,5 +56,11 @@ public final class SubqueryProjectionSegment implements SQLSegment, AliasAvailab
         return subquery.getStopIndex();
         // TODO
         // return null == alias ? alias.getStopIndex() : column.getStopIndex();
+    }
+    
+    @Override
+    public String getText() {
+        // TODO :Wait to be deleted later.
+        return "";
     }
 }

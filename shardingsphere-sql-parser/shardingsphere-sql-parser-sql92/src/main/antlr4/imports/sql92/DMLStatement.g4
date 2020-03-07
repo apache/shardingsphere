@@ -159,5 +159,5 @@ limitOffset
     ;
 
 subquery
-    : LP_ unionClause RP_ AS? alias?
+    : LP_ unionClause RP_
     ;

@@ -281,7 +281,7 @@ windowItem_
     ;
 
 subquery
-    : LP_ unionClause RP_ AS? alias?
+    : LP_ unionClause RP_
     ;
 
 selectLinesInto_

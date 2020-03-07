@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
 /**
  * Subquery segment.
@@ -35,5 +36,5 @@ public final class SubquerySegment implements SQLSegment, PredicateRightValue {
     
     private final int stopIndex;
     
-    private final String text;
+    private final SelectStatement select;
 }

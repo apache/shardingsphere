@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SingleTableClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableReferenceContext;
@@ -445,8 +446,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             return result;
         }
         if (projection instanceof SubquerySegment) {
-            SubqueryProjectionSegment result = new SubqueryProjectionSegment(
-                    new SubquerySegment(((SubquerySegment) projection).getStartIndex(), ((SubquerySegment) projection).getStopIndex(), ((SubquerySegment) projection).getText()));
+            SubqueryProjectionSegment result = new SubqueryProjectionSegment((SubquerySegment) projection);
             result.setAlias(alias);
             return result;
         }
@@ -506,7 +506,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         if (null != ctx.tableReferences()) {
             return visit(ctx.tableReferences());
         }
-        SubqueryTableSegment result = new SubqueryTableSegment(new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()));
+        SubqueryTableSegment result = new SubqueryTableSegment(new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery())));
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
         }
@@ -608,6 +608,11 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitSubquery(final SubqueryContext ctx) {
+        return visit(ctx.unionClause());
     }
     
     @Override
