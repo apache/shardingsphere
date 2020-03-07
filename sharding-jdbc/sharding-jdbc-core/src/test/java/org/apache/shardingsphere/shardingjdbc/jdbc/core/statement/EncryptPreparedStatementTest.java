@@ -217,13 +217,11 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
         try (PreparedStatement statement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
             statement.setObject(1, "plainValue");
             ResultSetMetaData metaData = statement.executeQuery().getMetaData();
-            assertThat(metaData.getColumnCount(), is(5));
+            assertThat(metaData.getColumnCount(), is(3));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("cipher_pwd"));
-                assertThat(metaData.getColumnLabel(3), is("plain_pwd"));
-                assertThat(metaData.getColumnLabel(4), is("cipher_pwd2"));
-                assertThat(metaData.getColumnLabel(5), is("plain_pwd2"));
+                assertThat(metaData.getColumnLabel(2), is("plain_pwd")); 
+                assertThat(metaData.getColumnLabel(3), is("plain_pwd2"));
             }
         }
     }

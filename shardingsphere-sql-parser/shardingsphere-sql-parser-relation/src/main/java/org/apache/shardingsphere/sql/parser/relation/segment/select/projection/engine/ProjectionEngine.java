@@ -121,24 +121,23 @@ public final class ProjectionEngine {
         return null == owner ? getUnqualifiedShorthandColumns(tables) : getQualifiedShorthandColumns(tables, owner);
     }
     
+    private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        for (SimpleTableSegment each : tables) {
+            result.addAll(relationMetas.getAllColumnNames(
+                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(null, columnName, null)).collect(Collectors.toList()));
+        }
+        return result;
+    }
+    
     private Collection<ColumnProjection> getQualifiedShorthandColumns(final Collection<SimpleTableSegment> tables, final String owner) {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (owner.equalsIgnoreCase(each.getAlias().orElse(tableName))) {
-                return relationMetas.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(tableName, columnName, null)).collect(Collectors.toList());
+                return relationMetas.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList());
             }
         }
         return Collections.emptyList();
-    }
-    
-    private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
-        Collection<ColumnProjection> result = new LinkedList<>();
-        for (SimpleTableSegment each : tables) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            result.addAll(relationMetas.getAllColumnNames(
-                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(tableName, columnName, null)).collect(Collectors.toList()));
-        }
-        return result;
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {
