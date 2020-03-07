@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.i
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ShorthandProjection;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,17 +124,17 @@ public final class ProjectionsContext {
     }
     
     /**
-     * Get actual projection count.
+     * Get actual projections.
      * 
-     * @return actual projection count
+     * @return actual projections
      */
-    public int getActualProjectionCount() {
-        int result = 0;
+    public List<Projection> getActualProjections() {
+        List<Projection> result = new ArrayList<>();
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
-                result += ((ShorthandProjection) each).getActualColumns().size();
+                result.addAll(((ShorthandProjection) each).getActualColumns());
             } else {
-                result++;
+                result.add(each);
             }
         }
         return result;
