@@ -135,7 +135,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (boolean) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, boolean.class), boolean.class);
     }
     
@@ -146,7 +146,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (byte) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, byte.class), byte.class);
     }
     
@@ -157,7 +157,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public short getShort(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (short) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, short.class), short.class);
     }
     
@@ -168,7 +168,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (int) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, int.class), int.class);
     }
     
@@ -179,7 +179,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public long getLong(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (long) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, long.class), long.class);
     }
     
@@ -190,7 +190,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (float) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, float.class), float.class);
     }
     
@@ -201,7 +201,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (double) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, double.class), double.class);
     }
     
@@ -212,7 +212,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (String) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, String.class), String.class);
     }
     
@@ -223,7 +223,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (BigDecimal) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
@@ -236,7 +236,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (BigDecimal) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
@@ -247,7 +247,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (byte[]) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, byte[].class), byte[].class);
     }
     
@@ -258,7 +258,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Date) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Date.class), Date.class);
     }
     
@@ -269,7 +269,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Date) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
@@ -280,7 +280,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Time) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Time.class), Time.class);
     }
     
@@ -291,7 +291,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Time) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
@@ -302,7 +302,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Timestamp) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
@@ -313,7 +313,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Timestamp) ResultSetUtil.convertValue(mergedResult.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
@@ -324,7 +324,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public InputStream getAsciiStream(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergedResult.getInputStream(columnIndex, "Ascii");
     }
     
@@ -337,7 +337,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergedResult.getInputStream(columnIndex, "Unicode");
     }
     
@@ -348,7 +348,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public InputStream getBinaryStream(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergedResult.getInputStream(columnIndex, "Binary");
     }
     
@@ -359,7 +359,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Reader getCharacterStream(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Reader) mergedResult.getValue(columnIndex, Reader.class);
     }
     
@@ -370,7 +370,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Blob getBlob(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Blob) mergedResult.getValue(columnIndex, Blob.class);
     }
     
@@ -381,7 +381,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Clob getClob(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Clob) mergedResult.getValue(columnIndex, Clob.class);
     }
     
@@ -392,7 +392,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (URL) mergedResult.getValue(columnIndex, URL.class);
     }
     
@@ -403,7 +403,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public SQLXML getSQLXML(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (SQLXML) mergedResult.getValue(columnIndex, SQLXML.class);
     }
     
@@ -414,7 +414,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergedResult.getValue(columnIndex, Object.class);
     }
     
@@ -425,11 +425,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public int findColumn(final String columnLabel) throws SQLException {
-        return originalResultSet.findColumn(getActualColumnLabel(columnLabel));
-    }
-    
-    private String getActualColumnLabel(final String columnLabel) {
-        return logicAndActualColumns.keySet().contains(columnLabel) ? logicAndActualColumns.get(columnLabel) : columnLabel;
+        return originalResultSet.findColumn(columnLabel);
     }
     
     @Override

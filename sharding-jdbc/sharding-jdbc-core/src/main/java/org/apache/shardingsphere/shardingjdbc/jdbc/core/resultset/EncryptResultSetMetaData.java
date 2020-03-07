@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -32,6 +33,7 @@ import java.util.Map.Entry;
 /**
  * Encrypt result set meta data.
  */
+@RequiredArgsConstructor
 public final class EncryptResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
@@ -41,14 +43,6 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     private final SQLStatementContext sqlStatementContext;
     
     private final Map<String, String> logicAndActualColumns;
-    
-    public EncryptResultSetMetaData(final ResultSetMetaData resultSetMetaData,
-                                    final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext, final Map<String, String> logicAndActualColumns) {
-        this.resultSetMetaData = resultSetMetaData;
-        this.encryptRule = encryptRule;
-        this.sqlStatementContext = sqlStatementContext;
-        this.logicAndActualColumns = logicAndActualColumns;
-    }
     
     @Override
     public int getColumnCount() throws SQLException {
@@ -112,8 +106,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        String result = resultSetMetaData.getColumnLabel(column);
-        return logicAndActualColumns.values().contains(result) ? getLogicColumn(result) : result;
+        return resultSetMetaData.getColumnLabel(column);
     }
     
     @Override
