@@ -90,9 +90,18 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         ShorthandProjection shorthandProjection = getShorthandProjection(segment, projectionsContext);
         List<String> shorthandExtensionProjections = new LinkedList<>();
         for (ColumnProjection each : shorthandProjection.getActualColumns()) {
-            shorthandExtensionProjections.add(getEncryptColumnProjection(each, tableName, encryptTable).getExpressionWithAlias());
+            if (encryptTable.getLogicColumns().contains(each.getName())) {
+                shorthandExtensionProjections.add(new ColumnProjection(each.getOwner(), getEncryptColumnName(tableName, each.getName()), each.getName()).getExpressionWithAlias());
+            } else {
+                shorthandExtensionProjections.add(each.getExpression());
+            }
         }
         return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), Joiner.on(", ").join(shorthandExtensionProjections));
+    }
+    
+    private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
+        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, logicEncryptColumnName);
+        return plainColumn.isPresent() && !queryWithCipherColumn ? plainColumn.get() : getEncryptRule().getCipherColumn(tableName, logicEncryptColumnName);
     }
     
     private ShorthandProjection getShorthandProjection(final ShorthandProjectionSegment segment, final ProjectionsContext projectionsContext) {
@@ -108,17 +117,5 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             }
         }
         throw new IllegalStateException(String.format("Can not find shorthand projection segment, owner is: `%s`", owner.orElse(null)));
-    }
-    
-    private ColumnProjection getEncryptColumnProjection(final ColumnProjection columnProjection, final String tableName, final EncryptTable encryptTable) {
-        if (!encryptTable.getLogicColumns().contains(columnProjection.getName())) {
-            return columnProjection;
-        }
-        return new ColumnProjection(columnProjection.getOwner(), getEncryptColumnName(tableName, columnProjection.getName()), columnProjection.getName());
-    }
-    
-    private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
-        Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, logicEncryptColumnName);
-        return plainColumn.isPresent() && !queryWithCipherColumn ? plainColumn.get() : getEncryptRule().getCipherColumn(tableName, logicEncryptColumnName);
     }
 }
