@@ -80,12 +80,12 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName) {
-        String owner = segment.getColumn().getOwner().isPresent() ? segment.getColumn().getOwner().get().getIdentifier().getValue() : null;
         String encryptColumnName = getEncryptColumnName(tableName, segment.getColumn().getIdentifier().getValue());
-        ColumnProjection columnProjection = new ColumnProjection(owner, encryptColumnName, segment.getAlias().orElse(segment.getColumn().getIdentifier().getValue()));
-        // TODO simplify me if can get alias's stop index
-        return new SubstitutableColumnNameToken(
-                segment.getStartIndex(), segment.getStopIndex(), segment.getAlias().isPresent() ? columnProjection.getExpression() : columnProjection.getExpressionWithAlias());
+        if (!segment.getAlias().isPresent()) {
+            encryptColumnName += " AS " + segment.getColumn().getIdentifier().getValue();
+        }
+        return segment.getColumn().getOwner().isPresent() ? new SubstitutableColumnNameToken(segment.getColumn().getOwner().get().getStopIndex() + 2, segment.getStopIndex(), encryptColumnName)
+                : new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), encryptColumnName);
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, 
