@@ -54,4 +54,13 @@ public final class ColumnProjection implements Projection {
     public Optional<String> getAlias() {
         return Optional.ofNullable(alias);
     }
+    
+    /**
+     * Get expression with alias.
+     * 
+     * @return expression with alias
+     */
+    public String getExpressionWithAlias() {
+        return getExpression() + (null == alias ? "" : " AS " + alias);
+    }
 }

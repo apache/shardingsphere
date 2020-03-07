@@ -129,11 +129,10 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     public void assertSelectWithMetaData() throws SQLException {
         try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
             ResultSetMetaData metaData = statement.executeQuery(SELECT_SQL_WITH_STAR).getMetaData();
-            assertThat(metaData.getColumnCount(), is(3));
+            assertThat(metaData.getColumnCount(), is(2));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("cipher_pwd"));
-                assertThat(metaData.getColumnLabel(3), is("pwd"));
+                assertThat(metaData.getColumnLabel(2), is("pwd"));
             }
         }
     }
@@ -143,10 +142,10 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_CIPHER);
             int count = 1;
-            List<Object> ids = Arrays.asList((Object) 1, 5);
+            List<Object> ids = Arrays.asList(1, 5);
             while (resultSet.next()) {
                 assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
-                assertThat(resultSet.getObject("pwd"), is((Object) "decryptValue"));
+                assertThat(resultSet.getObject("pwd"), is("decryptValue"));
                 count += 1;
             }
             assertThat(count - 1, is(ids.size()));
@@ -158,10 +157,10 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
         try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
             int count = 1;
-            List<Object> ids = Arrays.asList((Object) 1, 5);
+            List<Object> ids = Arrays.asList(1, 5);
             while (resultSet.next()) {
                 assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
-                assertThat(resultSet.getObject("pwd"), is((Object) "plainValue"));
+                assertThat(resultSet.getObject("pwd"), is("plainValue"));
                 count += 1;
             }
             assertThat(count - 1, is(ids.size()));
