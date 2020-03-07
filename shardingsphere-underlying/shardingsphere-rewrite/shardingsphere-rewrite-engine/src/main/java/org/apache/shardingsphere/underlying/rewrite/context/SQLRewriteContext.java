@@ -22,6 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.underlying.rewrite.metadata.ProjectionMetaData;
+import org.apache.shardingsphere.underlying.rewrite.metadata.ProjectionMetaDataDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -48,9 +51,14 @@ public final class SQLRewriteContext {
     
     private final List<Object> parameters;
     
+    private final ParameterBuilder parameterBuilder;
+    
     private final List<SQLToken> sqlTokens = new LinkedList<>();
     
-    private final ParameterBuilder parameterBuilder;
+    private final ProjectionMetaData projectionMetaData;
+    
+    @Getter(AccessLevel.NONE)
+    private final List<ProjectionMetaDataDecorator> projectionMetaDataDecorators = new LinkedList<>();
     
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
@@ -63,6 +71,11 @@ public final class SQLRewriteContext {
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder().getSQLTokenGenerators());
         parameterBuilder = sqlStatementContext instanceof InsertStatementContext
                 ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters()) : new StandardParameterBuilder(parameters);
+        projectionMetaData = createProjectionMetaData();
+    }
+    
+    private ProjectionMetaData createProjectionMetaData() {
+        return sqlStatementContext instanceof SelectStatementContext ? new ProjectionMetaData((SelectStatementContext) sqlStatementContext) : new ProjectionMetaData();
     }
     
     /**
@@ -79,5 +92,23 @@ public final class SQLRewriteContext {
      */
     public void generateSQLTokens() {
         sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, relationMetas));
+    }
+    
+    /**
+     * Add projection meta data decorator.
+     * 
+     * @param projectionMetaDataDecorator projection meta data decorator
+     */
+    public void addProjectionMetaDataDecorator(final ProjectionMetaDataDecorator projectionMetaDataDecorator) {
+        projectionMetaDataDecorators.add(projectionMetaDataDecorator);
+    }
+    
+    /**
+     * Generate projection meta data decorator.
+     */
+    public void generateProjectionMetaData() {
+        for (ProjectionMetaDataDecorator each : projectionMetaDataDecorators) {
+            each.decorate(projectionMetaData);
+        }
     }
 }

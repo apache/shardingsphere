@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.context;
 
+import org.apache.shardingsphere.encrypt.rewrite.metadata.EncryptProjectionMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
  */
 public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContextDecorator<EncryptRule> {
     
+    @SuppressWarnings("unchecked")
     @Override
     public void decorate(final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
         boolean isQueryWithCipherColumn = properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
@@ -40,5 +42,6 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
             }
         }
         sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
+        sqlRewriteContext.addProjectionMetaDataDecorator(new EncryptProjectionMetaDataDecorator(encryptRule));
     }
 }

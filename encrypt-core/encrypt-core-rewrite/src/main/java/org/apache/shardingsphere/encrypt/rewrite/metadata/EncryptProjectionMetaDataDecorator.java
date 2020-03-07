@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.engine;
+package org.apache.shardingsphere.encrypt.rewrite.metadata;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.underlying.rewrite.metadata.ProjectionMetaData;
-
-import java.util.List;
+import org.apache.shardingsphere.underlying.rewrite.metadata.ProjectionMetaDataDecorator;
 
 /**
- * SQL rewrite result.
+ * Projection meta data decorator for encrypt.
  */
 @RequiredArgsConstructor
-@Getter
-public final class SQLRewriteResult {
+public final class EncryptProjectionMetaDataDecorator implements ProjectionMetaDataDecorator {
     
-    private final String sql;
+    private final EncryptRule encryptRule;
     
-    private final List<Object> parameters;
-    
-    private final ProjectionMetaData projectionMetaData;
+    @Override
+    public void decorate(final ProjectionMetaData projectionMetaData) {
+    }
 }

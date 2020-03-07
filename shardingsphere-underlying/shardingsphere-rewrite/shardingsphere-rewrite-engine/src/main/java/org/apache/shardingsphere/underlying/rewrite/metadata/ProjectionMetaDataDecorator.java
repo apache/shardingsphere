@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.engine;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.rewrite.metadata.ProjectionMetaData;
-
-import java.util.List;
+package org.apache.shardingsphere.underlying.rewrite.metadata;
 
 /**
- * SQL rewrite result.
+ * Projection meta data decorator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLRewriteResult {
+public interface ProjectionMetaDataDecorator {
     
-    private final String sql;
-    
-    private final List<Object> parameters;
-    
-    private final ProjectionMetaData projectionMetaData;
+    /**
+     * decorate projection meta data.
+     * 
+     * @param projectionMetaData projection meta data
+     */
+    void decorate(ProjectionMetaData projectionMetaData);
 }

@@ -53,6 +53,7 @@ public final class SQLRewriteEntry {
         SQLRewriteContext result = new SQLRewriteContext(metaData.getRelationMetas(), sqlStatementContext, sql, parameters);
         decorate(decorators, result);
         result.generateSQLTokens();
+        result.generateProjectionMetaData();
         return result;
     }
     
