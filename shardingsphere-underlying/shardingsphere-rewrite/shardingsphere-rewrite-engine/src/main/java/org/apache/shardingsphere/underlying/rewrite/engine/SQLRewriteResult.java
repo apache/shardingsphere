@@ -19,7 +19,6 @@ package org.apache.shardingsphere.underlying.rewrite.engine;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.rewrite.metadata.ProjectionMetaData;
 
 import java.util.List;
 
@@ -33,6 +32,4 @@ public final class SQLRewriteResult {
     private final String sql;
     
     private final List<Object> parameters;
-    
-    private final ProjectionMetaData projectionMetaData;
 }

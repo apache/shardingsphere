@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.context;
 
-import org.apache.shardingsphere.encrypt.rewrite.metadata.EncryptProjectionMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -42,6 +41,5 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
             }
         }
         sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
-        sqlRewriteContext.addProjectionMetaDataDecorator(new EncryptProjectionMetaDataDecorator(encryptRule));
     }
 }
