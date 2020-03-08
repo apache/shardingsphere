@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
@@ -56,7 +55,6 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Getter
     private final ShardingExecutionContext shardingExecutionContext;
     
-    @Getter(AccessLevel.PROTECTED)
     private final Map<String, String> logicAndActualColumns; 
     
     public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ShardingExecutionContext shardingExecutionContext) {
@@ -106,7 +104,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final int findColumn(final String columnLabel) throws SQLException {
-        return resultSets.get(0).findColumn(getActualColumnLabel(columnLabel));
+        return resultSets.get(0).findColumn(columnLabel);
     }
     
     @Override
@@ -161,6 +159,6 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     }
     
     protected final String getActualColumnLabel(final String columnLabel) {
-        return getLogicAndActualColumns().keySet().contains(columnLabel) ? getLogicAndActualColumns().get(columnLabel) : columnLabel;
+        return logicAndActualColumns.keySet().contains(columnLabel) ? logicAndActualColumns.get(columnLabel) : columnLabel;
     }
 }
