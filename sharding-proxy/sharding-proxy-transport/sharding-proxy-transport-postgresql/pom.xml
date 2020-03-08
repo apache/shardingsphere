@@ -32,11 +32,6 @@
             <artifactId>sharding-proxy-transport-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>io.netty</groupId>
