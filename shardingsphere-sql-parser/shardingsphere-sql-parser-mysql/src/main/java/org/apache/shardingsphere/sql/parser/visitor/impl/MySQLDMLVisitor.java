@@ -293,7 +293,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        // TODO : Unsupported for withClause.
+        // TODO :Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.unionClause());
         result.setParameterCount(getCurrentParameterIndex());
         return result;
@@ -301,7 +301,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
-        // TODO : Unsupported for union SQL.
+        // TODO :Unsupported for union SQL.
         return visit(ctx.selectClause(0));
     }
     
@@ -517,7 +517,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
-        // TODO: Bad processing for join table
+        // TODO :Bad processing for join table
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         ASTNode tableFactor = visit(ctx.tableFactor());
         if (tableFactor instanceof SubqueryTableSegment) {

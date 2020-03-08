@@ -99,7 +99,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        // TODO deal with insert select
+        // TODO :deal with insert select
         if (null != ctx.insertSingleTable()) {
             InsertStatement result = (InsertStatement) visit(ctx.insertSingleTable().insertValuesClause());
             result.setTable((SimpleTableSegment) visit(ctx.insertSingleTable().insertIntoClause().tableName()));
@@ -224,7 +224,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        // TODO : Unsupported for withClause.
+        // TODO :Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.unionClause());
         result.setParameterCount(getCurrentParameterIndex());
         return result;
@@ -232,7 +232,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     
     @Override
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
-        // TODO : Unsupported for union SQL.
+        // TODO :Unsupported for union SQL.
         return visit(ctx.selectClause(0));
     }
     
@@ -420,7 +420,7 @@ public final class OracleDMLVisitor extends OracleVisitor implements DMLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
-        // TODO: Bad processing for join table
+        // TODO :Bad processing for join table
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         ASTNode tableFactor = visit(ctx.tableFactor());
         if (tableFactor instanceof SubqueryTableSegment) {
