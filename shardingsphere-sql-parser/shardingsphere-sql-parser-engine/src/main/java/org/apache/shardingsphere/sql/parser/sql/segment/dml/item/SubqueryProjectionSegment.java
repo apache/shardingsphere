@@ -57,10 +57,4 @@ public final class SubqueryProjectionSegment implements SQLSegment, ProjectionSe
         // TODO
         // return null == alias ? alias.getStopIndex() : column.getStopIndex();
     }
-    
-    @Override
-    public String getText() {
-        // TODO :Wait to be deleted later.
-        return "";
-    }
 }

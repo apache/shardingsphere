@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Optional;
 
@@ -36,8 +35,6 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     private final int stopIndex;
     
-    private final String text;
-    
     private final AggregationType type;
     
     private final int innerExpressionStartIndex;
@@ -45,10 +42,9 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     @Setter
     private AliasSegment alias;
     
-    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final String text, final AggregationType type, final int innerExpressionStartIndex) {
+    public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final int innerExpressionStartIndex) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
         this.type = type;
         this.innerExpressionStartIndex = innerExpressionStartIndex;
     }

@@ -438,9 +438,9 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         int innerExpressionStartIndex = ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex();
         if (null == ctx.distinct()) {
-            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex);
+            return new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpressionStartIndex);
         }
-        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
+        return new AggregationDistinctProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpressionStartIndex, getDistinctExpression(ctx));
     }
     
     private String getDistinctExpression(final AggregationFunctionContext ctx) {

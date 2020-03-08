@@ -54,7 +54,7 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegment() {
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0, "text");
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
         Optional<Projection> actual = new ProjectionEngine(mock(RelationMetas.class)).createProjection(null, Collections.emptyList(), shorthandProjectionSegment);
         assertTrue(actual.isPresent());
@@ -63,7 +63,7 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
-        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("text", new ColumnSegment(0, 10, new IdentifierValue("name")));
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 10, new IdentifierValue("name")));
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         Optional<Projection> actual = new ProjectionEngine(mock(RelationMetas.class)).createProjection(null, Collections.emptyList(), columnProjectionSegment);
         assertTrue(actual.isPresent());
@@ -80,7 +80,7 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegment() {
-        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, "text", AggregationType.COUNT, 0, "distinctExpression");
+        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, 0, "distinctExpression");
         Optional<Projection> actual = new ProjectionEngine(mock(RelationMetas.class)).createProjection("select count(1) from table_1", Collections.emptyList(), aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
@@ -88,7 +88,7 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegment() {
-        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, "text", AggregationType.COUNT, 0);
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.COUNT, 0);
         Optional<Projection> actual = new ProjectionEngine(mock(RelationMetas.class)).createProjection("select count(1) from table_1", Collections.emptyList(), aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationProjection.class));
@@ -96,7 +96,7 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationDistinctProjectionSegmentAndAggregationTypeIsAvg() {
-        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, "text", AggregationType.AVG, 0, "distinctExpression");
+        AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.AVG, 0, "distinctExpression");
         Optional<Projection> actual = new ProjectionEngine(mock(RelationMetas.class)).createProjection("select count(1) from table_1", Collections.emptyList(), aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
@@ -104,7 +104,7 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfAggregationProjectionSegmentAndAggregationTypeIsAvg() {
-        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, "text", AggregationType.AVG, 0);
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.AVG, 0);
         Optional<Projection> actual = new ProjectionEngine(mock(RelationMetas.class)).createProjection("select count(1) from table_1", Collections.emptyList(), aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(AggregationProjection.class));
