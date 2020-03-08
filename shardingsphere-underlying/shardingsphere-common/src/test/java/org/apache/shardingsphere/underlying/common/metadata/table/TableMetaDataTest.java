@@ -34,7 +34,7 @@ public final class TableMetaDataTest {
     
     @Test
     public void assertColumnPrimaryKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "dataType", true)), Collections.<String>emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "dataType", true)), Collections.emptyList());
         assertTrue(tableMetaData.getColumns().get("id").isPrimaryKey());
     }
 }

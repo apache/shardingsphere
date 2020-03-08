@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.impl;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.spi.JDBCDriverURLRecognizer;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,7 +31,7 @@ public final class OracleRecognizerTest {
     
     @Test
     public void assertGetURLPrefixes() {
-        assertThat(recognizer.getURLPrefixes(), CoreMatchers.<Collection<String>>is(Collections.singletonList("jdbc:oracle:")));
+        assertThat(recognizer.getURLPrefixes(), is(Collections.singletonList("jdbc:oracle:")));
     }
     
     @Test

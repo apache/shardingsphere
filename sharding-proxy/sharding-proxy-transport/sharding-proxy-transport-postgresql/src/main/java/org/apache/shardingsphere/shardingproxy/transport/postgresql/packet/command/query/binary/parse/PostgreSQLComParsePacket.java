@@ -46,7 +46,7 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
-        binaryStatementParameterTypes = sql.isEmpty() ? Collections.<PostgreSQLBinaryStatementParameterType>emptyList() : getParameterTypes(payload);
+        binaryStatementParameterTypes = sql.isEmpty() ? Collections.emptyList() : getParameterTypes(payload);
     }
     
     private List<PostgreSQLBinaryStatementParameterType> getParameterTypes(final PostgreSQLPacketPayload payload) {

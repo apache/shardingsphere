@@ -33,13 +33,13 @@ public final class EncryptPredicateEqualRightValueTokenTest {
     public void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
-        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList());
+        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, indexValues, Collections.emptyList());
         assertThat(actual.toString(), is("'a'"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
-        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0));
+        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.emptyMap(), Collections.singletonList(0));
         assertThat(actual.toString(), is("?"));
     }
 }

@@ -37,8 +37,8 @@ public final class GroupedParameterBuilderTest {
     
     private List<List<Object>> createGroupedParameters() {
         List<List<Object>> result = new LinkedList<>();
-        result.add(Arrays.<Object>asList(3, 4));
-        result.add(Arrays.<Object>asList(5, 6));
+        result.add(Arrays.asList(3, 4));
+        result.add(Arrays.asList(5, 6));
         return result;
     }
 }

@@ -30,31 +30,31 @@ public final class SQLUtilTest {
     
     @Test
     public void assertGetExactlyNumberForInteger() {
-        assertThat(SQLUtil.getExactlyNumber("100000", 10), is((Number) 100000));
-        assertThat(SQLUtil.getExactlyNumber("100000", 16), is((Number) 1048576));
-        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Integer.MIN_VALUE), 10), is((Number) Integer.MIN_VALUE));
-        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Integer.MAX_VALUE), 10), is((Number) Integer.MAX_VALUE));
+        assertThat(SQLUtil.getExactlyNumber("100000", 10), is(100000));
+        assertThat(SQLUtil.getExactlyNumber("100000", 16), is(1048576));
+        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Integer.MIN_VALUE), 10), is(Integer.MIN_VALUE));
+        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Integer.MAX_VALUE), 10), is(Integer.MAX_VALUE));
     }
     
     @Test
     public void assertGetExactlyNumberForLong() {
-        assertThat(SQLUtil.getExactlyNumber("100000000000", 10), is((Number) 100000000000L));
-        assertThat(SQLUtil.getExactlyNumber("100000000000", 16), is((Number) 17592186044416L));
-        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MIN_VALUE), 10), is((Number) Long.MIN_VALUE));
-        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MAX_VALUE), 10), is((Number) Long.MAX_VALUE));
+        assertThat(SQLUtil.getExactlyNumber("100000000000", 10), is(100000000000L));
+        assertThat(SQLUtil.getExactlyNumber("100000000000", 16), is(17592186044416L));
+        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MIN_VALUE), 10), is(Long.MIN_VALUE));
+        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MAX_VALUE), 10), is(Long.MAX_VALUE));
     }
     
     @Test
     public void assertGetExactlyNumberForBigInteger() {
-        assertThat(SQLUtil.getExactlyNumber("10000000000000000000", 10), is((Number) new BigInteger("10000000000000000000")));
-        assertThat(SQLUtil.getExactlyNumber("10000000000000000000", 16), is((Number) new BigInteger("75557863725914323419136")));
-        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MIN_VALUE + 1), 10), is((Number) (Long.MIN_VALUE + 1)));
-        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MAX_VALUE - 1), 10), is((Number) (Long.MAX_VALUE - 1)));
+        assertThat(SQLUtil.getExactlyNumber("10000000000000000000", 10), is(new BigInteger("10000000000000000000")));
+        assertThat(SQLUtil.getExactlyNumber("10000000000000000000", 16), is(new BigInteger("75557863725914323419136")));
+        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MIN_VALUE + 1), 10), is(Long.MIN_VALUE + 1));
+        assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MAX_VALUE - 1), 10), is(Long.MAX_VALUE - 1));
     }
     
     @Test
     public void assertGetExactlyNumberForBigDecimal() {
-        assertThat(SQLUtil.getExactlyNumber("1.1", 10), is((Number) new BigDecimal("1.1")));
+        assertThat(SQLUtil.getExactlyNumber("1.1", 10), is(new BigDecimal("1.1")));
     }
     
     @Test

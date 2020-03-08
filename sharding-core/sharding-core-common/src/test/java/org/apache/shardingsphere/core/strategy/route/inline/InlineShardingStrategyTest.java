@@ -45,7 +45,7 @@ public final class InlineShardingStrategyTest {
     @Test
     public void assertDoSharding() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        List<RouteValue> shardingValues = Lists.<RouteValue>newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
+        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ShardingSphereProperties(new Properties()));
         assertThat(actual.size(), is(4));
     }
@@ -53,7 +53,7 @@ public final class InlineShardingStrategyTest {
     @Test
     public void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1");
-        List<RouteValue> shardingValues = Lists.<RouteValue>newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
+        List<RouteValue> shardingValues = Lists.newArrayList(new ListRouteValue<>("order_id", "t_order", Lists.newArrayList(0, 1, 2, 3)));
         Collection<String> actual = shardingStrategy.doSharding(availableTargetNames, shardingValues, new ShardingSphereProperties(new Properties()));
         assertThat(actual.size(), is(2));
     }

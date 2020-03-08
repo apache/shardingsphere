@@ -69,8 +69,8 @@ public class SpringBootShadowShardingTest {
         }
         assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
         ShardingSphereProperties properties = runtimeContext.getProperties();
-        assertTrue((Boolean) properties.getValue(PropertiesConstant.SQL_SHOW));
-        assertThat((Integer) properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
+        assertTrue(properties.getValue(PropertiesConstant.SQL_SHOW));
+        assertThat(properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
     }
     
     private void assertShadowDatasource() {
@@ -81,8 +81,8 @@ public class SpringBootShadowShardingTest {
         }
         assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
         ShardingSphereProperties properties = runtimeContext.getProperties();
-        assertTrue((Boolean) properties.getValue(PropertiesConstant.SQL_SHOW));
-        assertThat((Integer) properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
+        assertTrue(properties.getValue(PropertiesConstant.SQL_SHOW));
+        assertThat(properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
     }
     
     @Test

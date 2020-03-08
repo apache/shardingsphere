@@ -21,7 +21,6 @@ import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import org.apache.shardingsphere.transaction.xa.atomikos.manager.fixture.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +29,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
 import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -87,7 +86,7 @@ public final class AtomikosTransactionManagerTest {
     
     @Test
     public void assertTransactionManager() {
-        assertThat(atomikosTransactionManager.getTransactionManager(), CoreMatchers.<TransactionManager>is(userTransactionManager));
+        assertThat(atomikosTransactionManager.getTransactionManager(), is(userTransactionManager));
     }
     
     @Test

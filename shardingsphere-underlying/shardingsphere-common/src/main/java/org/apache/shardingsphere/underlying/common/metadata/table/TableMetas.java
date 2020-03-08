@@ -91,7 +91,7 @@ public final class TableMetas {
      * @return column names
      */
     public List<String> getAllColumnNames(final String tableName) {
-        return tables.containsKey(tableName) ? new ArrayList<>(tables.get(tableName).getColumns().keySet()) : Collections.<String>emptyList();
+        return tables.containsKey(tableName) ? new ArrayList<>(tables.get(tableName).getColumns().keySet()) : Collections.emptyList();
     }
     
     /**

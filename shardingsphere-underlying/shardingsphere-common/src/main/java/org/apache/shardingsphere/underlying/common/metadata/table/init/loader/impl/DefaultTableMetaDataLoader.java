@@ -70,8 +70,8 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData, final String table) throws SQLException {
         String catalog = dataSourceMetaData.getCatalog();
         MetaDataLogger.logTableMetaData(catalog, table);
-        Collection<ColumnMetaData> columnMetaDataList = isTableExist(connection, catalog, table) ? columnMetaDataLoader.load(connection, catalog, table) : Collections.<ColumnMetaData>emptyList();
-        return new TableMetaData(columnMetaDataList, Collections.<String>emptyList());
+        Collection<ColumnMetaData> columnMetaDataList = isTableExist(connection, catalog, table) ? columnMetaDataLoader.load(connection, catalog, table) : Collections.emptyList();
+        return new TableMetaData(columnMetaDataList, Collections.emptyList());
     }
     
     private boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {

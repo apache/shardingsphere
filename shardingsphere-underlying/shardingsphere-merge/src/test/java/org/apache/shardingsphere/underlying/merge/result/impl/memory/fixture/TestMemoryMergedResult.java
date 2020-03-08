@@ -37,7 +37,7 @@ public final class TestMemoryMergedResult extends MemoryMergedResult<TestRule> {
     private MemoryQueryResultRow memoryQueryResultRow;
     
     public TestMemoryMergedResult() throws SQLException {
-        super(null, null, null, Collections.<QueryResult>emptyList());
+        super(null, null, null, Collections.emptyList());
     }
     
     @Override

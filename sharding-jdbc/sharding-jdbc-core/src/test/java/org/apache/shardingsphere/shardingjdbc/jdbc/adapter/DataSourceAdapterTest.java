@@ -39,7 +39,7 @@ public final class DataSourceAdapterTest extends AbstractShardingJDBCDatabaseAnd
     
     @Test
     public void assertUnwrapSuccess() throws SQLException {
-        assertThat(getShardingDataSource().unwrap(Object.class), is((Object) getShardingDataSource()));
+        assertThat(getShardingDataSource().unwrap(Object.class), is(getShardingDataSource()));
     }
     
     @Test(expected = SQLException.class)
