@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ShorthandProjection;
 
 import java.util.ArrayList;
@@ -124,16 +125,16 @@ public final class ProjectionsContext {
     }
     
     /**
-     * Get actual projections.
+     * Get expand projections with shorthand projections.
      * 
-     * @return actual projections
+     * @return expand projections
      */
-    public List<Projection> getActualProjections() {
+    public List<Projection> getExpandProjections() {
         List<Projection> result = new ArrayList<>();
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
                 result.addAll(((ShorthandProjection) each).getActualColumns());
-            } else {
+            } else if (!(each instanceof DerivedProjection)) {
                 result.add(each);
             }
         }
