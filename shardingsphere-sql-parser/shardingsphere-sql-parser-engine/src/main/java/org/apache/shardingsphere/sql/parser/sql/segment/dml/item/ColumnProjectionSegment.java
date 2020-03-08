@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Optional;
 
@@ -34,15 +33,11 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     @Getter
     private final ColumnSegment column;
     
-    @Getter
-    private final String text;
-    
     @Setter
     private AliasSegment alias;
     
-    public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
+    public ColumnProjectionSegment(final ColumnSegment columnSegment) {
         column = columnSegment;
-        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
     }
     
     @Override

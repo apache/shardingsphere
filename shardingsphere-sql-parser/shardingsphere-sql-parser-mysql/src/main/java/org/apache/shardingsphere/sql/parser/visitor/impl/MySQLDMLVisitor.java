@@ -384,8 +384,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
         if (null != ctx.unqualifiedShorthand()) {
-            projections.add(
-                    new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex(), ctx.unqualifiedShorthand().getText()));
+            projections.add(new ShorthandProjectionSegment(ctx.unqualifiedShorthand().getStart().getStartIndex(), ctx.unqualifiedShorthand().getStop().getStopIndex()));
         }
         for (ProjectionContext each : ctx.projection()) {
             projections.add((ProjectionSegment) visit(each));
@@ -400,7 +399,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         // FIXME :The stop index of project is the stop index of projection, instead of alias.
         if (null != ctx.qualifiedShorthand()) {
             QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
-            ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex(), shorthand.getText());
+            ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex());
             IdentifierValue identifier = new IdentifierValue(shorthand.identifier().getText());
             result.setOwner(new OwnerSegment(shorthand.identifier().getStart().getStartIndex(), shorthand.identifier().getStop().getStopIndex(), identifier));
             return result;
@@ -408,7 +407,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            ColumnProjectionSegment result = new ColumnProjectionSegment(ctx.columnName().getText(), column);
+            ColumnProjectionSegment result = new ColumnProjectionSegment(column);
             result.setAlias(alias);
             return result;
         }

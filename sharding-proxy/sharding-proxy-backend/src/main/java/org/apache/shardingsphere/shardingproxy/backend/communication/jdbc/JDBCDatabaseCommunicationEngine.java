@@ -38,9 +38,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.DerivedColumn;
-import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -54,9 +53,7 @@ import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -123,7 +120,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return response;
         }
         this.mergedResult = createMergedResult(sqlStatementContext, ((QueryResponse) response).getQueryResults());
-        handleColumnsForQueryHeader(sqlStatementContext);
         return response;
     }
     
@@ -149,56 +145,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return mergeEntry.process(queryResults, sqlStatementContext);
     }
     
-    private void handleColumnsForQueryHeader(final SQLStatementContext sqlStatementContext) {
-        removeDerivedColumns();
-        removeAssistedQueryColumns(sqlStatementContext);
-        setLogicColumns();
-    } 
-    
-    private void removeDerivedColumns() {
-        List<QueryHeader> toRemove = new LinkedList<>();
-        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
-        for (QueryHeader each : queryHeaders) {
-            if (DerivedColumn.isDerivedColumn(each.getColumnLabel())) {
-                toRemove.add(each);
-            }
-        }
-        queryHeaders.removeAll(toRemove);
-    }
-    
-    private void removeAssistedQueryColumns(final SQLStatementContext sqlStatementContext) {
-        List<QueryHeader> toRemove = new LinkedList<>();
-        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
-        Collection<String> assistedQueryColumns = getAssistedQueryColumns(sqlStatementContext);
-        for (QueryHeader each : queryHeaders) {
-            if (assistedQueryColumns.contains(each.getColumnName())) {
-                toRemove.add(each);
-            }
-        }
-        queryHeaders.removeAll(toRemove);
-    }
-    
-    private Collection<String> getAssistedQueryColumns(final SQLStatementContext sqlStatementContext) {
-        Collection<String> result = new LinkedList<>();
-        EncryptRule encryptRule = getEncryptRule();
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            result.addAll(encryptRule.getAssistedQueryColumns(each));
-        }
-        return result;
-    }
-    
     private EncryptRule getEncryptRule() {
         return logicSchema instanceof EncryptSchema ? ((EncryptSchema) logicSchema).getEncryptRule() : logicSchema.getShardingRule().getEncryptRule();
-    }
-    
-    private void setLogicColumns() {
-        List<QueryHeader> queryHeaders = ((QueryResponse) response).getQueryHeaders();
-        EncryptRule encryptRule = getEncryptRule();
-        for (QueryHeader each : queryHeaders) {
-            if (encryptRule.isCipherColumn(each.getTable(), each.getColumnName())) {
-                each.setColumnLabelAndName(encryptRule.getLogicColumnOfCipher(each.getTable(), each.getColumnName()));
-            }
-        }
     }
     
     @Override

@@ -23,11 +23,4 @@ import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
  * Projection segment.
  */
 public interface ProjectionSegment extends SQLSegment {
-    
-    /**
-     * Get text.
-     * 
-     * @return text
-     */
-    String getText();
 }
