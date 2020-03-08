@@ -56,14 +56,6 @@ public final class MySQLAuthenticationHandler {
         }
         return Optional.empty();
     }
-
-    private boolean isPasswordRight(final String password, final byte[] authResponse) {
-        return Strings.isNullOrEmpty(password) || Arrays.equals(getAuthCipherBytes(password), authResponse);
-    }
-
-    private boolean isAuthorizedSchema(final Collection<String> authorizedSchemas, final String schema) {
-        return Strings.isNullOrEmpty(schema) || CollectionUtils.isEmpty(authorizedSchemas) || authorizedSchemas.contains(schema);
-    }
     
     private Optional<ProxyUser> getUser(final String username) {
         for (Entry<String, ProxyUser> entry : SHARDING_PROXY_CONTEXT.getAuthentication().getUsers().entrySet()) {
@@ -72,6 +64,14 @@ public final class MySQLAuthenticationHandler {
             }
         }
         return Optional.empty();
+    }
+    
+    private boolean isPasswordRight(final String password, final byte[] authResponse) {
+        return Strings.isNullOrEmpty(password) || Arrays.equals(getAuthCipherBytes(password), authResponse);
+    }
+    
+    private boolean isAuthorizedSchema(final Collection<String> authorizedSchemas, final String schema) {
+        return Strings.isNullOrEmpty(schema) || CollectionUtils.isEmpty(authorizedSchemas) || authorizedSchemas.contains(schema);
     }
     
     private byte[] getAuthCipherBytes(final String password) {
