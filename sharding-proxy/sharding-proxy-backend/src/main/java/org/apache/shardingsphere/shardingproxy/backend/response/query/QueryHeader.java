@@ -21,6 +21,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 
 import java.sql.ResultSetMetaData;
@@ -38,9 +41,9 @@ public final class QueryHeader {
     
     private final String table;
     
-    private String columnLabel;
+    private final String columnLabel;
     
-    private String columnName;
+    private final String columnName;
     
     private final int columnLength;
     
@@ -57,9 +60,17 @@ public final class QueryHeader {
     private final boolean autoIncrement;
     
     public QueryHeader(final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
+        this(resultSetMetaData, logicSchema, resultSetMetaData.getColumnName(columnIndex), columnIndex);
+    }
+    
+    public QueryHeader(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
+        this(resultSetMetaData, logicSchema, getColumnName(projectionsContext, resultSetMetaData, columnIndex), columnIndex);
+    }
+    
+    private QueryHeader(final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final String columnName, final int columnIndex) throws SQLException {
+        this.columnName = columnName;
         schema = logicSchema.getName();
         columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
-        columnName = resultSetMetaData.getColumnName(columnIndex);
         columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
         columnType = resultSetMetaData.getColumnType(columnIndex);
         decimals = resultSetMetaData.getScale(columnIndex);
@@ -71,25 +82,15 @@ public final class QueryHeader {
             Collection<String> logicTableNames = logicSchema.getShardingRule().getLogicTableNames(actualTableName);
             table = logicTableNames.isEmpty() ? "" : logicTableNames.iterator().next();
             TableMetaData tableMetaData = logicSchema.getMetaData().getTables().get(table);
-            primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase())
-                    .isPrimaryKey();
+            primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
         } else {
             table = actualTableName;
             primaryKey = false;
         }
     }
     
-    /**
-     * Set column label and column name.
-     * 
-     * @param logicColumnName logic column name
-     */
-    public void setColumnLabelAndName(final String logicColumnName) {
-        if (columnLabel.equals(columnName)) {
-            columnLabel = logicColumnName;
-            columnName = logicColumnName;
-        } else {
-            columnName = logicColumnName;
-        }
+    private static String getColumnName(final ProjectionsContext projectionsContext, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
+        Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
+        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName() : resultSetMetaData.getColumnName(columnIndex);
     }
 }
