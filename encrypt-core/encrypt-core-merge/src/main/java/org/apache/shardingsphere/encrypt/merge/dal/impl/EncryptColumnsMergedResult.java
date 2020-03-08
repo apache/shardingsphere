@@ -61,6 +61,7 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
             if (!hasNext) {
                 return false;
             }
+            columnName = getOriginalValue(1, String.class).toString();
         }
         return true;
     }
