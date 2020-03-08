@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 
 import java.util.Collection;
 
@@ -40,7 +40,7 @@ public final class DropTableStatementContext extends CommonSQLStatementContext<D
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getAllTables() {
         return getSqlStatement().getTables();
     }
 }

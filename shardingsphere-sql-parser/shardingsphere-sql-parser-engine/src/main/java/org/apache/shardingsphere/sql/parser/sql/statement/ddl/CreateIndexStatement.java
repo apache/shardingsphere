@@ -20,17 +20,16 @@ package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.IndexSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 /**
  * Create index statement.
  */
 @Getter
 @Setter
-public final class CreateIndexStatement extends DDLStatement implements IndexSegmentAvailable {
+public final class CreateIndexStatement extends DDLStatement {
     
     private IndexSegment index;
     
-    private TableSegment table;
+    private SimpleTableSegment table;
 }

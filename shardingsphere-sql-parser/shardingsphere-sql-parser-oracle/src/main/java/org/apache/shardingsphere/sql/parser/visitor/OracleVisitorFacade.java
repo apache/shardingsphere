@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.RLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDALVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDCLVisitor;
@@ -57,5 +58,10 @@ public final class OracleVisitorFacade implements ParseTreeVisitorFacade {
     @Override
     public Class<? extends DALVisitor> getDALVisitorClass() {
         return OracleDALVisitor.class;
+    }
+    
+    @Override
+    public Class<? extends RLVisitor> getRLVisitorClass() {
+        return null;
     }
 }

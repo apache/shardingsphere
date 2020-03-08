@@ -25,10 +25,7 @@ import org.apache.shardingsphere.orchestration.center.configuration.InstanceConf
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
-
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.center.util.ConfigKeyUtils;
-
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -98,13 +95,7 @@ public final class ApolloInstanceTest {
     @SneakyThrows
     public void assertWatchDeletedChangedType() {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch("/test/children/1", new DataChangedEventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                future.set(dataChangedEvent);
-            }
-        });
+        configCenterRepository.watch("/test/children/1", future::set);
         embeddedApollo.deleteProperty("orchestration", "test.children.1");
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is("/test/children/1"));
@@ -122,13 +113,7 @@ public final class ApolloInstanceTest {
     @SneakyThrows
     private void assertWatchUpdateChangedType(final String key, final String newVaule) {
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        configCenterRepository.watch(key, new DataChangedEventListener() {
-            
-            @Override
-            public void onChange(final DataChangedEvent dataChangedEvent) {
-                future.set(dataChangedEvent);
-            }
-        });
+        configCenterRepository.watch(key, future::set);
         embeddedApollo.addOrModifyProperty("orchestration", ConfigKeyUtils.path2Key(key), newVaule);
         DataChangedEvent changeEvent = future.get(5, TimeUnit.SECONDS);
         assertThat(changeEvent.getKey(), is(key));

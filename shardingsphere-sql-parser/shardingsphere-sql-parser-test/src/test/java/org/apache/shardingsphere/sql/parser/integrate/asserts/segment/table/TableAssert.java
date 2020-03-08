@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.t
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTableOwner;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.List;
@@ -49,10 +49,10 @@ public final class TableAssert {
      * @param actual actual tables
      * @param expected expected tables
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<TableSegment> actual, final List<ExpectedTable> expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<SimpleTableSegment> actual, final List<ExpectedTable> expected) {
         assertThat(assertContext.getText("Tables size assertion error: "), actual.size(), is(expected.size()));
         int count = 0;
-        for (TableSegment each : actual) {
+        for (SimpleTableSegment each : actual) {
             assertIs(assertContext, each, expected.get(count));
             count++;
         }
@@ -65,7 +65,7 @@ public final class TableAssert {
      * @param actual actual table
      * @param expected expected table
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final TableSegment actual, final ExpectedTable expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedTable expected) {
         assertThat(assertContext.getText("Table name assertion error: "), actual.getTableName().getIdentifier().getValue(), is(expected.getName()));
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (null != expected.getOwner()) {
@@ -88,7 +88,7 @@ public final class TableAssert {
      * @param actual actual table segment
      * @param expected expected table owner
      */
-    public static void assertOwner(final SQLCaseAssertContext assertContext, final TableSegment actual, final ExpectedTableOwner expected) {
+    public static void assertOwner(final SQLCaseAssertContext assertContext, final SimpleTableSegment actual, final ExpectedTableOwner expected) {
         assertThat(assertContext.getText("Owner name assertion error: "), actual.getTableName().getIdentifier().getValue(), is(expected.getName()));
         assertThat(assertContext.getText("Owner name start delimiter assertion error: "), 
                 actual.getTableName().getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));

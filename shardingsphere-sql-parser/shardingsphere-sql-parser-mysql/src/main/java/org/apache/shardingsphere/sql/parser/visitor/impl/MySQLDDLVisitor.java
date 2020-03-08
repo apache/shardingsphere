@@ -64,7 +64,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.Colu
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
@@ -117,7 +117,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement((TableSegment) visit(ctx.tableName()));
+        CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -156,7 +156,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement((TableSegment) visit(ctx.tableName()));
+        AlterTableStatement result = new AlterTableStatement((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
@@ -233,16 +233,16 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         return result;
     }
     
-    private Collection<TableSegment> getReferencedTables(final ColumnDefinitionContext ctx) {
-        Collection<TableSegment> result = new LinkedList<>();
+    private Collection<SimpleTableSegment> getReferencedTables(final ColumnDefinitionContext ctx) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
         for (StorageOptionContext each : ctx.storageOption()) {
             if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
-                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
+                result.add((SimpleTableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
             }
         }
         for (GeneratedOptionContext each : ctx.generatedOption()) {
             if (null != each.dataTypeGenericOption() && null != each.dataTypeGenericOption().referenceDefinition()) {
-                result.add((TableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
+                result.add((SimpleTableSegment) visit(each.dataTypeGenericOption().referenceDefinition()));
             }
         }
         return result;
@@ -270,7 +270,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
             result.getPrimaryKeyColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.primaryKeyOption().columnNames())).getValue());
         }
         if (null != ctx.foreignKeyOption()) {
-            result.setReferencedTable((TableSegment) visit(ctx.foreignKeyOption().referenceDefinition()));
+            result.setReferencedTable((SimpleTableSegment) visit(ctx.foreignKeyOption().referenceDefinition()));
         }
         return result;
     }
@@ -348,28 +348,28 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        result.getTables().add((TableSegment) visit(ctx.tableName()));
+        result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         DropIndexStatement result = new DropIndexStatement();
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
 }

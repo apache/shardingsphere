@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GrantC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectPrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.CreateRoleStatement;
@@ -51,7 +51,7 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
     public ASTNode visitGrant(final GrantContext ctx) {
         GrantStatement result = new GrantStatement();
         if (null != ctx.objectPrivilegeClause()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
+            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
                 result.getTables().add(each);
             }
         }
@@ -62,7 +62,7 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
     public ASTNode visitRevoke(final RevokeContext ctx) {
         RevokeStatement result = new RevokeStatement();
         if (null != ctx.objectPrivilegeClause()) {
-            for (TableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
+            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
                 result.getTables().add(each);
             }
         }
@@ -70,8 +70,8 @@ public final class OracleDCLVisitor extends OracleVisitor implements DCLVisitor 
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<TableSegment> getTableFromPrivilegeClause(final ObjectPrivilegeClauseContext ctx) {
-        return null == ctx.onObjectClause().tableName() ? Collections.<TableSegment>emptyList() : Collections.singletonList((TableSegment) visit(ctx.onObjectClause().tableName()));
+    private Collection<SimpleTableSegment> getTableFromPrivilegeClause(final ObjectPrivilegeClauseContext ctx) {
+        return null == ctx.onObjectClause().tableName() ? Collections.emptyList() : Collections.singletonList((SimpleTableSegment) visit(ctx.onObjectClause().tableName()));
     }
     
     @Override

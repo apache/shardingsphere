@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dal;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 /**
  * From table segment.
@@ -33,5 +33,5 @@ public final class FromTableSegment implements SQLSegment {
     
     private int stopIndex;
     
-    private TableSegment table;
+    private SimpleTableSegment table;
 }

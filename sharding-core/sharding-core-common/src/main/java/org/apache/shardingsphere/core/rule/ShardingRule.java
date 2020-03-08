@@ -480,8 +480,7 @@ public class ShardingRule implements BaseRule {
     public Collection<String> getShardingLogicTableNames(final Collection<String> logicTableNames) {
         Collection<String> result = new LinkedList<>();
         for (String each : logicTableNames) {
-            Optional<TableRule> tableRule = findTableRule(each);
-            if (tableRule.isPresent()) {
+            if (findTableRule(each).isPresent()) {
                 result.add(each);
             }
         }

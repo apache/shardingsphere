@@ -29,5 +29,5 @@ public interface SQLStatement extends ASTNode {
      *
      * @return count of parameters
      */
-    int getParametersCount();
+    int getParameterCount();
 }

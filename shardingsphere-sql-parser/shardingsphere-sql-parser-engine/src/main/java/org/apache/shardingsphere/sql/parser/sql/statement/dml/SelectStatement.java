@@ -25,8 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.OrderBySegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,7 +38,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class SelectStatement extends DMLStatement implements WhereSegmentAvailable {
+public final class SelectStatement extends DMLStatement {
     
     private final Collection<TableSegment> tables = new LinkedList<>();
     
@@ -54,6 +55,15 @@ public final class SelectStatement extends DMLStatement implements WhereSegmentA
     private SelectStatement parentStatement;
     
     private LockSegment lock;
+    
+    /**
+     * Get where.
+     *
+     * @return where segment
+     */
+    public Optional<WhereSegment> getWhere() {
+        return Optional.ofNullable(where);
+    }
     
     /**
      * Get group by segment.
@@ -91,8 +101,33 @@ public final class SelectStatement extends DMLStatement implements WhereSegmentA
         return Optional.ofNullable(lock);
     }
     
-    @Override
-    public Optional<WhereSegment> getWhere() {
-        return Optional.ofNullable(where);
+    /**
+     * Get simple table segments.
+     * 
+     * @return simple table segments
+     */
+    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (TableSegment each : tables) {
+            if (each instanceof SimpleTableSegment) {
+                result.add((SimpleTableSegment) each);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get subQuery table segments.
+     *
+     * @return subQuery table segments
+     */
+    public Collection<SubqueryTableSegment> getSubQueryTableSegments() {
+        Collection<SubqueryTableSegment> result = new LinkedList<>();
+        for (TableSegment each : tables) {
+            if (each instanceof SubqueryTableSegment) {
+                result.add((SubqueryTableSegment) each);
+            }
+        }
+        return result;
     }
 }

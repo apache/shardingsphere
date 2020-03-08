@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnic
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.dcl.GrantStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.SetStatement;
@@ -142,7 +142,7 @@ public final class ShardingRouteEngineFactoryTest {
     @Test
     public void assertNewInstanceForDCLForSingleTable() {
         GrantStatement grantStatement = new GrantStatement();
-        grantStatement.getTables().add(new TableSegment(0, 0, new IdentifierValue("tbl")));
+        grantStatement.getTables().add(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         GrantStatementContext sqlStatementContext = new GrantStatementContext(grantStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, shardingSphereMetaData, sqlStatementContext, shardingConditions, properties);
         assertThat(actual, instanceOf(ShardingTableBroadcastRoutingEngine.class));

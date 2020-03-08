@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.engine;
 
+import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
@@ -41,7 +45,8 @@ public final class OrderByContextEngine {
      */
     public OrderByContext createOrderBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
         if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
-            return new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
+            OrderByContext orderByItems = createOrderByContextForDistinctRowWithoutGroupBy(selectStatement, groupByContext);
+            return null != orderByItems ? orderByItems : new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
         }
         List<OrderByItem> orderByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getOrderBy().get().getOrderByItems()) {
@@ -52,5 +57,25 @@ public final class OrderByContextEngine {
             orderByItems.add(orderByItem);
         }
         return new OrderByContext(orderByItems, false);
+    }
+
+    private OrderByContext createOrderByContextForDistinctRowWithoutGroupBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
+        if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
+            int index = 0;
+            List<OrderByItem> orderByItems = new LinkedList<>();
+            for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
+                if (projectionSegment instanceof ColumnProjectionSegment) {
+                    ColumnProjectionSegment columnProjectionSegment = (ColumnProjectionSegment) projectionSegment;
+                    ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnProjectionSegment.getColumn(), OrderDirection.ASC);
+                    OrderByItem item = new OrderByItem(columnOrderByItemSegment);
+                    item.setIndex(index++);
+                    orderByItems.add(item);
+                }
+            }
+            if (!orderByItems.isEmpty()) {
+                return new OrderByContext(orderByItems, true);
+            }
+        }
+        return null;
     }
 }

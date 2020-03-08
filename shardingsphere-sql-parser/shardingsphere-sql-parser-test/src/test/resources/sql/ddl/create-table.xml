@@ -338,7 +338,7 @@
     
     <create-table sql-case-id="create_table_with_inline_constraints">
         <table name="t_order" start-index="13" stop-index="19" />
-        <column-definition type="INT" primary-key="trur">
+        <column-definition type="INT" primary-key="true">
             <column name="order_id" />
         </column-definition>
         <column-definition type="INT">

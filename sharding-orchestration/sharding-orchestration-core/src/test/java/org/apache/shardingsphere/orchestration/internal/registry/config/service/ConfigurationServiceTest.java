@@ -50,6 +50,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -94,6 +95,16 @@ public final class ConfigurationServiceTest {
     private static final String PROPS_YAML = "sql.show: false\n";
 
     private static final String SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE = "defaultTableStrategy:\n" + "  none: ''\n";
+    
+    private static final String DATA_SOURCE_YAML_WITH_CONNECTIONINITSQLS =
+            "ds_0: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
+                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0\n" + "    username: root\n" + "    password: root\n"
+                    + "    connectionInitSqls:\n" + "        - set names utf8mb4;\n" + "        - set names utf8;\n"
+                    + "ds_1: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
+                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1\n" + "    username: root\n" + "    password: root\n"
+                    + "    connectionInitSqls:\n" + "        - set names utf8mb4;\n" + "        - set names utf8;\n";
     
     @Mock
     private ConfigCenterRepository regCenter;
@@ -308,7 +319,7 @@ public final class ConfigurationServiceTest {
     }
 
     @Test
-    public void assertIsShardingRuleWithDefaultTableStragetyNone() {
+    public void assertIsShardingRuleWithDefaultTableStrategyNone() {
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_RULE_YAML_DEFAULT_TABLE_STRATEGY_NONE);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         assertTrue(configurationService.isShardingRule("sharding_db"));
@@ -382,5 +393,33 @@ public final class ConfigurationServiceTest {
         assertThat(actual.size(), is(2));
         assertThat(actual, hasItems("sharding_db"));
         assertThat(actual, hasItems("masterslave_db"));
+    }
+    
+    @Test
+    public void assertLoadDataSourceConfigurationsWithConnectionInitSqls() {
+        when(regCenter.get("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML_WITH_CONNECTIONINITSQLS);
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        Map<String, DataSourceConfiguration> actual = configurationService.loadDataSourceConfigurations("sharding_db");
+        assertThat(actual.size(), is(2));
+        assertDataSourceConfigurationWithConnectionInitSqls(actual.get("ds_0"), createDataSourceConfiguration(createDataSourceWithConnectionInitSqls("ds_0")));
+        assertDataSourceConfigurationWithConnectionInitSqls(actual.get("ds_1"), createDataSourceConfiguration(createDataSourceWithConnectionInitSqls("ds_1")));
+    }
+    
+    private DataSource createDataSourceWithConnectionInitSqls(final String name) {
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName("com.mysql.jdbc.Driver");
+        result.setUrl("jdbc:mysql://localhost:3306/" + name);
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setConnectionInitSqls(Arrays.asList("set names utf8mb4;", "set names utf8;"));
+        return result;
+    }
+    
+    private void assertDataSourceConfigurationWithConnectionInitSqls(final DataSourceConfiguration actual, final DataSourceConfiguration expected) {
+        assertThat(actual.getDataSourceClassName(), is(expected.getDataSourceClassName()));
+        assertThat(actual.getProperties().get("url"), is(expected.getProperties().get("url")));
+        assertThat(actual.getProperties().get("username"), is(expected.getProperties().get("username")));
+        assertThat(actual.getProperties().get("password"), is(expected.getProperties().get("password")));
+        assertThat(actual.getProperties().get("connectionInitSqls"), is(expected.getProperties().get("connectionInitSqls")));
     }
 }

@@ -33,25 +33,34 @@ import java.util.Optional;
 @EqualsAndHashCode
 @ToString
 public final class ColumnProjection implements Projection {
-
+    
     private final String owner;
-
+    
     private final String name;
-
+    
     private final String alias;
-
+    
     @Override
     public String getExpression() {
         return null == owner ? name : owner + "." + name;
     }
-
+    
     @Override
     public String getColumnLabel() {
         return getAlias().orElse(name);
     }
-
+    
     @Override
     public Optional<String> getAlias() {
         return Optional.ofNullable(alias);
+    }
+    
+    /**
+     * Get expression with alias.
+     * 
+     * @return expression with alias
+     */
+    public String getExpressionWithAlias() {
+        return getExpression() + (null == alias ? "" : " AS " + alias);
     }
 }
