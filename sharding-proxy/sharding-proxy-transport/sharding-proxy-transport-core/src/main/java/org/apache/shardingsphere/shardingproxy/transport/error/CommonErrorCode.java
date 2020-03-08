@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.error;
+package org.apache.shardingsphere.shardingproxy.transport.error;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL error code.
+ * Common error code.
  */
-public interface SQLErrorCode {
+@RequiredArgsConstructor
+@Getter
+public enum CommonErrorCode implements SQLErrorCode {
     
-    /**
-     * Get error code.
-     * 
-     * @return error code
-     */
-    int getErrorCode();
+    CIRCUIT_BREAK_MODE(10000, "C10000", "Circuit break mode is ON."),
     
-    /**
-     * Get SQL state.
-     * 
-     * @return SQL state
-     */
-    String getSqlState();
+    UNSUPPORTED_COMMAND(10001, "C10001", "Unsupported command: [%s]"),
     
-    /**
-     * Get error message.
-     * 
-     * @return error message
-     */
-    String getErrorMessage();
+    UNKNOWN_EXCEPTION(10002, "C10002", "Unknown exception: [%s]");
+    
+    private final int errorCode;
+    
+    private final String sqlState;
+    
+    private final String errorMessage;
 }
