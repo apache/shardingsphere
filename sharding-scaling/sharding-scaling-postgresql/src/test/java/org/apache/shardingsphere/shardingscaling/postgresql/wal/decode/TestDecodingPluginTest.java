@@ -36,7 +36,7 @@ public final class TestDecodingPluginTest {
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin().decode(data, lsn);
         assertThat(actual.getLogSequenceNumber(), is(lsn));
         assertThat(actual.getTableName(), is("test"));
-        assertThat((String) actual.getAfterRow().get(0), is("1 2 3'"));
+        assertThat(actual.getAfterRow().get(0), is("1 2 3'"));
     }
     
     @Test
@@ -46,7 +46,7 @@ public final class TestDecodingPluginTest {
         UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin().decode(data, lsn);
         assertThat(actual.getLogSequenceNumber(), is(lsn));
         assertThat(actual.getTableName(), is("test"));
-        assertThat((String) actual.getAfterRow().get(0), is("1 2 3'"));
+        assertThat(actual.getAfterRow().get(0), is("1 2 3'"));
     }
     
     @Test
@@ -56,7 +56,7 @@ public final class TestDecodingPluginTest {
         DeleteRowEvent actual = (DeleteRowEvent) new TestDecodingPlugin().decode(data, lsn);
         assertThat(actual.getLogSequenceNumber(), is(lsn));
         assertThat(actual.getTableName(), is("test"));
-        assertThat((Integer) actual.getPrimaryKeys().get(0), is(1));
+        assertThat(actual.getPrimaryKeys().get(0), is(1));
     }
     
     @Test
@@ -66,6 +66,6 @@ public final class TestDecodingPluginTest {
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin().decode(data, lsn);
         assertThat(actual.getLogSequenceNumber(), is(lsn));
         assertThat(actual.getTableName(), is("test"));
-        assertThat((byte[]) actual.getAfterRow().get(0), is(new byte[] {(byte) 0xff, (byte) 0, (byte) 0xab}));
+        assertThat(actual.getAfterRow().get(0), is(new byte[] {(byte) 0xff, (byte) 0, (byte) 0xab}));
     }
 }

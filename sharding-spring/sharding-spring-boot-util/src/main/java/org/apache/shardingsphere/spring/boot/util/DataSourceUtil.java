@@ -40,7 +40,7 @@ public final class DataSourceUtil {
     private static final Collection<Class<?>> GENERAL_CLASS_TYPE;
     
     static {
-        GENERAL_CLASS_TYPE = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class);
+        GENERAL_CLASS_TYPE = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class);
     }
     
     /**

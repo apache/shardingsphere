@@ -47,7 +47,7 @@ public final class LimitPaginationContextEngineTest {
     @Test
     public void assertPaginationContextCreatedProperlyWhenPaginationValueSegmentIsParameterMarkerPaginationValueSegment() {
         LimitSegment limitSegment = new LimitSegment(0, 10, new ParameterMarkerLimitValueSegment(0, 10, 0), new ParameterMarkerLimitValueSegment(10, 20, 1));
-        PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Lists.<Object>newArrayList(15L, 20L));
+        PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Lists.newArrayList(15L, 20L));
         assertTrue(paginationContext.isHasPagination());
     }
 }

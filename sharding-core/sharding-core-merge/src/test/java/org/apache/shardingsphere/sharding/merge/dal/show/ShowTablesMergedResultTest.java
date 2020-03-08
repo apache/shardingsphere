@@ -59,7 +59,7 @@ public final class ShowTablesMergedResultTest {
     
     private RelationMetas createRelationMetas() {
         Map<String, RelationMetaData> relationMetaDataMap = new HashMap<>(1, 1);
-        relationMetaDataMap.put("table", new RelationMetaData(Collections.<String>emptyList()));
+        relationMetaDataMap.put("table", new RelationMetaData(Collections.emptyList()));
         return new RelationMetas(relationMetaDataMap);
     }
     
@@ -73,7 +73,7 @@ public final class ShowTablesMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.<QueryResult>emptyList());
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.emptyList());
         assertFalse(actual.next());
     }
     

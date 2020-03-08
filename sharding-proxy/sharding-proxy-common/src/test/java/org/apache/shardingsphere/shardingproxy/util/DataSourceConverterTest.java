@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.util;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.hamcrest.CoreMatchers;
+import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -67,14 +66,14 @@ public final class DataSourceConverterTest {
     
     private void assertParameter(final DataSourceConfiguration actual) {
         Map<String, Object> properties = actual.getProperties();
-        assertThat(properties.get("maxPoolSize"), CoreMatchers.<Object>is(50));
-        assertThat(properties.get("minPoolSize"), CoreMatchers.<Object>is(1));
-        assertThat(properties.get("connectionTimeout"), CoreMatchers.<Object>is(30 * 1000L));
-        assertThat(properties.get("idleTimeout"), CoreMatchers.<Object>is(60 * 1000L));
-        assertThat(properties.get("maxLifetime"), CoreMatchers.<Object>is(0L));
-        assertThat(properties.get("maintenanceIntervalMilliseconds"), CoreMatchers.<Object>is(30 * 1000L));
-        assertThat(properties.get("jdbcUrl"), CoreMatchers.<Object>is("jdbc:mysql://localhost:3306/demo_ds"));
-        assertThat(properties.get("username"), CoreMatchers.<Object>is("root"));
-        assertThat(properties.get("password"), CoreMatchers.<Object>is("root"));
+        assertThat(properties.get("maxPoolSize"), is(50));
+        assertThat(properties.get("minPoolSize"), is(1));
+        assertThat(properties.get("connectionTimeout"), is(30 * 1000L));
+        assertThat(properties.get("idleTimeout"), is(60 * 1000L));
+        assertThat(properties.get("maxLifetime"), is(0L));
+        assertThat(properties.get("maintenanceIntervalMilliseconds"), is(30 * 1000L));
+        assertThat(properties.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(properties.get("username"), is("root"));
+        assertThat(properties.get("password"), is("root"));
     }
 }

@@ -31,6 +31,6 @@ public final class PostgreSQLUnsupportedCommandExecutor implements CommandExecut
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.<DatabasePacket>singletonList(new PostgreSQLErrorResponsePacket());
+        return Collections.singletonList(new PostgreSQLErrorResponsePacket());
     }
 }

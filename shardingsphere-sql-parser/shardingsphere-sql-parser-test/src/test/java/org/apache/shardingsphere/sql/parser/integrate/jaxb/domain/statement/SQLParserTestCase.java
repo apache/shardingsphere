@@ -50,6 +50,6 @@ public abstract class SQLParserTestCase {
      * @return parameters
      */
     public List<String> getParameters() {
-        return null == parameters ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(parameters);
+        return null == parameters ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(parameters);
     }
 }

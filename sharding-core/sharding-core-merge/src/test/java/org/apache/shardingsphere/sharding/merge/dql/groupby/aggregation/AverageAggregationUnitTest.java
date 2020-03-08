@@ -31,20 +31,20 @@ public final class AverageAggregationUnitTest {
     public void assertAvgAggregation() {
         AverageAggregationUnit avgAggregationUnit = new AverageAggregationUnit();
         avgAggregationUnit.merge(null);
-        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(null, null));
-        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(1, null));
-        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(10, 50));
-        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(10, 20));
-        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(5, 40));
-        assertThat((BigDecimal) avgAggregationUnit.getResult(), is(new BigDecimal("4.4000")));
+        avgAggregationUnit.merge(Arrays.asList(null, null));
+        avgAggregationUnit.merge(Arrays.asList(1, null));
+        avgAggregationUnit.merge(Arrays.asList(10, 50));
+        avgAggregationUnit.merge(Arrays.asList(10, 20));
+        avgAggregationUnit.merge(Arrays.asList(5, 40));
+        assertThat(avgAggregationUnit.getResult(), is(new BigDecimal("4.4000")));
     }
     
     @Test
     public void assertDivideZero() {
         AverageAggregationUnit avgAggregationUnit = new AverageAggregationUnit();
-        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(0, 50));
-        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(0, 20));
-        avgAggregationUnit.merge(Arrays.<Comparable<?>>asList(0, 40));
-        assertThat((BigDecimal) avgAggregationUnit.getResult(), is(new BigDecimal(0)));
+        avgAggregationUnit.merge(Arrays.asList(0, 50));
+        avgAggregationUnit.merge(Arrays.asList(0, 20));
+        avgAggregationUnit.merge(Arrays.asList(0, 40));
+        assertThat(avgAggregationUnit.getResult(), is(new BigDecimal(0)));
     }
 }

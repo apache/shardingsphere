@@ -52,8 +52,8 @@ public final class InsertStatementTest {
     @Test
     public void assertNotUseDefaultColumnsWithSetAssignment() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.<AssignmentSegment>emptyList()));
-        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.<ColumnSegment>emptyList()));
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
+        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList()));
         assertFalse(insertStatement.useDefaultColumns());
     }
     
@@ -78,8 +78,8 @@ public final class InsertStatementTest {
     @Test
     public void assertGetValueListCountWithValues() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 1))));
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 2))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 2))));
         assertThat(insertStatement.getValueListCount(), is(2));
     }
     
@@ -94,7 +94,7 @@ public final class InsertStatementTest {
     @Test
     public void assertGetValueCountForPerGroupWithValues() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.<ExpressionSegment>singletonList(new LiteralExpressionSegment(0, 0, 1))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
         assertThat(insertStatement.getValueCountForPerGroup(), is(1));
     }
     

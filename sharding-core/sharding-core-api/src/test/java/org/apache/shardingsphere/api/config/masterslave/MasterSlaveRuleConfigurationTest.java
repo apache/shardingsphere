@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.api.config.masterslave;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -46,7 +44,7 @@ public final class MasterSlaveRuleConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithEmptySlaveDataSourceNames() {
-        new MasterSlaveRuleConfiguration("ds", "master_ds", Collections.<String>emptyList());
+        new MasterSlaveRuleConfiguration("ds", "master_ds", Collections.emptyList());
     }
     
     @Test
@@ -54,7 +52,7 @@ public final class MasterSlaveRuleConfigurationTest {
         MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"));
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave_ds")));
+        assertThat(actual.getSlaveDataSourceNames(), is(Collections.singletonList("slave_ds")));
         assertNull(actual.getLoadBalanceStrategyConfiguration());
     }
     
@@ -63,7 +61,7 @@ public final class MasterSlaveRuleConfigurationTest {
         MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave_ds")));
+        assertThat(actual.getSlaveDataSourceNames(), is(Collections.singletonList("slave_ds")));
         assertThat(actual.getLoadBalanceStrategyConfiguration().getType(), is("ROUND_ROBIN"));
     }
 }

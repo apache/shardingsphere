@@ -59,6 +59,6 @@ public final class RelationMetas {
      * @return column names
      */
     public List<String> getAllColumnNames(final String tableName) {
-        return relations.containsKey(tableName) ? relations.get(tableName).getColumnNames() : Collections.<String>emptyList();
+        return relations.containsKey(tableName) ? relations.get(tableName).getColumnNames() : Collections.emptyList();
     }
 }

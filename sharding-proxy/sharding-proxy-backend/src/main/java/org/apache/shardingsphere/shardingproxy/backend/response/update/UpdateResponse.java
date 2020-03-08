@@ -41,7 +41,7 @@ public final class UpdateResponse implements BackendResponse {
     private long updateCount;
     
     public UpdateResponse() {
-        this(Collections.<ExecuteResponse>emptyList());
+        this(Collections.emptyList());
     }
     
     public UpdateResponse(final Collection<ExecuteResponse> responseUnits) {

@@ -59,7 +59,7 @@ public final class HintShowTableStatusExecutor extends AbstractHintQueryExecutor
         Map<String, HintShowTableStatusResult> results = new HashMap<>();
         for (String each : getLogicTableNames()) {
             if (HintManager.isDatabaseShardingOnly()) {
-                fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.<Comparable<?>>emptyList());
+                fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());
             } else {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(each), HintManager.getTableShardingValues(each));
             }

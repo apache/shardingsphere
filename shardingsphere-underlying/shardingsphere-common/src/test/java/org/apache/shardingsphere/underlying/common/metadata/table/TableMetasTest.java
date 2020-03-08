@@ -22,7 +22,6 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,7 +41,7 @@ public final class TableMetasTest {
     
     @Test
     public void assertPut() {
-        TableMetas tableMetas = new TableMetas(Collections.<String, TableMetaData>emptyMap());
+        TableMetas tableMetas = new TableMetas(Collections.emptyMap());
         TableMetaData tableMetaData = mock(TableMetaData.class);
         tableMetas.put("tableMetaData", tableMetaData);
         assertThat(tableMetas.get("tableMetaData"), is(tableMetaData));
@@ -62,24 +61,24 @@ public final class TableMetasTest {
     
     @Test
     public void assertContainsColumn() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.<String>emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.emptyList());
         assertTrue(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).containsColumn("tableMetaData", "name"));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.<String>emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.emptyList());
         assertThat(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).getAllColumnNames("tableMetaData"), is(Collections.singletonList("name")));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenNotContainsKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.<String>emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.emptyList());
         assertThat(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).getAllColumnNames("other_tableMetaData"), is(Collections.<String>emptyList()));
     }
     
     @Test
     public void assertGetAllTableNames() {
-        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", mock(TableMetaData.class))).getAllTableNames(), is((Collection<String>) Sets.newHashSet("tableMetaData")));
+        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tableMetaData")));
     }
 }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,7 +36,7 @@ public final class BatchRouteUnitTest {
     
     @Test
     public void assertGetParameterSets() {
-        BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
+        BatchRouteUnit batchRouteUnit = new BatchRouteUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1))));
         List<List<Object>> actual = batchRouteUnit.getParameterSets();
         assertThat(actual.size(), is(1));
         assertTrue(actual.get(0).isEmpty());
@@ -44,19 +44,19 @@ public final class BatchRouteUnitTest {
         actual = batchRouteUnit.getParameterSets();
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).size(), is(1));
-        assertThat(actual.get(0).get(0), CoreMatchers.<Object>is(1));
+        assertThat(actual.get(0).get(0), is(1));
     }
     
     @Test
     public void assertEquals() {
-        BatchRouteUnit actual = new BatchRouteUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
-        BatchRouteUnit expected = new BatchRouteUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(2))));
+        BatchRouteUnit actual = new BatchRouteUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1))));
+        BatchRouteUnit expected = new BatchRouteUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(2))));
         assertTrue(expected.equals(actual));
     }
     
     @Test
     public void assertToString() {
-        BatchRouteUnit actual = new BatchRouteUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.<Object>newArrayList(1))));
+        BatchRouteUnit actual = new BatchRouteUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Lists.newArrayList(1))));
         assertThat(actual.toString(), is(String.format("BatchRouteUnit(executionUnit=ExecutionUnit"
                 + "(dataSourceName=%s, sqlUnit=SQLUnit(sql=%s, parameters=[%d])), jdbcAndActualAddBatchCallTimesMap={}, actualCallAddBatchTimes=0)", DATA_SOURCE_NAME, SQL, 1)));
     }

@@ -70,14 +70,14 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), 
                 new ColumnMetaData("user_id", "int", false), 
-                new ColumnMetaData("status", "int", false)), Collections.<String>emptySet()));
+                new ColumnMetaData("status", "int", false)), Collections.emptySet()));
         tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), 
                 new ColumnMetaData("order_id", "int", false),
                 new ColumnMetaData("user_id", "int", false), 
                 new ColumnMetaData("status", "varchar", false), 
-                new ColumnMetaData("c_date", "timestamp", false)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true)), Collections.<String>emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true)), Collections.<String>emptySet()));
+                new ColumnMetaData("c_date", "timestamp", false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true)), Collections.emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true)), Collections.emptySet()));
         return new TableMetas(tableMetaDataMap);
     }
 }
