@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.shardingjdbc.merge.JDBCEncryptResultDecoratorEngine;
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
@@ -48,7 +46,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -67,8 +64,6 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private final MergedResult mergedResult;
     
-    private final Map<String, String> logicAndActualColumns;
-    
     private final Map<String, Integer> columnLabelAndIndexMap;
     
     public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext,
@@ -78,8 +73,6 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
         mergedResult = createMergedResult(encryptRuntimeContext, resultSet);
-        boolean queryWithCipherColumn = encryptRuntimeContext.getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        logicAndActualColumns = createLogicAndActualColumns(queryWithCipherColumn);
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
     }
     
@@ -87,27 +80,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(1, 1);
         engines.put(encryptRule, new JDBCEncryptResultDecoratorEngine(resultSet.getMetaData()));
         MergeEntry mergeEntry = new MergeEntry(encryptRuntimeContext.getDatabaseType(), null, encryptRuntimeContext.getProperties(), engines);
-        return mergeEntry.process(Collections.<QueryResult>singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
-    }
-    
-    private Map<String, String> createLogicAndActualColumns(final boolean isQueryWithCipherColumn) {
-        return isQueryWithCipherColumn ? createLogicAndCipherColumns() : createLogicAndPlainColumns();
-    }
-    
-    private Map<String, String> createLogicAndCipherColumns() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            result.putAll(encryptRule.getLogicAndCipherColumns(each));
-        }
-        return result;
-    }
-    
-    private Map<String, String> createLogicAndPlainColumns() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            result.putAll(encryptRule.getLogicAndPlainColumns(each));
-        }
-        return result;
+        return mergeEntry.process(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     
     private Map<String, Integer> createColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {
@@ -420,7 +393,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return new EncryptResultSetMetaData(originalResultSet.getMetaData(), encryptRule, sqlStatementContext, logicAndActualColumns);
+        return new EncryptResultSetMetaData(originalResultSet.getMetaData(), sqlStatementContext);
     }
     
     @Override

@@ -18,17 +18,16 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 /**
  * Encrypt result set meta data.
@@ -38,35 +37,11 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final EncryptRule encryptRule;
-    
     private final SQLStatementContext sqlStatementContext;
     
-    private final Map<String, String> logicAndActualColumns;
-    
     @Override
-    public int getColumnCount() throws SQLException {
-        return resultSetMetaData.getColumnCount() - getDerivedColumnCount();
-    }
-    
-    private int getDerivedColumnCount() throws SQLException {
-        int result = 0;
-        Collection<String> assistedQueryColumns = getAssistedQueryColumns();
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            String columnLabel = resultSetMetaData.getColumnLabel(columnIndex);
-            if (assistedQueryColumns.contains(columnLabel)) {
-                result++;
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getAssistedQueryColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            result.addAll(encryptRule.getAssistedQueryColumns(each));
-        }
-        return result;
+    public int getColumnCount() {
+        return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size() : 0;
     }
     
     @Override
@@ -111,17 +86,18 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        String result = resultSetMetaData.getColumnName(column);
-        return logicAndActualColumns.values().contains(result) ? getLogicColumn(result) : result;
-    }
-    
-    private String getLogicColumn(final String actualColumn) throws SQLException {
-        for (Entry<String, String> entry : logicAndActualColumns.entrySet()) {
-            if (entry.getValue().equals(actualColumn)) {
-                return entry.getKey();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
+            if (column > actualProjections.size()) {
+                // TODO fill correct SQL state
+                throw new SQLException(String.format("Out of index of projection %s", column));
+            }
+            Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
+            if (projection instanceof ColumnProjection) {
+                return ((ColumnProjection) projection).getName();
             }
         }
-        throw new SQLException(String.format("Can not get logic column by %s.", actualColumn));
+        return resultSetMetaData.getColumnName(column);
     }
     
     @Override
