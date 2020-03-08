@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ShorthandProjection;
 import org.junit.Test;
 
@@ -128,10 +129,16 @@ public final class ProjectionsContextTest {
     }
     
     @Test
-    public void assertGetActualProjectionCount() {
-        ColumnProjection columnProjection = new ColumnProjection(null, "col", null);
-        ShorthandProjection shorthandProjection = new ShorthandProjection(null, Arrays.asList(new ColumnProjection(null, "col1", null), new ColumnProjection(null, "col2", null)));
-        ProjectionsContext actual = new ProjectionsContext(0, 0, false, Arrays.asList(columnProjection, shorthandProjection));
-        assertThat(actual.getActualProjectionCount(), is(3));
+    public void assertGetExpandProjections() {
+        ColumnProjection columnProjection1 = new ColumnProjection(null, "col1", null);
+        ColumnProjection columnProjection2 = new ColumnProjection(null, "col2", null);
+        ColumnProjection columnProjection3 = new ColumnProjection(null, "col3", null);
+        DerivedProjection derivedProjection = new DerivedProjection("col3", "a3");
+        ShorthandProjection shorthandProjection = new ShorthandProjection(null, Arrays.asList(columnProjection2, columnProjection3));
+        ProjectionsContext actual = new ProjectionsContext(0, 0, false, Arrays.asList(columnProjection1, shorthandProjection, derivedProjection));
+        assertThat(actual.getExpandProjections().size(), is(3));
+        assertThat(actual.getExpandProjections().get(0), is(columnProjection1));
+        assertThat(actual.getExpandProjections().get(1), is(columnProjection2));
+        assertThat(actual.getExpandProjections().get(2), is(columnProjection3));
     }
 }
