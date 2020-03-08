@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Optional;
 
