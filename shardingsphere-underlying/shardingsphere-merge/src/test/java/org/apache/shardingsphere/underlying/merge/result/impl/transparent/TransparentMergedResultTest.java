@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.transparent;
 
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -59,7 +58,7 @@ public final class TransparentMergedResultTest {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.getCalendarValue(1, Date.class, null)).thenReturn(new Date(0L));
         TransparentMergedResult actual = new TransparentMergedResult(queryResult);
-        assertThat(actual.getCalendarValue(1, Date.class, null), CoreMatchers.<Object>is(new Date(0L)));
+        assertThat(actual.getCalendarValue(1, Date.class, null), is(new Date(0L)));
     }
     
     @Test

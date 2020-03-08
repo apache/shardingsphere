@@ -21,13 +21,12 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class OrchestrationMasterSlaveRuleTest {
@@ -37,25 +36,25 @@ public final class OrchestrationMasterSlaveRuleTest {
     
     @Test
     public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(orchestrationMasterSlaveRule.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_db_0", "slave_db_1")));
+        assertThat(orchestrationMasterSlaveRule.getSlaveDataSourceNames(), is(Arrays.asList("slave_db_0", "slave_db_1")));
     }
     
     @Test
     public void assertGetSlaveDataSourceNamesWithDisabledDataSourceNames() {
         orchestrationMasterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(orchestrationMasterSlaveRule.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave_db_1")));
+        assertThat(orchestrationMasterSlaveRule.getSlaveDataSourceNames(), is(Collections.singletonList("slave_db_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
         orchestrationMasterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat((Collection) FieldUtil.getFieldValue(orchestrationMasterSlaveRule, "disabledDataSourceNames"), CoreMatchers.<Collection>is(Sets.newHashSet("slave_db_0")));
+        assertThat(FieldUtil.getFieldValue(orchestrationMasterSlaveRule, "disabledDataSourceNames"), is(Sets.newHashSet("slave_db_0")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
         orchestrationMasterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
         orchestrationMasterSlaveRule.updateDisabledDataSourceNames("slave_db_0", false);
-        assertThat((Collection) FieldUtil.getFieldValue(orchestrationMasterSlaveRule, "disabledDataSourceNames"), CoreMatchers.<Collection>is(Collections.emptySet()));
+        assertThat(FieldUtil.getFieldValue(orchestrationMasterSlaveRule, "disabledDataSourceNames"), is(Collections.emptySet()));
     }
 }

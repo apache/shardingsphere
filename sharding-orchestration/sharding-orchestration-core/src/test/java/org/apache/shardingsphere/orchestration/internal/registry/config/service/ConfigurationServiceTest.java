@@ -37,7 +37,6 @@ import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -45,12 +44,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -382,7 +381,7 @@ public final class ConfigurationServiceTest {
         when(regCenter.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Properties actual = configurationService.loadProperties();
-        assertThat(actual.get(PropertiesConstant.SQL_SHOW.getKey()), CoreMatchers.is(Boolean.FALSE));
+        assertThat(actual.get(PropertiesConstant.SQL_SHOW.getKey()), is(Boolean.FALSE));
     }
     
     @Test

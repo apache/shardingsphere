@@ -89,7 +89,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(statement.executeQuery(DQL_SQL)).thenReturn(resultSet);
         setExecuteGroups(Collections.singletonList(statement), true);
-        assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("value"));
+        assertThat(actual.executeQuery().iterator().next().getValue(1, String.class), is("value"));
         verify(statement).executeQuery(DQL_SQL);
     }
     
@@ -337,7 +337,7 @@ public final class StatementExecutorTest extends AbstractBaseExecutorTest {
         executeGroups.add(new InputGroup<>(statementExecuteUnits));
         for (Statement each : statements) {
             statementExecuteUnits.add(
-                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
+                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = StatementExecutor.class.getSuperclass().getDeclaredField("inputGroups");
         field.setAccessible(true);

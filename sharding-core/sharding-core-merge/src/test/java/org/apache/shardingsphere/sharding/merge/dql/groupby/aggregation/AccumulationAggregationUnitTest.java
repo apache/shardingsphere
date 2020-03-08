@@ -30,10 +30,10 @@ public final class AccumulationAggregationUnitTest {
     public void assertAccumulationAggregation() {
         AccumulationAggregationUnit accumulationAggregationUnit = new AccumulationAggregationUnit();
         accumulationAggregationUnit.merge(null);
-        accumulationAggregationUnit.merge(Collections.<Comparable<?>>singletonList(null));
-        accumulationAggregationUnit.merge(Collections.<Comparable<?>>singletonList(1));
-        accumulationAggregationUnit.merge(Collections.<Comparable<?>>singletonList(1));
-        accumulationAggregationUnit.merge(Collections.<Comparable<?>>singletonList(10));
+        accumulationAggregationUnit.merge(Collections.singletonList(null));
+        accumulationAggregationUnit.merge(Collections.singletonList(1));
+        accumulationAggregationUnit.merge(Collections.singletonList(1));
+        accumulationAggregationUnit.merge(Collections.singletonList(10));
         assertThat(((Number) accumulationAggregationUnit.getResult()).intValue(), is(12));
     }
 }

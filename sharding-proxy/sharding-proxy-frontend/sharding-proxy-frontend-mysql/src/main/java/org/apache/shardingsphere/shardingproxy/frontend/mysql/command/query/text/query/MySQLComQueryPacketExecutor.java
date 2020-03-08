@@ -68,15 +68,15 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         if (ShardingProxyContext.getInstance().isCircuitBreak()) {
-            return Collections.<DatabasePacket>singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
+            return Collections.singletonList(new MySQLErrPacket(1, CommonErrorCode.CIRCUIT_BREAK_MODE));
         }
         BackendResponse backendResponse = textProtocolBackendHandler.execute();
         if (backendResponse instanceof ErrorResponse) {
             isErrorResponse = true;
-            return Collections.<DatabasePacket>singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
+            return Collections.singletonList(createErrorPacket(((ErrorResponse) backendResponse).getCause()));
         }
         if (backendResponse instanceof UpdateResponse) {
-            return Collections.<DatabasePacket>singletonList(createUpdatePacket((UpdateResponse) backendResponse));
+            return Collections.singletonList(createUpdatePacket((UpdateResponse) backendResponse));
         }
         isQuery = true;
         return createQueryPackets((QueryResponse) backendResponse);

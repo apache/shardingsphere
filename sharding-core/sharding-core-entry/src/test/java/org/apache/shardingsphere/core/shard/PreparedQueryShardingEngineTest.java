@@ -46,7 +46,7 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     private PreparedQueryShardingEngine shardingEngine;
     
     public PreparedQueryShardingEngineTest() {
-        super("SELECT ?", Collections.<Object>singletonList(1));
+        super("SELECT ?", Collections.singletonList(1));
     }
     
     @Before

@@ -26,7 +26,6 @@ import io.opentracing.util.ThreadLocalActiveSpanSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingErrorLogTags;
-import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -72,8 +71,8 @@ public abstract class BaseOpenTracingHookTest {
         List<MockSpan.LogEntry> actualLogEntries = actual.logEntries();
         assertThat(actualLogEntries.size(), is(1));
         assertThat(actualLogEntries.get(0).fields().size(), is(3));
-        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.EVENT), CoreMatchers.<Object>is(ShardingErrorLogTags.EVENT_ERROR_TYPE));
-        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.ERROR_KIND), CoreMatchers.<Object>is(expectedException.getName()));
-        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.MESSAGE), CoreMatchers.<Object>is(expectedErrorMessage));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.EVENT), is(ShardingErrorLogTags.EVENT_ERROR_TYPE));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.ERROR_KIND), is(expectedException.getName()));
+        assertThat(actualLogEntries.get(0).fields().get(ShardingErrorLogTags.MESSAGE), is(expectedErrorMessage));
     }
 }

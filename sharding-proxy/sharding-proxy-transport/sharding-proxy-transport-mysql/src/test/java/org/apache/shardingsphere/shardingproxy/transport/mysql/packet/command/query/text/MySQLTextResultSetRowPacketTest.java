@@ -52,7 +52,7 @@ public final class MySQLTextResultSetRowPacketTest {
     public void assertWrite() {
         long now = System.currentTimeMillis();
         Timestamp timestamp = new Timestamp(now);
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.<Object>asList(null, "value", BigDecimal.ONE, new byte[] {}, timestamp));
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.asList(null, "value", BigDecimal.ONE, new byte[] {}, timestamp));
         actual.write(payload);
         verify(payload).writeInt1(0xfb);
         verify(payload).writeStringLenenc("value");
@@ -68,7 +68,7 @@ public final class MySQLTextResultSetRowPacketTest {
     public void assertTimestampWithoutNanos() {
         long now = System.currentTimeMillis() / 1000 * 1000;
         Timestamp timestamp = new Timestamp(now);
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.<Object>asList(null, "value", BigDecimal.ONE, new byte[]{}, timestamp));
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.asList(null, "value", BigDecimal.ONE, new byte[]{}, timestamp));
         actual.write(payload);
         verify(payload).writeInt1(0xfb);
         verify(payload).writeStringLenenc("value");

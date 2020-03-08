@@ -29,13 +29,13 @@ public final class SetParameterMethodInvocationTest {
     @Test
     public void assertGetValue() throws NoSuchMethodException {
         SetParameterMethodInvocation actual = new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setInt", int.class, int.class), new Object[] {1, 100}, 100);
-        assertThat(actual.getValue(), is((Object) 100));
+        assertThat(actual.getValue(), is(100));
     }
     
     @Test
     public void assertChangeValueArgument() throws NoSuchMethodException {
         SetParameterMethodInvocation actual = new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setInt", int.class, int.class), new Object[] {1, 100}, 100);
         actual.changeValueArgument(200);
-        assertThat(actual.getArguments()[1], is((Object) 200));
+        assertThat(actual.getArguments()[1], is(200));
     }
 }

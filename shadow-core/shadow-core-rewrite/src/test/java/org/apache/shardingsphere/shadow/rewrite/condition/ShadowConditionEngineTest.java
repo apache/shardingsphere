@@ -32,6 +32,6 @@ public class ShadowConditionEngineTest {
     public void assertGetConditionValues() {
         List<Object> actual = new ShadowCondition("col", 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
         assertThat(actual.size(), is(1));
-        assertThat((Integer) actual.get(0), is(1));
+        assertThat(actual.get(0), is(1));
     }
 }

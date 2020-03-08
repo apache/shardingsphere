@@ -37,7 +37,7 @@ public final class MySQLStringLenencBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(payload.readStringLenenc()).thenReturn("value");
-        assertThat(new MySQLStringLenencBinaryProtocolValue().read(payload), is((Object) "value"));
+        assertThat(new MySQLStringLenencBinaryProtocolValue().read(payload), is("value"));
     }
     
     @Test

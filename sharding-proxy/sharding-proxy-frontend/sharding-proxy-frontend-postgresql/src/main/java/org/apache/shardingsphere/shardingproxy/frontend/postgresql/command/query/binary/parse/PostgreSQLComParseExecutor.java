@@ -53,6 +53,6 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
             SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(packet.getSql(), true);
             binaryStatementRegistry.register(packet.getStatementId(), packet.getSql(), sqlStatement.getParameterCount(), packet.getBinaryStatementParameterTypes());
         }
-        return Collections.<DatabasePacket>singletonList(new PostgreSQLParseCompletePacket());
+        return Collections.singletonList(new PostgreSQLParseCompletePacket());
     }
 }

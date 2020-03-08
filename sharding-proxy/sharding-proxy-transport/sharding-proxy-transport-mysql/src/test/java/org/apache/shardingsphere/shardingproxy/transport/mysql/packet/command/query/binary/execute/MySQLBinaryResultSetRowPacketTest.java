@@ -38,8 +38,7 @@ public final class MySQLBinaryResultSetRowPacketTest {
     
     @Test 
     public void assertWrite() {
-        MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(
-                1, Arrays.<Object>asList("value", null), Arrays.asList(MySQLColumnType.MYSQL_TYPE_STRING, MySQLColumnType.MYSQL_TYPE_STRING));
+        MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(1, Arrays.asList("value", null), Arrays.asList(MySQLColumnType.MYSQL_TYPE_STRING, MySQLColumnType.MYSQL_TYPE_STRING));
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(0x00);
