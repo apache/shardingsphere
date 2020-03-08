@@ -22,5 +22,5 @@ package org.apache.shardingsphere.sql.parser.sql.statement;
  */
 public enum SQLStatementType {
     
-    DML, DDL, TCL, DCL, DAL
+    DML, DDL, TCL, DCL, DAL, RL
 }

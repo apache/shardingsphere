@@ -23,7 +23,8 @@ import org.apache.shardingsphere.shadow.rewrite.token.generator.BaseShadowSQLTok
 import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.RemoveToken;
@@ -39,29 +40,29 @@ public final class ShadowPredicateColumnTokenGenerator extends BaseShadowSQLToke
     
     @Override
     protected boolean isGenerateSQLTokenForShadow(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent();
+        return sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent();
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Preconditions.checkState(((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent());
+        Preconditions.checkState(((WhereAvailable) sqlStatementContext).getWhere().isPresent());
         Collection<SQLToken> result = new LinkedList<>();
-        for (AndPredicate each : ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getAndPredicates()) {
-            result.addAll(generateSQLTokens(sqlStatementContext, each));
+        for (AndPredicate each : ((WhereAvailable) sqlStatementContext).getWhere().get().getAndPredicates()) {
+            result.addAll(generateSQLTokens(((WhereAvailable) sqlStatementContext).getWhere().get(), each));
         }
         return result;
     }
     
-    private Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
+    private Collection<SQLToken> generateSQLTokens(final WhereSegment whereSegment, final AndPredicate andPredicate) {
         Collection<SQLToken> result = new LinkedList<>();
         LinkedList<PredicateSegment> predicates = (LinkedList<PredicateSegment>) andPredicate.getPredicates();
         for (int i = 0; i < predicates.size(); i++) {
             if (!getShadowRule().getColumn().equals(predicates.get(i).getColumn().getIdentifier().getValue())) {
                 continue;
             }
-            if (predicates.size() == 1) {
-                int startIndex = ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getStartIndex();
-                int stopIndex = ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getStopIndex();
+            if (1 == predicates.size()) {
+                int startIndex = whereSegment.getStartIndex();
+                int stopIndex = whereSegment.getStopIndex();
                 result.add(new RemoveToken(startIndex, stopIndex));
                 return result;
             }

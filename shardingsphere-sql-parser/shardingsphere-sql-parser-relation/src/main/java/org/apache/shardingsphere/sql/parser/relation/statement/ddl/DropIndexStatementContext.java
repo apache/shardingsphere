@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.sql.parser.relation.statement.ddl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.IndexAvailable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +33,7 @@ import java.util.Collections;
  * Drop index statement context.
  */
 @Getter
-public final class DropIndexStatementContext extends CommonSQLStatementContext<DropIndexStatement> implements TableAvailable {
+public final class DropIndexStatementContext extends CommonSQLStatementContext<DropIndexStatement> implements TableAvailable, IndexAvailable {
     
     private final TablesContext tablesContext;
     
@@ -41,7 +43,12 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext<D
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
-        return null == getSqlStatement().getTable() ? Collections.<TableSegment>emptyList() : Collections.singletonList(getSqlStatement().getTable());
+    public Collection<SimpleTableSegment> getAllTables() {
+        return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
+    }
+    
+    @Override
+    public Collection<IndexSegment> getIndexes() {
+        return getSqlStatement().getIndexes();
     }
 }

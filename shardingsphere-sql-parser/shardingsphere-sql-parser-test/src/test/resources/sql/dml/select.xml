@@ -898,6 +898,22 @@
             <column-item name="item_id" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_distinct_with_single_column_without_order_by" >
+        <table name="t_order_item" start-index="29" stop-index="40" />
+        <projections start-index="16" stop-index="22" distinct-row="true">
+            <column-projection name="item_id" start-index="16" stop-index="22" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_distinct_with_multi_column_without_order_by" >
+        <table name="t_order" start-index="47" stop-index="53" />
+        <projections start-index="16" stop-index="40" distinct-row="true">
+            <column-projection name="order_id" start-index="16" stop-index="23" />
+            <column-projection name="user_id" start-index="26" stop-index="32" />
+            <column-projection name="status" start-index="35" stop-index="40" />
+        </projections>
+    </select>
     
     <select sql-case-id="select_distinct_with_single_column" >
         <table name="t_order_item" start-index="29" stop-index="40" />

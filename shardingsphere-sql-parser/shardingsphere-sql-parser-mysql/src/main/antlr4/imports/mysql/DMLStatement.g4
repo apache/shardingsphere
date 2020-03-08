@@ -100,8 +100,8 @@ select
     : withClause_? unionClause
     ;
 
-callStatement
-    : CALL identifier (LP_ (identifier | expr)? RP_)?
+call
+    : CALL identifier (LP_ expr (COMMA_ expr)* RP_)?
     ;
 
 doStatement
@@ -223,7 +223,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName partitionNames_? (AS? alias)? indexHintList_? | subquery columnNames? | LP_ tableReferences RP_
+    : tableName partitionNames_? (AS? alias)? indexHintList_? | subquery AS? alias columnNames? | LP_ tableReferences RP_
     ;
 
 partitionNames_ 
@@ -281,7 +281,7 @@ windowItem_
     ;
 
 subquery
-    : LP_ unionClause RP_ AS? alias?
+    : LP_ unionClause RP_
     ;
 
 selectLinesInto_

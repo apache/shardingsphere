@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.relation.segment.select.projection.
 
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -28,21 +30,21 @@ public final class ShorthandProjectionTest {
     
     @Test
     public void assertGetExpression() {
-        assertThat(new ShorthandProjection("owner").getExpression(), is("owner.*"));
+        assertThat(new ShorthandProjection("owner", Collections.emptyList()).getExpression(), is("owner.*"));
     }
     
     @Test
     public void assertGetAliasWhenAbsent() {
-        assertFalse(new ShorthandProjection("owner").getAlias().isPresent());
+        assertFalse(new ShorthandProjection("owner", Collections.emptyList()).getAlias().isPresent());
     }
     
     @Test
     public void assertGetColumnLabel() {
-        assertTrue(new ShorthandProjection("owner").getColumnLabel().contains("*"));
+        assertTrue(new ShorthandProjection("owner", Collections.emptyList()).getColumnLabel().contains("*"));
     }
     
     @Test
     public void assertContains() {
-        assertTrue(new ShorthandProjection("owner").getOwner().isPresent());
+        assertTrue(new ShorthandProjection("owner", Collections.emptyList()).getOwner().isPresent());
     }
 }

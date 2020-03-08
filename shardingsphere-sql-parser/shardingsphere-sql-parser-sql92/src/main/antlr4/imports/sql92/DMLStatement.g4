@@ -121,7 +121,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery columnNames? | LP_ tableReferences RP_
+    : tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
     ;
 
 joinedTable
@@ -159,5 +159,5 @@ limitOffset
     ;
 
 subquery
-    : LP_ unionClause RP_ AS? alias?
+    : LP_ unionClause RP_
     ;

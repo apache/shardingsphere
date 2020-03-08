@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.relation.segment.table;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,9 +33,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class TablesContext {
     
-    private final Collection<TableSegment> tables;
+    private final Collection<SimpleTableSegment> tables;
     
-    public TablesContext(final TableSegment tableSegment) {
+    public TablesContext(final SimpleTableSegment tableSegment) {
         this(null == tableSegment ? Collections.emptyList() : Collections.singletonList(tableSegment));
     }
     
@@ -46,7 +46,7 @@ public final class TablesContext {
      */
     public Collection<String> getTableNames() {
         Collection<String> result = new LinkedHashSet<>(tables.size(), 1);
-        for (TableSegment each : tables) {
+        for (SimpleTableSegment each : tables) {
             result.add(each.getTableName().getIdentifier().getValue());
         }
         return result;
@@ -70,7 +70,7 @@ public final class TablesContext {
     }
     
     private String findTableNameFromSQL(final String tableNameOrAlias) {
-        for (TableSegment each : tables) {
+        for (SimpleTableSegment each : tables) {
             if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
                 return each.getTableName().getIdentifier().getValue();
             }
@@ -79,7 +79,7 @@ public final class TablesContext {
     }
     
     private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {
-        for (TableSegment each : tables) {
+        for (SimpleTableSegment each : tables) {
             if (relationMetas.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
                 return Optional.of(each.getTableName().getIdentifier().getValue());
             }

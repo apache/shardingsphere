@@ -48,7 +48,8 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     @Override
     public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(new ShardingSQLBuilder(sqlRewriteContext, shardingRule, routeUnit).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
+        return new SQLRewriteResult(
+                new ShardingSQLBuilder(sqlRewriteContext, shardingRule, routeUnit).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder) {

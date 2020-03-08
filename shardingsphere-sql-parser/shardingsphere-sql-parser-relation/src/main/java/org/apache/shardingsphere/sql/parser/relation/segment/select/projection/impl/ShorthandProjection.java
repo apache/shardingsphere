@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -37,6 +38,8 @@ public final class ShorthandProjection implements Projection {
     
     private final String owner;
     
+    private final Collection<ColumnProjection> actualColumns;
+    
     @Override
     public String getExpression() {
         return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
@@ -46,12 +49,12 @@ public final class ShorthandProjection implements Projection {
     public Optional<String> getAlias() {
         return Optional.empty();
     }
-
+    
     @Override
     public String getColumnLabel() {
-        return getAlias().orElse("*");
+        return "*";
     }
-
+    
     /**
      * Get owner.
      * 

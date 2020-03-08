@@ -20,10 +20,9 @@ package org.apache.shardingsphere.sql.parser.sql.predicate;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class PredicateExtractor {
     
-    private final Collection<TableSegment> tables;
+    private final Collection<SimpleTableSegment> tables;
     
     private final PredicateSegment predicate;
     
@@ -43,22 +42,17 @@ public final class PredicateExtractor {
      * 
      * @return table segments
      */
-    public Collection<TableSegment> extractTables() {
-        Collection<TableSegment> result = new LinkedList<>();
+    public Collection<SimpleTableSegment> extractTables() {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
         if (isToGenerateTableTokenLeftValue()) {
             Preconditions.checkState(predicate.getColumn().getOwner().isPresent());
             OwnerSegment segment = predicate.getColumn().getOwner().get();
-            result.add(new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+            result.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
         }
         if (isToGenerateTableTokenForRightValue()) {
             Preconditions.checkState(((ColumnSegment) predicate.getRightValue()).getOwner().isPresent());
             OwnerSegment segment = ((ColumnSegment) predicate.getRightValue()).getOwner().get();
-            result.add(new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
-        }
-        if (isToGenerateTableTokenForProjection()) {
-            Preconditions.checkState(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent());
-            OwnerSegment segment = ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get();
-            new TableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
+            result.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
         }
         return result;
     }
@@ -72,13 +66,8 @@ public final class PredicateExtractor {
                 && ((ColumnSegment) predicate.getRightValue()).getOwner().isPresent() && isTable(((ColumnSegment) predicate.getRightValue()).getOwner().get());
     }
     
-    private boolean isToGenerateTableTokenForProjection() {
-        return predicate.getRightValue() instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) predicate.getRightValue()).getOwner().isPresent()
-                && isTable(((ColumnProjectionSegment) predicate.getRightValue()).getOwner().get());
-    }
-    
     private boolean isTable(final OwnerSegment owner) {
-        for (TableSegment each : tables) {
+        for (SimpleTableSegment each : tables) {
             if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
                 return false;
             }

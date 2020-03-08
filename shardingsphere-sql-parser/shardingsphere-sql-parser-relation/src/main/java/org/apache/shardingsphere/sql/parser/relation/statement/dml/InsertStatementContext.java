@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueC
 import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TableAvailable;
+import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -88,7 +88,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     }
     
     @Override
-    public Collection<TableSegment> getAllTables() {
+    public Collection<SimpleTableSegment> getAllTables() {
         return Collections.singletonList(getSqlStatement().getTable());
     }
 }

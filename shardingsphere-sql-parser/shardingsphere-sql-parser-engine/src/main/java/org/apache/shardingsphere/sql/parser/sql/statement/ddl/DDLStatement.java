@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.statement.ddl;
 
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.AbstractSQLStatement;
 
 /**
  * DDL statement.

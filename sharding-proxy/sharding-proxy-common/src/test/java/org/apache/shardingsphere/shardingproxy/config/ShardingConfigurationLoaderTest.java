@@ -49,8 +49,8 @@ public final class ShardingConfigurationLoaderTest {
     }
     
     private void assertOrchestrationConfiguration(final Map<String, YamlInstanceConfiguration> map) {
-        YamlInstanceConfiguration actual = map.get("testname1");
-        assertThat(actual.getNamespace(), is("testnamspace1"));
+        YamlInstanceConfiguration actual = map.get("test_name_1");
+        assertThat(actual.getNamespace(), is("test_namespace_1"));
         assertThat(actual.getOrchestrationType(), is("configuration_center"));
         assertThat(actual.getServerLists(), is("localhost:2181"));
     }

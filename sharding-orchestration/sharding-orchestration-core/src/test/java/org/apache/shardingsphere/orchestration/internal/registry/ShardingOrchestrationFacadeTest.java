@@ -66,12 +66,12 @@ public final class ShardingOrchestrationFacadeTest {
         Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
         InstanceConfiguration instanceConfiguration1 = new InstanceConfiguration("SecondTestRegistryCenter");
         instanceConfiguration1.setOrchestrationType("registry_center");
-        instanceConfiguration1.setNamespace("namespace1");
-        instanceConfigurationMap.put("testname1", instanceConfiguration1);
+        instanceConfiguration1.setNamespace("namespace_1");
+        instanceConfigurationMap.put("test_name_1", instanceConfiguration1);
         InstanceConfiguration instanceConfiguration2 = new InstanceConfiguration("FirstTestConfigCenter");
         instanceConfiguration2.setOrchestrationType("config_center");
-        instanceConfiguration2.setNamespace("namespace2");
-        instanceConfigurationMap.put("testname2", instanceConfiguration2);
+        instanceConfiguration2.setNamespace("namespace_2");
+        instanceConfigurationMap.put("test_name_2", instanceConfiguration2);
         OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
         orchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));

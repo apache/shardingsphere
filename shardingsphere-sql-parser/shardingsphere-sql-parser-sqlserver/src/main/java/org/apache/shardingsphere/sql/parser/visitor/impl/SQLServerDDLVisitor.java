@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyC
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
@@ -71,7 +71,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement((TableSegment) visit(ctx.tableName()));
+        CreateTableStatement result = new CreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -109,13 +109,13 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         for (ColumnDefinitionOptionContext each : ctx.columnDefinitionOption()) {
             for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
                 if (null != columnConstraint.columnForeignKeyConstraint()) {
-                    result.getReferencedTables().add((TableSegment) visit(columnConstraint.columnForeignKeyConstraint().tableName()));
+                    result.getReferencedTables().add((SimpleTableSegment) visit(columnConstraint.columnForeignKeyConstraint().tableName()));
                 }
             }
         }
         for (ColumnConstraintContext each : ctx.columnConstraints().columnConstraint()) {
             if (null != each.columnForeignKeyConstraint()) {
-                result.getReferencedTables().add((TableSegment) visit(each.columnForeignKeyConstraint().tableName()));
+                result.getReferencedTables().add((SimpleTableSegment) visit(each.columnForeignKeyConstraint().tableName()));
             }
         }
         return result;
@@ -150,7 +150,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
             }
         }
         if (null != ctx.tableForeignKeyConstraint()) {
-            result.setReferencedTable((TableSegment) visit(ctx.tableForeignKeyConstraint().tableName()));
+            result.setReferencedTable((SimpleTableSegment) visit(ctx.tableForeignKeyConstraint().tableName()));
         }
         return result;
     }
@@ -158,9 +158,9 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement((TableSegment) visit(ctx.tableName()));
-        if (null != ctx.alterDefinitionClause()) {
-            for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
+        AlterTableStatement result = new AlterTableStatement((SimpleTableSegment) visit(ctx.tableName()));
+        for (AlterDefinitionClauseContext alterDefinitionClauseContext : ctx.alterDefinitionClause()) {
+            for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(alterDefinitionClauseContext)).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
                     result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
                 } else if (each instanceof ModifyColumnDefinitionSegment) {
@@ -229,7 +229,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement();
-        result.getTables().addAll(((CollectionValue<TableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
@@ -237,14 +237,15 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
         TruncateStatement result = new TruncateStatement();
-        result.getTables().add((TableSegment) visit(ctx.tableName()));
+        result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
@@ -254,7 +255,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
         if (null != ctx.indexName()) {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
         }
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
@@ -262,7 +263,7 @@ public final class SQLServerDDLVisitor extends SQLServerVisitor implements DDLVi
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         DropIndexStatement result = new DropIndexStatement();
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
-        result.setTable((TableSegment) visit(ctx.tableName()));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
 }

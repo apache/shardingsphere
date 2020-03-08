@@ -437,6 +437,22 @@
         <assertion expected-data-file="select_alias_as_single_quote_string.xml" />
     </dql-test-case>
 
+    <dql-test-case sql-case-id="select_distinct_with_single_column_without_order_by">
+        <assertion expected-data-file="select_distinct_with_single_column_without_order_by.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_multi_column_without_order_by">
+        <assertion expected-data-file="select_distinct_with_multi_column_without_order_by.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_owner_column_without_order_by">
+        <assertion expected-data-file="select_distinct_with_owner_column_without_order_by.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_owner_star_without_order_by">
+        <assertion expected-data-file="select_distinct_with_owner_star_without_order_by.xml" />
+    </dql-test-case>
+
     <dql-test-case sql-case-id="select_distinct_with_single_column">
         <assertion expected-data-file="select_distinct_with_single_column.xml" />
     </dql-test-case>
