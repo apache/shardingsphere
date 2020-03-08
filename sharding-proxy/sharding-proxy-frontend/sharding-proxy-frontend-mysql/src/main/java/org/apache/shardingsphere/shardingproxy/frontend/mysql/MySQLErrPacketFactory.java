@@ -37,7 +37,7 @@ import java.sql.SQLException;
 public final class MySQLErrPacketFactory {
     
     /**
-     * New instance of MytSQL ERR packet.
+     * New instance of MySQL ERR packet.
      * 
      * @param sequenceId sequence ID
      * @param cause cause
