@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
+package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
@@ -23,6 +23,8 @@ import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLAuthPluginData;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.junit.Before;
 import org.junit.Test;
 
