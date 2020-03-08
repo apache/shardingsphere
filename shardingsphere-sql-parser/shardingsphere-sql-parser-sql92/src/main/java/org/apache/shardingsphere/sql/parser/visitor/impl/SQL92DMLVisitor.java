@@ -356,6 +356,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         if (null != ctx.tableFactor()) {
+            // TODO :Ignore subquery table segment
             ASTNode tableFactor = visit(ctx.tableFactor());
             if (tableFactor instanceof SimpleTableSegment) {
                 result.getValue().add((SimpleTableSegment) tableFactor);
@@ -391,13 +392,17 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
+        // TODO: Bad processing for join table
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
-        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.tableFactor());
-        result.getValue().add(tableSegment);
+        ASTNode tableFactor = visit(ctx.tableFactor());
+        if (tableFactor instanceof SubqueryTableSegment) {
+            return result;
+        }
+        result.getValue().add((SimpleTableSegment) tableFactor);
         if (null != ctx.joinSpecification()) {
             Collection<SimpleTableSegment> tableSegments = new LinkedList<>();
             for (SimpleTableSegment each : ((CollectionValue<SimpleTableSegment>) visit(ctx.joinSpecification())).getValue()) {
-                if (isTable(each, Collections.singleton(tableSegment))) {
+                if (isTable(each, Collections.singleton((SimpleTableSegment) tableFactor))) {
                     tableSegments.add(each);
                 }
             }

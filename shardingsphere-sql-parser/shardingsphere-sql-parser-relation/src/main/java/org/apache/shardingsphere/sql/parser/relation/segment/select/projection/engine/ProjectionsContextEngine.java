@@ -65,7 +65,7 @@ public final class ProjectionsContextEngine {
      */
     public ProjectionsContext createProjectionsContext(final String sql, final SelectStatement selectStatement, final GroupByContext groupByContext, final OrderByContext orderByContext) {
         ProjectionsSegment projectionsSegment = selectStatement.getProjections();
-        Collection<Projection> projections = getProjections(sql, selectStatement.getTables(), projectionsSegment);
+        Collection<Projection> projections = getProjections(sql, selectStatement.getSimpleTableSegments(), projectionsSegment);
         ProjectionsContext result = new ProjectionsContext(projectionsSegment.getStartIndex(), projectionsSegment.getStopIndex(), projectionsSegment.isDistinctRow(), projections);
         result.getProjections().addAll(getDerivedGroupByColumns(projections, groupByContext, selectStatement));
         result.getProjections().addAll(getDerivedOrderByColumns(projections, orderByContext, selectStatement));
@@ -189,7 +189,7 @@ public final class ProjectionsContextEngine {
     }
     
     private SimpleTableSegment find(final String tableNameOrAlias, final SelectStatement selectStatement) {
-        for (SimpleTableSegment each : selectStatement.getTables()) {
+        for (SimpleTableSegment each : selectStatement.getSimpleTableSegments()) {
             if (tableNameOrAlias.equalsIgnoreCase(each.getTableName().getIdentifier().getValue()) || tableNameOrAlias.equals(each.getAlias().orElse(null))) {
                 return each;
             }

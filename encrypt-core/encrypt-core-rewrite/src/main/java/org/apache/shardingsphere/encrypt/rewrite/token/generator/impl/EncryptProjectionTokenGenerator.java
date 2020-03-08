@@ -58,7 +58,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SelectStatementContext selectStatementContext) {
         ProjectionsSegment projectionsSegment = selectStatementContext.getSqlStatement().getProjections();
         // TODO process multiple tables
-        String tableName = selectStatementContext.getSqlStatement().getTables().iterator().next().getTableName().getIdentifier().getValue();
+        String tableName = selectStatementContext.getSqlStatement().getSimpleTableSegments().iterator().next().getTableName().getIdentifier().getValue();
         return getEncryptRule().findEncryptTable(tableName).map(
             encryptTable -> generateSQLTokens(projectionsSegment, tableName, selectStatementContext, encryptTable)).orElseGet(Collections::emptyList);
     }
