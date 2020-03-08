@@ -34,15 +34,11 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     @Getter
     private final ColumnSegment column;
     
-    @Getter
-    private final String text;
-    
     @Setter
     private AliasSegment alias;
     
-    public ColumnProjectionSegment(final String text, final ColumnSegment columnSegment) {
+    public ColumnProjectionSegment(final ColumnSegment columnSegment) {
         column = columnSegment;
-        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
     }
     
     @Override

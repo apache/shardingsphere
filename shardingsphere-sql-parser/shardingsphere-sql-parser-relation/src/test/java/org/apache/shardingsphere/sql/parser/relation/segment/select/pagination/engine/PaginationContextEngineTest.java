@@ -50,7 +50,7 @@ public final class PaginationContextEngineTest {
     public void assertCreatePaginationContextWhenLimitSegmentAbsentAndTopSegmentPresent() {
         SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
-        projections.getProjections().add(new TopProjectionSegment(0, 10, "text", null, "rowNumberAlias"));
+        projections.getProjections().add(new TopProjectionSegment(0, 10, null, "rowNumberAlias"));
         selectStatement.setProjections(projections);
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());

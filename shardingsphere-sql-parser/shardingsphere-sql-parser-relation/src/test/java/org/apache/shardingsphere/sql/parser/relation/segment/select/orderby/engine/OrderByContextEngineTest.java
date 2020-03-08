@@ -79,8 +79,8 @@ public final class OrderByContextEngineTest {
     @Test
     public void assertCreateOrderInDistinctByWithoutOrderBy() {
         SelectStatement selectStatement = new SelectStatement();
-        ColumnProjectionSegment columnProjectionSegment1 = new ColumnProjectionSegment("column1", new ColumnSegment(0, 1, new IdentifierValue("column1")));
-        ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment("column2", new ColumnSegment(1, 2, new IdentifierValue("column2")));
+        ColumnProjectionSegment columnProjectionSegment1 = new ColumnProjectionSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")));
+        ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment(new ColumnSegment(1, 2, new IdentifierValue("column2")));
         List<ProjectionSegment> list = Arrays.asList(columnProjectionSegment1, columnProjectionSegment2);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
         projectionsSegment.setDistinctRow(true);
