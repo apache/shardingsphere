@@ -219,7 +219,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        // TODO : Unsupported for withClause.
+        // TODO :Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.unionClause());
         result.setParameterCount(getCurrentParameterIndex());
         return result;
@@ -227,7 +227,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     
     @Override
     public ASTNode visitUnionClause(final UnionClauseContext ctx) {
-        // TODO : Unsupported for union SQL.
+        // TODO :Unsupported for union SQL.
         return visit(ctx.selectClause(0));
     }
     
@@ -300,7 +300,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     
     @Override
     public ASTNode visitProjection(final ProjectionContext ctx) {
-        // FIXME: The stop index of project is the stop index of projection, instead of alias.
+        // FIXME :The stop index of project is the stop index of projection, instead of alias.
         if (null != ctx.qualifiedShorthand()) {
             QualifiedShorthandContext shorthand = ctx.qualifiedShorthand();
             ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex(), shorthand.getText());
@@ -379,6 +379,7 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         if (null != ctx.tableFactor()) {
+            // TODO :Ignore subquery table segment
             ASTNode tableFactor = visit(ctx.tableFactor());
             if (tableFactor instanceof SimpleTableSegment) {
                 result.getValue().add((SimpleTableSegment) tableFactor);
@@ -414,13 +415,17 @@ public final class SQLServerDMLVisitor extends SQLServerVisitor implements DMLVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
+        // TODO :Bad processing for join table
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
-        SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.tableFactor());
-        result.getValue().add(tableSegment);
+        ASTNode tableFactor = visit(ctx.tableFactor());
+        if (tableFactor instanceof SubqueryTableSegment) {
+            return result;
+        }
+        result.getValue().add((SimpleTableSegment) tableFactor);
         if (null != ctx.joinSpecification()) {
             Collection<SimpleTableSegment> tableSegments = new LinkedList<>();
             for (SimpleTableSegment each : ((CollectionValue<SimpleTableSegment>) visit(ctx.joinSpecification())).getValue()) {
-                if (isTable(each, Collections.singleton(tableSegment))) {
+                if (isTable(each, Collections.singleton((SimpleTableSegment) tableFactor))) {
                     tableSegments.add(each);
                 }
             }

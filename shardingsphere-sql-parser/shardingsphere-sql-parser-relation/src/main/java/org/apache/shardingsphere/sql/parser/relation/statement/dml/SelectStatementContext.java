@@ -83,7 +83,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
                                   final OrderByContext orderByContext, final ProjectionsContext projectionsContext, final PaginationContext paginationContext) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        tablesContext = new TablesContext(sqlStatement.getSimpleTableSegments());
         this.groupByContext = groupByContext;
         this.orderByContext = orderByContext;
         this.projectionsContext = projectionsContext;
@@ -93,7 +93,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     public SelectStatementContext(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        tablesContext = new TablesContext(sqlStatement.getSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(relationMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
@@ -187,7 +187,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>(getSqlStatement().getTables());
+        Collection<SimpleTableSegment> result = new LinkedList<>(getSqlStatement().getSimpleTableSegments());
         if (getSqlStatement().getWhere().isPresent()) {
             result.addAll(getAllTablesFromWhere(getSqlStatement().getWhere().get()));
         }
@@ -205,7 +205,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (AndPredicate each : where.getAndPredicates()) {
             for (PredicateSegment predicate : each.getPredicates()) {
-                result.addAll(new PredicateExtractor(getSqlStatement().getTables(), predicate).extractTables());
+                result.addAll(new PredicateExtractor(getSqlStatement().getSimpleTableSegments(), predicate).extractTables());
             }
         }
         return result;
@@ -222,7 +222,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private Optional<SimpleTableSegment> getTableSegment(final ProjectionSegment each) {
         Optional<OwnerSegment> owner = getTableOwner(each);
-        if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getTables())) {
+        if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getSimpleTableSegments())) {
             return Optional .of(new SimpleTableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
         }
         return Optional.empty();
@@ -243,7 +243,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
                 Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
-                if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getTables())) {
+                if (owner.isPresent() && isTable(owner.get(), getSqlStatement().getSimpleTableSegments())) {
                     Preconditions.checkState(((ColumnOrderByItemSegment) each).getColumn().getOwner().isPresent());
                     OwnerSegment segment = ((ColumnOrderByItemSegment) each).getColumn().getOwner().get();
                     result.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
