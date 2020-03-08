@@ -34,8 +34,8 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class MySQLAuthenticationHandlerTest {
     
@@ -95,9 +95,9 @@ public final class MySQLAuthenticationHandlerTest {
     
     private MySQLHandshakeResponse41Packet getResponse41(final String userName, final byte[] authResponse, final String database) {
         MySQLHandshakeResponse41Packet result = mock(MySQLHandshakeResponse41Packet.class);
-        doReturn(userName).when(result).getUsername();
-        doReturn(authResponse).when(result).getAuthResponse();
-        doReturn(database).when(result).getDatabase();
+        when(result.getUsername()).thenReturn(userName);
+        when(result.getAuthResponse()).thenReturn(authResponse);
+        when(result.getDatabase()).thenReturn(database);
         return result;
     }
     
