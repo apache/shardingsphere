@@ -198,7 +198,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         for (TableRule each : shardingRule.getTableRules()) {
             result.put(each.getLogicTable(), load(each.getLogicTable(), shardingRule));
         }
-        MetaDataLogger.log("Sharding table(s) have bean loaded in {} ms.", (System.currentTimeMillis() - loadBeginningTime));
+        MetaDataLogger.log("Sharding table(s) have been loaded in {} ms.", (System.currentTimeMillis() - loadBeginningTime));
         return result;
     }
     
@@ -212,7 +212,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         long loadBeginningTime = System.currentTimeMillis();
         List<TableMetaData> tableMetaDataList = getTableMetaDataList(shardingRule, tableNames);
         Map<String, TableMetaData> result = loadDefaultTables(tableNames, tableMetaDataList);
-        MetaDataLogger.log("Default table(s) have bean loaded in {} ms.", (System.currentTimeMillis() - loadBeginningTime));
+        MetaDataLogger.log("Default table(s) have been loaded in {} ms.", (System.currentTimeMillis() - loadBeginningTime));
         return result;
     }
     
