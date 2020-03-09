@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterators;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
@@ -44,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -118,10 +116,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     }
     
     private void handleOldBatchRouteUnits(final Collection<BatchRouteUnit> newRouteUnits) {
-        for (final BatchRouteUnit each : newRouteUnits) {
-            Optional<BatchRouteUnit> batchRouteUnit = Iterators.tryFind(routeUnits.iterator(), input -> Objects.equals(input, each));
-            if (batchRouteUnit.isPresent()) {
-                reviseBatchRouteUnit(batchRouteUnit.get(), each);
+        for (BatchRouteUnit each : newRouteUnits) {
+            for (BatchRouteUnit unit : routeUnits) {
+                if (unit.equals(each)) {
+                    reviseBatchRouteUnit(unit, each);
+                }
             }
         }
     }
@@ -169,8 +168,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             for (StatementExecuteUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
                 for (BatchRouteUnit eachRouteUnit : routeUnits) {
-                    if (eachRouteUnit.getExecutionUnit().getDataSourceName().equals(eachUnit.getExecutionUnit().getDataSourceName())
-                            && eachRouteUnit.getExecutionUnit().getSqlUnit().getSql().equals(eachUnit.getExecutionUnit().getSqlUnit().getSql())) {
+                    if (isSameDataSourceAndSQL(eachRouteUnit, eachUnit)) {
                         jdbcAndActualAddBatchCallTimesMap = eachRouteUnit.getJdbcAndActualAddBatchCallTimesMap();
                         break;
                     }
@@ -183,6 +181,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
             }
         }
         return result;
+    }
+    
+    private boolean isSameDataSourceAndSQL(final BatchRouteUnit batchRouteUnit, final StatementExecuteUnit statementExecuteUnit) {
+        return batchRouteUnit.getExecutionUnit().getDataSourceName().equals(statementExecuteUnit.getExecutionUnit().getDataSourceName())
+                && batchRouteUnit.getExecutionUnit().getSqlUnit().getSql().equals(statementExecuteUnit.getExecutionUnit().getSqlUnit().getSql());
     }
     
     /**
@@ -218,14 +221,18 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     }
     
     private Optional<StatementExecuteUnit> getStatementExecuteUnit(final Statement statement, final InputGroup<StatementExecuteUnit> executeGroup) {
-        return Iterators.tryFind(executeGroup.getInputs().iterator(), input -> input.getStatement().equals(statement));
+        for (StatementExecuteUnit each : executeGroup.getInputs()) {
+            if (each.getStatement().equals(statement)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private List<List<Object>> getParameterSets(final StatementExecuteUnit executeUnit) {
-        List<List<Object>> result;
-        result = Collections2.filter(routeUnits, input -> input.getExecutionUnit().getDataSourceName().equals(executeUnit.getExecutionUnit().getDataSourceName())
-                && input.getExecutionUnit().getSqlUnit().getSql().equals(executeUnit.getExecutionUnit().getSqlUnit().getSql())).iterator().next().getParameterSets();
-        return result;
+        Optional<BatchRouteUnit> batchRouteUnit = routeUnits.stream().filter(routeUnit -> isSameDataSourceAndSQL(routeUnit, executeUnit)).findFirst();
+        Preconditions.checkState(batchRouteUnit.isPresent());
+        return batchRouteUnit.get().getParameterSets();
     }
     
     @Override
