@@ -27,9 +27,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * MySQL Query command packet.
  *
- * <p>
- *     Replaced with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket}
- * </p>
+ * @deprecated Replaced with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket}
  */
 @Setter
 @Deprecated

@@ -28,9 +28,9 @@ import lombok.Getter;
  * <p>
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  OK_Packet
  *     https://dev.mysql.com/doc/internals/en/packet-OK_Packet.html
- *
- *     Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket}
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket}
  */
 @Getter
 @Deprecated

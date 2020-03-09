@@ -27,10 +27,9 @@ import lombok.Getter;
  *
  * <p>
  *     There is no define for result set packet header.
- *
- *
- *     Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket}
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket}
  */
 @Getter
 @Deprecated

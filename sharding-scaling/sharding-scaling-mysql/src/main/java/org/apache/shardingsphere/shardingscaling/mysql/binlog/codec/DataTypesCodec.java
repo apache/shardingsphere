@@ -27,9 +27,9 @@ import java.util.BitSet;
  *
  * <p>
  *     https://dev.mysql.com/doc/internals/en/describing-packets.html
- *
- *     Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload}
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload}
  */
 @Deprecated
 public final class DataTypesCodec {

@@ -45,9 +45,9 @@ import lombok.Setter;
  *     10          reserved, always 0
  *     n           rest of the plugin provided data (at least 12 bytes)
  *     1           \0 byte, terminating the second part of a scramble
- *
- *     Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket}
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket}
  */
 @Setter
 @Getter
