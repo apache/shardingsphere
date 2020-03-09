@@ -225,6 +225,7 @@ public final class MySQLConnector {
     }
     
     class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
+        
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
             if (null != responseCallback) {
@@ -242,6 +243,7 @@ public final class MySQLConnector {
     }
     
     class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
+        
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
             if (msg instanceof AbstractBinlogEvent) {
