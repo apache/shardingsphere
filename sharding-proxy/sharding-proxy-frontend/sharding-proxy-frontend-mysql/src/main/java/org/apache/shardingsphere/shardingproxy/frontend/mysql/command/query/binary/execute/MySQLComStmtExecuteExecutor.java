@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryHeade
 import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateResponse;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLErrPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;

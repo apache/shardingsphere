@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTr
 import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLErrorCode;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
-import org.apache.shardingsphere.shardingproxy.error.CommonErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.error.CommonErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 
@@ -37,7 +37,7 @@ import java.sql.SQLException;
 public final class MySQLErrPacketFactory {
     
     /**
-     * New instance of MytSQL ERR packet.
+     * New instance of MySQL ERR packet.
      * 
      * @param sequenceId sequence ID
      * @param cause cause

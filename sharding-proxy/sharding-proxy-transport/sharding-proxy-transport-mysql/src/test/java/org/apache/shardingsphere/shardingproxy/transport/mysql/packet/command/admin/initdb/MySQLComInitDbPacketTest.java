@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
@@ -38,18 +37,18 @@ public final class MySQLComInitDbPacketTest {
     
     @Test
     public void assertNew() {
-        when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        when(payload.readStringEOF()).thenReturn("logic_db");
         MySQLComInitDbPacket actual = new MySQLComInitDbPacket(payload);
         assertThat(actual.getSequenceId(), is(0));
-        assertThat(actual.getSchema(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+        assertThat(actual.getSchema(), is("logic_db"));
     }
     
     @Test
     public void assertWrite() {
-        when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        when(payload.readStringEOF()).thenReturn("logic_db");
         MySQLComInitDbPacket actual = new MySQLComInitDbPacket(payload);
         actual.write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_INIT_DB.getValue());
-        verify(payload).writeStringEOF(ShardingConstant.LOGIC_SCHEMA_NAME);
+        verify(payload).writeStringEOF("logic_db");
     }
 }
