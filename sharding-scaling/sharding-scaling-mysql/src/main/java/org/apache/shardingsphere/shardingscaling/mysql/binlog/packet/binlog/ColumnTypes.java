@@ -19,6 +19,10 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 
 /**
  * Mysql column types.
+ *
+ * <p>
+ *     Replaced by {@link org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType}
+ * </p>
  */
 public final class ColumnTypes {
     

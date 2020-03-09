@@ -36,6 +36,8 @@ import java.util.List;
  *
  * <p>
  *     https://dev.mysql.com/doc/internals/en/rows-event.html
+ *
+ *     Refactor by extends {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket}.
  * </p>
  */
 @Getter

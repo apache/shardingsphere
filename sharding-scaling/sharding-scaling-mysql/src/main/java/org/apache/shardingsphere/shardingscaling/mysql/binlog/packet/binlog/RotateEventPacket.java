@@ -24,6 +24,10 @@ import lombok.Getter;
 
 /**
  * Rotate event.
+ *
+ * <p>
+ *     Refactor by extends {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket}.
+ * </p>
  */
 @Getter
 public final class RotateEventPacket {
