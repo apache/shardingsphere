@@ -27,6 +27,10 @@ import io.netty.buffer.ByteBufAllocator;
 
 /**
  * MySQL binlog dump command packet.
+ *
+ * <p>
+ *     Refactor by extends {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}.
+ * </p>
  */
 @Setter
 public final class BinlogDumpCommandPacket extends AbstractCommandPacket {

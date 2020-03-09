@@ -32,8 +32,11 @@ import java.util.List;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Text Protocol  /  COM_QUERY  /  COM_QUERY Response
  *     https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket}
  */
 @Getter
+@Deprecated
 public final class RowDataPacket extends AbstractPacket {
     
     private List<String> columns = new ArrayList<>();
