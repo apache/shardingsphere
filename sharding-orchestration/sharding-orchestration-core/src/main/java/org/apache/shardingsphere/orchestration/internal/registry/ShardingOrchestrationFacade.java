@@ -19,7 +19,6 @@ package org.apache.shardingsphere.orchestration.internal.registry;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.Authentication;
@@ -120,26 +119,11 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     }
     
     private Optional<String> getInstanceNameByOrchestrationType(final Map<String, InstanceConfiguration> map, final String type) {
-        if (null == map || 0 == map.size() || null == type) {
-            return Optional.empty();
-        }
-        for (Entry<String, InstanceConfiguration> entry : map.entrySet()) {
-            if (contains(entry.getValue().getOrchestrationType(), type)) {
-                return Optional.of(entry.getKey());
-            }
-        }
-        return Optional.empty();
+        return (null == map || null == type) ? Optional.empty() : map.entrySet()
+                .stream().filter(entry -> contains(entry.getValue().getOrchestrationType(), type)).findFirst().map(Map.Entry::getKey);
     }
     
     private boolean contains(final String collection, final String element) {
-        if (Strings.isNullOrEmpty(collection)) {
-            return false;
-        }
-        for (String each : Splitter.on(",").split(collection)) {
-            if (element.equals(each.trim())) {
-                return true;
-            }
-        }
-        return false;
+        return Splitter.on(",").omitEmptyStrings().trimResults().splitToList(collection).stream().anyMatch(each -> element.equals(each.trim()));
     }
 }

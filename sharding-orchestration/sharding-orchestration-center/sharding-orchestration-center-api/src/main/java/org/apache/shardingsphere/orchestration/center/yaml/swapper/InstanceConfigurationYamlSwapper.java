@@ -34,13 +34,13 @@ public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlI
      */
     @Override
     public YamlInstanceConfiguration swap(final InstanceConfiguration data) {
-        YamlInstanceConfiguration result = new YamlInstanceConfiguration();
-        result.setOrchestrationType(data.getOrchestrationType());
-        result.setInstanceType(data.getType());
-        result.setServerLists(data.getServerLists());
-        result.setNamespace(data.getNamespace());
-        result.setProps(data.getProperties());
-        return result;
+        YamlInstanceConfiguration yamlInstanceConfiguration = new YamlInstanceConfiguration();
+        yamlInstanceConfiguration.setOrchestrationType(data.getOrchestrationType());
+        yamlInstanceConfiguration.setInstanceType(data.getType());
+        yamlInstanceConfiguration.setServerLists(data.getServerLists());
+        yamlInstanceConfiguration.setNamespace(data.getNamespace());
+        yamlInstanceConfiguration.setProps(data.getProperties());
+        return yamlInstanceConfiguration;
     }
     
     /**
@@ -51,10 +51,10 @@ public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlI
      */
     @Override
     public InstanceConfiguration swap(final YamlInstanceConfiguration yamlConfiguration) {
-        InstanceConfiguration result = new InstanceConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
-        result.setOrchestrationType(yamlConfiguration.getOrchestrationType());
-        result.setServerLists(yamlConfiguration.getServerLists());
-        result.setNamespace(yamlConfiguration.getNamespace());
-        return result;
+        InstanceConfiguration instanceConfiguration = new InstanceConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
+        instanceConfiguration.setOrchestrationType(yamlConfiguration.getOrchestrationType());
+        instanceConfiguration.setServerLists(yamlConfiguration.getServerLists());
+        instanceConfiguration.setNamespace(yamlConfiguration.getNamespace());
+        return instanceConfiguration;
     }
 }

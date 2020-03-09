@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Orchestration master slave rule.
@@ -43,12 +44,7 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
      */
     @Override
     public List<String> getSlaveDataSourceNames() {
-        if (disabledDataSourceNames.isEmpty()) {
-            return super.getSlaveDataSourceNames();
-        }
-        List<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
-        result.removeAll(disabledDataSourceNames);
-        return result;
+        return new LinkedList<>(super.getSlaveDataSourceNames()).stream().filter(e -> !disabledDataSourceNames.contains(e)).collect(Collectors.toList());
     }
     
     /**

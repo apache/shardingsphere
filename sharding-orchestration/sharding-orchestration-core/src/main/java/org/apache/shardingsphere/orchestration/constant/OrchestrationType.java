@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.constant;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -39,11 +40,6 @@ public enum OrchestrationType {
      * @return OrchestrationType enum, return {@code null} if not found
      */
     public static OrchestrationType findByValue(final String value) {
-        for (OrchestrationType each : OrchestrationType.values()) {
-            if (each.getValue().equals(value)) {
-                return each;
-            }
-        }
-        return null;
+        return Lists.newArrayList(OrchestrationType.values()).stream().filter(each -> each.getValue().equals(value)).findFirst().get();
     }
 }

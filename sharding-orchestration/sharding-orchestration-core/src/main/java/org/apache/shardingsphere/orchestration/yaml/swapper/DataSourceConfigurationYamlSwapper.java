@@ -28,16 +28,16 @@ public final class DataSourceConfigurationYamlSwapper implements YamlSwapper<Yam
     
     @Override
     public YamlDataSourceConfiguration swap(final DataSourceConfiguration data) {
-        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
-        result.setDataSourceClassName(data.getDataSourceClassName());
-        result.setProperties(data.getProperties());
-        return result;
+        YamlDataSourceConfiguration yamlDataSourceConfiguration = new YamlDataSourceConfiguration();
+        yamlDataSourceConfiguration.setDataSourceClassName(data.getDataSourceClassName());
+        yamlDataSourceConfiguration.setProperties(data.getProperties());
+        return yamlDataSourceConfiguration;
     }
     
     @Override
     public DataSourceConfiguration swap(final YamlDataSourceConfiguration yamlConfiguration) {
-        DataSourceConfiguration result = new DataSourceConfiguration(yamlConfiguration.getDataSourceClassName());
-        result.getProperties().putAll(yamlConfiguration.getProperties());
-        return result;
+        DataSourceConfiguration dataSourceConfiguration = new DataSourceConfiguration(yamlConfiguration.getDataSourceClassName());
+        dataSourceConfiguration.getProperties().putAll(yamlConfiguration.getProperties());
+        return dataSourceConfiguration;
     }
 }

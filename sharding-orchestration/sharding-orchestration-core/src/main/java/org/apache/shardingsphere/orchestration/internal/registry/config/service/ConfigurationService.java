@@ -60,7 +60,7 @@ public final class ConfigurationService {
     private final ConfigCenterRepository configCenterRepository;
     
     public ConfigurationService(final String name, final ConfigCenterRepository configCenterRepository) {
-        configNode = new ConfigurationNode(name);
+        this.configNode = new ConfigurationNode(name);
         this.configCenterRepository = configCenterRepository;
     }
     

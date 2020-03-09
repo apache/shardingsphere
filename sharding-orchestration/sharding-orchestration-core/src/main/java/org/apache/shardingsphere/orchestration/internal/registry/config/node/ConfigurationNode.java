@@ -124,13 +124,9 @@ public final class ConfigurationNode {
      * @return schema name
      */
     public String getSchemaName(final String configurationNodeFullPath) {
-        String result = "";
         Pattern pattern = Pattern.compile(getSchemaPath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configurationNodeFullPath);
-        if (matcher.find()) {
-            result = matcher.group(1);
-        }
-        return result;
+        return matcher.find() ? matcher.group(1) : "";
     }
     
     /**
@@ -140,10 +136,7 @@ public final class ConfigurationNode {
      * @return sharding schema names
      */
     public Collection<String> splitShardingSchemaName(final String shardingSchemaNames) {
-        if (Strings.isNullOrEmpty(shardingSchemaNames)) {
-            return Collections.emptyList();
-        }
-        return Splitter.on(COMMA_SEPARATOR).splitToList(shardingSchemaNames);
+        return Strings.isNullOrEmpty(shardingSchemaNames) ? Collections.emptyList() : Splitter.on(COMMA_SEPARATOR).splitToList(shardingSchemaNames);
     }
     
     /**
@@ -153,8 +146,7 @@ public final class ConfigurationNode {
      * @return config paths list.
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
-        Collection<String> result = Lists.newArrayList();
-        result.add(getSchemaPath());
+        Collection<String> result = Lists.newArrayList(getSchemaPath());
         for (String schemaName : schemaNames) {
             result.add(getSchemaNamePath(schemaName));
             result.add(getRulePath(schemaName));
