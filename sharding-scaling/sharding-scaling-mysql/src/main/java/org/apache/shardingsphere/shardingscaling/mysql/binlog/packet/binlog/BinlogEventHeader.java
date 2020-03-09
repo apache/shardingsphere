@@ -33,7 +33,7 @@ import lombok.Setter;
  *     |4 bytes  |1 byte   |4 bytes  |4 bytes     |4 bytes    |2 bytes|
  *     +---------+---------+---------+------------+-----------+-------+
  *
- *     Refactor by extends {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket}.
+ *     Refactor by extends {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}.
  * </p>
  */
 @Setter

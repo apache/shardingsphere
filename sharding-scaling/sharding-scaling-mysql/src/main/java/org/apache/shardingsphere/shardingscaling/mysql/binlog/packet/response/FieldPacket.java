@@ -30,7 +30,7 @@ import lombok.Getter;
  *     https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41
  * </p>
  *
- * @deprecated Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet}
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet}
  */
 @Getter
 @Deprecated

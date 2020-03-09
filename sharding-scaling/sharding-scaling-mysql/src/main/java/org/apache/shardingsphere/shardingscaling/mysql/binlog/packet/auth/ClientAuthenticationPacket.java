@@ -33,7 +33,7 @@ import lombok.SneakyThrows;
 /**
  * MySQL client authentication packet.
  *
- * @deprecated Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet}
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet}
  */
 @Setter
 @Deprecated

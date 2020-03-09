@@ -30,7 +30,7 @@ import lombok.Getter;
  *     https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html
  * </p>
  *
- * @deprecated Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket}
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket}
  */
 @Getter
 @Deprecated

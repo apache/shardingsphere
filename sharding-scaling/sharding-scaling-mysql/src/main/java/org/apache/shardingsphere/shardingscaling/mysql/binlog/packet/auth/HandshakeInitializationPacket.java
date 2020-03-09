@@ -47,7 +47,7 @@ import lombok.Setter;
  *     1           \0 byte, terminating the second part of a scramble
  * </p>
  *
- * @deprecated Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket}
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket}
  */
 @Setter
 @Getter

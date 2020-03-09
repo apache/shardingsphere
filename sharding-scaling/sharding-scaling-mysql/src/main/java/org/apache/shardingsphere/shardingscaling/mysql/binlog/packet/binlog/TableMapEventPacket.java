@@ -28,7 +28,7 @@ import lombok.Getter;
  * <p>
  *     https://dev.mysql.com/doc/internals/en/table-map-event.html
  *
- *     Refactor by extends {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket}.
+ *     Refactor by extends {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}.
  * </p>
  */
 @Getter
