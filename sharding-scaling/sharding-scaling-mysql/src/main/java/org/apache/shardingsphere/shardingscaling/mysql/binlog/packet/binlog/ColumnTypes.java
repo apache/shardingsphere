@@ -24,6 +24,7 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
  *     Replaced by {@link org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType}
  * </p>
  */
+@Deprecated
 public final class ColumnTypes {
     
     public static final int MYSQL_TYPE_DECIMAL = 0;
