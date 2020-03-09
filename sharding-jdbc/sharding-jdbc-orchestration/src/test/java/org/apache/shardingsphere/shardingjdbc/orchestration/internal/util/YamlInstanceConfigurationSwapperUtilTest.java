@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.util;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+
 import static org.junit.Assert.assertEquals;
 
-public class YamlInstanceConfigurationSwapperUtilTest {
+public final class YamlInstanceConfigurationSwapperUtilTest {
     
     @Test
     public void marshal() {

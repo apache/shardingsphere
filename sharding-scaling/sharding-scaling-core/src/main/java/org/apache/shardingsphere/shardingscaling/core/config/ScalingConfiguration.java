@@ -20,11 +20,14 @@ package org.apache.shardingsphere.shardingscaling.core.config;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Scaling configuration.
+ */
 @Setter
 @Getter
-public class ScalingConfiguration {
+public final class ScalingConfiguration {
     
     private RuleConfiguration ruleConfiguration;
-
+    
     private JobConfiguration jobConfiguration;
 }
