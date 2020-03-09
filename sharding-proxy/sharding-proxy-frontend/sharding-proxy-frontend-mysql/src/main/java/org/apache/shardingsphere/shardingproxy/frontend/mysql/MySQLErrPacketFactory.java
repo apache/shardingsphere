@@ -19,14 +19,14 @@ package org.apache.shardingsphere.shardingproxy.frontend.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.protocol.error.CommonErrorCode;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.ShardingCTLErrorCode;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.ShardingCTLException;
-import org.apache.shardingsphere.shardingproxy.transport.error.CommonErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 
 import java.sql.SQLException;
 
