@@ -30,8 +30,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>sharding-proxy-transport-core</module>
-        <module>sharding-proxy-transport-mysql</module>
-        <module>sharding-proxy-transport-postgresql</module>
+        <module>shardingsphere-database-protocol-core</module>
+        <module>shardingsphere-database-protocol-mysql</module>
+        <module>shardingsphere-database-protocol-postgresql</module>
     </modules>
 </project>
