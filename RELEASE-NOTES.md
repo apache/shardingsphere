@@ -12,6 +12,15 @@
 1. Metadata.getColumns could not work in JDBC.
 1. IN operator contains space and `\n` `\t` `\r` could not supported by parser.
 
+### Enhancement
+
+1. Optimize antlr performance using two-stage parsing strategy.
+1. Add class filter constructor to restrict the illegal class from YAML.
+
+###  Change Logs
+
+1. [MILESTONE](https://github.com/sharding-sphere/sharding-sphere/milestone/11)
+
 ## 4.0.0
 
 ### API Changes
