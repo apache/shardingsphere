@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class ShadowRuleConfiguration implements RuleConfiguration {
+public final class ShadowRuleConfiguration implements RuleConfiguration {
     
     private String column;
     

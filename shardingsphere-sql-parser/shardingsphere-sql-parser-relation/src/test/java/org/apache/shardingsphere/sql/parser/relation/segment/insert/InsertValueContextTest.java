@@ -59,16 +59,16 @@ public final class InsertValueContextTest {
     public void assertGetValueWhenParameterMarker() {
         Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         String parameterValue = "test";
-        List<Object> parameters = Collections.<Object>singletonList(parameterValue);
+        List<Object> parameters = Collections.singletonList(parameterValue);
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
         Object valueFromInsertValueContext = insertValueContext.getValue(0);
-        assertThat((String) valueFromInsertValueContext, is(parameterValue));
+        assertThat(valueFromInsertValueContext, is(parameterValue));
     }
     
     private Collection<ExpressionSegment> makeParameterMarkerExpressionSegment() {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(0, 10, 5);
-        return Collections.<ExpressionSegment>singleton(parameterMarkerExpressionSegment);
+        return Collections.singleton(parameterMarkerExpressionSegment);
     }
     
     @Test
@@ -83,6 +83,6 @@ public final class InsertValueContextTest {
     
     private Collection<ExpressionSegment> makeLiteralExpressionSegment(final Object literalObject) {
         LiteralExpressionSegment parameterMarkerExpressionSegment = new LiteralExpressionSegment(0, 10, literalObject);
-        return Collections.<ExpressionSegment>singleton(parameterMarkerExpressionSegment);
+        return Collections.singleton(parameterMarkerExpressionSegment);
     }
 }

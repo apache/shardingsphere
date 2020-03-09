@@ -26,7 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLComStmtResetPacketTest {
+public final class MySQLComStmtResetPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;

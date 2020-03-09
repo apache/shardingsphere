@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.protocol;
 
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -26,6 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,7 +39,7 @@ public final class MySQLInt8BinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(payload.readInt8()).thenReturn(1L);
-        assertThat(new MySQLInt8BinaryProtocolValue().read(payload), CoreMatchers.<Object>is(1L));
+        assertThat(new MySQLInt8BinaryProtocolValue().read(payload), is(1L));
     }
     
     @Test

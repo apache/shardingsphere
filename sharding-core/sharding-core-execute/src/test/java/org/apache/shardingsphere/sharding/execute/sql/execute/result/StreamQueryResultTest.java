@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.execute.sql.execute.result;
 
-import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -31,6 +30,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -59,56 +59,56 @@ public final class StreamQueryResultTest {
     public void assertGetValueByByte() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getByte(1)).thenReturn((byte) 0x00);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, byte.class), Is.<Object>is((byte) 0x00));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, byte.class), is((byte) 0x00));
     }
     
     @Test
     public void assertGetValueByShort() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getShort(1)).thenReturn((short) 1);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, short.class), Is.<Object>is((short) 1));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, short.class), is((short) 1));
     }
     
     @Test
     public void assertGetValueByInt() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getInt(1)).thenReturn(1);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, int.class), Is.<Object>is(1));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, int.class), is(1));
     }
     
     @Test
     public void assertGetValueByLong() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getLong(1)).thenReturn(1L);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, long.class), Is.<Object>is(1L));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, long.class), is(1L));
     }
     
     @Test
     public void assertGetValueByFloat() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getFloat(1)).thenReturn(1F);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, float.class), Is.<Object>is(1F));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, float.class), is(1F));
     }
     
     @Test
     public void assertGetValueByDouble() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getDouble(1)).thenReturn(1D);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, double.class), Is.<Object>is(1D));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, double.class), is(1D));
     }
     
     @Test
     public void assertGetValueByString() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(1)).thenReturn("value");
-        assertThat(new StreamQueryResult(resultSet).getValue(1, String.class), Is.<Object>is("value"));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, String.class), is("value"));
     }
     
     @Test
     public void assertGetValueByBigDecimal() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("0"));
-        assertThat(new StreamQueryResult(resultSet).getValue(1, BigDecimal.class), Is.<Object>is(new BigDecimal("0")));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, BigDecimal.class), is(new BigDecimal("0")));
     }
     
     @Test
@@ -116,21 +116,21 @@ public final class StreamQueryResultTest {
         ResultSet resultSet = mock(ResultSet.class);
         byte[] value = {1};
         when(resultSet.getBytes(1)).thenReturn(value);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, byte[].class), Is.<Object>is(value));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, byte[].class), is(value));
     }
     
     @Test
     public void assertGetValueByDate() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getDate(1)).thenReturn(new Date(0L));
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Date.class), Is.<Object>is(new Date(0L)));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, Date.class), is(new Date(0L)));
     }
     
     @Test
     public void assertGetValueByTime() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getTime(1)).thenReturn(new Time(0L));
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Time.class), Is.<Object>is(new Time(0L)));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, Time.class), is(new Time(0L)));
     }
     
     @Test
@@ -138,7 +138,7 @@ public final class StreamQueryResultTest {
         ResultSet resultSet = mock(ResultSet.class);
         Blob value = mock(Blob.class);
         when(resultSet.getBlob(1)).thenReturn(value);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Blob.class), Is.<Object>is(value));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, Blob.class), is(value));
     }
     
     @Test
@@ -146,14 +146,14 @@ public final class StreamQueryResultTest {
         ResultSet resultSet = mock(ResultSet.class);
         Clob value = mock(Clob.class);
         when(resultSet.getClob(1)).thenReturn(value);
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Clob.class), Is.<Object>is(value));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, Clob.class), is(value));
     }
     
     @Test
     public void assertGetValueByTimestamp() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(0L));
-        assertThat(new StreamQueryResult(resultSet).getValue(1, Timestamp.class), Is.<Object>is(new Timestamp(0L)));
+        assertThat(new StreamQueryResult(resultSet).getValue(1, Timestamp.class), is(new Timestamp(0L)));
     }
     
     @Test
@@ -246,13 +246,13 @@ public final class StreamQueryResultTest {
     @Test
     public void assertGetColumnCount() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
-        assertThat(queryResult.getColumnCount(), Is.is(1));
+        assertThat(queryResult.getColumnCount(), is(1));
     }
     
     @Test
     public void assertGetColumnLabel() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
-        assertThat(queryResult.getColumnLabel(1), Is.is("order_id"));
+        assertThat(queryResult.getColumnLabel(1), is("order_id"));
     }
     
     private ResultSet getResultSet() throws SQLException {

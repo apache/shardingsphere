@@ -41,7 +41,6 @@ import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerat
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -112,7 +111,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(shardingRule.getEncryptRule().findEncryptTable("t_order").isPresent());
         assertThat(shardingRule.getEncryptRule().findEncryptTable("t_order").get().getCipherColumn("user_id"), is("user_encrypt"));
         assertTrue(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").isPresent());
-        assertThat(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").get(), CoreMatchers.instanceOf(MD5Encryptor.class));
+        assertThat(shardingRule.getEncryptRule().findEncryptor("t_order", "order_id").get(), instanceOf(MD5Encryptor.class));
         shardingRule.getTableRule("t_order");
     }
     

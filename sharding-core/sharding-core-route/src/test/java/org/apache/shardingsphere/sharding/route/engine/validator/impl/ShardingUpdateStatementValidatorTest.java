@@ -64,21 +64,21 @@ public final class ShardingUpdateStatementValidatorTest {
     @Test
     public void assertValidateUpdateWithoutShardingKeyAndParameters() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(false);
-        List<Object> parameters = Arrays.<Object>asList(1, 1);
+        List<Object> parameters = Arrays.asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatement(), parameters);
     }
     
     @Test
     public void assertValidateUpdateWithShardingKeyAndShardingParameterEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        List<Object> parameters = Arrays.<Object>asList(1, 1);
+        List<Object> parameters = Arrays.asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(1), parameters);
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateUpdateWithShardingKeyAndShardingParameterNotEquals() {
         when(shardingRule.isShardingColumn("id", "user")).thenReturn(true);
-        List<Object> parameters = Arrays.<Object>asList(1, 1);
+        List<Object> parameters = Arrays.asList(1, 1);
         new ShardingUpdateStatementValidator().validate(shardingRule, createUpdateStatementAndParameters(2), parameters);
     }
     

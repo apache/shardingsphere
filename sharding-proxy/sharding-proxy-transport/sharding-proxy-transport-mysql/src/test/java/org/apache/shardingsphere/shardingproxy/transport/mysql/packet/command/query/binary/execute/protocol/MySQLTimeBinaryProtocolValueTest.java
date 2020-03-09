@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.protocol;
 
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -43,7 +42,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     
     @Test
     public void assertReadWithZeroByte() {
-        assertThat(new MySQLTimeBinaryProtocolValue().read(payload), CoreMatchers.<Object>is(new Timestamp(0)));
+        assertThat(new MySQLTimeBinaryProtocolValue().read(payload), is(new Timestamp(0)));
     }
     
     @Test

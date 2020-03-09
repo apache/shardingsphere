@@ -58,13 +58,13 @@ public final class ShowCreateTableMergedResultTest {
     
     private RelationMetas createRelationMetas() {
         Map<String, RelationMetaData> relationMetas = new HashMap<>(1, 1);
-        relationMetas.put("table", new RelationMetaData(Collections.<String>emptyList()));
+        relationMetas.put("table", new RelationMetaData(Collections.emptyList()));
         return new RelationMetas(relationMetas);
     }
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.<QueryResult>emptyList());
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.emptyList());
         assertFalse(actual.next());
     }
     

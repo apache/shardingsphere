@@ -27,13 +27,13 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class ServerConfiguration implements YamlConfiguration {
-
+public final class ServerConfiguration implements YamlConfiguration {
+    
     private int port = 8080;
-
+    
     private int blockQueueSize = 10000;
-
+    
     private int pushTimeout = 1000;
-
+    
     private int workerThread = 30;
 }

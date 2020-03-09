@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query;
 
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
@@ -47,7 +46,7 @@ public final class MySQLColumnDefinition41PacketTest {
     
     @Test
     public void assertWriteWithResultSetMetaData() throws SQLException {
-        when(resultSetMetaData.getSchemaName(1)).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        when(resultSetMetaData.getSchemaName(1)).thenReturn("logic_db");
         when(resultSetMetaData.getTableName(1)).thenReturn("tbl");
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("id");
         when(resultSetMetaData.getColumnName(1)).thenReturn("id");
@@ -65,7 +64,7 @@ public final class MySQLColumnDefinition41PacketTest {
         when(payload.readInt2()).thenReturn(MySQLServerInfo.CHARSET, 0);
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn((long) 0x0c);
-        when(payload.readStringLenenc()).thenReturn("def", ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id");
+        when(payload.readStringLenenc()).thenReturn("def", "logic_db", "tbl", "tbl", "id", "id");
         MySQLColumnDefinition41Packet actual = new MySQLColumnDefinition41Packet(payload);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
@@ -74,7 +73,7 @@ public final class MySQLColumnDefinition41PacketTest {
     
     private void verifyWrite() {
         verify(payload).writeStringLenenc("def");
-        verify(payload).writeStringLenenc(ShardingConstant.LOGIC_SCHEMA_NAME);
+        verify(payload).writeStringLenenc("logic_db");
         verify(payload, times(2)).writeStringLenenc("tbl");
         verify(payload, times(2)).writeStringLenenc("id");
         verify(payload).writeIntLenenc(0x0c);

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class JDBCBackendDataSourceTest {
     
-    private final JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource(Collections.<String, YamlDataSourceParameter>emptyMap());
+    private final JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource(Collections.emptyMap());
     
     @Before
     public void setUp() {

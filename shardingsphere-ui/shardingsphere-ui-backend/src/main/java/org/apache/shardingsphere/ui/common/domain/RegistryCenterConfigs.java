@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class RegistryCenterConfigs {
+public final class RegistryCenterConfigs {
     
     private List<RegistryCenterConfig> registryCenterConfigs = new ArrayList<>();
 }

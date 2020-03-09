@@ -47,9 +47,9 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
         String schema = SQLUtil.getExactlyValue(packet.getSchema());
         if (LogicSchemas.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
             backendConnection.setCurrentSchema(packet.getSchema());
-            return Collections.<DatabasePacket>singletonList(new MySQLOKPacket(1));
+            return Collections.singletonList(new MySQLOKPacket(1));
         }
-        return Collections.<DatabasePacket>singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getSchema()));
+        return Collections.singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, packet.getSchema()));
     }
     
     private boolean isAuthorizedSchema(final String schema) {

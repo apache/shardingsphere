@@ -49,15 +49,15 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingWithoutShardingColumns() {
         NoneShardingStrategy strategy = new NoneShardingStrategy();
-        assertThat(strategy.doSharding(targets, Collections.<RouteValue>emptySet(), new ShardingSphereProperties(new Properties())), is(targets));
+        assertThat(strategy.doSharding(targets, Collections.emptySet(), new ShardingSphereProperties(new Properties())), is(targets));
     }
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy(
                 new StandardShardingStrategyConfiguration("column", new PreciseShardingAlgorithmFixture(), new RangeShardingAlgorithmFixture()));
-        assertThat(strategy.doSharding(targets, Collections.<RouteValue>singletonList(new RangeRouteValue<>("column", "logicTable", Range.open(1, 3))), new ShardingSphereProperties(new Properties())),
-                is((Collection<String>) Sets.newHashSet("1")));
+        assertThat(strategy.doSharding(targets, Collections.singletonList(new RangeRouteValue<>("column", "logicTable", Range.open(1, 3))), new ShardingSphereProperties(new Properties())),
+                is(Sets.newHashSet("1")));
     }
     
     @Test
@@ -65,6 +65,6 @@ public final class ShardingStrategyTest {
         ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column1, column2", new ComplexKeysShardingAlgorithmFixture()));
         List<RouteValue> routeValues = Lists.newArrayList(
                 new ListRouteValue<>("column1", "logicTable", Collections.singletonList(1)), new RangeRouteValue<>("column2", "logicTable", Range.open(1, 3)));
-        assertThat(strategy.doSharding(targets, routeValues, new ShardingSphereProperties(new Properties())), is((Collection<String>) Sets.newHashSet("1", "2", "3")));
+        assertThat(strategy.doSharding(targets, routeValues, new ShardingSphereProperties(new Properties())), is(Sets.newHashSet("1", "2", "3")));
     }
 }

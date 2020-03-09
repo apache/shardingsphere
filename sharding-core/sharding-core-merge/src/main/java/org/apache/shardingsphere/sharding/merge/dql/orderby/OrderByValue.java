@@ -66,7 +66,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
      */
     public boolean next() throws SQLException {
         boolean result = queryResult.next();
-        orderValues = result ? getOrderValues() : Collections.<Comparable<?>>emptyList();
+        orderValues = result ? getOrderValues() : Collections.emptyList();
         return result;
     }
     

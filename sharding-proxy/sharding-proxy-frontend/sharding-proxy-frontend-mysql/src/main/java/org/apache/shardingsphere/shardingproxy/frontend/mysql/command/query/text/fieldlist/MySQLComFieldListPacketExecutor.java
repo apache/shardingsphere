@@ -57,7 +57,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         BackendResponse backendResponse = databaseCommunicationEngine.execute();
-        return backendResponse instanceof ErrorResponse ? Collections.<DatabasePacket>singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) 
+        return backendResponse instanceof ErrorResponse ? Collections.singletonList(MySQLErrPacketFactory.newInstance(1, ((ErrorResponse) backendResponse).getCause())) 
                 : getColumnDefinition41Packets();
     }
     
