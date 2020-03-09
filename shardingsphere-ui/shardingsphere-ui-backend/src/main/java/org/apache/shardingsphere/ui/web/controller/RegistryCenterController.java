@@ -94,7 +94,7 @@ public final class RegistryCenterController {
      */
     @RequestMapping(value = "/activated", method = RequestMethod.GET)
     public ResponseResult<RegistryCenterConfig> activated() {
-        return ResponseResultUtil.build(registryCenterConfigService.loadActivated().orNull());
+        return ResponseResultUtil.build(registryCenterConfigService.loadActivated().orElse(null));
     }
     
 }
