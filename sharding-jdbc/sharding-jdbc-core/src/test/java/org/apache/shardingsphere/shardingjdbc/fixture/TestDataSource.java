@@ -61,7 +61,7 @@ public final class TestDataSource extends AbstractDataSourceAdapter {
     public Connection getConnection() throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(metaData.getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(mock(ResultSet.class));
+        when(metaData.getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(mock(ResultSet.class));
         when(result.getMetaData()).thenReturn(metaData);
         when(result.getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         if (throwExceptionWhenClosing) {

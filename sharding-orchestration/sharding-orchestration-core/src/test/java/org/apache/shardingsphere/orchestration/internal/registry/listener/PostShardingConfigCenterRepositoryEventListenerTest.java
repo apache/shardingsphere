@@ -20,7 +20,6 @@ package org.apache.shardingsphere.orchestration.internal.registry.listener;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -47,7 +46,7 @@ public final class PostShardingConfigCenterRepositoryEventListenerTest {
             }
         };
         postShardingConfigCenterEventListener.watch();
-        verify(configCenterRepository).watch(eq("test"), ArgumentMatchers.<DataChangedEventListener>any());
+        verify(configCenterRepository).watch(eq("test"), ArgumentMatchers.any());
     }
     
     @Test
@@ -60,7 +59,7 @@ public final class PostShardingConfigCenterRepositoryEventListenerTest {
             }
         };
         postShardingConfigCenterEventListener.watch();
-        verify(configCenterRepository).watch(eq("test"), ArgumentMatchers.<DataChangedEventListener>any());
-        verify(configCenterRepository).watch(eq("dev"), ArgumentMatchers.<DataChangedEventListener>any());
+        verify(configCenterRepository).watch(eq("test"), ArgumentMatchers.any());
+        verify(configCenterRepository).watch(eq("dev"), ArgumentMatchers.any());
     }
 }
