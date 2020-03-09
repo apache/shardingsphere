@@ -1,3 +1,17 @@
+## 4.0.1
+
+### Bug Fixes
+
+1. Using guava cache to fix parsing deadlock.
+1. Oracle insert SQL could not work in encrypt mode.
+1. Proxy for PostgreSQL decode parameters error in all types except String.
+1. COM_STM_EXECUTE of proxy for MySQL could not support sysbench.
+1. None sharding strategy could not config in spring-boot.
+1. Plain column could not get from resultSet in sharding-encrypt mode.
+1. WasNull field was wrong in GroupByStreamMergeResult.
+1. Metadata.getColumns could not work in JDBC.
+1. IN operator contains space and `\n` `\t` `\r` could not supported by parser.
+
 ## 4.0.0
 
 ### API Changes
