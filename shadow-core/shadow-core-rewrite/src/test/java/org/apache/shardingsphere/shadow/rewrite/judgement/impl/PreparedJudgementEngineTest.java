@@ -48,8 +48,8 @@ public final class PreparedJudgementEngineTest {
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, 
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        InsertStatementContext insertStatementContext = new InsertStatementContext(relationMetas, Arrays.<Object>asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
-        PreparedJudgementEngine preparedJudgementEngine = new PreparedJudgementEngine(shadowRule, insertStatementContext, Arrays.<Object>asList(1, "Tom", true));
+        InsertStatementContext insertStatementContext = new InsertStatementContext(relationMetas, Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
+        PreparedJudgementEngine preparedJudgementEngine = new PreparedJudgementEngine(shadowRule, insertStatementContext, Arrays.asList(1, "Tom", true));
         Assert.assertTrue("should be shadow", preparedJudgementEngine.isShadowSQL());
     }
 }

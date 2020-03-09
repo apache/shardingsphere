@@ -88,7 +88,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         setExecuteGroups(Collections.singletonList(preparedStatement), true);
-        assertThat((String) actual.executeQuery().iterator().next().getValue(1, String.class), is("value"));
+        assertThat(actual.executeQuery().iterator().next().getValue(1, String.class), is("value"));
     }
     
     @Test
@@ -267,7 +267,7 @@ public final class PreparedStatementExecutorTest extends AbstractBaseExecutorTes
         executeGroups.add(new InputGroup<>(preparedStatementExecuteUnits));
         for (PreparedStatement each : preparedStatements) {
             preparedStatementExecuteUnits.add(
-                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList((Object) 1))), each, ConnectionMode.MEMORY_STRICTLY));
+                    new StatementExecuteUnit(new ExecutionUnit("ds_0", new SQLUnit(isQuery ? DQL_SQL : DML_SQL, Collections.singletonList(1))), each, ConnectionMode.MEMORY_STRICTLY));
         }
         Field field = PreparedStatementExecutor.class.getSuperclass().getDeclaredField("inputGroups");
         field.setAccessible(true);

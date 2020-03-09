@@ -58,7 +58,7 @@ public final class DecoratorMergedResultTest {
     public void assertGetCalenderValueWithColumnIndex() throws SQLException {
         Calendar calendar = Calendar.getInstance();
         when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
-        assertThat((Date) decoratorMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
+        assertThat(decoratorMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test

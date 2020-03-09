@@ -89,11 +89,11 @@ public final class SQLServerDCLVisitor extends SQLServerVisitor implements DCLVi
     }
     
     private Collection<SimpleTableSegment> getTableFromPrivilegeClause(final ClassPrivilegesClauseContext ctx) {
-        return null == ctx.onClassClause().tableName() ? Collections.<SimpleTableSegment>emptyList() : Collections.singletonList((SimpleTableSegment) visit(ctx.onClassClause().tableName()));
+        return null == ctx.onClassClause().tableName() ? Collections.emptyList() : Collections.singletonList((SimpleTableSegment) visit(ctx.onClassClause().tableName()));
     }
     
     private Collection<SimpleTableSegment> getTableFromPrivilegeClause(final ClassTypePrivilegesClauseContext ctx) {
-        return null == ctx.onClassTypeClause().tableName() ? Collections.<SimpleTableSegment>emptyList() : Collections.singletonList((SimpleTableSegment) visit(ctx.onClassTypeClause().tableName()));
+        return null == ctx.onClassTypeClause().tableName() ? Collections.emptyList() : Collections.singletonList((SimpleTableSegment) visit(ctx.onClassTypeClause().tableName()));
     }
     
     @Override

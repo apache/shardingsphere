@@ -50,7 +50,7 @@ public final class PaginationContextEngineTest {
     public void assertCreatePaginationContextWhenLimitSegmentAbsentAndTopSegmentPresent() {
         SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
-        projections.getProjections().add(new TopProjectionSegment(0, 10, "text", null, "rowNumberAlias"));
+        projections.getProjections().add(new TopProjectionSegment(0, 10, null, "rowNumberAlias"));
         selectStatement.setProjections(projections);
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, null, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
@@ -63,7 +63,7 @@ public final class PaginationContextEngineTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setWhere(new WhereSegment(0, 10));
         
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList(), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
@@ -73,7 +73,7 @@ public final class PaginationContextEngineTest {
     public void assertCreatePaginationContextWhenResultIsPaginationContext() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList(), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         assertThat(new PaginationContextEngine().createPaginationContext(selectStatement, projectionsContext, Collections.emptyList()), instanceOf(PaginationContext.class));
     }
 }

@@ -94,9 +94,9 @@ public final class ExpressionAssert {
      * @param expected expected subquery expression
      */
     public static void assertSubquery(final SQLCaseAssertContext assertContext, final SubqueryExpressionSegment actual, final ExpectedSubquery expected) {
-        assertNotNull(assertContext.getText("Expected subquery expression should exist."));
-        assertThat(assertContext.getText("Subquery text assertion error: "), actual.getSubquery().getText(), is(expected.getText()));
-        // TODO assert start index and stop index
+        // TODO assert start index, stop index and sub select statement.
+//         assertNotNull(assertContext.getText("Expected subquery expression should exist."));
+//        assertThat(assertContext.getText("Subquery text assertion error: "), actual.getSubquery().getText(), is(expected.getText()));
 //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

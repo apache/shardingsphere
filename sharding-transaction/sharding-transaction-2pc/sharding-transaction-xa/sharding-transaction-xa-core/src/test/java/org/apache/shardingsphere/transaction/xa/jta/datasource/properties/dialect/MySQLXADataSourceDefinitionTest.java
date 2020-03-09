@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,8 +30,7 @@ public final class MySQLXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new MySQLXADataSourceDefinition().getXADriverClassName(), 
-                CoreMatchers.<Collection<String>>is(Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource")));
+        assertThat(new MySQLXADataSourceDefinition().getXADriverClassName(), is(Arrays.asList("com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "com.mysql.cj.jdbc.MysqlXADataSource")));
     }
     
     @Test

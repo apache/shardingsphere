@@ -72,7 +72,7 @@ public final class PostgreSQLDCLVisitor extends PostgreSQLVisitor implements DCL
     
     @SuppressWarnings("unchecked")
     private Collection<SimpleTableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
-        return null == ctx.onObjectClause().tableNames() ? Collections.<SimpleTableSegment>emptyList() : ((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().tableNames())).getValue();
+        return null == ctx.onObjectClause().tableNames() ? Collections.emptyList() : ((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().tableNames())).getValue();
     }
     
     @Override

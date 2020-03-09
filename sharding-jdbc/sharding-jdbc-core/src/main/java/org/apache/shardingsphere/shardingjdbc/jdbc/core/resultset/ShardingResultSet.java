@@ -80,7 +80,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (boolean) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, boolean.class), boolean.class);
     }
     
@@ -91,7 +91,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (byte) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte.class), byte.class);
     }
     
@@ -102,7 +102,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public short getShort(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (short) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, short.class), short.class);
     }
     
@@ -113,7 +113,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public int getInt(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (int) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, int.class), int.class);
     }
     
@@ -124,7 +124,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public long getLong(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (long) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, long.class), long.class);
     }
     
@@ -135,7 +135,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (float) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, float.class), float.class);
     }
     
@@ -146,7 +146,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (double) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, double.class), double.class);
     }
     
@@ -157,7 +157,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (String) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class);
     }
     
@@ -168,7 +168,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
@@ -181,7 +181,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
@@ -192,7 +192,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (byte[]) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte[].class), byte[].class);
     }
     
@@ -203,7 +203,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Date) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Date.class), Date.class);
     }
     
@@ -214,7 +214,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Date) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
@@ -225,7 +225,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Time) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Time.class), Time.class);
     }
     
@@ -236,7 +236,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Time) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
             
@@ -247,7 +247,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
@@ -258,7 +258,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
@@ -269,7 +269,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public InputStream getAsciiStream(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergeResultSet.getInputStream(columnIndex, "Ascii");
     }
     
@@ -282,7 +282,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergeResultSet.getInputStream(columnIndex, "Unicode");
     }
     
@@ -293,7 +293,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public InputStream getBinaryStream(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergeResultSet.getInputStream(columnIndex, "Binary");
     }
     
@@ -304,7 +304,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Reader getCharacterStream(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Reader) mergeResultSet.getValue(columnIndex, Reader.class);
     }
     
@@ -315,7 +315,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Blob getBlob(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Blob) mergeResultSet.getValue(columnIndex, Blob.class);
     }
     
@@ -326,7 +326,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
         
     @Override
     public Clob getClob(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (Clob) mergeResultSet.getValue(columnIndex, Clob.class);
     }
     
@@ -337,7 +337,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (URL) mergeResultSet.getValue(columnIndex, URL.class);
     }
     
@@ -348,7 +348,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public SQLXML getSQLXML(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (SQLXML) mergeResultSet.getValue(columnIndex, SQLXML.class);
     }
     
@@ -359,7 +359,7 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
-        int columnIndex = columnLabelAndIndexMap.get(getActualColumnLabel(columnLabel));
+        int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return mergeResultSet.getValue(columnIndex, Object.class);
     }
 }

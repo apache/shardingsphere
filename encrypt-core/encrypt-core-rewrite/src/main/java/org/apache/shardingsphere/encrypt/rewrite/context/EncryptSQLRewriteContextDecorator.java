@@ -31,6 +31,7 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
  */
 public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContextDecorator<EncryptRule> {
     
+    @SuppressWarnings("unchecked")
     @Override
     public void decorate(final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
         boolean isQueryWithCipherColumn = properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);

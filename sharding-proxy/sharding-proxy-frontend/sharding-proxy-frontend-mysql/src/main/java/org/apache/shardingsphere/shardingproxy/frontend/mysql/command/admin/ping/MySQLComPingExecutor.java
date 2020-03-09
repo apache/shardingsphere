@@ -31,6 +31,6 @@ public final class MySQLComPingExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.<DatabasePacket>singletonList(new MySQLOKPacket(1));
+        return Collections.singletonList(new MySQLOKPacket(1));
     }
 }

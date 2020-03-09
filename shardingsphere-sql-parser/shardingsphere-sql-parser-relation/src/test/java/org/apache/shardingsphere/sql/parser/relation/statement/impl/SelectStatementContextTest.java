@@ -128,7 +128,7 @@ public final class SelectStatementContextTest {
     public void assertSetIndexWhenAggregationProjectionsPresent() {
         AggregationProjection aggregationProjection = new AggregationProjection(AggregationType.MAX, "", "id");
         aggregationProjection.getDerivedAggregationProjections().addAll(Collections.singletonList(aggregationProjection));
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(aggregationProjection), Collections.emptyList());
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(aggregationProjection));
         
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 new SelectStatement(), new GroupByContext(Collections.emptyList(), 0), createOrderBy(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS), projectionsContext, null);
@@ -161,7 +161,7 @@ public final class SelectStatementContextTest {
     
     private ProjectionsContext createProjectionsContext() {
         return new ProjectionsContext(
-                0, 0, true, Arrays.asList(getColumnProjectionWithoutOwner(), getColumnProjectionWithoutOwner(true), getColumnProjectionWithoutOwner(false)), Collections.emptyList());
+                0, 0, true, Arrays.asList(getColumnProjectionWithoutOwner(), getColumnProjectionWithoutOwner(true), getColumnProjectionWithoutOwner(false)));
     }
     
     private Projection getColumnProjectionWithoutOwner() {

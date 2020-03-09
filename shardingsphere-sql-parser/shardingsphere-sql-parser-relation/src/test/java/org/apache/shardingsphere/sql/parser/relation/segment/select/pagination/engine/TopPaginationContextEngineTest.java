@@ -54,7 +54,7 @@ public final class TopPaginationContextEngineTest {
     
     @Test
     public void assertCreatePaginationContextWhenRowNumberPredicateNotPresent() {
-        TopProjectionSegment topProjectionSegment = new TopProjectionSegment(0, 10, "text", null, "rowNumberAlias");
+        TopProjectionSegment topProjectionSegment = new TopProjectionSegment(0, 10, null, "rowNumberAlias");
         Collection<AndPredicate> andPredicates = Collections.emptyList();
         List<Object> parameters = Collections.emptyList();
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(topProjectionSegment, andPredicates, parameters);
@@ -80,7 +80,7 @@ public final class TopPaginationContextEngineTest {
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(predicateSegment);
         Collection<AndPredicate> andPredicates = Collections.singleton(andPredicate);
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, "text", null, name), andPredicates, Collections.emptyList());
+        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, null, name), andPredicates, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -94,7 +94,7 @@ public final class TopPaginationContextEngineTest {
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(predicateSegment);
         Collection<AndPredicate> andPredicates = Collections.singleton(andPredicate);
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, "text", null, name), andPredicates, Collections.singletonList(1));
+        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, null, name), andPredicates, Collections.singletonList(1));
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
         assertThat(paginationValueSegment, instanceOf(ParameterMarkerRowNumberValueSegment.class));
@@ -113,7 +113,7 @@ public final class TopPaginationContextEngineTest {
         AndPredicate andPredicate = new AndPredicate();
         andPredicate.getPredicates().add(predicateSegment);
         Collection<AndPredicate> andPredicates = Collections.singleton(andPredicate);
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, "text", null, name), andPredicates, Collections.emptyList());
+        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(new TopProjectionSegment(0, 10, null, name), andPredicates, Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
         assertThat(paginationValueSegment, instanceOf(NumberLiteralRowNumberValueSegment.class));

@@ -332,14 +332,14 @@ public final class UnsupportedOperationResultSetTest extends AbstractShardingJDB
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnIndexWithMap() throws SQLException {
         for (ResultSet each : resultSets) {
-            each.getObject(1, Collections.<String, Class<?>>emptyMap());
+            each.getObject(1, Collections.emptyMap());
         }
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertObjectForColumnLabelWithMap() throws SQLException {
         for (ResultSet each : resultSets) {
-            each.getObject("label", Collections.<String, Class<?>>emptyMap());
+            each.getObject("label", Collections.emptyMap());
         }
     }
 }

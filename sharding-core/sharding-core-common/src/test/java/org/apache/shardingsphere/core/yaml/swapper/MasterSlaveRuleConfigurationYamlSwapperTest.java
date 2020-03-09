@@ -20,11 +20,9 @@ package org.apache.shardingsphere.core.yaml.swapper;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,7 +37,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
                 new MasterSlaveRuleConfiguration("ds", "master", Collections.singletonList("slave"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master"));
-        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave")));
+        assertThat(actual.getSlaveDataSourceNames(), is(Collections.singletonList("slave")));
         assertThat(actual.getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
@@ -48,7 +46,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
         YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(new MasterSlaveRuleConfiguration("ds", "master", Collections.singletonList("slave")));
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master"));
-        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave")));
+        assertThat(actual.getSlaveDataSourceNames(), is(Collections.singletonList("slave")));
         assertNull(actual.getLoadBalanceAlgorithmType());
     }
     
@@ -80,6 +78,6 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     private void assertMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration actual) {
         assertThat(actual.getName(), is("master_slave_ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
+        assertThat(actual.getSlaveDataSourceNames(), is(Arrays.asList("slave_ds_0", "slave_ds_1")));
     }
 }

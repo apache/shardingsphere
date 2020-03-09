@@ -46,6 +46,6 @@ public final class PropertiesChangedListenerTest {
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        assertThat(propertiesChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", PROPERTIES_YAML, ChangedType.UPDATED)).getProps().get("sql.show"), is((Object) true));
+        assertThat(propertiesChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", PROPERTIES_YAML, ChangedType.UPDATED)).getProps().get("sql.show"), is(true));
     }
 }

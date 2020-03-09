@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.error;
+package org.apache.shardingsphere.shardingproxy.transport.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

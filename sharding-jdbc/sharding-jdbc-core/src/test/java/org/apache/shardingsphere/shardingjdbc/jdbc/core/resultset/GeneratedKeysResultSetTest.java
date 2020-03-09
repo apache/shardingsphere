@@ -158,9 +158,9 @@ public final class GeneratedKeysResultSetTest {
     @Test
     public void assertGetObject() {
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getObject(1), is((Object) 1L));
+        assertThat(actualResultSet.getObject(1), is(1L));
         assertTrue(actualResultSet.next());
-        assertThat(actualResultSet.getObject("order_id"), is((Object) 2L));
+        assertThat(actualResultSet.getObject("order_id"), is(2L));
         assertFalse(actualResultSet.next());
     }
     

@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -32,7 +30,7 @@ public final class OracleXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new OracleXADataSourceDefinition().getXADriverClassName(), CoreMatchers.<Collection<String>>is(Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource")));
+        assertThat(new OracleXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("oracle.jdbc.xa.client.OracleXADataSource")));
     }
     
     @Test

@@ -34,7 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class SubqueryProjectionSegment implements SQLSegment, AliasAvailable {
+public final class SubqueryProjectionSegment implements SQLSegment, ProjectionSegment, AliasAvailable {
     
     private final SubquerySegment subquery;
     

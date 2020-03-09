@@ -33,8 +33,6 @@ public final class TopProjectionSegment implements ProjectionSegment {
     
     private final int stopIndex;
     
-    private final String text;
-    
     private final RowNumberValueSegment top;
     
     private final String alias;

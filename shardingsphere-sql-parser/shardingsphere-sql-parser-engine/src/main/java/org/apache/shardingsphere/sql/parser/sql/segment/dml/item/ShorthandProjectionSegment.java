@@ -37,8 +37,6 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     
     private final int stopIndex;
     
-    private final String text;
-    
     private OwnerSegment owner;
     
     @Override

@@ -58,7 +58,7 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
                 ? null : shardingRouteContext.getShardingConditions().getConditions().iterator();
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
-            Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.<DataNode>emptyList() : shardingConditionIterator.next().getDataNodes();
+            Collection<DataNode> dataNodes = null == shardingConditionIterator ? Collections.emptyList() : shardingConditionIterator.next().getDataNodes();
             result.getInsertValues().add(new ShardingInsertValue(expressionSegments, dataNodes));
         }
         return result;

@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingK
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -59,7 +58,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getTableRules().size(), is(2));
         assertThat(actual.getBindingTableRules().size(), is(1));
         assertThat(actual.getBindingTableRules().iterator().next().getTableRules().size(), is(2));
-        assertThat(actual.getBroadcastTables(), CoreMatchers.is(Collections.singletonList("BROADCAST_TABLE")));
+        assertThat(actual.getBroadcastTables(), is(Collections.singletonList("BROADCAST_TABLE")));
         assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(actual.getDefaultShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
@@ -355,7 +354,7 @@ public final class ShardingRuleTest {
     @Test
     public void assertGetShardingLogicTableNames() {
         ShardingRule actual = createMaximumShardingRule();
-        assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), CoreMatchers.is(Collections.singletonList("LOGIC_TABLE")));
+        assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_TABLE")), is(Collections.singletonList("LOGIC_TABLE")));
     }
     
     @Test(expected = IllegalArgumentException.class)

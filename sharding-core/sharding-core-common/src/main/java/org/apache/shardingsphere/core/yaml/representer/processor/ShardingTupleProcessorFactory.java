@@ -33,6 +33,6 @@ public final class ShardingTupleProcessorFactory {
      * @return tuple processors for sharding
      */
     public static Collection<TupleProcessor> newInstance() {
-        return Collections.<TupleProcessor>singletonList(new NoneShardingStrategyTupleProcessor());
+        return Collections.singletonList(new NoneShardingStrategyTupleProcessor());
     }
 }

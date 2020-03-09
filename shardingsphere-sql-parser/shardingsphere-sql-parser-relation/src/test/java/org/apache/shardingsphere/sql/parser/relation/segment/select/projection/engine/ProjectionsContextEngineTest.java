@@ -66,7 +66,7 @@ public final class ProjectionsContextEngineTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(projectionsSegment);
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
@@ -80,7 +80,7 @@ public final class ProjectionsContextEngineTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(projectionsSegment);
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
@@ -96,7 +96,7 @@ public final class ProjectionsContextEngineTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(projectionsSegment);
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
@@ -113,7 +113,7 @@ public final class ProjectionsContextEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getTables().addAll(Collections.singletonList(new SimpleTableSegment(0, 0, new IdentifierValue("name"))));
         selectStatement.setProjections(projectionsSegment);
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
@@ -130,7 +130,7 @@ public final class ProjectionsContextEngineTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.getTables().addAll(Collections.singletonList(new SimpleTableSegment(0, 0, new IdentifierValue("name"))));
         selectStatement.setProjections(projectionsSegment);
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
         projectionsSegment.getProjections().addAll(Collections.singleton(shorthandProjectionSegment));
@@ -149,14 +149,14 @@ public final class ProjectionsContextEngineTest {
         selectStatement.getTables().addAll(Collections.singletonList(tableSegment));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10, "text");
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         SimpleTableSegment table = new SimpleTableSegment(0, 10, new IdentifierValue("name"));
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         table.setOwner(new OwnerSegment(0, 10, new IdentifierValue("name")));
         shorthandProjectionSegment.setOwner(owner);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         columnSegment.setOwner(owner);
-        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment("ColumnProjectionSegment", columnSegment);
+        ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
         columnProjectionSegment.getColumn().setOwner(owner);
         projectionsSegment.getProjections().addAll(Lists.newArrayList(columnProjectionSegment, shorthandProjectionSegment));
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC));

@@ -43,8 +43,8 @@ public final class DefaultYamlRepresenterTest {
     public void assertToYamlWithEmpty() {
         DefaultYamlRepresenterFixture actual = new DefaultYamlRepresenterFixture();
         actual.setValue("");
-        actual.setCollection(Collections.<String>emptyList());
-        actual.setMap(Collections.<String, String>emptyMap());
+        actual.setCollection(Collections.emptyList());
+        actual.setMap(Collections.emptyMap());
         assertThat(new Yaml(new DefaultYamlRepresenter()).dumpAsMap(actual), is("value: ''\n"));
     }
     

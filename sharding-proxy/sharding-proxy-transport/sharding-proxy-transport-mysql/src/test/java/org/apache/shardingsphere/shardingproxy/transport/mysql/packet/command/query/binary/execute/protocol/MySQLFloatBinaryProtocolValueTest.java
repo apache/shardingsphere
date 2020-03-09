@@ -19,12 +19,12 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,7 +38,7 @@ public final class MySQLFloatBinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(byteBuf.readFloatLE()).thenReturn(1f);
-        assertThat(new MySQLFloatBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf)), CoreMatchers.<Object>is(1f));
+        assertThat(new MySQLFloatBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf)), is(1f));
     }
     
     @Test
