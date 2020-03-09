@@ -34,6 +34,11 @@
             <artifactId>sharding-scaling-core</artifactId>
             <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-proxy-transport-mysql</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>io.netty</groupId>

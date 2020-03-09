@@ -32,8 +32,13 @@ import lombok.SneakyThrows;
 
 /**
  * MySQL client authentication packet.
+ *
+ * <p>
+ *     Replace with {@link org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet}
+ * </p>
  */
 @Setter
+@Deprecated
 public final class ClientAuthenticationPacket extends AbstractPacket {
     
     @Setter(AccessLevel.NONE)
