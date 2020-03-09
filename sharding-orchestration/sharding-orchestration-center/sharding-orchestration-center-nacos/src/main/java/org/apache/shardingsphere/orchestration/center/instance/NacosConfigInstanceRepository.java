@@ -39,7 +39,7 @@ import java.util.concurrent.Executor;
  * The nacos instance for ConfigCenter.
  */
 @Slf4j
-public class NacosConfigInstanceRepository implements ConfigCenterRepository {
+public final class NacosConfigInstanceRepository implements ConfigCenterRepository {
     
     private ConfigService configService;
     

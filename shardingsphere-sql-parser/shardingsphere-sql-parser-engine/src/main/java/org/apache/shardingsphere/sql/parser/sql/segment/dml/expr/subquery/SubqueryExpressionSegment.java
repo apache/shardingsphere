@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleEx
  */
 @RequiredArgsConstructor
 @ToString
-public class SubqueryExpressionSegment implements SimpleExpressionSegment {
+public final class SubqueryExpressionSegment implements SimpleExpressionSegment {
     
     @Getter
     private final SubquerySegment subquery;

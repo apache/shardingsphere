@@ -27,7 +27,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class RegistryCenterConfig {
+public final class RegistryCenterConfig {
     
     private String name;
     

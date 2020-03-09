@@ -17,24 +17,28 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.util;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.InstanceConfigurationYamlSwapper;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
- * YamlInstanceConfiguration swapper util.
+ * YAML instance configuration swapper util.
  */
-public class YamlInstanceConfigurationSwapperUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class YamlInstanceConfigurationSwapperUtil {
     
     private static final InstanceConfigurationYamlSwapper INSTANCE_SWAPPER = new InstanceConfigurationYamlSwapper();
     
     /**
-     * marshal YamlInstanceConfiguration map to InstanceConfiguration map.
+     * Marshal YAML instance configuration map to instance configuration map.
      *
-     * @param yamlInstanceConfigurationMap YamlInstanceConfiguration map
-     * @return InstanceConfiguration map
+     * @param yamlInstanceConfigurationMap YAML instance configuration map
+     * @return instance configuration map
      */
     public static Map<String, InstanceConfiguration> marshal(final Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap) {
         Map<String, InstanceConfiguration> result = new LinkedHashMap<>(yamlInstanceConfigurationMap.size(), 1);
