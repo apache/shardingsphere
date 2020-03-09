@@ -25,24 +25,24 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class RuleConfiguration {
-
+public final class RuleConfiguration {
+    
     private String sourceDatasource;
     
     private String sourceRule;
-
+    
     private YamlDataSourceParameter destinationDataSources;
-
+    
     @Setter
     @Getter
     public static final class YamlDataSourceParameter {
-
+        
         private String name;
-
+        
         private String url;
-
+        
         private String username;
-
+        
         private String password;
     }
 }

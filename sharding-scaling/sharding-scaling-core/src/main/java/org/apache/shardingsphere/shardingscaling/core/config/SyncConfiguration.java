@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @Getter
 @RequiredArgsConstructor
-public class SyncConfiguration {
+public final class SyncConfiguration {
     
     /**
      * The concurrency of writers.
@@ -35,8 +35,8 @@ public class SyncConfiguration {
     private final int concurrency;
     
     private final Map<String, String> tableNameMap;
-
+    
     private final RdbmsConfiguration readerConfiguration;
-
+    
     private final RdbmsConfiguration writerConfiguration;
 }

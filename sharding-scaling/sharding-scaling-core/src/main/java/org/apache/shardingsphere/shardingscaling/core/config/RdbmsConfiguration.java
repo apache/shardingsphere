@@ -30,12 +30,12 @@ import java.util.Map;
 @Setter
 @Getter
 @EqualsAndHashCode
-public class RdbmsConfiguration implements Cloneable {
-
+public final class RdbmsConfiguration implements Cloneable {
+    
     private DataSourceConfiguration dataSourceConfiguration;
-
+    
     private String tableName;
-
+    
     private String whereCondition;
     
     private int spiltNum;
