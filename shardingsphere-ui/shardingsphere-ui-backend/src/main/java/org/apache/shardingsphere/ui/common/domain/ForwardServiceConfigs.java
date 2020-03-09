@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.ui.common.domain;
 
-import com.google.common.base.Optional;
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Forward service configs.
@@ -50,7 +50,7 @@ public final class ForwardServiceConfigs {
      * @return forward service config
      */
     public Optional<ForwardServiceConfig> getForwardServiceConfig(final String forwardServiceType) {
-        return Optional.fromNullable(forwardServiceConfigs.get(forwardServiceType));
+        return Optional.ofNullable(forwardServiceConfigs.get(forwardServiceType));
     }
     
     /**
@@ -60,6 +60,6 @@ public final class ForwardServiceConfigs {
      * @return forward service config
      */
     public Optional<ForwardServiceConfig> removeForwardServiceConfig(final String forwardServiceType) {
-        return Optional.fromNullable(forwardServiceConfigs.remove(forwardServiceType));
+        return Optional.ofNullable(forwardServiceConfigs.remove(forwardServiceType));
     }
 }
