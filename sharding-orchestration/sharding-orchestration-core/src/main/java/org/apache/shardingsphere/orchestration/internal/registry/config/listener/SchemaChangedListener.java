@@ -42,7 +42,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.node.Con
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingConfigCenterEventListener;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
-import org.apache.shardingsphere.orchestration.internal.util.MapUtils;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
@@ -53,6 +52,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Schema changed listener.
@@ -120,7 +120,8 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for orchestration.");
-        return new DataSourceChangedEvent(shardingSchemaName, MapUtils.transformValues(dataSourceConfigurations, new DataSourceConfigurationYamlSwapper()::swap));
+        return new DataSourceChangedEvent(shardingSchemaName, dataSourceConfigurations.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue()))));
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
