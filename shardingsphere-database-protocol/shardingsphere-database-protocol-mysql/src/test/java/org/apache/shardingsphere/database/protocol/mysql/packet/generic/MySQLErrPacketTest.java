@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLErrPacketTest {
@@ -37,6 +38,20 @@ public final class MySQLErrPacketTest {
     @Test
     public void assertNewErrPacketWithServerErrorCode() {
         MySQLErrPacket actual = new MySQLErrPacket(1, MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
+        assertThat(actual.getSqlState(), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
+        assertThat(actual.getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root")));
+    }
+    
+    @Test
+    public void assertNewErrPacketWithPayload() {
+        when(payload.readInt1()).thenReturn(1, MySQLErrPacket.HEADER);
+        when(payload.readInt2()).thenReturn(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode());
+        when(payload.readStringFix(1)).thenReturn("#");
+        when(payload.readStringFix(5)).thenReturn(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState());
+        when(payload.readStringEOF()).thenReturn(String.format(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root"));
+        MySQLErrPacket actual = new MySQLErrPacket(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
         assertThat(actual.getSqlState(), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
