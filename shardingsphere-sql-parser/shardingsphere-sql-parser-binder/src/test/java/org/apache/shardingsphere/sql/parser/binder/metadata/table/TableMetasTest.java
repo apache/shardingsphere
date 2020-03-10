@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table;
+package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.junit.Test;
 
 import java.util.Collections;

@@ -46,8 +46,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;

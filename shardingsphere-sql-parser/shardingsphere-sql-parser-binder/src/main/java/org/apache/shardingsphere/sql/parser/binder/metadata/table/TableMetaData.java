@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table;
+package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,11 +46,11 @@ public final class TableMetaData {
     }
     
     private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
-        Map<String, ColumnMetaData> columns = new LinkedHashMap<>(columnMetaDataList.size(), 1);
+        Map<String, ColumnMetaData> result = new LinkedHashMap<>(columnMetaDataList.size(), 1);
         for (ColumnMetaData each : columnMetaDataList) {
-            columns.put(each.getName().toLowerCase(), each);
+            result.put(each.getName().toLowerCase(), each);
         }
-        return Collections.synchronizedMap(columns);
+        return Collections.synchronizedMap(result);
     }
     
     /**

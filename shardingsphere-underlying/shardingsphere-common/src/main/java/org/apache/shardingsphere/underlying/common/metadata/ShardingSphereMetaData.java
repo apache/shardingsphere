@@ -19,8 +19,8 @@ package org.apache.shardingsphere.underlying.common.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table;
+package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,31 +36,32 @@ public final class TableMetas {
     }
     
     /**
-     * Get table meta data by table name.
-     * @param logicTableName logicTableName logic table name
+     * Get table meta data via table name.
+     * 
+     * @param tableName tableName table name
      * @return table mata data
      */
-    public TableMetaData get(final String logicTableName) {
-        return tables.get(logicTableName);
+    public TableMetaData get(final String tableName) {
+        return tables.get(tableName);
     }
     
     /**
      * Add table meta data.
      * 
-     * @param logicTableName logic table name
+     * @param tableName table name
      * @param tableMetaData table meta data
      */
-    public void put(final String logicTableName, final TableMetaData tableMetaData) {
-        tables.put(logicTableName, tableMetaData);
+    public void put(final String tableName, final TableMetaData tableMetaData) {
+        tables.put(tableName, tableMetaData);
     }
     
     /**
      * Remove table meta data.
      *
-     * @param logicTableName logic table name
+     * @param tableName table name
      */
-    public void remove(final String logicTableName) {
-        tables.remove(logicTableName);
+    public void remove(final String tableName) {
+        tables.remove(tableName);
     }
     
     /**

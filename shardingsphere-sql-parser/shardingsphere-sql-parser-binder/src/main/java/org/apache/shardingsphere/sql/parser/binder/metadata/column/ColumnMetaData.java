@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.column;
+package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

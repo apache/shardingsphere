@@ -20,11 +20,11 @@ package org.apache.shardingsphere.underlying.common.metadata.table.init.loader.i
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;

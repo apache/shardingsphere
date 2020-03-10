@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.column.loader;
 
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
