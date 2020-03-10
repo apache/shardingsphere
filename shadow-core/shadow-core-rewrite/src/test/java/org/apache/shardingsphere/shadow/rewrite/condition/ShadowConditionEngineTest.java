@@ -26,8 +26,8 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ShadowConditionEngineTest {
-
+public final class ShadowConditionEngineTest {
+    
     @Test
     public void assertGetConditionValues() {
         List<Object> actual = new ShadowCondition("col", 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());

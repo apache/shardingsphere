@@ -19,7 +19,6 @@ package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
 import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -46,6 +45,6 @@ public final class PostShardingRegistryCenterRepositoryEventListenerTest {
             }
         };
         postShardingRegistryCenterEventListener.watch();
-        verify(regCenter).watch(eq("test"), ArgumentMatchers.<DataChangedEventListener>any());
+        verify(regCenter).watch(eq("test"), ArgumentMatchers.any());
     }
 }

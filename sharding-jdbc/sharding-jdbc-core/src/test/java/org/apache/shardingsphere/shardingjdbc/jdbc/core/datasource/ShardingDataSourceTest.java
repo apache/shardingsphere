@@ -138,9 +138,8 @@ public final class ShardingDataSourceTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery(ArgumentMatchers.<String>any())).thenReturn(resultSet);
-        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(),
-                ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
+        when(statement.executeQuery(ArgumentMatchers.any())).thenReturn(resultSet);
+        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resultSet);
         if (databaseType instanceof MySQLDatabaseType) {
             when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         } else if (databaseType instanceof H2DatabaseType) {

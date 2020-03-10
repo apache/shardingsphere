@@ -38,9 +38,6 @@ public abstract class SQLParserTestCase {
     @XmlAttribute(name = "sql-case-id")
     private String sqlCaseId;
     
-    @XmlAttribute(name = "long-sql")
-    private boolean longSQL;
-    
     @XmlAttribute
     private String parameters;
     

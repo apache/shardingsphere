@@ -29,8 +29,11 @@ import lombok.Getter;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  ERR_Packet
  *     https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket}
  */
 @Getter
+@Deprecated
 public final class ErrorPacket extends AbstractPacket {
     
     private short fieldCount;

@@ -33,7 +33,7 @@ import java.util.Properties;
  * Shadow data source.
  */
 @Getter
-public class ShadowDataSource extends AbstractDataSourceAdapter {
+public final class ShadowDataSource extends AbstractDataSourceAdapter {
     
     private static final String ACTUAL_DATABASE = "actual";
     
@@ -47,7 +47,7 @@ public class ShadowDataSource extends AbstractDataSourceAdapter {
     }
     
     @Override
-    public final Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return new ShadowConnection(getDataSourceMap().get(ACTUAL_DATABASE).getConnection(), getDataSourceMap().get(SHADOW_DATABASE).getConnection(), runtimeContext);
     }
 }

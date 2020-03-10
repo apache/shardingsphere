@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
 import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
@@ -25,6 +24,8 @@ import org.apache.shardingsphere.ui.repository.RegistryCenterConfigsRepository;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * Implementation of Registry center config service.
@@ -42,7 +43,7 @@ public final class RegistryCenterConfigServiceImpl implements RegistryCenterConf
     
     @Override
     public Optional<RegistryCenterConfig> loadActivated() {
-        return Optional.fromNullable(findActivatedRegistryCenterConfiguration(loadAll()));
+        return Optional.ofNullable(findActivatedRegistryCenterConfiguration(loadAll()));
     }
     
     @Override

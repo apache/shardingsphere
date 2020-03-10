@@ -29,7 +29,7 @@ import java.util.List;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-MetaData")
-public class MetaDataLogger {
+public final class MetaDataLogger {
     
     /**
      * Log table meta data loading information.
