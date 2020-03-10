@@ -26,8 +26,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 public final class TestCenterRepositoryRepository implements RegistryCenterRepository, ConfigCenterRepository {
     
@@ -38,7 +38,7 @@ public final class TestCenterRepositoryRepository implements RegistryCenterRepos
     private Properties properties;
     
     @Override
-    public void init(final InstanceConfiguration config) {
+    public void init(final CenterConfiguration config) {
     }
     
     @Override
