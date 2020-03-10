@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.binary.prepare;
 
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 

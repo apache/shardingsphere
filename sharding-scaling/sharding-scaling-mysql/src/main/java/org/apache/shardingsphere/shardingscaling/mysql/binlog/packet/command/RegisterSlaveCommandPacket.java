@@ -25,6 +25,10 @@ import lombok.Setter;
 
 /**
  * Register salve command packet.
+ *
+ * <p>
+ *     Refactor by extends {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}.
+ * </p>
  */
 @Setter
 public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {

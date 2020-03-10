@@ -17,24 +17,23 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.auth;
 
-import java.util.Optional;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.ConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.AuthenticationEngine;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLAuthenticationHandler;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.Optional;
 
 /**
  * Authentication engine for MySQL.
@@ -67,7 +66,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         }
         return true;
     }
-
+    
     private MySQLErrPacket getMySQLErrPacket(final MySQLServerErrorCode errorCode, final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet response41) {
         if (MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR == errorCode) {
             return new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR, response41.getUsername(), getHostAddress(context), response41.getDatabase());
@@ -76,7 +75,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
                     0 == response41.getAuthResponse().length ? "NO" : "YES");
         }
     }
-
+    
     private String getHostAddress(final ChannelHandlerContext context) {
         SocketAddress socketAddress = context.channel().remoteAddress();
         return socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();

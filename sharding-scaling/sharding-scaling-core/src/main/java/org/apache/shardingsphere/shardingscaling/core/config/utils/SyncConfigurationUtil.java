@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shardingscaling.core.config.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -32,22 +34,21 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * SyncConfiguration Util.
+ * Sync configuration Util.
  */
-public class SyncConfigurationUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SyncConfigurationUtil {
     
     /**
-     * Split ScalingConfiguration to SyncConfigurations.
+     * Split Scaling configuration to Sync configurations.
      *
-     * @param scalingConfiguration ScalingConfiguration
-     * @return List of SyncConfigurations
+     * @param scalingConfiguration scaling configuration
+     * @return list of sync configurations
      */
     public static Collection<SyncConfiguration> toSyncConfigurations(final ScalingConfiguration scalingConfiguration) {
         Collection<SyncConfiguration> result = new LinkedList<>();
-        Map<String, DataSourceConfiguration> sourceDatasource = ConfigurationYamlConverter.loadDataSourceConfigurations(
-                scalingConfiguration.getRuleConfiguration().getSourceDatasource());
-        ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(
-                scalingConfiguration.getRuleConfiguration().getSourceRule());
+        Map<String, DataSourceConfiguration> sourceDatasource = ConfigurationYamlConverter.loadDataSourceConfigurations(scalingConfiguration.getRuleConfiguration().getSourceDatasource());
+        ShardingRuleConfiguration sourceRule = ConfigurationYamlConverter.loadShardingRuleConfiguration(scalingConfiguration.getRuleConfiguration().getSourceRule());
         Map<String, Map<String, String>> dataSourceTableNameMap = toDataSourceTableNameMap(sourceRule, sourceDatasource.keySet());
         for (String each : dataSourceTableNameMap.keySet()) {
             RdbmsConfiguration readerConfiguration = createReaderConfiguration(sourceDatasource.get(each));
@@ -110,12 +111,12 @@ public class SyncConfigurationUtil {
     }
     
     private static RdbmsConfiguration createWriterConfiguration(final ScalingConfiguration scalingConfiguration) {
-        RdbmsConfiguration writerConfiguration = new RdbmsConfiguration();
+        RdbmsConfiguration result = new RdbmsConfiguration();
         JDBCDataSourceConfiguration writerDataSourceConfiguration = new JDBCDataSourceConfiguration(
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUrl(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getUsername(),
                 scalingConfiguration.getRuleConfiguration().getDestinationDataSources().getPassword());
-        writerConfiguration.setDataSourceConfiguration(writerDataSourceConfiguration);
-        return writerConfiguration;
+        result.setDataSourceConfiguration(writerDataSourceConfiguration);
+        return result;
     }
 }

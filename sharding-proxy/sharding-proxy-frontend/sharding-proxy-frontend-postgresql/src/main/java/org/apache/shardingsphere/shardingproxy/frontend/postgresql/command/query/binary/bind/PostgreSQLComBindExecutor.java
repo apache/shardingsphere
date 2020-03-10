@@ -17,6 +17,17 @@
 
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.bind;
 
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBinaryResultSetRowPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLBindCompletePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
@@ -29,17 +40,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.PostgreSQLErrPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLBinaryResultSetRowPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLBindCompletePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

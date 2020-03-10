@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-proxy-transport-postgresql</artifactId>
+            <artifactId>shardingsphere-database-protocol-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -22,11 +22,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Job configuration.
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-public class JobConfiguration {
-
+public final class JobConfiguration {
+    
     private int concurrency = 3;
 }

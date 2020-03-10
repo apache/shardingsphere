@@ -18,23 +18,23 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacketFactory;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacketType;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacketTypeLoader;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacket;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLErrPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.MySQLCommandPacketTypeLoader;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 
 import java.sql.SQLException;
 

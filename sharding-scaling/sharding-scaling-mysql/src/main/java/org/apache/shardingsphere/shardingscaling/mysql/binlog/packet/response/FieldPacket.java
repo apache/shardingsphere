@@ -29,8 +29,11 @@ import lombok.Getter;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Text Protocol  /  COM_QUERY  /  COM_QUERY Response
  *     https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet}
  */
 @Getter
+@Deprecated
 public final class FieldPacket extends AbstractPacket {
     
     private String catalog;

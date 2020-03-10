@@ -27,12 +27,12 @@ import lombok.Getter;
  *
  * <p>
  *     There is no define for result set packet header.
- *
- *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Prepared Statements  /  Binary Protocol ResultSet
- *     https://dev.mysql.com/doc/internals/en/binary-protocol-resultset.html
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket}
  */
 @Getter
+@Deprecated
 public final class ResultSetHeaderPacket extends AbstractPacket {
     
     private long columnCount;
