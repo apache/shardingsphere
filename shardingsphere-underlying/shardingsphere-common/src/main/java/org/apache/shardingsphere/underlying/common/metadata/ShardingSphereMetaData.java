@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
 
 import java.util.HashMap;
 import java.util.Map;
