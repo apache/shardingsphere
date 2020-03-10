@@ -53,7 +53,7 @@ public final class MySQLOKPacket implements MySQLPacket {
     private final String info;
     
     public MySQLOKPacket(final int sequenceId) {
-        this(sequenceId, 0L, 0L, DEFAULT_STATUS_FLAG,  0, "");
+        this(sequenceId, 0L, 0L, DEFAULT_STATUS_FLAG, 0, "");
     }
     
     public MySQLOKPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
