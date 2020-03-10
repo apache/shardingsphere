@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
 
 /**
  * Relation metas aware.

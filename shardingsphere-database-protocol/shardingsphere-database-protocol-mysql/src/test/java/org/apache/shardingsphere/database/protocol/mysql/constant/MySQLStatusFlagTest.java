@@ -28,4 +28,14 @@ public final class MySQLStatusFlagTest {
     public void assertGetValue() {
         assertThat(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue(), is(0x0001));
     }
+    
+    @Test
+    public void assertValueOfByInteger() {
+        assertThat(MySQLStatusFlag.valueOf(0x0001), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertValueOfByIntegerFailure() {
+        MySQLStatusFlag.valueOf(0x0011);
+    }
 }

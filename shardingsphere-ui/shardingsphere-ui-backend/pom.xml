@@ -33,16 +33,16 @@
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-sql-parser-spi</artifactId>
-                    <groupId>org.apache.shardingsphere</groupId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-sql-parser-engine</artifactId>
-                    <groupId>org.apache.shardingsphere</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>shardingsphere-sql-parser-relation</artifactId>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-sql-parser-binder</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -52,8 +52,8 @@
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>sharding-core-entry</artifactId>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>sharding-core-entry</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

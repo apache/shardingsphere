@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.protocol.error.SQLErrorCode;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
@@ -49,6 +50,15 @@ public final class MySQLErrPacket implements MySQLPacket {
     
     public MySQLErrPacket(final int sequenceId, final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
         this(sequenceId, sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), errorMessageArguments));
+    }
+    
+    public MySQLErrPacket(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL ERR packet must be `0xff`.");
+        errorCode = payload.readInt2();
+        payload.readStringFix(1);
+        sqlState = payload.readStringFix(5);
+        errorMessage = payload.readStringEOF();
     }
     
     @Override

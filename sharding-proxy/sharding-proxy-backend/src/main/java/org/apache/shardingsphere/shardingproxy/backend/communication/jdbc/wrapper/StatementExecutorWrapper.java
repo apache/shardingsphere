@@ -18,7 +18,12 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouter;
+import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
+import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
+import org.apache.shardingsphere.shadow.rewrite.judgement.impl.SimpleJudgementEngine;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.shard.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -29,10 +34,10 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.sql.parser.relation.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -73,6 +78,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         if (logicSchema instanceof EncryptSchema) {
             return doEncryptRoute(sql);
         }
+        if (logicSchema instanceof ShadowSchema) {
+            return doShadowRoute(sql);
+        }
         return doTransparentRoute(sql);
     }
     
@@ -111,9 +119,31 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         return result;
     }
     
-    private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final EncryptRule encryptRule) {
+    private ExecutionContext doShadowRoute(final String sql) {
+        ShadowSchema shadowSchema = (ShadowSchema) logicSchema;
+        SQLStatement sqlStatement = shadowSchema.getSqlParserEngine().parse(sql, true);
+        RelationMetas relationMetas = logicSchema.getMetaData().getRelationMetas();
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, new LinkedList<>(), sqlStatement);
+        ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine(shadowSchema.getShadowRule(), sqlStatementContext);
+        String dataSourceName = shadowJudgementEngine.isShadowSQL()
+                ? shadowSchema.getShadowRule().getRuleConfiguration().getShadowMappings().get(logicSchema.getDataSources().keySet().iterator().next())
+                : logicSchema.getDataSources().keySet().iterator().next();
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
+                .createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(shadowSchema.getShadowRule()));
+        SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
+        ExecutionContext result = new ExecutionContext(sqlStatementContext);
+        result.getExecutionUnits().add(
+                new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
+        return result;
+    }
+    
+    private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final BaseRule baseRule) {
         Map<BaseRule, SQLRewriteContextDecorator> result = new HashMap<>(1, 1);
-        result.put(encryptRule, new EncryptSQLRewriteContextDecorator());
+        if (baseRule instanceof EncryptRule) {
+            result.put(baseRule, new EncryptSQLRewriteContextDecorator());
+        } else if (baseRule instanceof ShadowRule) {
+            result.put(baseRule, new ShadowSQLRewriteContextDecorator());
+        }
         return result;
     }
     

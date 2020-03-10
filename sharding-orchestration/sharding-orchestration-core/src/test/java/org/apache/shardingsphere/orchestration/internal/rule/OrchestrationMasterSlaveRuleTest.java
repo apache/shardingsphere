@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.rule;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
@@ -48,7 +47,7 @@ public final class OrchestrationMasterSlaveRuleTest {
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
         orchestrationMasterSlaveRule.updateDisabledDataSourceNames("slave_db_0", true);
-        assertThat(FieldUtil.getFieldValue(orchestrationMasterSlaveRule, "disabledDataSourceNames"), is(Sets.newHashSet("slave_db_0")));
+        assertThat(FieldUtil.getFieldValue(orchestrationMasterSlaveRule, "disabledDataSourceNames"), is(Collections.singleton("slave_db_0")));
     }
     
     @Test

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.generator;
 
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**

@@ -35,14 +35,14 @@ public abstract class PostShardingRegistryCenterEventListener implements Shardin
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
-    private final RegistryCenterRepository regCenter;
+    private final RegistryCenterRepository registryCenterRepository;
     
     private final String watchKey;
     
     @Override
     public final void watch(final DataChangedEvent.ChangedType... watchedChangedTypes) {
         final Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
-        regCenter.watch(watchKey, dataChangedEvent -> {
+        registryCenterRepository.watch(watchKey, dataChangedEvent -> {
             if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
                 eventBus.post(createShardingOrchestrationEvent(dataChangedEvent));
             }

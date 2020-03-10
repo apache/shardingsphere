@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.underlying.rewrite.impl;
 
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.underlying.rewrite.sql.impl.DefaultSQLBuilder;
