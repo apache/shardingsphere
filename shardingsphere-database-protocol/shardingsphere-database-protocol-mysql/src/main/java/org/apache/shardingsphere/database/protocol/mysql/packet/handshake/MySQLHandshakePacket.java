@@ -135,7 +135,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         }
     }
     
-    private boolean isClientSecureConnection () {
+    private boolean isClientSecureConnection() {
         return 0 != (capabilityFlagsLower & MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue());
     }
     
