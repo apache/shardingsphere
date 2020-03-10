@@ -17,25 +17,27 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.constant;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MySQLStatusFlagTest {
+/**
+ * MySQL client/server protocol Authentication Method.
+ *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/authentication-method.html">Authentication Method</a>
+ */
+@RequiredArgsConstructor
+@Getter
+public enum MySQLAuthenticationMethod {
     
-    @Test
-    public void assertGetValue() {
-        assertThat(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue(), is(0x0001));
-    }
+    OLD_PASSWORD_AUTHENTICATION("mysql_old_password"),
     
-    @Test
-    public void assertValueOfByInteger() {
-        assertThat(MySQLStatusFlag.valueOf(0x0001), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS));
-    }
+    SECURE_PASSWORD_AUTHENTICATION("mysql_native_password"),
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertValueOfByIntegerFailure() {
-        MySQLStatusFlag.valueOf(0x0011);
-    }
+    CLEAR_TEXT_AUTHENTICATION("mysql_clear_password"),
+    
+    WINDOWS_NATIVE_AUTHENTICATION("authentication_windows_client"),
+    
+    SHA256("sha256_password");
+    
+    private final String methodName;
 }

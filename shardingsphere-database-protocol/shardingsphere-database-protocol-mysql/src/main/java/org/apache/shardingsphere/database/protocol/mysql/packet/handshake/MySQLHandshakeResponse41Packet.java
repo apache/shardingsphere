@@ -19,6 +19,8 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.handshake;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
@@ -29,25 +31,25 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
  */
 @RequiredArgsConstructor
+@Setter
+@Getter
 public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     
-    @Getter
     private final int sequenceId;
-    
-    private final int capabilityFlags;
     
     private final int maxPacketSize;
     
     private final int characterSet;
     
-    @Getter
     private final String username;
     
-    @Getter
-    private final byte[] authResponse;
+    private byte[] authResponse;
     
-    @Getter
-    private final String database;
+    private int capabilityFlags;
+    
+    private String database;
+    
+    private String authPluginName;
     
     public MySQLHandshakeResponse41Packet(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
@@ -58,6 +60,7 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
         username = payload.readStringNul();
         authResponse = readAuthResponse(payload);
         database = readDatabase(payload);
+        authPluginName = readAuthPluginName(payload);
     }
     
     private byte[] readAuthResponse(final MySQLPacketPayload payload) {
@@ -75,6 +78,30 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
         return 0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()) ? payload.readStringNul() : null;
     }
     
+    private String readAuthPluginName(final MySQLPacketPayload payload) {
+        return 0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()) ? payload.readStringNul() : null;
+    }
+    
+    /**
+     * Set database.
+     *
+     * @param database database
+     */
+    public void setDatabase(final String database) {
+        this.database = database;
+        capabilityFlags |= MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue();
+    }
+    
+    /**
+     * Set auth plugin name.
+     *
+     * @param mySQLAuthenticationMethod MySQL authentication method
+     */
+    public void setAuthPluginName(final MySQLAuthenticationMethod mySQLAuthenticationMethod) {
+        this.authPluginName = mySQLAuthenticationMethod.getMethodName();
+        capabilityFlags |= MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue();
+    }
+    
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt4(capabilityFlags);
@@ -84,6 +111,7 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
         payload.writeStringNul(username);
         writeAuthResponse(payload);
         writeDatabase(payload);
+        writeAuthPluginName(payload);
     }
     
     private void writeAuthResponse(final MySQLPacketPayload payload) {
@@ -100,6 +128,12 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     private void writeDatabase(final MySQLPacketPayload payload) {
         if (0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
             payload.writeStringNul(database);
+        }
+    }
+    
+    private void writeAuthPluginName(final MySQLPacketPayload payload) {
+        if (0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue())) {
+            payload.writeStringNul(authPluginName);
         }
     }
 }

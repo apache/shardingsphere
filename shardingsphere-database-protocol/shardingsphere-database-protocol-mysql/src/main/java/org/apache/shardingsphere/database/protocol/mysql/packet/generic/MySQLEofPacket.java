@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
@@ -45,6 +46,13 @@ public final class MySQLEofPacket implements MySQLPacket {
     
     public MySQLEofPacket(final int sequenceId) {
         this(sequenceId, 0, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+    }
+    
+    public MySQLEofPacket(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL EOF packet must be `0xfe`.");
+        warnings = payload.readInt2();
+        statusFlags = payload.readInt2();
     }
     
     @Override
