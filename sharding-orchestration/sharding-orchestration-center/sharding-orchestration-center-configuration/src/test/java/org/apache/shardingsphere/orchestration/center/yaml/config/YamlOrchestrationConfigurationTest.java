@@ -31,14 +31,14 @@ public final class YamlOrchestrationConfigurationTest {
     public void assertInstanceConfigurationMapWithConstructMethod() {
         Map<String, YamlCenterRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = new YamlOrchestrationConfiguration(instanceConfigurationMap);
-        assertThat(yamlOrchestrationConfiguration.getInstanceConfigurationMap(), is(instanceConfigurationMap));
+        assertThat(yamlOrchestrationConfiguration.getCenterRepositoryConfigurationMap(), is(instanceConfigurationMap));
     }
     
     @Test
     public void assertInstanceConfigurationMapWithSetMethod() {
         Map<String, YamlCenterRepositoryConfiguration> instanceConfigurationMap = new HashMap<>();
         YamlOrchestrationConfiguration yamlOrchestrationConfiguration = new YamlOrchestrationConfiguration();
-        yamlOrchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
-        assertThat(yamlOrchestrationConfiguration.getInstanceConfigurationMap(), is(instanceConfigurationMap));
+        yamlOrchestrationConfiguration.setCenterRepositoryConfigurationMap(instanceConfigurationMap);
+        assertThat(yamlOrchestrationConfiguration.getCenterRepositoryConfigurationMap(), is(instanceConfigurationMap));
     }
 }

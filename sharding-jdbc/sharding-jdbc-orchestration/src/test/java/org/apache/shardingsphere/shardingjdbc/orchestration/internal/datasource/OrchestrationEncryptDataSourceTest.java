@@ -22,8 +22,6 @@ import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
@@ -32,6 +30,8 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFact
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,22 +66,22 @@ public final class OrchestrationEncryptDataSourceTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put("test_encrypt_registry_name", getRegistryCenterConfiguration());
         instanceConfigurationMap.put("test_encrypt_config_name", getConfigCenterConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
-    private InstanceConfiguration getRegistryCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("SecondTestRegistryCenter");
+    private CenterConfiguration getRegistryCenterConfiguration() {
+        CenterConfiguration result = new CenterConfiguration("SecondTestRegistryCenter");
         result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_encrypt_registry");
         result.setServerLists("localhost:3181");
         return result;
     }
     
-    private InstanceConfiguration getConfigCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("SecondTestConfigCenter");
+    private CenterConfiguration getConfigCenterConfiguration() {
+        CenterConfiguration result = new CenterConfiguration("SecondTestConfigCenter");
         result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
         result.setNamespace("test_encrypt_config");
         result.setServerLists("localhost:3181");

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.swapper.InstanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,9 +30,9 @@ import java.util.Map;
  * YAML instance configuration swapper util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class YamlInstanceConfigurationSwapperUtil {
+public final class YamlCenterRepositoryConfigurationSwapperUtil {
     
-    private static final InstanceConfigurationYamlSwapper INSTANCE_SWAPPER = new InstanceConfigurationYamlSwapper();
+    private static final CenterRepositoryConfigurationYamlSwapper INSTANCE_SWAPPER = new CenterRepositoryConfigurationYamlSwapper();
     
     /**
      * Marshal YAML instance configuration map to instance configuration map.
@@ -40,9 +40,9 @@ public final class YamlInstanceConfigurationSwapperUtil {
      * @param yamlInstanceConfigurationMap YAML instance configuration map
      * @return instance configuration map
      */
-    public static Map<String, InstanceConfiguration> marshal(final Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap) {
-        Map<String, InstanceConfiguration> result = new LinkedHashMap<>(yamlInstanceConfigurationMap.size(), 1);
-        for (Map.Entry<String, YamlInstanceConfiguration> each : yamlInstanceConfigurationMap.entrySet()) {
+    public static Map<String, CenterConfiguration> marshal(final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap) {
+        Map<String, CenterConfiguration> result = new LinkedHashMap<>(yamlInstanceConfigurationMap.size(), 1);
+        for (Map.Entry<String, YamlCenterRepositoryConfiguration> each : yamlInstanceConfigurationMap.entrySet()) {
             result.put(each.getKey(), INSTANCE_SWAPPER.swap(each.getValue()));
         }
         return result;

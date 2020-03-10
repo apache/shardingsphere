@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api;
 
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

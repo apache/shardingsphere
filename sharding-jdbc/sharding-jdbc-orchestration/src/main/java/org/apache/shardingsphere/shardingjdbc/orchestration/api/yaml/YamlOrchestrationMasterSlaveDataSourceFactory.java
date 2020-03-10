@@ -22,12 +22,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlInstanceConfigurationSwapperUtil;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
@@ -100,12 +100,12 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfiguration, 
-                                               final Properties props, final Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap) throws SQLException {
+                                               final Properties props, final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap) throws SQLException {
         if (null == yamlMasterSlaveRuleConfiguration) {
-            return new OrchestrationMasterSlaveDataSource(new OrchestrationConfiguration(YamlInstanceConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
+            return new OrchestrationMasterSlaveDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration)), props);
-            return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationConfiguration(YamlInstanceConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
+            return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
     

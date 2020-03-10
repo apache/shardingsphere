@@ -34,5 +34,5 @@ import java.util.Map;
 @NoArgsConstructor
 public final class YamlOrchestrationConfiguration implements YamlConfiguration {
     
-    private Map<String, YamlCenterRepositoryConfiguration> instanceConfigurationMap;
+    private Map<String, YamlCenterRepositoryConfiguration> centerRepositoryConfigurationMap;
 }
