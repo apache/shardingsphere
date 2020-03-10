@@ -19,15 +19,18 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.service
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
@@ -87,6 +90,10 @@ public final class ConfigurationServiceTest {
             + "    props:\n" + "      aes.key.value: 123456\n" + "    type: aes\n" + "tables:\n" + "  t_order:\n" + "    columns:\n" 
             + "      order_id:\n"
             + "        cipherColumn: order_id\n" + "        encryptor: order_encryptor\n";
+    
+    private static final String SHADOW_RULE_YAML = "column: shadow\n"
+            + "shadowMappings:\n"
+            + "  ds: shadow_ds\n";
     
     private static final String AUTHENTICATION_YAML = "users:\n" + "  root1:\n" + "    authorizedSchemas: sharding_db\n" + "    password: root1\n" 
             + "  root2:\n" + "    authorizedSchemas: sharding_db,ms_db\n" + "    password: root2\n";
@@ -247,6 +254,14 @@ public final class ConfigurationServiceTest {
         verify(regCenter).persist("/test/config/schema/sharding_db/rule", ENCRYPT_RULE_YAML);
     }
     
+    @Test
+    public void assertPersistConfigurationForShadow() {
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        configurationService.persistConfiguration("sharding_db", createDataSourceConfigurations(), createShadowRuleConfiguration(), null, createProperties(), true);
+        verify(regCenter).persist(eq("/test/config/schema/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(regCenter).persist("/test/config/schema/sharding_db/rule", SHADOW_RULE_YAML);
+    }
+    
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
         return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> DataSourceConfiguration.getDataSourceConfiguration(e.getValue())));
     }
@@ -281,6 +296,10 @@ public final class ConfigurationServiceTest {
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(ENCRYPT_RULE_YAML, YamlEncryptRuleConfiguration.class));
+    }
+    
+    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+        return new ShadowRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(SHADOW_RULE_YAML, YamlShadowRuleConfiguration.class));
     }
     
     private Authentication createAuthentication() {
@@ -332,6 +351,13 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
+    public void assertIsShadowRule() {
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHADOW_RULE_YAML);
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        assertTrue(configurationService.isShadowRule("sharding_db"));
+    }
+    
+    @Test
     public void assertIsNotShardingRule() {
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
@@ -365,6 +391,15 @@ public final class ConfigurationServiceTest {
         assertThat(entry.getKey(), is("order_encryptor"));
         assertThat(entry.getValue().getType(), is("aes"));
         assertThat(entry.getValue().getProperties().get("aes.key.value").toString(), is("123456"));
+    }
+    
+    @Test
+    public void assertLoadShadowRuleConfiguration() {
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHADOW_RULE_YAML);
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        ShadowRuleConfiguration actual = configurationService.loadShadowRuleConfiguration("sharding_db");
+        assertThat(actual.getShadowMappings().get("ds"), is("shadow_ds"));
+        assertThat(actual.getColumn(), is("shadow"));
     }
     
     @Test
