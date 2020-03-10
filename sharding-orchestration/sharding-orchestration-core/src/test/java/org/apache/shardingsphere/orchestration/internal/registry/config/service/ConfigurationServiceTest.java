@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.service;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.internal.util.MapUtils;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
@@ -248,7 +248,7 @@ public final class ConfigurationServiceTest {
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
-        return Maps.transformValues(createDataSourceMap(), DataSourceConfiguration::getDataSourceConfiguration);
+        return MapUtils.transformValues(createDataSourceMap(), DataSourceConfiguration::getDataSourceConfiguration);
     }
     
     private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
