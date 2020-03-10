@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.config.listener.ConfigurationChangedListenerManager;
 import org.apache.shardingsphere.orchestration.internal.registry.state.listener.StateChangedListenerManager;
 

@@ -15,18 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.api;
+package org.apache.shardingsphere.orchestration.center;
 
 /**
- * Registry center.
+ * Config center.
  */
-public interface RegistryCenterRepository extends CenterRepository {
-    
-    /**
-     * Persist ephemeral data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    void persistEphemeral(String key, String value);
+public interface ConfigCenterRepository extends CenterRepository {
 }

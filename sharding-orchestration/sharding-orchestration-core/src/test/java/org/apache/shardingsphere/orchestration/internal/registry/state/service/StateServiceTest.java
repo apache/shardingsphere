@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.service;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

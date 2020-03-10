@@ -31,11 +31,11 @@ import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 import java.util.List;
 import java.util.Properties;
@@ -44,11 +44,11 @@ import java.util.stream.Collectors;
 /**
  * ETCD registry center.
  */
-public final class EtcdInstance implements ConfigCenterRepository, RegistryCenterRepository {
+public final class EtcdCenterRepository implements ConfigCenterRepository, RegistryCenterRepository {
     
     private Client client;
     
-    private InstanceConfiguration config;
+    private CenterConfiguration config;
     
     @Getter
     @Setter
@@ -57,7 +57,7 @@ public final class EtcdInstance implements ConfigCenterRepository, RegistryCente
     private EtcdProperties etcdProperties;
 
     @Override
-    public void init(final InstanceConfiguration config) {
+    public void init(final CenterConfiguration config) {
         this.config = config;
         this.etcdProperties = new EtcdProperties(this.properties);
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists()))).build();

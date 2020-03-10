@@ -25,11 +25,11 @@ import com.alibaba.nacos.api.exception.NacosException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.center.util.ConfigKeyUtils;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 import java.util.List;
 import java.util.Properties;
@@ -39,7 +39,7 @@ import java.util.concurrent.Executor;
  * The nacos instance for ConfigCenter.
  */
 @Slf4j
-public final class NacosConfigInstanceRepository implements ConfigCenterRepository {
+public final class NacosCenterRepository implements ConfigCenterRepository {
     
     private ConfigService configService;
     
@@ -55,7 +55,7 @@ public final class NacosConfigInstanceRepository implements ConfigCenterReposito
      * @param config config center configuration
      */
     @Override
-    public void init(final InstanceConfiguration config) {
+    public void init(final CenterConfiguration config) {
         try {
             nacosProperties = new NacosProperties(properties);
             Properties properties = new Properties();

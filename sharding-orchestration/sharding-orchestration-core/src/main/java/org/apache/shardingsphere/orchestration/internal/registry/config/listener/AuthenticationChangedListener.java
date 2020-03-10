@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.listene
 
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;

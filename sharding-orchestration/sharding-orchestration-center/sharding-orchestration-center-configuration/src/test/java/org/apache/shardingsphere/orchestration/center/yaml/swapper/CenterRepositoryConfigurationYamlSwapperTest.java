@@ -18,28 +18,28 @@
 package org.apache.shardingsphere.orchestration.center.yaml.swapper;
 
 import java.util.Properties;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class InstanceConfigurationYamlSwapperTest {
+public class CenterRepositoryConfigurationYamlSwapperTest {
     
     @Test
     public void assertToYaml() {
-        InstanceConfiguration instanceConfiguration = getInstanceConfiguration();
-        YamlInstanceConfiguration yamlConfiguration = new InstanceConfigurationYamlSwapper().swap(instanceConfiguration);
-        assertThat(yamlConfiguration.getOrchestrationType(), is(instanceConfiguration.getOrchestrationType()));
-        assertThat(yamlConfiguration.getInstanceType(), is(instanceConfiguration.getType()));
-        assertThat(yamlConfiguration.getServerLists(), is(instanceConfiguration.getServerLists()));
-        assertThat(yamlConfiguration.getNamespace(), is(instanceConfiguration.getNamespace()));
-        assertThat(yamlConfiguration.getProps(), is(instanceConfiguration.getProperties()));
+        CenterConfiguration configuration = getConfiguration();
+        YamlCenterRepositoryConfiguration yamlConfiguration = new CenterRepositoryConfigurationYamlSwapper().swap(configuration);
+        assertThat(yamlConfiguration.getOrchestrationType(), is(configuration.getOrchestrationType()));
+        assertThat(yamlConfiguration.getInstanceType(), is(configuration.getType()));
+        assertThat(yamlConfiguration.getServerLists(), is(configuration.getServerLists()));
+        assertThat(yamlConfiguration.getNamespace(), is(configuration.getNamespace()));
+        assertThat(yamlConfiguration.getProps(), is(configuration.getProperties()));
     }
     
-    private InstanceConfiguration getInstanceConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("zookeeper", new Properties());
+    private CenterConfiguration getConfiguration() {
+        CenterConfiguration result = new CenterConfiguration("zookeeper", new Properties());
         result.setOrchestrationType("config_center");
         result.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         result.setNamespace("orchestration");
@@ -48,8 +48,8 @@ public class InstanceConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToConfiguration() {
-        YamlInstanceConfiguration yamlConfiguration = getYamlInstanceConfiguration();
-        InstanceConfiguration instanceConfiguration = new InstanceConfigurationYamlSwapper().swap(yamlConfiguration);
+        YamlCenterRepositoryConfiguration yamlConfiguration = getYamlInstanceConfiguration();
+        CenterConfiguration instanceConfiguration = new CenterRepositoryConfigurationYamlSwapper().swap(yamlConfiguration);
         assertThat(instanceConfiguration.getOrchestrationType(), is(yamlConfiguration.getOrchestrationType()));
         assertThat(instanceConfiguration.getType(), is(yamlConfiguration.getInstanceType()));
         assertThat(instanceConfiguration.getServerLists(), is(yamlConfiguration.getServerLists()));
@@ -57,8 +57,8 @@ public class InstanceConfigurationYamlSwapperTest {
         assertThat(instanceConfiguration.getProperties(), is(yamlConfiguration.getProps()));
     }
     
-    private YamlInstanceConfiguration getYamlInstanceConfiguration() {
-        YamlInstanceConfiguration result = new YamlInstanceConfiguration();
+    private YamlCenterRepositoryConfiguration getYamlInstanceConfiguration() {
+        YamlCenterRepositoryConfiguration result = new YamlCenterRepositoryConfiguration();
         result.setInstanceType("zookeeper");
         result.setProps(new Properties());
         result.setOrchestrationType("config_center");

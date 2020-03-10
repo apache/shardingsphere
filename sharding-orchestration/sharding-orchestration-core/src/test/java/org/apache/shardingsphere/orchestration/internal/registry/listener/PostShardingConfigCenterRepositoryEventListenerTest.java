@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;

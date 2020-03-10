@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.service;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.state.instance.OrchestrationInstance;
 import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNode;
 

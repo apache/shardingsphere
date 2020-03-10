@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class YamlInstanceConfiguration implements YamlConfiguration {
+public final class YamlCenterRepositoryConfiguration implements YamlConfiguration {
     
     private String orchestrationType;
     

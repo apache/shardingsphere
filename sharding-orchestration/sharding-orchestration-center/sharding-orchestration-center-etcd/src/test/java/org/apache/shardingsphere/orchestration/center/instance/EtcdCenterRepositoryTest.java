@@ -53,7 +53,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class EtcdInstanceTest {
+public final class EtcdCenterRepositoryTest {
     
     @Mock
     private Client client;
@@ -85,7 +85,7 @@ public final class EtcdInstanceTest {
     @Mock
     private CompletableFuture putFuture;
     
-    private EtcdInstance etcdInstance = new EtcdInstance();
+    private EtcdCenterRepository centerRepository = new EtcdCenterRepository();
     
     @Before
     public void setUp() {
@@ -96,12 +96,12 @@ public final class EtcdInstanceTest {
     @SneakyThrows
     private void setClient() {
         mockClient();
-        FieldSetter.setField(etcdInstance, etcdInstance.getClass().getDeclaredField("client"), client);
+        FieldSetter.setField(centerRepository, centerRepository.getClass().getDeclaredField("client"), client);
     }
 
     @SneakyThrows
     private void setProperties() {
-        FieldSetter.setField(etcdInstance, etcdInstance.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
+        FieldSetter.setField(centerRepository, centerRepository.getClass().getDeclaredField("etcdProperties"), new EtcdProperties(new Properties()));
     }
     
     @SneakyThrows
@@ -122,7 +122,7 @@ public final class EtcdInstanceTest {
     
     @Test
     public void assertGetKey() {
-        etcdInstance.get("key");
+        centerRepository.get("key");
         verify(kv).get(ByteSequence.from("key", Charsets.UTF_8));
         verify(getResponse).getKvs();
     }
@@ -137,7 +137,7 @@ public final class EtcdInstanceTest {
             .setValue(ByteString.copyFromUtf8("value3")).build();
         List<KeyValue> keyValues = Arrays.asList(new KeyValue(keyValue1), new KeyValue(keyValue2), new KeyValue(keyValue1));
         when(getResponse.getKvs()).thenReturn(keyValues);
-        List<String> actual = etcdInstance.getChildrenKeys("/key");
+        List<String> actual = centerRepository.getChildrenKeys("/key");
         assertThat(actual.size(), is(2));
         Iterator<String> iterator = actual.iterator();
         assertThat(iterator.next(), is("key1"));
@@ -147,7 +147,7 @@ public final class EtcdInstanceTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertPersistEphemeral() {
-        etcdInstance.persistEphemeral("key1", "value1");
+        centerRepository.persistEphemeral("key1", "value1");
         verify(lease).grant(anyLong());
         verify(lease).keepAlive(anyLong(), any(StreamObserver.class));
         verify(kv).put(any(ByteSequence.class), any(ByteSequence.class), any(PutOption.class));
@@ -155,7 +155,7 @@ public final class EtcdInstanceTest {
     
     @Test
     public void assertWatch() {
-        etcdInstance.watch("key1", dataChangedEvent -> {
+        centerRepository.watch("key1", dataChangedEvent -> {
         });
         verify(watch).watch(any(ByteSequence.class), any(Watch.Listener.class));
     }

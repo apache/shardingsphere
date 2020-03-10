@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
 import com.google.common.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;

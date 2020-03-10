@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.api;
+package org.apache.shardingsphere.orchestration.center;
 
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.spi.TypeBasedSPI;

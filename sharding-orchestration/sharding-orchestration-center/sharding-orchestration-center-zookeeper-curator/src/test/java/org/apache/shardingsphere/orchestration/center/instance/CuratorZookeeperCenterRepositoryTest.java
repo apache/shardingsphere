@@ -21,10 +21,10 @@ import com.google.common.util.concurrent.SettableFuture;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.util.EmbedTestingServer;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import java.util.List;
@@ -37,9 +37,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class CuratorZookeeperInstanceTest {
+public final class CuratorZookeeperCenterRepositoryTest {
     
-    private static CuratorZookeeperInstance curatorZookeeperInstance = new CuratorZookeeperInstance();
+    private static CuratorZookeeperCenterRepository centerRepository = new CuratorZookeeperCenterRepository();
     
     private static CuratorFramework client;
     
@@ -48,59 +48,59 @@ public final class CuratorZookeeperInstanceTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        InstanceConfiguration configuration = new InstanceConfiguration(curatorZookeeperInstance.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(centerRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
-        curatorZookeeperInstance.init(configuration);
+        centerRepository.init(configuration);
         client = CuratorFrameworkFactory.newClient(SERVER_LISTS, new ExponentialBackoffRetry(1000, 3));
         client.start();
     }
     
     @Test
     public void assertPersist() {
-        curatorZookeeperInstance.persist("/test", "value1");
-        assertThat(curatorZookeeperInstance.get("/test"), is("value1"));
+        centerRepository.persist("/test", "value1");
+        assertThat(centerRepository.get("/test"), is("value1"));
     }
     
     @Test
     public void assertUpdate() {
-        curatorZookeeperInstance.persist("/test", "value2");
-        assertThat(curatorZookeeperInstance.get("/test"), is("value2"));
+        centerRepository.persist("/test", "value2");
+        assertThat(centerRepository.get("/test"), is("value2"));
     }
     
     @Test
     public void assertPersistEphemeral() {
-        curatorZookeeperInstance.persistEphemeral("/test/ephemeral", "value3");
-        assertThat(curatorZookeeperInstance.get("/test/ephemeral"), is("value3"));
+        centerRepository.persistEphemeral("/test/ephemeral", "value3");
+        assertThat(centerRepository.get("/test/ephemeral"), is("value3"));
     }
     
     @Test
     public void assertGetChildrenKeys() {
-        curatorZookeeperInstance.persist("/test/children/1", "value11");
-        curatorZookeeperInstance.persist("/test/children/2", "value12");
-        curatorZookeeperInstance.persist("/test/children/3", "value13");
-        List<String> childrenKeys = curatorZookeeperInstance.getChildrenKeys("/test/children");
+        centerRepository.persist("/test/children/1", "value11");
+        centerRepository.persist("/test/children/2", "value12");
+        centerRepository.persist("/test/children/3", "value13");
+        List<String> childrenKeys = centerRepository.getChildrenKeys("/test/children");
         assertThat(childrenKeys.size(), is(3));
     }
     
     @Test
     public void assertWatchUpdatedChangedType() throws Exception {
-        curatorZookeeperInstance.persist("/test/children/1", "value1");
+        centerRepository.persist("/test/children/1", "value1");
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        curatorZookeeperInstance.watch("/test/children", future::set);
-        curatorZookeeperInstance.persist("/test/children/1", "value2");
+        centerRepository.watch("/test/children", future::set);
+        centerRepository.persist("/test/children/1", "value2");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
-        assertThat(curatorZookeeperInstance.get("/test/children/1"), is("value2"));
+        assertThat(centerRepository.get("/test/children/1"), is("value2"));
     }
     
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
-        curatorZookeeperInstance.persist("/test/children/5", "value5");
+        centerRepository.persist("/test/children/5", "value5");
         SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        curatorZookeeperInstance.watch("/test/children/5", future::set);
+        centerRepository.watch("/test/children/5", future::set);
         client.delete().forPath("/test/children/5");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
@@ -111,81 +111,81 @@ public final class CuratorZookeeperInstanceTest {
     
     @Test
     public void assertWatchAddedChangedType() throws InterruptedException {
-        curatorZookeeperInstance.persist("/test/children/4", "value4");
+        centerRepository.persist("/test/children/4", "value4");
         AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
-        curatorZookeeperInstance.watch("/test/children", actualDataChangedEvent::set);
+        centerRepository.watch("/test/children", actualDataChangedEvent::set);
         Thread.sleep(2000L);
         assertNull(actualDataChangedEvent.get());
     }
     
     @Test
     public void assertGetWithNonExistentKey() {
-        assertNull(curatorZookeeperInstance.get("/test/nonExistentKey"));
+        assertNull(centerRepository.get("/test/nonExistentKey"));
     }
     
     @Test
     public void assertBuildCuratorClientWithCustomConfig() {
-        final CuratorZookeeperInstance customCuratorZookeeperInstance = new CuratorZookeeperInstance();
+        final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
         properties.setProperty(ZookeeperPropertiesEnum.MAX_RETRIES.getKey(), "1");
         properties.setProperty(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS.getKey(), "100");
         properties.setProperty(ZookeeperPropertiesEnum.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "1000");
         EmbedTestingServer.start();
-        InstanceConfiguration configuration = new InstanceConfiguration(customCuratorZookeeperInstance.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
-        customCuratorZookeeperInstance.setProperties(properties);
-        customCuratorZookeeperInstance.init(configuration);
-        assertThat(customCuratorZookeeperInstance.getProperties().getProperty(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
-        assertThat(customCuratorZookeeperInstance.getProperties().getProperty(ZookeeperPropertiesEnum.MAX_RETRIES.getKey()), is("1"));
-        assertThat(customCuratorZookeeperInstance.getProperties().getProperty(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS.getKey()), is("100"));
-        assertThat(customCuratorZookeeperInstance.getProperties().getProperty(ZookeeperPropertiesEnum.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("1000"));
-        customCuratorZookeeperInstance.persist("/test/children/1", "value1");
-        assertThat(customCuratorZookeeperInstance.get("/test/children/1"), is("value1"));
+        customCenterRepository.setProperties(properties);
+        customCenterRepository.init(configuration);
+        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
+        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertiesEnum.MAX_RETRIES.getKey()), is("1"));
+        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS.getKey()), is("100"));
+        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertiesEnum.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("1000"));
+        customCenterRepository.persist("/test/children/1", "value1");
+        assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
     }
     
     @Test
     public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
-        final CuratorZookeeperInstance customCuratorZookeeperInstance = new CuratorZookeeperInstance();
+        final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS.getKey(), "0");
         EmbedTestingServer.start();
-        InstanceConfiguration configuration = new InstanceConfiguration(customCuratorZookeeperInstance.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
-        customCuratorZookeeperInstance.setProperties(properties);
-        customCuratorZookeeperInstance.init(configuration);
-        assertThat(customCuratorZookeeperInstance.getProperties().getProperty(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
-        customCuratorZookeeperInstance.persist("/test/children/1", "value1");
-        assertThat(customCuratorZookeeperInstance.get("/test/children/1"), is("value1"));
+        customCenterRepository.setProperties(properties);
+        customCenterRepository.init(configuration);
+        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
+        customCenterRepository.persist("/test/children/1", "value1");
+        assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
     }
     
     @Test
     public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
-        final CuratorZookeeperInstance customCuratorZookeeperInstance = new CuratorZookeeperInstance();
+        final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertiesEnum.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
         EmbedTestingServer.start();
-        InstanceConfiguration configuration = new InstanceConfiguration(customCuratorZookeeperInstance.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
-        customCuratorZookeeperInstance.setProperties(properties);
-        customCuratorZookeeperInstance.init(configuration);
-        assertThat(customCuratorZookeeperInstance.getProperties().getProperty(ZookeeperPropertiesEnum.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
-        customCuratorZookeeperInstance.persist("/test/children/1", "value1");
-        assertThat(customCuratorZookeeperInstance.get("/test/children/1"), is("value1"));
+        customCenterRepository.setProperties(properties);
+        customCenterRepository.init(configuration);
+        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertiesEnum.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
+        customCenterRepository.persist("/test/children/1", "value1");
+        assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
     }
     
     @Test
     public void assertBuildCuratorClientWithDigest() {
-        final CuratorZookeeperInstance customCuratorZookeeperInstance = new CuratorZookeeperInstance();
+        final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertiesEnum.DIGEST.getKey(), "any");
         EmbedTestingServer.start();
-        InstanceConfiguration configuration = new InstanceConfiguration(customCuratorZookeeperInstance.getType(), new Properties());
+        CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
-        customCuratorZookeeperInstance.setProperties(properties);
-        customCuratorZookeeperInstance.init(configuration);
-        assertThat(customCuratorZookeeperInstance.getProperties().getProperty(ZookeeperPropertiesEnum.DIGEST.getKey()), is("any"));
-        customCuratorZookeeperInstance.persist("/test/children/1", "value1");
-        assertThat(customCuratorZookeeperInstance.get("/test/children/1"), is("value1"));
+        customCenterRepository.setProperties(properties);
+        customCenterRepository.init(configuration);
+        assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertiesEnum.DIGEST.getKey()), is("any"));
+        customCenterRepository.persist("/test/children/1", "value1");
+        assertThat(customCenterRepository.get("/test/children/1"), is("value1"));
     }
 }

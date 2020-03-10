@@ -46,8 +46,8 @@ public class CenterConfigurationTest {
         String type = "zookeeper";
         String orchestrationType = "config_center";
         CenterConfiguration configuration = new CenterConfiguration(type);
-        configuration.setType(orchestrationType);
-        assertThat(configuration.getType(), is(orchestrationType));
+        configuration.setOrchestrationType(orchestrationType);
+        assertThat(configuration.getOrchestrationType(), is(orchestrationType));
     }
     
     @Test

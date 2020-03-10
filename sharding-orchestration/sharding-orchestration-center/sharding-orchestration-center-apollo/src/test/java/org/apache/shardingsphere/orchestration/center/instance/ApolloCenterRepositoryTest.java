@@ -20,12 +20,12 @@ package org.apache.shardingsphere.orchestration.center.instance;
 import com.ctrip.framework.apollo.mockserver.EmbeddedApollo;
 import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.util.ConfigKeyUtils;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ApolloInstanceTest {
+public final class ApolloCenterRepositoryTest {
     
     static {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
@@ -50,21 +50,21 @@ public final class ApolloInstanceTest {
     @ClassRule
     public static EmbeddedApollo embeddedApollo = new EmbeddedApollo();
     
-    private static ConfigCenterRepository configCenterRepository = new ApolloInstance();
+    private static ConfigCenterRepository configCenterRepository = new ApolloCenterRepository();
     
     private static ApolloOpenApiWrapper openApiWrapper = mock(ApolloOpenApiWrapper.class);
     
     @BeforeClass
     @SneakyThrows
     public static void init() {
-        InstanceConfiguration configuration = new InstanceConfiguration("apollo");
+        CenterConfiguration configuration = new CenterConfiguration("apollo");
         configuration.setServerLists("http://config-service-url");
         configuration.setNamespace("orchestration");
         Properties properties = new Properties();
         configCenterRepository.setProperties(properties);
         ApolloConfigWrapper configWrapper = new ApolloConfigWrapper(configuration, new ApolloProperties(properties));
-        FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("configWrapper"), configWrapper);
-        FieldSetter.setField(configCenterRepository, ApolloInstance.class.getDeclaredField("openApiWrapper"), openApiWrapper);
+        FieldSetter.setField(configCenterRepository, ApolloCenterRepository.class.getDeclaredField("configWrapper"), configWrapper);
+        FieldSetter.setField(configCenterRepository, ApolloCenterRepository.class.getDeclaredField("openApiWrapper"), openApiWrapper);
     }
     
     @Test

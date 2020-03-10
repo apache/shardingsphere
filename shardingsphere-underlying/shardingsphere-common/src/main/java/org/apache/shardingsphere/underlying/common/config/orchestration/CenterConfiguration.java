@@ -33,8 +33,8 @@ public class CenterConfiguration extends TypeBasedSPIConfiguration {
     /**
      * Type of center, such as config_center, registry_center.
      */
-    private String type;
-    
+    private String orchestrationType;
+
     /**
      * Server list of center.
      */

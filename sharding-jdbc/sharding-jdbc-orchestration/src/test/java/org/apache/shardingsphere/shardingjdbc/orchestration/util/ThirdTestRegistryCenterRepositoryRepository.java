@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.util;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 

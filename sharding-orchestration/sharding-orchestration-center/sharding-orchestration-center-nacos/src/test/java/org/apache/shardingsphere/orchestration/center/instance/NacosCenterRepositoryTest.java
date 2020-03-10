@@ -21,10 +21,10 @@ import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.AdditionalAnswers;
@@ -46,9 +46,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class NacosConfigInstanceTest {
+public final class NacosCenterRepositoryTest {
     
-    private static ConfigCenterRepository nacosConfigCenterRepository = new NacosConfigInstanceRepository();
+    private static ConfigCenterRepository configCenterRepository = new NacosCenterRepository();
     
     private ConfigService configService = mock(ConfigService.class);
     
@@ -59,24 +59,24 @@ public final class NacosConfigInstanceTest {
         Properties properties = new Properties();
         properties.setProperty("group", group);
         properties.setProperty("timeout", "3000");
-        InstanceConfiguration configuration = new InstanceConfiguration(nacosConfigCenterRepository.getType(), properties);
+        CenterConfiguration configuration = new CenterConfiguration(configCenterRepository.getType(), properties);
         configuration.setServerLists("127.0.0.1:8848");
-        nacosConfigCenterRepository.init(configuration);
+        configCenterRepository.init(configuration);
         setConfigService(configService);
     }
     
     @SneakyThrows
     private void setConfigService(final ConfigService configService) {
-        Field configServiceField = NacosConfigInstanceRepository.class.getDeclaredField("configService");
+        Field configServiceField = NacosCenterRepository.class.getDeclaredField("configService");
         configServiceField.setAccessible(true);
-        configServiceField.set(nacosConfigCenterRepository, configService);
+        configServiceField.set(configCenterRepository, configService);
     }
     
     @Test
     @SneakyThrows
     public void assertPersist() {
         String value = "value";
-        nacosConfigCenterRepository.persist("/sharding/test", value);
+        configCenterRepository.persist("/sharding/test", value);
         verify(configService).publishConfig("sharding.test", group, value);
     }
     
@@ -85,7 +85,7 @@ public final class NacosConfigInstanceTest {
     public void assertGet() {
         String value = "value";
         when(configService.getConfig(eq("sharding.test"), eq(group), anyLong())).thenReturn(value);
-        assertThat(nacosConfigCenterRepository.get("/sharding/test"), is(value));
+        assertThat(configCenterRepository.get("/sharding/test"), is(value));
     }
     
     @Test
@@ -97,28 +97,28 @@ public final class NacosConfigInstanceTest {
             .when(configService)
             .addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualValue[0] = dataChangedEvent.getValue();
-        nacosConfigCenterRepository.watch("/sharding/test", listener);
+        configCenterRepository.watch("/sharding/test", listener);
         assertThat(actualValue[0], is(expectValue));
     }
     
     @Test
     @SneakyThrows
     public void assertGetWithNonExistentKey() {
-        assertNull(nacosConfigCenterRepository.get("/sharding/nonExistentKey"));
+        assertNull(configCenterRepository.get("/sharding/nonExistentKey"));
     }
     
     @Test
     @SneakyThrows
     public void assertGetWhenThrowException() {
         doThrow(NacosException.class).when(configService).getConfig(eq("sharding.test"), eq(group), anyLong());
-        assertNull(nacosConfigCenterRepository.get("/sharding/test"));
+        assertNull(configCenterRepository.get("/sharding/test"));
     }
     
     @Test
     @SneakyThrows
     public void assertUpdate() {
         String updatedValue = "newValue";
-        nacosConfigCenterRepository.persist("/sharding/test", updatedValue);
+        configCenterRepository.persist("/sharding/test", updatedValue);
         verify(configService).publishConfig("sharding.test", group, updatedValue);
     }
     
@@ -135,7 +135,7 @@ public final class NacosConfigInstanceTest {
             actualValue[0] = dataChangedEvent.getValue();
             actualType[0] = dataChangedEvent.getChangedType();
         };
-        nacosConfigCenterRepository.watch("/sharding/test", listener);
+        configCenterRepository.watch("/sharding/test", listener);
         assertThat(actualValue[0], is(expectValue));
         assertThat(actualType[0], is(ChangedType.UPDATED));
     }
@@ -148,7 +148,7 @@ public final class NacosConfigInstanceTest {
                 .when(configService)
                 .addListener(anyString(), anyString(), any(Listener.class));
         DataChangedEventListener listener = dataChangedEvent -> actualType[0] = dataChangedEvent.getChangedType();
-        nacosConfigCenterRepository.watch("/sharding/test", listener);
+        configCenterRepository.watch("/sharding/test", listener);
         assertThat(actualType[0], is(ChangedType.UPDATED));
     }
     

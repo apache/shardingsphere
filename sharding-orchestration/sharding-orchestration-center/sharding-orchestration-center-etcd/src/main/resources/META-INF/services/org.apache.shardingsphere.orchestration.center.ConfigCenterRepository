@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.orchestration.center.instance.EtcdInstance
+org.apache.shardingsphere.orchestration.center.instance.EtcdCenterRepository

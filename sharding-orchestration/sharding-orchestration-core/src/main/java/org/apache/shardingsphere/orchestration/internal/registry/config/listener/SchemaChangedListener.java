@@ -28,7 +28,7 @@ import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationY
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;

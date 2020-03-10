@@ -36,7 +36,7 @@ import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYaml
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;

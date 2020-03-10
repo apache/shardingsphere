@@ -25,13 +25,13 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloConfigWrapper;
 import org.apache.shardingsphere.orchestration.center.instance.wrapper.ApolloOpenApiWrapper;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.orchestration.center.util.ConfigKeyUtils;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.Properties;
  * Config center for Apollo.
  */
 @Slf4j
-public final class ApolloInstance implements ConfigCenterRepository {
+public final class ApolloCenterRepository implements ConfigCenterRepository {
     
     private final Map<String, DataChangedEventListener> caches = new HashMap<>();
     
@@ -55,7 +55,7 @@ public final class ApolloInstance implements ConfigCenterRepository {
     private Properties properties = new Properties();
     
     @Override
-    public void init(final InstanceConfiguration config) {
+    public void init(final CenterConfiguration config) {
         ApolloProperties apolloProperties = new ApolloProperties(properties);
         configWrapper = new ApolloConfigWrapper(config, apolloProperties);
         openApiWrapper = new ApolloOpenApiWrapper(config, apolloProperties);

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperInstance
+org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperCenterRepository

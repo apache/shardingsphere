@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.center.yaml.swapper;
 
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 
 /**
  * Orchestration instance configuration YAML swapper.
  */
-public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlInstanceConfiguration, InstanceConfiguration> {
+public final class CenterRepositoryConfigurationYamlSwapper implements YamlSwapper<YamlCenterRepositoryConfiguration, CenterConfiguration> {
     
     /**
      * Swap from InstanceConfiguration to YamlInstanceConfiguration.
@@ -33,8 +33,8 @@ public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlI
      * @return YAML instance configuration
      */
     @Override
-    public YamlInstanceConfiguration swap(final InstanceConfiguration configuration) {
-        YamlInstanceConfiguration result = new YamlInstanceConfiguration();
+    public YamlCenterRepositoryConfiguration swap(final CenterConfiguration configuration) {
+        YamlCenterRepositoryConfiguration result = new YamlCenterRepositoryConfiguration();
         result.setOrchestrationType(configuration.getOrchestrationType());
         result.setInstanceType(configuration.getType());
         result.setServerLists(configuration.getServerLists());
@@ -50,8 +50,8 @@ public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlI
      * @return swapped object
      */
     @Override
-    public InstanceConfiguration swap(final YamlInstanceConfiguration yamlConfiguration) {
-        InstanceConfiguration result = new InstanceConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
+    public CenterConfiguration swap(final YamlCenterRepositoryConfiguration yamlConfiguration) {
+        CenterConfiguration result = new CenterConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
         result.setOrchestrationType(yamlConfiguration.getOrchestrationType());
         result.setServerLists(yamlConfiguration.getServerLists());
         result.setNamespace(yamlConfiguration.getNamespace());

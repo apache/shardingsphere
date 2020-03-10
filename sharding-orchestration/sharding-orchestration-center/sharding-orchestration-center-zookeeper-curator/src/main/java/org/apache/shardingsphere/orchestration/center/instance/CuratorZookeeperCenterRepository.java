@@ -29,12 +29,12 @@ import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.instance.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Distributed lock center for zookeeper with curator.
  */
-public final class CuratorZookeeperInstance implements ConfigCenterRepository, RegistryCenterRepository {
+public final class CuratorZookeeperCenterRepository implements ConfigCenterRepository, RegistryCenterRepository {
     
     private final Map<String, TreeCache> caches = new HashMap<>();
     
@@ -63,13 +63,13 @@ public final class CuratorZookeeperInstance implements ConfigCenterRepository, R
     private Properties properties = new Properties();
     
     @Override
-    public void init(final InstanceConfiguration config) {
+    public void init(final CenterConfiguration config) {
         ZookeeperProperties zookeeperProperties = new ZookeeperProperties(properties);
         client = buildCuratorClient(config, zookeeperProperties);
         initCuratorClient(zookeeperProperties);
     }
     
-    private CuratorFramework buildCuratorClient(final InstanceConfiguration config, final ZookeeperProperties zookeeperProperties) {
+    private CuratorFramework buildCuratorClient(final CenterConfiguration config, final ZookeeperProperties zookeeperProperties) {
         int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.RETRY_INTERVAL_MILLISECONDS);
         int maxRetries = zookeeperProperties.getValue(ZookeeperPropertiesEnum.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertiesEnum.TIME_TO_LIVE_SECONDS);

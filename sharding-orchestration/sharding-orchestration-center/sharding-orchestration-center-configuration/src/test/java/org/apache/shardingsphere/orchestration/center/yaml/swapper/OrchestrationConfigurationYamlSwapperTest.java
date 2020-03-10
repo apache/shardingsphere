@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.center.yaml.swapper;
 
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,11 +73,11 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration("zookeeper", new Properties());
+        CenterConfiguration instanceConfiguration = new CenterConfiguration("zookeeper", new Properties());
         instanceConfiguration.setOrchestrationType("config_center");
         instanceConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         instanceConfiguration.setNamespace("orchestration");
-        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put(LOGIC_SCHEMA, instanceConfiguration);
         OrchestrationConfiguration result = new OrchestrationConfiguration();
         result.setInstanceConfigurationMap(instanceConfigurationMap);
@@ -85,13 +85,13 @@ public final class OrchestrationConfigurationYamlSwapperTest {
     }
     
     private YamlOrchestrationConfiguration getYamlOrchestrationConfiguration() {
-        YamlInstanceConfiguration yamlInstanceConfiguration = new YamlInstanceConfiguration();
+        YamlCenterRepositoryConfiguration yamlInstanceConfiguration = new YamlCenterRepositoryConfiguration();
         yamlInstanceConfiguration.setInstanceType("zookeeper");
         yamlInstanceConfiguration.setProps(new Properties());
         yamlInstanceConfiguration.setOrchestrationType("config_center");
         yamlInstanceConfiguration.setServerLists("127.0.0.1:2181,127.0.0.1:2182");
         yamlInstanceConfiguration.setNamespace("orchestration");
-        Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap = new HashMap<>();
+        Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap = new HashMap<>();
         yamlInstanceConfigurationMap.put(LOGIC_SCHEMA, yamlInstanceConfiguration);
         YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
         result.setInstanceConfigurationMap(yamlInstanceConfigurationMap);
