@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
@@ -27,13 +26,15 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.node.Con
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingConfigCenterEventListener;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
+import java.util.Arrays;
+
 /**
  * Authentication changed listener.
  */
 public final class AuthenticationChangedListener extends PostShardingConfigCenterEventListener {
     
     public AuthenticationChangedListener(final String name, final ConfigCenterRepository configCenterRepository) {
-        super(configCenterRepository, Lists.newArrayList(new ConfigurationNode(name).getAuthenticationPath()));
+        super(configCenterRepository, Arrays.asList(new ConfigurationNode(name).getAuthenticationPath()));
     }
     
     @Override

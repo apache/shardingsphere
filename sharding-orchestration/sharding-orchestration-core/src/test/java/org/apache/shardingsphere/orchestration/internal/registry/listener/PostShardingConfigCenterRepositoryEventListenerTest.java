@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.junit.Test;
@@ -25,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -38,7 +39,7 @@ public final class PostShardingConfigCenterRepositoryEventListenerTest {
     
     @Test
     public void assertWatch() {
-        PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenterRepository, Lists.newArrayList("test")) {
+        PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenterRepository, Arrays.asList("test")) {
             
             @Override
             protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
@@ -51,7 +52,7 @@ public final class PostShardingConfigCenterRepositoryEventListenerTest {
     
     @Test
     public void assertWatchMultipleKey() {
-        PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenterRepository, Lists.newArrayList("test", "dev")) {
+        PostShardingConfigCenterEventListener postShardingConfigCenterEventListener = new PostShardingConfigCenterEventListener(configCenterRepository, Arrays.asList("test", "dev")) {
             
             @Override
             protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -40,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -135,7 +135,7 @@ public final class EtcdInstanceTest {
         io.etcd.jetcd.api.KeyValue keyValue2 = io.etcd.jetcd.api.KeyValue.newBuilder()
             .setKey(ByteString.copyFromUtf8("/key/key2"))
             .setValue(ByteString.copyFromUtf8("value3")).build();
-        List<KeyValue> keyValues = Lists.newArrayList(new KeyValue(keyValue1), new KeyValue(keyValue2), new KeyValue(keyValue1));
+        List<KeyValue> keyValues = Arrays.asList(new KeyValue(keyValue1), new KeyValue(keyValue2), new KeyValue(keyValue1));
         when(getResponse.getKvs()).thenReturn(keyValues);
         List<String> actual = etcdInstance.getChildrenKeys("/key");
         assertThat(actual.size(), is(2));

@@ -29,18 +29,18 @@ public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlI
     /**
      * Swap from InstanceConfiguration to YamlInstanceConfiguration.
      *
-     * @param data data to be swapped
+     * @param configuration configuration to be swapped
      * @return YAML instance configuration
      */
     @Override
-    public YamlInstanceConfiguration swap(final InstanceConfiguration data) {
-        YamlInstanceConfiguration yamlInstanceConfiguration = new YamlInstanceConfiguration();
-        yamlInstanceConfiguration.setOrchestrationType(data.getOrchestrationType());
-        yamlInstanceConfiguration.setInstanceType(data.getType());
-        yamlInstanceConfiguration.setServerLists(data.getServerLists());
-        yamlInstanceConfiguration.setNamespace(data.getNamespace());
-        yamlInstanceConfiguration.setProps(data.getProperties());
-        return yamlInstanceConfiguration;
+    public YamlInstanceConfiguration swap(final InstanceConfiguration configuration) {
+        YamlInstanceConfiguration result = new YamlInstanceConfiguration();
+        result.setOrchestrationType(configuration.getOrchestrationType());
+        result.setInstanceType(configuration.getType());
+        result.setServerLists(configuration.getServerLists());
+        result.setNamespace(configuration.getNamespace());
+        result.setProps(configuration.getProperties());
+        return result;
     }
     
     /**
@@ -51,10 +51,10 @@ public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlI
      */
     @Override
     public InstanceConfiguration swap(final YamlInstanceConfiguration yamlConfiguration) {
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
-        instanceConfiguration.setOrchestrationType(yamlConfiguration.getOrchestrationType());
-        instanceConfiguration.setServerLists(yamlConfiguration.getServerLists());
-        instanceConfiguration.setNamespace(yamlConfiguration.getNamespace());
-        return instanceConfiguration;
+        InstanceConfiguration result = new InstanceConfiguration(yamlConfiguration.getInstanceType(), yamlConfiguration.getProps());
+        result.setOrchestrationType(yamlConfiguration.getOrchestrationType());
+        result.setServerLists(yamlConfiguration.getServerLists());
+        result.setNamespace(yamlConfiguration.getNamespace());
+        return result;
     }
 }

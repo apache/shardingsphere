@@ -45,6 +45,8 @@ import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguratio
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -173,7 +175,7 @@ public final class ConfigurationService {
         if (schemaNameList.contains(shardingSchemaName)) {
             return;
         }
-        List<String> newArrayList = Lists.newArrayList(schemaNameList);
+        List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(shardingSchemaName);
         configCenterRepository.persist(configNode.getSchemaPath(), Joiner.on(",").join(newArrayList));
     }

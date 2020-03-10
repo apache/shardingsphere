@@ -44,7 +44,7 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
      */
     @Override
     public List<String> getSlaveDataSourceNames() {
-        return new LinkedList<>(super.getSlaveDataSourceNames()).stream().filter(e -> !disabledDataSourceNames.contains(e)).collect(Collectors.toList());
+        return super.getSlaveDataSourceNames().stream().filter(e -> !disabledDataSourceNames.contains(e)).collect(Collectors.toList());
     }
     
     /**

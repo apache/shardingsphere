@@ -20,9 +20,9 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.node;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
@@ -146,7 +146,7 @@ public final class ConfigurationNode {
      * @return config paths list.
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
-        Collection<String> result = Lists.newArrayList(getSchemaPath());
+        Collection<String> result = Arrays.asList(getSchemaPath());
         for (String schemaName : schemaNames) {
             result.add(getSchemaNamePath(schemaName));
             result.add(getRulePath(schemaName));
