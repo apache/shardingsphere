@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLEofPacketTest {
@@ -41,6 +42,16 @@ public final class MySQLEofPacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), CoreMatchers.is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+    }
+    
+    @Test
+    public void assertNewEofPacketWithPayload() {
+        when(payload.readInt1()).thenReturn(5, 0xfe);
+        when(payload.readInt2()).thenReturn(0, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+        MySQLEofPacket actual = new MySQLEofPacket(payload);
+        assertThat(actual.getSequenceId(), is(5));
+        assertThat(actual.getWarnings(), is(0));
+        assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
