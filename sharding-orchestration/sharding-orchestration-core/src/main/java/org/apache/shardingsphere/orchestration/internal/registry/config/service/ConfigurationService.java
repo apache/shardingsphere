@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Configuration service.
@@ -86,7 +87,8 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
             Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = Maps.transformValues(dataSourceConfigurations, new DataSourceConfigurationYamlSwapper()::swap);
+            Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue())));
             configCenterRepository.persist(configNode.getDataSourcePath(shardingSchemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
         }
     }
@@ -218,7 +220,7 @@ public final class ConfigurationService {
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(configCenterRepository.get(configNode.getDataSourcePath(shardingSchemaName)));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
-        return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swap);
+        return result.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue())));
     }
     
     /**

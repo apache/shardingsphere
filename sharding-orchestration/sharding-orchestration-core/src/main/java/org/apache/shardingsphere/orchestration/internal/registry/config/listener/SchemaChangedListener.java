@@ -19,8 +19,8 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.listene
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+
+import org.apache.commons.collections4.SetUtils;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
@@ -48,9 +48,11 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Schema changed listener.
@@ -90,11 +92,11 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
     
     private ShardingOrchestrationEvent createSchemaNamesUpdatedEvent(final String shardingSchemaNames) {
         Collection<String> persistShardingSchemaNames = configurationNode.splitShardingSchemaName(shardingSchemaNames);
-        Set<String> addedSchemaNames = Sets.difference(Sets.newHashSet(persistShardingSchemaNames), Sets.newHashSet(existedSchemaNames));
+        Set<String> addedSchemaNames = SetUtils.difference(new HashSet<>(persistShardingSchemaNames), new HashSet<>(existedSchemaNames));
         if (!addedSchemaNames.isEmpty()) {
             return createUpdatedEventForNewSchema(addedSchemaNames.iterator().next());
         }
-        Set<String> deletedSchemaNames = Sets.difference(Sets.newHashSet(existedSchemaNames), Sets.newHashSet(persistShardingSchemaNames));
+        Set<String> deletedSchemaNames = SetUtils.difference(new HashSet<>(existedSchemaNames), new HashSet<>(persistShardingSchemaNames));
         if (!deletedSchemaNames.isEmpty()) {
             return createDeletedEvent(deletedSchemaNames.iterator().next());
         }
@@ -118,7 +120,8 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for orchestration.");
-        return new DataSourceChangedEvent(shardingSchemaName, Maps.transformValues(dataSourceConfigurations, new DataSourceConfigurationYamlSwapper()::swap));
+        return new DataSourceChangedEvent(shardingSchemaName, dataSourceConfigurations.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue()))));
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {

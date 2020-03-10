@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.service;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -50,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -248,7 +248,7 @@ public final class ConfigurationServiceTest {
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
-        return Maps.transformValues(createDataSourceMap(), DataSourceConfiguration::getDataSourceConfiguration);
+        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> DataSourceConfiguration.getDataSourceConfiguration(e.getValue())));
     }
     
     private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
