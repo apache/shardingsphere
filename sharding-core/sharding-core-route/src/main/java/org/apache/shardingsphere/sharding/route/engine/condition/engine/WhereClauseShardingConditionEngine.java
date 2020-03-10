@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShar
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
@@ -54,7 +54,7 @@ public final class WhereClauseShardingConditionEngine {
     
     private final ShardingRule shardingRule;
     
-    private final RelationMetas relationMetas;
+    private final TableMetas tableMetas;
     
     /**
      * Create sharding conditions.
@@ -98,7 +98,7 @@ public final class WhereClauseShardingConditionEngine {
     private Map<Column, Collection<RouteValue>> createRouteValueMap(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate, final List<Object> parameters) {
         Map<Column, Collection<RouteValue>> result = new HashMap<>();
         for (PredicateSegment each : andPredicate.getPredicates()) {
-            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(each, relationMetas);
+            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(each, tableMetas);
             if (!tableName.isPresent() || !shardingRule.isShardingColumn(each.getColumn().getIdentifier().getValue(), tableName.get())) {
                 continue;
             }

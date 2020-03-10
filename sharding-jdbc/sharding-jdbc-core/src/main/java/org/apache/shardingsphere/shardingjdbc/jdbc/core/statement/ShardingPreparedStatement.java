@@ -159,7 +159,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             engines.put(encryptRule, new JDBCEncryptResultDecoratorEngine(resultSets.get(0).getMetaData()));
         }
         MergeEntry mergeEntry = new MergeEntry(connection.getRuntimeContext().getDatabaseType(),
-                connection.getRuntimeContext().getMetaData().getRelationMetas(), connection.getRuntimeContext().getProperties(), engines);
+                connection.getRuntimeContext().getMetaData().getTables(), connection.getRuntimeContext().getProperties(), engines);
         return mergeEntry.process(queryResults, shardingExecutionContext.getSqlStatementContext());
     }
     

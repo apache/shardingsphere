@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.binder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dal.DescribeStatementContext;
@@ -75,16 +75,16 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param relationMetas relation metas
+     * @param tableMetas table metas
      * @param sql SQL
      * @param parameters SQL parameters
      * @param sqlStatement SQL statement
      * @return SQL statement context
      */
     @SuppressWarnings("unchecked")
-    public static SQLStatementContext newInstance(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
+    public static SQLStatementContext newInstance(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(relationMetas, sql, parameters, (DMLStatement) sqlStatement);
+            return getDMLStatementContext(tableMetas, sql, parameters, (DMLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DDLStatement) {
             return getDDLStatementContext((DDLStatement) sqlStatement);
@@ -98,9 +98,9 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final DMLStatement sqlStatement) {
+    private static SQLStatementContext getDMLStatementContext(final TableMetas tableMetas, final String sql, final List<Object> parameters, final DMLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(relationMetas, sql, parameters, (SelectStatement) sqlStatement);
+            return new SelectStatementContext(tableMetas, sql, parameters, (SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -109,7 +109,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(relationMetas, parameters, (InsertStatement) sqlStatement);
+            return new InsertStatementContext(tableMetas, parameters, (InsertStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

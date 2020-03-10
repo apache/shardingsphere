@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.memory;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
@@ -49,15 +49,15 @@ public abstract class MemoryMergedResult<T extends BaseRule> implements MergedRe
     
     private boolean wasNull;
     
-    protected MemoryMergedResult(final T rule, final RelationMetas relationMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        List<MemoryQueryResultRow> memoryQueryResultRowList = init(rule, relationMetas, sqlStatementContext, queryResults);
+    protected MemoryMergedResult(final T rule, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+        List<MemoryQueryResultRow> memoryQueryResultRowList = init(rule, tableMetas, sqlStatementContext, queryResults);
         memoryResultSetRows = memoryQueryResultRowList.iterator();
         if (!memoryQueryResultRowList.isEmpty()) {
             currentResultSetRow = memoryQueryResultRowList.get(0);
         }
     }
     
-    protected abstract List<MemoryQueryResultRow> init(T rule, RelationMetas relationMetas, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    protected abstract List<MemoryQueryResultRow> init(T rule, TableMetas tableMetas, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
     
     @Override
     public final boolean next() {

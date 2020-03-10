@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.table;
 
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
@@ -59,7 +59,7 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenSingleTable() {
         SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
         PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
-        Optional<String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableName(predicateSegment, mock(RelationMetas.class));
+        Optional<String> actual = new TablesContext(Collections.singletonList(tableSegment)).findTableName(predicateSegment, mock(TableMetas.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
@@ -71,7 +71,7 @@ public final class TablesContextTest {
         ColumnSegment columnSegment = createColumnSegment();
         columnSegment.setOwner(new OwnerSegment(0, 10, new IdentifierValue("table_1")));
         PredicateSegment predicateSegment = createPredicateSegment(columnSegment);
-        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(RelationMetas.class));
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(TableMetas.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }
@@ -81,18 +81,18 @@ public final class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
-        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(RelationMetas.class));
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, mock(TableMetas.class));
         assertFalse(actual.isPresent());
     }
     
     @Test
-    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndRelationMetasContainsColumn() {
+    public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndTableMetasContainsColumn() {
         SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
         SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
         PredicateSegment predicateSegment = createPredicateSegment(createColumnSegment());
-        RelationMetas relationMetas = mock(RelationMetas.class);
-        when(relationMetas.containsColumn(anyString(), anyString())).thenReturn(true);
-        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, relationMetas);
+        TableMetas tableMetas = mock(TableMetas.class);
+        when(tableMetas.containsColumn(anyString(), anyString())).thenReturn(true);
+        Optional<String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2)).findTableName(predicateSegment, tableMetas);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("table_1"));
     }

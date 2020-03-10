@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.column;
+package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 
 /**
- * Column meta data.
+ * Table metas aware.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public class ColumnMetaData {
+public interface TableMetasAware {
     
-    private final String name;
-    
-    private final String dataType;
-    
-    private final boolean primaryKey;
+    /**
+     * Set table metas.
+     * 
+     * @param tableMetas table metas
+     */
+    void setTableMetas(TableMetas tableMetas);
 }

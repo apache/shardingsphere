@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.metadata;
+package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Relation meta data.
+ * Column meta data.
  */
+@RequiredArgsConstructor
 @Getter
-public final class RelationMetaData {
+@EqualsAndHashCode
+@ToString
+public class ColumnMetaData {
     
-    private final List<String> columnNames;
+    private final String name;
     
-    public RelationMetaData(final Collection<String> columnNames) {
-        this.columnNames = getColumnNames(columnNames);
-    }
+    private final String dataType;
     
-    private List<String> getColumnNames(final Collection<String> originalColumnNames) {
-        List<String> result = new ArrayList<>(originalColumnNames.size());
-        for (String each : originalColumnNames) {
-            result.add(each.toLowerCase());
-        }
-        return result;
-    }
+    private final boolean primaryKey;
 }

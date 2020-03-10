@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.table;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
@@ -56,17 +56,17 @@ public final class TablesContext {
      * Find table name.
      *
      * @param predicate predicate
-     * @param relationMetas relation metas
+     * @param tableMetas table metas
      * @return table name
      */
-    public Optional<String> findTableName(final PredicateSegment predicate, final RelationMetas relationMetas) {
+    public Optional<String> findTableName(final PredicateSegment predicate, final TableMetas tableMetas) {
         if (1 == tables.size()) {
             return Optional.of(tables.iterator().next().getTableName().getIdentifier().getValue());
         }
         if (predicate.getColumn().getOwner().isPresent()) {
             return Optional.of(findTableNameFromSQL(predicate.getColumn().getOwner().get().getIdentifier().getValue()));
         }
-        return findTableNameFromMetaData(predicate.getColumn().getIdentifier().getValue(), relationMetas);
+        return findTableNameFromMetaData(predicate.getColumn().getIdentifier().getValue(), tableMetas);
     }
     
     private String findTableNameFromSQL(final String tableNameOrAlias) {
@@ -78,9 +78,9 @@ public final class TablesContext {
         throw new IllegalStateException("Can not find owner from table.");
     }
     
-    private Optional<String> findTableNameFromMetaData(final String columnName, final RelationMetas relationMetas) {
+    private Optional<String> findTableNameFromMetaData(final String columnName, final TableMetas tableMetas) {
         for (SimpleTableSegment each : tables) {
-            if (relationMetas.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
+            if (tableMetas.containsColumn(each.getTableName().getIdentifier().getValue(), columnName)) {
                 return Optional.of(each.getTableName().getIdentifier().getValue());
             }
         }
