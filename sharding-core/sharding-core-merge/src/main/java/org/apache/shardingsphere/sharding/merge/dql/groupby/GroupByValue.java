@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
