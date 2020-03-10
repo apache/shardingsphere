@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
+package org.apache.shardingsphere.underlying.common.config.orchestration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,5 +36,5 @@ public final class OrchestrationConfiguration {
     /**
      * Instance configuration map.
      */
-    private Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private Map<String, CenterConfiguration> instanceConfigurationMap;
 }

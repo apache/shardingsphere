@@ -15,55 +15,56 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
+package org.apache.shardingsphere.underlying.common.config.orchestration;
+
+import org.junit.Test;
 
 import java.util.Properties;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class InstanceConfigurationTest {
+public class CenterConfigurationTest {
     
     @Test
     public void assertConstructorWithType() {
         String type = "zookeeper";
-        assertThat(new InstanceConfiguration(type).getType(), is(type));
+        assertThat(new CenterConfiguration(type).getType(), is(type));
     }
     
     @Test
     public void assertConstructorWithTypeAndProperties() {
         String type = "zookeeper";
         Properties properties = new Properties();
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration(type, properties);
-        assertThat(instanceConfiguration.getType(), is(type));
-        assertThat(instanceConfiguration.getProperties(), is(properties));
+        CenterConfiguration configuration = new CenterConfiguration(type, properties);
+        assertThat(configuration.getType(), is(type));
+        assertThat(configuration.getProperties(), is(properties));
     }
     
     @Test
     public void assertCenterType() {
         String type = "zookeeper";
         String orchestrationType = "config_center";
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration(type);
-        instanceConfiguration.setOrchestrationType(orchestrationType);
-        assertThat(instanceConfiguration.getOrchestrationType(), is(orchestrationType));
+        CenterConfiguration configuration = new CenterConfiguration(type);
+        configuration.setType(orchestrationType);
+        assertThat(configuration.getType(), is(orchestrationType));
     }
     
     @Test
     public void assertServerLists() {
         String type = "zookeeper";
         String serverLists = "127.0.0.1:2181,127.0.0.1:2182";
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration(type);
-        instanceConfiguration.setServerLists(serverLists);
-        assertThat(instanceConfiguration.getServerLists(), is(serverLists));
+        CenterConfiguration configuration = new CenterConfiguration(type);
+        configuration.setServerLists(serverLists);
+        assertThat(configuration.getServerLists(), is(serverLists));
     }
     
     @Test
     public void assertNamespace() {
         String type = "zookeeper";
         String namespace = "orchestration";
-        InstanceConfiguration instanceConfiguration = new InstanceConfiguration(type);
-        instanceConfiguration.setNamespace(namespace);
-        assertThat(instanceConfiguration.getNamespace(), is(namespace));
+        CenterConfiguration configuration = new CenterConfiguration(type);
+        configuration.setNamespace(namespace);
+        assertThat(configuration.getNamespace(), is(namespace));
     }
 }

@@ -20,20 +20,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>sharding-orchestration</artifactId>
+        <artifactId>sharding-orchestration-center</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>sharding-orchestration-center</artifactId>
+    <artifactId>sharding-orchestration-center-configuration</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
 
-    <modules>
-        <module>sharding-orchestration-center-api</module>
-        <module>sharding-orchestration-center-configuration</module>
-        <module>sharding-orchestration-center-zookeeper-curator</module>
-        <module>sharding-orchestration-center-etcd</module>
-        <module>sharding-orchestration-center-apollo</module>
-        <module>sharding-orchestration-center-nacos</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-center-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

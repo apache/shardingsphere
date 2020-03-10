@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.center.api;
 
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public interface CenterRepository extends TypeBasedSPI {
      *
      * @param config config center configuration
      */
-    void init(InstanceConfiguration config);
+    void init(CenterConfiguration config);
     
     /**
      * Get data from config center.

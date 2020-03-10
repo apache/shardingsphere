@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.configuration;
+package org.apache.shardingsphere.underlying.common.config.orchestration;
+
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -29,8 +30,8 @@ public class OrchestrationConfigurationTest {
     @Test
     public void assertInstanceConfigurationMap() {
         OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
-        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
-        orchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
-        assertThat(orchestrationConfiguration.getInstanceConfigurationMap(), is(instanceConfigurationMap));
+        Map<String, CenterConfiguration> configurationMap = new HashMap<>();
+        orchestrationConfiguration.setInstanceConfigurationMap(configurationMap);
+        assertThat(orchestrationConfiguration.getInstanceConfigurationMap(), is(configurationMap));
     }
 }
