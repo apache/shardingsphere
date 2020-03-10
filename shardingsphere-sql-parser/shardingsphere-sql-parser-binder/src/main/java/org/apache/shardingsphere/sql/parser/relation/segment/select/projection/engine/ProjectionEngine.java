@@ -93,7 +93,7 @@ public final class ProjectionEngine {
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
-        return new ExpressionProjection(((ExpressionProjectionSegment) projectionSegment).getText(), projectionSegment.getAlias().orElse(null));
+        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
     }
     
     private AggregationDistinctProjection createProjection(final String sql, final AggregationDistinctProjectionSegment projectionSegment) {
