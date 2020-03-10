@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
@@ -32,9 +32,10 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Pro
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.engine.ProjectionsContextEngine;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateExtractor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionSegment;
@@ -51,7 +52,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.util.SQLUtil;
 
 import java.util.Collection;
@@ -91,12 +91,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         containsSubquery = containsSubquery();
     }
     
-    public SelectStatementContext(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectStatementContext(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(relationMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(tableMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
     }

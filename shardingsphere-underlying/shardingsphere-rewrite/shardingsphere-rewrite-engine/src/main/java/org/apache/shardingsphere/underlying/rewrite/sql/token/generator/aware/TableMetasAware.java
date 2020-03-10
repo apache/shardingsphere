@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.metadata;
+package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
 
-import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 
 /**
- * Relation meta data.
+ * Table metas aware.
  */
-@Getter
-public final class RelationMetaData {
+public interface TableMetasAware {
     
-    private final List<String> columnNames;
-    
-    public RelationMetaData(final Collection<String> columnNames) {
-        this.columnNames = getColumnNames(columnNames);
-    }
-    
-    private List<String> getColumnNames(final Collection<String> originalColumnNames) {
-        List<String> result = new ArrayList<>(originalColumnNames.size());
-        for (String each : originalColumnNames) {
-            result.add(each.toLowerCase());
-        }
-        return result;
-    }
+    /**
+     * Set table metas.
+     * 
+     * @param tableMetas table metas
+     */
+    void setTableMetas(TableMetas tableMetas);
 }

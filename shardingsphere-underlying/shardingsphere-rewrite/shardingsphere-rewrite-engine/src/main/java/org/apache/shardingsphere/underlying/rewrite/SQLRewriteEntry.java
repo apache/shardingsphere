@@ -50,7 +50,7 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, 
                                                      final SQLStatementContext sqlStatementContext, final Map<BaseRule, SQLRewriteContextDecorator> decorators) {
-        SQLRewriteContext result = new SQLRewriteContext(metaData.getRelationMetas(), sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(metaData.getTables(), sqlStatementContext, sql, parameters);
         decorate(decorators, result);
         result.generateSQLTokens();
         return result;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.underlying.rewrite.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
@@ -40,7 +40,7 @@ import java.util.List;
 @Getter
 public final class SQLRewriteContext {
     
-    private final RelationMetas relationMetas;
+    private final TableMetas tableMetas;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -55,8 +55,8 @@ public final class SQLRewriteContext {
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
-    public SQLRewriteContext(final RelationMetas relationMetas, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
-        this.relationMetas = relationMetas;
+    public SQLRewriteContext(final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
+        this.tableMetas = tableMetas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
@@ -78,6 +78,6 @@ public final class SQLRewriteContext {
      * Generate SQL tokens.
      */
     public void generateSQLTokens() {
-        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, relationMetas));
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, tableMetas));
     }
 }

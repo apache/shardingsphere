@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameterized;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
@@ -80,12 +80,12 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         SQLStatement sqlStatement = SQLParserEngineFactory.getSQLParserEngine(
                 null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType()).parse(getTestParameters().getInputSQL(), false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
-                createRelationMetas(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
-        return new SQLRewriteContext(mock(RelationMetas.class), sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
+                createTableMetas(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
+        return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
     }
     
-    private RelationMetas createRelationMetas() {
-        RelationMetas result = mock(RelationMetas.class);
+    private TableMetas createTableMetas() {
+        TableMetas result = mock(TableMetas.class);
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         return result;

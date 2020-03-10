@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.merge.engine.decorator.impl;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
@@ -30,12 +30,12 @@ import org.apache.shardingsphere.underlying.merge.result.impl.transparent.Transp
 public final class TransparentResultDecorator implements ResultDecorator {
     
     @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final TableMetas tableMetas) {
         return new TransparentMergedResult(queryResult);
     }
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final TableMetas tableMetas) {
         return mergedResult;
     }
 }

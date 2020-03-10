@@ -141,7 +141,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             engines.put(encryptRule, new ProxyResultDecoratorEngine(((QueryResponse) response).getQueryHeaders()));
         }
         MergeEntry mergeEntry = new MergeEntry(
-                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), engines);
+                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getTables(), ShardingProxyContext.getInstance().getProperties(), engines);
         return mergeEntry.process(queryResults, sqlStatementContext);
     }
     

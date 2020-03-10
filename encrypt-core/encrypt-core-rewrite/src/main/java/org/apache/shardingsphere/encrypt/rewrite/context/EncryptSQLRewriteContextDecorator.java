@@ -35,7 +35,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @Override
     public void decorate(final EncryptRule encryptRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
         boolean isQueryWithCipherColumn = properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
-        for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn).getParameterRewriters(sqlRewriteContext.getRelationMetas())) {
+        for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn).getParameterRewriters(sqlRewriteContext.getTableMetas())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
             }
