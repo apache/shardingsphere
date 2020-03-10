@@ -39,7 +39,7 @@
 #    root:
 #      password: root
 #    sharding:
-#      password: sharding
+#      password: sharding 
 #      authorizedSchemas: sharding_db
 #
 #props:
