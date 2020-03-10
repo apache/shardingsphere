@@ -26,7 +26,6 @@ import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShadowRuleChangedEvent;
-import org.apache.shardingsphere.shadow.metadata.loader.ShadowTableMetaDataLoader;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyConnectionManager;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourc
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl.DefaultTableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
@@ -69,7 +69,7 @@ public final class ShadowSchema extends LogicSchema {
     
     private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas) {
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
-        tableMetaDataInitializes.put(shadowRule, new ShadowTableMetaDataLoader(dataSourceMetas, new ProxyConnectionManager(getBackendDataSource())));
+        tableMetaDataInitializes.put(shadowRule, new DefaultTableMetaDataLoader(dataSourceMetas, new ProxyConnectionManager(getBackendDataSource())));
         return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     
