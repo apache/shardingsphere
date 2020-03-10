@@ -31,5 +31,6 @@
     
     <modules>
         <module>shadow-core-rewrite</module>
+        <module>shadow-core-common</module>
     </modules>
 </project>
