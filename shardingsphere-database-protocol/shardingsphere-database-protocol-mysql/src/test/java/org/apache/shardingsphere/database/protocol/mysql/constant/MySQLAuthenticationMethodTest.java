@@ -22,20 +22,10 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MySQLStatusFlagTest {
+public class MySQLAuthenticationMethodTest {
     
     @Test
-    public void assertGetValue() {
-        assertThat(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue(), is(0x0001));
-    }
-    
-    @Test
-    public void assertValueOfByInteger() {
-        assertThat(MySQLStatusFlag.valueOf(0x0001), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertValueOfByIntegerFailure() {
-        MySQLStatusFlag.valueOf(0x0011);
+    public void assertGetMethodName() {
+        assertThat(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName(), is("mysql_native_password"));
     }
 }
