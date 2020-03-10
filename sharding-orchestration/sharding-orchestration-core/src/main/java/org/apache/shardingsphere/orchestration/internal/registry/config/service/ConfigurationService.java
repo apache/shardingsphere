@@ -220,6 +220,16 @@ public final class ConfigurationService {
     }
     
     /**
+     * Judge is shadow rule or not.
+     * @param shardingSchemaName sharding schema name
+     * @return is shadow rule or not
+     */
+    public boolean isShadowRule(final String shardingSchemaName) {
+        return !configCenterRepository.get(configNode.getRulePath(shardingSchemaName)).contains("shadowRule:\n")
+                && configCenterRepository.get(configNode.getRulePath(shardingSchemaName)).contains("shadowMappings:\n");
+    }
+    
+    /**
      * Load data source configurations.
      *
      * @param shardingSchemaName sharding schema name

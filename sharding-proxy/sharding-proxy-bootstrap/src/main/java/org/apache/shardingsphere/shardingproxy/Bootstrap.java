@@ -147,10 +147,10 @@ public final class Bootstrap {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadEncryptRuleConfiguration(each));
             } else if (shardingOrchestrationFacade.getConfigService().isShardingRule(each)) {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
-            } else if (shardingOrchestrationFacade.getConfigService().isEncryptRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
-            } else {
+            } else if (shardingOrchestrationFacade.getConfigService().isShadowRule(each)) {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadShadowRuleConfiguration(each));
+            } else {
+                result.put(each, shardingOrchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
             }
         }
         return result;

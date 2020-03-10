@@ -351,6 +351,13 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
+    public void assertIsShadowRule() {
+        when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(SHADOW_RULE_YAML);
+        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
+        assertTrue(configurationService.isShadowRule("sharding_db"));
+    }
+    
+    @Test
     public void assertIsNotShardingRule() {
         when(regCenter.get("/test/config/schema/sharding_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
