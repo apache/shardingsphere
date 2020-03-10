@@ -58,4 +58,19 @@ public enum MySQLStatusFlag {
     SERVER_SESSION_STATE_CHANGED(0x4000);
     
     private final int value;
+    
+    /**
+     * Value of MySQL status flag.
+     *
+     * @param value value
+     * @return MySQL status flag
+     */
+    public static MySQLStatusFlag valueOf(final int value) {
+        for (MySQLStatusFlag each : MySQLStatusFlag.values()) {
+            if (each.getValue() == value) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Illegal MySQL status flag value %d", value));
+    }
 }

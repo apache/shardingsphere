@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.constant;
+package org.apache.shardingsphere.orchestration.internal.registry.config.event;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MySQLStatusFlagTest {
+/**
+ * Shadow rule changed event.
+ */
+@RequiredArgsConstructor
+@Getter
+public class ShadowRuleChangedEvent implements ShardingOrchestrationEvent {
     
-    @Test
-    public void assertGetValue() {
-        assertThat(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue(), is(0x0001));
-    }
+    private final String shardingSchemaName;
     
-    @Test
-    public void assertValueOfByInteger() {
-        assertThat(MySQLStatusFlag.valueOf(0x0001), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertValueOfByIntegerFailure() {
-        MySQLStatusFlag.valueOf(0x0011);
-    }
+    private final ShadowRuleConfiguration shadowRuleConfiguration;
 }

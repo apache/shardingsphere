@@ -21,7 +21,6 @@ import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventL
 import org.apache.shardingsphere.orchestration.center.util.ConfigKeyUtils;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +100,7 @@ public final class ApolloCenterRepository implements ConfigCenterRepository {
                 caches.get(changeKey).onChange(new DataChangedEvent(ConfigKeyUtils.key2Path(changeKey), change.getNewValue(), changedType));
             }
         };
-        configWrapper.addChangeListener(listener, Sets.newHashSet(apolloKey), Sets.newHashSet(apolloKey));
+        configWrapper.addChangeListener(listener, Collections.singleton(apolloKey), Collections.singleton(apolloKey));
     }
     
     private DataChangedEvent.ChangedType getChangedType(final PropertyChangeType changeType) {
