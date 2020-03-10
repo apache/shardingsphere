@@ -33,11 +33,11 @@ public final class ShardingOrchestrationListenerManager {
     
     private final StateChangedListenerManager stateChangedListenerManager;
     
-    public ShardingOrchestrationListenerManager(final String regCenterName, final RegistryCenterRepository regCenter,
-                                                final String configCenterName, final ConfigCenterRepository configCenterRepository,
+    public ShardingOrchestrationListenerManager(final String registryCenterRepositoryName, final RegistryCenterRepository registryCenterRepository,
+                                                final String configCenterRepositoryName, final ConfigCenterRepository configCenterRepository,
                                                 final Collection<String> shardingSchemaNames) {
-        configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterName, configCenterRepository, shardingSchemaNames);
-        stateChangedListenerManager = new StateChangedListenerManager(regCenterName, regCenter);
+        configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterRepositoryName, configCenterRepository, shardingSchemaNames);
+        stateChangedListenerManager = new StateChangedListenerManager(registryCenterRepositoryName, registryCenterRepository);
     }
     
     /**

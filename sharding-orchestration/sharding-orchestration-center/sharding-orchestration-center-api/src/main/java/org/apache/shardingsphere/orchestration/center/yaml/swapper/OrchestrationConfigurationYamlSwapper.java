@@ -35,20 +35,18 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     /**
      * Swap from InstanceConfiguration to YamlInstanceConfiguration.
      *
-     * @param data data to be swapped
+     * @param configuration configuration to be swapped
      * @return YAML instance configuration
      */
     @Override
-    public YamlOrchestrationConfiguration swap(final OrchestrationConfiguration data) {
+    public YamlOrchestrationConfiguration swap(final OrchestrationConfiguration configuration) {
         Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap = new HashMap();
-        Map<String, InstanceConfiguration> instanceConfigurationMap = data.getInstanceConfigurationMap();
+        Map<String, InstanceConfiguration> instanceConfigurationMap = configuration.getInstanceConfigurationMap();
+        InstanceConfigurationYamlSwapper swapper = new InstanceConfigurationYamlSwapper();
         for (Entry<String, InstanceConfiguration> each : instanceConfigurationMap.entrySet()) {
-            InstanceConfigurationYamlSwapper swapper = new InstanceConfigurationYamlSwapper();
             yamlInstanceConfigurationMap.put(each.getKey(), swapper.swap(each.getValue()));
         }
-        YamlOrchestrationConfiguration result = new YamlOrchestrationConfiguration();
-        result.setInstanceConfigurationMap(yamlInstanceConfigurationMap);
-        return result;
+        return new YamlOrchestrationConfiguration(yamlInstanceConfigurationMap);
     }
     
     /**
@@ -61,11 +59,10 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
     public OrchestrationConfiguration swap(final YamlOrchestrationConfiguration yamlConfiguration) {
         Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap();
         Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap = yamlConfiguration.getInstanceConfigurationMap();
+        InstanceConfigurationYamlSwapper swapper = new InstanceConfigurationYamlSwapper();
         for (Entry<String, YamlInstanceConfiguration> each : yamlInstanceConfigurationMap.entrySet()) {
-            InstanceConfigurationYamlSwapper swapper = new InstanceConfigurationYamlSwapper();
             instanceConfigurationMap.put(each.getKey(), swapper.swap(each.getValue()));
         }
-        OrchestrationConfiguration result = new OrchestrationConfiguration(instanceConfigurationMap);
-        return result;
+        return new OrchestrationConfiguration(instanceConfigurationMap);
     }
 }

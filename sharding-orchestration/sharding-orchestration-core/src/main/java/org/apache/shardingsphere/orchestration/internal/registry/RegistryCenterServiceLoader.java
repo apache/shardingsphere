@@ -46,8 +46,8 @@ public final class RegistryCenterServiceLoader extends TypeBasedSPIServiceLoader
      */
     public RegistryCenterRepository load(final InstanceConfiguration config) {
         Preconditions.checkNotNull(config, "Registry center configuration cannot be null.");
-        RegistryCenterRepository result = newService(config.getType(), config.getProperties());
-        result.init(config);
-        return result;
+        RegistryCenterRepository registryCenterRepository = newService(config.getType(), config.getProperties());
+        registryCenterRepository.init(config);
+        return registryCenterRepository;
     }
 }

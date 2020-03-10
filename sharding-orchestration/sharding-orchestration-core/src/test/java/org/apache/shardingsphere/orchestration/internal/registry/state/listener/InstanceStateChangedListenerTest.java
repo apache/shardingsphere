@@ -36,11 +36,11 @@ public final class InstanceStateChangedListenerTest {
     private InstanceStateChangedListener instanceStateChangedListener;
     
     @Mock
-    private RegistryCenterRepository regCenter;
+    private RegistryCenterRepository registryCenterRepository;
     
     @Before
     public void setUp() {
-        instanceStateChangedListener = new InstanceStateChangedListener("test", regCenter);
+        instanceStateChangedListener = new InstanceStateChangedListener("test", registryCenterRepository);
     }
     
     @Test

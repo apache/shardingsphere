@@ -27,10 +27,10 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfigu
 public final class DataSourceConfigurationYamlSwapper implements YamlSwapper<YamlDataSourceConfiguration, DataSourceConfiguration> {
     
     @Override
-    public YamlDataSourceConfiguration swap(final DataSourceConfiguration data) {
+    public YamlDataSourceConfiguration swap(final DataSourceConfiguration configuration) {
         YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
-        result.setDataSourceClassName(data.getDataSourceClassName());
-        result.setProperties(data.getProperties());
+        result.setDataSourceClassName(configuration.getDataSourceClassName());
+        result.setProperties(configuration.getProperties());
         return result;
     }
     

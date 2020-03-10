@@ -29,17 +29,17 @@ public final class InstanceConfigurationYamlSwapper implements YamlSwapper<YamlI
     /**
      * Swap from InstanceConfiguration to YamlInstanceConfiguration.
      *
-     * @param data data to be swapped
+     * @param configuration configuration to be swapped
      * @return YAML instance configuration
      */
     @Override
-    public YamlInstanceConfiguration swap(final InstanceConfiguration data) {
+    public YamlInstanceConfiguration swap(final InstanceConfiguration configuration) {
         YamlInstanceConfiguration result = new YamlInstanceConfiguration();
-        result.setOrchestrationType(data.getOrchestrationType());
-        result.setInstanceType(data.getType());
-        result.setServerLists(data.getServerLists());
-        result.setNamespace(data.getNamespace());
-        result.setProps(data.getProperties());
+        result.setOrchestrationType(configuration.getOrchestrationType());
+        result.setInstanceType(configuration.getType());
+        result.setServerLists(configuration.getServerLists());
+        result.setNamespace(configuration.getNamespace());
+        result.setProps(configuration.getProperties());
         return result;
     }
     

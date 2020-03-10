@@ -28,13 +28,13 @@ public final class StateService {
     
     private final StateNode stateNode;
     
-    private final RegistryCenterRepository regCenter;
+    private final RegistryCenterRepository registryCenterRepository;
     
     private final OrchestrationInstance instance;
     
-    public StateService(final String name, final RegistryCenterRepository regCenter) {
+    public StateService(final String name, final RegistryCenterRepository registryCenterRepository) {
         stateNode = new StateNode(name);
-        this.regCenter = regCenter;
+        this.registryCenterRepository = registryCenterRepository;
         instance = OrchestrationInstance.getInstance();
     }
     
@@ -42,13 +42,13 @@ public final class StateService {
      * Persist instance online.
      */
     public void persistInstanceOnline() {
-        regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
+        registryCenterRepository.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
     }
     
     /**
      * Initialize data sources node.
      */
     public void persistDataSourcesNode() {
-        regCenter.persist(stateNode.getDataSourcesNodeFullRootPath(), "");
+        registryCenterRepository.persist(stateNode.getDataSourcesNodeFullRootPath(), "");
     }
 }

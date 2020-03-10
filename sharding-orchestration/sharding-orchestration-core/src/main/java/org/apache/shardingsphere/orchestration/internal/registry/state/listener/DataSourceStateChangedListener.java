@@ -33,8 +33,8 @@ public final class DataSourceStateChangedListener extends PostShardingRegistryCe
     
     private final StateNode stateNode;
     
-    public DataSourceStateChangedListener(final String name, final RegistryCenterRepository regCenter) {
-        super(regCenter, new StateNode(name).getDataSourcesNodeFullRootPath());
+    public DataSourceStateChangedListener(final String name, final RegistryCenterRepository registryCenterRepository) {
+        super(registryCenterRepository, new StateNode(name).getDataSourcesNodeFullRootPath());
         stateNode = new StateNode(name);
     }
     
