@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
@@ -37,7 +38,7 @@ public final class MySQLOKPacket implements MySQLPacket {
      */
     public static final int HEADER = 0x00;
     
-    private static final int STATUS_FLAG = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();
+    private static final int DEFAULT_STATUS_FLAG = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();
     
     private final int sequenceId;
     
@@ -45,16 +46,28 @@ public final class MySQLOKPacket implements MySQLPacket {
     
     private final long lastInsertId;
     
+    private final int statusFlag;
+    
     private final int warnings;
     
     private final String info;
     
     public MySQLOKPacket(final int sequenceId) {
-        this(sequenceId, 0L, 0L, 0, "");
+        this(sequenceId, 0L, 0L, DEFAULT_STATUS_FLAG,  0, "");
     }
     
     public MySQLOKPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
-        this(sequenceId, affectedRows, lastInsertId, 0, "");
+        this(sequenceId, affectedRows, lastInsertId, DEFAULT_STATUS_FLAG, 0, "");
+    }
+    
+    public MySQLOKPacket(final MySQLPacketPayload payload) {
+        sequenceId = payload.readInt1();
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL OK packet must be `0x00`.");
+        affectedRows = payload.readIntLenenc();
+        lastInsertId = payload.readIntLenenc();
+        statusFlag = payload.readInt2();
+        warnings = payload.readInt2();
+        info = payload.readStringEOF();
     }
     
     @Override
@@ -62,7 +75,7 @@ public final class MySQLOKPacket implements MySQLPacket {
         payload.writeInt1(HEADER);
         payload.writeIntLenenc(affectedRows);
         payload.writeIntLenenc(lastInsertId);
-        payload.writeInt2(STATUS_FLAG);
+        payload.writeInt2(statusFlag);
         payload.writeInt2(warnings);
         payload.writeStringEOF(info);
     }

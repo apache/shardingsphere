@@ -46,7 +46,7 @@ public final class MySQLEofPacketTest {
     
     @Test
     public void assertNewEofPacketWithPayload() {
-        when(payload.readInt1()).thenReturn(5, 0xfe);
+        when(payload.readInt1()).thenReturn(5, MySQLEofPacket.HEADER);
         when(payload.readInt2()).thenReturn(0, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         MySQLEofPacket actual = new MySQLEofPacket(payload);
         assertThat(actual.getSequenceId(), is(5));

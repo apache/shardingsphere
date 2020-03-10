@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLOKPacketTest {
@@ -40,6 +41,7 @@ public final class MySQLOKPacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getAffectedRows(), is(0L));
         assertThat(actual.getLastInsertId(), is(0L));
+        assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getInfo(), is(""));
     }
@@ -50,6 +52,22 @@ public final class MySQLOKPacketTest {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getAffectedRows(), is(100L));
         assertThat(actual.getLastInsertId(), is(9999L));
+        assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        assertThat(actual.getWarnings(), is(0));
+        assertThat(actual.getInfo(), is(""));
+    }
+    
+    @Test
+    public void assertNewOKPacketWithPayload() {
+        when(packetPayload.readInt1()).thenReturn(1, MySQLOKPacket.HEADER);
+        when(packetPayload.readInt2()).thenReturn(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0);
+        when(packetPayload.readIntLenenc()).thenReturn(100L, 9999L);
+        when(packetPayload.readStringEOF()).thenReturn("");
+        MySQLOKPacket actual = new MySQLOKPacket(packetPayload);
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getAffectedRows(), is(100L));
+        assertThat(actual.getLastInsertId(), is(9999L));
+        assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getInfo(), is(""));
     }
