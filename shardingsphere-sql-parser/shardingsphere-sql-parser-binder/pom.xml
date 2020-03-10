@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-sql-parser</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-parser-relation</artifactId>
+    <artifactId>shardingsphere-sql-parser-binder</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

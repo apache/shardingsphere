@@ -81,6 +81,7 @@ public final class SQLStatementContextFactory {
      * @param sqlStatement SQL statement
      * @return SQL statement context
      */
+    @SuppressWarnings("unchecked")
     public static SQLStatementContext newInstance(final RelationMetas relationMetas, final String sql, final List<Object> parameters, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(relationMetas, sql, parameters, (DMLStatement) sqlStatement);
@@ -113,6 +114,7 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
+    @SuppressWarnings("unchecked")
     private static SQLStatementContext getDDLStatementContext(final DDLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
             return new CreateTableStatementContext((CreateTableStatement) sqlStatement);
@@ -138,6 +140,7 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext(sqlStatement);
     }
     
+    @SuppressWarnings("unchecked")
     private static SQLStatementContext getDCLStatementContext(final DCLStatement sqlStatement) {
         if (sqlStatement instanceof GrantStatement) {
             return new GrantStatementContext((GrantStatement) sqlStatement);
@@ -151,6 +154,7 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext(sqlStatement);
     }
     
+    @SuppressWarnings("unchecked")
     private static SQLStatementContext getDALStatementContext(final DALStatement sqlStatement) {
         if (sqlStatement instanceof DescribeStatement) {
             return new DescribeStatementContext((DescribeStatement) sqlStatement);
