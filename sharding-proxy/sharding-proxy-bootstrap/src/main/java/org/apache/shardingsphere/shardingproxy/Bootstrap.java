@@ -21,6 +21,7 @@ import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
@@ -146,8 +147,10 @@ public final class Bootstrap {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadEncryptRuleConfiguration(each));
             } else if (shardingOrchestrationFacade.getConfigService().isShardingRule(each)) {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
-            } else {
+            } else if (shardingOrchestrationFacade.getConfigService().isEncryptRule(each)) {
                 result.put(each, shardingOrchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
+            } else {
+                result.put(each, shardingOrchestrationFacade.getConfigService().loadShadowRuleConfiguration(each));
             }
         }
         return result;
@@ -194,6 +197,8 @@ public final class Bootstrap {
                 result.put(entry.getKey(), new MasterSlaveRuleConfigurationYamlSwapper().swap(entry.getValue().getMasterSlaveRule()));
             } else if (null != entry.getValue().getEncryptRule()) {
                 result.put(entry.getKey(), new EncryptRuleConfigurationYamlSwapper().swap(entry.getValue().getEncryptRule()));
+            } else if (null != entry.getValue().getShadowRule()) {
+                result.put(entry.getKey(), new ShadowRuleConfigurationYamlSwapper().swap(entry.getValue().getShadowRule()));
             }
         }
         return result;

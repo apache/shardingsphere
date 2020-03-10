@@ -19,6 +19,8 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
@@ -58,6 +60,9 @@ public final class LogicSchemaFactory {
         }
         if (ruleConfiguration instanceof EncryptRuleConfiguration) {
             return new EncryptSchema(schemaName, schemaDataSources.get(schemaName), (EncryptRuleConfiguration) ruleConfiguration);
+        }
+        if (ruleConfiguration instanceof ShadowRuleConfiguration) {
+            return new ShadowSchema(schemaName, schemaDataSources.get(schemaName), (ShadowRuleConfiguration) ruleConfiguration);
         }
         return new TransparentSchema(schemaName, schemaDataSources.get(schemaName));
     }

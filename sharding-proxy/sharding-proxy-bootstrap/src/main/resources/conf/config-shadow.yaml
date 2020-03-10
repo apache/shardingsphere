@@ -26,31 +26,31 @@
 # 
 ######################################################################################################
 #
-schemaName: sharding_db
+#schemaName: sharding_db
 #
-dataSources:
-  ds:
-    url: jdbc:mysql://localhost:3306/zhyee_00
-    username: root
-    password: root
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-  shadow_ds:
-    url: jdbc:mysql://localhost:3306/zhyee_01
-    username: root
-    password: root
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-
-shadowRule:
-  column: shadow
-  shadowMappings:
-    ds: shadow_ds
-
+#dataSources:
+#  ds:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0?serverTimezone=UTC&useSSL=false
+#    username: postgres
+#    password: postgres
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#  shadow_ds:
+#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1?serverTimezone=UTC&useSSL=false
+#    username: postgres
+#    password: postgres
+#    connectionTimeoutMilliseconds: 30000
+#    idleTimeoutMilliseconds: 60000
+#    maxLifetimeMilliseconds: 1800000
+#    maxPoolSize: 50
+#
+#shadowRule:
+#  column: shadow
+#  shadowMappings:
+#    ds: shadow_ds
+#
 #
 ######################################################################################################
 #
@@ -61,7 +61,7 @@ shadowRule:
 #schemaName: sharding_db
 #
 #dataSources:
-#  ds_0:
+#  ds:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
@@ -69,7 +69,7 @@ shadowRule:
 #    idleTimeoutMilliseconds: 60000
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
-#  ds_1:
+#  shadow_ds:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
@@ -78,31 +78,7 @@ shadowRule:
 #    maxLifetimeMilliseconds: 1800000
 #    maxPoolSize: 50
 #
-#shardingRule:
-#  tables:
-#    t_order:
-#      actualDataNodes: ds_${0..1}.t_order_${0..1}
-#      tableStrategy:
-#        inline:
-#          shardingColumn: order_id
-#          algorithmExpression: t_order_${order_id % 2}
-#      keyGenerator:
-#        type: SNOWFLAKE
-#        column: order_id
-#    t_order_item:
-#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-#      tableStrategy:
-#        inline:
-#          shardingColumn: order_id
-#          algorithmExpression: t_order_item_${order_id % 2}
-#      keyGenerator:
-#        type: SNOWFLAKE
-#        column: order_item_id
-#  bindingTables:
-#    - t_order,t_order_item
-#  defaultDatabaseStrategy:
-#    inline:
-#      shardingColumn: user_id
-#      algorithmExpression: ds_${user_id % 2}
-#  defaultTableStrategy:
-#    none:
+#shadowRule:
+#  column: shadow
+#  shadowMappings:
+#    ds: shadow_ds
