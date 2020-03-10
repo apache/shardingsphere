@@ -81,8 +81,6 @@ public final class OrderByItemAssert {
                 count++;
             }
         }
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertOrderInfo(final SQLCaseAssertContext assertContext, final OrderByItemSegment actual, final ExpectedOrderByItem expected, final String type) {

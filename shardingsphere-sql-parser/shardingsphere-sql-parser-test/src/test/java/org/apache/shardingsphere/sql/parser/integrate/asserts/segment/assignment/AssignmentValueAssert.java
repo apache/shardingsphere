@@ -49,7 +49,5 @@ public final class AssignmentValueAssert {
         } else if (actual instanceof ExpressionProjectionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual, expected.getCommonExpression());
         }
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }
