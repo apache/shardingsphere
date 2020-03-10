@@ -99,7 +99,7 @@ public final class OrderByItemAssert {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
         // TODO assert start index and stop index
-//                SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertIndexOrderByItem(final SQLCaseAssertContext assertContext,
