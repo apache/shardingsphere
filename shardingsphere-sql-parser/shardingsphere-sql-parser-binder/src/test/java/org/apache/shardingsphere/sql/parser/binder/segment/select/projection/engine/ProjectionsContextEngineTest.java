@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupB
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;

@@ -52,7 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.LinkedList;

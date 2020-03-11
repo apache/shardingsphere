@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.select.pagination;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.GroupBySegment;

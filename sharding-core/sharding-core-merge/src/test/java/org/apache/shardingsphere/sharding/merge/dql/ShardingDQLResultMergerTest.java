@@ -24,8 +24,8 @@ import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedR
 import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.cache.SQLParseResultCache;
-import org.apache.shardingsphere.sql.parser.core.constant.RuleName;
+import org.apache.shardingsphere.sql.parser.sql.constant.RuleName;
 import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;

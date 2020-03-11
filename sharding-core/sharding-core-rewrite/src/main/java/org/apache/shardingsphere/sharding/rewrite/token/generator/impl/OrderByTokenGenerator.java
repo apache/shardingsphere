@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;

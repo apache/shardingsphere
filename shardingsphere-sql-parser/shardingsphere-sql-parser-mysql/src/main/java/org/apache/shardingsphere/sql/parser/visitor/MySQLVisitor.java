@@ -64,8 +64,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
-import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.predicate.PredicateBuilder;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
@@ -104,7 +104,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.NumberLiteral
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.Collections;
