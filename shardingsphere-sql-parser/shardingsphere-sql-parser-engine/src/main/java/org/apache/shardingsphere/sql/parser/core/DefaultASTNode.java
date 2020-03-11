@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value;
+package org.apache.shardingsphere.sql.parser.core;
 
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
- * Value AST node.
+ * Default AST node.
  *
- * @param <T> type of value
+ * @author zhangliang
  */
-public interface ValueASTNode<T> extends ASTNode {
+@RequiredArgsConstructor
+public final class DefaultASTNode implements ASTNode {
+    
+    private final ParseTree parseTree;
     
     /**
-     * Get value.
+     * Get root node.
      * 
-     * @return value
+     * @return root node
      */
-    T getValue();
+    public ParseTree getRootNode() {
+        return parseTree.getChild(0);
+    }
 }

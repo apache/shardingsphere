@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql;
+package org.apache.shardingsphere.sql.parser.api;
 
 /**
  * AST node.

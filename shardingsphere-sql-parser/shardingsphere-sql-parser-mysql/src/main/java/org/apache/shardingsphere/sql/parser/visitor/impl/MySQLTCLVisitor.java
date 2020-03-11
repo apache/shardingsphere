@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Rollbac
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;

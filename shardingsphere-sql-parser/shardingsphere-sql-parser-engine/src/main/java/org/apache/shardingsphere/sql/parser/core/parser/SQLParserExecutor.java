@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.core.DefaultASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 /**
@@ -56,12 +57,12 @@ public final class SQLParserExecutor {
         try {
             ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
-            return sqlParser.execute().getChild(0);
+            return ((DefaultASTNode) sqlParser.parse()).getRootNode();
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
             ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
-            return sqlParser.execute().getChild(0);
+            return ((DefaultASTNode) sqlParser.parse()).getRootNode();
         }
     }
 }

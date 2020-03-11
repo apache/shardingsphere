@@ -50,7 +50,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameTableSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StorageOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TruncateTableContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;

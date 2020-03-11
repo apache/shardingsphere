@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RevokeContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.RevokeStatement;

@@ -52,7 +52,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereClauseContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.SetAssignmentSegment;

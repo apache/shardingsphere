@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Rol
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetImplicitTransactionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.tcl.RollbackStatement;

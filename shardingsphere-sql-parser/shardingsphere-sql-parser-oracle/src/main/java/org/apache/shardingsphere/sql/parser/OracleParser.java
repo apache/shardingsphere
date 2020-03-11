@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
+import org.apache.shardingsphere.sql.parser.core.DefaultASTNode;
 
 /**
  * SQL parser for Oracle.
@@ -28,5 +30,10 @@ public final class OracleParser extends OracleStatementParser implements SQLPars
     
     public OracleParser(final TokenStream input) {
         super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new DefaultASTNode(execute());
     }
 }

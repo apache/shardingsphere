@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.ColumnDefinitionSegment;

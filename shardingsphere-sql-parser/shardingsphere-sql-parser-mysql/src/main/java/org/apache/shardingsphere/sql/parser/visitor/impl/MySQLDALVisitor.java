@@ -53,7 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dal.ShowLikeSegment;
