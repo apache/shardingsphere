@@ -23,9 +23,12 @@ import lombok.Setter;
 
 /**
  * Abstract command packet.
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}
  */
 @Setter
 @Getter
+@Deprecated
 public abstract class AbstractCommandPacket extends AbstractPacket {
     
     private byte command;

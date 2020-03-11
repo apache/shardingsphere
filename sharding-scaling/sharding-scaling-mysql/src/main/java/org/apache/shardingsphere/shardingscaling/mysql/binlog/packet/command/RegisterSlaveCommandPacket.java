@@ -26,11 +26,10 @@ import lombok.Setter;
 /**
  * Register salve command packet.
  *
- * <p>
- *     Refactor by extends {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}.
- * </p>
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket}
  */
 @Setter
+@Deprecated
 public final class RegisterSlaveCommandPacket extends AbstractCommandPacket {
     
     private String reportHost;
