@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.TCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RollbackContext;

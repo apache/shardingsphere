@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserContext;

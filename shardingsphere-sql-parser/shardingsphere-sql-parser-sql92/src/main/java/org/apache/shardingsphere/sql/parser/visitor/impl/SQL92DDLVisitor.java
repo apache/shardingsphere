@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AlterTableContext;

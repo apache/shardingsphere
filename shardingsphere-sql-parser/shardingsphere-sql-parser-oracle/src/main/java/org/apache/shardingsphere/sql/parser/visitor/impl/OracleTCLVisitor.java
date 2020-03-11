@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.TCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SavepointContext;
