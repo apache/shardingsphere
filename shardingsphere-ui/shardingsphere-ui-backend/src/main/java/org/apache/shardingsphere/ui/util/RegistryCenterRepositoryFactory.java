@@ -20,11 +20,11 @@ package org.apache.shardingsphere.ui.util;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperInstance;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperCenterRepository;
 import org.apache.shardingsphere.ui.common.constant.RegistryCenterType;
 import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 /**
  * Registry center factory.
@@ -48,7 +48,7 @@ public final class RegistryCenterRepositoryFactory {
         RegistryCenterType registryCenterType = RegistryCenterType.nameOf(config.getRegistryCenterType());
         switch (registryCenterType) {
             case ZOOKEEPER:
-                result = new CuratorZookeeperInstance();
+                result = new CuratorZookeeperCenterRepository();
                 break;
             default:
                 throw new UnsupportedOperationException(config.getName());
@@ -58,8 +58,8 @@ public final class RegistryCenterRepositoryFactory {
         return result;
     }
     
-    private static InstanceConfiguration convert(final RegistryCenterConfig config) {
-        InstanceConfiguration result = new InstanceConfiguration(config.getRegistryCenterType());
+    private static CenterConfiguration convert(final RegistryCenterConfig config) {
+        CenterConfiguration result = new CenterConfiguration(config.getRegistryCenterType());
         result.setServerLists(config.getServerLists());
         result.setNamespace(config.getNamespace());
         result.getProperties().put("digest", config.getDigest());
