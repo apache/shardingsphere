@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql.constant.RuleName;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
@@ -52,7 +52,7 @@ public final class ParseTreeVisitorFactory {
     
     @SneakyThrows
     private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration configuration, final SQLStatementType type) {
-        ParseTreeVisitorFacade visitorFacade = configuration.getVisitorFacadeClass().getConstructor().newInstance();
+        SQLVisitorFacade visitorFacade = configuration.getVisitorFacadeClass().getConstructor().newInstance();
         switch (type) {
             case DML:
                 return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();

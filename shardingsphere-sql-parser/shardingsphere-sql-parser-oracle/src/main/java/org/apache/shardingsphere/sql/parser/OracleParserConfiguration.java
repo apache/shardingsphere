@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser;
 
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.visitor.OracleVisitorFacade;
 
@@ -44,7 +44,7 @@ public final class OracleParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends ParseTreeVisitorFacade> getVisitorFacadeClass() {
+    public Class<? extends SQLVisitorFacade> getVisitorFacadeClass() {
         return OracleVisitorFacade.class;
     }
 }

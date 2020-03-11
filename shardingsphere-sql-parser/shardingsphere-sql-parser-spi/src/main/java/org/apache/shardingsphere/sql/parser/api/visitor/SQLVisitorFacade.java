@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sql.parser.api.visitor;
 
 /**
- * Parse tree visitor facade.
+ * SQL visitor facade.
  */
-public interface ParseTreeVisitorFacade {
+public interface SQLVisitorFacade {
     
     /**
      * Get DML visitor class.
