@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCom
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * COM_BINLOG_DUMP command packet for MySQL.
@@ -29,6 +30,7 @@ import lombok.Getter;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-binlog-dump.html">COM_BINLOG_DUMP</a>
  */
 @Getter
+@ToString
 public final class MySQLComBinlogDumpCommandPacket extends MySQLCommandPacket {
     
     /**

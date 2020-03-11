@@ -26,34 +26,44 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLComBinlogDumpCommandPacketTest {
+public final class MySQLComRegisterSlaveCommandPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
     public void assertNew() {
-        when(payload.readInt2()).thenReturn(0);
-        when(payload.readStringEOF()).thenReturn("binlog-000001");
-        when(payload.readInt4()).thenReturn(4, 123456);
-        MySQLComBinlogDumpCommandPacket actual = new MySQLComBinlogDumpCommandPacket(payload);
-        assertThat(actual.getBinlogPos(), is(4));
-        assertThat(actual.getFlags(), is(0));
+        when(payload.readInt4()).thenReturn(123456, 654321);
+        when(payload.readInt1()).thenReturn(4, 4, 8);
+        when(payload.readStringFix(4)).thenReturn("host", "user");
+        when(payload.readStringFix(8)).thenReturn("password");
+        when(payload.readInt2()).thenReturn(3307);
+        MySQLComRegisterSlaveCommandPacket actual = new MySQLComRegisterSlaveCommandPacket(payload);
         assertThat(actual.getServerId(), is(123456));
-        assertThat(actual.getBinlogFilename(), is("binlog-000001"));
+        assertThat(actual.getSlaveHostname(), is("host"));
+        assertThat(actual.getSlaveUser(), is("user"));
+        assertThat(actual.getSlavePassword(), is("password"));
+        assertThat(actual.getSlavePort(), is(3307));
+        assertThat(actual.getMasterId(), is(654321));
     }
     
     @Test
     public void assertWrite() {
-        new MySQLComBinlogDumpCommandPacket(4, 123456, "binlog-000001").write(payload);
-        verify(payload).writeInt1(MySQLCommandPacketType.COM_BINLOG_DUMP.getValue());
-        verify(payload).writeInt4(4);
-        verify(payload).writeInt2(0);
+        new MySQLComRegisterSlaveCommandPacket(123456, "host", "user", "password", 3307).write(payload);
+        verify(payload).writeInt1(MySQLCommandPacketType.COM_REGISTER_SLAVE.getValue());
         verify(payload).writeInt4(123456);
-        verify(payload).writeStringEOF("binlog-000001");
+        verify(payload).writeStringFix("host");
+        verify(payload, times(2)).writeInt1(4);
+        verify(payload).writeStringFix("user");
+        verify(payload).writeInt1(8);
+        verify(payload).writeStringFix("password");
+        verify(payload).writeInt2(3307);
+        verify(payload).writeBytes(new byte[4]);
+        verify(payload).writeInt4(0);
     }
 }
