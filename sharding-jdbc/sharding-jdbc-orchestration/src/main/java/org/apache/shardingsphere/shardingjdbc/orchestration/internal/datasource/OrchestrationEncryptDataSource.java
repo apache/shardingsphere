@@ -24,7 +24,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
@@ -39,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 
 /**

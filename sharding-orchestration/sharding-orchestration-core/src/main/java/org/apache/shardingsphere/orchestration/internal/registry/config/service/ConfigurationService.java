@@ -39,7 +39,7 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationY
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
@@ -113,7 +113,7 @@ public final class ConfigurationService {
             } else if (ruleConfig instanceof EncryptRuleConfiguration) {
                 persistEncryptRuleConfiguration(shardingSchemaName, (EncryptRuleConfiguration) ruleConfig);
             } else if (ruleConfig instanceof ShadowRuleConfiguration) {
-                persisShadowRuleConfiguration(shardingSchemaName, (ShadowRuleConfiguration) ruleConfig);
+                persistShadowRuleConfiguration(shardingSchemaName, (ShadowRuleConfiguration) ruleConfig);
             } else {
                 persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfig);
             }
@@ -144,7 +144,7 @@ public final class ConfigurationService {
         configCenterRepository.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
     }
     
-    private void persisShadowRuleConfiguration(final String shardingSchemaName, final ShadowRuleConfiguration shadowRuleConfiguration) {
+    private void persistShadowRuleConfiguration(final String shardingSchemaName, final ShadowRuleConfiguration shadowRuleConfiguration) {
         Preconditions.checkState(null != shadowRuleConfiguration && !shadowRuleConfiguration.getColumn().isEmpty() && null != shadowRuleConfiguration.getShadowMappings(),
                 "No available shadow rule configuration in `%s` for orchestration.", shardingSchemaName);
         configCenterRepository.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new ShadowRuleConfigurationYamlSwapper().swap(shadowRuleConfiguration)));

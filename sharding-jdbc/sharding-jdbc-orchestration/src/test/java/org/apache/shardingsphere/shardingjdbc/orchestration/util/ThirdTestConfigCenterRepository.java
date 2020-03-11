@@ -24,9 +24,9 @@ import java.util.Map;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 public final class ThirdTestConfigCenterRepository implements ConfigCenterRepository {
     
@@ -37,7 +37,7 @@ public final class ThirdTestConfigCenterRepository implements ConfigCenterReposi
     private Properties properties;
     
     @Override
-    public void init(final InstanceConfiguration config) {
+    public void init(final CenterConfiguration config) {
     }
     
     @Override

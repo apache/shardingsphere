@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

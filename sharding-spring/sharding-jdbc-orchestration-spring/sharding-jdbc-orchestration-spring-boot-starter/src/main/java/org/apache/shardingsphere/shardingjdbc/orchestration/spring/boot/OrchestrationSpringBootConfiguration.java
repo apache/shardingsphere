@@ -28,10 +28,8 @@ import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYaml
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.swapper.InstanceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -50,6 +48,8 @@ import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSett
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -97,7 +97,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     
     private final SpringBootRootConfigurationProperties root;
     
-    private final InstanceConfigurationYamlSwapper instanceConfigurationYamlSwapper = new InstanceConfigurationYamlSwapper();
+    private final CenterRepositoryConfigurationYamlSwapper configurationYamlSwapper = new CenterRepositoryConfigurationYamlSwapper();
     
     /**
      * Get orchestration configuration.
@@ -107,9 +107,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     public OrchestrationConfiguration orchestrationConfiguration() {
         Preconditions.checkState(isValidOrchestrationConfiguration(), "The orchestration configuration is invalid, please configure orchestration");
-        Map<String, InstanceConfiguration> instanceConfigurationMap = Maps.newHashMapWithExpectedSize(root.getOrchestration().size());
-        for (Map.Entry<String, YamlInstanceConfiguration> entry : root.getOrchestration().entrySet()) {
-            instanceConfigurationMap.put(entry.getKey(), instanceConfigurationYamlSwapper.swap(entry.getValue()));
+        Map<String, CenterConfiguration> instanceConfigurationMap = Maps.newHashMapWithExpectedSize(root.getOrchestration().size());
+        for (Map.Entry<String, YamlCenterRepositoryConfiguration> entry : root.getOrchestration().entrySet()) {
+            instanceConfigurationMap.put(entry.getKey(), configurationYamlSwapper.swap(entry.getValue()));
         }
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }

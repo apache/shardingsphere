@@ -28,12 +28,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlInstanceConfigurationSwapperUtil;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationEncryptRuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 /**
@@ -99,12 +99,12 @@ public final class YamlOrchestrationEncryptDataSourceFactory {
     }
     
     private static DataSource createDataSource(final DataSource dataSource, final YamlEncryptRuleConfiguration yamlEncryptRuleConfiguration,
-                                               final Map<String, YamlInstanceConfiguration> yamlInstanceConfigurationMap, final Properties properties) throws SQLException {
+                                               final Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap, final Properties properties) throws SQLException {
         if (null == yamlEncryptRuleConfiguration) {
-            return new OrchestrationEncryptDataSource(new OrchestrationConfiguration(YamlInstanceConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
+            return new OrchestrationEncryptDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
             EncryptDataSource encryptDataSource = new EncryptDataSource(dataSource, new EncryptRule(ENCRYPT_RULE_SWAPPER.swap(yamlEncryptRuleConfiguration)), properties);
-            return new OrchestrationEncryptDataSource(encryptDataSource, new OrchestrationConfiguration(YamlInstanceConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
+            return new OrchestrationEncryptDataSource(encryptDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
     

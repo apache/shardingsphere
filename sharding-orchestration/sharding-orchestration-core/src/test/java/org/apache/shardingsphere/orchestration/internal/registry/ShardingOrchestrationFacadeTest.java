@@ -21,13 +21,13 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
 import org.apache.shardingsphere.orchestration.internal.registry.state.service.StateService;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,15 +63,15 @@ public final class ShardingOrchestrationFacadeTest {
     
     @Before
     public void setUp() {
-        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
-        InstanceConfiguration instanceConfiguration1 = new InstanceConfiguration("SecondTestRegistryCenter");
-        instanceConfiguration1.setOrchestrationType("registry_center");
-        instanceConfiguration1.setNamespace("namespace_1");
-        instanceConfigurationMap.put("test_name_1", instanceConfiguration1);
-        InstanceConfiguration instanceConfiguration2 = new InstanceConfiguration("FirstTestConfigCenter");
-        instanceConfiguration2.setOrchestrationType("config_center");
-        instanceConfiguration2.setNamespace("namespace_2");
-        instanceConfigurationMap.put("test_name_2", instanceConfiguration2);
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
+        CenterConfiguration configuration1 = new CenterConfiguration("SecondTestRegistryCenter");
+        configuration1.setOrchestrationType("registry_center");
+        configuration1.setNamespace("namespace_1");
+        instanceConfigurationMap.put("test_name_1", configuration1);
+        CenterConfiguration configuration2 = new CenterConfiguration("FirstTestConfigCenter");
+        configuration2.setOrchestrationType("config_center");
+        configuration2.setNamespace("namespace_2");
+        instanceConfigurationMap.put("test_name_2", configuration2);
         OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
         orchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));

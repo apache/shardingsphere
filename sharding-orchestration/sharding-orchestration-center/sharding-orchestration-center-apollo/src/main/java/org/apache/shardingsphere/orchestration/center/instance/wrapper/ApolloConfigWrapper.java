@@ -21,9 +21,9 @@ import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.ConfigConsts;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.ApolloProperties;
 import org.apache.shardingsphere.orchestration.center.instance.ApolloPropertiesEnum;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 import java.util.Set;
 
@@ -38,7 +38,7 @@ public final class ApolloConfigWrapper {
     
     private Config apolloConfig;
     
-    public ApolloConfigWrapper(final InstanceConfiguration config, final ApolloProperties properties) {
+    public ApolloConfigWrapper(final CenterConfiguration config, final ApolloProperties properties) {
         String appId = properties.getValue(ApolloPropertiesEnum.APP_ID);
         String env = properties.getValue(ApolloPropertiesEnum.ENV);
         String clusterName = properties.getValue(ApolloPropertiesEnum.CLUSTER_NAME);

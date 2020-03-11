@@ -43,6 +43,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-center-configuration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP-java7</artifactId>
             <scope>compile</scope>

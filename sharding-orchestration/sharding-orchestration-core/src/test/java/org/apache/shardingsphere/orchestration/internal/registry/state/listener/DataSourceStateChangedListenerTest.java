@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;

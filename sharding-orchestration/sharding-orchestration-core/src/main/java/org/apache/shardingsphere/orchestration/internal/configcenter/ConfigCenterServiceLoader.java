@@ -19,10 +19,10 @@ package org.apache.shardingsphere.orchestration.internal.configcenter;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 /**
  * Config center loader from SPI.
@@ -44,7 +44,7 @@ public final class ConfigCenterServiceLoader extends TypeBasedSPIServiceLoader<C
      * @param config configuration for config center
      * @return config center
      */
-    public ConfigCenterRepository load(final InstanceConfiguration config) {
+    public ConfigCenterRepository load(final CenterConfiguration config) {
         Preconditions.checkNotNull(config, "Config center configuration cannot be null.");
         ConfigCenterRepository result = newService(config.getType(), config.getProperties());
         result.init(config);
