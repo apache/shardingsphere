@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitorFacade;
 
@@ -35,8 +34,8 @@ public final class PostgreSQLParserConfiguration implements SQLParserConfigurati
     }
     
     @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return PostgreSQLStatementLexer.class;
+    public Class<? extends SQLLexer> getLexerClass() {
+        return PostgreSQLLexer.class;
     }
     
     @Override
@@ -45,7 +44,7 @@ public final class PostgreSQLParserConfiguration implements SQLParserConfigurati
     }
     
     @Override
-    public Class<? extends ParseTreeVisitorFacade> getVisitorFacadeClass() {
+    public Class<? extends SQLVisitorFacade> getVisitorFacadeClass() {
         return PostgreSQLVisitorFacade.class;
     }
 }

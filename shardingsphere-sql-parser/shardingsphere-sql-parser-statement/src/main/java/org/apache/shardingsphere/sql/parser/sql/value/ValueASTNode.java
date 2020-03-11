@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.value;
 
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Value AST node.

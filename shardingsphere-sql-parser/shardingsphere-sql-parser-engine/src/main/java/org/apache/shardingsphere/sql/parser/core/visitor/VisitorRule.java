@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.constant;
+package org.apache.shardingsphere.sql.parser.core.visitor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +23,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatementType;
 
 /**
- * Rule name.
+ * Visitor rule.
  */
 @RequiredArgsConstructor
-public enum RuleName {
+public enum VisitorRule {
     
     SELECT("Select", SQLStatementType.DML),
     
@@ -142,18 +142,18 @@ public enum RuleName {
     }
     
     /**
-     * Value of rule name.
+     * Value of visitor rule.
      * 
      * @param parseTreeClass parse tree class
-     * @return rule name
+     * @return visitor rule
      */
-    public static RuleName valueOf(final Class<? extends ParseTree> parseTreeClass) {
+    public static VisitorRule valueOf(final Class<? extends ParseTree> parseTreeClass) {
         String parseTreeClassName = parseTreeClass.getSimpleName();
-        for (RuleName each : RuleName.values()) {
+        for (VisitorRule each : VisitorRule.values()) {
             if (each.getContextName().equals(parseTreeClassName)) {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Can not find rule name: `%s`", parseTreeClassName));
+        throw new IllegalArgumentException(String.format("Can not find visitor rule: `%s`", parseTreeClassName));
     }
 }

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.sql.parser.core.visitor;
 
-/**
- * DAL visitor.
- */
-public interface DALVisitor {
+import org.antlr.v4.runtime.tree.ParseTree;
+
+public interface SelectContext extends ParseTree {
 }

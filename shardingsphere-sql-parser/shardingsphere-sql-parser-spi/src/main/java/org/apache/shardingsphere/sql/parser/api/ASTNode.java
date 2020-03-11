@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.constant;
+package org.apache.shardingsphere.sql.parser.api;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-
-public interface SelectContext extends ParseTree {
+/**
+ * AST node.
+ */
+public interface ASTNode {
 }

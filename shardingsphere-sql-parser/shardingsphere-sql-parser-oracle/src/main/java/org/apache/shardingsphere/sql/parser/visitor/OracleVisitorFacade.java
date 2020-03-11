@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.visitor;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.DALVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.DDLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.DMLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.RLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.TCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDALVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDCLVisitor;
 import org.apache.shardingsphere.sql.parser.visitor.impl.OracleDDLVisitor;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.visitor.impl.OracleTCLVisitor;
 /**
  * Visitor facade for Oracle.
  */
-public final class OracleVisitorFacade implements ParseTreeVisitorFacade {
+public final class OracleVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLVisitor> getDMLVisitorClass() {

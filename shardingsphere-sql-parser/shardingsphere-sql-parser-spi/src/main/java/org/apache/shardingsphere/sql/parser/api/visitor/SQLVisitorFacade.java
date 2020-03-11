@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.api.visitor;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLVisitor;
+
 /**
- * Parse tree visitor facade.
+ * SQL visitor facade.
  */
-public interface ParseTreeVisitorFacade {
+public interface SQLVisitorFacade {
     
     /**
      * Get DML visitor class.

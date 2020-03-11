@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.sql.parser;
 
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
  * SQL parser for PostgreSQL.
@@ -28,5 +30,10 @@ public final class PostgreSQLParser extends PostgreSQLStatementParser implements
     
     public PostgreSQLParser(final TokenStream input) {
         super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
     }
 }

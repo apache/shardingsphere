@@ -15,10 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.sql.parser;
+
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
 
 /**
- * DDL visitor.
+ * SQL lexer for PostgreSQL.
  */
-public interface DDLVisitor {
+public final class PostgreSQLLexer extends PostgreSQLStatementLexer implements SQLLexer {
+    
+    public PostgreSQLLexer(final CharStream input) {
+        super(input);
+    }
 }

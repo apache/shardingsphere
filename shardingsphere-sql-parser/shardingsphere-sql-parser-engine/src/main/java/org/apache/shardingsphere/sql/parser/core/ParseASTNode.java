@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.core;
 
-import org.antlr.v4.runtime.TokenStream;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for SQL92.
+ * Parse AST node.
+ *
+ * @author zhangliang
  */
-public final class SQL92Parser extends SQL92StatementParser implements SQLParser {
+@RequiredArgsConstructor
+public final class ParseASTNode implements ASTNode {
     
-    public SQL92Parser(final TokenStream input) {
-        super(input);
-    }
+    private final ParseTree parseTree;
     
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
+    /**
+     * Get root node.
+     * 
+     * @return root node
+     */
+    public ParseTree getRootNode() {
+        return parseTree.getChild(0);
     }
 }

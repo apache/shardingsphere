@@ -15,10 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.sql.parser;
+
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementLexer;
 
 /**
- * DCL visitor.
+ * SQL lexer for SQLServer.
  */
-public interface DCLVisitor {
+public final class SQLServerLexer extends SQLServerStatementLexer implements SQLLexer {
+    
+    public SQLServerLexer(final CharStream input) {
+        super(input);
+    }
 }

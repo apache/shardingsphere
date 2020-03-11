@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.sql.parser.api.lexer;
 
 /**
- * DML visitor.
+ * SQL lexer.
  */
-public interface DMLVisitor {
+public interface SQLLexer {
 }

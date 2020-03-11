@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
-
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement;
 
 /**
- * SQL parser for SQL92.
+ * DML visitor.
  */
-public final class SQL92Parser extends SQL92StatementParser implements SQLParser {
-    
-    public SQL92Parser(final TokenStream input) {
-        super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
-    }
+public interface DMLVisitor {
 }

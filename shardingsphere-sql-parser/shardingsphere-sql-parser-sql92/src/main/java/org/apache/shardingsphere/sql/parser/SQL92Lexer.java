@@ -17,23 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
 
 /**
- * SQL parser for SQL92.
+ * SQL lexer for SQL92.
  */
-public final class SQL92Parser extends SQL92StatementParser implements SQLParser {
+public final class SQL92Lexer extends SQL92StatementLexer implements SQLLexer {
     
-    public SQL92Parser(final TokenStream input) {
+    public SQL92Lexer(final CharStream input) {
         super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute());
     }
 }

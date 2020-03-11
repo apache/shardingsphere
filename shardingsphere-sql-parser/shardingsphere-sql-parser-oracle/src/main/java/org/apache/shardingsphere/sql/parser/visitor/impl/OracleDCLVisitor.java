@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor.impl;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.DCLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRoleContext;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropUs
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectPrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
-import org.apache.shardingsphere.sql.parser.sql.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dcl.AlterUserStatement;

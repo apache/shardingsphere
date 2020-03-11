@@ -15,10 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor;
+package org.apache.shardingsphere.sql.parser;
+
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementLexer;
 
 /**
- * TCL visitor.
+ * SQL lexer for Oracle.
  */
-public interface TCLVisitor {
+public final class OracleLexer extends OracleStatementLexer implements SQLLexer {
+    
+    public OracleLexer(final CharStream input) {
+        super(input);
+    }
 }

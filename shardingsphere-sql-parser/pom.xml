@@ -43,11 +43,4 @@
         
         <module>shardingsphere-sql-parser-test</module>
     </modules>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-        </dependency>
-    </dependencies>
 </project>
