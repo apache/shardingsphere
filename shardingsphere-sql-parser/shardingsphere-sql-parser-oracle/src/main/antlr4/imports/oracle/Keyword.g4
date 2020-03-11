@@ -534,3 +534,19 @@ DECIMAL
 TYPE
     : T Y P E
     ;
+
+INT
+    : I N T
+    ;
+
+SMALLINT
+    : S M A L L I N T
+    ;
+
+NUMERIC
+    : N U M E R I C
+    ;
+
+FLOAT
+    : F L O A T
+    ;

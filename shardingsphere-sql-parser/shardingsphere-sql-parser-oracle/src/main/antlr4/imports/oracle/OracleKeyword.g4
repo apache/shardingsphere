@@ -674,3 +674,119 @@ DBA_RECYCLEBIN
 FIRST
     : F I R S T
     ;
+
+NCHAR
+    : N C H A R
+    ;
+
+RAW
+    : R A W
+    ;
+
+VARCHAR
+    : V A R C H A R [2]?
+    ;
+
+NVARCHAR2
+    : N V A R C H A R [2]
+    ;
+
+LONG
+    : L O N G
+    ;
+
+LONG_RAW
+    : L O N G [ ]+ R A W
+    ;
+
+BLOB
+    : B L O B
+    ;
+
+CLOB
+    : C L O B
+    ;
+
+NCLOB
+    : N C L O B
+    ;
+
+BINARY_FLOAT
+    : B I N A R Y UL_ F L O A T
+    ;
+
+BINARY_DOUBLE
+    : B I N A R Y UL_ D O U B L E
+    ;
+
+PLS_INTEGER
+    : P L S UL_ I N T E G E R
+    ;
+
+BINARY_INTEGER
+    : B I N A R Y UL_ I N T E G E R
+    ;
+
+NUMBER
+    : N U M B E R
+    ;
+
+NATURALN
+    : N A T U R A L N
+    ;
+
+POSITIVE
+    : P O S I T I V E
+    ;
+
+POSITIVEN
+    : P O S I T I V E N
+    ;
+
+SIGNTYPE
+    : S I G N T Y P E
+    ;
+
+SIMPLE_INTEGER
+    : S I M P L E UL_ I N T E G E R
+    ;
+
+BFILE
+    : B F I L E
+    ;
+
+MLSLABEL
+    : M L S L A B E L
+    ;
+
+UROWID
+    : U R O W I D
+    ;
+
+TIMESTAMP_WITH_TIME_ZONE
+    : T I M E S T A M P [ ]+ W I T H [ ]+ T I M E [ ]+ Z O N E
+    ;
+
+INTERVAL_YEAR_TO_MONTH
+    : I N T E R V A L [ ]+ Y E A R [ ]+ T O [ ]+ M O N T H
+    ;
+
+INTERVAL_DAY_TO_SECOND
+    : I N T E R V A L [ ]+ D A Y [ ]+ T O [ ]+ S E C O N D
+    ;
+
+TIMESTAMP_WITH_LOCAL_TIME_ZONE
+    : T I M E S T A M P [ ]+ W I T H [ ]+ L O C A L [ ]+ T I M E [ ]+ Z O N E
+    ;
+
+JSON
+    : J S O N
+    ;
+
+DOUBLE_PRECISION
+    : D O U B L E [ ]+ P R E C I S I O N
+    ;
+
+DEC
+    : D E C
+    ;
