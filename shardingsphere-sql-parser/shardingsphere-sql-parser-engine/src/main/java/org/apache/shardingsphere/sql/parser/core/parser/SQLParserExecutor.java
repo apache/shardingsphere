@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.DefaultASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 /**
@@ -43,25 +43,25 @@ public final class SQLParserExecutor {
      *
      * @return AST node
      */
-    public DefaultASTNode execute() {
-        DefaultASTNode result = towPhaseParse();
+    public ParseASTNode execute() {
+        ParseASTNode result = towPhaseParse();
         if (result.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException(String.format("Unsupported SQL of `%s`", sql));
         }
         return result;
     }
     
-    private DefaultASTNode towPhaseParse() {
+    private ParseASTNode towPhaseParse() {
         SQLParser sqlParser = SQLParserFactory.newInstance(databaseTypeName, sql);
         try {
             ((Parser) sqlParser).setErrorHandler(new BailErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);
-            return (DefaultASTNode) sqlParser.parse();
+            return (ParseASTNode) sqlParser.parse();
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
             ((Parser) sqlParser).setErrorHandler(new DefaultErrorStrategy());
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.LL);
-            return (DefaultASTNode) sqlParser.parse();
+            return (ParseASTNode) sqlParser.parse();
         }
     }
 }

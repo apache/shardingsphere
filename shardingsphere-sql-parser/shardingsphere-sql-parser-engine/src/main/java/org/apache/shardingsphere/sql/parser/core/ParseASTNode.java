@@ -22,12 +22,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
- * Default AST node.
+ * Parse AST node.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public final class DefaultASTNode implements ASTNode {
+public final class ParseASTNode implements ASTNode {
     
     private final ParseTree parseTree;
     

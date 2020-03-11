@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.core.parser.SQLParserExecutor;
 import org.apache.shardingsphere.sql.parser.core.visitor.ParseTreeVisitorFactory;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
-import org.apache.shardingsphere.sql.parser.sql.constant.RuleName;
+import org.apache.shardingsphere.sql.parser.core.visitor.VisitorRule;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.Optional;
@@ -69,7 +69,7 @@ public final class SQLParserEngine {
             }
         }
         ParseTree parseTree = new SQLParserExecutor(databaseTypeName, sql).execute().getRootNode();
-        SQLStatement result = (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, RuleName.valueOf(parseTree.getClass())).visit(parseTree);
+        SQLStatement result = (SQLStatement) ParseTreeVisitorFactory.newInstance(databaseTypeName, VisitorRule.valueOf(parseTree.getClass())).visit(parseTree);
         if (useCache) {
             cache.put(sql, result);
         }
