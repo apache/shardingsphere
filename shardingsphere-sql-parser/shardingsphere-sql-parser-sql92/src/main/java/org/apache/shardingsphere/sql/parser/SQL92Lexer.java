@@ -17,34 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser;
 
+import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
-import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
-import org.apache.shardingsphere.sql.parser.visitor.PostgreSQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
 
 /**
- * SQL parser configuration for PostgreSQL.
+ * SQL lexer for SQL92.
  */
-public final class PostgreSQLParserConfiguration implements SQLParserConfiguration {
+public final class SQL92Lexer extends SQL92StatementLexer implements SQLLexer {
     
-    @Override
-    public String getDatabaseTypeName() {
-        return "PostgreSQL";
-    }
-    
-    @Override
-    public Class<? extends SQLLexer> getLexerClass() {
-        return PostgreSQLLexer.class;
-    }
-    
-    @Override
-    public Class<? extends SQLParser> getParserClass() {
-        return PostgreSQLParser.class;
-    }
-    
-    @Override
-    public Class<? extends ParseTreeVisitorFacade> getVisitorFacadeClass() {
-        return PostgreSQLVisitorFacade.class;
+    public SQL92Lexer(final CharStream input) {
+        super(input);
     }
 }

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser;
 
-import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.visitor.MySQLVisitorFacade;
 
@@ -35,8 +34,8 @@ public final class MySQLParserConfiguration implements SQLParserConfiguration {
     }
     
     @Override
-    public Class<? extends Lexer> getLexerClass() {
-        return MySQLStatementLexer.class;
+    public Class<? extends SQLLexer> getLexerClass() {
+        return MySQLLexer.class;
     }
     
     @Override

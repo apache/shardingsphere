@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.spi;
 
-import org.antlr.v4.runtime.Lexer;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
 
@@ -38,7 +38,7 @@ public interface SQLParserConfiguration {
      *
      * @return SQL lexer class type
      */
-    Class<? extends Lexer> getLexerClass();
+    Class<? extends SQLLexer> getLexerClass();
     
     /**
      * Get SQL parser class type.
