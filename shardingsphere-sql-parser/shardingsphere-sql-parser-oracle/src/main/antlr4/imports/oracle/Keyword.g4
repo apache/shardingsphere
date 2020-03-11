@@ -550,4 +550,3 @@ NUMERIC
 FLOAT
     : F L O A T
     ;
-
