@@ -259,9 +259,16 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
         if (null != ctx.subquery()) {
             new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()));
         }
-        ASTNode result = visit(ctx.predicate());
-        return result instanceof ColumnSegment
-                ? (ColumnSegment) result : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) result);
+        ASTNode rightValue = visit(ctx.predicate());
+        return createPredicateRightValue(ctx, rightValue);
+    }
+    
+    private ASTNode createPredicateRightValue(final BooleanPrimaryContext ctx, final ASTNode rightValue) {
+        if (rightValue instanceof ColumnSegment) {
+            return rightValue;
+        }
+        return rightValue instanceof SubquerySegment ? new PredicateCompareRightValue(ctx.comparisonOperator().getText(), new SubqueryExpressionSegment((SubquerySegment) rightValue))
+                : new PredicateCompareRightValue(ctx.comparisonOperator().getText(), (ExpressionSegment) rightValue);
     }
     
     @Override
