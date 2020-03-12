@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table.init;
+package org.apache.shardingsphere.underlying.common.metadata.table.loader;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * Table meta data initializer.
+ * Connection manager.
  */
-public interface TableMetaDataInitializer {
+public interface ConnectionManager {
+    
+    /**
+     * Get connection.
+     * 
+     * @param dataSourceName data source name
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    Connection getConnection(String dataSourceName) throws SQLException;
 }

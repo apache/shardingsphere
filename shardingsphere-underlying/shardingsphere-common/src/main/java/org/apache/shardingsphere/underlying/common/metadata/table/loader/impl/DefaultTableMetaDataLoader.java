@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl;
+package org.apache.shardingsphere.underlying.common.metadata.table.loader.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.Connection;
@@ -52,32 +51,21 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     
     private final ConnectionManager connectionManager;
     
-    private final ColumnMetaDataLoader columnMetaDataLoader = new ColumnMetaDataLoader();
-    
     @Override
     public TableMetaData load(final String tableName, final BaseRule rule) throws SQLException {
         String dataSourceName = getDataSourceName();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
-            return createTableMetaData(connection, dataSourceMetas.getDataSourceMetaData(dataSourceName), tableName);
+            return createTableMetaData(connection, dataSourceMetas.getDataSourceMetaData(dataSourceName).getCatalog(), tableName);
         }
     }
     
     private String getDataSourceName() {
-        Collection<String> allInstanceDataSourceNames = dataSourceMetas.getAllInstanceDataSourceNames();
-        return allInstanceDataSourceNames.iterator().next();
+        return dataSourceMetas.getAllInstanceDataSourceNames().iterator().next();
     }
     
-    private TableMetaData createTableMetaData(final Connection connection, final DataSourceMetaData dataSourceMetaData, final String table) throws SQLException {
-        String catalog = dataSourceMetaData.getCatalog();
+    private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String table) throws SQLException {
         MetaDataLogger.logTableMetaData(catalog, table);
-        Collection<ColumnMetaData> columnMetaDataList = isTableExist(connection, catalog, table) ? columnMetaDataLoader.load(connection, catalog, table) : Collections.emptyList();
-        return new TableMetaData(columnMetaDataList, Collections.emptyList());
-    }
-    
-    private boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, table, null)) {
-            return resultSet.next();
-        }
+        return new TableMetaData(ColumnMetaDataLoader.load(connection, catalog, table), Collections.emptyList());
     }
     
     @Override
