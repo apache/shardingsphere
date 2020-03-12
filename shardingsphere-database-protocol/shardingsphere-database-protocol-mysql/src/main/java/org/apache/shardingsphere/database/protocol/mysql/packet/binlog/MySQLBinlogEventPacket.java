@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.constant;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
-
-public final class MySQLBinlogEventTypeTest {
+/**
+ * MySQL binlog event packet.
+ *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event.html">Binlog Event</a>
+ */
+public interface MySQLBinlogEventPacket {
     
-    @Test
-    public void assertGetValue() {
-        assertThat(MySQLBinlogEventType.WRITE_ROWS_EVENTv2.getValue(), is(0x1e));
-    }
-    
-    @Test
-    public void assertGetEventTypeHeaderLengthsByBinlogVersion4() {
-        assertThat(MySQLBinlogEventType.getEventTypeHeaderLengthsByBinlogVersion4().length, is(35));
-    }
-    
-    @Test
-    public void assertGetEventTypeHeaderLength() {
-        assertThat(MySQLBinlogEventType.getEventTypeHeaderLength(MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT), is(84));
-    }
+    /**
+     * Get MySQL binlog event header.
+     *
+     * @return MySQL binlog event header
+     */
+    MySQLBinlogEventHeader getBinlogEventHeader();
 }
