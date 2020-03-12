@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table.init;
+package org.apache.shardingsphere.underlying.common.metadata.table;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.decorator.TableMetaDataDecorator;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.table.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;

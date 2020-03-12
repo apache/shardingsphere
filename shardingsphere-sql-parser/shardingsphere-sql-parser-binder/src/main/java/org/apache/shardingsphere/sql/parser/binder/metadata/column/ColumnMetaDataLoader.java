@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.column.loader;
-
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

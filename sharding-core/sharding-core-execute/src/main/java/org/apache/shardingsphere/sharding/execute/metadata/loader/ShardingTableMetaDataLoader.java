@@ -27,12 +27,12 @@ import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.column.loader.ColumnMetaDataLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 

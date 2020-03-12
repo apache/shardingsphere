@@ -48,8 +48,8 @@ import org.apache.shardingsphere.underlying.common.constant.properties.Propertie
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;

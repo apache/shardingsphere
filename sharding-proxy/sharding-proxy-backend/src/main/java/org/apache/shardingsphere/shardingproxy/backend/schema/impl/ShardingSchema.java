@@ -54,8 +54,8 @@ import org.apache.shardingsphere.underlying.common.constant.properties.ShardingS
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
