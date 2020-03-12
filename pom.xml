@@ -269,7 +269,7 @@
             </dependency>
             <dependency>
                 <groupId>io.seata</groupId>
-                <artifactId>seata-codec-seata</artifactId>
+                <artifactId>seata-codec-all</artifactId>
                 <version>${seata.version}</version>
                 <scope>provided</scope>
             </dependency>
