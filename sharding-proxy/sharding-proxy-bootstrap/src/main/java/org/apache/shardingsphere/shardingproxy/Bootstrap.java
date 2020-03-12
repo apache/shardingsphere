@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYaml
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.core.registrycenter.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
@@ -119,8 +119,8 @@ public final class Bootstrap {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
                 new OrchestrationConfigurationYamlSwapper().swap(new YamlOrchestrationConfiguration(serverConfig.getOrchestration())), shardingSchemaNames)) {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
-            Authentication authentication = shardingOrchestrationFacade.getConfigService().loadAuthentication();
-            Properties properties = shardingOrchestrationFacade.getConfigService().loadProperties();
+            Authentication authentication = shardingOrchestrationFacade.getConfigCenter().loadAuthentication();
+            Properties properties = shardingOrchestrationFacade.getConfigCenter().loadProperties();
             ConfigurationLogger.log(authentication);
             ConfigurationLogger.log(properties);
             ShardingProxyContext.getInstance().init(authentication, properties);
@@ -134,23 +134,23 @@ public final class Bootstrap {
     
     private static Map<String, Map<String, YamlDataSourceParameter>> getSchemaDataSourceParameterMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         Map<String, Map<String, YamlDataSourceParameter>> result = new LinkedHashMap<>();
-        for (String each : shardingOrchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
-            result.put(each, DataSourceConverter.getDataSourceParameterMap(shardingOrchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
+        for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
+            result.put(each, DataSourceConverter.getDataSourceParameterMap(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(each)));
         }
         return result;
     }
     
     private static Map<String, RuleConfiguration> getSchemaRules(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         Map<String, RuleConfiguration> result = new LinkedHashMap<>();
-        for (String each : shardingOrchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
-            if (shardingOrchestrationFacade.getConfigService().isEncryptRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigService().loadEncryptRuleConfiguration(each));
-            } else if (shardingOrchestrationFacade.getConfigService().isShardingRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigService().loadShardingRuleConfiguration(each));
-            } else if (shardingOrchestrationFacade.getConfigService().isShadowRule(each)) {
-                result.put(each, shardingOrchestrationFacade.getConfigService().loadShadowRuleConfiguration(each));
+        for (String each : shardingOrchestrationFacade.getConfigCenter().getAllShardingSchemaNames()) {
+            if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(each)) {
+                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadEncryptRuleConfiguration(each));
+            } else if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(each)) {
+                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShardingRuleConfiguration(each));
+            } else if (shardingOrchestrationFacade.getConfigCenter().isShadowRule(each)) {
+                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadShadowRuleConfiguration(each));
             } else {
-                result.put(each, shardingOrchestrationFacade.getConfigService().loadMasterSlaveRuleConfiguration(each));
+                result.put(each, shardingOrchestrationFacade.getConfigCenter().loadMasterSlaveRuleConfiguration(each));
             }
         }
         return result;

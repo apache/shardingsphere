@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
-public final class TestCenterRepositoryRepository implements RegistryCenterRepository, ConfigCenterRepository {
+public final class TestCenterRepository implements RegistryCenterRepository, ConfigCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
