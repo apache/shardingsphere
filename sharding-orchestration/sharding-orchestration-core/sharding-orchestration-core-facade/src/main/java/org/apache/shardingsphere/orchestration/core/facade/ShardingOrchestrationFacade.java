@@ -48,18 +48,18 @@ import java.util.Properties;
  */
 @Slf4j
 public final class ShardingOrchestrationFacade implements AutoCloseable {
-    
+
     private final RegistryCenterRepository registryCenterRepository;
-    
+
     private final ConfigCenterRepository configCenterRepository;
     
     private final boolean isOverwrite;
-    
+
     @Getter
-    private final ConfigCenter configService;
-    
-    private final RegistryCenter stateService;
-    
+    private final ConfigCenter configCenter;
+
+    private final RegistryCenter registryCenter;
+
     private final ShardingOrchestrationListenerManager listenerManager;
     
     public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
@@ -67,16 +67,16 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         Preconditions.checkArgument(registryCenterName.isPresent(), "Can not find instance configuration with registry center orchestration type.");
         CenterConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
         registryCenterRepository = new RegistryCenterRepositoryServiceLoader().load(registryCenterConfiguration);
-        stateService = new RegistryCenter(registryCenterName.get(), registryCenterRepository);
+        registryCenter = new RegistryCenter(registryCenterName.get(), registryCenterRepository);
         Optional<String> configCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.CONFIG_CENTER.getValue());
         Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
         CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
         configCenterRepository = new ConfigCenterRepositoryServiceLoader().load(configCenterConfiguration);
         isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertiesEnum.OVERWRITE);
-        configService = new ConfigCenter(configCenterName.get(), configCenterRepository);
+        configCenter = new ConfigCenter(configCenterName.get(), configCenterRepository);
         listenerManager = shardingSchemaNames.isEmpty()
                 ? new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,
-                                                            configCenterName.get(), configCenterRepository, configService.getAllShardingSchemaNames())
+                                                            configCenterName.get(), configCenterRepository, configCenter.getAllShardingSchemaNames())
                 : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,
                                                             configCenterName.get(), configCenterRepository, shardingSchemaNames);
     }
@@ -92,10 +92,10 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     public void init(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurationMap,
                      final Map<String, RuleConfiguration> schemaRuleMap, final Authentication authentication, final Properties props) {
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
-            configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, props, isOverwrite);
+            configCenter.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, props, isOverwrite);
         }
-        stateService.persistInstanceOnline();
-        stateService.persistDataSourcesNode();
+        registryCenter.persistInstanceOnline();
+        registryCenter.persistDataSourcesNode();
         listenerManager.initListeners();
     }
     
@@ -103,8 +103,8 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
      * Initialize for orchestration.
      */
     public void init() {
-        stateService.persistInstanceOnline();
-        stateService.persistDataSourcesNode();
+        registryCenter.persistInstanceOnline();
+        registryCenter.persistDataSourcesNode();
         listenerManager.initListeners();
     }
     

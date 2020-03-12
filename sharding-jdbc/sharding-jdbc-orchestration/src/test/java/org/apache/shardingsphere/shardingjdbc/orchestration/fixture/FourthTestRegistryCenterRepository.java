@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.util;
+package org.apache.shardingsphere.shardingjdbc.orchestration.fixture;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
-public final class FourthTestConfigCenterRepository implements ConfigCenterRepository {
+public final class FourthTestRegistryCenterRepository implements RegistryCenterRepository, ConfigCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -56,6 +58,11 @@ public final class FourthTestConfigCenterRepository implements ConfigCenterRepos
     }
     
     @Override
+    public void persistEphemeral(final String key, final String value) {
+        REGISTRY_DATA.put(key, value);
+    }
+    
+    @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
     }
     
@@ -66,6 +73,6 @@ public final class FourthTestConfigCenterRepository implements ConfigCenterRepos
     
     @Override
     public String getType() {
-        return "FourthTestConfigCenter";
+        return "FourthTestRegistryCenter";
     }
 }

@@ -15,13 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.util;
+package org.apache.shardingsphere.shardingjdbc.orchestration.fixture;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
@@ -29,7 +24,13 @@ import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
-public final class FirstTestRegistryCenterRepositoryRepository implements RegistryCenterRepository, ConfigCenterRepository {
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+public final class SecondTestRegistryCenterRepository implements RegistryCenterRepository, ConfigCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -72,6 +73,6 @@ public final class FirstTestRegistryCenterRepositoryRepository implements Regist
     
     @Override
     public String getType() {
-        return "FirstTestRegistryCenter";
+        return "SecondTestRegistryCenter";
     }
 }

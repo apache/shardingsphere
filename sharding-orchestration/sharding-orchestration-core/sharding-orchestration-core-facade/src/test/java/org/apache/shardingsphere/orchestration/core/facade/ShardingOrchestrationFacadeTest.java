@@ -53,10 +53,10 @@ public final class ShardingOrchestrationFacadeTest {
     private RegistryCenterRepository registryCenterRepository;
     
     @Mock
-    private ConfigCenter configService;
+    private ConfigCenter configCenter;
     
     @Mock
-    private RegistryCenter stateService;
+    private RegistryCenter registryCenter;
     
     @Mock
     private ShardingOrchestrationListenerManager listenerManager;
@@ -76,9 +76,10 @@ public final class ShardingOrchestrationFacadeTest {
         orchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(shardingOrchestrationFacade, "registryCenterRepository", registryCenterRepository);
-        FieldUtil.setField(shardingOrchestrationFacade, "configService", configService);
-        FieldUtil.setField(shardingOrchestrationFacade, "stateService", stateService);
+        FieldUtil.setField(shardingOrchestrationFacade, "configCenter", configCenter);
+        FieldUtil.setField(shardingOrchestrationFacade, "registryCenter", registryCenter);
         FieldUtil.setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
+
     }
     
     @Test
@@ -90,17 +91,17 @@ public final class ShardingOrchestrationFacadeTest {
         authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
         shardingOrchestrationFacade.init(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
-        verify(configService).persistConfiguration("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, props, false);
-        verify(stateService).persistInstanceOnline();
-        verify(stateService).persistDataSourcesNode();
+        verify(configCenter).persistConfiguration("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, props, false);
+        verify(registryCenter).persistInstanceOnline();
+        verify(registryCenter).persistDataSourcesNode();
         verify(listenerManager).initListeners();
     }
     
     @Test
     public void assertInitWithoutParameters() {
         shardingOrchestrationFacade.init();
-        verify(stateService).persistInstanceOnline();
-        verify(stateService).persistDataSourcesNode();
+        verify(registryCenter).persistInstanceOnline();
+        verify(registryCenter).persistDataSourcesNode();
         verify(listenerManager).initListeners();
     }
     

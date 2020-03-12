@@ -29,10 +29,10 @@ import java.util.Properties;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
-import org.apache.shardingsphere.orchestration.configserver.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.configserver.event.MasterSlaveRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.configserver.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.CenterType;
+import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
@@ -74,7 +74,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     
     private static CenterConfiguration getRegistryCenterConfiguration() {
         CenterConfiguration result = new CenterConfiguration("ThirdTestRegistryCenter");
-        result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+        result.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_ms_registry");
         result.setServerLists("localhost:3181");
         return result;
@@ -82,7 +82,7 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     
     private static CenterConfiguration getConfigCenterConfiguration() {
         CenterConfiguration result = new CenterConfiguration("ThirdTestConfigCenter");
-        result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
+        result.setOrchestrationType(CenterType.CONFIG_CENTER.getValue());
         result.setNamespace("test_ms_config");
         result.setServerLists("localhost:3181");
         return result;

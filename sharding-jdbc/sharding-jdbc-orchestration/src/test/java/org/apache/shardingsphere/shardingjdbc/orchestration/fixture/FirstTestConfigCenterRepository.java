@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.util;
+package org.apache.shardingsphere.shardingjdbc.orchestration.fixture;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
-public final class SecondTestConfigCenterRepository implements ConfigCenterRepository {
+public final class FirstTestConfigCenterRepository implements ConfigCenterRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -42,7 +42,9 @@ public final class SecondTestConfigCenterRepository implements ConfigCenterRepos
     
     @Override
     public String get(final String key) {
-        return REGISTRY_DATA.get(key);
+        final String s = REGISTRY_DATA.get(key);
+        System.out.println("get=>\nkey=" + key + "\nvalue=" + s);
+        return s;
     }
     
     @Override
@@ -52,6 +54,7 @@ public final class SecondTestConfigCenterRepository implements ConfigCenterRepos
     
     @Override
     public void persist(final String key, final String value) {
+        System.out.println("put=>\nkey=" + key + "\nvalue=" + value);
         REGISTRY_DATA.put(key, value);
     }
     
@@ -66,6 +69,6 @@ public final class SecondTestConfigCenterRepository implements ConfigCenterRepos
     
     @Override
     public String getType() {
-        return "SecondTestConfigCenter";
+        return "FirstTestConfigCenter";
     }
 }

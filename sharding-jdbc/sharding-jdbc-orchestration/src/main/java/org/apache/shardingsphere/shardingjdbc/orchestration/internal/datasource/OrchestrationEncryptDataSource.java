@@ -24,11 +24,11 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.orchestration.core.registrycenter.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.configserver.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.configserver.event.EncryptRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.configserver.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.configserver.service.ConfigurationService;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
@@ -53,7 +53,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     
     public OrchestrationEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
-        ConfigurationService configService = getShardingOrchestrationFacade().getConfigService();
+        ConfigCenter configService = getShardingOrchestrationFacade().getConfigCenter();
         EncryptRuleConfiguration encryptRuleConfig = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
         Preconditions.checkState(!encryptRuleConfig.getEncryptors().isEmpty(), "No available encrypt rule configuration to load.");
         Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME);
