@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.lexer;
 
 import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;

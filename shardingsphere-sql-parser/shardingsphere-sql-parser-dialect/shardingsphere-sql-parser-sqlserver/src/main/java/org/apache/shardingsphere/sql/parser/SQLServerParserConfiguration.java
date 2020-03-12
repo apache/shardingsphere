@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser;
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.lexer.SQLServerLexer;
+import org.apache.shardingsphere.sql.parser.parser.SQLServerParser;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.visitor.SQLServerVisitorFacade;
 

@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.lexer;
 
 import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementLexer;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
 
 /**
- * SQL lexer for Oracle.
+ * SQL lexer for SQL92.
  */
-public final class OracleLexer extends OracleStatementLexer implements SQLLexer {
+public final class SQL92Lexer extends SQL92StatementLexer implements SQLLexer {
     
-    public OracleLexer(final CharStream input) {
+    public SQL92Lexer(final CharStream input) {
         super(input);
     }
 }

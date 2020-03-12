@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser;
+package org.apache.shardingsphere.sql.parser.parser;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementLexer;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL lexer for SQL92.
+ * SQL parser for MySQL.
  */
-public final class SQL92Lexer extends SQL92StatementLexer implements SQLLexer {
+public final class MySQLParser extends MySQLStatementParser implements SQLParser {
     
-    public SQL92Lexer(final CharStream input) {
+    public MySQLParser(final TokenStream input) {
         super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
     }
 }
