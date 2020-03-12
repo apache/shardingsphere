@@ -20,10 +20,9 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 /**
  * MySQL event types.
  *
- * <p>
- *     https://dev.mysql.com/doc/shorternals/en/binlog-event-type.html
- * </p>
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinlogEventType}
  */
+@Deprecated
 public final class EventTypes {
     
     public static final short UNKNOWN_EVENT = 0;
