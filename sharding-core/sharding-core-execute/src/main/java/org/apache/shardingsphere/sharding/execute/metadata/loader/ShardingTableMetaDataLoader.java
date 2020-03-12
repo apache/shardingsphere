@@ -70,8 +70,6 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private final boolean isCheckingMetaData;
     
-    private final ColumnMetaDataLoader columnMetaDataLoader = new ColumnMetaDataLoader();
-    
     @Override
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
         final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orElse(null);
@@ -142,7 +140,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName, final String generateKeyColumnName) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : columnMetaDataLoader.load(connection, catalog, actualTableName)) {
+        for (ColumnMetaData each : ColumnMetaDataLoader.load(connection, catalog, actualTableName)) {
             result.add(filterColumnMetaData(each, generateKeyColumnName));
         }
         return result;
