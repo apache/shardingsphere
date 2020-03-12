@@ -1282,13 +1282,12 @@
         </where>
     </select>
     
-    <select sql-case-id="select_with_row_subquery_without_row_keyword">
+    <select sql-case-id="select_with_equal_subquery">
         <table name="t_order" start-index="14" stop-index="20" />
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where start-index="92" stop-index="105">
-            <!-- FIXME cannot parse subquery's predicate -->
+        <where start-index="22" stop-index="85">
             <and-predicate>
                 <predicate start-index="28" literal-stop-index="85">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
@@ -1319,13 +1318,38 @@
         </where>
     </select>
     
-    <select sql-case-id="select_with_row_subquery">
+    <select sql-case-id="select_with_in_subquery">
         <table name="t_order" start-index="14" stop-index="20" />
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where start-index="95" stop-index="107">
-            <!-- FIXME cannot parse subquery's predicate -->
+        <where start-index="22" stop-index="93">
+            <and-predicate>
+                <predicate start-index="28" literal-stop-index="93">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <in-right-value>
+                        <subquery>
+                            <select>
+                                <table name="t_order_item" start-index="60" stop-index="71" />
+                                <projections start-index="47" stop-index="53">
+                                    <column-projection name="user_id" start-index="47" stop-index="53" />
+                                </projections>
+                                <where start-index="73" stop-index="92">
+                                    <and-predicate>
+                                        <predicate start-index="79" literal-stop-index="92">
+                                            <column-left-value name="id" start-index="79" stop-index="80"  />
+                                            <in-right-value>
+                                                <literal-expression value="10" />
+                                                <literal-expression value="11" />
+                                            </in-right-value>
+                                        </predicate>
+                                    </and-predicate>
+                                </where>
+                            </select>
+                        </subquery>
+                    </in-right-value>
+                </predicate>
+            </and-predicate>
         </where>
     </select>
     

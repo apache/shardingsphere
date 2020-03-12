@@ -46,9 +46,8 @@
     <sql-case id="select_between_with_geography" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL" />
     <sql-case id="select_with_schema" value="SELECT * FROM db1.t_order" />
     <sql-case id="select_special_function_nested" value="SELECT sum(if(status=0, 1, 0)) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
-<!--    TODO Can not support subquery at current-->
-    <sql-case id="select_with_row_subquery_without_row_keyword" value="SELECT * FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
-<!--    <sql-case id="select_with_row_subquery" value="SELECT * FROM t_order WHERE ROW(user_id,order_id) = (SELECT user_id,order_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />-->
+    <sql-case id="select_with_equal_subquery" value="SELECT * FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
+    <sql-case id="select_with_in_subquery" value="SELECT * FROM t_order WHERE user_id in (SELECT user_id FROM t_order_item WHERE id in (10, 11))" db-types="MySQL" />
     <sql-case id="select_with_interval_function" value="SELECT INTERVAL(status,1,5) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_left_function" value="SELECT CONCAT(LEFT(status, 7), 'test') FROM t_order_item WHERE user_id = 10" db-types="MySQL" />
     <sql-case id="select_for_update" value="SELECT * FROM t_order WHERE user_id = ? FOR UPDATE" lock-clause="true"/>
