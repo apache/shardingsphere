@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
+import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
@@ -81,7 +81,7 @@ public final class OrchestrationEncryptDataSourceFactoryTest {
     
     private CenterConfiguration getRegistryCenterConfiguration() {
         CenterConfiguration result = new CenterConfiguration("FirstTestRegistryCenter");
-        result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+        result.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_encrypt_registry");
         result.setServerLists("localhost:3181");
         return result;
@@ -89,7 +89,7 @@ public final class OrchestrationEncryptDataSourceFactoryTest {
     
     private CenterConfiguration getConfigCenterConfiguration() {
         CenterConfiguration result = new CenterConfiguration("FirstTestConfigCenter");
-        result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
+        result.setOrchestrationType(CenterType.CONFIG_CENTER.getValue());
         result.setNamespace("test_encrypt_config");
         result.setServerLists("localhost:3181");
         return result;
