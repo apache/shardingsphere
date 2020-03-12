@@ -22,10 +22,10 @@ import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
+import org.apache.shardingsphere.orchestration.configserver.event.AuthenticationChangedEvent;
+import org.apache.shardingsphere.orchestration.configserver.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
 
 import java.util.Properties;
 

@@ -24,11 +24,11 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.EncryptRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
+import org.apache.shardingsphere.orchestration.core.registrycenter.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.configserver.event.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.configserver.event.EncryptRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.configserver.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.configserver.service.ConfigurationService;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 

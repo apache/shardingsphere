@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYaml
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.registrycenter.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;

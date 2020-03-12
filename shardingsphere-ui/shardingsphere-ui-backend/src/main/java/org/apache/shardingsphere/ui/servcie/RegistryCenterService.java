@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.ui.servcie;
 
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import org.apache.shardingsphere.orchestration.internal.registry.state.node.StateNode;
+import org.apache.shardingsphere.orchestration.configserver.node.ConfigurationNode;
+import org.apache.shardingsphere.orchestration.core.registrycenter.state.node.StateNode;
 
 /**
  * Registry center service.
