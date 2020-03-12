@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-parser</artifactId>
+        <artifactId>shardingsphere-sql-parser-dialect</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-sql-parser-sql92</artifactId>
+    <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -43,7 +43,7 @@
                     <execution>
                         <id>antlr</id>
                         <configuration>
-                            <libDirectory>src/main/antlr4/imports/sql92/</libDirectory>
+                            <libDirectory>src/main/antlr4/imports/sqlserver/</libDirectory>
                             <listener>false</listener>
                             <visitor>true</visitor>
                         </configuration>
