@@ -224,3 +224,10 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 1. 以需要脱敏的逻辑列名编写JPA的实体类(Entity).
 2. 关闭JPA的auto-ddl，如 auto-ddl=none.
 3. 手动建表，建表时应使用数据脱敏配置的`cipherColumn`,`plainColumn`和`assistedQueryColumn`代替逻辑列.
+
+#### 18. 服务启动时如何加快`metadata`加载速度？
+
+回答：
+
+1. 更新到`4.0.1`可以帮助加快`default dataSource`中加载table metadata的速度。
+2. 参照你采用的连接池，配置`max.connections.size.per.query`（默认值为1）更高的。
