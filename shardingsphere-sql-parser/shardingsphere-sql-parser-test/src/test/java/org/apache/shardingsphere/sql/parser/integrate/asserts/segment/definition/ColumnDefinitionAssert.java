@@ -41,7 +41,7 @@ public final class ColumnDefinitionAssert {
      * @param expected expected column definition
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
-        assertThat(assertContext.getText("Column definition name assertion error: "), actual.getColumnName(), is(expected.getColumn().getName()));
+        assertThat(assertContext.getText("Column definition name assertion error: "), actual.getColumnName().getIdentifier().getValue(), is(expected.getColumn().getName()));
         assertThat(assertContext.getText("Column definition data type assertion error: "), actual.getDataType(), is(expected.getType()));
         assertThat(assertContext.getText("Column definition primary key assertion error: "), actual.isPrimaryKey(), is(expected.isPrimaryKey()));
         TableAssert.assertIs(assertContext, actual.getReferencedTables(), expected.getReferencedTables());

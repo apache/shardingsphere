@@ -43,7 +43,11 @@ public final class ColumnPositionAssert {
      * @param expected expected column position
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnPositionSegment actual, final ExpectedColumnPosition expected) {
-        assertThat(assertContext.getText("Column change position name assertion error: "), actual.getColumnName(), is(expected.getColumn().getName()));
+        String columnname = null;
+        if (null != actual.getColumnName()) {
+            columnname = actual.getColumnName().getQualifiedName();
+        }
+        assertThat(assertContext.getText("Column change position name assertion error: "), columnname, is(expected.getColumn().getName()));
         // TODO assert start index and stop index
         if (actual instanceof ColumnAfterPositionSegment) {
             assertNotNull(assertContext.getText("Assignments should exist."), expected.getAfterColumn());

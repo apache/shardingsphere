@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 
 /**
  * Column position segment.
@@ -32,7 +33,7 @@ public abstract class ColumnPositionSegment implements SQLSegment, Comparable<Co
     
     private final int stopIndex;
     
-    private final String columnName;
+    private final ColumnSegment columnName;
     
     @Override
     public final int compareTo(final ColumnPositionSegment o) {
