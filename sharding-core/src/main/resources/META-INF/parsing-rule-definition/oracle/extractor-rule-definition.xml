@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<extractor-rule-definition>
-    <extractor-rule id="addColumnDefinition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.AddColumnDefinitionExtractor"/>
-    <extractor-rule id="modifyColumnDefinition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.dialect.oracle.OracleModifyColumnDefinitionExtractor" />
-    <extractor-rule id="dropPrimaryKey" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.constraint.dialect.oracle.OracleDropPrimaryKeyExtractor" />
-</extractor-rule-definition>

@@ -1,21 +1,164 @@
-## 3.1.0
+## 4.0.1
+
+### Bug Fixes
+
+1. Using guava cache to fix parsing deadlock.
+1. Oracle insert SQL could not work in encrypt mode.
+1. Proxy for PostgreSQL decode parameters error in all types except String.
+1. COM_STM_EXECUTE of proxy for MySQL could not support sysbench.
+1. None sharding strategy could not config in spring-boot.
+1. Plain column could not get from resultSet in sharding-encrypt mode.
+1. WasNull field was wrong in GroupByStreamMergeResult.
+1. Metadata.getColumns could not work in JDBC.
+1. IN operator contains space and `\n` `\t` `\r` could not supported by parser.
+
+### Enhancement
+
+1. Optimize antlr performance using two-stage parsing strategy.
+1. Add class filter constructor to restrict the illegal class from YAML.
+
+###  Change Logs
+
+1. [MILESTONE](https://github.com/sharding-sphere/sharding-sphere/milestone/11)
+
+## 4.0.0
+
+### API Changes
+
+1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
+1. Adjust Sharding-JDBC configuration API.
+1. Adjust persist structure for registry center.
+
+### New Features
+
+1. SQL92 Syntax available.
+1. Sharding-Proxy for PostgreSQL protocol available.
+1. SQL 100% compatible if route to single data node.
+1. Less-than(<), greater-than(>) and Less-than-equal(<=), greater-than-equal(>=) for sharding key operator available.
+1. DISTINCT SQL syntax available.
+1. Broadcast table available.
+1. LEAF key generator available.
+1. XA Transaction available, Atomikos, Narayana and Bitronix integrated.
+1. BASE Transaction available, Seata integrated.
+1. Data encrypt available.
+1. Skywalking plugin available.
+1. ShardingSphere-UI available, an orchestration management platform.
+
+### Enhancement
+
+1. MariaDB supported.
+1. Improve the compatibility of SQL parsing.
+1. `SELECT FOR UPDATE` route to master data source only.
+1. Hint in Sharding-Proxy available.
+1. Make configuration of orchestration consistent between Sharding-JDBC and Sharding-Proxy.
+1. Renew modified data sources only, not renew all the data sources.
+1. Vibrate configurable for Snowflake key generator.
+
+### Bug Fixes
+
+1. Improve the compatibility of JDBC Driver URL.
+1. Delete statement with alias available.
+1. Check and disable updating sharding column.
+1. Fix wrong type of TINYINT and SMALLINT as INTEGER.
+
+###  Change Logs
+
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+1. [MILESTONE #5](https://github.com/sharding-sphere/sharding-sphere/milestone/5)
+1. [MILESTONE #6](https://github.com/sharding-sphere/sharding-sphere/milestone/6)
+1. [MILESTONE #7](https://github.com/apache/incubator-shardingsphere/milestone/7)
+1. [MILESTONE #8](https://github.com/apache/incubator-shardingsphere/milestone/8)
+1. [MILESTONE #9](https://github.com/apache/incubator-shardingsphere/milestone/9)
+
+## 4.0.0.RC3
+
+### New Features
+
+1. ShardingSphere-UI, an orchestration management platform for ShardingSphere comes online.
+1. Not only SQLs from MySQL, PostgreSQL, SQLServer, Oracle, but any SQL92 Syntax can be parsed correctly and used in ShardingSphere.
+
+### Enhancement
+
+1. Support using less-than character(<) and greater-than character(>) for sharding data.
+1. When master and slave dataSources exist, support executing `SELECT FOR UPDATE` on master dataSource.
+1. Support hint in Sharding-Proxy.
+1. Finish parsing DAL syntax for MySQL.
+1. Make configuration of orchestration compatible between Sharding-JDBC and Sharding-Proxy.
+
+### Bug Fixes
+
+1. Through Bug fix, the feature of encryption becomes much stable and applicable.
+1. Support delete statement with alias.
+1. Check and disable updating sharding column.
+1. Fix wrong type of TINYINT and SMALLINT as INTEGER.
+
+### Refactor
+
+1. Rename optimized module to preprocessor module.
+1. Decouple rewrite core module and sharding/encrypt features.
+
+### Change Logs
+
+1. [MILESTONE](https://github.com/apache/incubator-shardingsphere/milestone/8)
+
+## 4.0.0.RC2
+
+### API Changes
+
+1. Optimize and delete API and configuration item of sharding logic index.
+1. Update the API of encryption to support the encrypted and plain data coexistence.
+
+### New Features
+
+1. Integration of Seata for distributed transaction.
+1. User can do data encryption by using ShardingProxy.
+1. User can use Leaf-segment generator to get distributed ID.
+1. Support Skywalking plugin for application performance management.
+
+### Enhancement
+
+1. Renew modified dataSources, not all the datasources to improve performance for configuration orchestration.
+1. Improve the compatibility of SQL parsing.
+
+### Refactor
+
+1. Remove DatabaseType enum, use dynamic SPI to load data source type.
+1. The parse engine upgrade from the 2nd generation to 3rd.
+1. The Refactoring of SQL rewriting module.
+
+### Change Logs
+
+1. [MILESTONE](https://github.com/apache/incubator-shardingsphere/milestone/7)
+
+
+## 4.0.0.RC1
+
+Merge all change logs of version 3.1.0.M1, 3.1.0, 3.1.0.1 and 4.0.0.M1. First apache release.
 
 ### API Changes
 
 1. Adjust persist structure for orchestration's registry center.
 1. Adjust Sharding-JDBC configuration API.
+1. Change package and maven groupId form `io.shardingsphere` to `org.apache.shardingsphere`.
+1. Adjust spring-boot-starter.
 
 ### New Features
 
 1. XA Transaction available.
-1. All SQL 100% compatible if route to single data node (MySQL Only).
+1. Data encrypt available.
+1. Use PostgreSQL protocol access Sharding-Proxy available.
 1. DISTINCT SQL syntax available.
-1. Broadcast table available.
-1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
+1. Broadcast table.
+1. All SQL 100% compatible if route to single data node (MySQL Only).
 
 ###  Change Logs
+
 1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
 1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+1. [MILESTONE #5](https://github.com/sharding-sphere/sharding-sphere/milestone/5)
+1. [MILESTONE #6](https://github.com/sharding-sphere/sharding-sphere/milestone/6)
+
 
 ## 3.0.0
 
@@ -435,7 +578,7 @@ Automatic generation key implementation, including
 
 1. [ISSUE #43](https://github.com/sharding-sphere/sharding-sphere/issues/43) The yaml file contains Chinese, and the operating system mode is not UTF-8 encoding, resulting in yaml can not be parsed
 1. [ISSUE #48](https://github.com/sharding-sphere/sharding-sphere/issues/48) Yaml file is not closed after reading
-1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify sub queries to ensure that the behavior of supplementary columns can be accurately positioned
+1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify subqueries to ensure that the behavior of supplementary columns can be accurately positioned
 
 ## 1.1.0
 

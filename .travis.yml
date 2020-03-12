@@ -1,17 +1,21 @@
-sudo: required
-cache: 
-  directories: 
-    - "$HOME/.m2"
-
 language: java
 jdk:
-  - oraclejdk8
-#  - oraclejdk7
-#  - openjdk7
+  - openjdk8
+
+install: true
+
+cache:
+  directories:
+    - "$HOME/.m2"
 
 before_script:
-  - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxPermSize=256m'" > ~/.mavenrc
-script:
-  - mvn clean install cobertura:cobertura coveralls:report -DrepoToken="${COVERALLS_REPO_TOKEN}"
+  - echo "MAVEN_OPTS='-Xmx1024m -XX:MaxMetaspaceSize=256m'" > ~/.mavenrc
 
-install: travis_wait 30 mvn install
+script:
+  - travis_wait 30 mvn --batch-mode --no-transfer-progress clean install cobertura:cobertura coveralls:report -DrepoToken="${COVERALLS_REPO_TOKEN}" -Dmaven.javadoc.skip=true
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+after_failure:
+  - echo "build failed!"

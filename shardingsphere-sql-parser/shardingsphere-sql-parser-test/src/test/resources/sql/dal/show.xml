@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <show-index sql-case-id="show_index_with_index_with_table">
+        <table name="t_order" start-index="16" stop-index="22" />
+    </show-index>
+    
+    <show-index sql-case-id="show_index_with_indexes_with_table_and_database">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <schema name="sharding_db" start-index="31" stop-index="41" />
+    </show-index>
+    
+    <show-index sql-case-id="show_index_with_keys_with_database_and_table">
+        <table name="t_order" start-index="15" stop-index="33">
+            <owner name="sharding_db" start-index="15" stop-index="25" />
+        </table>
+    </show-index>
+    
+    <show-index sql-case-id="show_index_with_table_back_quotes">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26" />
+        <schema name="sharding_db" start-index="33" stop-index="43" />
+    </show-index>
+    
+    <show-index sql-case-id="show_index_with_database_back_quotes">
+        <table name="t_order" start-index="18" stop-index="24" />
+        <schema name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="31" stop-index="43" />
+    </show-index>
+    
+    <show-index sql-case-id="show_index_with_back_quotes">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="37">
+            <owner name="sharding_db" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="27" />
+        </table>
+    </show-index>
+    
+    <show-columns sql-case-id="show_columns_from_table">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26"/>
+    </show-columns>
+    
+    <show-create-table sql-case-id="show_create_table">
+        <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="18" stop-index="26"/>
+    </show-create-table>
+    
+    <show-table-status sql-case-id="show_table_status" />
+    <show sql-case-id="show_all" />
+    <show sql-case-id="show_server_version" />
+    <show sql-case-id="show_transaction_isolation_level" />
+</sql-parser-test-cases>

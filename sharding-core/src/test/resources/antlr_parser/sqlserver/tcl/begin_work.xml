@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets namespace="sqlserver.tcl.beginWork">
-    <parser-result sql-case-id="begin" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.BeginTransactionStatement" />
-    <parser-result sql-case-id="begin_with_name" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.BeginTransactionStatement" />
-</parser-result-sets>

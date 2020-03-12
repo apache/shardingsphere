@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="MySQL" namespace="mysql.ddl.truncate">
-    <sql-case id="truncate_table" value="TRUNCATE TABLE t_order" />
-    <sql-case id="truncate_table_with_space" value="    TRUNCATE TABLE
-        t_order    " />
-    <sql-case id="truncate_table_with_back_quota" value="TRUNCATE TABLE `t_order`" />
-    <sql-case id="truncate_table_simple" value="TRUNCATE t_order" />
-</sql-cases>
