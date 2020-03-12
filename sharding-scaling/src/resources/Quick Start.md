@@ -1,31 +1,31 @@
-# 快速开始
+# Quick Start
 
-## 部署启动
-1. 执行以下命令，编译生成sharding-scaling二进制包：
+## Deployment
+1. Execute the following command to compile and generate the sharding-scaling binary package:
 ```
 git clone https://github.com/apache/incubator-shardingsphere.git；
 cd incubarot-shardingsphere;
 mvn clean install -Prelease;
 ```
-发布包所在目录为：`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
+The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
 
-2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
+2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
 ```
 port: 8888
 blockQueueSize: 10000
 pushTimeout: 1000
 workerThread: 30
 ```
-3. 启动sharding-scaling：
+3. start up sharding-scaling:
 ```
 sh bin/start.sh
 ```
-4. 查看日志`logs/stdout.log`，确保启动成功。
+4. See the log file `logs/stdout.log`，ensure successful startup.
 
-## 创建迁移任务
-ShardingScaling提供相应的HTTP接口来管理迁移任务，部署启动成功后，我们可以调用相应的接口来启动迁移任务。
+## Start scaling job
+ShardingScaling provides a corresponding HTTP interface to manage the migration jobs. We can invoke the appropriate interface to start the migration job.
 
-创建迁移任务：
+Start scaling job:
 ```
 curl -X POST \
   http://localhost:8888/shardingscaling/job/start \
@@ -46,11 +46,11 @@ curl -X POST \
    }
 }'
 ```
-注意：上述需要修改`ruleConfiguration.sourceDatasource`和`ruleConfiguration.sourceRule`，分别为源端ShardingSphere数据源和数据表规则相关配置；
+Note: The `ruleConfiguration.sourceDatasource` and `ruleConfiguration.sourceRule` should be changed to source's ShardingSphere's datasource and table rule.
 
-以及`ruleConfiguration.destinationDataSources`中目标端sharding-proxy的相关信息。
+What's more, the `ruleConfiguration.destinationDataSources` should be changed to destination's sharding-proxy.
 
-返回如下信息，表示任务创建成功：
+The following information is returned, indicating that the job was successfully created:
 ```
 {
    "success": true,
@@ -59,15 +59,15 @@ curl -X POST \
    "model": null
 }
 ```
-需要注意的是，目前ShardingScaling任务创建成功后，便会自动运行，进行数据的迁移。
+It should be noted that, after the ShardingScaling's job is successfully created, it will automatically run.
 
-## 查询任务进度
-执行如下命令获取当前所有迁移任务：
+## Get scaling progress
+Run the following command to get all current migration jobs:
 ```
 curl -X GET \
   http://localhost:8888/shardingscaling/job/list
 ```
-返回示例如下：
+Response:
 ```
 {
   "success": true,
@@ -81,12 +81,12 @@ curl -X GET \
   ]
 }
 ```
-进一步查询任务具体迁移状态：
+Further query job's specific migration status：
 ```
 curl -X GET \
   http://localhost:8888/shardingscaling/job/progress/1
 ```
-返回任务详细信息如下：
+Response：
 ```
 {
    "success": true,
@@ -137,8 +137,8 @@ curl -X GET \
    }
 }
 ```
-## 结束任务
-数据迁移完成后，我们可以调用接口结束任务：
+## Stop scaling job
+After the data migration is over, we can call the interface to end the job:
 ```
 curl -X POST \
   http://localhost:8888/shardingscaling/job/stop \
@@ -147,7 +147,7 @@ curl -X POST \
    "jobId":1
 }'
 ```
-返回如下信息表示任务成功结束：
+Response：
 ```
 {
    "success": true,
@@ -156,11 +156,10 @@ curl -X POST \
    "model": null
 }
 ```
-## 结束ShardingScaling
+## Shutdown ShardingScaling
 ```
 sh bin/stop.sh
 ```
-## 通过UI界面来操作
-Sharding-scaling与sharding-ui集成了用户界面，所以上述所有任务相关的操作都可以通过UI界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
-
-更多信息请参考sharding-ui项目。
+## Operate through the UI interface
+We provide user interface in sharding-ui, so all the operations related can be implemented with a click of the UI interface.
+For more information, please refer to the sharding-ui module.
