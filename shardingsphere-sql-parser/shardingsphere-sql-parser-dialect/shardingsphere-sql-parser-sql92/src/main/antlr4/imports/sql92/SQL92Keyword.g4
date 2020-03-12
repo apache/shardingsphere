@@ -690,39 +690,3 @@ WRITE
 ZONE
     : Z O N E
     ;
-
-CHARACTER_VARYING
-    : C H A R A C T E R [ ]+ V A R Y I N G
-    ;
-
-NATIONAL_CHARACTER
-    : N A T I O N A L [ ]+ C H A R A C T E R
-    ;
-
-NATIONAL_CHARACTER_VARYING
-    : N A T I O N A L [ ]+ C H A R A C T E R [ ]+ V A R Y I N G
-    ;
-
-NATIONAL_CHAR
-    : N A T I O N A L [ ]+ C H A R
-    ;
-
-NATIONAL_CHAR_VARYING
-    : N A T I O N A L [ ]+ C H A R [ ]+ V A R Y I N G
-    ;
-
-BIT_VARYING
-    : B I T [ ]+ V A R Y I N G
-    ;
-
-DOUBLE_PRECISION
-    : D O U B L E [ ]+ P R E C I S I O N
-    ;
-
-TIME_WITH_TIME_ZONE
-    : T I M E [ ]+ W I T H [ ]+ T I M E [ ]+ Z O N E
-    ;
-
-TIMESTAMP_WITH_TIME_ZONE
-    : T I M E S T A M P [ ]+ W I T H [ ]+ T I M E [ ]+ Z O N E
-    ;

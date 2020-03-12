@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.visitor;
 
+import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -436,7 +437,11 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        return new KeywordValue(ctx.getText());
+        Collection<String> dataTypeNames = new LinkedList<>();
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            dataTypeNames.add(ctx.getChild(i).getText());
+        }
+        return new KeywordValue(Joiner.on(" ").join(dataTypeNames));
     }
     
     // TODO :FIXME, sql case id: insert_with_str_to_date
