@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
-
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
-
-import io.netty.buffer.ByteBuf;
-import lombok.Getter;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog;
 
 /**
- * Rotate event.
+ * MySQL binlog event packet.
  *
- * @deprecated Replaced with {@link org.apache.shardingsphere.database.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket}
+ * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event.html">Binlog Event</a>
  */
-@Getter
-@Deprecated
-public final class RotateEventPacket {
-    
-    private long position;
-    
-    private String nextFileName;
+public interface MySQLBinlogEventPacket {
     
     /**
-     * Parse rotate event from {@code ByteBuf}.
-     * @param in buffer
+     * Get MySQL binlog event header.
+     *
+     * @return MySQL binlog event header
      */
-    public void parse(final ByteBuf in) {
-        position = DataTypesCodec.readInt8LE(in);
-        nextFileName = DataTypesCodec.readFixedLengthString(in.readableBytes(), in);
-    }
+    MySQLBinlogEventHeader getBinlogEventHeader();
 }

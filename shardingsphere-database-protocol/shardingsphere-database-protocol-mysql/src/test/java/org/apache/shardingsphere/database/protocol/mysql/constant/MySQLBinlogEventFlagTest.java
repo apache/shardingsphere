@@ -15,32 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
+package org.apache.shardingsphere.database.protocol.mysql.constant;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-import io.netty.buffer.ByteBuf;
-import lombok.Getter;
+import org.junit.Test;
 
-/**
- * Rotate event.
- *
- * @deprecated Replaced with {@link org.apache.shardingsphere.database.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket}
- */
-@Getter
-@Deprecated
-public final class RotateEventPacket {
+public final class MySQLBinlogEventFlagTest {
     
-    private long position;
-    
-    private String nextFileName;
-    
-    /**
-     * Parse rotate event from {@code ByteBuf}.
-     * @param in buffer
-     */
-    public void parse(final ByteBuf in) {
-        position = DataTypesCodec.readInt8LE(in);
-        nextFileName = DataTypesCodec.readFixedLengthString(in.readableBytes(), in);
+    @Test
+    public void assertGetValue() {
+        assertThat(MySQLBinlogEventFlag.LOG_EVENT_MTS_ISOLATE_F.getValue(), is(0x0200));
     }
 }

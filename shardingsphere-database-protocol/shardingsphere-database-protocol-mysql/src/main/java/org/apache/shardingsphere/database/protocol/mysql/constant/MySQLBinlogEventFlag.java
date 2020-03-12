@@ -15,32 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
+package org.apache.shardingsphere.database.protocol.mysql.constant;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
-
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Rotate event.
+ * MySQL binlog event flag.
  *
- * @deprecated Replaced with {@link org.apache.shardingsphere.database.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket}
+ * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event-flag.html">Binlog Event Flag</a>
  */
+@RequiredArgsConstructor
 @Getter
-@Deprecated
-public final class RotateEventPacket {
+public enum MySQLBinlogEventFlag {
     
-    private long position;
+    LOG_EVENT_BINLOG_IN_USE_F(0x0001),
     
-    private String nextFileName;
+    LOG_EVENT_FORCED_ROTATE_F(0x0002),
     
-    /**
-     * Parse rotate event from {@code ByteBuf}.
-     * @param in buffer
-     */
-    public void parse(final ByteBuf in) {
-        position = DataTypesCodec.readInt8LE(in);
-        nextFileName = DataTypesCodec.readFixedLengthString(in.readableBytes(), in);
-    }
+    LOG_EVENT_THREAD_SPECIFIC_F(0x0004),
+    
+    LOG_EVENT_SUPPRESS_USE_F(0x0008),
+    
+    LOG_EVENT_UPDATE_TABLE_MAP_VERSION_F(0x0010),
+    
+    LOG_EVENT_ARTIFICIAL_F(0x0020),
+    
+    LOG_EVENT_RELAY_LOG_F(0x0040),
+    
+    LOG_EVENT_IGNORABLE_F(0x0080),
+    
+    LOG_EVENT_NO_FILTER_F(0x0100),
+    
+    LOG_EVENT_MTS_ISOLATE_F(0x0200);
+    
+    private final int value;
 }

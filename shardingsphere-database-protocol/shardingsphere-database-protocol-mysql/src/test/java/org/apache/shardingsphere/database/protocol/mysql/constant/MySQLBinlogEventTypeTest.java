@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
+package org.apache.shardingsphere.database.protocol.mysql.constant;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-import io.netty.buffer.ByteBuf;
-import lombok.Getter;
+import org.junit.Test;
 
-/**
- * Rotate event.
- *
- * @deprecated Replaced with {@link org.apache.shardingsphere.database.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket}
- */
-@Getter
-@Deprecated
-public final class RotateEventPacket {
+public final class MySQLBinlogEventTypeTest {
     
-    private long position;
+    @Test
+    public void assertGetValue() {
+        assertThat(MySQLBinlogEventType.WRITE_ROWS_EVENTv2.getValue(), is(0x1e));
+    }
     
-    private String nextFileName;
+    @Test
+    public void assertGetEventTypeHeaderLengthsByBinlogVersion4() {
+        assertThat(MySQLBinlogEventType.getEventTypeHeaderLengthsByBinlogVersion4().length, is(35));
+    }
     
-    /**
-     * Parse rotate event from {@code ByteBuf}.
-     * @param in buffer
-     */
-    public void parse(final ByteBuf in) {
-        position = DataTypesCodec.readInt8LE(in);
-        nextFileName = DataTypesCodec.readFixedLengthString(in.readableBytes(), in);
+    @Test
+    public void assertGetEventTypeHeaderLength() {
+        assertThat(MySQLBinlogEventType.getEventTypeHeaderLength(MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT), is(84));
     }
 }
