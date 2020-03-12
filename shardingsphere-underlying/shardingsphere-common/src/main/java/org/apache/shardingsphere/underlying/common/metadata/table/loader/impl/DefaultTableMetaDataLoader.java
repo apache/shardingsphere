@@ -19,12 +19,11 @@ package org.apache.shardingsphere.underlying.common.metadata.table.loader.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -66,14 +65,7 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     
     private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String table) throws SQLException {
         MetaDataLogger.logTableMetaData(catalog, table);
-        Collection<ColumnMetaData> columnMetaDataList = isTableExist(connection, catalog, table) ? ColumnMetaDataLoader.load(connection, catalog, table) : Collections.emptyList();
-        return new TableMetaData(columnMetaDataList, Collections.emptyList());
-    }
-    
-    private boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, table, null)) {
-            return resultSet.next();
-        }
+        return new TableMetaData(ColumnMetaDataLoader.load(connection, catalog, table), Collections.emptyList());
     }
     
     @Override
