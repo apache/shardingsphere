@@ -228,4 +228,4 @@ The solutions are as follows:
 Answer:
 
 1. Update to 4.0.1 above, which helps speed up the process of loading table metadata from `the default dataSource`.
-2. Configure `max.connections.size.per.query`(Default value is 1) higher referring to connection pool you adopt.
+2. Configure `max.connections.size.per.query`(Default value is 1) higher referring to connection pool you adopt(Version >= 3.0.0.M3).

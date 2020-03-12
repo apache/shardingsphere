@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.keyword;
+package org.apache.shardingsphere.sql.parser.postgresql.parser;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Keyword value.
+ * SQL parser for PostgreSQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class KeywordValue implements ValueASTNode<String> {
+public final class PostgreSQLParser extends PostgreSQLStatementParser implements SQLParser {
     
-    private final String value;
+    public PostgreSQLParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
 }

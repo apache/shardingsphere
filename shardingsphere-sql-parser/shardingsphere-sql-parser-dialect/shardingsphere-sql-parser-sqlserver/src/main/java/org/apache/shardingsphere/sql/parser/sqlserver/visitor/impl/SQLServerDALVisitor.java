@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.keyword;
+package org.apache.shardingsphere.sql.parser.sqlserver.visitor.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.SQLServerVisitor;
 
 /**
- * Keyword value.
+ * DAL visitor for SQLServer.
  */
-@RequiredArgsConstructor
-@Getter
-public final class KeywordValue implements ValueASTNode<String> {
-    
-    private final String value;
+public final class SQLServerDALVisitor extends SQLServerVisitor implements DALVisitor {
 }

@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.keyword;
+package org.apache.shardingsphere.sql.parser.sql92.parser;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Keyword value.
+ * SQL parser for SQL92.
  */
-@RequiredArgsConstructor
-@Getter
-public final class KeywordValue implements ValueASTNode<String> {
+public final class SQL92Parser extends SQL92StatementParser implements SQLParser {
     
-    private final String value;
+    public SQL92Parser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
 }

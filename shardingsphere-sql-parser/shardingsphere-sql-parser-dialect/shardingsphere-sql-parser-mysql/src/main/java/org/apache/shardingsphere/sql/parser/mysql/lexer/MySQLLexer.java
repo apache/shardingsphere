@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.keyword;
+package org.apache.shardingsphere.sql.parser.mysql.lexer;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.sql.parser.api.lexer.SQLLexer;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
 
 /**
- * Keyword value.
+ * SQL lexer for MySQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class KeywordValue implements ValueASTNode<String> {
+public final class MySQLLexer extends MySQLStatementLexer implements SQLLexer {
     
-    private final String value;
+    public MySQLLexer(final CharStream input) {
+        super(input);
+    }
 }

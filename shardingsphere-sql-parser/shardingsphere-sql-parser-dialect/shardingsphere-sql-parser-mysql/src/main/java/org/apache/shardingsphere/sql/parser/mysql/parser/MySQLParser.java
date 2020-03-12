@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.value.keyword;
+package org.apache.shardingsphere.sql.parser.mysql.parser;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.value.ValueASTNode;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Keyword value.
+ * SQL parser for MySQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class KeywordValue implements ValueASTNode<String> {
+public final class MySQLParser extends MySQLStatementParser implements SQLParser {
     
-    private final String value;
+    public MySQLParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute());
+    }
 }
