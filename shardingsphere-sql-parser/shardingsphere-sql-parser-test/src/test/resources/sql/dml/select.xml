@@ -1289,6 +1289,33 @@
         </projections>
         <where start-index="92" stop-index="105">
             <!-- FIXME cannot parse subquery's predicate -->
+            <and-predicate>
+                <predicate start-index="28" literal-stop-index="85">
+                    <column-left-value name="user_id" start-index="28" stop-index="34" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <subquery>
+                            <select>
+                                <table name="t_order_item" start-index="59" stop-index="70" />
+                                <projections start-index="46" stop-index="52">
+                                    <column-projection name="user_id" start-index="46" stop-index="52" />
+                                </projections>
+                                <where start-index="72" stop-index="85">
+                                    <and-predicate>
+                                        <predicate start-index="78" literal-stop-index="84">
+                                            <column-left-value name="id" start-index="78" stop-index="79"  />
+                                            <operator type="=" />
+                                            <compare-right-value>
+                                                <literal-expression value="10" />
+                                            </compare-right-value>
+                                        </predicate>
+                                    </and-predicate>
+                                </where>
+                            </select>
+                        </subquery>
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
         </where>
     </select>
     

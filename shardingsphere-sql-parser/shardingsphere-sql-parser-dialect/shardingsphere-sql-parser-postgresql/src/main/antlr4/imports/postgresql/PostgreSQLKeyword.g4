@@ -472,11 +472,31 @@ RECURSIVE
     ;
 
 INT
-    : I N T [248]?
+    : I N T
+    ;
+
+INT2
+    : I N T [2]
+    ;
+
+INT4
+    : I N T [4]
+    ;
+
+INT8
+    : I N T [8]
     ;
 
 FLOAT
-    : F L O A T [48]?
+    : F L O A T
+    ;
+
+FLOAT4
+    : F L O A T [4]
+    ;
+
+FLOAT8
+    : F L O A T [8]
     ;
 
 SMALLSERIAL
@@ -544,7 +564,11 @@ INET
     ;
 
 MACADDR
-    : M A C A D D R [8]?
+    : M A C A D D R
+    ;
+
+MACADDR8
+    : M A C A D D R [8]
     ;
 
 BIT
@@ -575,8 +599,12 @@ JSON
     : J S O N
     ;
 
-INTRANGE
-    : I N T [48] R A N G E
+INT4RANGE
+    : I N T [4] R A N G E
+    ;
+
+INT8RANGE
+    : I N T [8] R A N G E
     ;
 
 NUMRANGE
@@ -593,8 +621,4 @@ TSTZRANGE
 
 DATERANGE
     : D A T E R A N G E
-    ;
-
-DOUBLE_PRECISION
-    : D O U B L E [ ]+ P R E C I S I O N
     ;
