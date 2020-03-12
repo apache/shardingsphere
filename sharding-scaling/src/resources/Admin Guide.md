@@ -1,31 +1,33 @@
-# 快速开始
+# Admin Guide
+## Environment
+JAVA，JDK 1.8+.
 
-## 部署启动
-1. 执行以下命令，编译生成sharding-scaling二进制包：
-```
-git clone https://github.com/apache/incubator-shardingsphere.git；
-cd incubarot-shardingsphere;
-mvn clean install -Prelease;
-```
-发布包所在目录为：`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
+The migration scene we support：
 
-2. 解压缩发布包，修改配置文件`conf/server.yaml`，这里主要修改启动端口，保证不与本机其他端口冲突，其他值保持默认即可：
-```
-port: 8888
-blockQueueSize: 10000
-pushTimeout: 1000
-workerThread: 30
-```
-3. 启动sharding-scaling：
-```
-sh bin/start.sh
-```
-4. 查看日志`logs/stdout.log`，确保启动成功。
+| Source     | Destination    | Whether support or not |
+| ---------- | -------------- | ---------------------- |
+| MySQL      | sharding-proxy | support                |
+| PostgreSQL | sharding-proxy | support                |
 
-## 创建迁移任务
-ShardingScaling提供相应的HTTP接口来管理迁移任务，部署启动成功后，我们可以调用相应的接口来启动迁移任务。
+## API
+### Start scaling job
 
-创建迁移任务：
+Interface description：POST /shardingscaling/job/start
+
+Body：
+
+| Parameter                                         | Describe                                        |
+|---------------------------------------------------|-------------------------------------------------|
+| ruleConfiguration.sourceDatasource                | source sharding proxy data source configuration |
+| ruleConfiguration.sourceRule                      | source sharding proxy table rule configuration  |
+| ruleConfiguration.destinationDataSources.name     | destination sharding proxy name                 |
+| ruleConfiguration.destinationDataSources.url      | destination sharding proxy jdbc url             |
+| ruleConfiguration.destinationDataSources.username | destination sharding proxy username             |
+| ruleConfiguration.destinationDataSources.password | destination sharding proxy password             |
+| jobConfiguration.concurrency                      | sync task proposed concurrency                  |
+
+Example：
+
 ```
 curl -X POST \
   http://localhost:8888/shardingscaling/job/start \
@@ -46,11 +48,9 @@ curl -X POST \
    }
 }'
 ```
-注意：上述需要修改`ruleConfiguration.sourceDatasource`和`ruleConfiguration.sourceRule`，分别为源端ShardingSphere数据源和数据表规则相关配置；
 
-以及`ruleConfiguration.destinationDataSources`中目标端sharding-proxy的相关信息。
+Response：
 
-返回如下信息，表示任务创建成功：
 ```
 {
    "success": true,
@@ -59,34 +59,18 @@ curl -X POST \
    "model": null
 }
 ```
-需要注意的是，目前ShardingScaling任务创建成功后，便会自动运行，进行数据的迁移。
 
-## 查询任务进度
-执行如下命令获取当前所有迁移任务：
-```
-curl -X GET \
-  http://localhost:8888/shardingscaling/job/list
-```
-返回示例如下：
-```
-{
-  "success": true,
-  "errorCode": 0,
-  "model": [
-    {
-      "jobId": 1,
-      "jobName": "Local Sharding Scaling Job",
-      "status": "RUNNING"
-    }
-  ]
-}
-```
-进一步查询任务具体迁移状态：
+### Get scaling progress
+
+Interface description：GET /shardingscaling/job/progress/{jobId}
+
+Example：
 ```
 curl -X GET \
   http://localhost:8888/shardingscaling/job/progress/1
 ```
-返回任务详细信息如下：
+
+Response：
 ```
 {
    "success": true,
@@ -95,10 +79,10 @@ curl -X GET \
    "model": {
         "id": 1,
         "jobName": "Local Sharding Scaling Job",
-        "status": "RUNNING"
+        "status": "RUNNING/STOPPED"
         "syncTaskProgress": [{
             "id": "127.0.0.1-3306-test",
-            "status": "SYNCHRONIZE_REALTIME_DATA",
+            "status": "PREPARING/MIGRATE_HISTORY_DATA/SYNCHRONIZE_REALTIME_DATA/STOPPING/STOPPED",
             "historySyncTaskProgress": [{
                 "id": "history-test-t1#0",
                 "estimatedRows": 41147,
@@ -137,8 +121,42 @@ curl -X GET \
    }
 }
 ```
-## 结束任务
-数据迁移完成后，我们可以调用接口结束任务：
+
+### List scaling jobs
+Interface description：GET /shardingscaling/job/list
+
+Example：
+```
+curl -X GET \
+  http://localhost:8888/shardingscaling/job/list
+```
+
+Response：
+
+```
+{
+  "success": true,
+  "errorCode": 0,
+  "model": [
+    {
+      "jobId": 1,
+      "jobName": "Local Sharding Scaling Job",
+      "status": "RUNNING"
+    }
+  ]
+}
+```
+
+### Stop scaling job
+Interface description：POST /shardingscaling/job/stop
+
+Body：
+
+| Parameter | Describe |
+| --------- | -------- |
+| jobId     | job id   |
+
+Example：
 ```
 curl -X POST \
   http://localhost:8888/shardingscaling/job/stop \
@@ -147,7 +165,7 @@ curl -X POST \
    "jobId":1
 }'
 ```
-返回如下信息表示任务成功结束：
+Response：
 ```
 {
    "success": true,
@@ -156,11 +174,13 @@ curl -X POST \
    "model": null
 }
 ```
-## 结束ShardingScaling
-```
-sh bin/stop.sh
-```
-## 通过UI界面来操作
-Sharding-scaling与sharding-ui集成了用户界面，所以上述所有任务相关的操作都可以通过UI界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
 
-更多信息请参考sharding-ui项目。
+## Configuration
+The existing configuration items are as follows, We can modify them in `conf/server.yaml`：
+| Name           | Description                                                  | Default value |
+| -------------- | ------------------------------------------------------------ | ------------- |
+| port           | Listening port of HTTP server                                | 8888          |
+| blockQueueSize | Queue size of data transmission channel                      | 10000         |
+| pushTimeout    | Data push timeout(ms)                                        | 1000          |
+| workerThread   | Worker thread pool size, the number of migration task threads allowed to run concurrently | 30            |
+
