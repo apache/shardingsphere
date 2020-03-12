@@ -15,7 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.complex;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple;
 
-public final class ExpectedSubquery extends ExpectedBaseComplexExpression {
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml.SelectStatementTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+
+@Getter
+@Setter
+public final class ExpectedSubquery extends ExpectedBaseSimpleExpression {
+    
+    @XmlElement(name = "select")
+    private SelectStatementTestCase selectTestCases;
 }
