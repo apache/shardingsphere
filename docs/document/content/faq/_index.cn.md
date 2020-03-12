@@ -229,5 +229,5 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 回答：
 
-1. 升级到`4.0.1`以上的版本可以帮助加快`default dataSource`中加载table metadata的速度。
-2. 参照你采用的连接池，配置`max.connections.size.per.query`（默认值为1）更高的。
+1. 升级到`4.0.1`以上的版本，以提高`default dataSource`的table metadata的加载速度。
+2. 参照你采用的连接池，将配置项`max.connections.size.per.query`（默认值为1）调高。
