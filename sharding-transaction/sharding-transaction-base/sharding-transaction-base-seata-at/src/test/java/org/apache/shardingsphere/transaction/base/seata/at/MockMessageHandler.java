@@ -27,6 +27,7 @@ import io.seata.core.protocol.AbstractResultMessage;
 import io.seata.core.protocol.HeartbeatMessage;
 import io.seata.core.protocol.MergeResultMessage;
 import io.seata.core.protocol.MergedWarpMessage;
+import io.seata.core.protocol.ProtocolConstants;
 import io.seata.core.protocol.RegisterRMRequest;
 import io.seata.core.protocol.RegisterRMResponse;
 import io.seata.core.protocol.RegisterTMRequest;
@@ -95,6 +96,17 @@ public final class MockMessageHandler extends ChannelDuplexHandler {
         ctx.writeAndFlush(response);
     }
     
+    private RpcMessage newRpcMessage(final RpcMessage request) {
+        RpcMessage result = new RpcMessage();
+        result.setMessageType(request.getBody() == HeartbeatMessage.PING ?
+            ProtocolConstants.MSGTYPE_HEARTBEAT_RESPONSE :
+            ProtocolConstants.MSGTYPE_RESPONSE);
+        result.setCodec(request.getCodec());
+        result.setCompressor(request.getCompressor());
+        result.setId(request.getId());
+        return result;
+    }
+    
     private void setMergeResultMessage(final RpcMessage request, final RpcMessage response) {
         MergedWarpMessage warpMessage = (MergedWarpMessage) request.getBody();
         AbstractResultMessage[] resultMessages = new AbstractResultMessage[warpMessage.msgs.size()];
@@ -135,14 +147,5 @@ public final class MockMessageHandler extends ChannelDuplexHandler {
         MergeResultMessage resultMessage = new MergeResultMessage();
         resultMessage.setMsgs(resultMessages);
         response.setBody(resultMessage);
-    }
-    
-    private RpcMessage newRpcMessage(final RpcMessage msg) {
-        RpcMessage result = new RpcMessage();
-        result.setAsync(true);
-        result.setHeartbeat(false);
-        result.setRequest(false);
-        result.setId(msg.getId());
-        return result;
     }
 }

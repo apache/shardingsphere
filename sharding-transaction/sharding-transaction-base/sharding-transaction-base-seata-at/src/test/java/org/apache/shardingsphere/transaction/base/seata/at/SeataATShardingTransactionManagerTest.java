@@ -20,6 +20,8 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 import io.seata.core.context.RootContext;
 import io.seata.core.protocol.MergeResultMessage;
 import io.seata.core.protocol.MergedWarpMessage;
+import io.seata.core.protocol.RegisterRMRequest;
+import io.seata.core.protocol.RegisterRMResponse;
 import io.seata.core.protocol.RegisterTMRequest;
 import io.seata.core.protocol.RegisterTMResponse;
 import io.seata.core.rpc.netty.RmRpcClient;
@@ -29,10 +31,10 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -165,10 +167,12 @@ public final class SeataATShardingTransactionManagerTest {
     }
     
     private void assertResult() {
-        assertThat(requestQueue.size(), is(2));
-        assertThat(responseQueue.size(), is(2));
+        assertThat(requestQueue.size(), is(3));
+        assertThat(responseQueue.size(), is(3));
+        assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
         assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
         assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
+        assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
         assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
         assertThat(responseQueue.poll(), instanceOf(MergeResultMessage.class));
     }
