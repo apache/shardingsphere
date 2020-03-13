@@ -98,9 +98,7 @@ public final class MockMessageHandler extends ChannelDuplexHandler {
     
     private RpcMessage newRpcMessage(final RpcMessage request) {
         RpcMessage result = new RpcMessage();
-        result.setMessageType(request.getBody() == HeartbeatMessage.PING ?
-            ProtocolConstants.MSGTYPE_HEARTBEAT_RESPONSE :
-            ProtocolConstants.MSGTYPE_RESPONSE);
+        result.setMessageType(request.getBody() == HeartbeatMessage.PING ? ProtocolConstants.MSGTYPE_HEARTBEAT_RESPONSE : ProtocolConstants.MSGTYPE_RESPONSE);
         result.setCodec(request.getCodec());
         result.setCompressor(request.getCompressor());
         result.setId(request.getId());
