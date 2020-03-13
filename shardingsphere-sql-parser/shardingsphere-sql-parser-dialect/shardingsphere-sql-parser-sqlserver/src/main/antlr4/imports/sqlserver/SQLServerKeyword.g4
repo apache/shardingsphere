@@ -868,7 +868,11 @@ DATETIMEOFFSET
     ;
 
 DATETIME
-    : D A T E T I M E [2]?
+    : D A T E T I M E
+    ;
+
+DATETIME2
+    : D A T E T I M E [2]
     ;
 
 SMALLDATETIME

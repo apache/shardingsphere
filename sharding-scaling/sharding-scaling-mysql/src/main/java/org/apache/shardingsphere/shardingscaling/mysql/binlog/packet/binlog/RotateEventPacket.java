@@ -25,11 +25,10 @@ import lombok.Getter;
 /**
  * Rotate event.
  *
- * <p>
- *     Refactor by extends {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}.
- * </p>
+ * @deprecated Replaced with {@link org.apache.shardingsphere.database.protocol.mysql.packet.binlog.management.MySQLBinlogRotateEventPacket}
  */
 @Getter
+@Deprecated
 public final class RotateEventPacket {
     
     private long position;

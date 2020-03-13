@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.schema;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 
 import java.sql.Connection;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.util;
 
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
+import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ public final class YamlInstanceConfigurationSwapperUtilTest {
     
     private YamlCenterRepositoryConfiguration getYamlInstanceConfiguration() {
         YamlCenterRepositoryConfiguration yamlConfiguration = new YamlCenterRepositoryConfiguration();
-        yamlConfiguration.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+        yamlConfiguration.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         yamlConfiguration.setInstanceType("zookeeper");
         yamlConfiguration.setNamespace("test");
         yamlConfiguration.setServerLists("localhost:2181");
