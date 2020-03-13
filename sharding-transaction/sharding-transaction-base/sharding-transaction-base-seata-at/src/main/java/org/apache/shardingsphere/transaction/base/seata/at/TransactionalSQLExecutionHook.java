@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
+import io.seata.core.context.RootContext;
 import org.apache.shardingsphere.sharding.execute.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 
@@ -25,22 +26,33 @@ import java.util.Map;
 
 /**
  * Seata transactional SQL execution hook.
+ *
+ * @author zhaojun
  */
 public final class TransactionalSQLExecutionHook implements SQLExecutionHook {
+    
+    private boolean seataBranch;
     
     @Override
     public void start(final String dataSourceName, final String sql, final List<Object> parameters,
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
-        if (!isTrunkThread) {
-            SeataTransactionBroadcaster.broadcastIfNecessary(shardingExecuteDataMap);
+        if (!isTrunkThread && shardingExecuteDataMap.containsKey(Constant.SEATA_TX_XID) && !RootContext.inGlobalTransaction()) {
+            RootContext.bind((String) shardingExecuteDataMap.get(Constant.SEATA_TX_XID));
+            seataBranch = true;
         }
     }
     
     @Override
     public void finishSuccess() {
+        if (seataBranch) {
+            RootContext.unbind();
+        }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
+        if (seataBranch) {
+            RootContext.unbind();
+        }
     }
 }

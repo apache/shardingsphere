@@ -17,31 +17,10 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
-
-import java.util.Map;
-
 /**
- * Seata transaction broadcaster.
+ * Constant.
  */
-class SeataTransactionBroadcaster {
+final class Constant {
     
-    private static final String SEATA_TX_XID = "SEATA_TX_XID";
-    
-    static void collectGlobalTxId() {
-        if (RootContext.inGlobalTransaction()) {
-            ExecutorDataMap.getValue().put(SEATA_TX_XID, RootContext.getXID());
-        }
-    }
-    
-    static void broadcastIfNecessary(final Map<String, Object> shardingExecuteDataMap) {
-        if (shardingExecuteDataMap.containsKey(SEATA_TX_XID) && !RootContext.inGlobalTransaction()) {
-            RootContext.bind((String) shardingExecuteDataMap.get(SEATA_TX_XID));
-        }
-    }
-
-    static void clear() {
-        ExecutorDataMap.getValue().remove(SEATA_TX_XID);
-    }
+    static final String SEATA_TX_XID = "SEATA_TX_XID";
 }
