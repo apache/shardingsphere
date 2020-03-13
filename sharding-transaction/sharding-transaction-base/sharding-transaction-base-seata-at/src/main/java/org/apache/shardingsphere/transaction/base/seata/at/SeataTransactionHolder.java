@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.base.seata.at;import io.seata.tm.api.GlobalTransaction;
+package org.apache.shardingsphere.transaction.base.seata.at;
+
+import io.seata.tm.api.GlobalTransaction;
 
 /**
  * Seata transaction holder.
