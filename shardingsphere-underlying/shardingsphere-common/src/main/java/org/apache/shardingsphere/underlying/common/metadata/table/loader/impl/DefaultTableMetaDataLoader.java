@@ -20,6 +20,7 @@ package org.apache.shardingsphere.underlying.common.metadata.table.loader.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
@@ -32,7 +33,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -55,7 +55,7 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     public TableMetaData load(final String tableName, final BaseRule rule) throws SQLException {
         String dataSourceName = getDataSourceName();
         try (Connection connection = connectionManager.getConnection(dataSourceName)) {
-            return createTableMetaData(connection, dataSourceMetas.getDataSourceMetaData(dataSourceName).getCatalog(), tableName);
+            return createTableMetaData(connection, dataSourceMetas.getDataSourceMetaData(dataSourceName).getCatalog(), dataSourceMetas.getDataSourceMetaData(dataSourceName).getSchema(), tableName);
         }
     }
     
@@ -63,9 +63,9 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
         return dataSourceMetas.getAllInstanceDataSourceNames().iterator().next();
     }
     
-    private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String table) throws SQLException {
+    private TableMetaData createTableMetaData(final Connection connection, final String catalog, final String schema, final String table) throws SQLException {
         MetaDataLogger.logTableMetaData(catalog, table);
-        return new TableMetaData(ColumnMetaDataLoader.load(connection, catalog, table), Collections.emptyList());
+        return new TableMetaData(ColumnMetaDataLoader.load(connection, catalog, table), IndexMetaDataLoader.load(connection, catalog, schema, table));
     }
     
     @Override
