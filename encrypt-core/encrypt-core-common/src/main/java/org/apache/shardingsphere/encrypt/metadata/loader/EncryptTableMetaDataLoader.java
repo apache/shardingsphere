@@ -22,9 +22,9 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.ConnectionManager;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.TableMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.loader.impl.DefaultTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.table.loader.impl.DefaultTableMetaDataLoader;
 
 import java.sql.SQLException;
 import java.util.Collection;

@@ -22,8 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.sql.parser.api.visitor.ParseTreeVisitorFacade;
-import org.apache.shardingsphere.sql.parser.sql.constant.RuleName;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserConfiguration;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatementType;
@@ -38,13 +37,13 @@ public final class ParseTreeVisitorFactory {
      * New instance of SQL visitor.
      * 
      * @param databaseTypeName name of database type
-     * @param ruleName rule name
+     * @param visitorRule visitor rule
      * @return parse tree visitor
      */
-    public static ParseTreeVisitor newInstance(final String databaseTypeName, final RuleName ruleName) {
+    public static ParseTreeVisitor newInstance(final String databaseTypeName, final VisitorRule visitorRule) {
         for (SQLParserConfiguration each : NewInstanceServiceLoader.newServiceInstances(SQLParserConfiguration.class)) {
             if (each.getDatabaseTypeName().equals(databaseTypeName)) {
-                return createParseTreeVisitor(each, ruleName.getType());
+                return createParseTreeVisitor(each, visitorRule.getType());
             }
         }
         throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseTypeName));
@@ -52,7 +51,7 @@ public final class ParseTreeVisitorFactory {
     
     @SneakyThrows
     private static ParseTreeVisitor createParseTreeVisitor(final SQLParserConfiguration configuration, final SQLStatementType type) {
-        ParseTreeVisitorFacade visitorFacade = configuration.getVisitorFacadeClass().getConstructor().newInstance();
+        SQLVisitorFacade visitorFacade = configuration.getVisitorFacadeClass().getConstructor().newInstance();
         switch (type) {
             case DML:
                 return (ParseTreeVisitor) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();

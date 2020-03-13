@@ -162,3 +162,5 @@ sh bin/stop.sh
 ```
 ## 通过UI界面来操作
 Sharding-scaling与sharding-ui集成了用户界面，所以上述所有任务相关的操作都可以通过UI界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
+
+更多信息请参考sharding-ui项目。

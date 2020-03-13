@@ -322,7 +322,7 @@ diff -r apache-shardingsphere-incubating-${RELEASE.VERSION}-src tag-${RELEASE.VE
 *   Correct year in `NOTICE` file
 *   There is only text files but no binary files
 *   All source files have ASF headers
-*   Codes can be compiled and pass the unit tests (mvn install)
+*   Codes can be compiled and pass the unit tests (./mvnw install)
 *   Check if there is any extra files or folders, empty folders for example
 
 #### Check binary packages
