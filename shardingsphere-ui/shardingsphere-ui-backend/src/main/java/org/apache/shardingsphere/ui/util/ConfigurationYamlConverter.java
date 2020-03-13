@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.ui.util;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
@@ -26,6 +25,8 @@ import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigura
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
@@ -37,8 +38,7 @@ import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
-import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -58,13 +58,7 @@ public final class ConfigurationYamlConverter {
     public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(data);
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
-        return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
-
-            @Override
-            public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
-                return new DataSourceConfigurationYamlSwapper().swap(input);
-            }
-        });
+        return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swap);
     }
 
     /**
