@@ -376,9 +376,7 @@
             <column-definition type="VARCHAR">
                 <column name="column3" />
             </column-definition>
-            <column-position>
-                <column name="column3" />
-            </column-position>
+            <column-position/>
         </add-column>
     </alter-table>
     
@@ -389,7 +387,7 @@
                 <column name="column4" />
             </column-definition>
             <column-position>
-                <column name="column4" />
+                <column name="order_id" />
                 <after-column name="order_id" />
             </column-position>
         </add-column>
@@ -401,34 +399,28 @@
             <column-definition type="VARCHAR">
                 <column name="column5" />
             </column-definition>
+            <column-position/>
+        </add-column>
+        <add-column>
+            <column-definition type="VARCHAR">
+                <column name="column6" />
+            </column-definition>
+            <column-position/>
+        </add-column>
+        <add-column>
+            <column-definition type="VARCHAR">
+                <column name="column7" />
+            </column-definition>
             <column-position>
                 <column name="column5" />
             </column-position>
         </add-column>
         <add-column>
             <column-definition type="VARCHAR">
-                <column name="column6" />
-            </column-definition>
-            <column-position>
-                <column name="column6" />
-            </column-position>
-        </add-column>
-        <add-column>
-            <column-definition type="VARCHAR">
-                <column name="column7" />
-            </column-definition>
-            <column-position>
-                <column name="column7" />
-                <after-column name="column5" />
-            </column-position>
-        </add-column>
-        <add-column>
-            <column-definition type="VARCHAR">
                 <column name="column8" />
             </column-definition>
-            <column-position column-name="column8" after-column="column6">
-                <column name="column8" />
-                <after-column name="column6" />
+            <column-position column-name="column8">
+                <column name="column6" />
             </column-position>
         </add-column>
     </alter-table>
@@ -467,9 +459,7 @@
             <column-definition type="VARCHAR">
                 <column name="status" />
             </column-definition>
-            <column-position>
-                <column />
-            </column-position>
+            <column-position/>
         </modify-column>
     </alter-table>
     
@@ -492,9 +482,7 @@
             <column-definition type="VARCHAR">
                 <column name="status" />
             </column-definition>
-            <column-position>
-                <column />
-            </column-position>
+            <column-position/>
         </modify-column>
         <modify-column>
             <column-definition type="INT">

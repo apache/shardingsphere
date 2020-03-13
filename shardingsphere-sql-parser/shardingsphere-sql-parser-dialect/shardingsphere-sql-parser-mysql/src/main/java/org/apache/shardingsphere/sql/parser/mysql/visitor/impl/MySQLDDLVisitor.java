@@ -334,14 +334,13 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         }
         return null == ctx.columnName() ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName)
                 : new ColumnAfterPositionSegment(
-                        ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName, ((ColumnSegment) visit(ctx.columnName())).getIdentifier().getValue());
+                        ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName);
     }
     
     private ColumnPositionSegment getColumnPositionSegment(final ColumnDefinitionSegment columnDefinition, final ColumnPositionSegment columnPosition) {
         return columnPosition instanceof ColumnFirstPositionSegment
-                ? new ColumnFirstPositionSegment(columnPosition.getStartIndex(), columnPosition.getStopIndex(), columnDefinition.getColumnName())
-                : new ColumnAfterPositionSegment(columnPosition.getStartIndex(), columnPosition.getStopIndex(), columnDefinition.getColumnName(),
-                ((ColumnAfterPositionSegment) columnPosition).getAfterColumnName());
+                ? new ColumnFirstPositionSegment(columnPosition.getStartIndex(), columnPosition.getStopIndex(), columnPosition.getColumnName())
+                : new ColumnAfterPositionSegment(columnPosition.getStartIndex(), columnPosition.getStopIndex(), columnPosition.getColumnName());
     }
     
     @SuppressWarnings("unchecked")
