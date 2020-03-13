@@ -45,7 +45,7 @@ public final class EncryptTableMetaDataDecorator implements TableMetaDataDecorat
     
     @Override
     public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final EncryptRule encryptRule) {
-        return new TableMetaData(getEncryptColumnMetaDataList(tableName, tableMetaData.getColumns().values(), encryptRule), tableMetaData.getIndexes());
+        return new TableMetaData(getEncryptColumnMetaDataList(tableName, tableMetaData.getColumns().values(), encryptRule), tableMetaData.getIndexes().values());
     }
     
     private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final String tableName, final Collection<ColumnMetaData> originalColumnMetaDataList, final EncryptRule encryptRule) {

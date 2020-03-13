@@ -36,6 +36,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyConnectionManager;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
@@ -156,15 +157,17 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaData(final CreateIndexStatement createIndexStatement) {
         if (null != createIndexStatement.getIndex()) {
-            getMetaData().getTables().get(
-                    createIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().add(createIndexStatement.getIndex().getIdentifier().getValue());
+            String indexName = createIndexStatement.getIndex().getIdentifier().getValue();
+            getMetaData().getTables().get(createIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().put(indexName, new IndexMetaData(indexName));
         }
     }
     
     private void refreshTableMetaData(final DropIndexStatement dropIndexStatement) {
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         if (null != dropIndexStatement.getTable()) {
-            getMetaData().getTables().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().removeAll(indexNames);
+            for (String each : indexNames) {
+                getMetaData().getTables().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().remove(each);
+            }
         }
         for (String each : indexNames) {
             if (findLogicTableName(getMetaData().getTables(), each).isPresent()) {
@@ -195,7 +198,7 @@ public final class ShardingSchema extends LogicSchema {
     
     private Optional<String> findLogicTableName(final TableMetas tableMetas, final String logicIndexName) {
         for (String each : tableMetas.getAllTableNames()) {
-            if (tableMetas.get(each).containsIndex(logicIndexName)) {
+            if (tableMetas.get(each).getIndexes().containsKey(logicIndexName)) {
                 return Optional.of(each);
             }
         }

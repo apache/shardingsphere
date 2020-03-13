@@ -24,13 +24,15 @@ import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
+import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
@@ -151,12 +153,10 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                 ? new ShardingGeneratedKeyColumnMetaData(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey()) : columnMetaData;
     }
     
-    private Collection<String> getLogicIndexes(final Connection connection, final String catalog, final String schema, final String actualTableName) throws SQLException {
-        Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, schema, actualTableName, false, false)) {
-            while (resultSet.next()) {
-                getLogicIndex(resultSet.getString(INDEX_NAME), actualTableName).ifPresent(result::add);
-            }
+    private Collection<IndexMetaData> getLogicIndexes(final Connection connection, final String catalog, final String schema, final String actualTableName) throws SQLException {
+        Collection<IndexMetaData> result = new HashSet<>();
+        for (IndexMetaData each : IndexMetaDataLoader.load(connection, catalog, schema, actualTableName)) {
+            getLogicIndex(each.getName(), actualTableName).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
         }
         return result;
     }
