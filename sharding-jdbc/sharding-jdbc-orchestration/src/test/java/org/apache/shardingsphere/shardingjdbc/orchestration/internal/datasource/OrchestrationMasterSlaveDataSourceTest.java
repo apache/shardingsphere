@@ -29,8 +29,6 @@ import java.util.Properties;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
@@ -42,6 +40,8 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSource
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.junit.BeforeClass;
@@ -66,22 +66,22 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put("test_ms_registry_name", getRegistryCenterConfiguration());
         instanceConfigurationMap.put("test_ms_config_name", getConfigCenterConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
-    private static InstanceConfiguration getRegistryCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("ThirdTestRegistryCenter");
+    private static CenterConfiguration getRegistryCenterConfiguration() {
+        CenterConfiguration result = new CenterConfiguration("ThirdTestRegistryCenter");
         result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_ms_registry");
         result.setServerLists("localhost:3181");
         return result;
     }
     
-    private static InstanceConfiguration getConfigCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("ThirdTestConfigCenter");
+    private static CenterConfiguration getConfigCenterConfiguration() {
+        CenterConfiguration result = new CenterConfiguration("ThirdTestConfigCenter");
         result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
         result.setNamespace("test_ms_config");
         result.setServerLists("localhost:3181");

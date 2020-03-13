@@ -32,6 +32,8 @@ import lombok.Setter;
  *     |timestamp|type code|server_id|event_length|end_log_pos|flags  |
  *     |4 bytes  |1 byte   |4 bytes  |4 bytes     |4 bytes    |2 bytes|
  *     +---------+---------+---------+------------+-----------+-------+
+ *
+ *     Refactor by extends {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}.
  * </p>
  */
 @Setter

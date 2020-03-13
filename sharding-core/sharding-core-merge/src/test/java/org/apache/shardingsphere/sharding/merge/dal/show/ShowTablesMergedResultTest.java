@@ -21,9 +21,9 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,12 +42,12 @@ public final class ShowTablesMergedResultTest {
     
     private ShardingRule shardingRule;
     
-    private RelationMetas relationMetas;
+    private TableMetas tableMetas;
     
     @Before
     public void setUp() {
         shardingRule = createShardingRule();
-        relationMetas = createRelationMetas();
+        tableMetas = createTableMetas();
     }
     
     private ShardingRule createShardingRule() {
@@ -57,10 +57,10 @@ public final class ShowTablesMergedResultTest {
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds"));
     }
     
-    private RelationMetas createRelationMetas() {
-        Map<String, RelationMetaData> relationMetaDataMap = new HashMap<>(1, 1);
-        relationMetaDataMap.put("table", new RelationMetaData(Collections.emptyList()));
-        return new RelationMetas(relationMetaDataMap);
+    private TableMetas createTableMetas() {
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        tableMetaDataMap.put("table", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
+        return new TableMetas(tableMetaDataMap);
     }
     
     private QueryResult createQueryResult(final String value) throws SQLException {
@@ -73,25 +73,25 @@ public final class ShowTablesMergedResultTest {
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.emptyList());
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.emptyList());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameInTableRule() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.singletonList(createQueryResult("table_0")));
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult("table_0")));
         assertTrue(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRuleWithDefaultDataSource() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.singletonList(createQueryResult("table")));
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult("table")));
         assertTrue(actual.next());
     }
     
     @Test
     public void assertNextForActualTableNameNotInTableRuleWithoutDefaultDataSource() throws SQLException {
-        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.singletonList(createQueryResult("table_3")));
+        LogicTablesMergedResult actual = new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult("table_3")));
         assertFalse(actual.next());
     }
 }

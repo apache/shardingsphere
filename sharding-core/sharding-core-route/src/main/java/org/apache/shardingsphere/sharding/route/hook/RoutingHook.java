@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.hook;
 
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 
 /**

@@ -21,10 +21,10 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.frontend.DatabaseProtocolFrontendEngineFactory;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.shardingproxy.transport.codec.PacketCodec;
 
 /**
  * Channel initializer.

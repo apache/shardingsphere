@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.internal.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -36,8 +35,6 @@ public final class OrchestrationShardingRule extends ShardingRule {
     
     public OrchestrationShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         super(shardingRuleConfig, dataSourceNames);
-        for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
-            masterSlaveRules.add(new OrchestrationMasterSlaveRule(each));
-        }
+        shardingRuleConfig.getMasterSlaveRuleConfigs().forEach(each -> masterSlaveRules.add(new OrchestrationMasterSlaveRule(each)));
     }
 }

@@ -23,11 +23,11 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
@@ -50,8 +50,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final RelationMetas relationMetas, 
-                                                    final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, 
+                                              final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);
         Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap = new HashMap<>(1024);

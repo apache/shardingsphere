@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.underlying.rewrite.impl;
 
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.underlying.rewrite.sql.impl.DefaultSQLBuilder;
@@ -34,7 +34,7 @@ public final class DefaultSQLBuilderTest {
     
     @Test
     public void assertToSQL() {
-        SQLRewriteContext context = new SQLRewriteContext(mock(RelationMetas.class), mock(SQLStatementContext.class), "SELECT * FROM t_config", Collections.emptyList());
+        SQLRewriteContext context = new SQLRewriteContext(mock(TableMetas.class), mock(SQLStatementContext.class), "SELECT * FROM t_config", Collections.emptyList());
         SQLBuilder sqlBuilderWithoutTokens = new DefaultSQLBuilder(context);
         assertThat(sqlBuilderWithoutTokens.toSQL(), is("SELECT * FROM t_config"));
     }

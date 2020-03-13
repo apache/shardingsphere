@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.internal.registry.listener;
 
 import com.google.common.eventbus.EventBus;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
@@ -35,14 +35,14 @@ public abstract class PostShardingRegistryCenterEventListener implements Shardin
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
-    private final RegistryCenterRepository regCenter;
+    private final RegistryCenterRepository registryCenterRepository;
     
     private final String watchKey;
     
     @Override
     public final void watch(final DataChangedEvent.ChangedType... watchedChangedTypes) {
         final Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
-        regCenter.watch(watchKey, dataChangedEvent -> {
+        registryCenterRepository.watch(watchKey, dataChangedEvent -> {
             if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
                 eventBus.post(createShardingOrchestrationEvent(dataChangedEvent));
             }

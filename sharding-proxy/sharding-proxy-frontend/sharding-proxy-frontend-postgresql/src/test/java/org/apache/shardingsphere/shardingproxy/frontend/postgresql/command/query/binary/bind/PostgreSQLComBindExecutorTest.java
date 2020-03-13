@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.bind;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;

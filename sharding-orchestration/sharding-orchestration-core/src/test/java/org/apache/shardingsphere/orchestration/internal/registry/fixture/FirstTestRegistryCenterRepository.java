@@ -19,9 +19,9 @@ package org.apache.shardingsphere.orchestration.internal.registry.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +34,7 @@ public final class FirstTestRegistryCenterRepository implements RegistryCenterRe
     private Properties properties = new Properties();
     
     @Override
-    public void init(final InstanceConfiguration config) {
+    public void init(final CenterConfiguration config) {
     }
     
     @Override

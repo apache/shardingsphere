@@ -19,14 +19,11 @@ package org.apache.shardingsphere.orchestration.internal.registry;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
 import org.apache.shardingsphere.orchestration.internal.configcenter.ConfigCenterServiceLoader;
 import org.apache.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
@@ -34,6 +31,8 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 import org.apache.shardingsphere.orchestration.internal.registry.state.service.StateService;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.constant.properties.OrchestrationProperties;
 import org.apache.shardingsphere.underlying.common.constant.properties.OrchestrationPropertiesEnum;
 
@@ -65,12 +64,12 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
         Optional<String> registryCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), OrchestrationType.REGISTRY_CENTER.getValue());
         Preconditions.checkArgument(registryCenterName.isPresent(), "Can not find instance configuration with registry center orchestration type.");
-        InstanceConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
+        CenterConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
         registryCenterRepository = new RegistryCenterServiceLoader().load(registryCenterConfiguration);
         stateService = new StateService(registryCenterName.get(), registryCenterRepository);
         Optional<String> configCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), OrchestrationType.CONFIG_CENTER.getValue());
         Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
-        InstanceConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
+        CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
         configCenterRepository = new ConfigCenterServiceLoader().load(configCenterConfiguration);
         isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertiesEnum.OVERWRITE);
         configService = new ConfigurationService(configCenterName.get(), configCenterRepository);
@@ -119,27 +118,12 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         }
     }
     
-    private Optional<String> getInstanceNameByOrchestrationType(final Map<String, InstanceConfiguration> map, final String type) {
-        if (null == map || 0 == map.size() || null == type) {
-            return Optional.empty();
-        }
-        for (Entry<String, InstanceConfiguration> entry : map.entrySet()) {
-            if (contains(entry.getValue().getOrchestrationType(), type)) {
-                return Optional.of(entry.getKey());
-            }
-        }
-        return Optional.empty();
+    private Optional<String> getInstanceNameByOrchestrationType(final Map<String, CenterConfiguration> map, final String type) {
+        return (null == map || null == type) ? Optional.empty() : map.entrySet()
+                .stream().filter(entry -> contains(entry.getValue().getOrchestrationType(), type)).findFirst().map(Map.Entry::getKey);
     }
     
     private boolean contains(final String collection, final String element) {
-        if (Strings.isNullOrEmpty(collection)) {
-            return false;
-        }
-        for (String each : Splitter.on(",").split(collection)) {
-            if (element.equals(each.trim())) {
-                return true;
-            }
-        }
-        return false;
+        return Splitter.on(",").omitEmptyStrings().trimResults().splitToList(collection).stream().anyMatch(each -> element.equals(each.trim()));
     }
 }

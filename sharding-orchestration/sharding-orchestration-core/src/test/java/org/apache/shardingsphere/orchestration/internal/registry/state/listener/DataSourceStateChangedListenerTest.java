@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
@@ -36,11 +36,11 @@ public final class DataSourceStateChangedListenerTest {
     private DataSourceStateChangedListener dataSourceStateChangedListener;
     
     @Mock
-    private RegistryCenterRepository regCenter;
+    private RegistryCenterRepository registryCenterRepository;
     
     @Before
     public void setUp() {
-        dataSourceStateChangedListener = new DataSourceStateChangedListener("test", regCenter);
+        dataSourceStateChangedListener = new DataSourceStateChangedListener("test", registryCenterRepository);
     }
     
     @Test

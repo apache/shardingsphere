@@ -30,6 +30,8 @@ import lombok.Getter;
  *
  *     Checksum in format description event include algorithm information.
  *     https://dev.mysql.com/worklog/task/?id=2540#tabs-2540-4
+ *
+ *     Refactor by extends {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacket}.
  * </p>
  */
 @Getter

@@ -35,8 +35,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeC
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
 import org.apache.shardingsphere.shardingjdbc.merge.JDBCEncryptResultDecoratorEngine;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
@@ -136,7 +136,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             engines.put(encryptRule, new JDBCEncryptResultDecoratorEngine(resultSets.get(0).getMetaData()));
         }
         MergeEntry mergeEntry = new MergeEntry(connection.getRuntimeContext().getDatabaseType(), 
-                connection.getRuntimeContext().getMetaData().getRelationMetas(), connection.getRuntimeContext().getProperties(), engines);
+                connection.getRuntimeContext().getMetaData().getTables(), connection.getRuntimeContext().getProperties(), engines);
         return mergeEntry.process(queryResults, shardingExecutionContext.getSqlStatementContext());
     }
     

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

@@ -46,9 +46,12 @@ import lombok.Setter;
  *     n           rest of the plugin provided data (at least 12 bytes)
  *     1           \0 byte, terminating the second part of a scramble
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket}
  */
 @Setter
 @Getter
+@Deprecated
 public final class HandshakeInitializationPacket extends AbstractPacket {
     
     private short protocolVersion = 0x0a;

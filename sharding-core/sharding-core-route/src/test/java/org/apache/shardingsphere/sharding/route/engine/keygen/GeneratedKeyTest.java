@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

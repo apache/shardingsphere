@@ -19,7 +19,11 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 
 /**
  * Mysql column types.
+ *
+ *
+ * @deprecated Replaced by {@link org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType}
  */
+@Deprecated
 public final class ColumnTypes {
     
     public static final int MYSQL_TYPE_DECIMAL = 0;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.rewrite;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -50,7 +50,7 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, 
                                                      final SQLStatementContext sqlStatementContext, final Map<BaseRule, SQLRewriteContextDecorator> decorators) {
-        SQLRewriteContext result = new SQLRewriteContext(metaData.getRelationMetas(), sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(metaData.getTables(), sqlStatementContext, sql, parameters);
         decorate(decorators, result);
         result.generateSQLTokens();
         return result;

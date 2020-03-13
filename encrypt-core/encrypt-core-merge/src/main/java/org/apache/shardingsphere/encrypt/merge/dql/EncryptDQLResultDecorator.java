@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -36,12 +36,12 @@ public final class EncryptDQLResultDecorator implements ResultDecorator {
     private final boolean queryWithCipherColumn;
     
     @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final TableMetas tableMetas) {
         return new EncryptMergedResult(encryptorMetaData, new TransparentMergedResult(queryResult), queryWithCipherColumn);
     }
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final RelationMetas relationMetas) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final TableMetas tableMetas) {
         return new EncryptMergedResult(encryptorMetaData, mergedResult, queryWithCipherColumn);
     }
 }

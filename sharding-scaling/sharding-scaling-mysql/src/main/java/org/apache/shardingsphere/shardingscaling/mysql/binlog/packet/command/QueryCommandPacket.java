@@ -26,8 +26,11 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * MySQL Query command packet.
+ *
+ * @deprecated Replaced with {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket}
  */
 @Setter
+@Deprecated
 public final class QueryCommandPacket extends AbstractCommandPacket {
     
     private String queryString;

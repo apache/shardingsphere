@@ -28,7 +28,10 @@ import java.util.BitSet;
  * <p>
  *     https://dev.mysql.com/doc/internals/en/describing-packets.html
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload}
  */
+@Deprecated
 public final class DataTypesCodec {
     
     private static final BigInteger MAX_BIG_INTEGER_VALUE = new BigInteger("18446744073709551615");

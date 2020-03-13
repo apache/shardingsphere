@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.memory.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.fixture.TestRule;
 import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryMergedResult;
@@ -41,8 +41,7 @@ public final class TestMemoryMergedResult extends MemoryMergedResult<TestRule> {
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final TestRule rule, 
-                                              final RelationMetas relationMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+    protected List<MemoryQueryResultRow> init(final TestRule rule, final TableMetas tableMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
         memoryQueryResultRow = mock(MemoryQueryResultRow.class);
         return Collections.singletonList(memoryQueryResultRow);
     }

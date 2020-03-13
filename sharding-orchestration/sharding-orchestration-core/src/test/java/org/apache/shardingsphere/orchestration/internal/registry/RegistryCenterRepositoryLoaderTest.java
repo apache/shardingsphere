@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.fixture.SecondTestRegistryCenterRepository;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -29,7 +29,7 @@ public final class RegistryCenterRepositoryLoaderTest {
     
     @Test
     public void assertLoad() {
-        RegistryCenterRepository registryCenterRepository = new RegistryCenterServiceLoader().load(new InstanceConfiguration("SecondTestRegistryCenter"));
+        RegistryCenterRepository registryCenterRepository = new RegistryCenterServiceLoader().load(new CenterConfiguration("SecondTestRegistryCenter"));
         assertThat(registryCenterRepository, instanceOf(SecondTestRegistryCenterRepository.class));
     }
 }

@@ -27,8 +27,11 @@ import io.netty.buffer.ByteBufAllocator;
 
 /**
  * MySQL binlog dump command packet.
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket}
  */
 @Setter
+@Deprecated
 public final class BinlogDumpCommandPacket extends AbstractCommandPacket {
     
     private static final int BINLOG_SEND_ANNOTATE_ROWS_EVENT = 2;

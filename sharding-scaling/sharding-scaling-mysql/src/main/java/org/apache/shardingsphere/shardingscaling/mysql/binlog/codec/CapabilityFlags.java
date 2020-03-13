@@ -24,7 +24,10 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Connection Phase  /  CapabilityFlags Flags
  *     https://dev.mysql.com/doc/internals/en/capability-flags.html#flag-CLIENT_PROTOCOL_41
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag}
  */
+@Deprecated
 public final class CapabilityFlags {
     
     public static final int CLIENT_LONG_PASSWORD = 0x00000001;

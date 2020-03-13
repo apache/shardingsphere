@@ -29,8 +29,11 @@ import io.netty.buffer.ByteBuf;
  *     MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Overview  /  Generic Response Packets  /  EOF_Packet
  *     https://dev.mysql.com/doc/internals/en/packet-EOF_Packet.html
  * </p>
+ *
+ * @deprecated Replace with {@link org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket}
  */
 @Getter
+@Deprecated
 public final class EofPacket extends AbstractPacket {
     
     private short fieldCount;

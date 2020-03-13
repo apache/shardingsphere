@@ -21,23 +21,25 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.shadow.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.core.yaml.representer.processor.ShardingTupleProcessorFactory;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.center.api.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
@@ -45,10 +47,12 @@ import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguratio
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Configuration service.
@@ -60,7 +64,7 @@ public final class ConfigurationService {
     private final ConfigCenterRepository configCenterRepository;
     
     public ConfigurationService(final String name, final ConfigCenterRepository configCenterRepository) {
-        configNode = new ConfigurationNode(name);
+        this.configNode = new ConfigurationNode(name);
         this.configCenterRepository = configCenterRepository;
     }
     
@@ -86,7 +90,8 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
             Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = Maps.transformValues(dataSourceConfigurations, new DataSourceConfigurationYamlSwapper()::swap);
+            Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue())));
             configCenterRepository.persist(configNode.getDataSourcePath(shardingSchemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
         }
     }
@@ -107,6 +112,8 @@ public final class ConfigurationService {
                 persistShardingRuleConfiguration(shardingSchemaName, (ShardingRuleConfiguration) ruleConfig);
             } else if (ruleConfig instanceof EncryptRuleConfiguration) {
                 persistEncryptRuleConfiguration(shardingSchemaName, (EncryptRuleConfiguration) ruleConfig);
+            } else if (ruleConfig instanceof ShadowRuleConfiguration) {
+                persistShadowRuleConfiguration(shardingSchemaName, (ShadowRuleConfiguration) ruleConfig);
             } else {
                 persistMasterSlaveRuleConfiguration(shardingSchemaName, (MasterSlaveRuleConfiguration) ruleConfig);
             }
@@ -135,6 +142,12 @@ public final class ConfigurationService {
         Preconditions.checkState(null != encryptRuleConfiguration && !encryptRuleConfiguration.getEncryptors().isEmpty(),
             "No available encrypt rule configuration in `%s` for orchestration.", shardingSchemaName);
         configCenterRepository.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new EncryptRuleConfigurationYamlSwapper().swap(encryptRuleConfiguration)));
+    }
+    
+    private void persistShadowRuleConfiguration(final String shardingSchemaName, final ShadowRuleConfiguration shadowRuleConfiguration) {
+        Preconditions.checkState(null != shadowRuleConfiguration && !shadowRuleConfiguration.getColumn().isEmpty() && null != shadowRuleConfiguration.getShadowMappings(),
+                "No available shadow rule configuration in `%s` for orchestration.", shardingSchemaName);
+        configCenterRepository.persist(configNode.getRulePath(shardingSchemaName), YamlEngine.marshal(new ShadowRuleConfigurationYamlSwapper().swap(shadowRuleConfiguration)));
     }
     
     private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
@@ -173,7 +186,7 @@ public final class ConfigurationService {
         if (schemaNameList.contains(shardingSchemaName)) {
             return;
         }
-        List<String> newArrayList = Lists.newArrayList(schemaNameList);
+        List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(shardingSchemaName);
         configCenterRepository.persist(configNode.getSchemaPath(), Joiner.on(",").join(newArrayList));
     }
@@ -209,6 +222,16 @@ public final class ConfigurationService {
     }
     
     /**
+     * Judge is shadow rule or not.
+     * @param shardingSchemaName sharding schema name
+     * @return is shadow rule or not
+     */
+    public boolean isShadowRule(final String shardingSchemaName) {
+        return !configCenterRepository.get(configNode.getRulePath(shardingSchemaName)).contains("shadowRule:\n")
+                && configCenterRepository.get(configNode.getRulePath(shardingSchemaName)).contains("shadowMappings:\n");
+    }
+    
+    /**
      * Load data source configurations.
      *
      * @param shardingSchemaName sharding schema name
@@ -218,7 +241,7 @@ public final class ConfigurationService {
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(configCenterRepository.get(configNode.getDataSourcePath(shardingSchemaName)));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
-        return Maps.transformValues(result, new DataSourceConfigurationYamlSwapper()::swap);
+        return result.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue())));
     }
     
     /**
@@ -250,6 +273,16 @@ public final class ConfigurationService {
      */
     public EncryptRuleConfiguration loadEncryptRuleConfiguration(final String shardingSchemaName) {
         return new EncryptRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(configCenterRepository.get(configNode.getRulePath(shardingSchemaName)), YamlEncryptRuleConfiguration.class));
+    }
+    
+    /**
+     * Load shadow rule configuration.
+     *
+     * @param shardingSchemaName sharding schema name
+     * @return shadow rule configuration
+     */
+    public ShadowRuleConfiguration loadShadowRuleConfiguration(final String shardingSchemaName) {
+        return new ShadowRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(configCenterRepository.get(configNode.getRulePath(shardingSchemaName)), YamlShadowRuleConfiguration.class));
     }
     
     /**

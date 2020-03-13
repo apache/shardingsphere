@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.listener;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent.ChangedType;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
 public final class StateChangedListenerManagerTest {
     
     @Mock
-    private RegistryCenterRepository regCenter;
+    private RegistryCenterRepository registryCenterRepository;
     
     @Mock
     private InstanceStateChangedListener instanceStateChangedListener;
@@ -41,7 +41,7 @@ public final class StateChangedListenerManagerTest {
     
     @Test
     public void assertInitListeners() {
-        StateChangedListenerManager actual = new StateChangedListenerManager("test", regCenter);
+        StateChangedListenerManager actual = new StateChangedListenerManager("test", registryCenterRepository);
         FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
         FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();

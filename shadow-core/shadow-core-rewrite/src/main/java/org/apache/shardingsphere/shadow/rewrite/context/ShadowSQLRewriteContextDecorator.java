@@ -32,7 +32,7 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
     
     @Override
     public void decorate(final ShadowRule shadowRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
-        for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getRelationMetas())) {
+        for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getTableMetas())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
             }

@@ -22,10 +22,10 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.rewrite.condition.ShadowConditionEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.type.WhereAvailable;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 
 import java.util.Collections;
 import java.util.Iterator;

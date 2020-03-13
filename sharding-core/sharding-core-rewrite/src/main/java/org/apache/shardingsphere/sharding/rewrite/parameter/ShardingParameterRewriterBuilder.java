@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
+import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
-import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.TableMetasAware;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,10 +43,10 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     private final ShardingRouteContext shardingRouteContext;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final RelationMetas relationMetas) {
+    public Collection<ParameterRewriter> getParameterRewriters(final TableMetas tableMetas) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
-            setUpParameterRewriters(each, relationMetas);
+            setUpParameterRewriters(each, tableMetas);
         }
         return result;
     }
@@ -58,9 +58,9 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final RelationMetas relationMetas) {
-        if (parameterRewriter instanceof RelationMetasAware) {
-            ((RelationMetasAware) parameterRewriter).setRelationMetas(relationMetas);
+    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final TableMetas tableMetas) {
+        if (parameterRewriter instanceof TableMetasAware) {
+            ((TableMetasAware) parameterRewriter).setTableMetas(tableMetas);
         }
         if (parameterRewriter instanceof ShardingRuleAware) {
             ((ShardingRuleAware) parameterRewriter).setShardingRule(shardingRule);

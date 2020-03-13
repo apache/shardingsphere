@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetaData;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,12 +41,12 @@ public final class ShowCreateTableMergedResultTest {
     
     private ShardingRule shardingRule;
     
-    private RelationMetas relationMetas;
+    private TableMetas tableMetas;
     
     @Before
     public void setUp() {
         shardingRule = createShardingRule();
-        relationMetas = createRelationMetas();
+        tableMetas = createTableMetas();
     }
     
     private ShardingRule createShardingRule() {
@@ -56,21 +56,21 @@ public final class ShowCreateTableMergedResultTest {
         return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
     }
     
-    private RelationMetas createRelationMetas() {
-        Map<String, RelationMetaData> relationMetas = new HashMap<>(1, 1);
-        relationMetas.put("table", new RelationMetaData(Collections.emptyList()));
-        return new RelationMetas(relationMetas);
+    private TableMetas createTableMetas() {
+        Map<String, TableMetaData> tableMetas = new HashMap<>(1, 1);
+        tableMetas.put("table", new TableMetaData(Collections.emptyList(), Collections.emptyList()));
+        return new TableMetas(tableMetas);
     }
     
     @Test
     public void assertNextForEmptyQueryResult() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.emptyList());
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.emptyList());
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForTableRuleIsPresent() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), relationMetas, Collections.singletonList(createQueryResult()));
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), tableMetas, Collections.singletonList(createQueryResult()));
         assertTrue(actual.next());
     }
     

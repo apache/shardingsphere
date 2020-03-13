@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.underlying.merge.engine.decorator;
 
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
@@ -34,20 +34,20 @@ public interface ResultDecorator {
      *
      * @param queryResult query result
      * @param sqlStatementContext SQL statement context
-     * @param relationMetas relation metas
+     * @param tableMetas table metas
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult decorate(QueryResult queryResult, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
+    MergedResult decorate(QueryResult queryResult, SQLStatementContext sqlStatementContext, TableMetas tableMetas) throws SQLException;
     
     /**
      * Decorate merged result.
      * 
      * @param mergedResult merged result
      * @param sqlStatementContext SQL statement context
-     * @param relationMetas relation metas
+     * @param tableMetas table metas
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult decorate(MergedResult mergedResult, SQLStatementContext sqlStatementContext, RelationMetas relationMetas) throws SQLException;
+    MergedResult decorate(MergedResult mergedResult, SQLStatementContext sqlStatementContext, TableMetas tableMetas) throws SQLException;
 }

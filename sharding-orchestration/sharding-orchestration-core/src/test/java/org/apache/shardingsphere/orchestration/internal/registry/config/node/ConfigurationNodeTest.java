@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.node;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -63,7 +63,7 @@ public final class ConfigurationNodeTest {
     
     @Test
     public void assertGetAllSchemaConfigPaths() {
-        Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Lists.newArrayList(ShardingConstant.LOGIC_SCHEMA_NAME));
+        Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Arrays.asList(ShardingConstant.LOGIC_SCHEMA_NAME));
         assertThat(actual.size(), is(4));
         assertThat(actual, hasItems("/test/config/schema"));
         assertThat(actual, hasItems("/test/config/schema/logic_db"));

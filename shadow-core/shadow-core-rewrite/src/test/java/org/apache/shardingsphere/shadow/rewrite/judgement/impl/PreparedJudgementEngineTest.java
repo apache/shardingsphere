@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -38,8 +38,8 @@ public final class PreparedJudgementEngineTest {
     
     @Test
     public void isShadowSQL() {
-        RelationMetas relationMetas = mock(RelationMetas.class);
-        when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
+        TableMetas tableMetas = mock(TableMetas.class);
+        when(tableMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
         shadowRuleConfiguration.setColumn("shadow");
         ShadowRule shadowRule = new ShadowRule(shadowRuleConfiguration);
@@ -48,7 +48,7 @@ public final class PreparedJudgementEngineTest {
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, 
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        InsertStatementContext insertStatementContext = new InsertStatementContext(relationMetas, Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(tableMetas, Arrays.asList(1, "Tom", 2, "Jerry", 3, true), insertStatement);
         PreparedJudgementEngine preparedJudgementEngine = new PreparedJudgementEngine(shadowRule, insertStatementContext, Arrays.asList(1, "Tom", true));
         Assert.assertTrue("should be shadow", preparedJudgementEngine.isShadowSQL());
     }

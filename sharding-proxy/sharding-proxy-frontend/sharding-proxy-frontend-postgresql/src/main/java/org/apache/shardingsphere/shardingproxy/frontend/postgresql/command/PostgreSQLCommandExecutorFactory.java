@@ -20,6 +20,11 @@ package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
@@ -30,11 +35,6 @@ import org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.parse.PostgreSQLComParseExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.binary.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.postgresql.command.query.text.PostgreSQLComQueryExecutor;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 
 /**
  * Command executor factory for PostgreSQL.

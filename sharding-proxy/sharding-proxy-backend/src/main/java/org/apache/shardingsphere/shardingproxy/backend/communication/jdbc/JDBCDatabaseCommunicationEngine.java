@@ -38,8 +38,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.EncryptSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.type.TableAvailable;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -141,7 +141,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             engines.put(encryptRule, new ProxyResultDecoratorEngine(((QueryResponse) response).getQueryHeaders()));
         }
         MergeEntry mergeEntry = new MergeEntry(
-                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getRelationMetas(), ShardingProxyContext.getInstance().getProperties(), engines);
+                LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getTables(), ShardingProxyContext.getInstance().getProperties(), engines);
         return mergeEntry.process(queryResults, sqlStatementContext);
     }
     

@@ -20,10 +20,10 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
 
 import java.sql.ResultSetMetaData;

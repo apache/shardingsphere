@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.state.service;
 
-import org.apache.shardingsphere.orchestration.center.api.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,27 +33,27 @@ import static org.mockito.Mockito.verify;
 public final class StateServiceTest {
     
     @Mock
-    private RegistryCenterRepository regCenter;
+    private RegistryCenterRepository registryCenterRepository;
     
     private StateService stateService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        stateService = new StateService("test", regCenter);
-        Field field = stateService.getClass().getDeclaredField("regCenter");
+        stateService = new StateService("test", registryCenterRepository);
+        Field field = stateService.getClass().getDeclaredField("registryCenterRepository");
         field.setAccessible(true);
-        field.set(stateService, regCenter);
+        field.set(stateService, registryCenterRepository);
     }
     
     @Test
     public void assertPersistInstanceOnline() {
         stateService.persistInstanceOnline();
-        verify(regCenter).persistEphemeral(anyString(), anyString());
+        verify(registryCenterRepository).persistEphemeral(anyString(), anyString());
     }
     
     @Test
     public void assertPersistDataSourcesNode() {
         stateService.persistDataSourcesNode();
-        verify(regCenter).persist("/test/state/datasources", "");
+        verify(registryCenterRepository).persist("/test/state/datasources", "");
     }
 }
