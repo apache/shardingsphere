@@ -15,37 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.decimal;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
-import io.netty.buffer.ByteBuf;
+import java.io.Serializable;
+
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
-public final class MySQLDoubleBinlogProtocolValueTest {
+/**
+ * Year type value of MySQL binlog protocol.
+ *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ */
+public final class MySQLYearBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
-    @Mock
-    private MySQLPacketPayload payload;
+    private static final String YEAR_OF_ZERO = "0000";
     
-    @Mock
-    private ByteBuf byteBuf;
-    
-    @Mock
-    private MySQLBinlogColumnDef columnDef;
-    
-    @Test
-    public void assertRead() {
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readDoubleLE()).thenReturn(1.1d);
-        MySQLDoubleBinlogProtocolValue actual = new MySQLDoubleBinlogProtocolValue();
-        assertThat(actual.read(columnDef, payload), is(1.1d));
+    @Override
+    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
+        int result = payload.readInt1();
+        if (0 == result) {
+            return YEAR_OF_ZERO;
+        }
+        return Integer.toString(result + 1900);
     }
 }

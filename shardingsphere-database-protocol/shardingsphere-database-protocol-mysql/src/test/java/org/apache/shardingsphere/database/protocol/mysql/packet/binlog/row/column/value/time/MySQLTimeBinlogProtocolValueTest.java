@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.decimal;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLDoubleBinlogProtocolValueTest {
+public final class MySQLTimeBinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -44,8 +44,14 @@ public final class MySQLDoubleBinlogProtocolValueTest {
     @Test
     public void assertRead() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readDoubleLE()).thenReturn(1.1d);
-        MySQLDoubleBinlogProtocolValue actual = new MySQLDoubleBinlogProtocolValue();
-        assertThat(actual.read(columnDef, payload), is(1.1d));
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(16 * 10000 + 59 * 100 + 59);
+        assertThat(new MySQLTimeBinlogProtocolValue().read(columnDef, payload), is("16:59:59"));
+    }
+    
+    @Test
+    public void assertReadNullTime() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(0);
+        assertThat(new MySQLTimeBinlogProtocolValue().read(columnDef, payload), is("00:00:00"));
     }
 }

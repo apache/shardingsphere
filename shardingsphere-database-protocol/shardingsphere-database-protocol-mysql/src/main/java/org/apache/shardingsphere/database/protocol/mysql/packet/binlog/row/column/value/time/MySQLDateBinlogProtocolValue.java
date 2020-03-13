@@ -15,37 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.decimal;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
-import io.netty.buffer.ByteBuf;
+import java.io.Serializable;
+
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
-public final class MySQLDoubleBinlogProtocolValueTest {
+/**
+ * Date type value of MySQL binlog protocol.
+ *
+ * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ */
+public final class MySQLDateBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
-    @Mock
-    private MySQLPacketPayload payload;
+    private static final String ZERO_OF_DATE = "0000-00-00";
     
-    @Mock
-    private ByteBuf byteBuf;
-    
-    @Mock
-    private MySQLBinlogColumnDef columnDef;
-    
-    @Test
-    public void assertRead() {
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readDoubleLE()).thenReturn(1.1d);
-        MySQLDoubleBinlogProtocolValue actual = new MySQLDoubleBinlogProtocolValue();
-        assertThat(actual.read(columnDef, payload), is(1.1d));
+    @Override
+    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
+        int date = payload.getByteBuf().readUnsignedMediumLE();
+        if (0 == date) {
+            return ZERO_OF_DATE;
+        }
+        return String.format("%d-%02d-%02d", date / 16 / 32, date / 32 % 16, date % 32);
     }
 }

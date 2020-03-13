@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.decimal;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
-import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
@@ -30,22 +29,23 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLDoubleBinlogProtocolValueTest {
+public final class MySQLYearBinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
-    
-    @Mock
-    private ByteBuf byteBuf;
     
     @Mock
     private MySQLBinlogColumnDef columnDef;
     
     @Test
     public void assertRead() {
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readDoubleLE()).thenReturn(1.1d);
-        MySQLDoubleBinlogProtocolValue actual = new MySQLDoubleBinlogProtocolValue();
-        assertThat(actual.read(columnDef, payload), is(1.1d));
+        when(payload.readInt1()).thenReturn(1);
+        assertThat(new MySQLYearBinlogProtocolValue().read(columnDef, payload), is("1901"));
+    }
+    
+    @Test
+    public void assertReadNullYear() {
+        when(payload.readInt1()).thenReturn(0);
+        assertThat(new MySQLYearBinlogProtocolValue().read(columnDef, payload), is("0000"));
     }
 }
