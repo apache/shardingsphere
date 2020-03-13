@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value;
 
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serializable;
 
 /**
- * Column definition.
+ * MySQL binlog protocol column value.
  *
- * @deprecated Replaced with {@link MySQLBinlogColumnDef}
+ * <p>
+ *     There are no detail documents about the value in row-based replication protocol.
+ *     And many types of value protocol are different with {@link MySQLBinaryProtocolValue}
+ * </p>
  */
-@Setter
-@Getter
-@Deprecated
-public final class ColumnDef {
+public interface MySQLBinlogProtocolValue {
     
-    private int type;
-    
-    private int meta;
+    /**
+     * Read column value from binlog protocol.
+     *
+     * @param columnDef column definition from TABLE_MAP_EVENT
+     * @param payload payload operation for MySQL binlog packet
+     * @return column value
+     */
+    Serializable read(MySQLBinlogColumnDef columnDef, MySQLPacketPayload payload);
 }

@@ -85,7 +85,10 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertReadInt6() {
-        assertThat(new MySQLPacketPayload(byteBuf).readInt6(), is(0));
+        when(byteBuf.readByte()).thenReturn((byte) 0x01, (byte) 0x00);
+        assertThat(new MySQLPacketPayload(byteBuf).readInt6(), is(1L));
+        when(byteBuf.readByte()).thenReturn((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x80);
+        assertThat(new MySQLPacketPayload(byteBuf).readInt6(), is(0x800000000000L));
     }
     
     @Test

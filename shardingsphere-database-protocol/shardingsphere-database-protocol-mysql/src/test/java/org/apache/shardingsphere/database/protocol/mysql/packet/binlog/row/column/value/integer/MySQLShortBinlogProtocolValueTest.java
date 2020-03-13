@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.integer;
 
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import lombok.Getter;
-import lombok.Setter;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
-/**
- * Column definition.
- *
- * @deprecated Replaced with {@link MySQLBinlogColumnDef}
- */
-@Setter
-@Getter
-@Deprecated
-public final class ColumnDef {
+@RunWith(MockitoJUnitRunner.class)
+public final class MySQLShortBinlogProtocolValueTest {
     
-    private int type;
+    @Mock
+    private MySQLPacketPayload payload;
     
-    private int meta;
+    @Mock
+    private MySQLBinlogColumnDef columnDef;
+    
+    @Test
+    public void assertRead() {
+        when(payload.readInt2()).thenReturn(1);
+        MySQLShortBinlogProtocolValue actual = new MySQLShortBinlogProtocolValue();
+        assertThat(actual.read(columnDef, payload), is(1));
+    }
 }
