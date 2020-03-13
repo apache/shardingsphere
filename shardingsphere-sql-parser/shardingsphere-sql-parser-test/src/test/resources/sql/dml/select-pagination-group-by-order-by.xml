@@ -52,12 +52,12 @@
             </and-predicate>
         </where>
         <group-by>
-            <column-item name="item_id">
+            <column-item name="item_id" start-index="171" stop-index="179" literal-start-index="172" literal-stop-index="180">
                 <owner name="i" start-index="171" stop-index="171" literal-start-index="172" literal-stop-index="172" />
             </column-item>
         </group-by>
         <order-by>
-            <column-item name="item_id" order-direction="DESC">
+            <column-item name="item_id" order-direction="DESC" start-index="190" stop-index="198" literal-start-index="191" literal-stop-index="199">
                 <owner name="i" start-index="190" stop-index="190" literal-start-index="191" literal-stop-index="191" />
             </column-item>
         </order-by>
@@ -102,12 +102,12 @@
             </and-predicate>
         </where>
         <group-by>
-            <column-item name="user_id">
+            <column-item name="user_id" start-index="171" stop-index="179" literal-start-index="172" literal-stop-index="180">
                 <owner name="i" start-index="171" stop-index="171" literal-start-index="172" literal-stop-index="172" />
             </column-item>
         </group-by>
         <order-by>
-            <column-item name="item_id" order-direction="DESC">
+            <column-item name="item_id" order-direction="DESC" start-index="190" stop-index="198" literal-start-index="191" literal-stop-index="199">
                 <owner name="i" start-index="190" stop-index="190" literal-start-index="191" literal-stop-index="191" />
             </column-item>
         </order-by>

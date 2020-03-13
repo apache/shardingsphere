@@ -53,7 +53,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC">
+            <column-item name="item_id" order-direction="DESC" start-index="165" stop-index="173" literal-start-index="166" literal-stop-index="174">
                 <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
             </column-item>
         </order-by>
@@ -97,7 +97,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC">
+            <column-item name="item_id" order-direction="DESC" start-index="165" stop-index="173" literal-start-index="166" literal-stop-index="174">
                 <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
             </column-item>
         </order-by>
@@ -141,7 +141,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC">
+            <column-item name="item_id" order-direction="DESC" start-index="173" stop-index="181" literal-start-index="174" literal-stop-index="182">
                 <owner name="i" start-index="173" stop-index="173" literal-start-index="174" literal-stop-index="174" />
             </column-item>
         </order-by>
@@ -186,7 +186,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC">
+            <column-item name="item_id" order-direction="DESC" start-index="173" stop-index="181" literal-start-index="174" literal-stop-index="182">
                 <owner name="i" start-index="173" stop-index="173" literal-start-index="174" literal-stop-index="174" />
             </column-item>
         </order-by>
@@ -286,7 +286,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC">
+            <column-item name="item_id" order-direction="DESC" start-index="165" stop-index="173" literal-start-index="166" literal-stop-index="174">
                 <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
             </column-item>
         </order-by>
@@ -331,7 +331,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC">
+            <column-item name="item_id" order-direction="DESC" start-index="165" stop-index="173" literal-start-index="166" literal-stop-index="174">
                 <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
             </column-item>
         </order-by>
@@ -567,7 +567,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="49" stop-index="56" literal-start-index="50" literal-stop-index="57" />
         </order-by>
         <row-count value="20" parameter-index="0" />
     </select>

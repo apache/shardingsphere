@@ -23,7 +23,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="33" stop-index="42">
                 <owner name="o" start-index="33" stop-index="33" />
             </column-item>
             <index-item index="2" order-direction="DESC" />
@@ -62,7 +62,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="order_id" order-direction="DESC">
+            <column-item name="order_id" order-direction="DESC" start-index="103" stop-index="112">
                 <owner name="o" start-index="103" stop-index="103" />
             </column-item>
             <index-item index="1" />
@@ -77,7 +77,7 @@
             </column-projection>
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="59" stop-index="68">
                 <owner name="o" start-index="59" stop-index="59" />
             </column-item>
         </order-by>
@@ -114,13 +114,13 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="creation_date" order-direction="DESC">
+            <column-item name="creation_date" order-direction="DESC" start-index="103" stop-index="117">
                 <owner name="i" start-index="103" stop-index="103" />
             </column-item>
-            <column-item name="order_id" order-direction="DESC">
+            <column-item name="order_id" order-direction="DESC" start-index="125" stop-index="134">
                 <owner name="o" start-index="125" stop-index="125" />
             </column-item>
-            <column-item name="item_id">
+            <column-item name="item_id" start-index="142" stop-index="150">
                 <owner name="i" start-index="142" stop-index="142" />
             </column-item>
         </order-by>
@@ -135,7 +135,7 @@
             </column-projection>
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="59" stop-index="68">
                 <owner name="o" start-index="59" stop-index="59" />
             </column-item>
         </order-by>
@@ -150,7 +150,7 @@
             </column-projection>
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="59" stop-index="68">
                 <owner name="o" start-index="59" stop-index="59" />
             </column-item>
         </order-by>
@@ -166,7 +166,7 @@
             <column-projection name="order_id" start-index="10" stop-index="17" />
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="48" stop-index="57">
                 <owner name="o" start-index="48" stop-index="48" />
             </column-item>
         </order-by>
@@ -180,7 +180,7 @@
             </shorthand-projection>
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="35" stop-index="44">
                 <owner name="o" start-index="35" stop-index="35" />
             </column-item>
         </order-by>
@@ -192,7 +192,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="33" stop-index="40" />
         </order-by>
     </select>
     
@@ -209,7 +209,7 @@
             </shorthand-projection>
         </projections>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="39" stop-index="54">
                 <owner name="t_order" start-index="39" stop-index="45" />
             </column-item>
         </order-by>
@@ -221,7 +221,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="31" stop-index="38" />
         </order-by>
     </select>
     
@@ -237,7 +237,7 @@
             </shorthand-projection>
         </projections>
         <order-by>
-            <column-item name="item_id" />
+            <column-item name="item_id" start-index="113" stop-index="119" />
         </order-by>
     </select>
 </sql-parser-test-cases>
