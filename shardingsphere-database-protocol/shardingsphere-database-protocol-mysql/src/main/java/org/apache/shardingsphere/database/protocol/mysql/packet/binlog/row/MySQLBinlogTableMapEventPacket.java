@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.AbstractMySQLBinlogEventPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.Collection;

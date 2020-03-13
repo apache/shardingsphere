@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.integer;
+
+import java.io.Serializable;
 
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
-
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Column definition.
- *
- * @deprecated Replaced with {@link MySQLBinlogColumnDef}
+ * Short integer type value of MySQL binlog protocol.
  */
-@Setter
-@Getter
-@Deprecated
-public final class ColumnDef {
+public final class MySQLShortBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
-    private int type;
-    
-    private int meta;
+    @Override
+    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
+        return payload.readInt2();
+    }
 }

@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column;
 
-import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
  * Column definition.
  *
- * @deprecated Replaced with {@link MySQLBinlogColumnDef}
+ * @see <a href="https://dev.mysql.com/doc/internals/en/table-map-event.html">TABLE_MAP_EVENT</a>
  */
+@RequiredArgsConstructor
 @Setter
 @Getter
-@Deprecated
-public final class ColumnDef {
+public final class MySQLBinlogColumnDef {
     
-    private int type;
+    private final MySQLColumnType columnType;
     
-    private int meta;
+    private int columnMeta;
 }

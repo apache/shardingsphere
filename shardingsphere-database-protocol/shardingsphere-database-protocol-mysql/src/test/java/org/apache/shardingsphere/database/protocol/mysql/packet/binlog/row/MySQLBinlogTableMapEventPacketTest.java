@@ -20,11 +20,14 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row;
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import java.util.Collection;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -33,9 +36,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLBinlogTableMapEventPacketTest {

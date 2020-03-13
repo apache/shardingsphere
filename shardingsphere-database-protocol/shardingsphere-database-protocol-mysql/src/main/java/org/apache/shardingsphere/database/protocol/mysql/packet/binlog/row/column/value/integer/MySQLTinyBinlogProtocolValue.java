@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.integer;
 
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
+import java.io.Serializable;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Column definition.
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/table-map-event.html">TABLE_MAP_EVENT</a>
+ * Tiny integer type value of MySQL binlog protocol.
  */
-@RequiredArgsConstructor
-@Setter
-@Getter
-public final class MySQLBinlogColumnDef {
+public final class MySQLTinyBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
-    private final MySQLColumnType columnType;
-    
-    private int columnMeta;
+    @Override
+    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
+        return payload.readInt1();
+    }
 }
