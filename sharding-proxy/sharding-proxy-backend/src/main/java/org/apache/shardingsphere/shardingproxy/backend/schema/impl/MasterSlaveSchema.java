@@ -22,13 +22,13 @@ import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializerEntry;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
+import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.underlying.common.constant.properties.ShardingS
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.init.TableMetaDataInitializer;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.sql.SQLException;
