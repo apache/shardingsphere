@@ -52,15 +52,17 @@ public final class TableMetasLoader {
      * Load table metas.
      *
      * @param dataSource data source
-     * @param catalog catalog name
-     * @param schema schema name
      * @param maxConnectionCount count of max connections permitted to use for this query
      * @return table metas
      * @throws SQLException SQL exception
      */
-    public static TableMetas load(final DataSource dataSource, final String catalog, final String schema, final int maxConnectionCount) throws SQLException {
+    public static TableMetas load(final DataSource dataSource, final int maxConnectionCount) throws SQLException {
+        String catalog;
+        String schema;
         List<String> tableNames;
         try (Connection connection = dataSource.getConnection()) {
+            catalog = connection.getCatalog();
+            schema = connection.getSchema();
             tableNames = loadAllTableNames(connection, catalog, schema);
         }
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
