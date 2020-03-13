@@ -82,7 +82,7 @@ public final class MySQLTime2BinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadNullYear() {
+    public void assertReadNullTime() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMedium()).thenReturn(0x800000);
         assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("00:00:00"));
