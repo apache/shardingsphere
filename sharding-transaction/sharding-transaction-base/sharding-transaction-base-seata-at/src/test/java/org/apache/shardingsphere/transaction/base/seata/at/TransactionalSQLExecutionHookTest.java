@@ -54,15 +54,20 @@ public final class TransactionalSQLExecutionHookTest {
     }
     
     @Test
-    public void assertStartInTrunkThread() {
+    public void assertTrunkThreadExecute() {
         executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, true, shardingExecuteDataMap);
         assertFalse(RootContext.inGlobalTransaction());
+        RootContext.bind("xid");
+        executionHook.finishSuccess();
+        assertTrue(RootContext.inGlobalTransaction());
     }
     
     @Test
-    public void assertStartInChildThread() {
+    public void assertChildThreadExecute() {
         executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false, shardingExecuteDataMap);
         assertTrue(RootContext.inGlobalTransaction());
+        executionHook.finishSuccess();
+        assertFalse(RootContext.inGlobalTransaction());
     }
     
     @Test
