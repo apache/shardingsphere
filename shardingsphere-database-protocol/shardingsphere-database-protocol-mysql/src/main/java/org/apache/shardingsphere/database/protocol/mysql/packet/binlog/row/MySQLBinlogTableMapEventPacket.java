@@ -45,7 +45,7 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
     
     private final int columnCount;
     
-    private final Collection<ColumnDef> columnDefs;
+    private final Collection<MySQLBinlogColumnDef> columnDefs;
     
     private final MySQLBinlogBitmap nullBitMap;
     
@@ -66,13 +66,13 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
     
     private void readColumnDefs(final MySQLPacketPayload payload) {
         for (int i = 0; i < columnCount; i++) {
-            columnDefs.add(new ColumnDef(MySQLColumnType.valueOf(payload.readInt1())));
+            columnDefs.add(new MySQLBinlogColumnDef(MySQLColumnType.valueOf(payload.readInt1())));
         }
     }
     
     private void readColumnMetaDefs(final MySQLPacketPayload payload) {
         payload.readIntLenenc();
-        for (ColumnDef each : columnDefs) {
+        for (MySQLBinlogColumnDef each : columnDefs) {
             each.setColumnMeta(readColumnMetaDef(each.getColumnType(), payload));
         }
     }

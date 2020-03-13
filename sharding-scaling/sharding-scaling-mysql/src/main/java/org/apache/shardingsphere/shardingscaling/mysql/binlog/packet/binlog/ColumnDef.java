@@ -22,9 +22,12 @@ import lombok.Setter;
 
 /**
  * Column definition.
+ *
+ * @deprecated Replaced with {@link org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogColumnDef}
  */
 @Setter
 @Getter
+@Deprecated
 public final class ColumnDef {
     
     private int type;

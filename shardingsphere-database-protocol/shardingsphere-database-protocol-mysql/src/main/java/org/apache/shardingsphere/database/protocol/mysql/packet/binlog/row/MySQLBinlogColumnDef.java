@@ -31,7 +31,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Setter
 @Getter
-public final class ColumnDef {
+public final class MySQLBinlogColumnDef {
     
     private final MySQLColumnType columnType;
     

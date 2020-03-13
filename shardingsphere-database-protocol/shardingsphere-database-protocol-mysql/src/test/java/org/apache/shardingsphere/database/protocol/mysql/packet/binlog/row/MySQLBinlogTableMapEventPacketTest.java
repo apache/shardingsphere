@@ -71,16 +71,16 @@ public final class MySQLBinlogTableMapEventPacketTest {
         assertNullBitmap(actual.getNullBitMap());
     }
     
-    private void assertColumnDefs(final Collection<ColumnDef> columnDefs) {
+    private void assertColumnDefs(final Collection<MySQLBinlogColumnDef> columnDefs) {
         assertThat(columnDefs.size(), is(4));
-        Iterator<ColumnDef> columnDefIterator = columnDefs.iterator();
+        Iterator<MySQLBinlogColumnDef> columnDefIterator = columnDefs.iterator();
         assertColumnDef(columnDefIterator.next(), MySQLColumnType.MYSQL_TYPE_LONGLONG, 0);
         assertColumnDef(columnDefIterator.next(), MySQLColumnType.MYSQL_TYPE_VARCHAR, 255);
         assertColumnDef(columnDefIterator.next(), MySQLColumnType.MYSQL_TYPE_NEWDECIMAL, 10);
         assertColumnDef(columnDefIterator.next(), MySQLColumnType.MYSQL_TYPE_DATETIME2, 11);
     }
     
-    private void assertColumnDef(final ColumnDef actual, final MySQLColumnType columnType, final int columnMeta) {
+    private void assertColumnDef(final MySQLBinlogColumnDef actual, final MySQLColumnType columnType, final int columnMeta) {
         assertThat(actual.getColumnType(), is(columnType));
         assertThat(actual.getColumnMeta(), is(columnMeta));
     }
