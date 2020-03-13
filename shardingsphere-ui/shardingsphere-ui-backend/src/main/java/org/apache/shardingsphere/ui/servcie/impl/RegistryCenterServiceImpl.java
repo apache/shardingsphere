@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.ui.servcie.impl;
 
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.configserver.node.ConfigurationNode;
-import org.apache.shardingsphere.orchestration.core.registrycenter.state.node.StateNode;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
+import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
 import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterConfigService;
@@ -49,19 +49,19 @@ public final class RegistryCenterServiceImpl implements RegistryCenterService {
     }
     
     @Override
-    public ConfigurationNode getActivateConfigurationNode() {
+    public ConfigCenterNode getActivateConfigurationNode() {
         Optional<RegistryCenterConfig> optional = registryCenterConfigService.loadActivated();
         if (optional.isPresent()) {
-            return new ConfigurationNode(optional.get().getOrchestrationName());
+            return new ConfigCenterNode(optional.get().getOrchestrationName());
         }
         throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "No activated registry center!");
     }
     
     @Override
-    public StateNode getActivatedStateNode() {
+    public RegistryCenterNode getActivatedStateNode() {
         Optional<RegistryCenterConfig> optional = registryCenterConfigService.loadActivated();
         if (optional.isPresent()) {
-            return new StateNode(optional.get().getOrchestrationName());
+            return new RegistryCenterNode(optional.get().getOrchestrationName());
         }
         throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "No activated registry center!");
     }
