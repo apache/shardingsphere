@@ -21,12 +21,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Table meta data.
@@ -38,16 +38,24 @@ public final class TableMetaData {
     
     private final Map<String, ColumnMetaData> columns;
     
-    private final Collection<String> indexes;
+    private final Map<String, IndexMetaData> indexes;
     
-    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<String> indexes) {
+    public TableMetaData(final Collection<ColumnMetaData> columnMetaDataList, final Collection<IndexMetaData> indexMetaDataList) {
         columns = getColumns(columnMetaDataList);
-        this.indexes = new CopyOnWriteArraySet<>(indexes);
+        indexes = getIndexes(indexMetaDataList);
     }
     
     private Map<String, ColumnMetaData> getColumns(final Collection<ColumnMetaData> columnMetaDataList) {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(columnMetaDataList.size(), 1);
         for (ColumnMetaData each : columnMetaDataList) {
+            result.put(each.getName().toLowerCase(), each);
+        }
+        return Collections.synchronizedMap(result);
+    }
+    
+    private Map<String, IndexMetaData> getIndexes(final Collection<IndexMetaData> indexMetaDataList) {
+        Map<String, IndexMetaData> result = new LinkedHashMap<>(indexMetaDataList.size(), 1);
+        for (IndexMetaData each : indexMetaDataList) {
             result.put(each.getName().toLowerCase(), each);
         }
         return Collections.synchronizedMap(result);
@@ -60,6 +68,6 @@ public final class TableMetaData {
      * @return contains index or not
      */
     public boolean containsIndex(final String indexName) {
-        return indexes.contains(indexName);
+        return indexes.containsKey(indexName);
     }
 }

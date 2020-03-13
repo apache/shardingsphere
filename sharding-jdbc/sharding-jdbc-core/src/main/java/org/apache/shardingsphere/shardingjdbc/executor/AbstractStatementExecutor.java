@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -31,6 +30,9 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConne
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceMapConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
@@ -46,8 +48,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -70,18 +70,15 @@ import java.util.stream.Collectors;
 /**
  * Abstract statement executor.
  */
-@Getter(AccessLevel.PROTECTED)
+@Getter
 public abstract class AbstractStatementExecutor {
     
     private final DatabaseType databaseType;
     
-    @Getter
     private final int resultSetType;
     
-    @Getter
     private final int resultSetConcurrency;
     
-    @Getter
     private final int resultSetHoldability;
     
     private final ShardingConnection connection;
@@ -92,20 +89,16 @@ public abstract class AbstractStatementExecutor {
     
     private final Collection<Connection> connections = new LinkedList<>();
     
-    @Getter
-    @Setter
-    private SQLStatementContext sqlStatementContext;
-    
-    @Getter
     private final List<List<Object>> parameterSets = new LinkedList<>();
     
-    @Getter
     private final List<Statement> statements = new LinkedList<>();
     
-    @Getter
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     private final Collection<InputGroup<StatementExecuteUnit>> inputGroups = new LinkedList<>();
+    
+    @Setter
+    private SQLStatementContext sqlStatementContext;
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.databaseType = shardingConnection.getRuntimeContext().getDatabaseType();
@@ -210,15 +203,17 @@ public abstract class AbstractStatementExecutor {
         if (null == createIndexStatement.getIndex()) {
             return;
         }
-        runtimeContext.getMetaData().getTables().get(
-                createIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().add(createIndexStatement.getIndex().getIdentifier().getValue());
+        String indexName = createIndexStatement.getIndex().getIdentifier().getValue();
+        runtimeContext.getMetaData().getTables().get(createIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().put(indexName, new IndexMetaData(indexName));
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final DropIndexStatement dropIndexStatement) {
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         TableMetaData tableMetaData = runtimeContext.getMetaData().getTables().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue());
         if (null != dropIndexStatement.getTable()) {
-            tableMetaData.getIndexes().removeAll(indexNames);
+            for (String each : indexNames) {
+                tableMetaData.getIndexes().remove(each);
+            }
         }
         for (String each : indexNames) {
             if (findLogicTableName(runtimeContext.getMetaData().getTables(), each).isPresent()) {

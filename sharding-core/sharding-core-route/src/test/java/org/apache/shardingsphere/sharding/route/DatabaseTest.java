@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.route.fixture.HintShardingAlgorithmFix
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -86,7 +87,7 @@ public final class DatabaseTest {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
+        when(tableMetas.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList(new IndexMetaData("id"), new IndexMetaData("user_id"))));
         when(tableMetas.containsTable("tesT")).thenReturn(true);
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
@@ -108,7 +109,8 @@ public final class DatabaseTest {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
         TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("tbl_pagination")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
+        when(tableMetas.get("tbl_pagination")).thenReturn(
+                new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList(new IndexMetaData("id"), new IndexMetaData("user_id"))));
         when(tableMetas.containsTable("tbl_pagination")).thenReturn(true);
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         when(result.getTables()).thenReturn(tableMetas);

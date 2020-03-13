@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.metadata.table;
+package org.apache.shardingsphere.sql.parser.binder.metadata.index;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
-import org.junit.Test;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import java.util.Collections;
-
-import static org.junit.Assert.assertTrue;
-
-public final class TableMetaDataTest {
+/**
+ * Index meta data.
+ */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class IndexMetaData {
     
-    @Test
-    public void assertContainsIndex() {
-        TableMetaData actual = new TableMetaData(Collections.singletonList(new ColumnMetaData("column_name", "dataType", true)), Collections.singletonList(new IndexMetaData("index_name")));
-        assertTrue(actual.containsIndex("index_name"));
-    }
+    private final String name;
 }
