@@ -26,7 +26,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.seata.core.rpc.netty.MessageCodecHandler;
+import io.seata.core.rpc.netty.v1.ProtocolV1Decoder;
+import io.seata.core.rpc.netty.v1.ProtocolV1Encoder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +75,10 @@ public final class MockSeataServer {
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(final SocketChannel socketChannel) {
-                    socketChannel.pipeline().addLast(new MessageCodecHandler()).addLast(messageHandler);
+                    socketChannel.pipeline()
+                        .addLast(new ProtocolV1Decoder())
+                        .addLast(new ProtocolV1Encoder())
+                        .addLast(messageHandler);
                 }
             });
         ChannelFuture future = bootstrap.bind(port).sync();
