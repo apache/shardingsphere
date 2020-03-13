@@ -60,14 +60,4 @@ public final class TableMetaData {
         }
         return Collections.synchronizedMap(result);
     }
-    
-    /**
-     * Judge contains index or not.
-     *
-     * @param indexName index name
-     * @return contains index or not
-     */
-    public boolean containsIndex(final String indexName) {
-        return indexes.containsKey(indexName);
-    }
 }

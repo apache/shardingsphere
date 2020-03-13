@@ -198,7 +198,7 @@ public final class ShardingSchema extends LogicSchema {
     
     private Optional<String> findLogicTableName(final TableMetas tableMetas, final String logicIndexName) {
         for (String each : tableMetas.getAllTableNames()) {
-            if (tableMetas.get(each).containsIndex(logicIndexName)) {
+            if (tableMetas.get(each).getIndexes().containsKey(logicIndexName)) {
                 return Optional.of(each);
             }
         }
