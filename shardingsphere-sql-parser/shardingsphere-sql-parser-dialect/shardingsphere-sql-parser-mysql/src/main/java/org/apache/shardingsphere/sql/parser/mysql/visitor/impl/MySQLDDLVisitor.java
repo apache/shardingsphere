@@ -228,7 +228,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
         KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
         boolean isPrimaryKey = isPrimaryKey(ctx);
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType.getValue(), isPrimaryKey);
         result.getReferencedTables().addAll(getReferencedTables(ctx));
         return result;
     }
@@ -303,7 +303,7 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitRenameColumnSpecification(final RenameColumnSpecificationContext ctx) {
         return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                ((ColumnSegment) visit(ctx.columnName(0))).getIdentifier().getValue(), ((ColumnSegment) visit(ctx.columnName(1))).getIdentifier().getValue());
+                (ColumnSegment) visit(ctx.columnName(0)), (ColumnSegment) visit(ctx.columnName(1)));
     }
     
     @Override
@@ -328,9 +328,9 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     
     @Override
     public ASTNode visitFirstOrAfterColumn(final FirstOrAfterColumnContext ctx) {
-        String columnName = null;
+        ColumnSegment columnName = null;
         if (null != ctx.columnName()) {
-            columnName = ((ColumnSegment) visit(ctx.columnName())).getQualifiedName();
+            columnName = (ColumnSegment) visit(ctx.columnName());
         }
         return null == ctx.columnName() ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName)
                 : new ColumnAfterPositionSegment(

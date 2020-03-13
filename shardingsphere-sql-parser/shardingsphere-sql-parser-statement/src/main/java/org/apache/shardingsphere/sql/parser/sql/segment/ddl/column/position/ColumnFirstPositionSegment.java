@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position;
 
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+
 /**
  * Column first position segment.
  */
 public final class ColumnFirstPositionSegment extends ColumnPositionSegment {
     
-    public ColumnFirstPositionSegment(final int startIndex, final int stopIndex, final String columnName) {
+    public ColumnFirstPositionSegment(final int startIndex, final int stopIndex, final ColumnSegment columnName) {
         super(startIndex, stopIndex, columnName);
     }
 }
