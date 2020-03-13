@@ -19,13 +19,12 @@ package org.apache.shardingsphere.encrypt.metadata.loader;
 
 import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.impl.DefaultTableMetaDataLoader;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,8 +39,8 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
     
     private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
     
-    public EncryptTableMetaDataLoader(final DataSourceMetas dataSourceMetas, final ConnectionManager connectionManager, final int maxConnectionsSizePerQuery) {
-        defaultTableMetaDataLoader = new DefaultTableMetaDataLoader(dataSourceMetas, connectionManager, maxConnectionsSizePerQuery);
+    public EncryptTableMetaDataLoader(final DataSource dataSource, final int maxConnectionsSizePerQuery) {
+        defaultTableMetaDataLoader = new DefaultTableMetaDataLoader(dataSource, maxConnectionsSizePerQuery);
         encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
     }
     

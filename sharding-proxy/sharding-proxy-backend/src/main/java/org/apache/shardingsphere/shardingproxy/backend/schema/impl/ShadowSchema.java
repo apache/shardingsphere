@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.core.common.event.ShadowRuleChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
-import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyConnectionManager;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
@@ -41,6 +40,7 @@ import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataI
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.impl.DefaultTableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,15 +66,15 @@ public final class ShadowSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSourceMetas).initAll();
+        TableMetas tableMetas = createTableMetaDataInitializerEntry().initAll();
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
-    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas) {
+    private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry() {
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
         ShardingSphereProperties properties = ShardingProxyContext.getInstance().getProperties();
-        tableMetaDataInitializes.put(shadowRule, 
-                new DefaultTableMetaDataLoader(dataSourceMetas, new ProxyConnectionManager(getBackendDataSource()), properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)));
+        DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
+        tableMetaDataInitializes.put(shadowRule, new DefaultTableMetaDataLoader(dataSource, properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)));
         return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     

@@ -52,28 +52,38 @@ public final class TableMetasLoader {
      * Load table metas.
      *
      * @param dataSource data source
+     * @param table table name
+     * @return table metas
+     * @throws SQLException SQL exception
+     */
+    public static TableMetaData load(final DataSource dataSource, final String table) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return new TableMetaData(ColumnMetaDataLoader.load(connection, table), IndexMetaDataLoader.load(connection, table));
+        }
+    }
+    
+    /**
+     * Load table metas.
+     *
+     * @param dataSource data source
      * @param maxConnectionCount count of max connections permitted to use for this query
      * @return table metas
      * @throws SQLException SQL exception
      */
     public static TableMetas load(final DataSource dataSource, final int maxConnectionCount) throws SQLException {
-        String catalog;
-        String schema;
         List<String> tableNames;
         try (Connection connection = dataSource.getConnection()) {
-            catalog = connection.getCatalog();
-            schema = connection.getSchema();
-            tableNames = loadAllTableNames(connection, catalog, schema);
+            tableNames = loadAllTableNames(connection);
         }
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
         if (1 == tableGroups.size()) {
-            return new TableMetas(load(dataSource.getConnection(), tableGroups.get(0), catalog, schema));
+            return new TableMetas(load(dataSource.getConnection(), tableGroups.get(0)));
         }
         Map<String, TableMetaData> result = new ConcurrentHashMap<>(tableNames.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(maxConnectionCount);
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (List<String> each : tableGroups) {
-            futures.add(executorService.submit(() -> load(dataSource.getConnection(), each, catalog, schema)));
+            futures.add(executorService.submit(() -> load(dataSource.getConnection(), each)));
         }
         for (Future<Map<String, TableMetaData>> each : futures) {
             try {
@@ -89,20 +99,20 @@ public final class TableMetasLoader {
         return new TableMetas(result);
     }
     
-    private static Map<String, TableMetaData> load(final Connection connection, final Collection<String> tables, final String catalog, final String schema) throws SQLException {
+    private static Map<String, TableMetaData> load(final Connection connection, final Collection<String> tables) throws SQLException {
         try (Connection con = connection) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tables) {
-                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, catalog, each), IndexMetaDataLoader.load(con, catalog, schema, each)));
+                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each), IndexMetaDataLoader.load(con, each)));
             }
             return result;
         }
         
     }
     
-    private static List<String> loadAllTableNames(final Connection connection, final String catalog, final String schema) throws SQLException {
+    private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, schema, null, new String[]{TABLE_TYPE})) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table)) {

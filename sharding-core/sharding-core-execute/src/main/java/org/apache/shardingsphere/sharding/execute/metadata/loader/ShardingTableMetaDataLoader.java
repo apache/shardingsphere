@@ -128,7 +128,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         String schema = dataSourceMetaData.getSchema();
         MetaDataLogger.logTableMetaData(catalog, schema, actualTableName);
         return isTableExist(connection, catalog, actualTableName)
-                ? new TableMetaData(getColumnMetaDataList(connection, catalog, actualTableName, generateKeyColumnName), getLogicIndexes(connection, catalog, schema, actualTableName))
+                ? new TableMetaData(getColumnMetaDataList(connection, actualTableName, generateKeyColumnName), getLogicIndexes(connection, actualTableName))
                 : new TableMetaData(Collections.emptyList(), Collections.emptySet());
     }
     
@@ -138,9 +138,9 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         }
     }
     
-    private Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName, final String generateKeyColumnName) throws SQLException {
+    private Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName, final String generateKeyColumnName) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : ColumnMetaDataLoader.load(connection, catalog, actualTableName)) {
+        for (ColumnMetaData each : ColumnMetaDataLoader.load(connection, actualTableName)) {
             result.add(filterColumnMetaData(each, generateKeyColumnName));
         }
         return result;
@@ -151,9 +151,9 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                 ? new ShardingGeneratedKeyColumnMetaData(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey()) : columnMetaData;
     }
     
-    private Collection<IndexMetaData> getLogicIndexes(final Connection connection, final String catalog, final String schema, final String actualTableName) throws SQLException {
+    private Collection<IndexMetaData> getLogicIndexes(final Connection connection, final String actualTableName) throws SQLException {
         Collection<IndexMetaData> result = new HashSet<>();
-        for (IndexMetaData each : IndexMetaDataLoader.load(connection, catalog, schema, actualTableName)) {
+        for (IndexMetaData each : IndexMetaDataLoader.load(connection, actualTableName)) {
             getLogicIndex(each.getName(), actualTableName).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
         }
         return result;

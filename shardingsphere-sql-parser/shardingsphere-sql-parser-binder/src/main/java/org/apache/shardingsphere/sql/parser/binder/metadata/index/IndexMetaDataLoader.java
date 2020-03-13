@@ -38,15 +38,13 @@ public final class IndexMetaDataLoader {
      * Load column meta data list.
      * 
      * @param connection connection
-     * @param catalog catalog name
-     * @param schema schema name
      * @param table table name
      * @return index meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<IndexMetaData> load(final Connection connection, final String catalog, final String schema, final String table) throws SQLException {
+    public static Collection<IndexMetaData> load(final Connection connection, final String table) throws SQLException {
         Collection<IndexMetaData> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(catalog, schema, table, false, false)) {
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getSchema(), table, false, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString(INDEX_NAME);
                 result.add(new IndexMetaData(indexName));
