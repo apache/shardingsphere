@@ -368,6 +368,9 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         if (astNode instanceof ParameterMarkerValue) {
             return new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(), ((ParameterMarkerValue) astNode).getValue());
         }
+        if (astNode instanceof SubquerySegment) {
+            return new SubqueryExpressionSegment((SubquerySegment) astNode);
+        }
         if (astNode instanceof OtherLiteralValue) {
             return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText());
         }

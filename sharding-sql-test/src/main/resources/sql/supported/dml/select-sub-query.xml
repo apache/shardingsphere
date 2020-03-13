@@ -21,4 +21,8 @@
 <!--    <sql-case id="select_sub_query_with_multiple_tables" value="SELECT t.* FROM (SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id and o.order_id IN (?, ?)) t ORDER BY t.item_id" db-types="SQLServer,Oracle" />-->
 <!--    <sql-case id="select_sub_query_with_order_by" value="SELECT COUNT(1) as orders_count FROM (SELECT * FROM t_order ORDER BY order_id desc) t" db-types="H2,MySQL,PostgreSQL,Oracle" />-->
 <!--    <sql-case id="select_sub_query_with_group_by" value="SELECT COUNT(1) as order_items_count FROM (SELECT order_id FROM t_order_item GROUP BY order_id) t" db-types="H2,MySQL,PostgreSQL,Oracle" />-->
+<!--    <sql-case id="select_sub_query_with_table" value="SELECT t.* FROM (SELECT * FROM t_order o WHERE o.order_id IN (?, ?)) t ORDER BY t.item_id" />-->
+    <sql-case id="select_with_equal_subquery" value="SELECT * FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE id = 10)" db-types="MySQL" />
+    <sql-case id="select_with_in_subquery" value="SELECT * FROM t_order WHERE user_id in (SELECT user_id FROM t_order_item WHERE id in (10, 11))" db-types="MySQL" />
+    <sql-case id="select_with_between_subquery" value="SELECT * FROM t_order WHERE user_id between (select user_id from t_order_item where order_id = 10) and ?" db-types="MySQL" />
 </sql-cases>
