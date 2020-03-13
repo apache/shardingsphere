@@ -30,9 +30,12 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.ProxyConnectionManager;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.impl.DefaultTableMetaDataLoader;
@@ -69,7 +72,9 @@ public final class ShadowSchema extends LogicSchema {
     
     private TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSourceMetas dataSourceMetas) {
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
-        tableMetaDataInitializes.put(shadowRule, new DefaultTableMetaDataLoader(dataSourceMetas, new ProxyConnectionManager(getBackendDataSource())));
+        ShardingSphereProperties properties = ShardingProxyContext.getInstance().getProperties();
+        tableMetaDataInitializes.put(shadowRule, 
+                new DefaultTableMetaDataLoader(dataSourceMetas, new ProxyConnectionManager(getBackendDataSource()), properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)));
         return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
     

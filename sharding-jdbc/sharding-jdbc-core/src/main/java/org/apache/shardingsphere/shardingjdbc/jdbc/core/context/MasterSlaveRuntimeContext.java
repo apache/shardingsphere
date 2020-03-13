@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceMapConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
@@ -58,7 +59,8 @@ public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeC
     @Override
     protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(1, 1);
-        tableMetaDataInitializes.put(getRule(), new DefaultTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceMapConnectionManager(dataSourceMap)));
+        tableMetaDataInitializes.put(getRule(), new DefaultTableMetaDataLoader(
+                dataSourceMetas, new JDBCDataSourceMapConnectionManager(dataSourceMap), getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)));
         return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
     }
 }

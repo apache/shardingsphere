@@ -51,6 +51,8 @@ public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
     
     private final ConnectionManager connectionManager;
     
+    private final int maxConnectionsSizePerQuery;
+    
     @Override
     public TableMetaData load(final String tableName, final BaseRule rule) throws SQLException {
         String dataSourceName = getDataSourceName();

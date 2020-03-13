@@ -21,6 +21,7 @@ import org.apache.shardingsphere.encrypt.metadata.loader.EncryptTableMetaDataLoa
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
@@ -44,7 +45,8 @@ public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<
     @Override
     protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSource dataSource, final DataSourceMetas dataSourceMetas) {
         Map<BaseRule, TableMetaDataInitializer> initializes = new HashMap<>(1, 1);
-        initializes.put(getRule(), new EncryptTableMetaDataLoader(dataSourceMetas, new JDBCDataSourceConnectionManager(dataSource)));
+        initializes.put(getRule(), new EncryptTableMetaDataLoader(dataSourceMetas, 
+                new JDBCDataSourceConnectionManager(dataSource), getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)));
         return new TableMetaDataInitializerEntry(initializes);
     }
 }

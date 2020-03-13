@@ -40,8 +40,8 @@ public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<Enc
     
     private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
     
-    public EncryptTableMetaDataLoader(final DataSourceMetas dataSourceMetas, final ConnectionManager connectionManager) {
-        defaultTableMetaDataLoader = new DefaultTableMetaDataLoader(dataSourceMetas, connectionManager);
+    public EncryptTableMetaDataLoader(final DataSourceMetas dataSourceMetas, final ConnectionManager connectionManager, final int maxConnectionsSizePerQuery) {
+        defaultTableMetaDataLoader = new DefaultTableMetaDataLoader(dataSourceMetas, connectionManager, maxConnectionsSizePerQuery);
         encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
     }
     

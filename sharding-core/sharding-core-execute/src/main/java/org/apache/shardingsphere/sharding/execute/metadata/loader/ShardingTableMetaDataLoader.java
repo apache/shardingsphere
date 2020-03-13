@@ -60,8 +60,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<ShardingRule> {
     
-    private static final String INDEX_NAME = "INDEX_NAME";
-    
     private final DataSourceMetas dataSourceMetas;
     
     private final ExecutorEngine executorEngine;
@@ -74,7 +72,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     @Override
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orElse(null);
+        String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orElse(null);
         List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule, generateKeyColumnName);
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
