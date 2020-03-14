@@ -31,6 +31,7 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
@@ -133,7 +134,6 @@ public final class SeataATShardingTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
-        assertTrue(ExecutorDataMap.getValue().containsKey("SEATA_TX_XID"));
         assertTrue(seataATShardingTransactionManager.isInTransaction());
         assertResult();
     }
