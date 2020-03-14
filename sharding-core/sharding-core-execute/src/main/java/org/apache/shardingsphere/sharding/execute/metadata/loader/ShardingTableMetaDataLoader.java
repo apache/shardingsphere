@@ -33,11 +33,11 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,13 +60,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<ShardingRule> {
     
-    private static final String INDEX_NAME = "INDEX_NAME";
-    
     private final DataSourceMetas dataSourceMetas;
     
     private final ExecutorEngine executorEngine;
     
-    private final ConnectionManager connectionManager;
+    private final Map<String, DataSource> dataSourceMap;
     
     private final int maxConnectionsSizePerQuery;
     
@@ -74,7 +72,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     @Override
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        final String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orElse(null);
+        String generateKeyColumnName = shardingRule.findGenerateKeyColumnName(logicTableName).orElse(null);
         List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(shardingRule.getTableRule(logicTableName)), shardingRule, generateKeyColumnName);
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
@@ -91,7 +89,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     private Collection<TableMetaData> load(final String dataSourceName, 
                                            final DataSourceMetaData dataSourceMetaData, final Collection<DataNode> dataNodes, final String generateKeyColumnName) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
-        try (Connection connection = connectionManager.getConnection(dataSourceName)) {
+        try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (DataNode each : dataNodes) {
                 result.add(createTableMetaData(connection, dataSourceMetaData, each.getTableName(), generateKeyColumnName));
             }
@@ -130,7 +128,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         String schema = dataSourceMetaData.getSchema();
         MetaDataLogger.logTableMetaData(catalog, schema, actualTableName);
         return isTableExist(connection, catalog, actualTableName)
-                ? new TableMetaData(getColumnMetaDataList(connection, catalog, actualTableName, generateKeyColumnName), getLogicIndexes(connection, catalog, schema, actualTableName))
+                ? new TableMetaData(getColumnMetaDataList(connection, actualTableName, generateKeyColumnName), getLogicIndexes(connection, actualTableName))
                 : new TableMetaData(Collections.emptyList(), Collections.emptySet());
     }
     
@@ -140,9 +138,9 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         }
     }
     
-    private Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName, final String generateKeyColumnName) throws SQLException {
+    private Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName, final String generateKeyColumnName) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : ColumnMetaDataLoader.load(connection, catalog, actualTableName)) {
+        for (ColumnMetaData each : ColumnMetaDataLoader.load(connection, actualTableName)) {
             result.add(filterColumnMetaData(each, generateKeyColumnName));
         }
         return result;
@@ -153,9 +151,9 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
                 ? new ShardingGeneratedKeyColumnMetaData(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey()) : columnMetaData;
     }
     
-    private Collection<IndexMetaData> getLogicIndexes(final Connection connection, final String catalog, final String schema, final String actualTableName) throws SQLException {
+    private Collection<IndexMetaData> getLogicIndexes(final Connection connection, final String actualTableName) throws SQLException {
         Collection<IndexMetaData> result = new HashSet<>();
-        for (IndexMetaData each : IndexMetaDataLoader.load(connection, catalog, schema, actualTableName)) {
+        for (IndexMetaData each : IndexMetaDataLoader.load(connection, actualTableName)) {
             getLogicIndex(each.getName(), actualTableName).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
         }
         return result;
@@ -232,7 +230,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private Collection<String> loadAllTableNames(final String dataSourceName, final String catalog, final String schemaName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
-        try (Connection connection = connectionManager.getConnection(dataSourceName);
+        try (Connection connection = dataSourceMap.get(dataSourceName).getConnection();
              ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
             result.addAll(loadTableName(resultSet));
         }

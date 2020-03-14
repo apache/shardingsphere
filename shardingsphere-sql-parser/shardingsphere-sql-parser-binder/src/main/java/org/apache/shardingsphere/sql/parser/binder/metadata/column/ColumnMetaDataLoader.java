@@ -24,7 +24,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -42,18 +41,14 @@ public final class ColumnMetaDataLoader {
      * Load column meta data list.
      * 
      * @param connection connection
-     * @param catalog catalog name
      * @param table table name
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<ColumnMetaData> load(final Connection connection, final String catalog, final String table) throws SQLException {
-        if (!isTableExist(connection, catalog, table)) {
-            return Collections.emptyList();
-        }
+    public static Collection<ColumnMetaData> load(final Connection connection, final String table) throws SQLException {
         Collection<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = loadPrimaryKeys(connection, catalog, table);
-        try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, table, "%")) {
+        Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 String columnType = resultSet.getString(TYPE_NAME);
@@ -64,15 +59,9 @@ public final class ColumnMetaDataLoader {
         return result;
     }
     
-    private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, table, null)) {
-            return resultSet.next();
-        }
-    }
-    
-    private static Collection<String> loadPrimaryKeys(final Connection connection, final String catalog, final String table) throws SQLException {
+    private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(catalog, null, table)) {
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, table)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString(COLUMN_NAME));
             }

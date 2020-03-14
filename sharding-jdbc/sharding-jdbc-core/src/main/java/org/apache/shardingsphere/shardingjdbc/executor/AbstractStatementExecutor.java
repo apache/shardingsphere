@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.metadata.JDBCDataSourceMapConnectionManager;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -243,8 +242,8 @@ public abstract class AbstractStatementExecutor {
         ShardingRule shardingRule = connection.getRuntimeContext().getRule();
         ShardingSphereProperties properties = connection.getRuntimeContext().getProperties();
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(2, 1);
-        tableMetaDataInitializes.put(shardingRule, new ShardingTableMetaDataLoader(connection.getRuntimeContext().getMetaData().getDataSources(), connection.getRuntimeContext().getExecutorEngine(), 
-                new JDBCDataSourceMapConnectionManager(connection.getDataSourceMap()),
+        tableMetaDataInitializes.put(shardingRule, new ShardingTableMetaDataLoader(
+                connection.getRuntimeContext().getMetaData().getDataSources(), connection.getRuntimeContext().getExecutorEngine(), connection.getDataSourceMap(),
                 properties.<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), properties.<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED)));
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             tableMetaDataInitializes.put(shardingRule.getEncryptRule(), new EncryptTableMetaDataDecorator());

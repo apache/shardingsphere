@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static org.junit.Assert.assertNull;
+
 public final class UnsupportedOperationConnectionTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
     private final List<ShardingConnection> shardingConnections = new ArrayList<>();
@@ -108,29 +110,29 @@ public final class UnsupportedOperationConnectionTest extends AbstractShardingJD
         }
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCatalog() throws SQLException {
+    @Test
+    public void assertGetCatalog() {
         for (ShardingConnection each : shardingConnections) {
-            each.getCatalog();
+            assertNull(each.getCatalog());
         }
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetCatalog() throws SQLException {
+    @Test
+    public void assertSetCatalog() {
         for (ShardingConnection each : shardingConnections) {
             each.setCatalog("");
         }
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetSchema() throws SQLException {
+    @Test
+    public void assertGetSchema() {
         for (ShardingConnection each : shardingConnections) {
-            each.getSchema();
+            assertNull(each.getSchema());
         }
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetSchema() throws SQLException {
+    @Test
+    public void assertSetSchema() {
         for (ShardingConnection each : shardingConnections) {
             each.setSchema("");
         }
