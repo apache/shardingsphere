@@ -32,7 +32,6 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
