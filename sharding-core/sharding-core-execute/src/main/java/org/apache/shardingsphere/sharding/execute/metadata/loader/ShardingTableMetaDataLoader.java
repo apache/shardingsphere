@@ -33,11 +33,11 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.ConnectionManager;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -64,7 +64,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private final ExecutorEngine executorEngine;
     
-    private final ConnectionManager connectionManager;
+    private final Map<String, DataSource> dataSourceMap;
     
     private final int maxConnectionsSizePerQuery;
     
@@ -89,7 +89,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     private Collection<TableMetaData> load(final String dataSourceName, 
                                            final DataSourceMetaData dataSourceMetaData, final Collection<DataNode> dataNodes, final String generateKeyColumnName) throws SQLException {
         Collection<TableMetaData> result = new LinkedList<>();
-        try (Connection connection = connectionManager.getConnection(dataSourceName)) {
+        try (Connection connection = dataSourceMap.get(dataSourceName).getConnection()) {
             for (DataNode each : dataNodes) {
                 result.add(createTableMetaData(connection, dataSourceMetaData, each.getTableName(), generateKeyColumnName));
             }
@@ -230,7 +230,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
     
     private Collection<String> loadAllTableNames(final String dataSourceName, final String catalog, final String schemaName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
-        try (Connection connection = connectionManager.getConnection(dataSourceName);
+        try (Connection connection = dataSourceMap.get(dataSourceName).getConnection();
              ResultSet resultSet = connection.getMetaData().getTables(catalog, schemaName, null, new String[]{"TABLE"})) {
             result.addAll(loadTableName(resultSet));
         }
