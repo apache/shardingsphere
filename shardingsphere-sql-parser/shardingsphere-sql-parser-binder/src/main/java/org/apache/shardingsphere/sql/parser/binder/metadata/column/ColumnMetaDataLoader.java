@@ -24,7 +24,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -47,9 +46,6 @@ public final class ColumnMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Collection<ColumnMetaData> load(final Connection connection, final String table) throws SQLException {
-        if (!isTableExist(connection, table)) {
-            return Collections.emptyList();
-        }
         Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, table, "%")) {
@@ -61,12 +57,6 @@ public final class ColumnMetaDataLoader {
             }
         }
         return result;
-    }
-    
-    private static boolean isTableExist(final Connection connection, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), null, table, null)) {
-            return resultSet.next();
-        }
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
