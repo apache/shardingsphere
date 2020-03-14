@@ -134,7 +134,6 @@ public final class SeataATShardingTransactionManagerTest {
     @Test
     public void assertBegin() {
         seataATShardingTransactionManager.begin();
-        assertTrue(ExecutorDataMap.getValue().containsKey("SEATA_TX_XID"));
         assertTrue(seataATShardingTransactionManager.isInTransaction());
         assertResult();
     }

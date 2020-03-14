@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,9 +58,9 @@ public final class TransactionalSQLExecutionHookTest {
     
     @Test
     public void assertTrunkThreadExecute() {
-        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, true, shardingExecuteDataMap);
-        assertFalse(RootContext.inGlobalTransaction());
         RootContext.bind("xid");
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, true, shardingExecuteDataMap);
+        assertThat(ExecutorDataMap.getValue().get("SEATA_TX_XID"), is(RootContext.getXID()));
         executionHook.finishSuccess();
         assertTrue(RootContext.inGlobalTransaction());
     }
@@ -71,9 +74,10 @@ public final class TransactionalSQLExecutionHookTest {
     }
     
     @Test
-    public void assertOthers() {
+    public void assertChildThreadExecuteFailed() {
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false, shardingExecuteDataMap);
+        assertTrue(RootContext.inGlobalTransaction());
         executionHook.finishFailure(new RuntimeException());
-        executionHook.finishSuccess();
         assertFalse(RootContext.inGlobalTransaction());
     }
 }
