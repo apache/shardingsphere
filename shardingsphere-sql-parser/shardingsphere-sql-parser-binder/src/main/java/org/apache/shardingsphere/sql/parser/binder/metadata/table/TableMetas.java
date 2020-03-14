@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -32,7 +33,10 @@ public final class TableMetas {
     private final Map<String, TableMetaData> tables;
     
     public TableMetas(final Map<String, TableMetaData> tables) {
-        this.tables = new ConcurrentHashMap<>(tables);
+        this.tables = new ConcurrentHashMap<>(tables.size(), 1);
+        for (Entry<String, TableMetaData> entry : tables.entrySet()) {
+            this.tables.put(entry.getKey().toLowerCase(), entry.getValue());
+        }
     }
     
     /**
@@ -42,7 +46,7 @@ public final class TableMetas {
      * @return table mata data
      */
     public TableMetaData get(final String tableName) {
-        return tables.get(tableName);
+        return tables.get(tableName.toLowerCase());
     }
     
     /**
@@ -52,7 +56,7 @@ public final class TableMetas {
      * @param tableMetaData table meta data
      */
     public void put(final String tableName, final TableMetaData tableMetaData) {
-        tables.put(tableName, tableMetaData);
+        tables.put(tableName.toLowerCase(), tableMetaData);
     }
     
     /**
@@ -61,7 +65,7 @@ public final class TableMetas {
      * @param tableName table name
      */
     public void remove(final String tableName) {
-        tables.remove(tableName);
+        tables.remove(tableName.toLowerCase());
     }
     
     /**
@@ -71,7 +75,7 @@ public final class TableMetas {
      * @return contains table from table meta data or not
      */
     public boolean containsTable(final String tableName) {
-        return tables.containsKey(tableName);
+        return tables.containsKey(tableName.toLowerCase());
     }
     
     /**
@@ -82,7 +86,7 @@ public final class TableMetas {
      * @return contains column name or not
      */
     public boolean containsColumn(final String tableName, final String columnName) {
-        return containsTable(tableName) && tables.get(tableName).getColumns().containsKey(columnName.toLowerCase());
+        return containsTable(tableName) && get(tableName).getColumns().containsKey(columnName.toLowerCase());
     }
     
     /**
@@ -92,7 +96,7 @@ public final class TableMetas {
      * @return column names
      */
     public List<String> getAllColumnNames(final String tableName) {
-        return tables.containsKey(tableName) ? new ArrayList<>(tables.get(tableName).getColumns().keySet()) : Collections.emptyList();
+        return containsTable(tableName) ? new ArrayList<>(get(tableName).getColumns().keySet()) : Collections.emptyList();
     }
     
     /**
