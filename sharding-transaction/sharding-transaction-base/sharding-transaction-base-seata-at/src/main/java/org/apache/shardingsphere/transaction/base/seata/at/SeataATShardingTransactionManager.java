@@ -46,6 +46,8 @@ import java.util.Map;
  */
 public final class SeataATShardingTransactionManager implements ShardingTransactionManager {
     
+    private static final String SEATA_TX_XID = "SEATA_TX_XID";
+    
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     private final FileConfiguration configuration = new FileConfiguration("seata.conf");
@@ -79,7 +81,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
         GlobalTransaction globalTransaction = GlobalTransactionContext.getCurrentOrCreate();
         globalTransaction.begin();
         SeataTransactionHolder.set(globalTransaction);
-        ExecutorDataMap.getValue().put(Constant.SEATA_TX_XID, RootContext.getXID());
+        ExecutorDataMap.getValue().put(SEATA_TX_XID, RootContext.getXID());
     }
     
     @Override

@@ -29,13 +29,15 @@ import java.util.Map;
  */
 public final class TransactionalSQLExecutionHook implements SQLExecutionHook {
     
+    private static final String SEATA_TX_XID = "SEATA_TX_XID";
+    
     private boolean seataBranch;
     
     @Override
     public void start(final String dataSourceName, final String sql, final List<Object> parameters,
                       final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
-        if (!isTrunkThread && shardingExecuteDataMap.containsKey(Constant.SEATA_TX_XID) && !RootContext.inGlobalTransaction()) {
-            RootContext.bind((String) shardingExecuteDataMap.get(Constant.SEATA_TX_XID));
+        if (!isTrunkThread && shardingExecuteDataMap.containsKey(SEATA_TX_XID) && !RootContext.inGlobalTransaction()) {
+            RootContext.bind((String) shardingExecuteDataMap.get(SEATA_TX_XID));
             seataBranch = true;
         }
     }
