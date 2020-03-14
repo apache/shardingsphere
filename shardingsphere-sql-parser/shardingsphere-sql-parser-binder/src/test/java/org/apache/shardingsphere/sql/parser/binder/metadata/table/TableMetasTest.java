@@ -35,50 +35,50 @@ public final class TableMetasTest {
     @Test
     public void assertGet() {
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        TableMetas tableMetas = new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData));
-        assertThat(tableMetas.get("tableMetaData"), is(tableMetaData));
+        TableMetas tableMetas = new TableMetas(ImmutableMap.of("tbl", tableMetaData));
+        assertThat(tableMetas.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertPut() {
         TableMetas tableMetas = new TableMetas(Collections.emptyMap());
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        tableMetas.put("tableMetaData", tableMetaData);
-        assertThat(tableMetas.get("tableMetaData"), is(tableMetaData));
+        tableMetas.put("tbl", tableMetaData);
+        assertThat(tableMetas.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertRemove() {
-        TableMetas tableMetas = new TableMetas(ImmutableMap.of("tableMetaData", mock(TableMetaData.class)));
-        tableMetas.remove("tableMetaData");
-        assertNull(tableMetas.get("tableMetaData"));
+        TableMetas tableMetas = new TableMetas(ImmutableMap.of("tbl", mock(TableMetaData.class)));
+        tableMetas.remove("tbl");
+        assertNull(tableMetas.get("tbl"));
     }
     
     @Test
     public void assertContainsTable() {
-        assertTrue(new TableMetas(ImmutableMap.of("tableMetaData", mock(TableMetaData.class))).containsTable("tableMetaData"));
+        assertTrue(new TableMetas(ImmutableMap.of("tbl", mock(TableMetaData.class))).containsTable("tbl"));
     }
     
     @Test
     public void assertContainsColumn() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.emptyList());
-        assertTrue(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).containsColumn("tableMetaData", "name"));
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false)), Collections.emptyList());
+        assertTrue(new TableMetas(ImmutableMap.of("tbl", tableMetaData)).containsColumn("tbl", "col"));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.emptyList());
-        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).getAllColumnNames("tableMetaData"), is(Collections.singletonList("name")));
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false)), Collections.emptyList());
+        assertThat(new TableMetas(ImmutableMap.of("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenNotContainsKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("name", "dataType", false)), Collections.emptyList());
-        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", tableMetaData)).getAllColumnNames("other_tableMetaData"), is(Collections.<String>emptyList()));
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false)), Collections.emptyList());
+        assertThat(new TableMetas(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
     }
     
     @Test
     public void assertGetAllTableNames() {
-        assertThat(new TableMetas(ImmutableMap.of("tableMetaData", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tableMetaData")));
+        assertThat(new TableMetas(ImmutableMap.of("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
     }
 }
