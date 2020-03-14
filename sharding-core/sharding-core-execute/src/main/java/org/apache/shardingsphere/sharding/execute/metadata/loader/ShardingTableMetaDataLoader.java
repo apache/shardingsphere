@@ -127,15 +127,7 @@ public final class ShardingTableMetaDataLoader implements TableMetaDataLoader<Sh
         String catalog = dataSourceMetaData.getCatalog();
         String schema = dataSourceMetaData.getSchema();
         MetaDataLogger.logTableMetaData(catalog, schema, actualTableName);
-        return isTableExist(connection, catalog, actualTableName)
-                ? new TableMetaData(getColumnMetaDataList(connection, actualTableName, generateKeyColumnName), getLogicIndexes(connection, actualTableName))
-                : new TableMetaData(Collections.emptyList(), Collections.emptySet());
-    }
-    
-    private boolean isTableExist(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, actualTableName, null)) {
-            return resultSet.next();
-        }
+        return new TableMetaData(getColumnMetaDataList(connection, actualTableName, generateKeyColumnName), getLogicIndexes(connection, actualTableName));
     }
     
     private Collection<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String actualTableName, final String generateKeyColumnName) throws SQLException {
