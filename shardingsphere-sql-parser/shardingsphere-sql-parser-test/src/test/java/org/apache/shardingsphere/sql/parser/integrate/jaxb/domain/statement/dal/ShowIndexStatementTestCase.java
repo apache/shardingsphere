@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dal
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.schema.ExpectedSchema;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ShowIndexStatementTestCase extends SQLParserTestCase {
 
     @XmlElement
-    private ExpectedTable table;
+    private ExpectedSimpleTable table;
     
     @XmlElement
     private ExpectedSchema schema;

@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected table.
+ * Expected simple table.
  */
 @Getter
 @Setter
-public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedSimpleTable extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlAttribute
     private String name;
