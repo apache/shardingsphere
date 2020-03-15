@@ -54,7 +54,7 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
     
     private ShardingSphereMetaData createMetaData(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSource));
-        TableMetas tableMetas = loadTableMetas(dataSource, dataSourceMetas);
+        TableMetas tableMetas = loadTableMetas(dataSource);
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
@@ -67,5 +67,5 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
         return result;
     }
     
-    protected abstract TableMetas loadTableMetas(DataSource dataSource, DataSourceMetas dataSourceMetas) throws SQLException;
+    protected abstract TableMetas loadTableMetas(DataSource dataSource) throws SQLException;
 }

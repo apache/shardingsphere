@@ -23,7 +23,6 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -39,7 +38,7 @@ public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<
     }
     
     @Override
-    protected TableMetas loadTableMetas(final DataSource dataSource, final DataSourceMetas dataSourceMetas) throws SQLException {
+    protected TableMetas loadTableMetas(final DataSource dataSource) throws SQLException {
         return new EncryptTableMetaDataDecorator().decorate(TableMetasLoader.load(dataSource, getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)), getRule());
     }
 }
