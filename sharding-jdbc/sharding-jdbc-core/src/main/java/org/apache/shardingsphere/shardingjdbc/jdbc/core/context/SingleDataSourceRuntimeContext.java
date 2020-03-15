@@ -19,12 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
@@ -55,7 +54,7 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
     
     private ShardingSphereMetaData createMetaData(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSource));
-        TableMetas tableMetas = createTableMetaDataInitializerEntry(dataSource, dataSourceMetas).initAll();
+        TableMetas tableMetas = loadTableMetas(dataSource, dataSourceMetas);
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
@@ -68,5 +67,5 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
         return result;
     }
     
-    protected abstract TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(DataSource dataSource, DataSourceMetas dataSourceMetas);
+    protected abstract TableMetas loadTableMetas(DataSource dataSource, DataSourceMetas dataSourceMetas) throws SQLException;
 }

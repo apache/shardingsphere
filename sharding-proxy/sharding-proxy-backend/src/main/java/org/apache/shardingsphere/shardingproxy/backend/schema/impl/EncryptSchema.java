@@ -31,7 +31,6 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
@@ -40,8 +39,6 @@ import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourc
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -65,24 +62,14 @@ public final class EncryptSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = decorateEncryptTableMetas(loadRawTableMetas());
+        TableMetas tableMetas = createTableMetas();
         return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
     }
     
-    private TableMetas loadRawTableMetas() throws SQLException {
+    private TableMetas createTableMetas() throws SQLException {
         DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return TableMetasLoader.load(dataSource, maxConnectionsSizePerQuery);
-    }
-    
-    private TableMetas decorateEncryptTableMetas(final TableMetas rawTableMetas) {
-        EncryptTableMetaDataDecorator decorator = new EncryptTableMetaDataDecorator();
-        Collection<String> allTableNames = rawTableMetas.getAllTableNames();
-        Map<String, TableMetaData> result = new HashMap<>(allTableNames.size(), 1);
-        for (String each : allTableNames) {
-            result.put(each, decorator.decorate(rawTableMetas.get(each), each, encryptRule));
-        }
-        return new TableMetas(result);
+        return new EncryptTableMetaDataDecorator().decorate(TableMetasLoader.load(dataSource, maxConnectionsSizePerQuery), encryptRule);
     }
     
     /**
