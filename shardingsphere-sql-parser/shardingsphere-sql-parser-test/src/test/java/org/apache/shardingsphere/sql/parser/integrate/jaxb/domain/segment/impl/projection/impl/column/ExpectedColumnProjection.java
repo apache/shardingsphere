@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedDelimiterSQLSegment;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTableOwner;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.ExpectedProjection;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -37,5 +37,5 @@ public final class ExpectedColumnProjection extends AbstractExpectedDelimiterSQL
     private String alias;
     
     @XmlElement
-    private ExpectedTableOwner owner;
+    private ExpectedSimpleTableOwner owner;
 }

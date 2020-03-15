@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.item.impl;
+package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.item.ExpectedOrderByItem;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedDelimiterSQLSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Expected column order by item.
+ * Expected tables.
  */
 @Getter
 @Setter
-public final class ExpectedColumnOrderByItem extends ExpectedOrderByItem {
+public final class ExpectedTables extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlAttribute
-    private String name;
+    @XmlElement(name = "simple-table")
+    private final Collection<ExpectedSimpleTable> simpleTables = new LinkedList<>();
     
-    @XmlElement
-    private ExpectedSimpleTableOwner owner;
+    @XmlElement(name = "subquery-table")
+    private final Collection<ExpectedSubqueryTable> subqueryTables = new LinkedList<>();
 }

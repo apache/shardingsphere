@@ -24,11 +24,11 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.Abstra
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected table owner.
+ * Expected simple table owner.
  */
 @Getter
 @Setter
-public final class ExpectedTableOwner extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedSimpleTableOwner extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlAttribute
     private String name;
