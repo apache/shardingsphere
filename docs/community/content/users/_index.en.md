@@ -31,6 +31,7 @@ The list here will be shown in the alphabetical order.
 1. BaiXing https://www.baixing.com/
 1. BBGame https://www.bbgameonline.com/
 1. Bilibili https://www.bilibili.com/
+1. Bus Cloud http://www.dtchuxing.com/index.html/
 1. CAAS http://caas.com.cn/
 1. Century Lead http://www.iotlead.com/
 1. CertusNet http://www.certusnet.com.cn/
@@ -61,7 +62,7 @@ The list here will be shown in the alphabetical order.
 1. FFZXNet http://www.ffzxnet.com/
 1. Fotoplace https://www.fotoplace.cc/
 1. GaoJiHealth http://www.gaojihealth.com/
-1. Guangxi Province Territorial Resources Information Center http://z.gxdlr.gov.cn/
+1. Guangxi Province Natural Resources Information Center http://dnr.gxzf.gov.cn/
 1. GuaZi https://www.guazi.com/
 1. Haier Cash https://www.haiercash.com/
 1. HelloGlobal https://www.helloglobal.com/
@@ -91,6 +92,7 @@ The list here will be shown in the alphabetical order.
 1. KingCome http://www.kingcome.cn/
 1. KJT pay https://www.kjtpay.com/
 1. KTJR https://www.ktjr.com/
+1. LianShang Literature http://read.zhulang.com/
 1. Lily&Beauty https://www.lrlz.com/
 1. MaFengWo https://www.mafengwo.cn/
 1. MagicEares https://magicears.com.cn/
