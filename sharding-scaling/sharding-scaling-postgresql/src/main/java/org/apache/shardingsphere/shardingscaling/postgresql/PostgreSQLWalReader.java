@@ -33,9 +33,11 @@ import org.apache.shardingsphere.shardingscaling.postgresql.wal.decode.DecodingP
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.AbstractWalEvent;
 import org.postgresql.PGConnection;
+import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
 
 import java.nio.ByteBuffer;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -47,7 +49,7 @@ public final class PostgreSQLWalReader extends AbstractSyncExecutor implements L
     
     private final RdbmsConfiguration rdbmsConfiguration;
     
-    private final DecodingPlugin decodingPlugin = new TestDecodingPlugin();
+    private DecodingPlugin decodingPlugin;
     
     private final LogicalReplication logicalReplication = new LogicalReplication();
     
@@ -75,6 +77,7 @@ public final class PostgreSQLWalReader extends AbstractSyncExecutor implements L
     public void read(final Channel channel) {
         try {
             PGConnection pgConnection = logicalReplication.createPgConnection((JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration());
+            decodingPlugin = new TestDecodingPlugin(((Connection) pgConnection).unwrap(PgConnection.class).getTimestampUtils());
             PGReplicationStream stream = logicalReplication.createReplicationStream(pgConnection,
                     PostgreSQLLogPositionManager.SLOT_NAME, walPosition.getLogSequenceNumber());
             while (isRunning()) {

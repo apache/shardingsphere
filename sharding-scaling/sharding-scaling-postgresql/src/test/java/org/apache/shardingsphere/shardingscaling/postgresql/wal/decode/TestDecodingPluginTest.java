@@ -33,7 +33,7 @@ public final class TestDecodingPluginTest {
     public void assertDecodeWriteRowEvent() {
         LogSequenceNumber lsn = LogSequenceNumber.valueOf("0/14EFDB8");
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[character varying]:'1 2 3'''".getBytes());
-        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin().decode(data, lsn);
+        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, lsn);
         assertThat(actual.getLogSequenceNumber(), is(lsn));
         assertThat(actual.getTableName(), is("test"));
         assertThat((String) actual.getAfterRow().get(0), is("1 2 3'"));
@@ -43,7 +43,7 @@ public final class TestDecodingPluginTest {
     public void assertDecodeUpdateRowEvent() {
         LogSequenceNumber lsn = LogSequenceNumber.valueOf("0/14EFDB8");
         ByteBuffer data = ByteBuffer.wrap("table public.test: UPDATE: data[character varying]:'1 2 3'''".getBytes());
-        UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin().decode(data, lsn);
+        UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin(null).decode(data, lsn);
         assertThat(actual.getLogSequenceNumber(), is(lsn));
         assertThat(actual.getTableName(), is("test"));
         assertThat((String) actual.getAfterRow().get(0), is("1 2 3'"));
@@ -53,7 +53,7 @@ public final class TestDecodingPluginTest {
     public void assertDecodeDeleteRowEvent() {
         LogSequenceNumber lsn = LogSequenceNumber.valueOf("0/14EFDB8");
         ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes());
-        DeleteRowEvent actual = (DeleteRowEvent) new TestDecodingPlugin().decode(data, lsn);
+        DeleteRowEvent actual = (DeleteRowEvent) new TestDecodingPlugin(null).decode(data, lsn);
         assertThat(actual.getLogSequenceNumber(), is(lsn));
         assertThat(actual.getTableName(), is("test"));
         assertThat((Integer) actual.getPrimaryKeys().get(0), is(1));
@@ -63,7 +63,7 @@ public final class TestDecodingPluginTest {
     public void assertDecodeWriteRowEventWithByteA() {
         LogSequenceNumber lsn = LogSequenceNumber.valueOf("0/14EFDB8");
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[bytea]:'\\xff00ab'".getBytes());
-        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin().decode(data, lsn);
+        WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, lsn);
         assertThat(actual.getLogSequenceNumber(), is(lsn));
         assertThat(actual.getTableName(), is("test"));
         assertThat((byte[]) actual.getAfterRow().get(0), is(new byte[] {(byte) 0xff, (byte) 0, (byte) 0xab}));
