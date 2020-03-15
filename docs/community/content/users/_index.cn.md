@@ -56,9 +56,9 @@ chapter = true
 1. 高济医疗 http://www.gaojihealth.com/ 
 1. 高阳捷迅 http://www.19pay.com.cn/ 
 1. 瓜子二手车 https://www.guazi.com/ 
-1. 公交云 http://www.dtchuxing.com/index.html/
+1. 公交云 http://www.dtchuxing.com/index.html
 1. 光云科技 https://www.raycloud.com/ 
-1. 广西壮族自治区自然资源信息中心 http://dnr.gxzf.gov.cn/
+1. 广西壮族自治区自然资源信息中心 http://dnr.gxzf.gov.cn/ 
 1. 广州理德物联网科技有限公司 http://www.iotlead.com/
 1. 广州码码高信息科技有限公司 http://www.mamagao.cn/
 1. 广州锐森科技 https://www.elelive.net/

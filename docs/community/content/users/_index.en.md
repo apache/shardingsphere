@@ -31,7 +31,7 @@ The list here will be shown in the alphabetical order.
 1. BaiXing https://www.baixing.com/
 1. BBGame https://www.bbgameonline.com/
 1. Bilibili https://www.bilibili.com/
-1. Bus Cloud http://www.dtchuxing.com/index.html/
+1. Bus Cloud http://www.dtchuxing.com/index.html
 1. CAAS http://caas.com.cn/
 1. Century Lead http://www.iotlead.com/
 1. CertusNet http://www.certusnet.com.cn/
