@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.metadata.decorator;
+package org.apache.shardingsphere.sharding.execute.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.metadata.loader;
+package org.apache.shardingsphere.sharding.execute.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.sharding.execute.metadata.decorator.ShardingTableMetaDataDecorator;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
