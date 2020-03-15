@@ -21,8 +21,8 @@ import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaData
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
 import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.impl.DefaultTableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,23 +35,27 @@ import java.util.Map;
  */
 public final class EncryptTableMetaDataLoader implements TableMetaDataLoader<EncryptRule> {
     
-    private final DefaultTableMetaDataLoader defaultTableMetaDataLoader;
+    private final DataSource dataSource;
+    
+    private final int maxConnectionsSizePerQuery;
     
     private final EncryptTableMetaDataDecorator encryptTableMetaDataDecorator;
     
     public EncryptTableMetaDataLoader(final DataSource dataSource, final int maxConnectionsSizePerQuery) {
-        defaultTableMetaDataLoader = new DefaultTableMetaDataLoader(dataSource, maxConnectionsSizePerQuery);
+        this.dataSource = dataSource;
+        this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
         encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
     }
     
     @Override
     public TableMetaData load(final String tableName, final EncryptRule encryptRule) throws SQLException {
-        return encryptTableMetaDataDecorator.decorate(defaultTableMetaDataLoader.load(tableName, encryptRule), tableName, encryptRule);
+        return encryptTableMetaDataDecorator.decorate(TableMetasLoader.load(dataSource, tableName), tableName, encryptRule);
     }
     
     @Override
     public TableMetas loadAll(final EncryptRule encryptRule) throws SQLException {
-        TableMetas tableMetas = defaultTableMetaDataLoader.loadAll(encryptRule);
+        EncryptTableMetaDataDecorator encryptTableMetaDataDecorator = new EncryptTableMetaDataDecorator();
+        TableMetas tableMetas = TableMetasLoader.load(dataSource, maxConnectionsSizePerQuery);
         Collection<String> allTableNames = tableMetas.getAllTableNames();
         Map<String, TableMetaData> result = new HashMap<>(allTableNames.size(), 1);
         for (String each : allTableNames) {
