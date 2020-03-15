@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.execute.metadata;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -39,7 +38,6 @@ import java.util.Optional;
 /**
  * Table meta data decorator for sharding.
  */
-@RequiredArgsConstructor
 public final class ShardingTableMetaDataDecorator implements TableMetaDataDecorator<ShardingRule> {
     
     @Override
