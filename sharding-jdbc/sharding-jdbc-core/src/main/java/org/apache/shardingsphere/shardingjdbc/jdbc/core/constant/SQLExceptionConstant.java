@@ -27,4 +27,8 @@ import lombok.NoArgsConstructor;
 public final class SQLExceptionConstant {
     
     public static final String SQL_STRING_NULL_OR_EMPTY = "SQL String can not be NULL or empty.";
+    
+    public static final String SQL_STATE = "S1002";
+    
+    public static final int SQL_VENDOR_CODE = 0;
 }

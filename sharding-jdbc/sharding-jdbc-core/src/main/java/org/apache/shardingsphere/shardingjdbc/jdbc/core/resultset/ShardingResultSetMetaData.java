@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -92,8 +93,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
         if (sqlStatementContext instanceof SelectStatementContext) {
             List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
             if (column > actualProjections.size()) {
-                // TODO fill correct SQL state
-                throw new SQLException(String.format("Out of index of projection %s", column));
+                throw new SQLException(String.format("Out of index of projection %s", column), SQLExceptionConstant.SQL_STATE, SQLExceptionConstant.SQL_VENDOR_CODE);
             }
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
             if (projection instanceof ColumnProjection) {
