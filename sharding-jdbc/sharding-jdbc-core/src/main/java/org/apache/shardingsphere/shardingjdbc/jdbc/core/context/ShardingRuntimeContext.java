@@ -27,15 +27,11 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -64,13 +60,13 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
     
     @Override
     protected TableMetas loadTableMetas(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) throws SQLException {
-        Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(2, 1);
-        tableMetaDataInitializes.put(getRule(), new ShardingTableMetaDataLoader(dataSourceMetas, getExecutorEngine(), dataSourceMap,
-                getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED)));
+        int maxConnectionsSizePerQuery = getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        boolean isCheckingMetaData = getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
+        TableMetas result = new ShardingTableMetaDataLoader(dataSourceMetas, getExecutorEngine(), dataSourceMap, maxConnectionsSizePerQuery, isCheckingMetaData).loadAll(getRule());
         if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
-            tableMetaDataInitializes.put(getRule().getEncryptRule(), new EncryptTableMetaDataDecorator());
+            result = new EncryptTableMetaDataDecorator().decorate(result, getRule().getEncryptRule());
         }
-        return new TableMetaDataInitializerEntry(tableMetaDataInitializes).initAll();
+        return result;
     }
     
     @Override
