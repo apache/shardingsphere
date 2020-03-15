@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaData
 import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -62,14 +63,14 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
     }
     
     @Override
-    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) {
+    protected TableMetas loadTableMetas(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) throws SQLException {
         Map<BaseRule, TableMetaDataInitializer> tableMetaDataInitializes = new HashMap<>(2, 1);
-        tableMetaDataInitializes.put(getRule(), new ShardingTableMetaDataLoader(dataSourceMetas, getExecutorEngine(), dataSourceMap, 
+        tableMetaDataInitializes.put(getRule(), new ShardingTableMetaDataLoader(dataSourceMetas, getExecutorEngine(), dataSourceMap,
                 getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED)));
         if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
             tableMetaDataInitializes.put(getRule().getEncryptRule(), new EncryptTableMetaDataDecorator());
         }
-        return new TableMetaDataInitializerEntry(tableMetaDataInitializes);
+        return new TableMetaDataInitializerEntry(tableMetaDataInitializes).initAll();
     }
     
     @Override
