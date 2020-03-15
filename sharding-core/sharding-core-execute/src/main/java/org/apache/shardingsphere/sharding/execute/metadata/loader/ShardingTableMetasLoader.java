@@ -23,15 +23,19 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sharding.execute.metadata.decorator.ShardingTableMetaDataDecorator;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Table metas loader for sharding.
@@ -72,6 +76,41 @@ public final class ShardingTableMetasLoader {
         return actualTableMetaDataMap.values().iterator().next();
     }
     
+    /**
+     * Load table metas.
+     *
+     * @return table metas
+     * @throws SQLException SQL exception
+     */
+    public TableMetas load() throws SQLException {
+        Map<String, TableMetaData> result = new HashMap<>();
+        result.putAll(loadShardingTables());
+        result.putAll(loadDefaultTables());
+        return new TableMetas(result);
+    }
+    
+    private Map<String, TableMetaData> loadShardingTables() throws SQLException {
+        Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        long start = System.currentTimeMillis();
+        MetaDataLogger.log("There are {} sharding table(s) will be loaded.", shardingRule.getTableRules().size());
+        for (TableRule each : shardingRule.getTableRules()) {
+            result.put(each.getLogicTable(), load(each.getLogicTable()));
+        }
+        MetaDataLogger.log("Sharding table(s) have been loaded in {} milliseconds.", System.currentTimeMillis() - start);
+        return result;
+    }
+    
+    private Map<String, TableMetaData> loadDefaultTables() throws SQLException {
+        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
+        if (!actualDefaultDataSourceName.isPresent()) {
+            return Collections.emptyMap();
+        }
+        long start = System.currentTimeMillis();
+        TableMetas result = TableMetasLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery);
+        MetaDataLogger.log("Default table(s) have been loaded in {} milliseconds.", System.currentTimeMillis() - start);
+        return result.getTables();
+    }
+    
     // TODO check all meta data for one time
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
@@ -79,7 +118,7 @@ public final class ShardingTableMetasLoader {
         for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
             if (!sample.equals(decorator.decorate(entry.getValue(), logicTableName, shardingRule))) {
                 throw new ShardingSphereException(
-                        "Cannot get uniformed table structure for logic table `%s` and actual table `%s`. The different meta data of actual tables are as follows:\n%s\n%s.", 
+                        "Cannot get uniformed table structure for logic table `%s` and actual table `%s`. The different meta data of actual tables are as follows:\n%s\n%s.",
                         logicTableName, entry.getKey(), sample, entry.getValue());
             }
         }
