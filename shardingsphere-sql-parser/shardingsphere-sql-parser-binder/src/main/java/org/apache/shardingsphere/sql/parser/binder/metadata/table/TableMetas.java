@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Table metas.
  */
+@Getter
 public final class TableMetas {
     
     private final Map<String, TableMetaData> tables;

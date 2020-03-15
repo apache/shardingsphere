@@ -15,35 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table.loader.impl;
+package org.apache.shardingsphere.underlying.common.metadata.table;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
-import org.apache.shardingsphere.underlying.common.metadata.table.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-
 /**
- * Default table meta data loader.
+ * Table meta data decorator.
  */
-@RequiredArgsConstructor
-public final class DefaultTableMetaDataLoader implements TableMetaDataLoader {
+public interface TableMetaDataDecorator<T extends BaseRule> {
     
-    private final DataSource dataSource;
+    /**
+     * Decorate table metas.
+     *
+     * @param tableMetas table metas
+     * @param rule rule
+     * @return decorated table metas
+     */
+    TableMetas decorate(TableMetas tableMetas, T rule);
     
-    private final int maxConnectionsSizePerQuery;
-    
-    @Override
-    public TableMetaData load(final String tableName, final BaseRule rule) throws SQLException {
-        return TableMetasLoader.load(dataSource, tableName);
-    }
-    
-    @Override
-    public TableMetas loadAll(final BaseRule rule) throws SQLException {
-        return TableMetasLoader.load(dataSource, maxConnectionsSizePerQuery);
-    }
+    /**
+     * Decorate table meta data.
+     *
+     * @param tableMetaData table meta data
+     * @param tableName table name
+     * @param rule rule
+     * @return decorated table meta data
+     */
+    TableMetaData decorate(TableMetaData tableMetaData, String tableName, T rule);
 }

@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata.decorator;
+package org.apache.shardingsphere.encrypt.metadata;
 
-import org.apache.shardingsphere.encrypt.metadata.EncryptColumnMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.HashMap;
