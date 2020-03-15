@@ -30,6 +30,7 @@ import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationSha
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
+import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetasLoader;
 import org.apache.shardingsphere.shardingproxy.backend.executor.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -136,12 +137,12 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaData(final CreateTableStatement createTableStatement) throws SQLException {
         String tableName = createTableStatement.getTable().getTableName().getIdentifier().getValue();
-        getMetaData().getTables().put(tableName, loadTableMeta(metaData.getDataSources(), tableName));
+        getMetaData().getTables().put(tableName, loadTableMeta(tableName));
     }
     
     private void refreshTableMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
         String tableName = alterTableStatement.getTable().getTableName().getIdentifier().getValue();
-        getMetaData().getTables().put(tableName, loadTableMeta(metaData.getDataSources(), tableName));
+        getMetaData().getTables().put(tableName, loadTableMeta(tableName));
     }
     
     private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
@@ -182,11 +183,10 @@ public final class ShardingSchema extends LogicSchema {
         return result;
     }
     
-    private TableMetaData loadTableMeta(final DataSourceMetas dataSourceMetas, final String tableName) throws SQLException {
+    private TableMetaData loadTableMeta(final String tableName) throws SQLException {
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
-        TableMetaData result = new ShardingTableMetaDataLoader(dataSourceMetas,
-                BackendExecutorContext.getInstance().getExecutorEngine(), getBackendDataSource().getDataSources(), maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName, shardingRule);
+        TableMetaData result = new ShardingTableMetasLoader(getBackendDataSource().getDataSources(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName);
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
         }

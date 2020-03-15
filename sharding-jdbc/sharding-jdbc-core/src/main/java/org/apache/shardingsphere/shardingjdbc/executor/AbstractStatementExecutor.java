@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.decorator.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetaDataLoader;
+import org.apache.shardingsphere.sharding.execute.metadata.loader.ShardingTableMetasLoader;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
@@ -46,7 +46,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
@@ -179,12 +178,12 @@ public abstract class AbstractStatementExecutor {
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final CreateTableStatement createTableStatement) throws SQLException {
         String tableName = createTableStatement.getTable().getTableName().getIdentifier().getValue();
-        runtimeContext.getMetaData().getTables().put(tableName, loadTableMeta(runtimeContext.getMetaData().getDataSources(), tableName));
+        runtimeContext.getMetaData().getTables().put(tableName, loadTableMeta(tableName));
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final AlterTableStatement alterTableStatement) throws SQLException {
         String tableName = alterTableStatement.getTable().getTableName().getIdentifier().getValue();
-        runtimeContext.getMetaData().getTables().put(tableName, loadTableMeta(runtimeContext.getMetaData().getDataSources(), tableName));
+        runtimeContext.getMetaData().getTables().put(tableName, loadTableMeta(tableName));
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final DropTableStatement dropTableStatement) {
@@ -233,12 +232,11 @@ public abstract class AbstractStatementExecutor {
         return Optional.empty();
     }
     
-    private TableMetaData loadTableMeta(final DataSourceMetas dataSourceMetas, final String tableName) throws SQLException {
+    private TableMetaData loadTableMeta(final String tableName) throws SQLException {
         ShardingRule shardingRule = connection.getRuntimeContext().getRule();
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
-        TableMetaData result = new ShardingTableMetaDataLoader(dataSourceMetas,
-                connection.getRuntimeContext().getExecutorEngine(), connection.getDataSourceMap(), maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName, shardingRule);
+        TableMetaData result = new ShardingTableMetasLoader(connection.getDataSourceMap(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName);
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
         }

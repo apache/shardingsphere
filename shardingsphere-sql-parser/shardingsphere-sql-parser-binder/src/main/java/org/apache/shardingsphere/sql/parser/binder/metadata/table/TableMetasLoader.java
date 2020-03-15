@@ -49,11 +49,11 @@ public final class TableMetasLoader {
     private static final String TABLE_NAME = "TABLE_NAME";
     
     /**
-     * Load table metas.
+     * Load table meta data.
      *
      * @param dataSource data source
      * @param table table name
-     * @return table metas
+     * @return table meta data
      * @throws SQLException SQL exception
      */
     public static TableMetaData load(final DataSource dataSource, final String table) throws SQLException {
