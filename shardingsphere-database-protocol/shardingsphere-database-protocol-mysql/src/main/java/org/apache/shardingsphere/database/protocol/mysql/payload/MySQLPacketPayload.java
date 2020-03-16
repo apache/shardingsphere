@@ -130,9 +130,12 @@ public final class MySQLPacketPayload implements PacketPayload {
      *
      * @return 6 byte fixed length integer
      */
-    public int readInt6() {
-        // TODO
-        return 0;
+    public long readInt6() {
+        long result = 0;
+        for (int i = 0; i < 6; i++) {
+            result |= ((long) (0xff & byteBuf.readByte())) << (8 * i);
+        }
+        return result;
     }
     
     /**

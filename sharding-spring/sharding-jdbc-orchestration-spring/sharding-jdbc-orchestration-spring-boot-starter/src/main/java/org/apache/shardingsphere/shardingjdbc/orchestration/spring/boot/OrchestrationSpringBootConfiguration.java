@@ -30,7 +30,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -172,9 +172,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource dataSource(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME))) {
-            if (shardingOrchestrationFacade.getConfigService().isEncryptRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
+            if (shardingOrchestrationFacade.getConfigCenter().isEncryptRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
                 return new OrchestrationEncryptDataSource(orchestrationConfiguration);
-            } else if (shardingOrchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
+            } else if (shardingOrchestrationFacade.getConfigCenter().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME)) {
                 return new OrchestrationShardingDataSource(orchestrationConfiguration);
             } else {
                 return new OrchestrationMasterSlaveDataSource(orchestrationConfiguration);

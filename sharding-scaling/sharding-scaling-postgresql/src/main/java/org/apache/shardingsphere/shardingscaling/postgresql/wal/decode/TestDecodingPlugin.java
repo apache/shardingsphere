@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.postgresql.wal.decode;
 
+import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.AbstractWalEvent;
@@ -24,20 +25,23 @@ import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.DeleteRowE
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.WriteRowEvent;
+import org.postgresql.jdbc.TimestampUtils;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Test decoding plugin.
  */
+@AllArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
+    
+    private final TimestampUtils timestampUtils;
     
     @Override
     public AbstractWalEvent decode(final ByteBuffer data, final LogSequenceNumber logSequenceNumber) {
@@ -173,11 +177,19 @@ public final class TestDecodingPlugin implements DecodingPlugin {
             case "boolean":
                 return Boolean.parseBoolean(readNextSegment(data));
             case "time without time zone":
-                return Time.valueOf(readNextString(data).substring(0, 7));
+                try {
+                    return timestampUtils.toTime(null, readNextString(data));
+                } catch (SQLException e) {
+                    throw new DecodingException(e);
+                }
             case "date":
                 return Date.valueOf(readNextString(data));
             case "timestamp without time zone":
-                return Timestamp.valueOf(readNextString(data));
+                try {
+                    return timestampUtils.toTimestamp(null, readNextString(data));
+                } catch (SQLException e) {
+                    throw new DecodingException(e);
+                }
             case "bytea":
                 return decodeHex(readNextString(data).substring(2));
             default:

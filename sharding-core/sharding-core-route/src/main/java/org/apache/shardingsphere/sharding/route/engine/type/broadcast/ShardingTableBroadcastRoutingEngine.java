@@ -71,7 +71,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     
     private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
         for (String each : tableMetas.getAllTableNames()) {
-            if (tableMetas.get(each).containsIndex(logicIndexName)) {
+            if (tableMetas.get(each).getIndexes().containsKey(logicIndexName)) {
                 return Optional.of(each);
             }
         }

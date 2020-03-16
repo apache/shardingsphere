@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml.
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 
+import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
@@ -63,7 +64,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getSimpleTableSegments(), expected.getTables());
+        TableAssert.assertIs(assertContext, actual.getSimpleTableSegments(), new LinkedList<>(expected.getTables().getSimpleTables()));
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.ExpectedWhereClause;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -35,7 +35,7 @@ import java.util.List;
 public final class DeleteStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table")
-    private final List<ExpectedTable> tables = new LinkedList<>();
+    private final List<ExpectedSimpleTable> tables = new LinkedList<>();
     
     @XmlElement(name = "where")
     private ExpectedWhereClause whereClause;

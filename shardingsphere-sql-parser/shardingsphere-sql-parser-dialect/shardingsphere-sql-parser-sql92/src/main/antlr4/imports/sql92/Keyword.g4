@@ -535,3 +535,11 @@ DECIMAL
 TYPE
     : T Y P E
     ;
+
+VARCHAR
+    : V A R C H A R
+    ;
+
+FLOAT
+    : F L O A T
+    ;

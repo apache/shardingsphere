@@ -109,7 +109,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
         KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
         boolean isPrimaryKey = isPrimaryKey(ctx);
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getIdentifier().getValue(), dataType.getValue(), isPrimaryKey);
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType.getValue(), isPrimaryKey);
         for (InlineConstraintContext each : ctx.inlineConstraint()) {
             if (null != each.referencesClause()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.referencesClause().tableName()));
@@ -221,7 +221,7 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
         // TODO visit pk and reference table
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column.getQualifiedName(), dataType.getValue(), false);
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType.getValue(), false);
     }
     
     @Override

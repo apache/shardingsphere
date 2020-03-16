@@ -31,6 +31,7 @@ import java.util.TimeZone;
  *
  * <p>
  *     https://dev.mysql.com/doc/refman/5.7/en/date-and-time-types.html
+ *     https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html
  * </p>
  */
 public final class DateAndTimeValueDecoder {

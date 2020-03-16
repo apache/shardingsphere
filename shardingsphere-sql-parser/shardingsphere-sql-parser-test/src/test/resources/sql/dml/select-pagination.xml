@@ -18,8 +18,10 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
-        <table name="t_order" alias="o" start-index="16" stop-index="22" />
-        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -63,8 +65,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
-        <table name="t_order" alias="o" start-index="16" stop-index="22" />
-        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -107,8 +111,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
-        <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
-        <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
+            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -152,8 +158,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_limit_and_offset_keyword" parameters="1, 2, 9, 10, 3, 5">
-        <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
-        <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
+            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -197,8 +205,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
-        <table name="t_order" alias="o" start-index="167" stop-index="173" />
-        <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="167" stop-index="173" />
+            <simple-table name="t_order_item" alias="i" start-index="182" stop-index="193" />
+        </tables>
         <projections start-index="22" stop-index="160">
             <top-projection alias="rownum_" start-index="22" stop-index="72">
                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
@@ -251,8 +261,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
-        <table name="t_order" alias="o" start-index="16" stop-index="22" />
-        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -297,8 +309,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_offset_and_limit_all" parameters="1, 2, 9, 10, 5">
-        <table name="t_order" alias="o" start-index="16" stop-index="22" />
-        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -341,8 +355,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
-        <table name="t_order" alias="o" start-index="167" stop-index="173" />
-        <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="167" stop-index="173" />
+            <simple-table name="t_order_item" alias="i" start-index="182" stop-index="193" />
+        </tables>
         <projections start-index="22" stop-index="160">
             <top-projection alias="rownum_" start-index="22" stop-index="72">
                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
@@ -385,8 +401,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_top_for_greater_than_and_equal" parameters="3, 1, 2, 9, 10, 6">
-        <table name="t_order" alias="o" start-index="167" stop-index="173" />
-        <table name="t_order_item" alias="i" start-index="182" stop-index="193" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="167" stop-index="173" />
+            <simple-table name="t_order_item" alias="i" start-index="182" stop-index="193" />
+        </tables>
         <projections start-index="22" stop-index="160">
             <top-projection alias="rownum_" start-index="22" stop-index="72">
                 <top-value value="3" parameter-index="0" start-index="27" stop-index="27" />
@@ -429,8 +447,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
-        <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
-        <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
+        <tables>
+            <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
+            <simple-table name="t_order_item" alias="i" start-index="167" stop-index="178" />
+        </tables>
         <projections start-index="58" stop-index="139">
             <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
                 <owner name="order0_" start-index="58" stop-index="64" />
@@ -474,8 +494,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 10, 5, 3">
-        <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
-        <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
+        <tables>
+            <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
+            <simple-table name="t_order_item" alias="i" start-index="167" stop-index="178" />
+        </tables>
         <projections start-index="58" stop-index="139">
             <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
                 <owner name="order0_" start-index="58" stop-index="64" />
@@ -512,8 +534,10 @@
     </select>
     
     <select sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
-        <table name="t_order" alias="order0_" start-index="146" stop-index="152" />
-        <table name="t_order_item" alias="i" start-index="167" stop-index="178" />
+        <tables>
+            <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
+            <simple-table name="t_order_item" alias="i" start-index="167" stop-index="178" />
+        </tables>
         <projections start-index="58" stop-index="139">
             <column-projection name="order_id" alias="order_id" start-index="58" stop-index="73">
                 <owner name="order0_" start-index="58" stop-index="64" />
@@ -550,7 +574,9 @@
     </select>
     
     <select sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -573,7 +599,9 @@
     </select>
     
     <select sql-case-id="select_pagination_with_offset_fetch" parameters="20">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>

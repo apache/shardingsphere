@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shardingjdbc.orchestration.util.FirstTestConfigCenterRepository
-org.apache.shardingsphere.shardingjdbc.orchestration.util.SecondTestConfigCenterRepository
-org.apache.shardingsphere.shardingjdbc.orchestration.util.ThirdTestConfigCenterRepository
-org.apache.shardingsphere.shardingjdbc.orchestration.util.FourthTestConfigCenterRepository
+org.apache.shardingsphere.shardingjdbc.orchestration.fixture.FirstTestConfigCenterRepository
+org.apache.shardingsphere.shardingjdbc.orchestration.fixture.SecondTestConfigCenterRepository
+org.apache.shardingsphere.shardingjdbc.orchestration.fixture.ThirdTestConfigCenterRepository
+org.apache.shardingsphere.shardingjdbc.orchestration.fixture.FourthTestConfigCenterRepository

@@ -684,7 +684,11 @@ RAW
     ;
 
 VARCHAR
-    : V A R C H A R [2]?
+    : V A R C H A R
+    ;
+
+VARCHAR2
+    : V A R C H A R [2]
     ;
 
 NVARCHAR2
@@ -694,11 +698,7 @@ NVARCHAR2
 LONG
     : L O N G
     ;
-
-LONG_RAW
-    : L O N G [ ]+ R A W
-    ;
-
+    
 BLOB
     : B L O B
     ;
@@ -763,28 +763,8 @@ UROWID
     : U R O W I D
     ;
 
-TIMESTAMP_WITH_TIME_ZONE
-    : T I M E S T A M P [ ]+ W I T H [ ]+ T I M E [ ]+ Z O N E
-    ;
-
-INTERVAL_YEAR_TO_MONTH
-    : I N T E R V A L [ ]+ Y E A R [ ]+ T O [ ]+ M O N T H
-    ;
-
-INTERVAL_DAY_TO_SECOND
-    : I N T E R V A L [ ]+ D A Y [ ]+ T O [ ]+ S E C O N D
-    ;
-
-TIMESTAMP_WITH_LOCAL_TIME_ZONE
-    : T I M E S T A M P [ ]+ W I T H [ ]+ L O C A L [ ]+ T I M E [ ]+ Z O N E
-    ;
-
 JSON
     : J S O N
-    ;
-
-DOUBLE_PRECISION
-    : D O U B L E [ ]+ P R E C I S I O N
     ;
 
 DEC

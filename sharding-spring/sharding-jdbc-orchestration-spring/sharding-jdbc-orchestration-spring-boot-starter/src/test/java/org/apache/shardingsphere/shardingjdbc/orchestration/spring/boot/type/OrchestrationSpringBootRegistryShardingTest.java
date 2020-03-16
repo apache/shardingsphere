@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrate
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepositoryRepository;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
@@ -59,22 +59,22 @@ public class OrchestrationSpringBootRegistryShardingTest {
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
-        TestCenterRepositoryRepository testCenter = new TestCenterRepositoryRepository();
-        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", "ds: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+        TestCenterRepository testCenter = new TestCenterRepository();
+        testCenter.persist("/demo_spring_boot_ds_center/config/schema/logic_db/datasource", "ds: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: sa\n"
-            + "ds_0: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+            + "ds_0: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
             + "    maxTotal: 16\n"
             + "    password: ''\n"
             + "    username: sa\n"
-            + "ds_1: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
+            + "ds_1: !!org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n"
             + "  properties:\n"
             + "    url: jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL\n"
