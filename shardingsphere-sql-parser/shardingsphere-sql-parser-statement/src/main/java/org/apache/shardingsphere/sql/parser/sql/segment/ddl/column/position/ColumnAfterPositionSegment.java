@@ -26,10 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 @Getter
 public final class ColumnAfterPositionSegment extends ColumnPositionSegment {
     
-    private final String afterColumnName;
-    
-    public ColumnAfterPositionSegment(final int startIndex, final int stopIndex, final ColumnSegment columnName, final String afterColumnName) {
+    public ColumnAfterPositionSegment(final int startIndex, final int stopIndex, final ColumnSegment columnName) {
         super(startIndex, stopIndex, columnName);
-        this.afterColumnName = afterColumnName;
     }
 }
