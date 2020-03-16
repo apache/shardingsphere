@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.metadata.table;
+package org.apache.shardingsphere.sql.parser.binder.metadata.schema;
+
+import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,17 +29,27 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Table metas.
+ * Schema meta data.
  */
-public final class TableMetas {
+@Getter
+public final class SchemaMetaData {
     
     private final Map<String, TableMetaData> tables;
     
-    public TableMetas(final Map<String, TableMetaData> tables) {
+    public SchemaMetaData(final Map<String, TableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
         for (Entry<String, TableMetaData> entry : tables.entrySet()) {
             this.tables.put(entry.getKey().toLowerCase(), entry.getValue());
         }
+    }
+    
+    /**
+     * Get all table names.
+     *
+     * @return all table names
+     */
+    public Collection<String> getAllTableNames() {
+        return tables.keySet();
     }
     
     /**
@@ -97,14 +110,5 @@ public final class TableMetas {
      */
     public List<String> getAllColumnNames(final String tableName) {
         return containsTable(tableName) ? new ArrayList<>(get(tableName).getColumns().keySet()) : Collections.emptyList();
-    }
-    
-    /**
-     * Get all table names.
-     * 
-     * @return all table names
-     */
-    public Collection<String> getAllTableNames() {
-        return tables.keySet();
     }
 }

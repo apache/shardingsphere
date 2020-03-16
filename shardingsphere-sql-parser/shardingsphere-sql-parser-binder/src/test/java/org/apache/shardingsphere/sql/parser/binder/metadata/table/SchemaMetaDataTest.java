@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -30,55 +31,55 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class TableMetasTest {
+public final class SchemaMetaDataTest {
+    
+    @Test
+    public void assertGetAllTableNames() {
+        assertThat(new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
+    }
     
     @Test
     public void assertGet() {
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        TableMetas tableMetas = new TableMetas(ImmutableMap.of("tbl", tableMetaData));
-        assertThat(tableMetas.get("tbl"), is(tableMetaData));
+        SchemaMetaData schemaMetaData = new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
+        assertThat(schemaMetaData.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertPut() {
-        TableMetas tableMetas = new TableMetas(Collections.emptyMap());
+        SchemaMetaData schemaMetaData = new SchemaMetaData(Collections.emptyMap());
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        tableMetas.put("tbl", tableMetaData);
-        assertThat(tableMetas.get("tbl"), is(tableMetaData));
+        schemaMetaData.put("tbl", tableMetaData);
+        assertThat(schemaMetaData.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertRemove() {
-        TableMetas tableMetas = new TableMetas(ImmutableMap.of("tbl", mock(TableMetaData.class)));
-        tableMetas.remove("tbl");
-        assertNull(tableMetas.get("tbl"));
+        SchemaMetaData schemaMetaData = new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class)));
+        schemaMetaData.remove("tbl");
+        assertNull(schemaMetaData.get("tbl"));
     }
     
     @Test
     public void assertContainsTable() {
-        assertTrue(new TableMetas(ImmutableMap.of("tbl", mock(TableMetaData.class))).containsTable("tbl"));
+        assertTrue(new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class))).containsTable("tbl"));
     }
     
     @Test
     public void assertContainsColumn() {
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false)), Collections.emptyList());
-        assertTrue(new TableMetas(ImmutableMap.of("tbl", tableMetaData)).containsColumn("tbl", "col"));
+        assertTrue(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).containsColumn("tbl", "col"));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false)), Collections.emptyList());
-        assertThat(new TableMetas(ImmutableMap.of("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
+        assertThat(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenNotContainsKey() {
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false)), Collections.emptyList());
-        assertThat(new TableMetas(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
-    }
-    
-    @Test
-    public void assertGetAllTableNames() {
-        assertThat(new TableMetas(ImmutableMap.of("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
+        assertThat(new SchemaMetaData(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
     }
 }

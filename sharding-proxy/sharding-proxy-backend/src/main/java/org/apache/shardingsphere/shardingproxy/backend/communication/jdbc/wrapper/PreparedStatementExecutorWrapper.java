@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShadowSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -96,7 +96,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private ExecutionContext doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getTables(), sqlStatementContext, sql, parameters);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getSchema(), sqlStatementContext, sql, parameters);
         sqlRewriteContext.generateSQLTokens();
         String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
@@ -111,8 +111,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private ExecutionContext doEncryptRoute(final String sql) {
         EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
         SQLStatement sqlStatement = encryptSchema.getSqlParserEngine().parse(sql, true);
-        TableMetas tableMetas = logicSchema.getMetaData().getTables();
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(tableMetas, sql, parameters, sqlStatement);
+        SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema();
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, parameters, sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
                 .createSQLRewriteContext(sql, parameters, sqlStatementContext, createSQLRewriteContextDecorator(encryptSchema.getEncryptRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
@@ -125,8 +125,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private ExecutionContext doShadowRoute(final String sql) {
         ShadowSchema shadowSchema = (ShadowSchema) logicSchema;
         SQLStatement sqlStatement = shadowSchema.getSqlParserEngine().parse(sql, true);
-        TableMetas tableMetas = logicSchema.getMetaData().getTables();
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(tableMetas, sql, parameters, sqlStatement);
+        SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema();
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, parameters, sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine(shadowSchema.getShadowRule(), sqlStatementContext, parameters);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
                 .createSQLRewriteContext(sql, parameters, sqlStatementContext, createSQLRewriteContextDecorator(shadowSchema.getShadowRule()));
@@ -150,6 +150,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     private ExecutionContext doTransparentRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, false);
         ExecutionContext result = new ExecutionContext(new CommonSQLStatementContext(sqlStatement));

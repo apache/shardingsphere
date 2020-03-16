@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.metadata.table;
+package org.apache.shardingsphere.sql.parser.binder.metadata.schema;
 
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,45 +40,31 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Table metas loader.
+ * Schema meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TableMetasLoader {
+public final class SchemaMetaDataLoader {
     
     private static final String TABLE_TYPE = "TABLE";
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
     /**
-     * Load table metas.
-     *
-     * @param dataSource data source
-     * @param table table name
-     * @return table metas
-     * @throws SQLException SQL exception
-     */
-    public static TableMetaData load(final DataSource dataSource, final String table) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return new TableMetaData(ColumnMetaDataLoader.load(connection, table), IndexMetaDataLoader.load(connection, table));
-        }
-    }
-    
-    /**
-     * Load table metas.
+     * Load schema meta data.
      *
      * @param dataSource data source
      * @param maxConnectionCount count of max connections permitted to use for this query
-     * @return table metas
+     * @return schema meta data
      * @throws SQLException SQL exception
      */
-    public static TableMetas load(final DataSource dataSource, final int maxConnectionCount) throws SQLException {
+    public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount) throws SQLException {
         List<String> tableNames;
         try (Connection connection = dataSource.getConnection()) {
             tableNames = loadAllTableNames(connection);
         }
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
         if (1 == tableGroups.size()) {
-            return new TableMetas(load(dataSource.getConnection(), tableGroups.get(0)));
+            return new SchemaMetaData(load(dataSource.getConnection(), tableGroups.get(0)));
         }
         Map<String, TableMetaData> result = new ConcurrentHashMap<>(tableNames.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(maxConnectionCount);
@@ -96,7 +83,7 @@ public final class TableMetasLoader {
             }
              
         }
-        return new TableMetas(result);
+        return new SchemaMetaData(result);
     }
     
     private static Map<String, TableMetaData> load(final Connection connection, final Collection<String> tables) throws SQLException {
@@ -107,7 +94,6 @@ public final class TableMetasLoader {
             }
             return result;
         }
-        
     }
     
     private static List<String> loadAllTableNames(final Connection connection) throws SQLException {

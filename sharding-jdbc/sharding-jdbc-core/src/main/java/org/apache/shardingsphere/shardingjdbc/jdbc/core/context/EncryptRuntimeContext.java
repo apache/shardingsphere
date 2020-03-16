@@ -17,19 +17,16 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
-import org.apache.shardingsphere.encrypt.metadata.loader.EncryptTableMetaDataLoader;
+import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializerEntry;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.metadata.decorator.SchemaMetaDataDecorator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -42,9 +39,8 @@ public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<
     }
     
     @Override
-    protected TableMetaDataInitializerEntry createTableMetaDataInitializerEntry(final DataSource dataSource, final DataSourceMetas dataSourceMetas) {
-        Map<BaseRule, TableMetaDataInitializer> initializes = new HashMap<>(1, 1);
-        initializes.put(getRule(), new EncryptTableMetaDataLoader(dataSource, getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY)));
-        return new TableMetaDataInitializerEntry(initializes);
+    protected SchemaMetaData loadSchemaMetaData(final DataSource dataSource) throws SQLException {
+        int maxConnectionCount = getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return SchemaMetaDataDecorator.decorate(SchemaMetaDataLoader.load(dataSource, maxConnectionCount), getRule(), new EncryptTableMetaDataDecorator());
     }
 }

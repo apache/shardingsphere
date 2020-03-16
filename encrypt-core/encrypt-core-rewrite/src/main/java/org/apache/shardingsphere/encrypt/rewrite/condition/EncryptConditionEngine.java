@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
@@ -49,7 +49,7 @@ public final class EncryptConditionEngine {
     
     private final EncryptRule encryptRule;
     
-    private final TableMetas tableMetas;
+    private final SchemaMetaData schemaMetaData;
     
     /**
      * Create encrypt conditions.
@@ -90,7 +90,7 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final SQLStatementContext sqlStatementContext, final PredicateSegment predicateSegment) {
-        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(predicateSegment, tableMetas);
+        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(predicateSegment, schemaMetaData);
         return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), predicateSegment.getColumn().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(predicateSegment, tableName.get()) : Optional.empty();
     }

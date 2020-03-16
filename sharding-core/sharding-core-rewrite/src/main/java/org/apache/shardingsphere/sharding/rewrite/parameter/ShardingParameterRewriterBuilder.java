@@ -24,10 +24,10 @@ import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAwar
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.TableMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,10 +43,10 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     private final ShardingRouteContext shardingRouteContext;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final TableMetas tableMetas) {
+    public Collection<ParameterRewriter> getParameterRewriters(final SchemaMetaData schemaMetaData) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
-            setUpParameterRewriters(each, tableMetas);
+            setUpParameterRewriters(each, schemaMetaData);
         }
         return result;
     }
@@ -58,9 +58,9 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final TableMetas tableMetas) {
-        if (parameterRewriter instanceof TableMetasAware) {
-            ((TableMetasAware) parameterRewriter).setTableMetas(tableMetas);
+    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final SchemaMetaData schemaMetaData) {
+        if (parameterRewriter instanceof SchemaMetaDataAware) {
+            ((SchemaMetaDataAware) parameterRewriter).setSchemaMetaData(schemaMetaData);
         }
         if (parameterRewriter instanceof ShardingRuleAware) {
             ((ShardingRuleAware) parameterRewriter).setShardingRule(shardingRule);

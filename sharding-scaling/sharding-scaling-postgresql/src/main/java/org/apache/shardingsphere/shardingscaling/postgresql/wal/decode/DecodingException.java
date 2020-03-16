@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
-
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+package org.apache.shardingsphere.shardingscaling.postgresql.wal.decode;
 
 /**
- * Table metas aware.
+ * Decoding exception.
  */
-public interface TableMetasAware {
+public final class DecodingException extends RuntimeException {
     
-    /**
-     * Set table metas.
-     * 
-     * @param tableMetas table metas
-     */
-    void setTableMetas(TableMetas tableMetas);
+    public DecodingException(final Throwable cause) {
+        super(cause);
+    }
 }

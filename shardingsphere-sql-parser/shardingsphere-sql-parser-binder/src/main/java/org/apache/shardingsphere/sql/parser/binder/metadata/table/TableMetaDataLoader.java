@@ -15,36 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table.loader;
+package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataInitializer;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
  * Table meta data loader.
  */
-public interface TableMetaDataLoader<T extends BaseRule> extends TableMetaDataInitializer {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TableMetaDataLoader {
     
     /**
      * Load table meta data.
      *
-     * @param tableName table name
-     * @param rule rule
+     * @param dataSource data source
+     * @param table table name
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    TableMetaData load(String tableName, T rule) throws SQLException;
-    
-    /**
-     * Load all table metas.
-     *
-     * @param rule sharding rule
-     * @return Table metas
-     * @throws SQLException SQL exception
-     */
-    TableMetas loadAll(T rule) throws SQLException;
+    public static TableMetaData load(final DataSource dataSource, final String table) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return new TableMetaData(ColumnMetaDataLoader.load(connection, table), IndexMetaDataLoader.load(connection, table));
+        }
+    }
 }
