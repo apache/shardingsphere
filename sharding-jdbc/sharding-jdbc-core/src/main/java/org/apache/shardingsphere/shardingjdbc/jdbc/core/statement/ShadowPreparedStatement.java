@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shadow.rewrite.judgement.impl.PreparedJudgement
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnection;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
@@ -172,10 +173,11 @@ public final class ShadowPreparedStatement extends AbstractShardingPreparedState
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
         SQLStatement sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, true);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getMetaData().getSchema(), sql, getParameters(), sqlStatement);
+        SchemaMetaData schemaMetaData = connection.getRuntimeContext().getMetaData().getSchema();
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext, getParameters());
         isShadowSQL = shadowJudgementEngine.isShadowSQL();
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getProperties())
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(schemaMetaData, connection.getRuntimeContext().getProperties())
                 .createSQLRewriteContext(sql, getParameters(), sqlStatementContext, createSQLRewriteContextDecorator(connection.getRuntimeContext().getRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         showSQL(sqlRewriteResult.getSql());

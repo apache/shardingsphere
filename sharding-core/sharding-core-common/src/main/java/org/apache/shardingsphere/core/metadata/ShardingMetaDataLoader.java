@@ -67,7 +67,7 @@ public final class ShardingMetaDataLoader {
         }
         Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
         Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
-        // TODO use multiple thread for diff data source
+        // TODO use multiple threads to load meta data for different data sources
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
             for (DataNode each : entry.getValue()) {
                 actualTableMetaDataMap.put(each.getTableName(), TableMetaDataLoader.load(dataSourceMap.get(each.getDataSourceName()), each.getTableName()));
@@ -104,7 +104,7 @@ public final class ShardingMetaDataLoader {
                 ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery) : new SchemaMetaData(Collections.emptyMap());
     }
     
-    // TODO check all meta data for one time
+    // TODO check all meta data in once
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);

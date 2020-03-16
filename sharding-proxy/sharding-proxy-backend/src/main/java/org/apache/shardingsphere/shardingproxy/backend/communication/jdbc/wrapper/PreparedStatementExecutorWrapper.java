@@ -113,7 +113,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SQLStatement sqlStatement = encryptSchema.getSqlParserEngine().parse(sql, true);
         SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema();
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, parameters, sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData().getSchema(), ShardingProxyContext.getInstance().getProperties())
                 .createSQLRewriteContext(sql, parameters, sqlStatementContext, createSQLRewriteContextDecorator(encryptSchema.getEncryptRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
@@ -128,7 +128,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema();
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, parameters, sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new PreparedJudgementEngine(shadowSchema.getShadowRule(), sqlStatementContext, parameters);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData().getSchema(), ShardingProxyContext.getInstance().getProperties())
                 .createSQLRewriteContext(sql, parameters, sqlStatementContext, createSQLRewriteContextDecorator(shadowSchema.getShadowRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         ExecutionContext result = new ExecutionContext(sqlStatementContext);

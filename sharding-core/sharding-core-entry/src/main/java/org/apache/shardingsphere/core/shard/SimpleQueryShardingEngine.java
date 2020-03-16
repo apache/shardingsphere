@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.core.shard;
 
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
+import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -48,7 +49,7 @@ public final class SimpleQueryShardingEngine extends BaseShardingEngine {
     }
     
     @Override
-    protected ShardingRouteContext route(final String sql, final List<Object> parameters) {
-        return getShardingRouter().route(sql, Collections.emptyList(), false);
+    protected ShardingRouteContext route(final ShardingRouter shardingRouter, final String sql, final List<Object> parameters) {
+        return shardingRouter.route(sql, Collections.emptyList(), false);
     }
 }
