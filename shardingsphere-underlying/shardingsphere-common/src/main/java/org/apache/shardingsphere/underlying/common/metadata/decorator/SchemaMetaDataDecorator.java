@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.decorator;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -28,24 +29,23 @@ import java.util.Map;
 /**
  * Schema meta data decorator.
  */
-@RequiredArgsConstructor
-public final class SchemaMetaDataDecorator<T extends BaseRule> {
-    
-    private final TableMetaDataDecorator<T> tableMetaDataDecorator;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SchemaMetaDataDecorator {
     
     /**
      * Decorate schema meta data.
      *
      * @param schemaMetaData schema meta data
      * @param rule rule
+     * @param tableMetaDataDecorator table meta data decorator
+     * @param <T> type of rule
      * @return decorated schema meta data
      */
-    public SchemaMetaData decorate(final SchemaMetaData schemaMetaData, final T rule) {
+    public static <T extends BaseRule> SchemaMetaData decorate(final SchemaMetaData schemaMetaData, final T rule, final TableMetaDataDecorator<T> tableMetaDataDecorator) {
         Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
         for (String each : schemaMetaData.getAllTableNames()) {
             result.put(each, tableMetaDataDecorator.decorate(schemaMetaData.get(each), each, rule));
         }
         return new SchemaMetaData(result);
     }
-    
 }

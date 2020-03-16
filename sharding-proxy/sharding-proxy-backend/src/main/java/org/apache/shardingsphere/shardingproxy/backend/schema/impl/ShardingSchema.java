@@ -176,9 +176,9 @@ public final class ShardingSchema extends LogicSchema {
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
         SchemaMetaData result = new ShardingMetaDataLoader(getBackendDataSource().getDataSources(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load();
-        result = new SchemaMetaDataDecorator<>(new ShardingTableMetaDataDecorator()).decorate(result, shardingRule);
+        result = SchemaMetaDataDecorator.decorate(result, shardingRule, new ShardingTableMetaDataDecorator());
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            result = new SchemaMetaDataDecorator<>(new ShardingTableMetaDataDecorator()).decorate(result, shardingRule);
+            result = SchemaMetaDataDecorator.decorate(result, shardingRule, new ShardingTableMetaDataDecorator());
         }
         return result;
     }

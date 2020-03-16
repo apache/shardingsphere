@@ -41,6 +41,6 @@ public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<
     @Override
     protected SchemaMetaData loadSchemaMetaData(final DataSource dataSource) throws SQLException {
         int maxConnectionCount = getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new SchemaMetaDataDecorator<>(new EncryptTableMetaDataDecorator()).decorate(SchemaMetaDataLoader.load(dataSource, maxConnectionCount), getRule());
+        return SchemaMetaDataDecorator.decorate(SchemaMetaDataLoader.load(dataSource, maxConnectionCount), getRule(), new EncryptTableMetaDataDecorator());
     }
 }

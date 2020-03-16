@@ -65,9 +65,9 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
         int maxConnectionsSizePerQuery = getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
         SchemaMetaData result = new ShardingMetaDataLoader(dataSourceMap, getRule(), maxConnectionsSizePerQuery, isCheckingMetaData).load();
-        result = new SchemaMetaDataDecorator<>(new ShardingTableMetaDataDecorator()).decorate(result, getRule());
+        result = SchemaMetaDataDecorator.decorate(result, getRule(), new ShardingTableMetaDataDecorator());
         if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
-            result = new SchemaMetaDataDecorator<>(new EncryptTableMetaDataDecorator()).decorate(result, getRule().getEncryptRule());
+            result = SchemaMetaDataDecorator.decorate(result, getRule().getEncryptRule(), new EncryptTableMetaDataDecorator());
         }
         return result;
     }
