@@ -15,16 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.table;
+package org.apache.shardingsphere.underlying.common.metadata.decorator;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Meta data decorator.
+ * Schema meta data decorator.
  */
-public interface MetaDataDecorator<T extends BaseRule> {
+@RequiredArgsConstructor
+public final class SchemaMetaDataDecorator<T extends BaseRule> {
+    
+    private final TableMetaDataDecorator<T> tableMetaDataDecorator;
     
     /**
      * Decorate schema meta data.
@@ -33,15 +40,12 @@ public interface MetaDataDecorator<T extends BaseRule> {
      * @param rule rule
      * @return decorated schema meta data
      */
-    SchemaMetaData decorate(SchemaMetaData schemaMetaData, T rule);
+    public SchemaMetaData decorate(final SchemaMetaData schemaMetaData, final T rule) {
+        Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
+        for (String each : schemaMetaData.getAllTableNames()) {
+            result.put(each, tableMetaDataDecorator.decorate(schemaMetaData.get(each), each, rule));
+        }
+        return new SchemaMetaData(result);
+    }
     
-    /**
-     * Decorate table meta data.
-     *
-     * @param tableMetaData table meta data
-     * @param tableName table name
-     * @param rule rule
-     * @return decorated table meta data
-     */
-    TableMetaData decorate(TableMetaData tableMetaData, String tableName, T rule);
 }

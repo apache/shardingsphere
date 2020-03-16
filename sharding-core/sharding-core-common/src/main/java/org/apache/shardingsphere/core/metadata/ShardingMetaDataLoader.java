@@ -113,7 +113,7 @@ public final class ShardingMetaDataLoader {
     
     // TODO check all meta data for one time
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
-        ShardingMetaDataDecorator decorator = new ShardingMetaDataDecorator();
+        ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
         for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
             if (!sample.equals(decorator.decorate(entry.getValue(), logicTableName, shardingRule))) {
