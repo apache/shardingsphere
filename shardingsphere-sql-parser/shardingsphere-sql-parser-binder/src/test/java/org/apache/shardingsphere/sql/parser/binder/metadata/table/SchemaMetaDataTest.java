@@ -34,6 +34,11 @@ import static org.mockito.Mockito.mock;
 public final class SchemaMetaDataTest {
     
     @Test
+    public void assertGetAllTableNames() {
+        assertThat(new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
+    }
+    
+    @Test
     public void assertGet() {
         TableMetaData tableMetaData = mock(TableMetaData.class);
         SchemaMetaData schemaMetaData = new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
@@ -76,10 +81,5 @@ public final class SchemaMetaDataTest {
     public void assertGetAllColumnNamesWhenNotContainsKey() {
         TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false)), Collections.emptyList());
         assertThat(new SchemaMetaData(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
-    }
-    
-    @Test
-    public void assertGetAllTableNames() {
-        assertThat(new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class))).getAllTableNames(), is(Sets.newHashSet("tbl")));
     }
 }

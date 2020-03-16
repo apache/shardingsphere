@@ -44,6 +44,15 @@ public final class SchemaMetaData {
     }
     
     /**
+     * Get all table names.
+     *
+     * @return all table names
+     */
+    public Collection<String> getAllTableNames() {
+        return tables.keySet();
+    }
+    
+    /**
      * Get table meta data via table name.
      * 
      * @param tableName tableName table name
@@ -101,14 +110,5 @@ public final class SchemaMetaData {
      */
     public List<String> getAllColumnNames(final String tableName) {
         return containsTable(tableName) ? new ArrayList<>(get(tableName).getColumns().keySet()) : Collections.emptyList();
-    }
-    
-    /**
-     * Get all table names.
-     * 
-     * @return all table names
-     */
-    public Collection<String> getAllTableNames() {
-        return tables.keySet();
     }
 }
