@@ -93,7 +93,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
         if (sqlStatementContext instanceof SelectStatementContext) {
             List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
             if (column > actualProjections.size()) {
-                throw new SQLException(String.format("Out of index of projection %s", column), SQLExceptionConstant.SQL_STATE_S1002, SQLExceptionConstant.SQL_VENDOR_CODE_ZERO);
+                throw new SQLException(String.format("Out of index of projection %s", column), SQLExceptionConstant.OUT_OF_INDEX_SQL_STAT, 0);
             }
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
             if (projection instanceof ColumnProjection) {
