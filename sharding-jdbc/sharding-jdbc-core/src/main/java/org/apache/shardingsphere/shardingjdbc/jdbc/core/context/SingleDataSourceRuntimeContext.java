@@ -40,7 +40,7 @@ import java.util.Properties;
  * @param <T> type of rule
  */
 @Getter
-@Slf4j
+@Slf4j(topic = "ShardingSphere-metadata")
 public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends AbstractRuntimeContext<T> {
     
     private final ShardingSphereMetaData metaData;

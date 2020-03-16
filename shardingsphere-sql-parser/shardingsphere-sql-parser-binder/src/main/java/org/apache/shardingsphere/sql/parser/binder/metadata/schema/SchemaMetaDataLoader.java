@@ -44,7 +44,7 @@ import java.util.concurrent.Future;
  * Schema meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
+@Slf4j(topic = "ShardingSphere-metadata")
 public final class SchemaMetaDataLoader {
     
     private static final String TABLE_TYPE = "TABLE";

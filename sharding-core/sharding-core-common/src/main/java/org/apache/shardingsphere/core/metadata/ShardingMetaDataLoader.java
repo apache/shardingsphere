@@ -41,7 +41,7 @@ import java.util.Optional;
  * Sharding meta data loader.
  */
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j(topic = "ShardingSphere-metadata")
 public final class ShardingMetaDataLoader {
     
     private final Map<String, DataSource> dataSourceMap;
