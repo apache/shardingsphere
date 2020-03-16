@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 public interface SchemaMetaDataAware {
     
     /**
-     * Set table metas.
+     * Set schema meta data.
      * 
      * @param schemaMetaData schema meta data
      */

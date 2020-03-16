@@ -50,11 +50,11 @@ public final class SchemaMetaDataLoader {
     private static final String TABLE_NAME = "TABLE_NAME";
     
     /**
-     * Load table metas.
+     * Load schema meta data.
      *
      * @param dataSource data source
      * @param maxConnectionCount count of max connections permitted to use for this query
-     * @return table metas
+     * @return schema meta data
      * @throws SQLException SQL exception
      */
     public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount) throws SQLException {
