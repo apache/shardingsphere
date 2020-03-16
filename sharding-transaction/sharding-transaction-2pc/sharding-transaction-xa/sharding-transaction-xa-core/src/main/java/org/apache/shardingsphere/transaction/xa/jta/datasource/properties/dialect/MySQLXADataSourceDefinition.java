@@ -59,7 +59,6 @@ public final class MySQLXADataSourceDefinition implements XADataSourceDefinition
         result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
         result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
         result.setProperty("netTimeoutForStreamingResults", "0");
-        result.setProperty("useDynamicCharsetInfo", Boolean.FALSE.toString());
         return result;
     }
 }
