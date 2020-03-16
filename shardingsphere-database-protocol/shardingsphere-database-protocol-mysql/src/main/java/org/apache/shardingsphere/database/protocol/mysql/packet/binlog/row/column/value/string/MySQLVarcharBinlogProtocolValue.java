@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string;
 
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
@@ -25,32 +24,14 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import java.io.Serializable;
 
 /**
- * String type value of MySQL binlog protocol.
+ * Varchar/Var string type value of MySQL binlog protocol.
  */
-public final class MySQLStringBinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLVarcharBinlogProtocolValue implements MySQLBinlogProtocolValue {
+    
+    private static final int VARCHAR_LENGTH_META_POINT = 256;
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        switch (MySQLColumnType.valueOf(columnDef.getColumnMeta() >> 8)) {
-            case MYSQL_TYPE_ENUM:
-                return readEnumValue(columnDef.getColumnMeta() & 0xff, payload);
-            case MYSQL_TYPE_SET:
-                return payload.getByteBuf().readByte();
-            case MYSQL_TYPE_STRING:
-                return payload.readStringFix(payload.getByteBuf().readUnsignedByte());
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
-    
-    private Serializable readEnumValue(final int meta, final MySQLPacketPayload payload) {
-        switch (meta) {
-            case 1:
-                return payload.readInt1();
-            case 2:
-                return payload.readInt2();
-            default:
-                throw new UnsupportedOperationException("MySQL Enum meta in binlog only include value 1 or 2, but actual is " + meta);
-        }
+        return payload.readStringFix(VARCHAR_LENGTH_META_POINT > columnDef.getColumnMeta() ? payload.getByteBuf().readUnsignedByte() : payload.getByteBuf().readUnsignedShortLE());
     }
 }
