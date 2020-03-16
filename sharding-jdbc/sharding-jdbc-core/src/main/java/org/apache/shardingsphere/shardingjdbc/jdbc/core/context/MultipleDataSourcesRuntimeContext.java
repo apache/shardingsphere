@@ -54,7 +54,7 @@ public abstract class MultipleDataSourcesRuntimeContext<T extends BaseRule> exte
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
-        SchemaMetaData schemaMetaData = loadSchemaMetaData(dataSourceMap, dataSourceMetas);
+        SchemaMetaData schemaMetaData = loadSchemaMetaData(dataSourceMap);
         ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
         log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
         return result;
@@ -72,5 +72,5 @@ public abstract class MultipleDataSourcesRuntimeContext<T extends BaseRule> exte
         return result;
     }
     
-    protected abstract SchemaMetaData loadSchemaMetaData(Map<String, DataSource> dataSourceMap, DataSourceMetas dataSourceMetas) throws SQLException;
+    protected abstract SchemaMetaData loadSchemaMetaData(Map<String, DataSource> dataSourceMap) throws SQLException;
 }
