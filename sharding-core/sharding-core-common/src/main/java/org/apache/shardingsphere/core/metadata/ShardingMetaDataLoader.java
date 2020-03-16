@@ -38,10 +38,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Table metas loader for sharding.
+ * Sharding meta data loader.
  */
 @RequiredArgsConstructor
-public final class ShardingTableMetasLoader {
+public final class ShardingMetaDataLoader {
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -77,9 +77,9 @@ public final class ShardingTableMetasLoader {
     }
     
     /**
-     * Load table metas.
+     * Load schema Meta data.
      *
-     * @return table metas
+     * @return schema Meta data
      * @throws SQLException SQL exception
      */
     public SchemaMetaData load() throws SQLException {
