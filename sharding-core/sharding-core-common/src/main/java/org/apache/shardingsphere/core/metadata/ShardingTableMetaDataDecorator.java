@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.core.metadata;
 
-import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.decorator.TableMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -39,23 +36,7 @@ public final class ShardingTableMetaDataDecorator implements TableMetaDataDecora
     
     @Override
     public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
-        return new TableMetaData(getColumnMetaDataList(tableMetaData, tableName, shardingRule), getIndexMetaDataList(tableMetaData, tableName, shardingRule));
-    }
-    
-    private Collection<ColumnMetaData> getColumnMetaDataList(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        if (!generateKeyColumnName.isPresent()) {
-            return tableMetaData.getColumns().values();
-        }
-        Collection<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : tableMetaData.getColumns().values()) {
-            if (each.getName().equalsIgnoreCase(generateKeyColumnName.get())) {
-                result.add(new ShardingGeneratedKeyColumnMetaData(each.getName(), each.getDataType(), each.isPrimaryKey()));
-            } else {
-                result.add(each);
-            }
-        }
-        return result;
+        return new TableMetaData(tableMetaData.getColumns().values(), getIndexMetaDataList(tableMetaData, tableName, shardingRule));
     }
     
     private Collection<IndexMetaData> getIndexMetaDataList(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
