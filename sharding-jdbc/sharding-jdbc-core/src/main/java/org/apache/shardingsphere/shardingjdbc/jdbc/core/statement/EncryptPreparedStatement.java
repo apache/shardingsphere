@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionCon
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
@@ -168,8 +169,9 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(runtimeContext.getMetaData().getSchema(), sql, getParameters(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData(), 
+        SchemaMetaData schemaMetaData = runtimeContext.getMetaData().getSchema();
+        sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(schemaMetaData, 
                 runtimeContext.getProperties()).createSQLRewriteContext(sql, getParameters(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         showSQL(sqlRewriteResult.getSql());
