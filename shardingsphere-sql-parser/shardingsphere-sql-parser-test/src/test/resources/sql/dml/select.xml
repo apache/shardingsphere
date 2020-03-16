@@ -111,7 +111,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" />
+            <column-item name="item_id" start-index="55" stop-index="61" />
         </order-by>
     </select>
     
@@ -135,7 +135,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" />
+            <column-item name="item_id" start-index="55" stop-index="61" />
         </order-by>
     </select>
     
@@ -158,7 +158,7 @@
             <!--</and-predicate>-->
         </where>
         <order-by>
-            <column-item name="item_id" />
+            <column-item name="item_id" start-index="88" stop-index="94" literal-start-index="98" literal-stop-index="104" />
         </order-by>
     </select>
     
@@ -181,7 +181,7 @@
             <!--</and-predicate>-->
         </where>
         <order-by>
-            <column-item name="item_id" />
+            <column-item name="item_id" start-index="94" stop-index="100" literal-start-index="104" literal-stop-index="110" />
         </order-by>
     </select>
     
@@ -273,8 +273,8 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="user_id" />
-            <column-item name="order_id" />
+            <column-item name="user_id" start-index="90" stop-index="96" literal-start-index="91" literal-stop-index="97" />
+            <column-item name="order_id" start-index="99" stop-index="106" literal-start-index="100" literal-stop-index="107" />
         </order-by>
     </select>
     
@@ -322,8 +322,8 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="user_id" />
-            <column-item name="order_id" />
+            <column-item name="user_id" start-index="103" stop-index="109" literal-start-index="104" literal-stop-index="110" />
+            <column-item name="order_id" start-index="112" stop-index="119" literal-start-index="113" literal-stop-index="120" />
         </order-by>
     </select>
     
@@ -359,8 +359,8 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="user_id" />
-            <column-item name="order_id" />
+            <column-item name="user_id" start-index="81" stop-index="87" literal-start-index="82" literal-stop-index="88" />
+            <column-item name="order_id" start-index="90" stop-index="97" literal-start-index="91" literal-stop-index="98" />
         </order-by>
     </select>
     
@@ -394,7 +394,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="79" stop-index="86" literal-start-index="91" literal-stop-index="98" />
         </order-by>
     </select>
     
@@ -517,7 +517,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id">
+            <column-item name="item_id" start-index="165" stop-index="173" literal-start-index="166" literal-stop-index="174">
                 <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
             </column-item>
         </order-by>
@@ -534,7 +534,7 @@
             </shorthand-projection>
         </projections>
         <order-by>
-            <column-item name="item_id">
+            <column-item name="item_id" start-index="108" stop-index="116">
                 <owner name="i" start-index="108" stop-index="108" />
             </column-item>
         </order-by>
@@ -588,7 +588,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id">
+            <column-item name="item_id" start-index="230" stop-index="238" literal-start-index="236" literal-stop-index="244">
                 <owner name="i" start-index="230" stop-index="230" literal-start-index="236" literal-stop-index="236" />
             </column-item>
         </order-by>
@@ -642,7 +642,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id">
+            <column-item name="item_id" start-index="221" stop-index="229" literal-start-index="227" literal-stop-index="235">
                 <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
             </column-item>
         </order-by>
@@ -696,7 +696,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id">
+            <column-item name="item_id" start-index="221" stop-index="229" literal-start-index="227" literal-stop-index="235">
                 <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
             </column-item>
         </order-by>
@@ -750,7 +750,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id">
+            <column-item name="item_id" start-index="221" stop-index="229" literal-start-index="227" literal-stop-index="235">
                 <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
             </column-item>
         </order-by>
@@ -947,7 +947,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="item_id" />
+            <column-item name="item_id" start-index="59" stop-index="67" />
         </order-by>
     </select>
 
@@ -979,7 +979,7 @@
             <column-projection name="item_id" start-index="16" stop-index="22" />
         </projections>
         <order-by>
-            <column-item name="item_id" />
+            <column-item name="item_id" start-index="51" stop-index="57" />
         </order-by>
     </select>
     
@@ -993,7 +993,7 @@
             </column-projection>
         </projections>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="55" stop-index="62" />
         </order-by>
     </select>
     
@@ -1007,7 +1007,7 @@
             <column-projection name="status" start-index="35" stop-index="40" />
         </projections>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="64" stop-index="71" />
         </order-by>
     </select>
     
@@ -1030,7 +1030,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="62" stop-index="69" />
         </order-by>
     </select>
     
@@ -1060,7 +1060,7 @@
             </and-predicate>
         </where>
         <order-by>
-            <column-item name="order_id">
+            <column-item name="order_id" start-index="132" stop-index="147">
                 <owner name="t_order" start-index="132" stop-index="138" />
             </column-item>
         </order-by>
@@ -1167,10 +1167,10 @@
             </and-predicate>
         </where>
         <group-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="88" stop-index="95" />
         </group-by>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="106" stop-index="113" />
         </order-by>
     </select>
     
@@ -1183,10 +1183,10 @@
             <column-projection name="order_id" start-index="35" stop-index="42" />
         </projections>
         <group-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="66" stop-index="73" />
         </group-by>
         <order-by>
-            <column-item name="order_id" />
+            <column-item name="order_id" start-index="84" stop-index="91" />
         </order-by>
     </select>
     
@@ -1198,7 +1198,7 @@
             <expression-projection start-index="15" stop-index="23" />
         </projections>
         <order-by>
-            <column-item name="item_id" />
+            <column-item name="item_id" start-index="52" stop-index="58" />
         </order-by>
     </select>
     
