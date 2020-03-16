@@ -17,22 +17,34 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
-import java.io.Serializable;
-
-import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
-import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
-import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 /**
- * YEAR type value of MySQL binlog protocol.
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * Time value util of MySQL.
  */
-public final class MySQLYearBinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLTimeValueUtil {
     
-    @Override
-    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        int result = payload.readInt1();
-        return 0 == result ? MySQLTimeValueUtil.YEAR_OF_ZERO : Integer.toString(result + 1900);
+    public static final String ZERO_OF_TIME = "00:00:00";
+    
+    public static final String ZERO_OF_DATE = "0000-00-00";
+    
+    public static final String YEAR_OF_ZERO = "0000";
+    
+    public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
+    
+    private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = ThreadLocal.withInitial(() -> {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+        return sdf;
+    });
+    
+    /**
+     * Get simple date format for current thread.
+     *
+     * @return simple date format
+     */
+    public static SimpleDateFormat getSimpleDateFormat() {
+        return TIMESTAMP_FORMAT.get();
     }
 }

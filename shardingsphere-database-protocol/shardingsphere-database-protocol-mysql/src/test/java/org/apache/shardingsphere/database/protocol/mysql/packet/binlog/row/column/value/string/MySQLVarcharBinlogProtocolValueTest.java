@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string;
 
 import io.netty.buffer.ByteBuf;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -30,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLDateBinlogProtocolValueTest {
+public final class MySQLVarcharBinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -38,20 +40,34 @@ public final class MySQLDateBinlogProtocolValueTest {
     @Mock
     private ByteBuf byteBuf;
     
-    @Mock
     private MySQLBinlogColumnDef columnDef;
     
-    @Test
-    public void assertRead() {
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMediumLE()).thenReturn(1901 * 16 * 32 + 32 + 1);
-        assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is("1901-01-01"));
+    @Before
+    public void setUp() {
+        columnDef = new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_VARCHAR);
     }
     
     @Test
-    public void assertReadNullDate() {
+    public void assertReadVarcharValueWithMeta1() {
+        String expected = "teststring";
+        columnDef.setColumnMeta(10);
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMediumLE()).thenReturn(0);
-        assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.ZERO_OF_DATE));
+        when(byteBuf.readUnsignedByte()).thenReturn((short) expected.length());
+        when(payload.readStringFix(expected.length())).thenReturn(expected);
+        assertThat(new MySQLVarcharBinlogProtocolValue().read(columnDef, payload), is(expected));
+    }
+    
+    @Test
+    public void assertReadVarcharValueWithMeta2() {
+        StringBuilder expectedStringBuilder = new StringBuilder("test string for length more than 256");
+        for (int i = 0; i < 256; i++) {
+            expectedStringBuilder.append(i);
+        }
+        String expected = expectedStringBuilder.toString();
+        columnDef.setColumnMeta(expected.length());
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(expected.length());
+        when(payload.readStringFix(expected.length())).thenReturn(expected);
+        assertThat(new MySQLVarcharBinlogProtocolValue().read(columnDef, payload), is(expected));
     }
 }

@@ -17,30 +17,43 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
-import java.io.Serializable;
-
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import java.io.Serializable;
 
 /**
- * TIME2 type value of MySQL binlog protocol.
- *
- * <p>
- *     TIME2 type applied after MySQL 5.6.4.
- * </p>
+ * MySQL DATETIME2 binlog protocol value.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */
-public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        int time = payload.getByteBuf().readUnsignedMedium();
-        if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
+        long datetime = readDatetimeV2FromPayload(payload);
+        return 0 == datetime ? MySQLTimeValueUtil.DATETIME_OF_ZERO : readDatetime(columnDef, datetime, payload);
+    }
+    
+    private long readDatetimeV2FromPayload(final MySQLPacketPayload payload) {
+        long result = 0;
+        for (int i = 4; i >= 0; i--) {
+            result |= (long) payload.readInt1() << (8 * i);
         }
-        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds.toString());
+        return result;
+    }
+    
+    private Serializable readDatetime(final MySQLBinlogColumnDef columnDef, final long datetime, final MySQLPacketPayload payload) {
+        long datetimeWithoutSign = datetime & (0x8000000000L - 1);
+        return String.format("%s %s%s", readDate(datetimeWithoutSign >> 17), readTime(datetimeWithoutSign % (1 << 17)), new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).toString());
+    }
+    
+    private String readDate(final long date) {
+        long yearAndMonth = date >> 5;
+        return String.format("%d-%02d-%02d", yearAndMonth / 13, yearAndMonth % 13, date % (1 << 5));
+    }
+    
+    private String readTime(final long time) {
+        return String.format("%02d:%02d:%02d", time >> 12, (time >> 6) % (1 << 6), time % (1 << 6));
     }
 }

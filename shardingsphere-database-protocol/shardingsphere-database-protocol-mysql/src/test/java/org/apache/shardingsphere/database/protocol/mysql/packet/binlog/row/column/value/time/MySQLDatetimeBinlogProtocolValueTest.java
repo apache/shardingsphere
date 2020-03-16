@@ -17,30 +17,35 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
-import java.io.Serializable;
-
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
-import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-/**
- * TIME2 type value of MySQL binlog protocol.
- *
- * <p>
- *     TIME2 type applied after MySQL 5.6.4.
- * </p>
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
- */
-public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public final class MySQLDatetimeBinlogProtocolValueTest {
     
-    @Override
-    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        int time = payload.getByteBuf().readUnsignedMedium();
-        if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
-        }
-        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds.toString());
+    @Mock
+    private MySQLPacketPayload payload;
+    
+    @Mock
+    private MySQLBinlogColumnDef columnDef;
+    
+    @Test
+    public void assertRead() {
+        when(payload.readInt8()).thenReturn(99991231235959L);
+        assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is("9999-12-31 23:59:59"));
+    }
+    
+    @Test
+    public void assertReadNullTime() {
+        when(payload.readInt8()).thenReturn(0L);
+        assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.DATETIME_OF_ZERO));
     }
 }

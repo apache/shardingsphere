@@ -15,32 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
-
-import java.io.Serializable;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.blob;
 
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
+import java.io.Serializable;
+
 /**
- * TIME2 type value of MySQL binlog protocol.
- *
- * <p>
- *     TIME2 type applied after MySQL 5.6.4.
- * </p>
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * BLOB type value of MySQL binlog protocol.
  */
-public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLBlobBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        int time = payload.getByteBuf().readUnsignedMedium();
-        if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
+        return payload.readStringFixByBytes(readLengthFromMeta(columnDef.getColumnMeta(), payload));
+    }
+    
+    private int readLengthFromMeta(final int columnMeta, final MySQLPacketPayload payload) {
+        switch (columnMeta) {
+            case 1:
+                return payload.getByteBuf().readUnsignedByte();
+            case 2:
+                return payload.getByteBuf().readUnsignedShortLE();
+            case 3:
+                return payload.getByteBuf().readUnsignedMediumLE();
+            case 4:
+                return payload.readInt4();
+            default:
+                throw new UnsupportedOperationException("MySQL blob type meta in binlog should be range 1 to 4, but actual value is: " + columnMeta);
         }
-        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds.toString());
     }
 }

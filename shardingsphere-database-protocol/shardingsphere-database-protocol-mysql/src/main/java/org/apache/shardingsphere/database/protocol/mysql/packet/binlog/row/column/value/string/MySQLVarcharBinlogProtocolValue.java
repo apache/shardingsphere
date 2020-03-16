@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
-
-import java.io.Serializable;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string;
 
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
+import java.io.Serializable;
+
 /**
- * TIME2 type value of MySQL binlog protocol.
- *
- * <p>
- *     TIME2 type applied after MySQL 5.6.4.
- * </p>
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * VARCHAR / VAR_STRING type value of MySQL binlog protocol.
  */
-public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLVarcharBinlogProtocolValue implements MySQLBinlogProtocolValue {
+    
+    private static final int VARCHAR_LENGTH_META_POINT = 256;
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        int time = payload.getByteBuf().readUnsignedMedium();
-        if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
-        }
-        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds.toString());
+        return payload.readStringFix(VARCHAR_LENGTH_META_POINT > columnDef.getColumnMeta() ? payload.getByteBuf().readUnsignedByte() : payload.getByteBuf().readUnsignedShortLE());
     }
 }

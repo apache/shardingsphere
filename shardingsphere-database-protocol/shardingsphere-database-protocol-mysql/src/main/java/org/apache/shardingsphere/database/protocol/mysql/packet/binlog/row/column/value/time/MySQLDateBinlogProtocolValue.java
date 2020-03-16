@@ -24,20 +24,15 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colum
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Date type value of MySQL binlog protocol.
+ * DATE type value of MySQL binlog protocol.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */
 public final class MySQLDateBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
-    private static final String ZERO_OF_DATE = "0000-00-00";
-    
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int date = payload.getByteBuf().readUnsignedMediumLE();
-        if (0 == date) {
-            return ZERO_OF_DATE;
-        }
-        return String.format("%d-%02d-%02d", date / 16 / 32, date / 32 % 16, date % 32);
+        return 0 == date ? MySQLTimeValueUtil.ZERO_OF_DATE : String.format("%d-%02d-%02d", date / 16 / 32, date / 32 % 16, date % 32);
     }
 }

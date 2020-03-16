@@ -15,32 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string;
 
-import java.io.Serializable;
-
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
+import java.io.Serializable;
+
 /**
- * TIME2 type value of MySQL binlog protocol.
- *
- * <p>
- *     TIME2 type applied after MySQL 5.6.4.
- * </p>
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * STRING type value of MySQL binlog protocol.
  */
-public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLStringBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        int time = payload.getByteBuf().readUnsignedMedium();
-        if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
+        switch (MySQLColumnType.valueOf(columnDef.getColumnMeta() >> 8)) {
+            case MYSQL_TYPE_ENUM:
+                return readEnumValue(columnDef.getColumnMeta() & 0xff, payload);
+            case MYSQL_TYPE_SET:
+                return payload.getByteBuf().readByte();
+            case MYSQL_TYPE_STRING:
+                return payload.readStringFix(payload.getByteBuf().readUnsignedByte());
+            default:
+                throw new UnsupportedOperationException();
         }
-        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds.toString());
+    }
+    
+    private Serializable readEnumValue(final int meta, final MySQLPacketPayload payload) {
+        switch (meta) {
+            case 1:
+                return payload.readInt1();
+            case 2:
+                return payload.readInt2();
+            default:
+                throw new UnsupportedOperationException("MySQL Enum meta in binlog only include value 1 or 2, but actual is " + meta);
+        }
     }
 }

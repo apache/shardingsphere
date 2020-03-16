@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colum
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Long type value of MySQL binlog protocol.
+ * LONG type value of MySQL binlog protocol.
  */
 public final class MySQLLongBinlogProtocolValue implements MySQLBinlogProtocolValue {
     

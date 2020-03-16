@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.blob;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLTime2BinlogProtocolValueTest {
+public final class MySQLBlobBinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -44,47 +44,47 @@ public final class MySQLTime2BinlogProtocolValueTest {
     
     @Before
     public void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_TIME2);
-        columnDef.setColumnMeta(0);
+        columnDef = new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_STRING);
     }
     
     @Test
-    public void assertRead() {
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("16:08:04"));
-    }
-    
-    @Test
-    public void assertReadWithFraction1() {
+    public void assertReadWithMeta1() {
         columnDef.setColumnMeta(1);
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(payload.readInt1()).thenReturn(90);
-        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("16:08:04.9"));
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 0xff);
+        when(payload.readStringFixByBytes(0xff)).thenReturn(new byte[255]);
+        assertThat(new MySQLBlobBinlogProtocolValue().read(columnDef, payload), is(new byte[255]));
     }
     
     @Test
-    public void assertReadWithFraction3() {
+    public void assertReadWithMeta2() {
+        columnDef.setColumnMeta(2);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedShortLE()).thenReturn(0xffff);
+        when(payload.readStringFixByBytes(0xffff)).thenReturn(new byte[65535]);
+        assertThat(new MySQLBlobBinlogProtocolValue().read(columnDef, payload), is(new byte[65535]));
+    }
+    
+    @Test
+    public void assertReadWithMeta3() {
         columnDef.setColumnMeta(3);
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedShort()).thenReturn(90);
-        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("16:08:04.900"));
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(0xffffff);
+        when(payload.readStringFixByBytes(0xffffff)).thenReturn(new byte[255]);
+        assertThat(new MySQLBlobBinlogProtocolValue().read(columnDef, payload), is(new byte[255]));
     }
     
     @Test
-    public void assertReadWithFraction6() {
-        columnDef.setColumnMeta(6);
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04, 90);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("16:08:04.900000"));
+    public void assertReadWithMeta4() {
+        columnDef.setColumnMeta(4);
+        when(payload.readInt4()).thenReturn(Integer.MAX_VALUE);
+        when(payload.readStringFixByBytes(Integer.MAX_VALUE)).thenReturn(new byte[255]);
+        assertThat(new MySQLBlobBinlogProtocolValue().read(columnDef, payload), is(new byte[255]));
     }
     
-    @Test
-    public void assertReadNullTime() {
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.ZERO_OF_TIME));
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertReadWithUnknownMetaValue() {
+        columnDef.setColumnMeta(5);
+        new MySQLBlobBinlogProtocolValue().read(columnDef, payload);
     }
 }

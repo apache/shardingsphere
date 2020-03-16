@@ -17,30 +17,29 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
-import java.io.Serializable;
-
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import java.io.Serializable;
 
 /**
- * TIME2 type value of MySQL binlog protocol.
- *
- * <p>
- *     TIME2 type applied after MySQL 5.6.4.
- * </p>
+ * MySQL DATETIME binlog protocol value.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */
-public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLDatetimeBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        int time = payload.getByteBuf().readUnsignedMedium();
-        if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
-        }
-        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds.toString());
+        long datetime = payload.readInt8();
+        return 0 == datetime ? MySQLTimeValueUtil.DATETIME_OF_ZERO : String.format("%s %s", readDate((int) (datetime / 1000000)), readTime((int) (datetime % 1000000)));
+    }
+    
+    private String readDate(final int date) {
+        return String.format("%04d-%02d-%02d", date / 10000, (date % 10000) / 100, date % 100);
+    }
+    
+    private String readTime(final int time) {
+        return String.format("%02d:%02d:%02d", time / 10000, (time % 10000) / 100, time % 100);
     }
 }
