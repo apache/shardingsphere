@@ -111,7 +111,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         SQLStatement sqlStatement = encryptSchema.getSqlParserEngine().parse(sql, false);
         SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema();
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, new LinkedList<>(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData().getSchema(), ShardingProxyContext.getInstance().getProperties())
                 .createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(encryptSchema.getEncryptRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
@@ -129,7 +129,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         String dataSourceName = shadowJudgementEngine.isShadowSQL()
                 ? shadowSchema.getShadowRule().getRuleConfiguration().getShadowMappings().get(logicSchema.getDataSources().keySet().iterator().next())
                 : logicSchema.getDataSources().keySet().iterator().next();
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData(), ShardingProxyContext.getInstance().getProperties())
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(logicSchema.getMetaData().getSchema(), ShardingProxyContext.getInstance().getProperties())
                 .createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(shadowSchema.getShadowRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
