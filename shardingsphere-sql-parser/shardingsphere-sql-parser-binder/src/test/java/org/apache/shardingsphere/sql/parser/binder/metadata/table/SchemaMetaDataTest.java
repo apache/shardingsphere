@@ -41,23 +41,30 @@ public final class SchemaMetaDataTest {
     @Test
     public void assertGet() {
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        SchemaMetaData schemaMetaData = new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
-        assertThat(schemaMetaData.get("tbl"), is(tableMetaData));
+        assertThat(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).get("tbl"), is(tableMetaData));
+    }
+    
+    @Test
+    public void assertMerge() {
+        SchemaMetaData actual = new SchemaMetaData(Collections.emptyMap());
+        TableMetaData tableMetaData = mock(TableMetaData.class);
+        actual.merge(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)));
+        assertThat(actual.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertPut() {
-        SchemaMetaData schemaMetaData = new SchemaMetaData(Collections.emptyMap());
+        SchemaMetaData actual = new SchemaMetaData(Collections.emptyMap());
         TableMetaData tableMetaData = mock(TableMetaData.class);
-        schemaMetaData.put("tbl", tableMetaData);
-        assertThat(schemaMetaData.get("tbl"), is(tableMetaData));
+        actual.put("tbl", tableMetaData);
+        assertThat(actual.get("tbl"), is(tableMetaData));
     }
     
     @Test
     public void assertRemove() {
-        SchemaMetaData schemaMetaData = new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class)));
-        schemaMetaData.remove("tbl");
-        assertNull(schemaMetaData.get("tbl"));
+        SchemaMetaData actual = new SchemaMetaData(ImmutableMap.of("tbl", mock(TableMetaData.class)));
+        actual.remove("tbl");
+        assertNull(actual.get("tbl"));
     }
     
     @Test

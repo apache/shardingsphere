@@ -83,13 +83,12 @@ public final class ShardingMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public SchemaMetaData load() throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>();
-        result.putAll(loadShardingTables());
-        result.putAll(loadDefaultTables());
-        return new SchemaMetaData(result);
+        SchemaMetaData result = loadShardingSchemaMetaData();
+        result.merge(loadDefaultSchemaMetaData());
+        return result;
     }
     
-    private Map<String, TableMetaData> loadShardingTables() throws SQLException {
+    private SchemaMetaData loadShardingSchemaMetaData() throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         long start = System.currentTimeMillis();
         MetaDataLogger.log("There are {} sharding table(s) will be loaded.", shardingRule.getTableRules().size());
@@ -97,18 +96,18 @@ public final class ShardingMetaDataLoader {
             result.put(each.getLogicTable(), load(each.getLogicTable()));
         }
         MetaDataLogger.log("Sharding table(s) have been loaded in {} milliseconds.", System.currentTimeMillis() - start);
-        return result;
+        return new SchemaMetaData(result);
     }
     
-    private Map<String, TableMetaData> loadDefaultTables() throws SQLException {
+    private SchemaMetaData loadDefaultSchemaMetaData() throws SQLException {
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         if (!actualDefaultDataSourceName.isPresent()) {
-            return Collections.emptyMap();
+            return new SchemaMetaData(Collections.emptyMap());
         }
         long start = System.currentTimeMillis();
         SchemaMetaData result = SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery);
         MetaDataLogger.log("Default table(s) have been loaded in {} milliseconds.", System.currentTimeMillis() - start);
-        return result.getTables();
+        return result;
     }
     
     // TODO check all meta data for one time
