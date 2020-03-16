@@ -34,13 +34,11 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
  */
 public final class MySQLTimeBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
-    private static final String ZERO_OF_TIME = "00:00:00";
-    
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int time = payload.getByteBuf().readUnsignedMediumLE();
         if (0 == time) {
-            return ZERO_OF_TIME;
+            return MySQLTimeValueUtil.ZERO_OF_TIME;
         }
         int minuteSecond = Math.abs(time) % 10000;
         return String.format("%02d:%02d:%02d", time / 10000, minuteSecond / 100, minuteSecond % 100);
