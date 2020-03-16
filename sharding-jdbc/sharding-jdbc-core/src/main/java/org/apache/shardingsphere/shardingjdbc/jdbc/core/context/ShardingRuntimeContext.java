@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
+import org.apache.shardingsphere.encrypt.metadata.EncryptMetaDataDecorator;
+import org.apache.shardingsphere.core.metadata.ShardingMetaDataDecorator;
 import org.apache.shardingsphere.core.metadata.ShardingMetaDataLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
@@ -64,9 +64,9 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
         int maxConnectionsSizePerQuery = getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
         SchemaMetaData result = new ShardingMetaDataLoader(dataSourceMap, getRule(), maxConnectionsSizePerQuery, isCheckingMetaData).load();
-        result = new ShardingTableMetaDataDecorator().decorate(result, getRule());
+        result = new ShardingMetaDataDecorator().decorate(result, getRule());
         if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
-            result = new EncryptTableMetaDataDecorator().decorate(result, getRule().getEncryptRule());
+            result = new EncryptMetaDataDecorator().decorate(result, getRule().getEncryptRule());
         }
         return result;
     }

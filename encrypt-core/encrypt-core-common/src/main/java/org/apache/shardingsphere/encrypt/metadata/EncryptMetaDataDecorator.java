@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.table.MetaDataDecorator;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,9 +29,9 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Table meta data decorator for encrypt.
+ * Meta data decorator for encrypt.
  */
-public final class EncryptTableMetaDataDecorator implements TableMetaDataDecorator<EncryptRule> {
+public final class EncryptMetaDataDecorator implements MetaDataDecorator<EncryptRule> {
     
     @Override
     public SchemaMetaData decorate(final SchemaMetaData schemaMetaData, final EncryptRule encryptRule) {

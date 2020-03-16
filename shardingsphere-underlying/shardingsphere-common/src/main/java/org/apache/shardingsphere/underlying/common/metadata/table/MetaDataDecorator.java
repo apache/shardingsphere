@@ -22,16 +22,16 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
- * Table meta data decorator.
+ * Meta data decorator.
  */
-public interface TableMetaDataDecorator<T extends BaseRule> {
+public interface MetaDataDecorator<T extends BaseRule> {
     
     /**
-     * Decorate table metas.
+     * Decorate schema meta data.
      *
      * @param schemaMetaData schema meta data
      * @param rule rule
-     * @return decorated table metas
+     * @return decorated schema meta data
      */
     SchemaMetaData decorate(SchemaMetaData schemaMetaData, T rule);
     
