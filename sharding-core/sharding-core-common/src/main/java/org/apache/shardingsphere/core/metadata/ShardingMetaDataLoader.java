@@ -90,14 +90,12 @@ public final class ShardingMetaDataLoader {
     }
     
     private SchemaMetaData loadShardingSchemaMetaData() throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         log.info("Loading {} logic tables' meta data.", shardingRule.getTableRules().size());
-        long start = System.currentTimeMillis();
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
-            result.put(each.getLogicTable(), load(each.getLogicTable()));
+            tableMetaDataMap.put(each.getLogicTable(), load(each.getLogicTable()));
         }
-        log.info("Load finished, total cost {} milliseconds.", System.currentTimeMillis() - start);
-        return new SchemaMetaData(result);
+        return new SchemaMetaData(tableMetaDataMap);
     }
     
     private SchemaMetaData loadDefaultSchemaMetaData() throws SQLException {

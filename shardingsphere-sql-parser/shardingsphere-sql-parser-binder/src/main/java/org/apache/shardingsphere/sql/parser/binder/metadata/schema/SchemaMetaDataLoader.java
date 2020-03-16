@@ -66,16 +66,9 @@ public final class SchemaMetaDataLoader {
         }
         log.info("Loading {} tables' meta data.", tableNames.size());
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
-        if (1 == tableGroups.size()) {
-            long start = System.currentTimeMillis();
-            Map<String, TableMetaData> result = load(dataSource.getConnection(), tableGroups.get(0));
-            log.info("Load finished, total cost {} milliseconds.", System.currentTimeMillis() - start);
-            return new SchemaMetaData(result);
-        }
-        long start = System.currentTimeMillis();
-        Map<String, TableMetaData> result = asyncLoad(dataSource, maxConnectionCount, tableNames, tableGroups);
-        log.info("Load finished, total cost {} milliseconds.", System.currentTimeMillis() - start);
-        return new SchemaMetaData(result);
+        Map<String, TableMetaData> tableMetaDataMap = 1 == tableGroups.size()
+                ? load(dataSource.getConnection(), tableGroups.get(0)) : asyncLoad(dataSource, maxConnectionCount, tableNames, tableGroups);
+        return new SchemaMetaData(tableMetaDataMap);
     }
     
     private static Map<String, TableMetaData> load(final Connection connection, final Collection<String> tables) throws SQLException {
