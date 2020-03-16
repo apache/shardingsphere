@@ -29,7 +29,7 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.junit.Test;
 
 import java.sql.ResultSetMetaData;
@@ -127,10 +127,10 @@ public final class QueryHeaderTest {
     private ShardingSchema getShardingSchema() {
         ShardingSchema result = mock(ShardingSchema.class);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", "int", true);
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
+        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getTables()).thenReturn(tableMetas);
+        when(metaData.getSchema()).thenReturn(schemaMetaData);
         DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
         when(dataSourceMetas.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
         when(metaData.getDataSources()).thenReturn(dataSourceMetas);

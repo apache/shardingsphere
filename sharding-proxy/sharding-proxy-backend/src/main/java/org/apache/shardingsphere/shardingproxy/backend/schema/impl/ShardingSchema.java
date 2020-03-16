@@ -37,7 +37,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
@@ -84,8 +84,8 @@ public final class ShardingSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = loadTableMetas();
-        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
+        SchemaMetaData schemaMetaData = loadSchemaMetaData();
+        return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
     }
     
     /**
@@ -136,24 +136,24 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaData(final CreateTableStatement createTableStatement) throws SQLException {
         String tableName = createTableStatement.getTable().getTableName().getIdentifier().getValue();
-        getMetaData().getTables().put(tableName, loadTableMeta(tableName));
+        getMetaData().getSchema().put(tableName, loadTableMeta(tableName));
     }
     
     private void refreshTableMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
         String tableName = alterTableStatement.getTable().getTableName().getIdentifier().getValue();
-        getMetaData().getTables().put(tableName, loadTableMeta(tableName));
+        getMetaData().getSchema().put(tableName, loadTableMeta(tableName));
     }
     
     private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
         for (SimpleTableSegment each : dropTableStatement.getTables()) {
-            getMetaData().getTables().remove(each.getTableName().getIdentifier().getValue());
+            getMetaData().getSchema().remove(each.getTableName().getIdentifier().getValue());
         }
     }
     
     private void refreshTableMetaData(final CreateIndexStatement createIndexStatement) {
         if (null != createIndexStatement.getIndex()) {
             String indexName = createIndexStatement.getIndex().getIdentifier().getValue();
-            getMetaData().getTables().get(createIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().put(indexName, new IndexMetaData(indexName));
+            getMetaData().getSchema().get(createIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().put(indexName, new IndexMetaData(indexName));
         }
     }
     
@@ -161,20 +161,20 @@ public final class ShardingSchema extends LogicSchema {
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         if (null != dropIndexStatement.getTable()) {
             for (String each : indexNames) {
-                getMetaData().getTables().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().remove(each);
+                getMetaData().getSchema().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().remove(each);
             }
         }
         for (String each : indexNames) {
-            if (findLogicTableName(getMetaData().getTables(), each).isPresent()) {
-                getMetaData().getTables().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().remove(each);
+            if (findLogicTableName(getMetaData().getSchema(), each).isPresent()) {
+                getMetaData().getSchema().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().remove(each);
             }
         }
     }
     
-    private TableMetas loadTableMetas() throws SQLException {
+    private SchemaMetaData loadSchemaMetaData() throws SQLException {
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
-        TableMetas result = new ShardingTableMetasLoader(getBackendDataSource().getDataSources(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load();
+        SchemaMetaData result = new ShardingTableMetasLoader(getBackendDataSource().getDataSources(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load();
         result = new ShardingTableMetaDataDecorator().decorate(result, shardingRule);
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = new EncryptTableMetaDataDecorator().decorate(result, shardingRule.getEncryptRule());
@@ -201,9 +201,9 @@ public final class ShardingSchema extends LogicSchema {
         return result;
     }
     
-    private Optional<String> findLogicTableName(final TableMetas tableMetas, final String logicIndexName) {
-        for (String each : tableMetas.getAllTableNames()) {
-            if (tableMetas.get(each).getIndexes().containsKey(logicIndexName)) {
+    private Optional<String> findLogicTableName(final SchemaMetaData schemaMetaData, final String logicIndexName) {
+        for (String each : schemaMetaData.getAllTableNames()) {
+            if (schemaMetaData.get(each).getIndexes().containsKey(logicIndexName)) {
                 return Optional.of(each);
             }
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.binder.statement.impl;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
@@ -46,29 +46,29 @@ public final class InsertStatementContextTest {
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("status"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         setUpInsertValues(insertStatement);
-        InsertStatementContext actual = new InsertStatementContext(mock(TableMetas.class), Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(mock(SchemaMetaData.class), Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertStatementContext(actual);
     }
     
     @Test
     public void assertInsertStatementContextWithoutColumnNames() {
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
+        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
-        InsertStatementContext actual = new InsertStatementContext(tableMetas, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertInsertStatementContext(actual);
     }
     
     @Test
     public void assertGetGroupedParameters() {
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
+        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         setUpInsertValues(insertStatement);
-        InsertStatementContext actual = new InsertStatementContext(tableMetas, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
+        InsertStatementContext actual = new InsertStatementContext(schemaMetaData, Arrays.asList(1, "Tom", 2, "Jerry"), insertStatement);
         assertThat(actual.getGroupedParameters().size(), is(2));
     }
     

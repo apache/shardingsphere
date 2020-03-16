@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.parameter.rewriter;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 
 import java.util.Collection;
 
@@ -29,8 +29,8 @@ public interface ParameterRewriterBuilder {
     /**
      * Get parameter rewriters.
      * 
-     * @param tableMetas table metas
+     * @param schemaMetaData schema meta data
      * @return parameter rewriters
      */
-    Collection<ParameterRewriter> getParameterRewriters(TableMetas tableMetas);
+    Collection<ParameterRewriter> getParameterRewriters(SchemaMetaData schemaMetaData);
 }

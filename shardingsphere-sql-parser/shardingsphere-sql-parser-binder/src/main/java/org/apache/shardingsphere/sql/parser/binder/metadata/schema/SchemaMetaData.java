@@ -29,14 +29,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Table metas.
+ * Schema meta data.
  */
 @Getter
-public final class TableMetas {
+public final class SchemaMetaData {
     
     private final Map<String, TableMetaData> tables;
     
-    public TableMetas(final Map<String, TableMetaData> tables) {
+    public SchemaMetaData(final Map<String, TableMetaData> tables) {
         this.tables = new ConcurrentHashMap<>(tables.size(), 1);
         for (Entry<String, TableMetaData> entry : tables.entrySet()) {
             this.tables.put(entry.getKey().toLowerCase(), entry.getValue());

@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 
 /**
- * Table metas aware.
+ * Schema meta data aware.
  */
-public interface TableMetasAware {
+public interface SchemaMetaDataAware {
     
     /**
      * Set table metas.
      * 
-     * @param tableMetas table metas
+     * @param schemaMetaData schema meta data
      */
-    void setTableMetas(TableMetas tableMetas);
+    void setSchemaMetaData(SchemaMetaData schemaMetaData);
 }

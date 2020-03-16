@@ -30,8 +30,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetasLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -61,14 +61,14 @@ public final class ShadowSchema extends LogicSchema {
     
     private ShardingSphereMetaData createMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        TableMetas tableMetas = createTableMetas();
-        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
+        SchemaMetaData schemaMetaData = createSchemaMetaData();
+        return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
     }
     
-    private TableMetas createTableMetas() throws SQLException {
+    private SchemaMetaData createSchemaMetaData() throws SQLException {
         DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return TableMetasLoader.load(dataSource, maxConnectionsSizePerQuery);
+        return SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery);
     }
     
     /**

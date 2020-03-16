@@ -175,7 +175,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     
     private Statement getStatementAndReplay(final String sql) throws SQLException {
         SQLStatement sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, false);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getMetaData().getTables(), sql, Collections.emptyList(), sqlStatement);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getMetaData().getSchema(), sql, Collections.emptyList(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext);
         isShadowSQL = shadowJudgementEngine.isShadowSQL();
         Statement result = shadowStatementGenerator.createStatement();

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.select.projection.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
@@ -45,13 +45,13 @@ import java.util.Optional;
  */
 public final class ProjectionsContextEngine {
     
-    private final TableMetas tableMetas;
+    private final SchemaMetaData schemaMetaData;
     
     private final ProjectionEngine projectionEngine;
     
-    public ProjectionsContextEngine(final TableMetas tableMetas) {
-        this.tableMetas = tableMetas;
-        projectionEngine = new ProjectionEngine(tableMetas);
+    public ProjectionsContextEngine(final SchemaMetaData schemaMetaData) {
+        this.schemaMetaData = schemaMetaData;
+        projectionEngine = new ProjectionEngine(schemaMetaData);
     }
     
     /**
@@ -177,7 +177,7 @@ public final class ProjectionsContextEngine {
     private boolean isSameProjection(final ShorthandProjection shorthandProjection, final ColumnOrderByItemSegment orderItem, final SelectStatement selectStatement) {
         Preconditions.checkState(shorthandProjection.getOwner().isPresent());
         SimpleTableSegment tableSegment = find(shorthandProjection.getOwner().get(), selectStatement);
-        return tableMetas.containsColumn(tableSegment.getTableName().getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
+        return schemaMetaData.containsColumn(tableSegment.getTableName().getIdentifier().getValue(), orderItem.getColumn().getIdentifier().getValue());
     }
     
     private boolean isSameAlias(final Projection projection, final TextOrderByItemSegment orderItem) {

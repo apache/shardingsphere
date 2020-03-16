@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -34,12 +35,14 @@ public final class TableMetaDataLoader {
     /**
      * Load table meta data.
      *
-     * @param connection connection
+     * @param dataSource data source
      * @param table table name
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static TableMetaData load(final Connection connection, final String table) throws SQLException {
-        return new TableMetaData(ColumnMetaDataLoader.load(connection, table), IndexMetaDataLoader.load(connection, table));
+    public static TableMetaData load(final DataSource dataSource, final String table) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return new TableMetaData(ColumnMetaDataLoader.load(connection, table), IndexMetaDataLoader.load(connection, table));
+        }
     }
 }

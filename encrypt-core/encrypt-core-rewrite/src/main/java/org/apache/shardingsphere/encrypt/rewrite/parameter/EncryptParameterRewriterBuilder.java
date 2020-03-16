@@ -25,10 +25,10 @@ import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptInsertVal
 import org.apache.shardingsphere.encrypt.rewrite.parameter.impl.EncryptPredicateParameterRewriter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.TableMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -44,10 +44,10 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     private final boolean queryWithCipherColumn;
     
     @Override
-    public Collection<ParameterRewriter> getParameterRewriters(final TableMetas tableMetas) {
+    public Collection<ParameterRewriter> getParameterRewriters(final SchemaMetaData schemaMetaData) {
         Collection<ParameterRewriter> result = getParameterRewriters();
         for (ParameterRewriter each : result) {
-            setUpParameterRewriters(each, tableMetas);
+            setUpParameterRewriters(each, schemaMetaData);
         }
         return result;
     }
@@ -61,9 +61,9 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         return result;
     }
     
-    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final TableMetas tableMetas) {
-        if (parameterRewriter instanceof TableMetasAware) {
-            ((TableMetasAware) parameterRewriter).setTableMetas(tableMetas);
+    private void setUpParameterRewriters(final ParameterRewriter parameterRewriter, final SchemaMetaData schemaMetaData) {
+        if (parameterRewriter instanceof SchemaMetaDataAware) {
+            ((SchemaMetaDataAware) parameterRewriter).setSchemaMetaData(schemaMetaData);
         }
         if (parameterRewriter instanceof EncryptRuleAware) {
             ((EncryptRuleAware) parameterRewriter).setEncryptRule(encryptRule);

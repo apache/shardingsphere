@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataDecorator;
 
 import java.util.Collection;
@@ -34,12 +34,12 @@ import java.util.Map;
 public final class EncryptTableMetaDataDecorator implements TableMetaDataDecorator<EncryptRule> {
     
     @Override
-    public TableMetas decorate(final TableMetas tableMetas, final EncryptRule encryptRule) {
-        Map<String, TableMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size(), 1);
-        for (String each : tableMetas.getAllTableNames()) {
-            result.put(each, decorate(tableMetas.get(each), each, encryptRule));
+    public SchemaMetaData decorate(final SchemaMetaData schemaMetaData, final EncryptRule encryptRule) {
+        Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
+        for (String each : schemaMetaData.getAllTableNames()) {
+            result.put(each, decorate(schemaMetaData.get(each), each, encryptRule));
         }
-        return new TableMetas(result);
+        return new SchemaMetaData(result);
     }
     
     @Override

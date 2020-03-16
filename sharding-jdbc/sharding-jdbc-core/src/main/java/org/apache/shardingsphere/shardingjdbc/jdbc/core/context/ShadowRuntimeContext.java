@@ -23,8 +23,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSo
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetasLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 
 import javax.sql.DataSource;
@@ -65,8 +65,8 @@ public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<S
     }
     
     @Override
-    protected TableMetas loadTableMetas(final DataSource dataSource) throws SQLException {
-        return TableMetasLoader.load(dataSource, getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
+    protected SchemaMetaData loadSchemaMetaData(final DataSource dataSource) throws SQLException {
+        return SchemaMetaDataLoader.load(dataSource, getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
     }
     
     public enum ShadowType {

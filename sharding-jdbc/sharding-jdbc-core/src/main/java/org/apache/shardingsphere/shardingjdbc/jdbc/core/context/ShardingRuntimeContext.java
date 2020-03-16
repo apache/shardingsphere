@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
 import org.apache.shardingsphere.core.metadata.ShardingTableMetasLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -60,10 +60,10 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
     }
     
     @Override
-    protected TableMetas loadTableMetas(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) throws SQLException {
+    protected SchemaMetaData loadSchemaMetaData(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) throws SQLException {
         int maxConnectionsSizePerQuery = getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
-        TableMetas result = new ShardingTableMetasLoader(dataSourceMap, getRule(), maxConnectionsSizePerQuery, isCheckingMetaData).load();
+        SchemaMetaData result = new ShardingTableMetasLoader(dataSourceMap, getRule(), maxConnectionsSizePerQuery, isCheckingMetaData).load();
         result = new ShardingTableMetaDataDecorator().decorate(result, getRule());
         if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = new EncryptTableMetaDataDecorator().decorate(result, getRule().getEncryptRule());

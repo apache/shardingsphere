@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.common.metadata.table;
 
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
@@ -29,11 +29,11 @@ public interface TableMetaDataDecorator<T extends BaseRule> {
     /**
      * Decorate table metas.
      *
-     * @param tableMetas table metas
+     * @param schemaMetaData schema meta data
      * @param rule rule
      * @return decorated table metas
      */
-    TableMetas decorate(TableMetas tableMetas, T rule);
+    SchemaMetaData decorate(SchemaMetaData schemaMetaData, T rule);
     
     /**
      * Decorate table meta data.
