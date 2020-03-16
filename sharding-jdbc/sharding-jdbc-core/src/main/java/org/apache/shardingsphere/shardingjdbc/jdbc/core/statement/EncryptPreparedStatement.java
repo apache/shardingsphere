@@ -168,7 +168,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(runtimeContext.getMetaData().getTables(), sql, getParameters(), sqlStatement);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(runtimeContext.getMetaData().getSchema(), sql, getParameters(), sqlStatement);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData(), 
                 runtimeContext.getProperties()).createSQLRewriteContext(sql, getParameters(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);

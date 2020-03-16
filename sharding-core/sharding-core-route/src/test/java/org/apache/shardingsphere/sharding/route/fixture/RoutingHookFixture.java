@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.fixture;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
 
@@ -30,7 +30,7 @@ public final class RoutingHookFixture implements RoutingHook {
     
     private ShardingRouteContext routeContext;
     
-    private TableMetas tableMetas;
+    private SchemaMetaData schemaMetaData;
     
     private Exception cause;
     
@@ -40,9 +40,9 @@ public final class RoutingHookFixture implements RoutingHook {
     }
     
     @Override
-    public void finishSuccess(final ShardingRouteContext shardingRouteContext, final TableMetas tableMetas) {
+    public void finishSuccess(final ShardingRouteContext shardingRouteContext, final SchemaMetaData schemaMetaData) {
         this.routeContext = shardingRouteContext;
-        this.tableMetas = tableMetas;
+        this.schemaMetaData = schemaMetaData;
     }
     
     @Override

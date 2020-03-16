@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfigur
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
@@ -80,12 +80,12 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         SQLStatement sqlStatement = SQLParserEngineFactory.getSQLParserEngine(
                 null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType()).parse(getTestParameters().getInputSQL(), false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(
-                createTableMetas(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
-        return new SQLRewriteContext(mock(TableMetas.class), sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
+                createSchemaMetaData(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatement);
+        return new SQLRewriteContext(mock(SchemaMetaData.class), sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
     }
     
-    private TableMetas createTableMetas() {
-        TableMetas result = mock(TableMetas.class);
+    private SchemaMetaData createSchemaMetaData() {
+        SchemaMetaData result = mock(SchemaMetaData.class);
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "certificate_number", "password", "amount", "status"));
         return result;

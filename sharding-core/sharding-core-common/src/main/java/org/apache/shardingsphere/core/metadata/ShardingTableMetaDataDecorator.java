@@ -24,14 +24,11 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.decorator.TableMetaDataDecorator;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -39,15 +36,6 @@ import java.util.Optional;
  * Table meta data decorator for sharding.
  */
 public final class ShardingTableMetaDataDecorator implements TableMetaDataDecorator<ShardingRule> {
-    
-    @Override
-    public TableMetas decorate(final TableMetas tableMetas, final ShardingRule shardingRule) {
-        Map<String, TableMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size(), 1);
-        for (String each : tableMetas.getAllTableNames()) {
-            result.put(each, decorate(tableMetas.get(each), each, shardingRule));
-        }
-        return new TableMetas(result);
-    }
     
     @Override
     public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {

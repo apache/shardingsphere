@@ -104,7 +104,7 @@ public abstract class BaseShardingEngine {
         routingHook.start(sql);
         try {
             ShardingRouteContext result = decorate(route(sql, clonedParameters));
-            routingHook.finishSuccess(result, metaData.getTables());
+            routingHook.finishSuccess(result, metaData.getSchema());
             return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

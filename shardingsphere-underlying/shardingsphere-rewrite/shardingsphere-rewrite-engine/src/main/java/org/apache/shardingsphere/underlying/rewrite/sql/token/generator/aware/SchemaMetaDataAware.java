@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.parameter.rewriter;
+package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
 
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 
-import java.util.Collection;
-
 /**
- * Parameter rewriter builder.
+ * Schema meta data aware.
  */
-public interface ParameterRewriterBuilder {
+public interface SchemaMetaDataAware {
     
     /**
-     * Get parameter rewriters.
+     * Set schema meta data.
      * 
      * @param schemaMetaData schema meta data
-     * @return parameter rewriters
      */
-    Collection<ParameterRewriter> getParameterRewriters(SchemaMetaData schemaMetaData);
+    void setSchemaMetaData(SchemaMetaData schemaMetaData);
 }
