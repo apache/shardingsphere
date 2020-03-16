@@ -27,7 +27,7 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import lombok.Getter;
 
 /**
- * New Decimal type value of MySQL binlog protocol.
+ * NEWDECIMAL type value of MySQL binlog protocol.
  *
  * @see <a href="https://github.com/mysql/mysql-server/blob/5.7/strings/decimal.c">bin2decimal</a>
  */

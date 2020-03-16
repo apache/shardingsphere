@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import java.io.Serializable;
 
 /**
- * Varchar/Var string type value of MySQL binlog protocol.
+ * VARCHAR / VAR_STRING type value of MySQL binlog protocol.
  */
 public final class MySQLVarcharBinlogProtocolValue implements MySQLBinlogProtocolValue {
     

@@ -24,10 +24,10 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colum
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Time v2 type value of MySQL binlog protocol.
+ * TIME2 type value of MySQL binlog protocol.
  *
  * <p>
- *     Time v2 type applied after MySQL 5.6.4.
+ *     TIME2 type applied after MySQL 5.6.4.
  * </p>
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>

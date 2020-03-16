@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * MySQL timestamp v2 binlog protocol value.
+ * MySQL TIMESTAMP2 binlog protocol value.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */

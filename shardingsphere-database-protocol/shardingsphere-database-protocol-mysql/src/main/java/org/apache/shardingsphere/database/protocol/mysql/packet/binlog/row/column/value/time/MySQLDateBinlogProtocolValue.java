@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colum
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Date type value of MySQL binlog protocol.
+ * DATE type value of MySQL binlog protocol.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */

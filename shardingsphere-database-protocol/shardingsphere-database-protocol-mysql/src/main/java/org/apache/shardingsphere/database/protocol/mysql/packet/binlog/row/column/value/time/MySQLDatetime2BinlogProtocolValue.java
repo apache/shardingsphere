@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import java.io.Serializable;
 
 /**
- * MySQL datetime v2 binlog protocol value.
+ * MySQL DATETIME2 binlog protocol value.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */
