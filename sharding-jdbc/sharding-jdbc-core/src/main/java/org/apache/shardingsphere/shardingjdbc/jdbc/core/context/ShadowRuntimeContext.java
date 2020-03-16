@@ -23,8 +23,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSo
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetasLoader;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 
 import javax.sql.DataSource;

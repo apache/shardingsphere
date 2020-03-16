@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.impl;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.SQLBuilder;

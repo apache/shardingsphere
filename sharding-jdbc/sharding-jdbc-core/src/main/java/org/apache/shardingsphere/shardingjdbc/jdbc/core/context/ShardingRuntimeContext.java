@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
 import org.apache.shardingsphere.core.metadata.ShardingTableMetasLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;

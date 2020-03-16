@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.select.projection.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationDistinctProjection;

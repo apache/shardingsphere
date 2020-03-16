@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.aware.ShadowRuleAware;
 import org.apache.shardingsphere.shadow.rewrite.parameter.impl.ShadowInsertValueParameterRewriter;
 import org.apache.shardingsphere.shadow.rewrite.parameter.impl.ShadowPredicateParameterRewriter;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 

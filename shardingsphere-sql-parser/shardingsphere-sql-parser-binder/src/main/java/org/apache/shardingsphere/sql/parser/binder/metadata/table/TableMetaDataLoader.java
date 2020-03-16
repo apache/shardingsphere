@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.engine.merger;
+package org.apache.shardingsphere.sql.parser.binder.metadata.table;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
-import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
- * Query results merger.
+ * Table meta data loader.
  */
-public interface ResultMerger {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TableMetaDataLoader {
     
     /**
-     * Merge query results.
-     * 
-     * @param queryResults query results
-     * @param sqlStatementContext SQL statement context
-     * @param tableMetas table metas
-     * @return merged result
+     * Load table meta data.
+     *
+     * @param connection connection
+     * @param table table name
+     * @return table meta data
      * @throws SQLException SQL exception
      */
-    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext sqlStatementContext, TableMetas tableMetas) throws SQLException;
+    public static TableMetaData load(final Connection connection, final String table) throws SQLException {
+        return new TableMetaData(ColumnMetaDataLoader.load(connection, table), IndexMetaDataLoader.load(connection, table));
+    }
 }

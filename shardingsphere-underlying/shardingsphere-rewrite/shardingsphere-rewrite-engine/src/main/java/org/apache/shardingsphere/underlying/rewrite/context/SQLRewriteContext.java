@@ -19,7 +19,7 @@ package org.apache.shardingsphere.underlying.rewrite.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAwar
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingPaginationParameterRewriter;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.TableMetasAware;

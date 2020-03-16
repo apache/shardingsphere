@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;

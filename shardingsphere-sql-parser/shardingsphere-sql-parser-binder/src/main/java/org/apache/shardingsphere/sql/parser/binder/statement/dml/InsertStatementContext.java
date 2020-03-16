@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;

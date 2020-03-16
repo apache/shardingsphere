@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetasLoader;
 import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 

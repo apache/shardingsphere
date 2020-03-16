@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.generator;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;

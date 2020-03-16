@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.metadata.table;
+package org.apache.shardingsphere.sql.parser.binder.metadata.schema;
 
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
-import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -58,7 +58,7 @@ public final class TableMetasLoader {
      */
     public static TableMetaData load(final DataSource dataSource, final String table) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return new TableMetaData(ColumnMetaDataLoader.load(connection, table), IndexMetaDataLoader.load(connection, table));
+            return TableMetaDataLoader.load(connection, table);
         }
     }
     
@@ -103,11 +103,10 @@ public final class TableMetasLoader {
         try (Connection con = connection) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tables) {
-                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each), IndexMetaDataLoader.load(con, each)));
+                result.put(each, TableMetaDataLoader.load(con, each));
             }
             return result;
         }
-        
     }
     
     private static List<String> loadAllTableNames(final Connection connection) throws SQLException {

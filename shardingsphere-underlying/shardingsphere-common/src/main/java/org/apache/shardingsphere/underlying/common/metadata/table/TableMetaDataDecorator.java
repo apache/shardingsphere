@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.common.metadata.table;
 
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**

@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineF
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;

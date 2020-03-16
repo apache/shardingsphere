@@ -22,8 +22,8 @@ import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetasLoader;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 

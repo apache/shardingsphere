@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMer
 import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

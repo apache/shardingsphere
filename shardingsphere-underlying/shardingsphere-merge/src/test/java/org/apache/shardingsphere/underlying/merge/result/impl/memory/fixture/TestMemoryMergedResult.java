@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.memory.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.TableMetas;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.fixture.TestRule;
