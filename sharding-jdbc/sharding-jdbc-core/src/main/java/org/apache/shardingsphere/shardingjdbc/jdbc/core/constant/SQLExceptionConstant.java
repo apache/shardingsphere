@@ -28,5 +28,7 @@ public final class SQLExceptionConstant {
     
     public static final String SQL_STRING_NULL_OR_EMPTY = "SQL String can not be NULL or empty.";
     
-    public static final String OUT_OF_INDEX_SQL_STAT = "S1002";
+    public static final String COLUMN_INDEX_OUT_OF_RANGE = "Column index out of range.";
+    
+    public static final String OUT_OF_INDEX_SQL_STATE = "S1002";
 }

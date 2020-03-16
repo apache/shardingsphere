@@ -90,7 +90,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
         if (sqlStatementContext instanceof SelectStatementContext) {
             List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
             if (column > actualProjections.size()) {
-                throw new SQLException(String.format("Out of index of projection %s", column), SQLExceptionConstant.OUT_OF_INDEX_SQL_STAT, 0);
+                throw new SQLException(SQLExceptionConstant.COLUMN_INDEX_OUT_OF_RANGE, SQLExceptionConstant.OUT_OF_INDEX_SQL_STATE, 0);
             }
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
             if (projection instanceof ColumnProjection) {
