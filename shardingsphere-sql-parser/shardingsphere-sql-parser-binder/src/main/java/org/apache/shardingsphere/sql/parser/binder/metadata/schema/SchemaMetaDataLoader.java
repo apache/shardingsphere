@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.binder.metadata.schema;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -43,6 +44,7 @@ import java.util.concurrent.Future;
  * Schema meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class SchemaMetaDataLoader {
     
     private static final String TABLE_TYPE = "TABLE";
@@ -62,27 +64,17 @@ public final class SchemaMetaDataLoader {
         try (Connection connection = dataSource.getConnection()) {
             tableNames = loadAllTableNames(connection);
         }
+        log.info("Loading {} tables' meta data.", tableNames.size());
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
         if (1 == tableGroups.size()) {
-            return new SchemaMetaData(load(dataSource.getConnection(), tableGroups.get(0)));
+            long start = System.currentTimeMillis();
+            Map<String, TableMetaData> result = load(dataSource.getConnection(), tableGroups.get(0));
+            log.info("Load finished, total cost {} milliseconds.", System.currentTimeMillis() - start);
+            return new SchemaMetaData(result);
         }
-        Map<String, TableMetaData> result = new ConcurrentHashMap<>(tableNames.size(), 1);
-        ExecutorService executorService = Executors.newFixedThreadPool(maxConnectionCount);
-        Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (List<String> each : tableGroups) {
-            futures.add(executorService.submit(() -> load(dataSource.getConnection(), each)));
-        }
-        for (Future<Map<String, TableMetaData>> each : futures) {
-            try {
-                result.putAll(each.get());
-            } catch (final InterruptedException | ExecutionException ex) {
-                if (ex.getCause() instanceof SQLException) {
-                    throw (SQLException) ex.getCause();
-                }
-                Thread.currentThread().interrupt();
-            }
-             
-        }
+        long start = System.currentTimeMillis();
+        Map<String, TableMetaData> result = asyncLoad(dataSource, maxConnectionCount, tableNames, tableGroups);
+        log.info("Load finished, total cost {} milliseconds.", System.currentTimeMillis() - start);
         return new SchemaMetaData(result);
     }
     
@@ -111,5 +103,26 @@ public final class SchemaMetaDataLoader {
     
     private static boolean isSystemTable(final String table) {
         return table.contains("$") || table.contains("/");
+    }
+    
+    private static Map<String, TableMetaData> asyncLoad(final DataSource dataSource,
+                                                        final int maxConnectionCount, final List<String> tableNames, final List<List<String>> tableGroups) throws SQLException {
+        Map<String, TableMetaData> result = new ConcurrentHashMap<>(tableNames.size(), 1);
+        ExecutorService executorService = Executors.newFixedThreadPool(maxConnectionCount);
+        Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
+        for (List<String> each : tableGroups) {
+            futures.add(executorService.submit(() -> load(dataSource.getConnection(), each)));
+        }
+        for (Future<Map<String, TableMetaData>> each : futures) {
+            try {
+                result.putAll(each.get());
+            } catch (final InterruptedException | ExecutionException ex) {
+                if (ex.getCause() instanceof SQLException) {
+                    throw (SQLException) ex.getCause();
+                }
+                Thread.currentThread().interrupt();
+            }
+        }
+        return result;
     }
 }
