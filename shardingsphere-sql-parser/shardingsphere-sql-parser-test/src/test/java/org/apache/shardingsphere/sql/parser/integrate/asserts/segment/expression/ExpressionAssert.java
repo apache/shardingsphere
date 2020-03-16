@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expressio
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple.ExpectedLiteralExpression;
@@ -52,8 +53,7 @@ public final class ExpressionAssert {
                                                         final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
         assertNotNull(assertContext.getText("Expected parameter marker expression should exist."), expected);
         assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     /**

@@ -773,7 +773,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="79" stop-index="79" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -904,9 +904,9 @@
                 <predicate start-index="28" stop-index="61" literal-stop-index="97">
                     <column-left-value name="rule" start-index="28" stop-index="31" />
                     <between-right-value>
-                        <between-parameter-marker-expression value="0" />
+                        <between-parameter-marker-expression value="0"  start-index="41" stop-index="48" literal-start-index="48" literal-stop-index="55" />
                         <between-literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
-                        <and-parameter-marker-expression value="1" />
+                        <and-parameter-marker-expression value="1" start-index="54" stop-index="61" />
                         <and-literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" />
                     </between-right-value>
                 </predicate>
@@ -919,7 +919,7 @@
                     <column-left-value name="order_id" start-index="140" stop-index="147" literal-start-index="180" literal-stop-index="187" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="4" start-index="151" stop-index="151" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
