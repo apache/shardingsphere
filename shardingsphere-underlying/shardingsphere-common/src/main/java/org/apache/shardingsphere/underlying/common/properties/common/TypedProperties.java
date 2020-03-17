@@ -69,6 +69,15 @@ public class TypedProperties<E extends Enum & TypedPropertiesKey> {
         }
     }
     
+    private Optional<E> find(final String key) {
+        for (E each : keyClass.getEnumConstants()) {
+            if (each.getKey().equals(key)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
     private String getErrorMessage(final E typedEnum, final String invalidValue) {
         return String.format("Value '%s' of '%s' cannot convert to type '%s'.", invalidValue, typedEnum.getKey(), typedEnum.getType().getName());
     }
@@ -106,20 +115,5 @@ public class TypedProperties<E extends Enum & TypedPropertiesKey> {
         }
         cachedProperties.put(typedEnum, result);
         return (T) result;
-    }
-    
-    /**
-     * Find value via property key.
-     *
-     * @param key property key
-     * @return value enum
-     */
-    public Optional<E> find(final String key) {
-        for (E each : keyClass.getEnumConstants()) {
-            if (each.getKey().equals(key)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
 }
