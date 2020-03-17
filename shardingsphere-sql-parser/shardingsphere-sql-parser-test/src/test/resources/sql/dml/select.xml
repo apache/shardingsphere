@@ -104,7 +104,7 @@
                     <column-left-value name="item_id" start-index="33" stop-index="39" />
                     <operator type="&lt;&gt;" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -128,7 +128,7 @@
                     <column-left-value name="item_id" start-index="33" stop-index="39" />
                     <operator type="!=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -198,7 +198,7 @@
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="38" stop-index="38" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -206,7 +206,7 @@
                     <column-left-value name="order_id" start-index="44" stop-index="51" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="55" stop-index="55" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -227,7 +227,7 @@
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -235,7 +235,7 @@
                     <column-left-value name="order_id" start-index="45" stop-index="52" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -255,18 +255,18 @@
                 <predicate start-index="28" stop-index="50" literal-stop-index="51">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <between-right-value>
-                        <between-parameter-marker-expression value="0" />
+                        <between-parameter-marker-expression value="0" start-index="44" stop-index="44" />
                         <between-literal-expression value="1" />
-                        <and-parameter-marker-expression value="1" />
+                        <and-parameter-marker-expression value="1" start-index="50" stop-index="50" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
                 <predicate start-index="56" stop-index="79" literal-start-index="57" literal-stop-index="80">
                     <column-left-value name="order_id" start-index="56" stop-index="63" literal-start-index="57" literal-stop-index="64" />
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="73" stop-index="73" />
                         <between-literal-expression value="2" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="79" stop-index="79" />
                         <and-literal-expression value="5" />
                     </between-right-value>
                 </predicate>
@@ -291,7 +291,7 @@
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <operator type="&gt;=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -299,7 +299,7 @@
                     <column-left-value name="user_id" start-index="45" stop-index="51" />
                     <operator type="&lt;=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
                         <literal-expression value="10" />
                     </compare-right-value>
                 </predicate>
@@ -307,7 +307,7 @@
                     <column-left-value name="order_id" start-index="62" stop-index="69" literal-start-index="63" literal-stop-index="70" />
                     <operator type="&gt;=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -315,7 +315,7 @@
                     <column-left-value name="order_id" start-index="80" stop-index="87" literal-start-index="81" literal-stop-index="88" />
                     <operator type="&lt;=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="3" />
+                        <parameter-marker-expression value="3" start-index="92" stop-index="92" />
                         <literal-expression value="5" />
                     </compare-right-value>
                 </predicate>
@@ -339,9 +339,9 @@
                 <predicate start-index="28" stop-index="47">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
+                        <parameter-marker-expression value="1" start-index="43" stop-index="43" />
+                        <parameter-marker-expression value="2" start-index="46" stop-index="46" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                         <literal-expression value="3" />
@@ -350,8 +350,8 @@
                 <predicate start-index="53" stop-index="70" literal-stop-index="71">
                     <column-left-value name="order_id" start-index="53" stop-index="60" />
                     <in-right-value>
-                        <parameter-marker-expression value="3" />
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="3" start-index="66" stop-index="66" />
+                        <parameter-marker-expression value="4" start-index="69" stop-index="69" />
                         <literal-expression value="9" />
                         <literal-expression value="10" />
                     </in-right-value>
@@ -376,8 +376,8 @@
                 <predicate start-index="28" stop-index="45" literal-stop-index="51">
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="41" stop-index="41" />
+                        <parameter-marker-expression value="1" start-index="44" stop-index="44" />
                         <literal-expression value="1000" />
                         <literal-expression value="1001" />
                     </in-right-value>
@@ -385,8 +385,8 @@
                 <predicate start-index="51" stop-index="68" literal-start-index="57" literal-stop-index="80">
                     <column-left-value name="order_id" start-index="51" stop-index="58" literal-start-index="57" literal-stop-index="64" />
                     <in-right-value>
-                        <parameter-marker-expression value="2" />
-                        <parameter-marker-expression value="3" />
+                        <parameter-marker-expression value="2" start-index="64" stop-index="64" />
+                        <parameter-marker-expression value="3" start-index="67" stop-index="67" />
                         <literal-expression value="1001" />
                         <literal-expression value="1002" />
                     </in-right-value>
@@ -418,8 +418,8 @@
                         <owner name="o" start-index="93" stop-index="93" literal-start-index="98" literal-stop-index="98" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="1" />
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="1" start-index="107" stop-index="107" />
+                        <parameter-marker-expression value="2" start-index="110" stop-index="110" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -429,9 +429,9 @@
                         <owner name="o" start-index="117" stop-index="117" literal-start-index="122" literal-stop-index="122" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="3" />
+                        <between-parameter-marker-expression value="3" start-index="136" stop-index="136" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="4" />
+                        <and-parameter-marker-expression value="4" start-index="142" stop-index="142" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -459,8 +459,8 @@
                         <owner name="o" start-index="91" stop-index="91" literal-start-index="96" literal-stop-index="96" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="1" />
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="1" start-index="105" stop-index="105" />
+                        <parameter-marker-expression value="2" start-index="108" stop-index="108" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -470,9 +470,9 @@
                         <owner name="o" start-index="115" stop-index="115" literal-start-index="120" literal-stop-index="120" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="3" />
+                        <between-parameter-marker-expression value="3" start-index="134" stop-index="134" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="4" />
+                        <and-parameter-marker-expression value="4" start-index="140" stop-index="140" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -612,8 +612,8 @@
                         <owner name="o" start-index="144" stop-index="144" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                        <parameter-marker-expression value="1" start-index="161" stop-index="161" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -623,9 +623,9 @@
                         <owner name="o" start-index="168" stop-index="168" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="187" stop-index="187" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="193" stop-index="193" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -635,7 +635,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="4" start-index="210" stop-index="210" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -666,8 +666,8 @@
                         <owner name="o" start-index="144" stop-index="144" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                        <parameter-marker-expression value="1" start-index="161" stop-index="161" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -677,9 +677,9 @@
                         <owner name="o" start-index="168" stop-index="168" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="187" stop-index="187" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="193" stop-index="193" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -689,7 +689,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="4" start-index="210" stop-index="210" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -720,8 +720,8 @@
                         <owner name="o" start-index="144" stop-index="144" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="158" stop-index="158" />
+                        <parameter-marker-expression value="1" start-index="161" stop-index="161" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -731,9 +731,9 @@
                         <owner name="o" start-index="168" stop-index="168" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="187" stop-index="187" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="193" stop-index="193" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -743,7 +743,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="4" start-index="210" stop-index="210" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -820,7 +820,7 @@
                     <column-left-value name="rule" start-index="28" stop-index="31" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="35" stop-index="42" />
                         <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
                     </compare-right-value>
                 </predicate>
@@ -833,7 +833,7 @@
                     <column-left-value name="user_id" start-index="121" stop-index="127" literal-start-index="143" literal-stop-index="149" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="3" />
+                        <parameter-marker-expression value="3" start-index="131" stop-index="131" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -841,7 +841,7 @@
                     <column-left-value name="order_id" start-index="137" stop-index="144" literal-start-index="159" literal-stop-index="166" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="4" start-index="148" stop-index="148" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -861,8 +861,8 @@
                 <predicate start-index="28" stop-index="55" literal-stop-index="91">
                     <column-left-value name="rule" start-index="28" stop-index="31" />
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="37" stop-index="44" />
+                        <parameter-marker-expression value="1" start-index="47" stop-index="54" />
                         <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
                         <literal-expression value="{&quot;rule3&quot;:&quot;null3&quot;}'::json" />
                     </in-right-value>
@@ -876,7 +876,7 @@
                     <column-left-value name="user_id" start-index="134" stop-index="140" literal-start-index="174" literal-stop-index="180" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="4" start-index="144" stop-index="144" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -884,7 +884,7 @@
                     <column-left-value name="order_id" start-index="150" stop-index="157" literal-start-index="190" literal-stop-index="197" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="5" />
+                        <parameter-marker-expression value="5" start-index="161" stop-index="161" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -1444,7 +1444,7 @@
                     <column-left-value name="user_id" start-index="28" stop-index="34"  literal-stop-index="34" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="38" stop-index="38" />
                         <literal-expression value="10" />
                     </compare-right-value>
                 </predicate>
