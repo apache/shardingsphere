@@ -35,7 +35,7 @@ import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.properties.orchestration.OrchestrationProperties;
-import org.apache.shardingsphere.underlying.common.properties.orchestration.OrchestrationPropertiesEnum;
+import org.apache.shardingsphere.underlying.common.properties.orchestration.OrchestrationPropertyKey;
 
 import java.util.Collection;
 import java.util.Map;
@@ -72,7 +72,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
         CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
         configCenterRepository = new ConfigCenterRepositoryServiceLoader().load(configCenterConfiguration);
-        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertiesEnum.OVERWRITE);
+        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertyKey.OVERWRITE);
         configCenter = new ConfigCenter(configCenterName.get(), configCenterRepository);
         listenerManager = shardingSchemaNames.isEmpty()
                 ? new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,

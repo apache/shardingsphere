@@ -22,11 +22,11 @@ import org.apache.shardingsphere.underlying.common.properties.common.TypedProper
 import java.util.Properties;
 
 /**
- * Orchestration properties.
+ * Typed properties of orchestration.
  */
-public final class OrchestrationProperties extends TypedProperties<OrchestrationPropertiesEnum> {
+public final class OrchestrationProperties extends TypedProperties<OrchestrationPropertyKey> {
     
     public OrchestrationProperties(final Properties props) {
-        super(OrchestrationPropertiesEnum.class, props);
+        super(OrchestrationPropertyKey.class, props);
     }
 }

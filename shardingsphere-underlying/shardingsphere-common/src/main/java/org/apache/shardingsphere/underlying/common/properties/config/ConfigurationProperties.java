@@ -22,7 +22,7 @@ import org.apache.shardingsphere.underlying.common.properties.common.TypedProper
 import java.util.Properties;
 
 /**
- * Configuration properties.
+ * Typed properties of configuration.
  */
 public final class ConfigurationProperties extends TypedProperties<ConfigurationPropertyKey> {
     

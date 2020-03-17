@@ -22,14 +22,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
 
 /**
- * Orchestration properties enum.
+ * Typed property key of orchestration.
  */
 @RequiredArgsConstructor
 @Getter
-public enum OrchestrationPropertiesEnum implements TypedPropertyKey {
+public enum OrchestrationPropertyKey implements TypedPropertyKey {
     
     /**
-     * Enable or Disable to overwrite orchestration config center data.
+     * Enable or disable to overwrite orchestration config center data.
      *
      * <p>
      * If this properties is true, yaml file config properties will overwrite orchestration config center data.

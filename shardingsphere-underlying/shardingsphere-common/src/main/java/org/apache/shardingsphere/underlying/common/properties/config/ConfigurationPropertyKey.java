@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
 
 /**
- * Property key of configuration.
+ * Typed property key of configuration.
  */
 @RequiredArgsConstructor
 @Getter
