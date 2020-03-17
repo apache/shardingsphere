@@ -25,9 +25,9 @@ import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingSt
 import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -37,10 +37,10 @@ import java.util.Properties;
 
 public final class LocalShardingDatabasesAndTablesConfiguration implements ExampleConfiguration {
     
-    private final Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private final Map<String, CenterConfiguration> centerConfigurationMap;
     
-    public LocalShardingDatabasesAndTablesConfiguration(final Map<String, InstanceConfiguration> instanceConfigurationMap) {
-        this.instanceConfigurationMap = instanceConfigurationMap;
+    public LocalShardingDatabasesAndTablesConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
+        this.centerConfigurationMap = centerConfigurationMap;
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
@@ -58,7 +58,7 @@ public final class LocalShardingDatabasesAndTablesConfiguration implements Examp
         shardingRuleConfig.getBroadcastTables().add("t_address");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "demo_ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new PreciseModuloShardingTableAlgorithm()));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(instanceConfigurationMap);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
         return OrchestrationShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new Properties(), orchestrationConfig);
     }
     
