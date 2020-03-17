@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnTyp
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.AbstractMySQLBinlogEventPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLNullBitmap;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.Collection;
@@ -48,7 +49,7 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
     
     private final Collection<MySQLBinlogColumnDef> columnDefs;
     
-    private final MySQLBinlogBitmap nullBitMap;
+    private final MySQLNullBitmap nullBitMap;
     
     protected MySQLBinlogTableMapEventPacket(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         super(binlogEventHeader);
@@ -62,7 +63,7 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
         columnDefs = new LinkedList<>();
         readColumnDefs(payload);
         readColumnMetaDefs(payload);
-        nullBitMap = new MySQLBinlogBitmap(columnCount, payload);
+        nullBitMap = new MySQLNullBitmap(columnCount, payload);
     }
     
     private void readColumnDefs(final MySQLPacketPayload payload) {
