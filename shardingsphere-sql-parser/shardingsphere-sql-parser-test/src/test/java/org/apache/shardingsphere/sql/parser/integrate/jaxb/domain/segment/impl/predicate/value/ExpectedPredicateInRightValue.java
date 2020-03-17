@@ -43,6 +43,6 @@ public final class ExpectedPredicateInRightValue implements ExpectedPredicateRig
     @XmlElement(name = "common-expression")
     private List<ExpectedCommonExpression> commonExpressions;
 
-    @XmlElement(name = "subquery")
+    @XmlElement(name = "subquery-expression")
     private List<ExpectedSubquery> subqueries;
 }

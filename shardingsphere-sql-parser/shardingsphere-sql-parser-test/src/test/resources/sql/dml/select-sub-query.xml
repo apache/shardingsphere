@@ -70,7 +70,7 @@
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <operator type="=" />
                     <compare-right-value>
-                        <subquery>
+                        <subquery-expression>
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="59" stop-index="70" />
@@ -90,7 +90,7 @@
                                     </and-predicate>
                                 </where>
                             </select>
-                        </subquery>
+                        </subquery-expression>
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -109,7 +109,7 @@
                 <predicate start-index="28" literal-stop-index="93">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <in-right-value>
-                        <subquery>
+                        <subquery-expression>
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="60" stop-index="71" />
@@ -129,7 +129,7 @@
                                     </and-predicate>
                                 </where>
                             </select>
-                        </subquery>
+                        </subquery-expression>
                     </in-right-value>
                 </predicate>
             </and-predicate>
@@ -148,7 +148,7 @@
                 <predicate start-index="28" stop-index="103" literal-stop-index="104">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <between-right-value>
-                        <between-subquery>
+                        <between-subquery-expression>
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="65" stop-index="76" />
@@ -168,7 +168,7 @@
                                     </and-predicate>
                                 </where>
                             </select>
-                        </between-subquery>
+                        </between-subquery-expression>
                         <and-parameter-marker-expression value="0" />
                         <and-literal-expression value="12" />
                     </between-right-value>

@@ -109,7 +109,6 @@ public final class WhereClauseAssert {
             assertNotNull(assertContext.getText("Operator assertion error: "), expected);
             assertThat(assertContext.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator(), is(expected.getType()));
         }
-        // TODO assert operator start index and stop index
     }
     
     private static void assertCompareRightValue(final SQLCaseAssertContext assertContext, final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
@@ -122,8 +121,6 @@ public final class WhereClauseAssert {
         } else if (actual.getExpression() instanceof SubqueryExpressionSegment) {
             ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual.getExpression(), expected.getSubquery());
         }
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertInRightValue(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
@@ -132,8 +129,6 @@ public final class WhereClauseAssert {
         assertLiteralExpressionSegment(assertContext, actual, expected);
         assertCommonExpressionSegment(assertContext, actual, expected);
         assertSubqueryExpressionSegment(assertContext, actual, expected);
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertParameterMarkerExpressionSegment(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
@@ -180,8 +175,6 @@ public final class WhereClauseAssert {
         assertNotNull(assertContext.getText("Expected predicate between right value can not be null"), expected);
         assertBetweenExpression(assertContext, actual.getBetweenExpression(), expected);
         assertAndExpression(assertContext, actual.getAndExpression(), expected);
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertBetweenExpression(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
