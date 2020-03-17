@@ -22,8 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedDelimiterSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected tables.
@@ -33,8 +33,8 @@ import java.util.LinkedList;
 public final class ExpectedTables extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlElement(name = "simple-table")
-    private final Collection<ExpectedSimpleTable> simpleTables = new LinkedList<>();
+    private final List<ExpectedSimpleTable> simpleTables = new LinkedList<>();
     
     @XmlElement(name = "subquery-table")
-    private final Collection<ExpectedSubqueryTable> subqueryTables = new LinkedList<>();
+    private final List<ExpectedSubqueryTable> subqueryTables = new LinkedList<>();
 }
