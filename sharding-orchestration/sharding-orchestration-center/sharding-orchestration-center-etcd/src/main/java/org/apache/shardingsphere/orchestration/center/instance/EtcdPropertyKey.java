@@ -22,21 +22,16 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
 /**
- * Nacos properties enum.
+ * Typed property key of Etcd.
  */
 @RequiredArgsConstructor
 @Getter
-public enum NacosPropertiesEnum implements TypedPropertyKey {
+public enum EtcdPropertyKey implements TypedPropertyKey {
     
     /**
-     * Nacos config service group name.
+     * The portal url for apollo open api client.
      */
-    GROUP("group", "SHARDING_SPHERE_DEFAULT_GROUP", String.class),
-    
-    /**
-     * Nacos get config data timeout value.
-     */
-    TIMEOUT("timeout", String.valueOf(3000), long.class);
+    TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30", long.class);
     
     private final String key;
     

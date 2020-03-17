@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
 /**
- * Zookeeper properties enum.
+ * Typed property key of Zookeeper.
  */
 @RequiredArgsConstructor
 @Getter
-public enum ZookeeperPropertiesEnum implements TypedPropertyKey {
+public enum ZookeeperPropertyKey implements TypedPropertyKey {
     
     /**
      * Retry interval milliseconds when connect with zookeeper curator client.

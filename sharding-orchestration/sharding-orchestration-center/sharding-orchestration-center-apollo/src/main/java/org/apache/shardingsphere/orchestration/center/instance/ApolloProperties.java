@@ -22,11 +22,11 @@ import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
 import java.util.Properties;
 
 /**
- * Apollo properties.
+ * Typed properties of Apollo.
  */
-public final class ApolloProperties extends TypedProperties<ApolloPropertiesEnum> {
+public final class ApolloProperties extends TypedProperties<ApolloPropertyKey> {
     
     public ApolloProperties(final Properties props) {
-        super(ApolloPropertiesEnum.class, props);
+        super(ApolloPropertyKey.class, props);
     }
 }

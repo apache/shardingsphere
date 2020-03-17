@@ -94,7 +94,7 @@ public final class EtcdCenterRepository implements ConfigCenterRepository, Regis
     @Override
     @SneakyThrows
     public void persistEphemeral(final String key, final String value) {
-        long leaseId = client.getLeaseClient().grant(this.etcdProperties.getValue(EtcdPropertiesEnum.TIME_TO_LIVE_SECONDS)).get().getID();
+        long leaseId = client.getLeaseClient().grant(this.etcdProperties.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
         client.getLeaseClient().keepAlive(leaseId, Observers.observer(response -> { }));
         client.getKVClient().put(ByteSequence.from(key, Charsets.UTF_8), ByteSequence.from(value, Charsets.UTF_8), PutOption.newBuilder().withLeaseId(leaseId).build()).get();
     }

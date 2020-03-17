@@ -22,11 +22,11 @@ import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
 import java.util.Properties;
 
 /**
- * Nacos properties.
+ * Typed properties of Nacos.
  */
-public final class NacosProperties extends TypedProperties<NacosPropertiesEnum> {
+public final class NacosProperties extends TypedProperties<NacosPropertyKey> {
     
     public NacosProperties(final Properties props) {
-        super(NacosPropertiesEnum.class, props);
+        super(NacosPropertyKey.class, props);
     }
 }

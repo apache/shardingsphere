@@ -24,11 +24,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
 /**
- * Apollo properties enum.
+ * Typed property key of Apollo.
  */
 @RequiredArgsConstructor
 @Getter
-public enum ApolloPropertiesEnum implements TypedPropertyKey {
+public enum ApolloPropertyKey implements TypedPropertyKey {
     
     /**
      * Apollo config client app id param.

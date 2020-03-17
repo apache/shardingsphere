@@ -17,16 +17,30 @@
 
 package org.apache.shardingsphere.orchestration.center.instance;
 
-import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
-
-import java.util.Properties;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
 /**
- * Typed properties of Zookeeper.
+ * Typed property key of Nacos.
  */
-public final class ZookeeperProperties extends TypedProperties<ZookeeperPropertyKey> {
+@RequiredArgsConstructor
+@Getter
+public enum NacosPropertyKey implements TypedPropertyKey {
     
-    public ZookeeperProperties(final Properties props) {
-        super(ZookeeperPropertyKey.class, props);
-    }
+    /**
+     * Nacos config service group name.
+     */
+    GROUP("group", "SHARDING_SPHERE_DEFAULT_GROUP", String.class),
+    
+    /**
+     * Nacos get config data timeout value.
+     */
+    TIMEOUT("timeout", String.valueOf(3000), long.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }

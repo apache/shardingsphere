@@ -22,11 +22,11 @@ import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
 import java.util.Properties;
 
 /**
- * Etcd properties.
+ * Typed properties of Etcd.
  */
-public final class EtcdProperties extends TypedProperties<EtcdPropertiesEnum> {
-
+public final class EtcdProperties extends TypedProperties<EtcdPropertyKey> {
+    
     public EtcdProperties(final Properties props) {
-        super(EtcdPropertiesEnum.class, props);
+        super(EtcdPropertyKey.class, props);
     }
 }
