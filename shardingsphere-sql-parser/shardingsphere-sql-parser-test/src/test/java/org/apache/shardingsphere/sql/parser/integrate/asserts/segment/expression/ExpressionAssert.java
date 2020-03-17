@@ -94,7 +94,7 @@ public final class ExpressionAssert {
      * @param actual actual subquery segment
      * @param expected expected subquery expression
      */
-    public static void assertSubquery(final SQLCaseAssertContext assertContext, final SubqueryExpressionSegment actual, final ExpectedSubquery expected) {
+    public static void assertSubqueryExpression(final SQLCaseAssertContext assertContext, final SubqueryExpressionSegment actual, final ExpectedSubquery expected) {
         // TODO assert start index, stop index and sub select statement.
         SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSelectTestCases());
 //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
