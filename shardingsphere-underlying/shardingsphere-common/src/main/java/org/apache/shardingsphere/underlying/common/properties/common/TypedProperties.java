@@ -55,20 +55,12 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
     }
     
     private Map<E, String> preloadStringValues(final Class<E> keyClass) {
-        Map<E, String> result = new HashMap<>(props.size(), 1);
-        for (Object each : props.keySet()) {
-            findEnumKey(keyClass, each.toString()).ifPresent(enumKey -> result.put(enumKey, props.getOrDefault(enumKey.getKey(), enumKey.getDefaultValue()).toString()));
+        E[] enumConstants = keyClass.getEnumConstants();
+        Map<E, String> result = new HashMap<>(enumConstants.length, 1);
+        for (E each : enumConstants) {
+            result.put(each, props.getOrDefault(each.getKey(), each.getDefaultValue()).toString());
         }
         return result;
-    }
-    
-    private Optional<E> findEnumKey(final Class<E> keyClass, final String key) {
-        for (E each : keyClass.getEnumConstants()) {
-            if (each.getKey().equals(key)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
     
     private void validate(final Map<E, String> stringValueMap) {
