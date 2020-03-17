@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.underlying.common.properties;
 
+import org.apache.shardingsphere.underlying.common.properties.basic.TypedProperties;
+
 import java.util.Properties;
 
 /**

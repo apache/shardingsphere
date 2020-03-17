@@ -19,6 +19,7 @@ package org.apache.shardingsphere.underlying.common.properties;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.properties.basic.TypedPropertiesKey;
 
 /**
  * Orchestration properties enum.

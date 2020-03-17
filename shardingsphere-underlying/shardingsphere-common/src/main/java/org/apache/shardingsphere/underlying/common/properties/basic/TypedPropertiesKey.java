@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties;
+package org.apache.shardingsphere.underlying.common.properties.basic;
 
 /**
  * Typed properties key interface.
@@ -23,20 +23,23 @@ package org.apache.shardingsphere.underlying.common.properties;
 public interface TypedPropertiesKey {
     
     /**
-     * return the specific type.
-     * @return type
-     */
-    Class<?> getType();
-    
-    /**
-     * return the specific key.
+     * Return the specific key.
+     * 
      * @return key
      */
     String getKey();
     
     /**
-     * return the default value.
+     * Return the default value.
+     * 
      * @return defaultValue
      */
     String getDefaultValue();
+    
+    /**
+     * Return the specific type.
+     * 
+     * @return type
+     */
+    Class<?> getType();
 }

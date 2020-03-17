@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.underlying.common.properties;
 
+import org.apache.shardingsphere.underlying.common.properties.basic.TypedProperties;
+
 import java.util.Properties;
 
 /**
@@ -27,5 +29,4 @@ public final class ShardingSphereProperties extends TypedProperties<PropertiesCo
     public ShardingSphereProperties(final Properties props) {
         super(PropertiesConstant.class, props);
     }
-    
 }
