@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.segment.select.projection.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationDistinctProjection;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ProjectionEngine {
     
-    private final TableMetas tableMetas;
+    private final SchemaMetaData schemaMetaData;
     
     private int aggregationAverageDerivedColumnCount;
     
@@ -124,7 +124,7 @@ public final class ProjectionEngine {
     private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
         Collection<ColumnProjection> result = new LinkedList<>();
         for (SimpleTableSegment each : tables) {
-            result.addAll(tableMetas.getAllColumnNames(
+            result.addAll(schemaMetaData.getAllColumnNames(
                     each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(null, columnName, null)).collect(Collectors.toList()));
         }
         return result;
@@ -134,7 +134,7 @@ public final class ProjectionEngine {
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (owner.equalsIgnoreCase(each.getAlias().orElse(tableName))) {
-                return tableMetas.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList());
+                return schemaMetaData.getAllColumnNames(tableName).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList());
             }
         }
         return Collections.emptyList();

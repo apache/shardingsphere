@@ -17,21 +17,15 @@
 
 package org.apache.shardingsphere.core.metadata;
 
-import org.apache.shardingsphere.core.metadata.column.ShardingGeneratedKeyColumnMetaData;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.decorator.TableMetaDataDecorator;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -41,33 +35,8 @@ import java.util.Optional;
 public final class ShardingTableMetaDataDecorator implements TableMetaDataDecorator<ShardingRule> {
     
     @Override
-    public TableMetas decorate(final TableMetas tableMetas, final ShardingRule shardingRule) {
-        Map<String, TableMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size(), 1);
-        for (String each : tableMetas.getAllTableNames()) {
-            result.put(each, decorate(tableMetas.get(each), each, shardingRule));
-        }
-        return new TableMetas(result);
-    }
-    
-    @Override
     public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
-        return new TableMetaData(getColumnMetaDataList(tableMetaData, tableName, shardingRule), getIndexMetaDataList(tableMetaData, tableName, shardingRule));
-    }
-    
-    private Collection<ColumnMetaData> getColumnMetaDataList(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
-        Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(tableName);
-        if (!generateKeyColumnName.isPresent()) {
-            return tableMetaData.getColumns().values();
-        }
-        Collection<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : tableMetaData.getColumns().values()) {
-            if (each.getName().equalsIgnoreCase(generateKeyColumnName.get())) {
-                result.add(new ShardingGeneratedKeyColumnMetaData(each.getName(), each.getDataType(), each.isPrimaryKey()));
-            } else {
-                result.add(each);
-            }
-        }
-        return result;
+        return new TableMetaData(tableMetaData.getColumns().values(), getIndexMetaDataList(tableMetaData, tableName, shardingRule));
     }
     
     private Collection<IndexMetaData> getIndexMetaDataList(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {

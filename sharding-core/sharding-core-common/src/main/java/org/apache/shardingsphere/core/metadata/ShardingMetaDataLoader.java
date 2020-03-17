@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.core.metadata;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetasLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -37,10 +38,11 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Table metas loader for sharding.
+ * Sharding meta data loader.
  */
 @RequiredArgsConstructor
-public final class ShardingTableMetasLoader {
+@Slf4j(topic = "ShardingSphere-metadata")
+public final class ShardingMetaDataLoader {
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -61,14 +63,14 @@ public final class ShardingTableMetasLoader {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         if (!isCheckingMetaData) {
             DataNode dataNode = tableRule.getActualDataNodes().iterator().next();
-            return TableMetasLoader.load(dataSourceMap.get(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName());
+            return TableMetaDataLoader.load(dataSourceMap.get(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName());
         }
         Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
         Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
-        // TODO use multiple thread for diff data source
+        // TODO use multiple threads to load meta data for different data sources
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
             for (DataNode each : entry.getValue()) {
-                actualTableMetaDataMap.put(each.getTableName(), TableMetasLoader.load(dataSourceMap.get(each.getDataSourceName()), each.getTableName()));
+                actualTableMetaDataMap.put(each.getTableName(), TableMetaDataLoader.load(dataSourceMap.get(each.getDataSourceName()), each.getTableName()));
             }
         }
         checkUniformed(logicTableName, actualTableMetaDataMap);
@@ -76,41 +78,33 @@ public final class ShardingTableMetasLoader {
     }
     
     /**
-     * Load table metas.
+     * Load schema Meta data.
      *
-     * @return table metas
+     * @return schema Meta data
      * @throws SQLException SQL exception
      */
-    public TableMetas load() throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>();
-        result.putAll(loadShardingTables());
-        result.putAll(loadDefaultTables());
-        return new TableMetas(result);
-    }
-    
-    private Map<String, TableMetaData> loadShardingTables() throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
-        long start = System.currentTimeMillis();
-        MetaDataLogger.log("There are {} sharding table(s) will be loaded.", shardingRule.getTableRules().size());
-        for (TableRule each : shardingRule.getTableRules()) {
-            result.put(each.getLogicTable(), load(each.getLogicTable()));
-        }
-        MetaDataLogger.log("Sharding table(s) have been loaded in {} milliseconds.", System.currentTimeMillis() - start);
+    public SchemaMetaData load() throws SQLException {
+        SchemaMetaData result = loadShardingSchemaMetaData();
+        result.merge(loadDefaultSchemaMetaData());
         return result;
     }
     
-    private Map<String, TableMetaData> loadDefaultTables() throws SQLException {
-        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
-        if (!actualDefaultDataSourceName.isPresent()) {
-            return Collections.emptyMap();
+    private SchemaMetaData loadShardingSchemaMetaData() throws SQLException {
+        log.info("Loading {} logic tables' meta data.", shardingRule.getTableRules().size());
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        for (TableRule each : shardingRule.getTableRules()) {
+            tableMetaDataMap.put(each.getLogicTable(), load(each.getLogicTable()));
         }
-        long start = System.currentTimeMillis();
-        TableMetas result = TableMetasLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery);
-        MetaDataLogger.log("Default table(s) have been loaded in {} milliseconds.", System.currentTimeMillis() - start);
-        return result.getTables();
+        return new SchemaMetaData(tableMetaDataMap);
     }
     
-    // TODO check all meta data for one time
+    private SchemaMetaData loadDefaultSchemaMetaData() throws SQLException {
+        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
+        return actualDefaultDataSourceName.isPresent()
+                ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery) : new SchemaMetaData(Collections.emptyMap());
+    }
+    
+    // TODO check all meta data in once
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
@@ -91,12 +91,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         containsSubquery = containsSubquery();
     }
     
-    public SelectStatementContext(final TableMetas tableMetas, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
+    public SelectStatementContext(final SchemaMetaData schemaMetaData, final String sql, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(tableMetas).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(schemaMetaData).createProjectionsContext(sql, sqlStatement, groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
     }

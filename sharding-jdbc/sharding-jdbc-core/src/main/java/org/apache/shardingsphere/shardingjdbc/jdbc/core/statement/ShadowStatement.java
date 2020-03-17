@@ -175,7 +175,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     
     private Statement getStatementAndReplay(final String sql) throws SQLException {
         SQLStatement sqlStatement = connection.getRuntimeContext().getSqlParserEngine().parse(sql, false);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getMetaData().getTables(), sql, Collections.emptyList(), sqlStatement);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(connection.getRuntimeContext().getMetaData().getSchema(), sql, Collections.emptyList(), sqlStatement);
         ShadowJudgementEngine shadowJudgementEngine = new SimpleJudgementEngine(connection.getRuntimeContext().getRule(), sqlStatementContext);
         isShadowSQL = shadowJudgementEngine.isShadowSQL();
         Statement result = shadowStatementGenerator.createStatement();
@@ -184,7 +184,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     }
     
     private String rewriteSQL(final String sql) {
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getProperties())
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(connection.getRuntimeContext().getMetaData().getSchema(), connection.getRuntimeContext().getProperties())
                 .createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(connection.getRuntimeContext().getRule()));
         String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);
@@ -198,8 +198,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     }
     
     private void showSQL(final String sql) {
-        boolean showSQL = connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
-        if (showSQL) {
+        if (connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)) {
             log.info("Rule Type: shadow");
             log.info("SQL: {} ::: IsShadowSQL: {}", sql, isShadowSQL);
         }

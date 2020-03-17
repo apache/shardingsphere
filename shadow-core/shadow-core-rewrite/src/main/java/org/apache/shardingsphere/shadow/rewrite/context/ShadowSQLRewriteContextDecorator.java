@@ -30,9 +30,10 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.Parameter
  */
 public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShadowRule> {
     
+    @SuppressWarnings("unchecked")
     @Override
     public void decorate(final ShadowRule shadowRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
-        for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getTableMetas())) {
+        for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getSchemaMetaData())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
             }
