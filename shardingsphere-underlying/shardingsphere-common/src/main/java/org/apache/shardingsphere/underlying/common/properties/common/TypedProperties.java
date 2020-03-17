@@ -37,30 +37,27 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
-    private final Class<E> keyClass;
-    
     @Getter
     private final Properties props;
     
     private final Map<Enum, Object> cache = new ConcurrentHashMap<>(64);
     
     public TypedProperties(final Class<E> keyClass, final Properties props) {
-        this.keyClass = keyClass;
         this.props = props;
-        validate();
+        validate(keyClass);
     }
     
-    private void validate() {
+    private void validate(final Class<E> keyClass) {
         Collection<String> errorMessages = new LinkedList<>();
         for (String each : props.stringPropertyNames()) {
-            find(each).ifPresent(typedEnum -> errorMessages.addAll(getErrorMessages(each, typedEnum)));
+            find(keyClass, each).ifPresent(typedEnum -> errorMessages.addAll(getErrorMessages(each, typedEnum)));
         }
         if (!errorMessages.isEmpty()) {
             throw new ShardingSphereConfigurationException(Joiner.on(LINE_SEPARATOR).join(errorMessages));
         }
     }
     
-    private Optional<E> find(final String key) {
+    private Optional<E> find(final Class<E> keyClass, final String key) {
         for (E each : keyClass.getEnumConstants()) {
             if (each.getKey().equals(key)) {
                 return Optional.of(each);
