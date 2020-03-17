@@ -53,8 +53,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -236,7 +236,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertTrue(showSql);
         int executorSize = properties.getValue(PropertiesConstant.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
-        assertNull(properties.findByKey("foo"));
+        assertFalse(properties.find("foo").isPresent());
     }
     
     @Test

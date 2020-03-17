@@ -24,7 +24,7 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class PropertiesConstantTest {
@@ -33,13 +33,13 @@ public final class PropertiesConstantTest {
     
     @Test
     public void assertFindByKey() {
-        assertThat(shardingSphereProperties.findByKey("sql.show"), is(PropertiesConstant.SQL_SHOW));
-        assertThat(shardingSphereProperties.findByKey("sql.simple"), is(PropertiesConstant.SQL_SIMPLE));
-        assertThat(shardingSphereProperties.findByKey("executor.size"), is(PropertiesConstant.EXECUTOR_SIZE));
+        assertThat(shardingSphereProperties.find("sql.show").orElse(null), is(PropertiesConstant.SQL_SHOW));
+        assertThat(shardingSphereProperties.find("sql.simple").orElse(null), is(PropertiesConstant.SQL_SIMPLE));
+        assertThat(shardingSphereProperties.find("executor.size").orElse(null), is(PropertiesConstant.EXECUTOR_SIZE));
     }
     
     @Test
     public void assertFindByKeyWhenNotFound() {
-        assertNull(shardingSphereProperties.findByKey("empty"));
+        assertFalse(shardingSphereProperties.find("empty").isPresent());
     }
 }

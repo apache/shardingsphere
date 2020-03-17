@@ -19,8 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -30,6 +28,8 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.Or
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
+import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -42,8 +42,8 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -157,7 +157,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         assertTrue(showSql);
         int executorSize = properties.getValue(PropertiesConstant.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
-        assertNull(properties.findByKey("foo"));
+        assertFalse(properties.find("foo").isPresent());
     }
 
     @Test

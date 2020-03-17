@@ -25,6 +25,7 @@ import org.apache.shardingsphere.underlying.common.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,15 +35,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TypedProperties<E extends Enum & TypedPropertiesKey> {
     
-    private final Class<E> enumClass;
+    private final Class<E> keyClass;
     
     @Getter
     private final Properties props;
     
     private final Map<Enum, Object> cachedProperties = new ConcurrentHashMap<>(64, 1);
     
-    public TypedProperties(final Class<E> enumClass, final Properties props) {
-        this.enumClass = enumClass;
+    public TypedProperties(final Class<E> keyClass, final Properties props) {
+        this.keyClass = keyClass;
         this.props = props;
         validate();
     }
@@ -51,16 +52,16 @@ public class TypedProperties<E extends Enum & TypedPropertiesKey> {
         Set<String> propertyNames = props.stringPropertyNames();
         Collection<String> errorMessages = new ArrayList<>(propertyNames.size());
         for (String each : propertyNames) {
-            E typedEnum = findByKey(each);
-            if (null == typedEnum) {
+            Optional<E> typedEnum = find(each);
+            if (!typedEnum.isPresent()) {
                 continue;
             }
-            Class<?> type = typedEnum.getType();
+            Class<?> type = typedEnum.get().getType();
             String value = props.getProperty(each);
             if (type == boolean.class && !StringUtil.isBooleanValue(value)) {
-                errorMessages.add(getErrorMessage(typedEnum, value));
+                errorMessages.add(getErrorMessage(typedEnum.get(), value));
             } else if (type == int.class && !StringUtil.isIntValue(value)) {
-                errorMessages.add(getErrorMessage(typedEnum, value));
+                errorMessages.add(getErrorMessage(typedEnum.get(), value));
             }
         }
         if (!errorMessages.isEmpty()) {
@@ -111,15 +112,14 @@ public class TypedProperties<E extends Enum & TypedPropertiesKey> {
      * Find value via property key.
      *
      * @param key property key
-     * @return value enum, return {@code null} if not found
+     * @return value enum
      */
-    public E findByKey(final String key) {
-        E[] enumConstants = this.enumClass.getEnumConstants();
-        for (E typedEnum : enumConstants) {
-            if (typedEnum.getKey().equals(key)) {
-                return typedEnum;
+    public Optional<E> find(final String key) {
+        for (E each : keyClass.getEnumConstants()) {
+            if (each.getKey().equals(key)) {
+                return Optional.of(each);
             }
         }
-        return null;
+        return Optional.empty();
     }
 }
