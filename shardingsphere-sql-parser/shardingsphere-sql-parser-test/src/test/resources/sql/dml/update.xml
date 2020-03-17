@@ -58,7 +58,7 @@
                     <owner name="o" start-index="24" stop-index="24" />
                 </column>
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="35" stop-index="35" />
                     <literal-expression value="update" />
                 </assignment-value>
             </assignment>
@@ -71,7 +71,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -81,7 +81,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -95,7 +95,7 @@
             <assignment start-index="19" stop-index="32" literal-stop-index="43">
                 <column name="start_time" start-index="19" stop-index="28" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="32" stop-index="32" />
                     <literal-expression value="2017-06-07" />
                 </assignment-value>
             </assignment>
@@ -114,21 +114,21 @@
             <assignment start-index="119" stop-index="133" literal-start-index="134" literal-stop-index="166">
                 <column name="rule" start-index="119" stop-index="122" literal-start-index="134" literal-stop-index="137" />
                 <assignment-value>
-                    <parameter-marker-expression value="3" />
+                    <parameter-marker-expression value="3" start-index="126" stop-index="133" />
                     <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
                 </assignment-value>
             </assignment>
             <assignment start-index="136" stop-index="152" literal-start-index="169" literal-stop-index="185">
                 <column name="discount_type" start-index="136" stop-index="148" literal-start-index="169" literal-stop-index="181" />
                 <assignment-value>
-                    <parameter-marker-expression value="4" />
+                    <parameter-marker-expression value="4" start-index="152" stop-index="152" />
                     <literal-expression value="3" />
                 </assignment-value>
             </assignment>
             <assignment start-index="155" stop-index="168" literal-start-index="188" literal-stop-index="201">
                 <column name="order_type" start-index="155" stop-index="164" literal-start-index="188" literal-stop-index="197" />
                 <assignment-value>
-                    <parameter-marker-expression value="5" />
+                    <parameter-marker-expression value="5" start-index="168" stop-index="168" />
                     <literal-expression value="5" />
                 </assignment-value>
             </assignment>
@@ -139,7 +139,7 @@
                     <column-left-value name="user_id" start-index="176" stop-index="182" literal-start-index="209" literal-stop-index="215" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="6" />
+                        <parameter-marker-expression value="6" start-index="186" stop-index="186" />
                         <literal-expression value="7" />
                     </compare-right-value>
                 </predicate>
@@ -147,7 +147,7 @@
                     <column-left-value name="order_id" start-index="192" stop-index="199" literal-start-index="225" literal-stop-index="232" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="7" />
+                        <parameter-marker-expression value="7" start-index="203" stop-index="203" />
                         <literal-expression value="200" />
                     </compare-right-value>
                 </predicate>
@@ -175,7 +175,7 @@
             <assignment start-index="39" stop-index="48" literal-start-index="39" literal-stop-index="55">
                 <column name="status" start-index="39" stop-index="44" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="48" stop-index="48" />
                     <literal-expression value="update" />
                 </assignment-value>
             </assignment>
@@ -186,7 +186,7 @@
                     <column-left-value name="order_id" start-index="56" stop-index="63" literal-start-index="63" literal-stop-index="70" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="67" stop-index="67" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -194,7 +194,7 @@
                     <column-left-value name="user_id" start-index="73" stop-index="79" literal-start-index="80" literal-stop-index="86" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="83" stop-index="83" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -208,7 +208,7 @@
             <assignment start-index="21" stop-index="32" literal-stop-index="39">
                 <column name="status" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="28" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="32" stop-index="32" />
                     <literal-expression value="update" />
                 </assignment-value>
             </assignment>
@@ -314,7 +314,7 @@
                     <column-left-value name="order_id" start-index="44" stop-index="51" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="55" stop-index="55" />
                         <literal-expression value="1000" />
                     </compare-right-value>
                 </predicate>
@@ -322,7 +322,7 @@
                     <column-left-value name="user_id" start-index="78" stop-index="84" literal-start-index="81" literal-stop-index="87" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="88" stop-index="88" />
                         <literal-expression value="10" />
                     </compare-right-value>
                 </predicate>
@@ -332,7 +332,7 @@
                     <column-left-value name="order_id" start-index="60" stop-index="67" literal-start-index="63" literal-stop-index="70" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="71" stop-index="71" />
                         <literal-expression value="0" />
                     </compare-right-value>
                 </predicate>
@@ -340,7 +340,7 @@
                     <column-left-value name="user_id" start-index="78" stop-index="84" literal-start-index="81" literal-stop-index="87" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="88" stop-index="88" />
                         <literal-expression value="10" />
                     </compare-right-value>
                 </predicate>
