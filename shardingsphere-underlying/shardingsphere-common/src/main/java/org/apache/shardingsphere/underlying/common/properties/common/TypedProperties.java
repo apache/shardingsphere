@@ -41,11 +41,11 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
     @Getter
     private final Properties props;
     
-    private final Map<Enum, Object> cache = new ConcurrentHashMap<>(64);
+    private final Map<E, Object> cache;
     
     public TypedProperties(final Class<E> keyClass, final Properties props) {
         this.props = props;
-        preload(keyClass);
+        cache = preload(keyClass);
     }
     
     private Map<E, Object> preload(final Class<E> keyClass) {
@@ -129,11 +129,6 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
      */
     @SuppressWarnings("unchecked")
     public <T> T getValue(final E enumKey) {
-        if (cache.containsKey(enumKey)) {
-            return (T) cache.get(enumKey);
-        }
-        Object result = getActualValue(enumKey, props.getOrDefault(enumKey.getKey(), enumKey.getDefaultValue()).toString());
-        cache.put(enumKey, result);
-        return (T) result;
+        return (T) cache.get(enumKey);
     }
 }
