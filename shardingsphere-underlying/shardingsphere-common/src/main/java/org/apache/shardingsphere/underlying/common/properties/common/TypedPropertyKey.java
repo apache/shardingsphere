@@ -18,28 +18,28 @@
 package org.apache.shardingsphere.underlying.common.properties.common;
 
 /**
- * Typed properties key interface.
+ * Typed property key.
  */
-public interface TypedPropertiesKey {
+public interface TypedPropertyKey {
     
     /**
-     * Return the specific key.
+     * Get property key.
      * 
-     * @return key
+     * @return property key
      */
     String getKey();
     
     /**
-     * Return the default value.
+     * Get default property value.
      * 
-     * @return defaultValue
+     * @return default property value
      */
     String getDefaultValue();
     
     /**
-     * Return the specific type.
+     * Get property type.
      * 
-     * @return type
+     * @return property type
      */
     Class<?> getType();
 }

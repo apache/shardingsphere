@@ -19,14 +19,14 @@ package org.apache.shardingsphere.orchestration.center.instance;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertiesKey;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
 
 /**
  * Etcd properties enum.
  */
 @RequiredArgsConstructor
 @Getter
-public enum EtcdPropertiesEnum implements TypedPropertiesKey {
+public enum EtcdPropertiesEnum implements TypedPropertyKey {
 
     /**
      * The portal url for apollo open api client.

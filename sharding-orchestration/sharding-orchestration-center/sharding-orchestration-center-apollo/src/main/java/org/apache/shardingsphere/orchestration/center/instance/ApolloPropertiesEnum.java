@@ -21,14 +21,14 @@ import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.openapi.client.constant.ApolloOpenApiConstants;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertiesKey;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
 
 /**
  * Apollo properties enum.
  */
 @RequiredArgsConstructor
 @Getter
-public enum ApolloPropertiesEnum implements TypedPropertiesKey {
+public enum ApolloPropertiesEnum implements TypedPropertyKey {
     
     /**
      * Apollo config client app id param.

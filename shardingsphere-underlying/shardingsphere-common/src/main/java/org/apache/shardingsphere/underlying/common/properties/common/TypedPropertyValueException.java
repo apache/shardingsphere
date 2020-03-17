@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.util;
+package org.apache.shardingsphere.underlying.common.properties.common;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public final class StringUtilTest {
+/**
+ * Typed property value exception.
+ */
+public final class TypedPropertyValueException extends Exception {
     
-    @Test
-    public void assertIsBooleanValue() {
-        assertTrue(StringUtil.isBooleanValue("TRUE"));
-        assertTrue(StringUtil.isBooleanValue("FALSE"));
-        assertTrue(StringUtil.isBooleanValue("true"));
-        assertTrue(StringUtil.isBooleanValue("False"));
-        assertFalse(StringUtil.isBooleanValue("error"));
-    }
-    
-    @Test
-    public void assertIsIntValue() {
-        assertTrue(StringUtil.isIntValue("-10"));
-        assertFalse(StringUtil.isIntValue("1-1"));
+    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
+        super(String.format("Value '%s' of '%s' cannot convert to type '%s'. ", value, key.getKey(), key.getType().getName()));
     }
 }

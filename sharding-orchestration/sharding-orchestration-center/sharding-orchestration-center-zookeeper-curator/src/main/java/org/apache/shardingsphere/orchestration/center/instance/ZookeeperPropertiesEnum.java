@@ -19,14 +19,14 @@ package org.apache.shardingsphere.orchestration.center.instance;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertiesKey;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
 
 /**
  * Zookeeper properties enum.
  */
 @RequiredArgsConstructor
 @Getter
-public enum ZookeeperPropertiesEnum implements TypedPropertiesKey {
+public enum ZookeeperPropertiesEnum implements TypedPropertyKey {
     
     /**
      * Retry interval milliseconds when connect with zookeeper curator client.

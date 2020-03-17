@@ -20,108 +20,58 @@ package org.apache.shardingsphere.underlying.common.properties.common;
 import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.util.StringUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Typed properties with a specified enum.
  */
-public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
+public abstract class TypedProperties<E extends Enum & TypedPropertyKey> {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     @Getter
     private final Properties props;
     
-    private final Map<E, Object> cache;
+    private final Map<E, TypedPropertyValue> cache;
     
     public TypedProperties(final Class<E> keyClass, final Properties props) {
         this.props = props;
-        validate(keyClass);
         cache = preload(keyClass);
     }
     
-    private void validate(final Class<E> keyClass) {
+    private Map<E, TypedPropertyValue> preload(final Class<E> keyClass) {
+        E[] enumConstants = keyClass.getEnumConstants();
+        Map<E, TypedPropertyValue> result = new HashMap<>(enumConstants.length, 1);
         Collection<String> errorMessages = new LinkedList<>();
-        for (E each : keyClass.getEnumConstants()) {
-            if (null != props.get(each.getKey())) {
-                validate(each, props.get(each.getKey()).toString()).ifPresent(errorMessages::add);
+        for (E each : enumConstants) {
+            TypedPropertyValue value = null;
+            try {
+                value = new TypedPropertyValue(each, props.getOrDefault(each.getKey(), each.getDefaultValue()).toString());
+            } catch (final TypedPropertyValueException ex) {
+                errorMessages.add(ex.getMessage());
             }
+            result.put(each, value);
         }
         if (!errorMessages.isEmpty()) {
             throw new ShardingSphereConfigurationException(Joiner.on(LINE_SEPARATOR).join(errorMessages));
         }
-    }
-    
-    private Optional<String> validate(final E enumKey, final String value) {
-        Class<?> type = enumKey.getType();
-        if (type == boolean.class && !StringUtil.isBooleanValue(value)) {
-            return Optional.of(createErrorMessage(enumKey, value));
-        }
-        if (type == int.class && !StringUtil.isIntValue(value)) {
-            return Optional.of(createErrorMessage(enumKey, value));
-        }
-        if (type == long.class && !StringUtil.isLongValue(value)) {
-            return Optional.of(createErrorMessage(enumKey, value));
-        }
-        return Optional.empty();
-    }
-    
-    private String createErrorMessage(final E enumKey, final String invalidValue) {
-        return String.format("Value '%s' of '%s' cannot convert to type '%s'. ", invalidValue, enumKey.getKey(), enumKey.getType().getName());
-    }
-    
-    private Map<E, Object> preload(final Class<E> keyClass) {
-        return preloadActualValues(preloadStringValues(keyClass));
-    }
-    
-    private Map<E, String> preloadStringValues(final Class<E> keyClass) {
-        E[] enumConstants = keyClass.getEnumConstants();
-        Map<E, String> result = new HashMap<>(enumConstants.length, 1);
-        for (E each : enumConstants) {
-            result.put(each, props.getOrDefault(each.getKey(), each.getDefaultValue()).toString());
-        }
         return result;
-    }
-    
-    private Map<E, Object> preloadActualValues(final Map<E, String> stringValueMap) {
-        Map<E, Object> result = new ConcurrentHashMap<>(stringValueMap.size(), 1);
-        for (Entry<E, String> entry : stringValueMap.entrySet()) {
-            result.put(entry.getKey(), getActualValue(entry.getKey(), entry.getValue()));
-        }
-        return result;
-    }
-    
-    private Object getActualValue(final E enumKey, final String value) {
-        if (boolean.class == enumKey.getType()) {
-            return Boolean.valueOf(value);
-        }
-        if (int.class == enumKey.getType()) {
-            return Integer.valueOf(value);
-        }
-        if (long.class == enumKey.getType()) {
-            return Long.valueOf(value);
-        }
-        return value;
     }
     
     /**
      * Get property value.
      *
-     * @param enumKey enum key
+     * @param key property key
      * @param <T> class type of return value
      * @return property value
      */
     @SuppressWarnings("unchecked")
-    public <T> T getValue(final E enumKey) {
-        return (T) cache.get(enumKey);
+    public <T> T getValue(final E key) {
+        return (T) (cache.containsKey(key) ? cache.get(key).getValue() : null);
     }
 }
