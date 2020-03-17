@@ -60,26 +60,6 @@ public final class TableAssert {
         assertSubqueryTableSegment(assertContext, actual, expected);
     }
     
-    private static void assertSimpleTableSegment(final SQLCaseAssertContext assertContext, final Collection<TableSegment> actual, final ExpectedTables expected) {
-        int count = 0;
-        for (TableSegment each : actual) {
-            if (each instanceof SimpleTableSegment) {
-                assertIs(assertContext, (SimpleTableSegment) each, expected.getSimpleTables().get(count));
-            }
-            count++;
-        }
-    }
-    
-    private static void assertSubqueryTableSegment(final SQLCaseAssertContext assertContext, final Collection<TableSegment> actual, final ExpectedTables expected) {
-        int count = 0;
-        for (TableSegment each : actual) {
-            if (each instanceof SubqueryTableSegment) {
-                assertIs(assertContext, (SubqueryTableSegment) each, expected.getSubqueryTables().get(count));
-            }
-            count++;
-        }
-    }
-    
     /**
      * Assert actual table segments is correct with expected tables.
      * 
@@ -146,5 +126,25 @@ public final class TableAssert {
                 actual.getTableName().getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
         assertThat(assertContext.getText("Owner name end delimiter assertion error: "), actual.getTableName().getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
+    }
+    
+    private static void assertSimpleTableSegment(final SQLCaseAssertContext assertContext, final Collection<TableSegment> actual, final ExpectedTables expected) {
+        int count = 0;
+        for (TableSegment each : actual) {
+            if (each instanceof SimpleTableSegment) {
+                assertIs(assertContext, (SimpleTableSegment) each, expected.getSimpleTables().get(count));
+            }
+            count++;
+        }
+    }
+    
+    private static void assertSubqueryTableSegment(final SQLCaseAssertContext assertContext, final Collection<TableSegment> actual, final ExpectedTables expected) {
+        int count = 0;
+        for (TableSegment each : actual) {
+            if (each instanceof SubqueryTableSegment) {
+                assertIs(assertContext, (SubqueryTableSegment) each, expected.getSubqueryTables().get(count));
+            }
+            count++;
+        }
     }
 }
