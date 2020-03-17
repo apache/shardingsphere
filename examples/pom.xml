@@ -139,7 +139,7 @@
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-center-etcd</artifactId>
                 <version>${shardingsphere.version}</version>
             </dependency>
