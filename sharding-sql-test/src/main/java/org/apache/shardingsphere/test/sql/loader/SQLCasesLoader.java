@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.loader;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.SQLCase;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -75,18 +76,13 @@ public final class SQLCasesLoader {
         return result;
     }
 
-    private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
+    private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) throws UnsupportedEncodingException {
         Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return result;
         }
-        String realPath;
-        try {
-            realPath = URLDecoder.decode(url.getPath(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            realPath = url.getPath();
-        }
+        String realPath = URLDecoder.decode(url.getPath(), "UTF-8");
         File filePath = new File(realPath);
         if (!filePath.exists()) {
             return result;
@@ -198,7 +194,7 @@ public final class SQLCasesLoader {
     }
 
     private static Collection<String> getDatabaseTypes(final String databaseTypes) {
-        return Strings.isNullOrEmpty(databaseTypes) ? getALlDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
+        return Strings.isNullOrEmpty(databaseTypes) ? getALlDatabaseTypes() : Lists.newArrayList(Splitter.on(',').trimResults().split(databaseTypes));
     }
 
     private static Collection<String> getALlDatabaseTypes() {
