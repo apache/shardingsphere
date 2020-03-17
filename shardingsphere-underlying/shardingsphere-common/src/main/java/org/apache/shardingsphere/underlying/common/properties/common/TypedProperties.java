@@ -20,27 +20,29 @@ package org.apache.shardingsphere.underlying.common.properties.common;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Typed properties with a specified enum.
  */
-public class TypedProperties<E extends Enum & TypedPropertiesKey> {
+public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
+    
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     private final Class<E> keyClass;
     
     @Getter
     private final Properties props;
     
-    private final Map<Enum, Object> cachedProperties = new ConcurrentHashMap<>(64, 1);
+    private final Map<Enum, Object> cache = new ConcurrentHashMap<>(64);
     
     public TypedProperties(final Class<E> keyClass, final Properties props) {
         this.keyClass = keyClass;
@@ -49,23 +51,12 @@ public class TypedProperties<E extends Enum & TypedPropertiesKey> {
     }
     
     private void validate() {
-        Set<String> propertyNames = props.stringPropertyNames();
-        Collection<String> errorMessages = new ArrayList<>(propertyNames.size());
-        for (String each : propertyNames) {
-            Optional<E> typedEnum = find(each);
-            if (!typedEnum.isPresent()) {
-                continue;
-            }
-            Class<?> type = typedEnum.get().getType();
-            String value = props.getProperty(each);
-            if (type == boolean.class && !StringUtil.isBooleanValue(value)) {
-                errorMessages.add(getErrorMessage(typedEnum.get(), value));
-            } else if (type == int.class && !StringUtil.isIntValue(value)) {
-                errorMessages.add(getErrorMessage(typedEnum.get(), value));
-            }
+        Collection<String> errorMessages = new LinkedList<>();
+        for (String each : props.stringPropertyNames()) {
+            find(each).ifPresent(typedEnum -> errorMessages.addAll(getErrorMessages(each, typedEnum)));
         }
         if (!errorMessages.isEmpty()) {
-            throw new IllegalArgumentException(Joiner.on(" ").join(errorMessages));
+            throw new ShardingSphereConfigurationException(Joiner.on(LINE_SEPARATOR).join(errorMessages));
         }
     }
     
@@ -76,6 +67,18 @@ public class TypedProperties<E extends Enum & TypedPropertiesKey> {
             }
         }
         return Optional.empty();
+    }
+    
+    private Collection<String> getErrorMessages(final String key, final E typedEnum) {
+        Collection<String> result = new LinkedList<>();
+        Class<?> type = typedEnum.getType();
+        String value = props.getProperty(key);
+        if (type == boolean.class && !StringUtil.isBooleanValue(value)) {
+            result.add(getErrorMessage(typedEnum, value));
+        } else if (type == int.class && !StringUtil.isIntValue(value)) {
+            result.add(getErrorMessage(typedEnum, value));
+        }
+        return result;
     }
     
     private String getErrorMessage(final E typedEnum, final String invalidValue) {
@@ -91,29 +94,29 @@ public class TypedProperties<E extends Enum & TypedPropertiesKey> {
      */
     @SuppressWarnings("unchecked")
     public <T> T getValue(final E typedEnum) {
-        if (cachedProperties.containsKey(typedEnum)) {
-            return (T) cachedProperties.get(typedEnum);
+        if (cache.containsKey(typedEnum)) {
+            return (T) cache.get(typedEnum);
         }
-        String value = props.getProperty(typedEnum.getKey());
-        if (Strings.isNullOrEmpty(value)) {
-            Object obj = props.get(typedEnum.getKey());
-            if (null == obj) {
-                value = typedEnum.getDefaultValue();
-            } else {
-                value = obj.toString();
-            }
-        }
-        Object result;
-        if (boolean.class == typedEnum.getType()) {
-            result = Boolean.valueOf(value);
-        } else if (int.class == typedEnum.getType()) {
-            result = Integer.valueOf(value);
-        } else if (long.class == typedEnum.getType()) {
-            result = Long.valueOf(value);
-        } else {
-            result = value;
-        }
-        cachedProperties.put(typedEnum, result);
+        Object result = getValue(typedEnum, getValueString(typedEnum));
+        cache.put(typedEnum, result);
         return (T) result;
+    }
+    
+    private Object getValue(final E typedEnum, final String value) {
+        if (boolean.class == typedEnum.getType()) {
+            return Boolean.valueOf(value);
+        }
+        if (int.class == typedEnum.getType()) {
+            return Integer.valueOf(value);
+        }
+        if (long.class == typedEnum.getType()) {
+            return Long.valueOf(value);
+        }
+        return value;
+    }
+    
+    private String getValueString(final E typedEnum) {
+        String value = props.getProperty(typedEnum.getKey());
+        return Strings.isNullOrEmpty(value) ? typedEnum.getDefaultValue() : value;
     }
 }
