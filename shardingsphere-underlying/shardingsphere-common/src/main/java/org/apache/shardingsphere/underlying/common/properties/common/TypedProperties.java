@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.common.properties.common;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.util.StringUtil;
@@ -94,7 +93,7 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
         if (cache.containsKey(typedEnum)) {
             return (T) cache.get(typedEnum);
         }
-        Object result = getValue(typedEnum, getValueString(typedEnum));
+        Object result = getValue(typedEnum, props.getOrDefault(typedEnum.getKey(), typedEnum.getDefaultValue()).toString());
         cache.put(typedEnum, result);
         return (T) result;
     }
@@ -110,10 +109,5 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
             return Long.valueOf(value);
         }
         return value;
-    }
-    
-    private String getValueString(final E typedEnum) {
-        String value = props.getProperty(typedEnum.getKey());
-        return Strings.isNullOrEmpty(value) ? typedEnum.getDefaultValue() : value;
     }
 }
