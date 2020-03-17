@@ -24,9 +24,9 @@ import java.util.Properties;
 /**
  * Configuration properties.
  */
-public final class ConfigurationProperties extends TypedProperties<PropertiesConstant> {
+public final class ConfigurationProperties extends TypedProperties<ConfigurationPropertyKey> {
     
     public ConfigurationProperties(final Properties props) {
-        super(PropertiesConstant.class, props);
+        super(ConfigurationPropertyKey.class, props);
     }
 }

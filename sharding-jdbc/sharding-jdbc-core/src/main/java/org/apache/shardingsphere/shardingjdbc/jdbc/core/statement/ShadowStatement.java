@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShadowConnect
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
@@ -198,7 +198,7 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     }
     
     private void showSQL(final String sql) {
-        if (connection.getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW)) {
+        if (connection.getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             log.info("Rule Type: shadow");
             log.info("SQL: {} ::: IsShadowSQL: {}", sql, isShadowSQL);
         }

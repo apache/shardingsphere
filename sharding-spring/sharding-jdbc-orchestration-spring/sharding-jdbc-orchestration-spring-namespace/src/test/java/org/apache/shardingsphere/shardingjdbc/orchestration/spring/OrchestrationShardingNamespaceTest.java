@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.Or
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -151,10 +151,10 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
         OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
         ConfigurationProperties properties = dataSource.getRuntimeContext().getProperties();
-        assertTrue(properties.<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        boolean showSql = properties.getValue(PropertiesConstant.SQL_SHOW);
+        assertTrue(properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        boolean showSql = properties.getValue(ConfigurationPropertyKey.SQL_SHOW);
         assertTrue(showSql);
-        int executorSize = properties.getValue(PropertiesConstant.EXECUTOR_SIZE);
+        int executorSize = properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
         assertThat(executorSize, is(10));
     }
 

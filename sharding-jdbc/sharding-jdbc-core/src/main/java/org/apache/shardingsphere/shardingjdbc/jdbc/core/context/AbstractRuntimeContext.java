@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -53,7 +53,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
         this.rule = rule;
         this.properties = new ConfigurationProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
-        executorEngine = new ExecutorEngine(properties.<Integer>getValue(PropertiesConstant.EXECUTOR_SIZE));
+        executorEngine = new ExecutorEngine(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
         ConfigurationLogger.log(rule.getRuleConfiguration());
         ConfigurationLogger.log(props);

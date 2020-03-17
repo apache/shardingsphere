@@ -34,7 +34,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 
@@ -75,7 +75,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     private SchemaMetaData loadSchemaMetaData() throws SQLException {
         DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery);
     }
     

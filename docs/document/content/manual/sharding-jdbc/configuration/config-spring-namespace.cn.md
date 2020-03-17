@@ -559,7 +559,7 @@ weight = 4
 | type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID             |
 | props-ref         | 属性                          | 自增列值生成器的属性配置引用 |
 
-#### PropertiesConstant
+#### Properties
 
 属性配置项，可以为以下自增列值生成器的属性。
 

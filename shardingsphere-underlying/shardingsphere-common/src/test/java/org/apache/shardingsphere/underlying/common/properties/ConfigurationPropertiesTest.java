@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.common.properties;
 
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,37 +37,37 @@ public final class ConfigurationPropertiesTest {
     
     @Before
     public void setUp() {
-        prop.put(PropertiesConstant.SQL_SHOW.getKey(), "true");
-        prop.put(PropertiesConstant.EXECUTOR_SIZE.getKey(), "10");
+        prop.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
+        prop.put(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "10");
         configurationProperties = new ConfigurationProperties(prop);
     }
     
     @Test
     public void assertGetValueForDefaultValue() {
         ConfigurationProperties properties = new ConfigurationProperties(new Properties());
-        boolean actualSQLShow = properties.getValue(PropertiesConstant.SQL_SHOW);
-        assertThat(actualSQLShow, is(Boolean.valueOf(PropertiesConstant.SQL_SHOW.getDefaultValue())));
-        int executorMaxSize = properties.getValue(PropertiesConstant.EXECUTOR_SIZE);
-        assertThat(executorMaxSize, is(Integer.valueOf(PropertiesConstant.EXECUTOR_SIZE.getDefaultValue())));
+        boolean actualSQLShow = properties.getValue(ConfigurationPropertyKey.SQL_SHOW);
+        assertThat(actualSQLShow, is(Boolean.valueOf(ConfigurationPropertyKey.SQL_SHOW.getDefaultValue())));
+        int executorMaxSize = properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
+        assertThat(executorMaxSize, is(Integer.valueOf(ConfigurationPropertyKey.EXECUTOR_SIZE.getDefaultValue())));
     }
     
     @Test
     public void assertGetValueForBoolean() {
-        boolean showSql = configurationProperties.getValue(PropertiesConstant.SQL_SHOW);
+        boolean showSql = configurationProperties.getValue(ConfigurationPropertyKey.SQL_SHOW);
         assertTrue(showSql);
     }
     
     @Test
     public void assertGetValueForInteger() {
-        int actualExecutorMaxSize = configurationProperties.getValue(PropertiesConstant.EXECUTOR_SIZE);
+        int actualExecutorMaxSize = configurationProperties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
         assertThat(actualExecutorMaxSize, is(10));
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertValidateFailure() {
         Properties prop = new Properties();
-        prop.put(PropertiesConstant.SQL_SHOW.getKey(), "error");
-        prop.put(PropertiesConstant.EXECUTOR_SIZE.getKey(), "error");
+        prop.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), "error");
+        prop.put(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "error");
         prop.put("other", "other");
         new ConfigurationProperties(prop);
     }

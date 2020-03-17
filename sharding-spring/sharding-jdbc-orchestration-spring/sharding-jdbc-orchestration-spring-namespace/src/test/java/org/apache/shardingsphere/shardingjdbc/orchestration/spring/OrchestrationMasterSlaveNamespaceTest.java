@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
 import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
@@ -85,7 +85,7 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     
     @Test
     public void assertProperties() {
-        boolean showSQL = getProperties("defaultMasterSlaveDataSourceOrchestration").getValue(PropertiesConstant.SQL_SHOW);
+        boolean showSQL = getProperties("defaultMasterSlaveDataSourceOrchestration").getValue(ConfigurationPropertyKey.SQL_SHOW);
         assertTrue(showSQL);
     }
     

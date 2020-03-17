@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringEncryptDataSource;
@@ -76,8 +76,8 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertProperties() {
-        boolean showSQL = getProperties("encryptDataSourceOrchestration").getValue(PropertiesConstant.SQL_SHOW);
-        boolean queryWithCipherColumn = getProperties("encryptDataSourceOrchestration").getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean showSQL = getProperties("encryptDataSourceOrchestration").getValue(ConfigurationPropertyKey.SQL_SHOW);
+        boolean queryWithCipherColumn = getProperties("encryptDataSourceOrchestration").getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         assertTrue(showSQL);
         assertFalse(queryWithCipherColumn);
     }

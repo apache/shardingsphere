@@ -25,7 +25,7 @@ import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.impl.TransparentResultDecorator;
@@ -40,7 +40,7 @@ public abstract class EncryptResultDecoratorEngine implements ResultDecoratorEng
     public final ResultDecorator newInstance(final DatabaseType databaseType,
                                              final EncryptRule encryptRule, final ConfigurationProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return new EncryptDQLResultDecorator(createEncryptorMetaData(encryptRule, sqlStatementContext), properties.<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+            return new EncryptDQLResultDecorator(createEncryptorMetaData(encryptRule, sqlStatementContext), properties.<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new EncryptDALResultDecorator(encryptRule);

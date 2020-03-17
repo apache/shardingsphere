@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
 
 /**
- * Properties constant.
+ * Property key of configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public enum PropertiesConstant implements TypedPropertyKey {
+public enum ConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
      * Enable or Disable to show SQL details.

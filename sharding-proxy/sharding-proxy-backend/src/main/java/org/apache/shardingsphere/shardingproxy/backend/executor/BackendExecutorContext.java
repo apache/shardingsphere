@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 
@@ -34,7 +34,7 @@ public final class BackendExecutorContext {
     private static final BackendExecutorContext INSTANCE = new BackendExecutorContext();
     
     private final ExecutorEngine executorEngine = new ExecutorEngine(
-            ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.EXECUTOR_SIZE));
+            ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
     
     /**
      * Get executor context instance.
