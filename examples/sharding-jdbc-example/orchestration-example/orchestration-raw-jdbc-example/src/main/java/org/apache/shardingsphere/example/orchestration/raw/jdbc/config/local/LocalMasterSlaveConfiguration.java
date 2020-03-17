@@ -20,9 +20,9 @@ package org.apache.shardingsphere.example.orchestration.raw.jdbc.config.local;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -33,16 +33,16 @@ import java.util.Properties;
 
 public final class LocalMasterSlaveConfiguration implements ExampleConfiguration {
     
-    private final Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private final Map<String, CenterConfiguration> centerConfigurationMap;
     
-    public LocalMasterSlaveConfiguration(final Map<String, InstanceConfiguration> instanceConfigurationMap) {
-        this.instanceConfigurationMap = instanceConfigurationMap;
+    public LocalMasterSlaveConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
+        this.centerConfigurationMap = centerConfigurationMap;
     }
     
     @Override
     public DataSource getDataSource() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
-        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(instanceConfigurationMap);
+        OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration(centerConfigurationMap);
         return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new Properties(), orchestrationConfig);
     }
     
