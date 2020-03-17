@@ -15,31 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.common;
+package org.apache.shardingsphere.orchestration.core.facade.properties;
+
+import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
+
+import java.util.Properties;
 
 /**
- * Typed property key.
+ * Typed properties of orchestration.
  */
-public interface TypedPropertyKey {
+public final class OrchestrationProperties extends TypedProperties<OrchestrationPropertyKey> {
     
-    /**
-     * Get property key.
-     * 
-     * @return property key
-     */
-    String getKey();
-    
-    /**
-     * Get default property value.
-     * 
-     * @return default property value
-     */
-    String getDefaultValue();
-    
-    /**
-     * Get property type.
-     * 
-     * @return property type
-     */
-    Class<?> getType();
+    public OrchestrationProperties(final Properties props) {
+        super(OrchestrationPropertyKey.class, props);
+    }
 }

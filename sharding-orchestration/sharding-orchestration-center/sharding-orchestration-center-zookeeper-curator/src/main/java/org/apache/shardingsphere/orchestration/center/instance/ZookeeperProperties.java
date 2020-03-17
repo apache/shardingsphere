@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.orchestration.center.instance;
 
-import org.apache.shardingsphere.underlying.common.properties.common.TypedProperties;
+import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
 
 import java.util.Properties;
 
 /**
- * Zookeeper properties.
+ * Typed properties of Zookeeper.
  */
-public final class ZookeeperProperties extends TypedProperties<ZookeeperPropertiesEnum> {
+public final class ZookeeperProperties extends TypedProperties<ZookeeperPropertyKey> {
     
     public ZookeeperProperties(final Properties props) {
-        super(ZookeeperPropertiesEnum.class, props);
+        super(ZookeeperPropertyKey.class, props);
     }
 }

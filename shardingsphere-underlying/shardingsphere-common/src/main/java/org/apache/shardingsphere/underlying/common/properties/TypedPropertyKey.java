@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.instance;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
+package org.apache.shardingsphere.underlying.common.properties;
 
 /**
- * Nacos properties enum.
+ * Typed property key.
  */
-@RequiredArgsConstructor
-@Getter
-public enum NacosPropertiesEnum implements TypedPropertyKey {
+public interface TypedPropertyKey {
     
     /**
-     * Nacos config service group name.
+     * Get property key.
+     * 
+     * @return property key
      */
-    GROUP("group", "SHARDING_SPHERE_DEFAULT_GROUP", String.class),
+    String getKey();
     
     /**
-     * Nacos get config data timeout value.
+     * Get default property value.
+     * 
+     * @return default property value
      */
-    TIMEOUT("timeout", String.valueOf(3000), long.class);
+    String getDefaultValue();
     
-    private final String key;
-    
-    private final String defaultValue;
-    
-    private final Class<?> type;
+    /**
+     * Get property type.
+     * 
+     * @return property type
+     */
+    Class<?> getType();
 }

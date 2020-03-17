@@ -20,7 +20,7 @@ package org.apache.shardingsphere.underlying.rewrite;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
@@ -37,7 +37,7 @@ public final class SQLRewriteEntry {
     
     private final SchemaMetaData schemaMetaData;
     
-    private final ShardingSphereProperties properties;
+    private final ConfigurationProperties properties;
     
     /**
      * Create SQL rewrite context.

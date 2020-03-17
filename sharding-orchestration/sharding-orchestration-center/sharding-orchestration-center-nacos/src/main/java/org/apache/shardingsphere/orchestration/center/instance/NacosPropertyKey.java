@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.context;
+package org.apache.shardingsphere.orchestration.center.instance;
 
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
 /**
- * SQL rewrite context decorator.
- *
- * @param <T> type of rule
+ * Typed property key of Nacos.
  */
-public interface SQLRewriteContextDecorator<T extends BaseRule> {
+@RequiredArgsConstructor
+@Getter
+public enum NacosPropertyKey implements TypedPropertyKey {
     
     /**
-     * Decorate SQL rewrite context.
-     *
-     * @param rule rule
-     * @param properties ShardingSphere properties
-     * @param sqlRewriteContext SQL rewrite context to be decorated
+     * Nacos config service group name.
      */
-    void decorate(T rule, ConfigurationProperties properties, SQLRewriteContext sqlRewriteContext);
+    GROUP("group", "SHARDING_SPHERE_DEFAULT_GROUP", String.class),
+    
+    /**
+     * Nacos get config data timeout value.
+     */
+    TIMEOUT("timeout", String.valueOf(3000), long.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }

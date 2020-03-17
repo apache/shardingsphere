@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.config;
+package org.apache.shardingsphere.underlying.common.config.properties;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
+import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
 /**
- * Properties constant.
+ * Typed property key of configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public enum PropertiesConstant implements TypedPropertyKey {
+public enum ConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
      * Enable or Disable to show SQL details.

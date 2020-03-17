@@ -291,7 +291,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID |
 | props             | Properties                   | 自增列值生成器的相关属性配置                                                      |
 
-#### PropertiesConstant
+#### Properties
 
 属性配置项，可以为以下自增列值生成器的属性。
 
@@ -332,7 +332,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | assistedQueryColumn| String                       | 辅助查询字段，针对ShardingQueryAssistedEncryptor类型的加解密器进行辅助查询            |
 | encryptor          | String                       | 加解密器名字                                                                      |
 
-#### PropertiesConstant
+#### Properties
 
 属性配置项，可以为以下属性。
 
@@ -367,7 +367,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | slaveDataSourceNames     | Collection\<String\>            | 从库数据源名称列表 |
 | loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | 从库负载均衡算法   |
 
-#### PropertiesConstant
+#### Properties
 
 属性配置项，可以为以下属性。
 
@@ -395,7 +395,7 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 | encryptors          | Map<String, EncryptorRuleConfiguration>     | 加解密器配置列表，可自定义或选择内置类型：MD5/AES                                    |
 | tables              | Map<String, EncryptTableRuleConfiguration>  | 加密表配置列表                      |
 
-#### PropertiesConstant
+#### Properties
 
 属性配置项，可以为以下属性。
 

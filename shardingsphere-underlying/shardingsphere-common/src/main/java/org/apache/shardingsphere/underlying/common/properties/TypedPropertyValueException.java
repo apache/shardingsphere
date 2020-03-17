@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.config;
-
-import org.apache.shardingsphere.underlying.common.properties.common.TypedProperties;
-
-import java.util.Properties;
+package org.apache.shardingsphere.underlying.common.properties;
 
 /**
- * ShardingSphere properties for configuration.
+ * Typed property value exception.
  */
-public final class ShardingSphereProperties extends TypedProperties<PropertiesConstant> {
+public final class TypedPropertyValueException extends Exception {
     
-    public ShardingSphereProperties(final Properties props) {
-        super(PropertiesConstant.class, props);
+    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
+        super(String.format("Value '%s' of '%s' cannot convert to type '%s'. ", value, key.getKey(), key.getType().getName()));
     }
 }

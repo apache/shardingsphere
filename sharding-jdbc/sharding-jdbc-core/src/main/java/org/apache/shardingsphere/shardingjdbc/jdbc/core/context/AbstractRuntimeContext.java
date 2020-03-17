@@ -22,8 +22,8 @@ import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -41,7 +41,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     private final T rule;
     
-    private final ShardingSphereProperties properties;
+    private final ConfigurationProperties properties;
     
     private final DatabaseType databaseType;
     
@@ -51,9 +51,9 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     protected AbstractRuntimeContext(final T rule, final Properties props, final DatabaseType databaseType) {
         this.rule = rule;
-        this.properties = new ShardingSphereProperties(null == props ? new Properties() : props);
+        this.properties = new ConfigurationProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
-        executorEngine = new ExecutorEngine(properties.<Integer>getValue(PropertiesConstant.EXECUTOR_SIZE));
+        executorEngine = new ExecutorEngine(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
         ConfigurationLogger.log(rule.getRuleConfiguration());
         ConfigurationLogger.log(props);

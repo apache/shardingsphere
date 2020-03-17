@@ -28,14 +28,14 @@ import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterRepositoryServiceLoader;
 import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrchestrationListenerManager;
+import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationProperties;
+import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationPropertyKey;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenter;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterRepositoryServiceLoader;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.properties.orchestration.OrchestrationProperties;
-import org.apache.shardingsphere.underlying.common.properties.orchestration.OrchestrationPropertiesEnum;
 
 import java.util.Collection;
 import java.util.Map;
@@ -72,7 +72,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
         CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
         configCenterRepository = new ConfigCenterRepositoryServiceLoader().load(configCenterConfiguration);
-        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertiesEnum.OVERWRITE);
+        isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertyKey.OVERWRITE);
         configCenter = new ConfigCenter(configCenterName.get(), configCenterRepository);
         listenerManager = shardingSchemaNames.isEmpty()
                 ? new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,

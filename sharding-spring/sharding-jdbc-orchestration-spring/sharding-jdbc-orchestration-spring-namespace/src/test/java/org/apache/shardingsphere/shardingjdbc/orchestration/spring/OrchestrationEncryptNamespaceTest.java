@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.OrchestrationSpringEncryptDataSource;
@@ -76,13 +76,13 @@ public class OrchestrationEncryptNamespaceTest extends AbstractJUnit4SpringConte
     
     @Test
     public void assertProperties() {
-        boolean showSQL = getProperties("encryptDataSourceOrchestration").getValue(PropertiesConstant.SQL_SHOW);
-        boolean queryWithCipherColumn = getProperties("encryptDataSourceOrchestration").getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        boolean showSQL = getProperties("encryptDataSourceOrchestration").getValue(ConfigurationPropertyKey.SQL_SHOW);
+        boolean queryWithCipherColumn = getProperties("encryptDataSourceOrchestration").getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         assertTrue(showSQL);
         assertFalse(queryWithCipherColumn);
     }
     
-    private ShardingSphereProperties getProperties(final String encryptDatasourceName) {
+    private ConfigurationProperties getProperties(final String encryptDatasourceName) {
         OrchestrationSpringEncryptDataSource encryptDataSource = applicationContext.getBean(encryptDatasourceName, OrchestrationSpringEncryptDataSource.class);
         EncryptDataSource dataSource = (EncryptDataSource) FieldValueUtil.getFieldValue(encryptDataSource, "dataSource", true);
         return dataSource.getRuntimeContext().getProperties();

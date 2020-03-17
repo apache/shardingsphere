@@ -15,14 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.common;
+package org.apache.shardingsphere.orchestration.center.instance;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
 /**
- * Typed property value exception.
+ * Typed property key of Etcd.
  */
-public final class TypedPropertyValueException extends Exception {
+@RequiredArgsConstructor
+@Getter
+public enum EtcdPropertyKey implements TypedPropertyKey {
     
-    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
-        super(String.format("Value '%s' of '%s' cannot convert to type '%s'. ", value, key.getKey(), key.getType().getName()));
-    }
+    /**
+     * The portal url for apollo open api client.
+     */
+    TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30", long.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }
