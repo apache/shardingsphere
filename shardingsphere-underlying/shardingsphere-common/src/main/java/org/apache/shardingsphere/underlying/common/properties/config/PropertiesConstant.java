@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.constant.properties;
+package org.apache.shardingsphere.underlying.common.properties.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertiesKey;
 
 /**
  * Properties constant.
@@ -124,7 +125,7 @@ public enum PropertiesConstant implements TypedPropertiesKey {
      * Enable opentracing for Sharding-Proxy.
      */
     PROXY_OPENTRACING_ENABLED("proxy.opentracing.enabled", String.valueOf(Boolean.FALSE), boolean.class),
-
+    
     /**
      * Enable hint for Sharding-Proxy.
      */
@@ -141,5 +142,4 @@ public enum PropertiesConstant implements TypedPropertiesKey {
     private final String defaultValue;
     
     private final Class<?> type;
-    
 }

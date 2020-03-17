@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 

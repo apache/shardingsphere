@@ -34,8 +34,8 @@ import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguratio
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.OrchestrationProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.OrchestrationPropertiesEnum;
+import org.apache.shardingsphere.underlying.common.properties.orchestration.OrchestrationProperties;
+import org.apache.shardingsphere.underlying.common.properties.orchestration.OrchestrationPropertiesEnum;
 
 import java.util.Collection;
 import java.util.Map;

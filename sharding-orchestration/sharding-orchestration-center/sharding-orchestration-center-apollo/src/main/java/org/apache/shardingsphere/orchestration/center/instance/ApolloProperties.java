@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.center.instance;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.TypedProperties;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedProperties;
 
 import java.util.Properties;
 

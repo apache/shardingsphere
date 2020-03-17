@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.constant;
+package org.apache.shardingsphere.underlying.common.properties;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,7 +63,7 @@ public final class ShardingSpherePropertiesTest {
         assertThat(actualExecutorMaxSize, is(10));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ShardingSphereConfigurationException.class)
     public void assertValidateFailure() {
         Properties prop = new Properties();
         prop.put(PropertiesConstant.SQL_SHOW.getKey(), "error");

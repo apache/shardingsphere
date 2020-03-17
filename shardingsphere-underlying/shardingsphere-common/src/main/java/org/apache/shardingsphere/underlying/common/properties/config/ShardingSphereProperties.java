@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.constant.properties;
+package org.apache.shardingsphere.underlying.common.properties.config;
+
+import org.apache.shardingsphere.underlying.common.properties.common.TypedProperties;
 
 import java.util.Properties;
 
 /**
- * Orchestration properties.
+ * ShardingSphere properties for configuration.
  */
-public final class OrchestrationProperties extends TypedProperties<OrchestrationPropertiesEnum> {
+public final class ShardingSphereProperties extends TypedProperties<PropertiesConstant> {
     
-    public OrchestrationProperties(final Properties props) {
-        super(OrchestrationPropertiesEnum.class, props);
+    public ShardingSphereProperties(final Properties props) {
+        super(PropertiesConstant.class, props);
     }
 }

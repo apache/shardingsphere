@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.constant.properties;
+package org.apache.shardingsphere.underlying.common.properties.orchestration;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertiesKey;
 
 /**
- * Typed properties key interface.
+ * Orchestration properties enum.
  */
-public interface TypedPropertiesKey {
+@RequiredArgsConstructor
+@Getter
+public enum OrchestrationPropertiesEnum implements TypedPropertiesKey {
     
     /**
-     * return the specific type.
-     * @return type
+     * Enable or Disable to overwrite orchestration config center data.
+     *
+     * <p>
+     * If this properties is true, yaml file config properties will overwrite orchestration config center data.
+     * Default: false
+     * </p>
      */
-    Class<?> getType();
+    OVERWRITE("overwrite", String.valueOf(Boolean.FALSE), boolean.class);
     
-    /**
-     * return the specific key.
-     * @return key
-     */
-    String getKey();
+    private final String key;
     
-    /**
-     * return the default value.
-     * @return defaultValue
-     */
-    String getDefaultValue();
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }
