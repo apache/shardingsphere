@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colum
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.integer.MySQLLongLongBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.integer.MySQLShortBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.integer.MySQLTinyBinlogProtocolValue;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string.MySQLJsonBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string.MySQLStringBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string.MySQLVarcharBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time.MySQLDateBinlogProtocolValue;
@@ -90,6 +91,7 @@ public final class MySQLBinlogProtocolValueFactory {
         BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_STRING, new MySQLStringBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_VARCHAR, new MySQLVarcharBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_VAR_STRING, new MySQLVarcharBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLColumnType.MySQL_TYPE_JSON, new MySQLJsonBinlogProtocolValue());
     }
     
     private static void registerBlobTypeValue() {

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.BinlogContext;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.BlobValueDecoder;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DecimalValueDecoder;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.JsonValueDecoder;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string.MySQLJsonValueDecoder;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 
@@ -254,7 +254,7 @@ public final class RowsEventPacket {
         if (0 == length) {
             return "";
         } else {
-            return JsonValueDecoder.decode(in.readBytes(length));
+            return MySQLJsonValueDecoder.decode(in.readBytes(length));
         }
     }
 }

@@ -15,128 +15,133 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string;
 
 import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
- * Json value decoder.
+ * JSON type value decoder for MySQL.
  *
- * <p>
- *     https://github.com/mysql/mysql-server/blob/5.7/sql/json_binary.h
- * </p>
+ * @see <a href="https://github.com/mysql/mysql-server/blob/5.7/sql/json_binary.h">json_binary</a>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JsonValueDecoder {
+public final class MySQLJsonValueDecoder {
+    
+    private static final BigInteger MAX_BIG_INTEGER_VALUE = new BigInteger("18446744073709551615");
     
     /**
      * Decode mysql json binary data to json string.
      *
-     * @param in buffer
-     * @return string
+     * @param byteBuf json binary value payload
+     * @return json string
      */
-    public static Serializable decode(final ByteBuf in) {
-        int valueType = DataTypesCodec.readUnsignedInt1(in);
+    public static Serializable decode(final ByteBuf byteBuf) {
+        int valueType = byteBuf.readUnsignedByte() & 0xff;
         StringBuilder result = new StringBuilder();
-        decodeValue(valueType, 1, in, result);
+        decodeValue(valueType, 1, byteBuf, result);
         return result.toString();
     }
     
-    private static void decodeValue(final int type, final int offset, final ByteBuf in, final StringBuilder out) {
-        int oldOffset = in.readerIndex();
-        // set reader index to entry start position
-        in.readerIndex(offset);
+    private static void decodeValue(final int type, final int offset, final ByteBuf byteBuf, final StringBuilder result) {
+        int oldOffset = byteBuf.readerIndex();
+        byteBuf.readerIndex(offset);
         try {
             switch (type) {
                 case JsonValueTypes.SMALL_JSON_OBJECT:
-                    decodeJsonObject(true, in.slice(), out);
+                    decodeJsonObject(true, byteBuf.slice(), result);
                     break;
                 case JsonValueTypes.LARGE_JSON_OBJECT:
-                    decodeJsonObject(false, in.slice(), out);
+                    decodeJsonObject(false, byteBuf.slice(), result);
                     break;
                 case JsonValueTypes.SMALL_JSON_ARRAY:
-                    decodeJsonArray(true, in.slice(), out);
+                    decodeJsonArray(true, byteBuf.slice(), result);
                     break;
                 case JsonValueTypes.LARGE_JSON_ARRAY:
-                    decodeJsonArray(false, in.slice(), out);
+                    decodeJsonArray(false, byteBuf.slice(), result);
                     break;
                 case JsonValueTypes.INT16:
-                    out.append(DataTypesCodec.readInt2LE(in));
+                    result.append(byteBuf.readShortLE());
                     break;
                 case JsonValueTypes.UINT16:
-                    out.append(DataTypesCodec.readUnsignedInt2LE(in));
+                    result.append(byteBuf.readUnsignedShortLE());
                     break;
                 case JsonValueTypes.INT32:
-                    out.append(DataTypesCodec.readInt4LE(in));
+                    result.append(byteBuf.readIntLE());
                     break;
                 case JsonValueTypes.UINT32:
-                    out.append(DataTypesCodec.readUnsignedInt4LE(in));
+                    result.append(byteBuf.readUnsignedIntLE());
                     break;
                 case JsonValueTypes.INT64:
-                    out.append(DataTypesCodec.readInt8LE(in));
+                    result.append(byteBuf.readLongLE());
                     break;
                 case JsonValueTypes.UINT64:
-                    out.append(DataTypesCodec.readUnsignedInt8LE(in));
+                    result.append(readUnsignedLongLE(byteBuf));
                     break;
                 case JsonValueTypes.DOUBLE:
-                    out.append(DataTypesCodec.readDoubleLE(in));
+                    result.append(byteBuf.readDoubleLE());
                     break;
                 case JsonValueTypes.STRING:
-                    outputString(decodeString(in.slice()), out);
+                    outputString(decodeString(byteBuf.slice()), result);
                     break;
                 default:
                     throw new UnsupportedOperationException();
             }
         } finally {
-            in.readerIndex(oldOffset);
+            byteBuf.readerIndex(oldOffset);
         }
     }
     
-    private static void decodeJsonObject(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
-        out.append('{');
-        int count = getIntBasedObjectSize(in, isSmall);
-        int size = getIntBasedObjectSize(in, isSmall);
+    private static BigInteger readUnsignedLongLE(final ByteBuf byteBuf) {
+        long value = byteBuf.readLongLE();
+        return 0 <= value ? BigInteger.valueOf(value) : MAX_BIG_INTEGER_VALUE.add(BigInteger.valueOf(1 + value));
+    }
+    
+    private static void decodeJsonObject(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder result) {
+        result.append('{');
+        int count = getIntBasedObjectSize(byteBuf, isSmall);
+        int size = getIntBasedObjectSize(byteBuf, isSmall);
         String[] keys = new String[count];
         for (int i = 0; i < count; i++) {
-            keys[i] = decodeKeyEntry(isSmall, in);
+            keys[i] = decodeKeyEntry(isSmall, byteBuf);
         }
         for (int i = 0; i < count; i++) {
             if (0 < i) {
-                out.append(',');
+                result.append(',');
             }
-            out.append('"').append(keys[i]).append("\":");
-            decodeValueEntry(isSmall, in, out);
+            result.append('"').append(keys[i]).append("\":");
+            decodeValueEntry(isSmall, byteBuf, result);
         }
-        out.append('}');
+        result.append('}');
     }
     
-    private static void decodeJsonArray(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
-        out.append('[');
-        int count = getIntBasedObjectSize(in, isSmall);
-        int size = getIntBasedObjectSize(in, isSmall);
+    private static void decodeJsonArray(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder result) {
+        result.append('[');
+        int count = getIntBasedObjectSize(byteBuf, isSmall);
+        int size = getIntBasedObjectSize(byteBuf, isSmall);
         for (int i = 0; i < count; i++) {
             if (0 < i) {
-                out.append(',');
+                result.append(',');
             }
-            decodeValueEntry(isSmall, in, out);
+            decodeValueEntry(isSmall, byteBuf, result);
         }
-        out.append(']');
+        result.append(']');
     }
     
-    private static String decodeKeyEntry(final boolean isSmall, final ByteBuf in) {
-        int offset = getIntBasedObjectSize(in, isSmall);
-        int length = DataTypesCodec.readUnsignedInt2LE(in);
+    private static String decodeKeyEntry(final boolean isSmall, final ByteBuf byteBuf) {
+        int offset = getIntBasedObjectSize(byteBuf, isSmall);
+        int length = byteBuf.readUnsignedShortLE();
         byte[] data = new byte[length];
-        in.getBytes(offset, data, 0, length);
+        byteBuf.getBytes(offset, data, 0, length);
         return new String(data);
     }
     
-    private static void decodeValueEntry(final boolean isSmall, final ByteBuf in, final StringBuilder out) {
-        int type = DataTypesCodec.readUnsignedInt1(in);
+    private static void decodeValueEntry(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder result) {
+        int type = byteBuf.readUnsignedByte() & 0xff;
         switch (type) {
             case JsonValueTypes.SMALL_JSON_OBJECT:
             case JsonValueTypes.LARGE_JSON_OBJECT:
@@ -146,41 +151,41 @@ public final class JsonValueDecoder {
             case JsonValueTypes.UINT64:
             case JsonValueTypes.DOUBLE:
             case JsonValueTypes.STRING:
-                decodeValue(type, getIntBasedObjectSize(in, isSmall), in, out);
+                decodeValue(type, getIntBasedObjectSize(byteBuf, isSmall), byteBuf, result);
                 break;
             case JsonValueTypes.INT16:
-                out.append(DataTypesCodec.readInt2LE(in));
+                result.append(byteBuf.readShortLE());
                 if (!isSmall) {
-                    DataTypesCodec.skipBytes(2, in);
+                    byteBuf.skipBytes(2);
                 }
                 break;
             case JsonValueTypes.UINT16:
-                out.append(getIntBasedObjectSize(in, isSmall));
+                result.append(getIntBasedObjectSize(byteBuf, isSmall));
                 break;
             case JsonValueTypes.INT32:
                 if (isSmall) {
-                    decodeValue(type, DataTypesCodec.readUnsignedInt2LE(in), in, out);
+                    decodeValue(type, byteBuf.readUnsignedShortLE(), byteBuf, result);
                 } else {
-                    out.append(DataTypesCodec.readInt4LE(in));
+                    result.append(byteBuf.readIntLE());
                 }
                 break;
             case JsonValueTypes.UINT32:
                 if (isSmall) {
-                    decodeValue(type, DataTypesCodec.readUnsignedInt2LE(in), in, out);
+                    decodeValue(type, byteBuf.readUnsignedShortLE(), byteBuf, result);
                 } else {
-                    out.append(DataTypesCodec.readUnsignedInt4LE(in));
+                    result.append(byteBuf.readUnsignedIntLE());
                 }
                 break;
             case JsonValueTypes.LITERAL:
-                outputLiteral(getIntBasedObjectSize(in, isSmall), out);
+                outputLiteral(getIntBasedObjectSize(byteBuf, isSmall), result);
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
     }
     
-    private static int getIntBasedObjectSize(final ByteBuf in, final boolean isSmall) {
-        return isSmall ? DataTypesCodec.readUnsignedInt2LE(in) : (int) DataTypesCodec.readUnsignedInt4LE(in);
+    private static int getIntBasedObjectSize(final ByteBuf byteBuf, final boolean isSmall) {
+        return isSmall ? byteBuf.readUnsignedShortLE() : (int) byteBuf.readUnsignedIntLE();
     }
     
     private static void outputLiteral(final int inlineValue, final StringBuilder out) {
@@ -199,15 +204,17 @@ public final class JsonValueDecoder {
         }
     }
     
-    private static String decodeString(final ByteBuf in) {
-        int length = decodeDataLength(in);
-        return DataTypesCodec.readFixedLengthString(length, in);
+    private static String decodeString(final ByteBuf byteBuf) {
+        int length = decodeDataLength(byteBuf);
+        byte[] buffer = new byte[length];
+        byteBuf.readBytes(buffer, 0, length);
+        return new String(buffer);
     }
     
-    private static int decodeDataLength(final ByteBuf in) {
+    private static int decodeDataLength(final ByteBuf byteBuf) {
         int length = 0;
         for (int i = 0; ; i++) {
-            int data = DataTypesCodec.readUnsignedInt1(in);
+            int data = byteBuf.readUnsignedByte();
             length |= (data & 0x7f) << (7 * i);
             if (0 == (data & 0x80)) {
                 break;
