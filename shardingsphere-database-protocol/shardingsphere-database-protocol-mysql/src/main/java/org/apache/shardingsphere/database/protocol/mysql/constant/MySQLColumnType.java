@@ -74,6 +74,13 @@ public enum MySQLColumnType {
     
     MYSQL_TYPE_TIME2(0x13),
     
+    /**
+     * Do not describe in document, but actual exist.
+     *
+     * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4795"></a>
+     */
+    MySQL_TYPE_JSON(0xf5),
+    
     MYSQL_TYPE_NEWDECIMAL(0xf6),
     
     MYSQL_TYPE_ENUM(0xf7),

@@ -15,22 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.blob;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.string;
+
+import java.io.Serializable;
 
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
-import java.io.Serializable;
-
 /**
- * BLOB type value of MySQL binlog protocol.
+ * JSON type value of MySQL binlog protocol.
+ *
+ * <p>
+ *     There are no detail document about JSON type in MySQL replication.
+ *     Also no detail document in MariaDB.
+ *
+ *     Decoding implementation is referred to MySQL source code.
+ * </p>
+ *
+ * @see <a href="https://github.com/mysql/mysql-server/blob/5.7/sql/json_binary.h">json_binary</a>
+ * @see <a href="https://github.com/apache/incubator-shardingsphere/issues/4795"></a>
  */
-public final class MySQLBlobBinlogProtocolValue implements MySQLBinlogProtocolValue {
+public final class MySQLJsonBinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        return payload.readStringFixByBytes(readLengthFromMeta(columnDef.getColumnMeta(), payload));
+        return MySQLJsonValueDecoder.decode(payload.getByteBuf().readBytes(readLengthFromMeta(columnDef.getColumnMeta(), payload)));
     }
     
     private int readLengthFromMeta(final int columnMeta, final MySQLPacketPayload payload) {
@@ -44,7 +54,7 @@ public final class MySQLBlobBinlogProtocolValue implements MySQLBinlogProtocolVa
             case 4:
                 return payload.readInt4();
             default:
-                throw new UnsupportedOperationException("MySQL BLOB type meta in binlog should be range 1 to 4, but actual value is: " + columnMeta);
+                throw new UnsupportedOperationException("MySQL JSON type meta in binlog should be range 1 to 4, but actual value is: " + columnMeta);
         }
     }
 }
