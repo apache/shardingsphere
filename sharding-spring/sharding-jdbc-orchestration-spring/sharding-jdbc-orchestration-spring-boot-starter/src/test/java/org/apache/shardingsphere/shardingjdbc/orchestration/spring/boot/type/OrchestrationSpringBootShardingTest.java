@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataS
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,7 +69,7 @@ public class OrchestrationSpringBootShardingTest {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
         assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        ShardingSphereProperties properties = runtimeContext.getProperties();
+        ConfigurationProperties properties = runtimeContext.getProperties();
         assertTrue(properties.getValue(PropertiesConstant.SQL_SHOW));
         assertThat(properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
     }

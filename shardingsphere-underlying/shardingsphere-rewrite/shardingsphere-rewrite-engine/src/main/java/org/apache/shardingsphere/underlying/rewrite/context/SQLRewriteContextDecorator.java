@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.context;
 
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
@@ -34,5 +34,5 @@ public interface SQLRewriteContextDecorator<T extends BaseRule> {
      * @param properties ShardingSphere properties
      * @param sqlRewriteContext SQL rewrite context to be decorated
      */
-    void decorate(T rule, ShardingSphereProperties properties, SQLRewriteContext sqlRewriteContext);
+    void decorate(T rule, ConfigurationProperties properties, SQLRewriteContext sqlRewriteContext);
 }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.Incre
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -150,7 +150,7 @@ public class OrchestrationShardingNamespaceTest extends AbstractJUnit4SpringCont
     public void assertPropsDataSource() {
         OrchestrationSpringShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSourceOrchestration", OrchestrationSpringShardingDataSource.class);
         ShardingDataSource dataSource = (ShardingDataSource) FieldValueUtil.getFieldValue(shardingDataSource, "dataSource", true);
-        ShardingSphereProperties properties = dataSource.getRuntimeContext().getProperties();
+        ConfigurationProperties properties = dataSource.getRuntimeContext().getProperties();
         assertTrue(properties.<Boolean>getValue(PropertiesConstant.SQL_SHOW));
         boolean showSql = properties.getValue(PropertiesConstant.SQL_SHOW);
         assertTrue(showSql);

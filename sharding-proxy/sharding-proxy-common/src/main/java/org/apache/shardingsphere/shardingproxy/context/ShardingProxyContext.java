@@ -23,7 +23,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationC
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.CircuitStateChangedEvent;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 
@@ -37,7 +37,7 @@ public final class ShardingProxyContext {
     
     private static final ShardingProxyContext INSTANCE = new ShardingProxyContext();
     
-    private ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
+    private ConfigurationProperties properties = new ConfigurationProperties(new Properties());
     
     private Authentication authentication;
     
@@ -64,7 +64,7 @@ public final class ShardingProxyContext {
      */
     public void init(final Authentication authentication, final Properties props) {
         this.authentication = authentication;
-        properties = new ShardingSphereProperties(props);
+        properties = new ConfigurationProperties(props);
     }
     
     /**
@@ -75,7 +75,7 @@ public final class ShardingProxyContext {
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         ConfigurationLogger.log(event.getProps());
-        properties = new ShardingSphereProperties(event.getProps());
+        properties = new ConfigurationProperties(event.getProps());
     }
     
     /**

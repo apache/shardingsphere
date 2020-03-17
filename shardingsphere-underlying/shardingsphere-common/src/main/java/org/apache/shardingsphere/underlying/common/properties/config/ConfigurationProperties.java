@@ -22,11 +22,11 @@ import org.apache.shardingsphere.underlying.common.properties.common.TypedProper
 import java.util.Properties;
 
 /**
- * ShardingSphere properties for configuration.
+ * Configuration properties.
  */
-public final class ShardingSphereProperties extends TypedProperties<PropertiesConstant> {
+public final class ConfigurationProperties extends TypedProperties<PropertiesConstant> {
     
-    public ShardingSphereProperties(final Properties props) {
+    public ConfigurationProperties(final Properties props) {
         super(PropertiesConstant.class, props);
     }
 }

@@ -40,7 +40,7 @@ import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDa
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
 import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -230,7 +230,7 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         ShardingDataSource shardingDataSource = applicationContext.getBean("propsDataSource", ShardingDataSource.class);
         ShardingRuntimeContext runtimeContext = (ShardingRuntimeContext) FieldValueUtil.getFieldValue(shardingDataSource, "runtimeContext", true);
         assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        ShardingSphereProperties properties = runtimeContext.getProperties();
+        ConfigurationProperties properties = runtimeContext.getProperties();
         boolean showSql = properties.getValue(PropertiesConstant.SQL_SHOW);
         assertTrue(showSql);
         int executorSize = properties.getValue(PropertiesConstant.EXECUTOR_SIZE);

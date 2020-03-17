@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteCont
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
 import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
@@ -47,10 +47,10 @@ public abstract class BaseShardingEngineTest {
     
     private final List<Object> parameters;
     
-    protected final ShardingSphereProperties getProperties() {
+    protected final ConfigurationProperties getProperties() {
         Properties result = new Properties();
         result.setProperty(PropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        return new ShardingSphereProperties(result);
+        return new ConfigurationProperties(result);
     }
     
     @SuppressWarnings("unchecked")

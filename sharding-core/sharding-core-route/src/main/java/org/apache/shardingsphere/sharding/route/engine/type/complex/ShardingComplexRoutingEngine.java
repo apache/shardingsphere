@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
@@ -46,7 +46,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
     private final ShardingConditions shardingConditions;
 
-    private final ShardingSphereProperties properties;
+    private final ConfigurationProperties properties;
     
     @Override
     public RouteResult route(final ShardingRule shardingRule) {

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.merge.engine.merger.impl.TransparentResultMerger;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public final class ShardingResultMergerEngineTest {
     
     @Test
     public void assertNewInstanceWithSelectStatement() {
-        ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
+        ConfigurationProperties properties = new ConfigurationProperties(new Properties());
         SQLStatementContext sqlStatementContext = new SelectStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
@@ -58,7 +58,7 @@ public final class ShardingResultMergerEngineTest {
     
     @Test
     public void assertNewInstanceWithDALStatement() {
-        ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
+        ConfigurationProperties properties = new ConfigurationProperties(new Properties());
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new ShowStatement());
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
@@ -70,7 +70,7 @@ public final class ShardingResultMergerEngineTest {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         insertStatement.setInsertColumns(insertColumnsSegment);
         SQLStatementContext sqlStatementContext = new InsertStatementContext(null, Collections.emptyList(), insertStatement);
-        ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
+        ConfigurationProperties properties = new ConfigurationProperties(new Properties());
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentResultMerger.class));
     }
 }
