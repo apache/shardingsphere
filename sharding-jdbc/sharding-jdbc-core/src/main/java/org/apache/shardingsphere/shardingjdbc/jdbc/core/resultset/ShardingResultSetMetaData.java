@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Pro
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -105,7 +105,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     @Override
     public String getSchemaName(final int column) {
-        return ShardingConstant.LOGIC_SCHEMA_NAME;
+        return DefaultSchema.LOGIC_NAME;
     }
     
     @Override
@@ -126,7 +126,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     @Override
     public String getCatalogName(final int column) {
-        return ShardingConstant.LOGIC_SCHEMA_NAME;
+        return DefaultSchema.LOGIC_NAME;
     }
     
     @Override

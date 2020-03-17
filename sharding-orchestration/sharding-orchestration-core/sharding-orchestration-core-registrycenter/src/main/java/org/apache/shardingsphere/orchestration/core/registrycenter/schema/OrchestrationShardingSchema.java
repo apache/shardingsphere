@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.registrycenter.schema;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public final class OrchestrationShardingSchema {
             schemaName = values.get(0);
             dataSourceName = values.get(1);
         } else {
-            schemaName = ShardingConstant.LOGIC_SCHEMA_NAME;
+            schemaName = DefaultSchema.LOGIC_NAME;
             dataSourceName = value;
         }
     }
