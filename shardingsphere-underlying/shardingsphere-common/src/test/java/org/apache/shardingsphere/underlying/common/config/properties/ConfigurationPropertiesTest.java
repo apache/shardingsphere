@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties;
+package org.apache.shardingsphere.underlying.common.config.properties;
 
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 
