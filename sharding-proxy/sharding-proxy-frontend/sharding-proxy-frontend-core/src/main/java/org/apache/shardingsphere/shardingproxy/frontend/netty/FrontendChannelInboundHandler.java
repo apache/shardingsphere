@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadEx
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.underlying.common.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
 
 /**
  * Frontend channel inbound handler.

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeC
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
-import org.apache.shardingsphere.underlying.common.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

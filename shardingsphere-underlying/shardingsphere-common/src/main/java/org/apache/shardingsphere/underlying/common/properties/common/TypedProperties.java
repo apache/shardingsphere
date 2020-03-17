@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.basic;
+package org.apache.shardingsphere.underlying.common.properties.common;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;

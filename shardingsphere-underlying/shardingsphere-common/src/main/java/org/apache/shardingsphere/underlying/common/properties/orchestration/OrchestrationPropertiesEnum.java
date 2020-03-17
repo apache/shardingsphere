@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties;
+package org.apache.shardingsphere.underlying.common.properties.orchestration;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.basic.TypedPropertiesKey;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertiesKey;
 
 /**
  * Orchestration properties enum.

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.underlying.common.properties;
 
+import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
 import org.junit.Before;
 import org.junit.Test;
 

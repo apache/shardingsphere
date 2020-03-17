@@ -39,8 +39,8 @@ import org.apache.shardingsphere.shardingjdbc.spring.algorithm.RangeModuloTableS
 import org.apache.shardingsphere.shardingjdbc.spring.datasource.SpringShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.spring.util.FieldValueUtil;
-import org.apache.shardingsphere.underlying.common.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.config.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.config.ShardingSphereProperties;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.basic;
+package org.apache.shardingsphere.underlying.common.properties.common;
 
 /**
  * Typed properties key interface.
