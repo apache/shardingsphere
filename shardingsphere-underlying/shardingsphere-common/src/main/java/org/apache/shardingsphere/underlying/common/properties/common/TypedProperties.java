@@ -89,6 +89,9 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
         if (type == int.class && !StringUtil.isIntValue(value)) {
             return Optional.of(createErrorMessage(enumKey, value));
         }
+        if (type == long.class && !StringUtil.isLongValue(value)) {
+            return Optional.of(createErrorMessage(enumKey, value));
+        }
         return Optional.empty();
     }
     
