@@ -45,28 +45,16 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
     
     public TypedProperties(final Class<E> keyClass, final Properties props) {
         this.props = props;
+        validate(keyClass);
         cache = preload(keyClass);
     }
     
-    private Map<E, Object> preload(final Class<E> keyClass) {
-        Map<E, String> stringValueMap = preloadStringValues(keyClass);
-        validate(stringValueMap);
-        return preloadActualValues(stringValueMap);
-    }
-    
-    private Map<E, String> preloadStringValues(final Class<E> keyClass) {
-        E[] enumConstants = keyClass.getEnumConstants();
-        Map<E, String> result = new HashMap<>(enumConstants.length, 1);
-        for (E each : enumConstants) {
-            result.put(each, props.getOrDefault(each.getKey(), each.getDefaultValue()).toString());
-        }
-        return result;
-    }
-    
-    private void validate(final Map<E, String> stringValueMap) {
+    private void validate(final Class<E> keyClass) {
         Collection<String> errorMessages = new LinkedList<>();
-        for (Entry<E, String> entry : stringValueMap.entrySet()) {
-            validate(entry.getKey(), entry.getValue()).ifPresent(errorMessages::add);
+        for (E each : keyClass.getEnumConstants()) {
+            if (null != props.get(each.getKey())) {
+                validate(each, props.get(each.getKey()).toString()).ifPresent(errorMessages::add);
+            }
         }
         if (!errorMessages.isEmpty()) {
             throw new ShardingSphereConfigurationException(Joiner.on(LINE_SEPARATOR).join(errorMessages));
@@ -89,6 +77,19 @@ public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
     
     private String createErrorMessage(final E enumKey, final String invalidValue) {
         return String.format("Value '%s' of '%s' cannot convert to type '%s'. ", invalidValue, enumKey.getKey(), enumKey.getType().getName());
+    }
+    
+    private Map<E, Object> preload(final Class<E> keyClass) {
+        return preloadActualValues(preloadStringValues(keyClass));
+    }
+    
+    private Map<E, String> preloadStringValues(final Class<E> keyClass) {
+        E[] enumConstants = keyClass.getEnumConstants();
+        Map<E, String> result = new HashMap<>(enumConstants.length, 1);
+        for (E each : enumConstants) {
+            result.put(each, props.getOrDefault(each.getKey(), each.getDefaultValue()).toString());
+        }
+        return result;
     }
     
     private Map<E, Object> preloadActualValues(final Map<E, String> stringValueMap) {
