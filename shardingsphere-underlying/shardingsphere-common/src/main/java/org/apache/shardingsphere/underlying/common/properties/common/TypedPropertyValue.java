@@ -18,21 +18,20 @@
 package org.apache.shardingsphere.underlying.common.properties.common;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.properties.exception.TypedPropertiesValueException;
 
 /**
- * Typed properties value.
+ * Typed property value.
  */
 @Getter
-public final class TypedPropertiesValue {
+public final class TypedPropertyValue {
     
     private Object value;
     
-    public TypedPropertiesValue(final TypedPropertiesKey key, final String value) throws TypedPropertiesValueException {
+    public TypedPropertyValue(final TypedPropertyKey key, final String value) throws TypedPropertyValueException {
         this.value = createTypedValue(key, value);
     }
     
-    private Object createTypedValue(final TypedPropertiesKey key, final String value) throws TypedPropertiesValueException {
+    private Object createTypedValue(final TypedPropertyKey key, final String value) throws TypedPropertyValueException {
         if (boolean.class == key.getType()) {
             return Boolean.valueOf(value);
         }
@@ -40,14 +39,14 @@ public final class TypedPropertiesValue {
             try {
                 return Integer.valueOf(value);
             } catch (final NumberFormatException ex) {
-                throw new TypedPropertiesValueException(key, value);
+                throw new TypedPropertyValueException(key, value);
             }
         }
         if (long.class == key.getType()) {
             try {
                 return Long.valueOf(value);
             } catch (final NumberFormatException ex) {
-                throw new TypedPropertiesValueException(key, value);
+                throw new TypedPropertyValueException(key, value);
             }
         }
         return value;

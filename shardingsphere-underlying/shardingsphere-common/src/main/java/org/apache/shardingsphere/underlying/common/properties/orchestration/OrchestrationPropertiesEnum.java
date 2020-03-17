@@ -19,14 +19,14 @@ package org.apache.shardingsphere.underlying.common.properties.orchestration;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertiesKey;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
 
 /**
  * Orchestration properties enum.
  */
 @RequiredArgsConstructor
 @Getter
-public enum OrchestrationPropertiesEnum implements TypedPropertiesKey {
+public enum OrchestrationPropertiesEnum implements TypedPropertyKey {
     
     /**
      * Enable or Disable to overwrite orchestration config center data.

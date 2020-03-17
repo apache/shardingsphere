@@ -19,14 +19,14 @@ package org.apache.shardingsphere.underlying.common.properties.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertiesKey;
+import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
 
 /**
  * Properties constant.
  */
 @RequiredArgsConstructor
 @Getter
-public enum PropertiesConstant implements TypedPropertiesKey {
+public enum PropertiesConstant implements TypedPropertyKey {
     
     /**
      * Enable or Disable to show SQL details.

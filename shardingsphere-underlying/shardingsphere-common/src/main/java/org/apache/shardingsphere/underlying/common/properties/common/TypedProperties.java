@@ -20,7 +20,6 @@ package org.apache.shardingsphere.underlying.common.properties.common;
 import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.underlying.common.properties.exception.TypedPropertiesValueException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,29 +30,29 @@ import java.util.Properties;
 /**
  * Typed properties with a specified enum.
  */
-public abstract class TypedProperties<E extends Enum & TypedPropertiesKey> {
+public abstract class TypedProperties<E extends Enum & TypedPropertyKey> {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     @Getter
     private final Properties props;
     
-    private final Map<E, TypedPropertiesValue> cache;
+    private final Map<E, TypedPropertyValue> cache;
     
     public TypedProperties(final Class<E> keyClass, final Properties props) {
         this.props = props;
         cache = preload(keyClass);
     }
     
-    private Map<E, TypedPropertiesValue> preload(final Class<E> keyClass) {
+    private Map<E, TypedPropertyValue> preload(final Class<E> keyClass) {
         E[] enumConstants = keyClass.getEnumConstants();
-        Map<E, TypedPropertiesValue> result = new HashMap<>(enumConstants.length, 1);
+        Map<E, TypedPropertyValue> result = new HashMap<>(enumConstants.length, 1);
         Collection<String> errorMessages = new LinkedList<>();
         for (E each : enumConstants) {
-            TypedPropertiesValue value = null;
+            TypedPropertyValue value = null;
             try {
-                value = new TypedPropertiesValue(each, props.getOrDefault(each.getKey(), each.getDefaultValue()).toString());
-            } catch (final TypedPropertiesValueException ex) {
+                value = new TypedPropertyValue(each, props.getOrDefault(each.getKey(), each.getDefaultValue()).toString());
+            } catch (final TypedPropertyValueException ex) {
                 errorMessages.add(ex.getMessage());
             }
             result.put(each, value);
