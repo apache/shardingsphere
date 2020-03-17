@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.constant.properties;
+package org.apache.shardingsphere.underlying.common.properties;
 
 import java.util.Properties;
 

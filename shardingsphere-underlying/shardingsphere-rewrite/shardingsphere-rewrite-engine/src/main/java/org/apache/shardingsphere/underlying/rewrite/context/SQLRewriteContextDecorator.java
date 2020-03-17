@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.context;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**

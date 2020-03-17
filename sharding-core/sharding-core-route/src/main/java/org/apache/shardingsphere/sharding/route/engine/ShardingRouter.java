@@ -44,7 +44,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.properties.ShardingSphereProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;

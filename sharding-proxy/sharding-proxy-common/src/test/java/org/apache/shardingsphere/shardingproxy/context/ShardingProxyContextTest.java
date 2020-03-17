@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.context;
 
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.PropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
@@ -47,7 +47,7 @@ public final class ShardingProxyContextTest {
         ShardingProxyContext.getInstance().init(authentication, props);
         assertThat(ShardingProxyContext.getInstance().getAuthentication(), is(authentication));
         assertTrue(ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        assertThat(ShardingProxyContext.getInstance().getProperties().<String>getValue(PropertiesConstant.PROXY_TRANSACTION_TYPE), is("BASE"));
+        assertThat(ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.PROXY_TRANSACTION_TYPE), is("BASE"));
     }
     
     @Test

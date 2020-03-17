@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

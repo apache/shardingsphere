@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.Inval
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutorFactory;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.PropertiesConstant;
 
 import java.sql.SQLException;
 import java.util.Optional;

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractMasterSlavePreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.PropertiesConstant;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

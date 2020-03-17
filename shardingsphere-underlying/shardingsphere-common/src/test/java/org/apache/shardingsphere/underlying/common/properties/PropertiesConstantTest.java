@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.constant;
+package org.apache.shardingsphere.underlying.common.properties;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
 import org.junit.Test;
 
 import java.util.Properties;

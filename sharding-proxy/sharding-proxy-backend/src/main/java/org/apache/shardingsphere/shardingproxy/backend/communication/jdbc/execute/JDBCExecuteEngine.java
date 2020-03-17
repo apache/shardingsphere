@@ -37,7 +37,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.properties.PropertiesConstant;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
 import java.sql.SQLException;
