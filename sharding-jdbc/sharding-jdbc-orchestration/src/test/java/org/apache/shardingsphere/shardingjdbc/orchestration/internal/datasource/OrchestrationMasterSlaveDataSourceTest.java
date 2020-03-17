@@ -42,7 +42,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.con
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -103,12 +103,12 @@ public final class OrchestrationMasterSlaveDataSourceTest {
     private MasterSlaveRuleChangedEvent getMasterSlaveRuleChangedEvent() {
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(
                 "new_ms", "ds_m", Collections.singletonList("ds_s"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
-        return new MasterSlaveRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveRuleConfiguration);
+        return new MasterSlaveRuleChangedEvent(DefaultSchema.LOGIC_NAME, masterSlaveRuleConfiguration);
     }
     
     @Test
     public void assertRenewDataSource() {
-        masterSlaveDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurations()));
+        masterSlaveDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
         assertThat(masterSlaveDataSource.getDataSource().getDataSourceMap().size(), is(1));
         
     }

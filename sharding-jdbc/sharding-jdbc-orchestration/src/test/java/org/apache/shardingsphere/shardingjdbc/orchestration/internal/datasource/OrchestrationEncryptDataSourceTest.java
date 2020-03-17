@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSo
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
 import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -114,13 +114,13 @@ public final class OrchestrationEncryptDataSourceTest {
         encryptRuleConfig.getEncryptors().put("order_encryptor", new EncryptorRuleConfiguration("md5", new Properties()));
         encryptRuleConfig.getTables().put("t_order_item", 
                 new EncryptTableRuleConfiguration(Collections.singletonMap("item_id", new EncryptColumnRuleConfiguration("plain_item_id", "cipher_item_id", "", "order_encryptor"))));
-        return new EncryptRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, encryptRuleConfig);
+        return new EncryptRuleChangedEvent(DefaultSchema.LOGIC_NAME, encryptRuleConfig);
     }
     
     @Test
     public void assertRenewDataSource() throws SQLException {
         assertThat(encryptDataSource.getConnection().getMetaData().getURL(), is("jdbc:h2:mem:ds_encrypt"));
-        encryptDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurations()));
+        encryptDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
         assertThat(encryptDataSource.getConnection().getMetaData().getURL(), is("jdbc:h2:mem:test"));
     }
     
@@ -136,7 +136,7 @@ public final class OrchestrationEncryptDataSourceTest {
     @Test
     public void assertRenewDataSourceWithError() {
         try {
-            encryptDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, Collections.emptyMap()));
+            encryptDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, Collections.emptyMap()));
         } catch (IllegalStateException ex) {
             assertThat(ex.getMessage(), is("There should be only one datasource for encrypt, but now has 0 datasource(s)"));
         }

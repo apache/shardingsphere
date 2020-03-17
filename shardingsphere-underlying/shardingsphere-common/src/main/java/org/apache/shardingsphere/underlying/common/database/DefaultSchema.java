@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.constant;
+package org.apache.shardingsphere.underlying.common.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding constant.
+ * Default schema.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingConstant {
+public final class DefaultSchema {
     
     /**
-     * Logic database schema name.
+     * Logic schema name.
      * 
      * <p>
      * ShardingSphere just have one logic database table.
-     * Default: sharding_db
      * </p>
      */
-    public static final String LOGIC_SCHEMA_NAME = "logic_db";
+    public static final String LOGIC_NAME = "logic_db";
 }
