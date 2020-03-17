@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.common;
+package org.apache.shardingsphere.underlying.common.properties;
 
 /**
  * Typed property value exception.

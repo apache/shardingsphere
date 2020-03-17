@@ -28,8 +28,8 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.spring.datasource.Or
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerator;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.util.FieldValueUtil;
-import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

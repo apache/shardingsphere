@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.Cach
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

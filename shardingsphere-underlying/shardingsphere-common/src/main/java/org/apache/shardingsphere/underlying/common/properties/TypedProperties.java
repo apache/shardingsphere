@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.common;
+package org.apache.shardingsphere.underlying.common.properties;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;

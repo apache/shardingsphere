@@ -15,18 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties.config;
-
-import org.apache.shardingsphere.underlying.common.properties.common.TypedProperties;
-
-import java.util.Properties;
+package org.apache.shardingsphere.underlying.common.properties;
 
 /**
- * Typed properties of configuration.
+ * Typed property key.
  */
-public final class ConfigurationProperties extends TypedProperties<ConfigurationPropertyKey> {
+public interface TypedPropertyKey {
     
-    public ConfigurationProperties(final Properties props) {
-        super(ConfigurationPropertyKey.class, props);
-    }
+    /**
+     * Get property key.
+     * 
+     * @return property key
+     */
+    String getKey();
+    
+    /**
+     * Get default property value.
+     * 
+     * @return default property value
+     */
+    String getDefaultValue();
+    
+    /**
+     * Get property type.
+     * 
+     * @return property type
+     */
+    Class<?> getType();
 }

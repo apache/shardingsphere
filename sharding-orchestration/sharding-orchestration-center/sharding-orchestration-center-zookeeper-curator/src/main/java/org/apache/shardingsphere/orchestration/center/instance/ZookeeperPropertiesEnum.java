@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.center.instance;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.common.TypedPropertyKey;
+import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
 /**
  * Zookeeper properties enum.

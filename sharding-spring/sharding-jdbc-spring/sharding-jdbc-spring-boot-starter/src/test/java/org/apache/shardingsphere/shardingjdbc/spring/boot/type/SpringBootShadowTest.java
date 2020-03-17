@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.spring.boot.type;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShadowDataSource;
-import org.apache.shardingsphere.underlying.common.properties.config.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
