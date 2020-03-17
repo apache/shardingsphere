@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.integrate.jaxb;
 
 import com.google.common.base.Preconditions;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.SQLParserTestCases;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
@@ -25,6 +26,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,10 +43,11 @@ public final class SQLParserTestCasesRegistry {
         sqlParserTestCases = load(rootDirectory);
     }
     
+    @SneakyThrows
     private Map<String, SQLParserTestCase> load(final String directory) {
         URL url = SQLParserTestCasesRegistry.class.getClassLoader().getResource(directory);
         Preconditions.checkNotNull(url, "Can not find SQL parser test cases.");
-        File[] files = new File(url.getPath()).listFiles();
+        File[] files = new File(URLDecoder.decode(url.getPath(), "UTF-8")).listFiles();
         Preconditions.checkNotNull(files, "Can not find SQL parser test cases.");
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : files) {

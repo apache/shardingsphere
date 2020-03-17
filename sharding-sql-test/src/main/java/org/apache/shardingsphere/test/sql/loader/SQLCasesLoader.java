@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.loader;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.SQLCase;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -32,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -73,13 +75,14 @@ public final class SQLCasesLoader {
         return result;
     }
     
+    @SneakyThrows
     private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
         Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return result;
         }
-        File filePath = new File(url.getPath());
+        File filePath = new File(URLDecoder.decode(url.getPath(), "UTF-8"));
         if (!filePath.exists()) {
             return result;
         }
@@ -190,7 +193,7 @@ public final class SQLCasesLoader {
     }
     
     private static Collection<String> getDatabaseTypes(final String databaseTypes) {
-        return Strings.isNullOrEmpty(databaseTypes) ? getALlDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
+        return Strings.isNullOrEmpty(databaseTypes) ? getALlDatabaseTypes() : Lists.newArrayList(Splitter.on(',').trimResults().split(databaseTypes));
     }
     
     private static Collection<String> getALlDatabaseTypes() {
