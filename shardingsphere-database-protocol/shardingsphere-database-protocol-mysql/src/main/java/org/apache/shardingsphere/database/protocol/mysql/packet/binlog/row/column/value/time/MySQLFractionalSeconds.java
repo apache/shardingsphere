@@ -24,13 +24,13 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */
-public final class MySQLTimeFractionalSeconds {
+public final class MySQLFractionalSeconds {
 
     private final int fraction;
     
     private final int fractionalSecondsPrecision;
     
-    public MySQLTimeFractionalSeconds(final int columnMeta, final MySQLPacketPayload payload) {
+    public MySQLFractionalSeconds(final int columnMeta, final MySQLPacketPayload payload) {
         this.fractionalSecondsPrecision = columnMeta;
         fraction = readFraction(payload);
     }

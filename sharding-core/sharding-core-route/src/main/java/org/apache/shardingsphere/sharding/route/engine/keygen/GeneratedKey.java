@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -50,26 +50,26 @@ public final class GeneratedKey {
      * Get generate key.
      *
      * @param shardingRule sharding rule
-     * @param tableMetas table metas
+     * @param schemaMetaData schema meta data
      * @param parameters SQL parameters
      * @param insertStatement insert statement
      * @return generate key
      */
-    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final TableMetas tableMetas, final List<Object> parameters, final InsertStatement insertStatement) {
+    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement) {
         Optional<String> generateKeyColumnNameOptional = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName().getIdentifier().getValue());
-        return generateKeyColumnNameOptional.map(generateKeyColumnName -> containsGenerateKey(tableMetas, insertStatement, generateKeyColumnName)
-                ? findGeneratedKey(tableMetas, parameters, insertStatement, generateKeyColumnName) : createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName));
+        return generateKeyColumnNameOptional.map(generateKeyColumnName -> containsGenerateKey(schemaMetaData, insertStatement, generateKeyColumnName)
+                ? findGeneratedKey(schemaMetaData, parameters, insertStatement, generateKeyColumnName) : createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName));
     }
     
-    private static boolean containsGenerateKey(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private static boolean containsGenerateKey(final SchemaMetaData schemaMetaData, final InsertStatement insertStatement, final String generateKeyColumnName) {
         return insertStatement.getColumnNames().isEmpty()
-                ? tableMetas.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == insertStatement.getValueCountForPerGroup()
+                ? schemaMetaData.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).size() == insertStatement.getValueCountForPerGroup()
                 : insertStatement.getColumnNames().contains(generateKeyColumnName);
     }
     
-    private static GeneratedKey findGeneratedKey(final TableMetas tableMetas, final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private static GeneratedKey findGeneratedKey(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
         GeneratedKey result = new GeneratedKey(generateKeyColumnName, false);
-        for (ExpressionSegment each : findGenerateKeyExpressions(tableMetas, insertStatement, generateKeyColumnName)) {
+        for (ExpressionSegment each : findGenerateKeyExpressions(schemaMetaData, insertStatement, generateKeyColumnName)) {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));
             } else if (each instanceof LiteralExpressionSegment) {
@@ -79,16 +79,16 @@ public final class GeneratedKey {
         return result;
     }
     
-    private static Collection<ExpressionSegment> findGenerateKeyExpressions(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private static Collection<ExpressionSegment> findGenerateKeyExpressions(final SchemaMetaData schemaMetaData, final InsertStatement insertStatement, final String generateKeyColumnName) {
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (List<ExpressionSegment> each : insertStatement.getAllValueExpressions()) {
-            result.add(each.get(findGenerateKeyIndex(tableMetas, insertStatement, generateKeyColumnName.toLowerCase())));
+            result.add(each.get(findGenerateKeyIndex(schemaMetaData, insertStatement, generateKeyColumnName.toLowerCase())));
         }
         return result;
     }
     
-    private static int findGenerateKeyIndex(final TableMetas tableMetas, final InsertStatement insertStatement, final String generateKeyColumnName) {
-        return insertStatement.getColumnNames().isEmpty() ? tableMetas.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName) 
+    private static int findGenerateKeyIndex(final SchemaMetaData schemaMetaData, final InsertStatement insertStatement, final String generateKeyColumnName) {
+        return insertStatement.getColumnNames().isEmpty() ? schemaMetaData.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName) 
                 : insertStatement.getColumnNames().indexOf(generateKeyColumnName);
     }
     

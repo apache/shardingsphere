@@ -24,25 +24,23 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colum
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Time2 type value of MySQL binlog protocol.
+ * TIME2 type value of MySQL binlog protocol.
  *
  * <p>
- *     Time2 type applied after MySQL 5.6.4.
+ *     TIME2 type applied after MySQL 5.6.4.
  * </p>
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
  */
 public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     
-    private static final String ZERO_OF_TIME = "00:00:00";
-    
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int time = payload.getByteBuf().readUnsignedMedium();
         if (0x800000 == time) {
-            return ZERO_OF_TIME;
+            return MySQLTimeValueUtil.ZERO_OF_TIME;
         }
-        MySQLTimeFractionalSeconds fractionalSeconds = new MySQLTimeFractionalSeconds(columnDef.getColumnMeta(), payload);
+        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
         return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds.toString());
     }
 }

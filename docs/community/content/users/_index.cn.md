@@ -56,8 +56,9 @@ chapter = true
 1. 高济医疗 http://www.gaojihealth.com/ 
 1. 高阳捷迅 http://www.19pay.com.cn/ 
 1. 瓜子二手车 https://www.guazi.com/ 
+1. 公交云 http://www.dtchuxing.com/index.html
 1. 光云科技 https://www.raycloud.com/ 
-1. 广西壮族自治区国土资源信息中心 http://z.gxdlr.gov.cn/ 
+1. 广西壮族自治区自然资源信息中心 http://dnr.gxzf.gov.cn/ 
 1. 广州理德物联网科技有限公司 http://www.iotlead.com/
 1. 广州码码高信息科技有限公司 http://www.mamagao.cn/
 1. 广州锐森科技 https://www.elelive.net/
@@ -91,6 +92,7 @@ chapter = true
 1. 客如云 https://www.keruyun.com/
 1. 快捷通支付服务有限公司 https://www.kjtpay.com/
 1. 丽人丽妆 https://www.lrlz.com/ 
+1. 连尚文学 http://read.zhulang.com/
 1. 马蜂窝 https://www.mafengwo.cn/ 
 1. 马上金融 https://www.msxf.com/
 1. 每日优鲜便利购 https://www.missfresh.cn/ 

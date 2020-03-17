@@ -84,36 +84,36 @@ public final class CuratorZookeeperCenterRepositoryTest {
     
     @Test
     public void assertWatchUpdatedChangedType() throws Exception {
-        centerRepository.persist("/test/children/1", "value1");
+        centerRepository.persist("/test/children_updated/1", "value1");
         final SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        centerRepository.watch("/test/children", future::set);
-        centerRepository.persist("/test/children/1", "value2");
+        centerRepository.watch("/test/children_updated", future::set);
+        centerRepository.persist("/test/children_updated/1", "value2");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.UPDATED));
-        assertThat(dataChangedEvent.getKey(), is("/test/children/1"));
+        assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
         assertThat(dataChangedEvent.getValue(), is("value2"));
-        assertThat(centerRepository.get("/test/children/1"), is("value2"));
+        assertThat(centerRepository.get("/test/children_updated/1"), is("value2"));
     }
     
     @Test
     public void assertWatchDeletedChangedType() throws Exception {
-        centerRepository.persist("/test/children/5", "value5");
+        centerRepository.persist("/test/children_deleted/5", "value5");
         SettableFuture<DataChangedEvent> future = SettableFuture.create();
-        centerRepository.watch("/test/children/5", future::set);
-        client.delete().forPath("/test/children/5");
+        centerRepository.watch("/test/children_deleted/5", future::set);
+        client.delete().forPath("/test/children_deleted/5");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
         assertThat(dataChangedEvent.getChangedType(), is(DataChangedEvent.ChangedType.DELETED));
-        assertThat(dataChangedEvent.getKey(), is("/test/children/5"));
+        assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
         assertThat(dataChangedEvent.getValue(), is("value5"));
     }
     
     @Test
     public void assertWatchAddedChangedType() throws InterruptedException {
-        centerRepository.persist("/test/children/4", "value4");
+        centerRepository.persist("/test/children_added/4", "value4");
         AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
-        centerRepository.watch("/test/children", actualDataChangedEvent::set);
+        centerRepository.watch("/test/children_added", actualDataChangedEvent::set);
         Thread.sleep(2000L);
         assertNull(actualDataChangedEvent.get());
     }

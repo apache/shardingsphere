@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.column;
+package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 
 /**
- * Column meta data for sharding generated key.
+ * Schema meta data aware.
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public final class ShardingGeneratedKeyColumnMetaData extends ColumnMetaData {
+public interface SchemaMetaDataAware {
     
-    public ShardingGeneratedKeyColumnMetaData(final String name, final String dataType, final boolean primaryKey) {
-        super(name, dataType, primaryKey);
-    }
+    /**
+     * Set schema meta data.
+     * 
+     * @param schemaMetaData schema meta data
+     */
+    void setSchemaMetaData(SchemaMetaData schemaMetaData);
 }
