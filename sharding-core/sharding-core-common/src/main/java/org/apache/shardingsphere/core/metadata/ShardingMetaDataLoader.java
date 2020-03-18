@@ -112,26 +112,25 @@ public final class ShardingMetaDataLoader {
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
-        Collection<TableMetaDataViolation> metaDataViolations = new LinkedList<>();
-        compareAllTableMetaData(metaDataViolations, sample, decorator, logicTableName, actualTableMetaDataMap);
-        throwExceptionIfNecessary(metaDataViolations, logicTableName);
+        Collection<TableMetaDataViolation> violations = new LinkedList<>();
+        compareAllTableMetaData(violations, sample, decorator, logicTableName, actualTableMetaDataMap);
+        throwExceptionIfNecessary(violations, logicTableName);
     }
 
-    private void compareAllTableMetaData(final Collection<TableMetaDataViolation> metaDataViolations, final TableMetaData sample,
+    private void compareAllTableMetaData(final Collection<TableMetaDataViolation> violations, final TableMetaData sample,
                       final ShardingTableMetaDataDecorator decorator, final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
             TableMetaData tableMetaData = entry.getValue();
             if (!sample.equals(decorator.decorate(tableMetaData, logicTableName, shardingRule))) {
-                metaDataViolations.add(new TableMetaDataViolation(entry.getKey(), tableMetaData));
+                violations.add(new TableMetaDataViolation(entry.getKey(), tableMetaData));
             }
         }
     }
 
-    private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> metaDataViolations, final String logicTableName) {
-        if (!metaDataViolations.isEmpty()) {
-            StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`,"
-                    + " it has different meta data of actual tables are as follows: ");
-            for (TableMetaDataViolation each : metaDataViolations) {
+    private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> violations, final String logicTableName) {
+        if (!violations.isEmpty()) {
+            StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows: ");
+            for (TableMetaDataViolation each : violations) {
                 exceptionMessageBuilder.append("\nactual table: ").append(each.getActualTableName())
                         .append(", meta data: ").append(each.getTableMetaData());
             }
@@ -139,12 +138,12 @@ public final class ShardingMetaDataLoader {
         }
     }
 
-    @AllArgsConstructor(access = AccessLevel.PACKAGE)
+    @RequiredArgsConstructor
     @Getter
-    private class TableMetaDataViolation {
+    private final class TableMetaDataViolation {
 
-        private String actualTableName;
+        private final String actualTableName;
 
-        private TableMetaData tableMetaData;
+        private final TableMetaData tableMetaData;
     }
 }
