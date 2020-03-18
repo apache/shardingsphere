@@ -117,7 +117,7 @@ public final class SchemaChangedListener extends PostShardingConfigCenterEventLi
     
     @SuppressWarnings("unchecked")
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map<String, YamlDataSourceConfiguration>) YamlEngine.unmarshal(event.getValue());
+        Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
         Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for orchestration.");
         return new DataSourceChangedEvent(shardingSchemaName, dataSourceConfigurations.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue()))));
