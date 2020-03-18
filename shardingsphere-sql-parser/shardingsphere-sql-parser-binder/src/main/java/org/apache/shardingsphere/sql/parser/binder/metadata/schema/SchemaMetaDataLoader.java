@@ -101,7 +101,7 @@ public final class SchemaMetaDataLoader {
     private static Map<String, TableMetaData> asyncLoad(final DataSource dataSource,
                                                         final int maxConnectionCount, final List<String> tableNames, final List<List<String>> tableGroups) throws SQLException {
         Map<String, TableMetaData> result = new ConcurrentHashMap<>(tableNames.size(), 1);
-        ExecutorService executorService = Executors.newFixedThreadPool(maxConnectionCount);
+        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(tableGroups.size(), maxConnectionCount));
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (List<String> each : tableGroups) {
             futures.add(executorService.submit(() -> load(dataSource.getConnection(), each)));
