@@ -20,8 +20,14 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,17 +49,23 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private List<Comparable<?>> orderValues;
     
-    public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems) {
+    public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems, final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) {
         this.queryResult = queryResult;
         this.orderByItems = orderByItems;
-        this.orderValuesCaseSensitive = getOrderValuesCaseSensitive();
+        this.orderValuesCaseSensitive = getOrderValuesCaseSensitive(selectStatementContext, schemaMetaData);
     }
     
     @SneakyThrows
-    private List<Boolean> getOrderValuesCaseSensitive() {
+    private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) {
         List<Boolean> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem each : orderByItems) {
-            result.add(queryResult.isCaseSensitive(each.getIndex()));
+            Collection<SimpleTableSegment> simpleTableSegments = selectStatementContext.getAllTables();
+            if (simpleTableSegments.size() > 0) {
+                String tableName = simpleTableSegments.iterator().next().getTableName().getIdentifier().getValue();
+                TableMetaData tableMetaData = schemaMetaData.get(tableName);
+                ColumnMetaData columnMetaData = tableMetaData.getColumns().get(((ColumnOrderByItemSegment) each.getSegment()).getColumn().getIdentifier().getValue());
+                result.add(columnMetaData.isCaseSensitive());
+            }
         }
         return result;
     }

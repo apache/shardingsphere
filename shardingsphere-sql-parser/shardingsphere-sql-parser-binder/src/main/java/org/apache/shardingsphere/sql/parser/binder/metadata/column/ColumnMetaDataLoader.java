@@ -60,6 +60,11 @@ public final class ColumnMetaDataLoader {
                 result.add(new ColumnMetaData(columnName, columnType, isPrimaryKey));
             }
         }
+        try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM " + table + " WHERE 1 != 1;")) {
+            for (ColumnMetaData each : result) {
+                each.setCaseSensitive(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each.getName())));
+            }
+        }
         return result;
     }
     
