@@ -21,15 +21,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-
 import java.util.Properties;
 
-public class TypedPropertiesTest {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
+public final class TypedPropertiesTest {
+    
     @Test
-    public void assertTypes() throws Exception {
+    public void assertTypes() {
 
         Properties props = new Properties();
         AProperties properties = new AProperties(APropertyKey.class, props);
@@ -59,7 +59,7 @@ public class TypedPropertiesTest {
         assertThat(properties.getValue(APropertyKey.A6), is(222L));
         assertThat(properties.getValue(APropertyKey.A7), is(Boolean.FALSE));
     }
-
+    
     @RequiredArgsConstructor
     @Getter
     private enum APropertyKey implements TypedPropertyKey {
@@ -70,14 +70,14 @@ public class TypedPropertiesTest {
         A5("a5", "1", Integer.class),
         A6("a6", "200", Long.class),
         A7("a7", "true", Boolean.class);
-
+        
         private final String key;
-
+        
         private final String defaultValue;
-
+        
         private final Class<?> type;
     }
-
+    
     private static class AProperties extends TypedProperties<APropertyKey> {
         AProperties(final Class<APropertyKey> keyClass, final Properties props) {
             super(keyClass, props);
