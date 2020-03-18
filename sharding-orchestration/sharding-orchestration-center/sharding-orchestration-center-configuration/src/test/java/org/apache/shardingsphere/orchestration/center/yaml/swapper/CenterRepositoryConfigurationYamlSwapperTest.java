@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.center.yaml.swapper;
 
 import java.util.Properties;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

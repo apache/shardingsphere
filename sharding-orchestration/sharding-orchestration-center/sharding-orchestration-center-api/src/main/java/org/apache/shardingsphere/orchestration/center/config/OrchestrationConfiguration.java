@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.config.orchestration;
+package org.apache.shardingsphere.orchestration.center.config;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public class OrchestrationConfigurationTest {
+/**
+ * Config center configuration.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class OrchestrationConfiguration {
     
-    @Test
-    public void assertInstanceConfigurationMap() {
-        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
-        Map<String, CenterConfiguration> configurationMap = new HashMap<>();
-        orchestrationConfiguration.setInstanceConfigurationMap(configurationMap);
-        assertThat(orchestrationConfiguration.getInstanceConfigurationMap(), is(configurationMap));
-    }
+    private final Map<String, CenterConfiguration> instanceConfigurationMap;
 }
