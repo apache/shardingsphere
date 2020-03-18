@@ -30,10 +30,11 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
+import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -103,17 +104,25 @@ public final class ShardingMetaDataLoader {
         return actualDefaultDataSourceName.isPresent()
                 ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery) : new SchemaMetaData(Collections.emptyMap());
     }
-    
-    // TODO check all meta data in once
+
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
+        List<String[]> errorMetaDataList = new LinkedList<>();
         for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
-            if (!sample.equals(decorator.decorate(entry.getValue(), logicTableName, shardingRule))) {
-                throw new ShardingSphereException(
-                        "Cannot get uniformed table structure for logic table `%s` and actual table `%s`. The different meta data of actual tables are as follows:\n%s\n%s.",
-                        logicTableName, entry.getKey(), sample, entry.getValue());
+            TableMetaData entryValue = entry.getValue();
+            if (!sample.equals(decorator.decorate(entryValue, logicTableName, shardingRule))) {
+                errorMetaDataList.add(new String[] {entry.getKey(), entryValue.toString()});
             }
+        }
+
+        if (!errorMetaDataList.isEmpty()) {
+            StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`"
+                    + ",it has different meta data of actual tables are as follows:");
+            for (String[] each : errorMetaDataList) {
+                exceptionMessageBuilder.append("\nactual table:").append(each[0]).append(", meta data:").append(each[1]);
+            }
+            throw new ShardingSphereException(exceptionMessageBuilder.toString(), logicTableName);
         }
     }
 }
