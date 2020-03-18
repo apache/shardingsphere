@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.core.metadata;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -31,8 +34,9 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.Map.Entry;
@@ -108,21 +112,39 @@ public final class ShardingMetaDataLoader {
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
-        List<TableMetaDataViolation> metaDataViolationList = new LinkedList<>();
+        Collection<TableMetaDataViolation> metaDataViolations = new LinkedList<>();
+        compareAllTableMetaData(metaDataViolations, sample, decorator, logicTableName, actualTableMetaDataMap);
+        throwExceptionIfNecessary(metaDataViolations, logicTableName);
+    }
+
+    private void compareAllTableMetaData(final Collection<TableMetaDataViolation> metaDataViolations, final TableMetaData sample,
+                      final ShardingTableMetaDataDecorator decorator, final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
-            TableMetaData entryValue = entry.getValue();
-            if (!sample.equals(decorator.decorate(entryValue, logicTableName, shardingRule))) {
-                metaDataViolationList.add(new TableMetaDataViolation(entry.getKey(), entryValue));
+            TableMetaData tableMetaData = entry.getValue();
+            if (!sample.equals(decorator.decorate(tableMetaData, logicTableName, shardingRule))) {
+                metaDataViolations.add(new TableMetaDataViolation(entry.getKey(), tableMetaData));
             }
         }
-        if (!metaDataViolationList.isEmpty()) {
-            StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`"
-                    + ",it has different meta data of actual tables are as follows:");
-            for (TableMetaDataViolation each : metaDataViolationList) {
-                exceptionMessageBuilder.append("\nactual table:").append(each.getActualTableName())
-                        .append(", meta data:").append(each.getTableMetaData());
+    }
+
+    private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> metaDataViolations, final String logicTableName) {
+        if (!metaDataViolations.isEmpty()) {
+            StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`,"
+                    + " it has different meta data of actual tables are as follows: ");
+            for (TableMetaDataViolation each : metaDataViolations) {
+                exceptionMessageBuilder.append("\nactual table: ").append(each.getActualTableName())
+                        .append(", meta data: ").append(each.getTableMetaData());
             }
             throw new ShardingSphereException(exceptionMessageBuilder.toString(), logicTableName);
         }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PACKAGE)
+    @Getter
+    private class TableMetaDataViolation {
+
+        private String actualTableName;
+
+        private TableMetaData tableMetaData;
     }
 }
