@@ -17,56 +17,67 @@
 
 package org.apache.shardingsphere.underlying.common.config.properties;
 
-import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ConfigurationPropertiesTest {
     
-    private final Properties prop = new Properties();
-    
-    private ConfigurationProperties configurationProperties;
-    
-    @Before
-    public void setUp() {
-        prop.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
-        prop.put(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "10");
-        configurationProperties = new ConfigurationProperties(prop);
+    @Test
+    public void assertGetValue() {
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
+        props.setProperty(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString());
+        props.setProperty(ConfigurationPropertyKey.ACCEPTOR_SIZE.getKey(), "20");
+        props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "20");
+        props.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20");
+        props.setProperty(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), Boolean.FALSE.toString());
+        props.setProperty(ConfigurationPropertyKey.ALLOW_RANGE_QUERY_WITH_INLINE_SHARDING.getKey(), Boolean.TRUE.toString());
+        props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20");
+        props.setProperty(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE.getKey(), "XA");
+        props.setProperty(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED.getKey(), Boolean.TRUE.toString());
+        props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
+        props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_MAX_CONNECTIONS.getKey(), "20");
+        props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS.getKey(), "20");
+        props.setProperty(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString());
+        ConfigurationProperties actual = new ConfigurationProperties(props);
+        assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
+        assertThat(actual.getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), is(20));
+        assertThat(actual.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(20));
+        assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(20));
+        assertFalse(actual.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
+        assertTrue(actual.getValue(ConfigurationPropertyKey.ALLOW_RANGE_QUERY_WITH_INLINE_SHARDING));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("XA"));
+        assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED));
+        assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_MAX_CONNECTIONS), is(20));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS), is(20));
+        assertTrue(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
     }
     
     @Test
-    public void assertGetValueForDefaultValue() {
-        ConfigurationProperties properties = new ConfigurationProperties(new Properties());
-        boolean actualSQLShow = properties.getValue(ConfigurationPropertyKey.SQL_SHOW);
-        assertThat(actualSQLShow, is(Boolean.valueOf(ConfigurationPropertyKey.SQL_SHOW.getDefaultValue())));
-        int executorMaxSize = properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
-        assertThat(executorMaxSize, is(Integer.valueOf(ConfigurationPropertyKey.EXECUTOR_SIZE.getDefaultValue())));
-    }
-    
-    @Test
-    public void assertGetValueForBoolean() {
-        boolean showSql = configurationProperties.getValue(ConfigurationPropertyKey.SQL_SHOW);
-        assertTrue(showSql);
-    }
-    
-    @Test
-    public void assertGetValueForInteger() {
-        int actualExecutorMaxSize = configurationProperties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE);
-        assertThat(actualExecutorMaxSize, is(10));
-    }
-    
-    @Test(expected = ShardingSphereConfigurationException.class)
-    public void assertValidateFailure() {
-        Properties prop = new Properties();
-        prop.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), "error");
-        prop.put(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "error");
-        prop.put("other", "other");
-        new ConfigurationProperties(prop);
+    public void assertGetDefaultValue() {
+        ConfigurationProperties actual = new ConfigurationProperties(new Properties());
+        assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
+        assertThat(actual.getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), is(Runtime.getRuntime().availableProcessors() * 2));
+        assertThat(actual.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(0));
+        assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(1));
+        assertTrue(actual.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
+        assertFalse(actual.getValue(ConfigurationPropertyKey.ALLOW_RANGE_QUERY_WITH_INLINE_SHARDING));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("LOCAL"));
+        assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED));
+        assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_MAX_CONNECTIONS), is(8));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS), is(60));
+        assertFalse(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
     }
 }
