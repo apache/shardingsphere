@@ -15,19 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.config.orchestration;
+package org.apache.shardingsphere.orchestration.center.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.underlying.common.config.TypeBasedSPIConfiguration;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Config center configuration.
+ * Orchestration instance configuration.
  */
-@RequiredArgsConstructor
 @Getter
-public final class OrchestrationConfiguration {
+@Setter
+public final class CenterConfiguration extends TypeBasedSPIConfiguration {
     
-    private final Map<String, CenterConfiguration> instanceConfigurationMap;
+    /**
+     * Type of center, such as config_center, registry_center.
+     */
+    private String orchestrationType;
+    
+    /**
+     * Server list of center.
+     */
+    private String serverLists;
+    
+    /**
+     * Namespace of center.
+     */
+    private String namespace;
+    
+    public CenterConfiguration(final String type) {
+        super(type);
+    }
+    
+    public CenterConfiguration(final String type, final Properties properties) {
+        super(type, properties);
+    }
 }

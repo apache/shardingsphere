@@ -23,7 +23,7 @@ import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import org.apache.shardingsphere.orchestration.center.instance.ApolloProperties;
 import org.apache.shardingsphere.orchestration.center.instance.ApolloPropertyKey;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 import java.util.Set;
 

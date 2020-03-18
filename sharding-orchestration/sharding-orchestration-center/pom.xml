@@ -23,11 +23,10 @@
         <artifactId>sharding-orchestration</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-
     <artifactId>sharding-orchestration-center</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>sharding-orchestration-center-api</module>
         <module>sharding-orchestration-center-configuration</module>

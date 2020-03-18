@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.util;
 
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;

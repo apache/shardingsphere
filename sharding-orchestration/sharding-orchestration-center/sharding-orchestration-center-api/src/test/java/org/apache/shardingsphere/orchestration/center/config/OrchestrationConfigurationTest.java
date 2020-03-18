@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.config.orchestration;
+package org.apache.shardingsphere.orchestration.center.config;
 
 import org.junit.Test;
 
