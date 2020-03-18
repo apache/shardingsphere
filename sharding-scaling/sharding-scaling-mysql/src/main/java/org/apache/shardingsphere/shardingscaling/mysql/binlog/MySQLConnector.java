@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 
+import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
+import org.apache.shardingsphere.database.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.MySQLCommandPacketDecoder;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.MySQLLengthFieldBasedFrameEncoder;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.BinlogDumpCommandPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.QueryCommandPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.RegisterSlaveCommandPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.ErrorPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
 import io.netty.bootstrap.Bootstrap;
@@ -37,14 +39,12 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteOrder;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 
@@ -86,8 +86,7 @@ public final class MySQLConnector {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(final SocketChannel socketChannel) {
-                        socketChannel.pipeline().addLast(new LengthFieldBasedFrameDecoder(ByteOrder.LITTLE_ENDIAN, Integer.MAX_VALUE, 0, 3, 1, 4, true));
-                        socketChannel.pipeline().addLast(MySQLLengthFieldBasedFrameEncoder.class.getSimpleName(), new MySQLLengthFieldBasedFrameEncoder());
+                        socketChannel.pipeline().addLast(new PacketCodec(new MySQLPacketCodecEngine()));
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
                         socketChannel.pipeline().addLast(new MySQLNegotiateHandler(username, password, responseCallback));
                         socketChannel.pipeline().addLast(new MySQLCommandResponseHandler());
@@ -106,10 +105,9 @@ public final class MySQLConnector {
      */
     public synchronized boolean execute(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        QueryCommandPacket queryCommandPacket = new QueryCommandPacket();
-        queryCommandPacket.setQueryString(queryString);
-        channel.writeAndFlush(queryCommandPacket);
-        return null != waitExpectedResponse(OkPacket.class);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
+        channel.writeAndFlush(comQueryPacket);
+        return null != waitExpectedResponse(MySQLOKPacket.class);
     }
     
     /**
@@ -120,10 +118,9 @@ public final class MySQLConnector {
      */
     public synchronized int executeUpdate(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        QueryCommandPacket queryCommandPacket = new QueryCommandPacket();
-        queryCommandPacket.setQueryString(queryString);
-        channel.writeAndFlush(queryCommandPacket);
-        return (int) waitExpectedResponse(OkPacket.class).getAffectedRows();
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
+        channel.writeAndFlush(comQueryPacket);
+        return (int) waitExpectedResponse(MySQLOKPacket.class).getAffectedRows();
     }
     
     /**
@@ -134,9 +131,8 @@ public final class MySQLConnector {
      */
     public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        QueryCommandPacket queryCommandPacket = new QueryCommandPacket();
-        queryCommandPacket.setQueryString(queryString);
-        channel.writeAndFlush(queryCommandPacket);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
+        channel.writeAndFlush(comQueryPacket);
         return waitExpectedResponse(InternalResultSet.class);
     }
     
@@ -173,7 +169,7 @@ public final class MySQLConnector {
             return 0;
         }
         InternalResultSet resultSet = executeQuery("SELECT @@GLOBAL.BINLOG_CHECKSUM");
-        String checksumType = resultSet.getFieldValues().get(0).getColumns().get(0);
+        String checksumType = resultSet.getFieldValues().get(0).getData().get(0).toString();
         switch (checksumType) {
             case "None":
                 return 0;
@@ -215,8 +211,8 @@ public final class MySQLConnector {
             if (type.equals(response.getClass())) {
                 return (T) response;
             }
-            if (response instanceof ErrorPacket) {
-                throw new RuntimeException(((ErrorPacket) response).getMessage());
+            if (response instanceof MySQLErrPacket) {
+                throw new RuntimeException(((MySQLErrPacket) response).getErrorMessage());
             }
             throw new RuntimeException("unexpected response type");
         } catch (InterruptedException | ExecutionException e) {
