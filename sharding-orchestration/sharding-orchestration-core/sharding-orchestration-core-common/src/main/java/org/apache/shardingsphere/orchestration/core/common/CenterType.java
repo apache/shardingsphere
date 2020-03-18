@@ -33,8 +33,6 @@ public enum CenterType {
     REGISTRY_CENTER("registry_center"),
     CONFIG_CENTER("config_center");
 
-    private static final String ONLY_SUPPORT = "now only support :{},{}";
-
     private final String value;
     
     /**
@@ -46,6 +44,6 @@ public enum CenterType {
     public static CenterType findByValue(final String value) {
         return Arrays.stream(CenterType.values())
                 .filter(each -> each.getValue().equals(value)).findFirst()
-                .orElseThrow(() -> new OrchestrationException(ONLY_SUPPORT, "registry_center", "config_center"));
+                .orElseThrow(() -> new OrchestrationException("now only support :{},{}", CenterType.CONFIG_CENTER.getValue(), CenterType.REGISTRY_CENTER.getValue()));
     }
 }
