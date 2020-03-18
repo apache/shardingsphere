@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.properties;
+package org.apache.shardingsphere.underlying.common.properties.fixture;
 
-/**
- * Typed property value exception.
- */
-public final class TypedPropertyValueException extends Exception {
+import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
+
+import java.util.Properties;
+
+public final class TestTypedProperties extends TypedProperties<TestTypedPropertyKey> {
     
-    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
-        super(String.format("Value `%s` of `%s` cannot convert to type `%s`.", value, key.getKey(), key.getType().getName()));
+    public TestTypedProperties(final Properties props) {
+        super(TestTypedPropertyKey.class, props);
     }
 }

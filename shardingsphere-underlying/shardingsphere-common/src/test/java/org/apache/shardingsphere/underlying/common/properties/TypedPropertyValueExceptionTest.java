@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.underlying.common.properties;
 
-/**
- * Typed property value exception.
- */
-public final class TypedPropertyValueException extends Exception {
+import org.apache.shardingsphere.underlying.common.properties.fixture.TestTypedPropertyKey;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class TypedPropertyValueExceptionTest {
     
-    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
-        super(String.format("Value `%s` of `%s` cannot convert to type `%s`.", value, key.getKey(), key.getType().getName()));
+    @Test
+    public void assertGetMessage() {
+        assertThat(new TypedPropertyValueException(TestTypedPropertyKey.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`."));
     }
 }
