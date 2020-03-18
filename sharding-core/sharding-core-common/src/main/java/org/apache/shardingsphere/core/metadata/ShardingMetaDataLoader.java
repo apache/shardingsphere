@@ -46,7 +46,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j(topic = "ShardingSphere-metadata")
 public final class ShardingMetaDataLoader {
-    
+
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
     private final Map<String, DataSource> dataSourceMap;
     
     private final ShardingRule shardingRule;
@@ -111,28 +113,23 @@ public final class ShardingMetaDataLoader {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
         Collection<TableMetaDataViolation> violations = new LinkedList<>();
-        compareAllTableMetaData(violations, sample, decorator, logicTableName, actualTableMetaDataMap);
-        throwExceptionIfNecessary(violations, logicTableName);
-    }
-
-    private void compareAllTableMetaData(final Collection<TableMetaDataViolation> violations, final TableMetaData sample,
-                      final ShardingTableMetaDataDecorator decorator, final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
             TableMetaData tableMetaData = entry.getValue();
             if (!sample.equals(decorator.decorate(tableMetaData, logicTableName, shardingRule))) {
                 violations.add(new TableMetaDataViolation(entry.getKey(), tableMetaData));
             }
         }
+        throwExceptionIfNecessary(violations, logicTableName);
     }
 
     private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> violations, final String logicTableName) {
         if (!violations.isEmpty()) {
-            StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows: ");
+            StringBuilder errorMessage = new StringBuilder("Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows: ");
             for (TableMetaDataViolation each : violations) {
-                exceptionMessageBuilder.append("\nactual table: ").append(each.getActualTableName())
+                errorMessage.append(LINE_SEPARATOR).append("actual table: ").append(each.getActualTableName())
                         .append(", meta data: ").append(each.getTableMetaData());
             }
-            throw new ShardingSphereException(exceptionMessageBuilder.toString(), logicTableName);
+            throw new ShardingSphereException(errorMessage.toString(), logicTableName);
         }
     }
 
