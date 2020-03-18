@@ -34,7 +34,7 @@ public enum CenterType {
     CONFIG_CENTER("config_center");
 
     private final String value;
-    
+
     /**
      * Find OrchestrationType via property value.
      *

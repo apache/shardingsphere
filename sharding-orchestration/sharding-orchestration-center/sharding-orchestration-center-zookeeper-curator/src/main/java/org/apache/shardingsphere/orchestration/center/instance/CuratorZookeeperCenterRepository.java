@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.orchestration.center.instance;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,6 +39,7 @@ import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -86,7 +86,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
         if (!Strings.isNullOrEmpty(digest)) {
-            builder.authorization("digest", digest.getBytes(Charsets.UTF_8))
+            builder.authorization("digest", digest.getBytes(StandardCharsets.UTF_8))
                 .aclProvider(new ACLProvider() {
                     
                     @Override
@@ -125,7 +125,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
         }
         ChildData resultInCache = cache.getCurrentData(key);
         if (null != resultInCache) {
-            return null == resultInCache.getData() ? null : new String(resultInCache.getData(), Charsets.UTF_8);
+            return null == resultInCache.getData() ? null : new String(resultInCache.getData(), StandardCharsets.UTF_8);
         }
         return getDirectly(key);
     }
@@ -143,7 +143,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     public void persist(final String key, final String value) {
         try {
             if (!isExisted(key)) {
-                client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(key, value.getBytes(Charsets.UTF_8));
+                client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             } else {
                 update(key, value);
             }
@@ -156,7 +156,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     
     private void update(final String key, final String value) {
         try {
-            client.inTransaction().check().forPath(key).and().setData().forPath(key, value.getBytes(Charsets.UTF_8)).and().commit();
+            client.inTransaction().check().forPath(key).and().setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)).and().commit();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -166,7 +166,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     
     private String getDirectly(final String key) {
         try {
-            return new String(client.getData().forPath(key), Charsets.UTF_8);
+            return new String(client.getData().forPath(key), StandardCharsets.UTF_8);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -192,7 +192,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             if (isExisted(key)) {
                 client.delete().deletingChildrenIfNeeded().forPath(key);
             }
-            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(Charsets.UTF_8));
+            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -228,7 +228,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             }
             DataChangedEvent.ChangedType changedType = getChangedType(event);
             if (DataChangedEvent.ChangedType.IGNORED != changedType) {
-                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
+                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), StandardCharsets.UTF_8), changedType));
             }
         });
     }
