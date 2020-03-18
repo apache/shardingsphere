@@ -124,10 +124,10 @@ public final class ShardingMetaDataLoader {
 
     private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> violations, final String logicTableName) {
         if (!violations.isEmpty()) {
-            StringBuilder errorMessage = new StringBuilder("Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows: ");
+            StringBuilder errorMessage = new StringBuilder("Cannot get uniformed table structure for logic table `%s`, ")
+                    .append("it has different meta data of actual tables are as follows:").append(LINE_SEPARATOR);
             for (TableMetaDataViolation each : violations) {
-                errorMessage.append(LINE_SEPARATOR).append("actual table: ").append(each.getActualTableName())
-                        .append(", meta data: ").append(each.getTableMetaData());
+                errorMessage.append("actual table: ").append(each.getActualTableName()).append(", meta data: ").append(each.getTableMetaData()).append(LINE_SEPARATOR);
             }
             throw new ShardingSphereException(errorMessage.toString(), logicTableName);
         }
