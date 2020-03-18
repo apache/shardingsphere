@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteCont
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingTokenGenerateBuilder;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
@@ -35,9 +35,10 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     
     private final ShardingRouteContext shardingRouteContext;
     
+    @SuppressWarnings("unchecked")
     @Override
-    public void decorate(final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLRewriteContext sqlRewriteContext) {
-        for (ParameterRewriter each : new ShardingParameterRewriterBuilder(shardingRule, shardingRouteContext).getParameterRewriters(sqlRewriteContext.getRelationMetas())) {
+    public void decorate(final ShardingRule shardingRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext) {
+        for (ParameterRewriter each : new ShardingParameterRewriterBuilder(shardingRule, shardingRouteContext).getParameterRewriters(sqlRewriteContext.getSchemaMetaData())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
             }

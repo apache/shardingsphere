@@ -79,7 +79,8 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     }
     
     private String readAuthPluginName(final MySQLPacketPayload payload) {
-        return 0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()) ? payload.readStringNul() : null;
+        // TODO Should check CLIENT_PLUGIN_AUTH both client capabilityFlags and server capability
+        return null;
     }
     
     /**

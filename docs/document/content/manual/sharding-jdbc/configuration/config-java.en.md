@@ -285,7 +285,7 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | type   | String     | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
 | props  | Properties | The Property configuration of key generators                 |
 
-#### PropertiesConstant
+#### Properties
 
 Property configuration that can include these properties of these key generators.
 
@@ -326,7 +326,7 @@ Property configuration that can include these properties of these key generators
 | assistedQueryColumn | String                       | AssistedColumns for query，when use ShardingQueryAssistedEncryptor, it can help query encrypted data  |
 | encryptor           | String                       | Encryptor name                                                                                        |
 
-#### ShardingPropertiesConstant
+#### Properties
 
 Property configuration items, can be of the following properties.
 
@@ -357,7 +357,7 @@ Property configuration items, can be of the following properties.
 | slaveDataSourceNames     | Collection\<String\>            | Slave database source name list   |
 | loadBalanceAlgorithm (?) | MasterSlaveLoadBalanceAlgorithm | Slave database load balance       |
 
-#### ShardingPropertiesConstant
+#### Properties
 
 Property configuration items, can be of the following properties.
 
@@ -385,7 +385,7 @@ Property configuration items, can be of the following properties.
 | encryptors          | Map<String, EncryptorRuleConfiguration>     | Encryptor names and encryptors                              |
 | tables              | Map<String, EncryptTableRuleConfiguration>  | Encrypt table names and encrypt tables                      |
 
-#### PropertiesConstant
+#### Properties
 
 Property configuration items, can be of the following properties.
 

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.underlying.rewrite.sql.token.generator;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 import java.util.Collection;
@@ -62,13 +62,14 @@ public final class SQLTokenGenerators {
      *
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param relationMetas relation metas
+     * @param schemaMetaData schema meta data
      * @return SQL tokens
      */
-    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final RelationMetas relationMetas) {
+    @SuppressWarnings("unchecked")
+    public List<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final SchemaMetaData schemaMetaData) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            setUpSQLTokenGenerator(each, parameters, relationMetas, result);
+            setUpSQLTokenGenerator(each, parameters, schemaMetaData, result);
             if (!each.isGenerateSQLToken(sqlStatementContext)) {
                 continue;
             }
@@ -84,12 +85,12 @@ public final class SQLTokenGenerators {
         return result;
     }
     
-    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, final RelationMetas relationMetas, final List<SQLToken> previousSQLTokens) {
+    private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters, final SchemaMetaData schemaMetaData, final List<SQLToken> previousSQLTokens) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(parameters);
         }
-        if (sqlTokenGenerator instanceof RelationMetasAware) {
-            ((RelationMetasAware) sqlTokenGenerator).setRelationMetas(relationMetas);
+        if (sqlTokenGenerator instanceof SchemaMetaDataAware) {
+            ((SchemaMetaDataAware) sqlTokenGenerator).setSchemaMetaData(schemaMetaData);
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);

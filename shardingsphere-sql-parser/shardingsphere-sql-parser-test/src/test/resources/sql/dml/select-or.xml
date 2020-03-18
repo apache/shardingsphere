@@ -18,7 +18,9 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_or_with_same_sharding_columns" parameters="1, 2">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -47,7 +49,9 @@
     </select>
     
     <select sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -76,7 +80,9 @@
     </select>
     
     <select sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -105,7 +111,9 @@
     </select>
     
     <select sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -150,7 +158,9 @@
     </select>
     
     <select sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -263,8 +273,10 @@
     </select>
     
     <select sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
-        <table name="t_order" alias="o" start-index="16" stop-index="22" />
-        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -319,9 +331,11 @@
     </select>
     
     <select sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
-        <table name="t_order" alias="o" start-index="16" stop-index="22" />
-        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+            <simple-table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.underlying.rewrite;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
@@ -35,9 +35,9 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class SQLRewriteEntry {
     
-    private final ShardingSphereMetaData metaData;
+    private final SchemaMetaData schemaMetaData;
     
-    private final ShardingSphereProperties properties;
+    private final ConfigurationProperties properties;
     
     /**
      * Create SQL rewrite context.
@@ -50,7 +50,7 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, 
                                                      final SQLStatementContext sqlStatementContext, final Map<BaseRule, SQLRewriteContextDecorator> decorators) {
-        SQLRewriteContext result = new SQLRewriteContext(metaData.getRelationMetas(), sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(schemaMetaData, sqlStatementContext, sql, parameters);
         decorate(decorators, result);
         result.generateSQLTokens();
         return result;

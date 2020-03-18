@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.shard.fixture;
 
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
 
@@ -31,7 +31,7 @@ public final class RoutingHookFixture implements RoutingHook {
     }
     
     @Override
-    public void finishSuccess(final ShardingRouteContext shardingRouteContext, final TableMetas tableMetas) {
+    public void finishSuccess(final ShardingRouteContext shardingRouteContext, final SchemaMetaData schemaMetaData) {
     }
     
     @Override

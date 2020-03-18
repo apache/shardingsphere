@@ -30,6 +30,7 @@
 
     <modules>
         <module>sharding-orchestration-center-api</module>
+        <module>sharding-orchestration-center-configuration</module>
         <module>sharding-orchestration-center-zookeeper-curator</module>
         <module>sharding-orchestration-center-etcd</module>
         <module>sharding-orchestration-center-apollo</module>

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLErrPacketFactory;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
 
@@ -70,7 +70,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             return;
         }
         int count = 0;
-        int flushThreshold = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int flushThreshold = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         int currentSequenceId = 0;
         while (queryCommandExecutor.next()) {
             count++;

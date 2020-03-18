@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.impl.ShardingSchem
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -81,7 +81,7 @@ public final class QueryHeader {
         if (null != actualTableName && logicSchema instanceof ShardingSchema) {
             Collection<String> logicTableNames = logicSchema.getShardingRule().getLogicTableNames(actualTableName);
             table = logicTableNames.isEmpty() ? "" : logicTableNames.iterator().next();
-            TableMetaData tableMetaData = logicSchema.getMetaData().getTables().get(table);
+            TableMetaData tableMetaData = logicSchema.getMetaData().getSchema().get(table);
             primaryKey = null != tableMetaData && tableMetaData.getColumns().get(resultSetMetaData.getColumnName(columnIndex).toLowerCase()).isPrimaryKey();
         } else {
             table = actualTableName;

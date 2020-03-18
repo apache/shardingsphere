@@ -19,11 +19,12 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -89,8 +90,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
         if (sqlStatementContext instanceof SelectStatementContext) {
             List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
             if (column > actualProjections.size()) {
-                // TODO fill correct SQL state
-                throw new SQLException(String.format("Out of index of projection %s", column));
+                throw new SQLException(SQLExceptionConstant.COLUMN_INDEX_OUT_OF_RANGE, SQLExceptionConstant.OUT_OF_INDEX_SQL_STATE, 0);
             }
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
             if (projection instanceof ColumnProjection) {
@@ -102,7 +102,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     @Override
     public String getSchemaName(final int column) {
-        return ShardingConstant.LOGIC_SCHEMA_NAME;
+        return DefaultSchema.LOGIC_NAME;
     }
     
     @Override
@@ -122,7 +122,7 @@ public final class EncryptResultSetMetaData extends WrapperAdapter implements Re
     
     @Override
     public String getCatalogName(final int column) {
-        return ShardingConstant.LOGIC_SCHEMA_NAME;
+        return DefaultSchema.LOGIC_NAME;
     }
     
     @Override

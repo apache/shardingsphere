@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Column definition.
+ *
+ * @deprecated Replaced with {@link MySQLBinlogColumnDef}
  */
 @Setter
 @Getter
+@Deprecated
 public final class ColumnDef {
     
     private int type;

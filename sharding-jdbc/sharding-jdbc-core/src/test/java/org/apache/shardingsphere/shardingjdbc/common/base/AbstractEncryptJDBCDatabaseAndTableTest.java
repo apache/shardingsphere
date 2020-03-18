@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -60,8 +60,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static Properties createProperties() {
         Properties result = new Properties();
-        result.put(PropertiesConstant.SQL_SHOW.getKey(), true);
-        result.put(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
+        result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), true);
+        result.put(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
         return result;
     }
     

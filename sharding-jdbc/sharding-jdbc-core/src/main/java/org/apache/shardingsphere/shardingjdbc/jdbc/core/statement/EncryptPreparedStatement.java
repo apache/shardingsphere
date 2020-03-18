@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -30,14 +29,12 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionCon
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.RelationMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
@@ -172,22 +169,13 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
-        RelationMetas relationMetas = getRelationMetas(runtimeContext.getMetaData().getTables());
-        sqlStatementContext = SQLStatementContextFactory.newInstance(relationMetas, sql, getParameters(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData(), 
+        SchemaMetaData schemaMetaData = runtimeContext.getMetaData().getSchema();
+        sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(schemaMetaData, 
                 runtimeContext.getProperties()).createSQLRewriteContext(sql, getParameters(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
         SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
         showSQL(sqlRewriteResult.getSql());
         return new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters());
-    }
-    
-    private RelationMetas getRelationMetas(final TableMetas tableMetas) {
-        Map<String, RelationMetaData> result = new HashMap<>(tableMetas.getAllTableNames().size());
-        for (String each : tableMetas.getAllTableNames()) {
-            TableMetaData tableMetaData = tableMetas.get(each);
-            result.put(each, new RelationMetaData(tableMetaData.getColumns().keySet()));
-        }
-        return new RelationMetas(result);
     }
     
     private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final EncryptRule encryptRule) {
@@ -197,7 +185,7 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     }
     
     private void showSQL(final String sql) {
-        boolean showSQL = runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
+        boolean showSQL = runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW);
         if (showSQL) {
             log.info("Rule Type: encrypt");
             log.info("SQL: {}", sql);

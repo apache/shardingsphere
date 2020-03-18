@@ -29,13 +29,14 @@ import org.apache.shardingsphere.sharding.route.fixture.HintShardingAlgorithmFix
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,7 +58,7 @@ public final class DatabaseTest {
     
     private ShardingRule shardingRule;
 
-    private ShardingSphereProperties properties = new ShardingSphereProperties(new Properties());
+    private ConfigurationProperties properties = new ConfigurationProperties(new Properties());
     
     @Before
     public void setRouteRuleContext() {
@@ -85,10 +86,10 @@ public final class DatabaseTest {
         when(dataSourceMetas.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
-        when(tableMetas.containsTable("tesT")).thenReturn(true);
-        return new ShardingSphereMetaData(dataSourceMetas, tableMetas);
+        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList(new IndexMetaData("id"), new IndexMetaData("user_id"))));
+        when(schemaMetaData.containsTable("tesT")).thenReturn(true);
+        return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
     }
     
     @Test
@@ -107,11 +108,12 @@ public final class DatabaseTest {
     private ShardingSphereMetaData getMetaDataForPagination() {
         ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true);
         ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false);
-        TableMetas tableMetas = mock(TableMetas.class);
-        when(tableMetas.get("tbl_pagination")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList("id", "user_id")));
-        when(tableMetas.containsTable("tbl_pagination")).thenReturn(true);
+        SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.get("tbl_pagination")).thenReturn(
+                new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList(new IndexMetaData("id"), new IndexMetaData("user_id"))));
+        when(schemaMetaData.containsTable("tbl_pagination")).thenReturn(true);
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        when(result.getTables()).thenReturn(tableMetas);
+        when(result.getSchema()).thenReturn(schemaMetaData);
         DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
         when(dataSourceMetas.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
         when(result.getDataSources()).thenReturn(dataSourceMetas);
@@ -132,7 +134,7 @@ public final class DatabaseTest {
         ShardingRule rule = new ShardingRule(shardingRuleConfig, dataSourceMap.keySet());
         String originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        when(metaData.getTables()).thenReturn(mock(TableMetas.class));
+        when(metaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         ShardingRouteContext actual = new ShardingRouter(rule, properties, metaData, sqlParserEngine).route(originSQL, Lists.newArrayList(13, 173), false);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));

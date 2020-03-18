@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
-import org.apache.shardingsphere.sql.parser.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.Collections;

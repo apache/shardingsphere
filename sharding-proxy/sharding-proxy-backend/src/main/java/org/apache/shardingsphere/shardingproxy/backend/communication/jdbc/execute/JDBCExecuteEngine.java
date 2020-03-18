@@ -37,7 +37,7 @@ import org.apache.shardingsphere.shardingproxy.backend.response.update.UpdateRes
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
 import java.sql.SQLException;
@@ -62,7 +62,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     public JDBCExecuteEngine(final BackendConnection backendConnection, final JDBCExecutorWrapper jdbcExecutorWrapper) {
         this.backendConnection = backendConnection;
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute());
     }

@@ -34,12 +34,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Properties;
 
 import static org.junit.Assert.fail;
 
@@ -52,21 +49,11 @@ public final class SQLParserParameterizedTest {
     
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
-    private static final Properties PROPS = new Properties();
-    
     private final String sqlCaseId;
     
     private final String databaseType;
     
     private final SQLCaseType sqlCaseType;
-    
-    static {
-        try {
-            PROPS.load(new FileInputStream(SQLParserParameterizedTest.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "/runtime-config.properties"));
-        } catch (final IOException ex) {
-            log.warn("Can not find file `runtime-config.properties`, use default properties configuration.", ex);
-        }
-    }
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {

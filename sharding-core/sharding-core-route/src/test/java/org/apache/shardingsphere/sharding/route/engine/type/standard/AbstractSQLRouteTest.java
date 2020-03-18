@@ -24,13 +24,13 @@ import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTes
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.Arrays;
@@ -47,9 +47,9 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildTableMetas());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildSchemaMetaData());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
-        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, new ShardingSphereProperties(new Properties()), metaData, sqlParserEngine);
+        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, new ConfigurationProperties(new Properties()), metaData, sqlParserEngine);
         ShardingRouteContext result = shardingRouter.route(sql, parameters, false);
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
         return result;
@@ -66,7 +66,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         return new DataSourceMetas(DatabaseTypes.getActualDatabaseType("MySQL"), dataSourceInfoMap);
     }
     
-    private TableMetas buildTableMetas() {
+    private SchemaMetaData buildSchemaMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), 
                 new ColumnMetaData("user_id", "int", false), 
@@ -78,6 +78,6 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
                 new ColumnMetaData("c_date", "timestamp", false)), Collections.emptySet()));
         tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true)), Collections.emptySet()));
         tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true)), Collections.emptySet()));
-        return new TableMetas(tableMetaDataMap);
+        return new SchemaMetaData(tableMetaDataMap);
     }
 }
