@@ -32,17 +32,17 @@ public final class TypedPropertyValue {
     }
     
     private Object createTypedValue(final TypedPropertyKey key, final String value) throws TypedPropertyValueException {
-        if (boolean.class == key.getType()) {
+        if (boolean.class == key.getType() || Boolean.class == key.getType()) {
             return Boolean.valueOf(value);
         }
-        if (int.class == key.getType()) {
+        if (int.class == key.getType() || Integer.class == key.getType()) {
             try {
                 return Integer.valueOf(value);
             } catch (final NumberFormatException ex) {
                 throw new TypedPropertyValueException(key, value);
             }
         }
-        if (long.class == key.getType()) {
+        if (long.class == key.getType() || Long.class == key.getType()) {
             try {
                 return Long.valueOf(value);
             } catch (final NumberFormatException ex) {
