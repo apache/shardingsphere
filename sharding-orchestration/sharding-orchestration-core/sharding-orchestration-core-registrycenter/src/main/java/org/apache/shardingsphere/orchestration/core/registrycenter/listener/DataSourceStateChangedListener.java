@@ -31,11 +31,11 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.schema.Orches
  */
 public final class DataSourceStateChangedListener extends PostShardingRegistryCenterEventListener {
     
-    private final RegistryCenterNode stateNode;
+    private final RegistryCenterNode registryCenterNode;
     
     public DataSourceStateChangedListener(final String name, final RegistryCenterRepository registryCenterRepository) {
         super(registryCenterRepository, new RegistryCenterNode(name).getDataSourcesNodeFullRootPath());
-        stateNode = new RegistryCenterNode(name);
+        registryCenterNode = new RegistryCenterNode(name);
     }
     
     @Override
@@ -44,7 +44,7 @@ public final class DataSourceStateChangedListener extends PostShardingRegistryCe
     }
     
     private OrchestrationShardingSchema getShardingSchema(final String dataSourceNodeFullPath) {
-        return stateNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
+        return registryCenterNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

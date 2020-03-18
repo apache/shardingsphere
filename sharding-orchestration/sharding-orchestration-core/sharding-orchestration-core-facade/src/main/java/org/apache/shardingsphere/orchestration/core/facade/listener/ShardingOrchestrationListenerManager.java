@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.facade.listener;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configcenter.listener.ConfigurationChangedListenerManager;
-import org.apache.shardingsphere.orchestration.core.registrycenter.listener.StateChangedListenerManager;
+import org.apache.shardingsphere.orchestration.core.registrycenter.listener.RegistryListenerManager;
 
 import java.util.Collection;
 
@@ -31,13 +31,13 @@ public final class ShardingOrchestrationListenerManager {
     
     private final ConfigurationChangedListenerManager configurationChangedListenerManager;
     
-    private final StateChangedListenerManager stateChangedListenerManager;
+    private final RegistryListenerManager registryListenerManager;
     
     public ShardingOrchestrationListenerManager(final String registryCenterRepositoryName, final RegistryCenterRepository registryCenterRepository,
                                                 final String configCenterRepositoryName, final ConfigCenterRepository configCenterRepository,
                                                 final Collection<String> shardingSchemaNames) {
         configurationChangedListenerManager = new ConfigurationChangedListenerManager(configCenterRepositoryName, configCenterRepository, shardingSchemaNames);
-        stateChangedListenerManager = new StateChangedListenerManager(registryCenterRepositoryName, registryCenterRepository);
+        registryListenerManager = new RegistryListenerManager(registryCenterRepositoryName, registryCenterRepository);
     }
     
     /**
@@ -45,6 +45,6 @@ public final class ShardingOrchestrationListenerManager {
      */
     public void initListeners() {
         configurationChangedListenerManager.initListeners();
-        stateChangedListenerManager.initListeners();
+        registryListenerManager.initListeners();
     }
 }

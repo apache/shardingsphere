@@ -46,7 +46,7 @@ public final class DataSourceStateChangedListenerTest {
     @Test
     public void assertCreateShardingOrchestrationEvent() {
         OrchestrationShardingSchema expected = new OrchestrationShardingSchema("master_slave_db", "slave_ds_0");
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/state/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/registry/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED);
         assertThat(dataSourceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).getShardingSchema().getSchemaName(), is(expected.getSchemaName()));
     }
 }

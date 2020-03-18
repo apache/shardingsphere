@@ -117,7 +117,7 @@ public class OrchestrationSpringBootRegistryShardingTest {
             + "        algorithmExpression: t_order_item_${order_id % 2}\n"
             + "        shardingColumn: order_id\n");
         testCenter.persist("/demo_spring_boot_ds_center/config/props", "executor.size: '100'\nsql.show: 'true'\n");
-        testCenter.persist("/demo_spring_boot_ds_center/state/datasources", "");
+        testCenter.persist("/demo_spring_boot_ds_center/registry/datasources", "");
     }
     
     @Test
