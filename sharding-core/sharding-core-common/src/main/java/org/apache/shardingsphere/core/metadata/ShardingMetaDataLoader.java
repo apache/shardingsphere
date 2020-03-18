@@ -105,15 +105,15 @@ public final class ShardingMetaDataLoader {
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
         List<String[]> errorMetaDataList = new LinkedList<>();
         for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
-            final TableMetaData entryValue = entry.getValue();
+            TableMetaData entryValue = entry.getValue();
             if (!sample.equals(decorator.decorate(entryValue, logicTableName, shardingRule))) {
-                final String[] errorItem = new String[] {entry.getKey(), entryValue.toString()};
-                errorMetaDataList.add(errorItem);
+                errorMetaDataList.add(new String[] {entry.getKey(), entryValue.toString()});
             }
         }
 
         if (!errorMetaDataList.isEmpty()) {
-            StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows:");
+            StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`")
+                    .append(", it has different meta data of actual tables are as follows:");
             for (String[] each : errorMetaDataList) {
                 exceptionMessageBuilder.append("\nactual table:").append(each[0]).append(", meta data:").append(each[1]);
             }
