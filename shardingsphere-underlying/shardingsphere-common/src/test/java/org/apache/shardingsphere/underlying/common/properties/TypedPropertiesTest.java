@@ -60,10 +60,9 @@ public class TypedPropertiesTest {
         assertThat(properties.getValue(APropertyKey.A7), is(Boolean.FALSE));
     }
 
-
     @RequiredArgsConstructor
     @Getter
-    private static enum APropertyKey implements TypedPropertyKey{
+    private enum APropertyKey implements TypedPropertyKey {
         A1("a1", "1", int.class),
         A2("a2", "200", long.class),
         A3("a3", "true", boolean.class),
@@ -79,8 +78,8 @@ public class TypedPropertiesTest {
         private final Class<?> type;
     }
 
-    private static class AProperties extends TypedProperties<APropertyKey>{
-        public AProperties(Class<APropertyKey> keyClass, Properties props) {
+    private static class AProperties extends TypedProperties<APropertyKey> {
+        AProperties(final Class<APropertyKey> keyClass, final Properties props) {
             super(keyClass, props);
         }
     }
