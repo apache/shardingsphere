@@ -113,7 +113,7 @@ public final class ShardingMetaDataLoader {
 
         if (!errorMetaDataList.isEmpty()) {
             StringBuilder exceptionMessageBuilder = new StringBuilder("Cannot get uniformed table structure for logic table `%s`"
-                    + ", it has different meta data of actual tables are as follows:");
+                    + ",it has different meta data of actual tables are as follows:");
             for (String[] each : errorMetaDataList) {
                 exceptionMessageBuilder.append("\nactual table:").append(each[0]).append(", meta data:").append(each[1]);
             }
