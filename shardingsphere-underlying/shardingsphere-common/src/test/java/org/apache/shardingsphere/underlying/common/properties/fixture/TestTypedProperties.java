@@ -17,31 +17,13 @@
 
 package org.apache.shardingsphere.underlying.common.properties.fixture;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
+import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
 
-@RequiredArgsConstructor
-@Getter
-public enum TestTypedPropertyKey implements TypedPropertyKey {
+import java.util.Properties;
+
+public final class TestTypedProperties extends TypedProperties<TestTypedPropertyKey> {
     
-    BOOLEAN_VALUE("boolean", String.valueOf(Boolean.FALSE), boolean.class),
-    
-    BOOLEAN_OBJECT_VALUE("Boolean", String.valueOf(Boolean.FALSE), Boolean.class),
-    
-    INT_VALUE("int", "10", int.class),
-    
-    INT_OBJECT_VALUE("Integer", "10", Integer.class),
-    
-    LONG_VALUE("long", "1000", long.class),
-    
-    LONG_OBJECT_VALUE("Long", "1000", Long.class),
-    
-    STRING_VALUE("String", "value", String.class);
-    
-    private final String key;
-    
-    private final String defaultValue;
-    
-    private final Class<?> type;
+    public TestTypedProperties(final Properties props) {
+        super(TestTypedPropertyKey.class, props);
+    }
 }
