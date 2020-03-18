@@ -32,15 +32,9 @@ import java.util.Map.Entry;
  */
 public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<YamlOrchestrationConfiguration, OrchestrationConfiguration> {
     
-    /**
-     * Swap from InstanceConfiguration to YamlInstanceConfiguration.
-     *
-     * @param configuration configuration to be swapped
-     * @return YAML instance configuration
-     */
     @Override
     public YamlOrchestrationConfiguration swap(final OrchestrationConfiguration configuration) {
-        Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap = new HashMap();
+        Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap = new HashMap<>();
         Map<String, CenterConfiguration> instanceConfigurationMap = configuration.getInstanceConfigurationMap();
         CenterRepositoryConfigurationYamlSwapper swapper = new CenterRepositoryConfigurationYamlSwapper();
         for (Entry<String, CenterConfiguration> each : instanceConfigurationMap.entrySet()) {
@@ -49,15 +43,9 @@ public final class OrchestrationConfigurationYamlSwapper implements YamlSwapper<
         return new YamlOrchestrationConfiguration(yamlInstanceConfigurationMap);
     }
     
-    /**
-     * Swap from YamlInstanceConfiguration to InstanceConfiguration.
-     *
-     * @param yamlConfiguration YAML instance configuration
-     * @return swapped object
-     */
     @Override
     public OrchestrationConfiguration swap(final YamlOrchestrationConfiguration yamlConfiguration) {
-        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap();
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
         Map<String, YamlCenterRepositoryConfiguration> yamlInstanceConfigurationMap = yamlConfiguration.getCenterRepositoryConfigurationMap();
         CenterRepositoryConfigurationYamlSwapper swapper = new CenterRepositoryConfigurationYamlSwapper();
         for (Entry<String, YamlCenterRepositoryConfiguration> each : yamlInstanceConfigurationMap.entrySet()) {

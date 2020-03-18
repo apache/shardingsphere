@@ -72,8 +72,7 @@ public final class ShardingOrchestrationFacadeTest {
         configuration2.setOrchestrationType("config_center");
         configuration2.setNamespace("namespace_2");
         instanceConfigurationMap.put("test_name_2", configuration2);
-        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
-        orchestrationConfiguration.setInstanceConfigurationMap(instanceConfigurationMap);
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration(instanceConfigurationMap);
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(orchestrationConfiguration, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(shardingOrchestrationFacade, "registryCenterRepository", registryCenterRepository);
         FieldUtil.setField(shardingOrchestrationFacade, "configCenter", configCenter);

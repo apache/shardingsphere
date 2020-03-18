@@ -79,9 +79,7 @@ public final class OrchestrationConfigurationYamlSwapperTest {
         instanceConfiguration.setNamespace("orchestration");
         Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put(LOGIC_SCHEMA, instanceConfiguration);
-        OrchestrationConfiguration result = new OrchestrationConfiguration();
-        result.setInstanceConfigurationMap(instanceConfigurationMap);
-        return result;
+        return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
     private YamlOrchestrationConfiguration getYamlOrchestrationConfiguration() {

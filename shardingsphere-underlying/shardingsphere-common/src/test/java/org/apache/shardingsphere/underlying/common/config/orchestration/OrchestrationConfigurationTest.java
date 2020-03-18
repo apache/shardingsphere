@@ -25,13 +25,11 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OrchestrationConfigurationTest {
+public final class OrchestrationConfigurationTest {
     
     @Test
     public void assertInstanceConfigurationMap() {
-        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration();
         Map<String, CenterConfiguration> configurationMap = new HashMap<>();
-        orchestrationConfiguration.setInstanceConfigurationMap(configurationMap);
-        assertThat(orchestrationConfiguration.getInstanceConfigurationMap(), is(configurationMap));
+        assertThat(new OrchestrationConfiguration(configurationMap).getInstanceConfigurationMap(), is(configurationMap));
     }
 }

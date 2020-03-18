@@ -17,24 +17,17 @@
 
 package org.apache.shardingsphere.underlying.common.config.orchestration;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
 /**
  * Config center configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public final class OrchestrationConfiguration {
     
-    /**
-     * Instance configuration map.
-     */
-    private Map<String, CenterConfiguration> instanceConfigurationMap;
+    private final Map<String, CenterConfiguration> instanceConfigurationMap;
 }
