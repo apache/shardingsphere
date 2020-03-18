@@ -26,7 +26,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,18 +35,18 @@ import java.util.Map;
  * SQL parser test cases registry.
  */
 public final class SQLParserTestCasesRegistry {
-    
+
     private Map<String, SQLParserTestCase> sqlParserTestCases;
-    
+
     public SQLParserTestCasesRegistry(final String rootDirectory) {
         sqlParserTestCases = load(rootDirectory);
     }
-    
+
     @SneakyThrows
     private Map<String, SQLParserTestCase> load(final String directory) {
         URL url = SQLParserTestCasesRegistry.class.getClassLoader().getResource(directory);
         Preconditions.checkNotNull(url, "Can not find SQL parser test cases.");
-        File[] files = new File(URLDecoder.decode(url.getPath(), "UTF-8")).listFiles();
+        File[] files = new File(url.toURI().getPath()).listFiles();
         Preconditions.checkNotNull(files, "Can not find SQL parser test cases.");
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : files) {
@@ -55,7 +54,7 @@ public final class SQLParserTestCasesRegistry {
         }
         return result;
     }
-    
+
     private Map<String, SQLParserTestCase> load(final File file) {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         if (file.isDirectory()) {
@@ -70,14 +69,14 @@ public final class SQLParserTestCasesRegistry {
         }
         return result;
     }
-    
+
     private void putAll(final Map<String, SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
         Collection<String> sqlParserTestCaseIds = new HashSet<>(sqlParserTestCases.keySet());
         sqlParserTestCaseIds.retainAll(target.keySet());
         Preconditions.checkState(sqlParserTestCaseIds.isEmpty(), "Find duplicated SQL Case IDs: %s", sqlParserTestCaseIds);
         target.putAll(sqlParserTestCases);
     }
-    
+
     private Map<String, SQLParserTestCase> getSQLParserTestCases(final File file) {
         try {
             return ((SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(file)).getAllSQLParserTestCases();
@@ -85,10 +84,10 @@ public final class SQLParserTestCasesRegistry {
             throw new RuntimeException(ex);
         }
     }
-    
+
     /**
      * Get SQL parser test case.
-     * 
+     *
      * @param sqlCaseId SQL case ID
      * @return SQL parser test case
      */
@@ -96,7 +95,7 @@ public final class SQLParserTestCasesRegistry {
         Preconditions.checkState(sqlParserTestCases.containsKey(sqlCaseId), "Can not find SQL of id: %s", sqlCaseId);
         return sqlParserTestCases.get(sqlCaseId);
     }
-    
+
     /**
      * Get all SQL case IDs.
      *

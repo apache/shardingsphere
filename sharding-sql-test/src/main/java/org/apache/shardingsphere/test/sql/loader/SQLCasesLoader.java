@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.sql.loader;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.SQLCase;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
@@ -33,7 +32,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -48,19 +46,19 @@ import java.util.jar.JarFile;
  * SQL test cases loader.
  */
 public final class SQLCasesLoader {
-    
+
     private final Map<String, SQLCase> sqlCases;
-    
+
     public SQLCasesLoader(final String rootDirection) {
         sqlCases = loadSQLCases(rootDirection);
     }
-    
+
     @SneakyThrows
     private static Map<String, SQLCase> loadSQLCases(final String path) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         return file.isFile() ? loadSQLCasesFromJar(path, file) : loadSQLCasesFromTargetDirectory(path);
     }
-    
+
     private static Map<String, SQLCase> loadSQLCasesFromJar(final String path, final File file) throws IOException, JAXBException {
         Map<String, SQLCase> result = new TreeMap<>();
         try (JarFile jar = new JarFile(file)) {
@@ -74,15 +72,13 @@ public final class SQLCasesLoader {
         }
         return result;
     }
-    
+
     @SneakyThrows
     private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
         Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
-        if (null == url) {
-            return result;
-        }
-        File filePath = new File(URLDecoder.decode(url.getPath(), "UTF-8"));
+        Preconditions.checkNotNull(url, "Can not find SQL test cases.");
+        File filePath = new File(url.toURI().getPath());
         if (!filePath.exists()) {
             return result;
         }
@@ -95,7 +91,7 @@ public final class SQLCasesLoader {
         }
         return result;
     }
-    
+
     @SneakyThrows
     private static void loadSQLCasesFromDirectory(final Map<String, SQLCase> sqlStatementMap, final File file) {
         if (file.isDirectory()) {
@@ -110,7 +106,7 @@ public final class SQLCasesLoader {
             fillSQLMap(sqlStatementMap, new FileInputStream(file));
         }
     }
-    
+
     private static void fillSQLMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : sqlCases.getSqlCases()) {
@@ -121,13 +117,13 @@ public final class SQLCasesLoader {
             sqlCaseMap.put(each.getId(), each);
         }
     }
-    
+
     /**
      * Get SQL.
      *
-     * @param sqlCaseId SQL case ID
+     * @param sqlCaseId   SQL case ID
      * @param sqlCaseType SQL case type
-     * @param parameters SQL parameters
+     * @param parameters  SQL parameters
      * @return SQL
      */
     public String getSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters) {
@@ -140,17 +136,17 @@ public final class SQLCasesLoader {
                 throw new UnsupportedOperationException(sqlCaseType.name());
         }
     }
-    
+
     private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
         Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of id: " + id);
         SQLCase statement = sqlCaseMap.get(id);
         return statement.getValue();
     }
-    
+
     private String getPlaceholderSQL(final String sql) {
         return sql.replace("%%", "%").replace("'%'", "'%%'");
     }
-    
+
     private String getLiteralSQL(final String sql, final List<?> parameters) {
         if (null == parameters || parameters.isEmpty()) {
             return sql;
@@ -158,7 +154,7 @@ public final class SQLCasesLoader {
         return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
                 .replace("%%", "%").replace("'%'", "'%%'");
     }
-    
+
     /**
      * Get test parameters for junit parameterized test cases.
      *
@@ -171,7 +167,7 @@ public final class SQLCasesLoader {
         }
         return result;
     }
-    
+
     private Collection<Object[]> getTestParameters(final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
@@ -179,7 +175,7 @@ public final class SQLCasesLoader {
         }
         return result;
     }
-    
+
     private static Collection<Object[]> getTestParameters(final SQLCase sqlCase, final SQLCaseType sqlCaseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
@@ -191,18 +187,18 @@ public final class SQLCasesLoader {
         }
         return result;
     }
-    
+
     private static Collection<String> getDatabaseTypes(final String databaseTypes) {
-        return Strings.isNullOrEmpty(databaseTypes) ? getALlDatabaseTypes() : Lists.newArrayList(Splitter.on(',').trimResults().split(databaseTypes));
+        return Strings.isNullOrEmpty(databaseTypes) ? getALlDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
     }
-    
+
     private static Collection<String> getALlDatabaseTypes() {
         return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer");
     }
-    
+
     /**
      * Get all SQL case IDs.
-     * 
+     *
      * @return all SQL case IDs
      */
     public Collection<String> getAllSQLCaseIDs() {
