@@ -100,8 +100,14 @@ public enum MySQLCapabilityFlag {
         return 0;
     }
     
+    /**
+     * Calculate capability flags.
+     *
+     * @param capabilities single capabilities of need to be calculated
+     * @return combined capabilities
+     */
     // TODO use xor to calculate lower and upper
-    private static int calculateCapabilityFlags(final MySQLCapabilityFlag... capabilities) {
+    public static int calculateCapabilityFlags(final MySQLCapabilityFlag... capabilities) {
         int result = 0;
         for (MySQLCapabilityFlag each : capabilities) {
             result |= each.value;

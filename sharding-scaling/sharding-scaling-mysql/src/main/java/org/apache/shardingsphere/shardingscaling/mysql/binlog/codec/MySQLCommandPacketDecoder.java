@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.auth.HandshakeInitializationPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.EofPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.ErrorPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.FieldPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.ResultSetHeaderPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.RowDataPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -38,86 +39,78 @@ import java.util.List;
 @Slf4j
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
-    private enum States { Initiate, ResponsePacket, FieldPacket, RowDataPacket }
+    private enum States { ResponsePacket, FieldPacket, RowDataPacket }
     
-    private States currentState = States.Initiate;
+    private States currentState = States.ResponsePacket;
+    
+    private boolean auth;
     
     private InternalResultSet internalResultSet;
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         // first packet from server is handshake initialization packet
-        if (States.Initiate.equals(currentState)) {
-            out.add(decodeHandshakeInitializationPacket(in));
-            currentState = States.ResponsePacket;
-            return;
+        MySQLPacketPayload payload = new MySQLPacketPayload(in);
+        if (!auth) {
+            out.add(decodeHandshakePacket(payload));
+            auth = true;
+        } else {
+            decodeCommandPacket(payload, out);
         }
+    }
+    
+    private void decodeCommandPacket(final MySQLPacketPayload payload, final List<Object> out) {
         if (States.FieldPacket.equals(currentState)) {
-            decodeFieldPacket(in);
+            decodeFieldPacket(payload);
             return;
         }
         if (States.RowDataPacket.equals(currentState)) {
-            decodeRowDataPacket(in, out);
+            decodeRowDataPacket(payload, out);
             return;
         }
-        decodeResponsePacket(in, out);
+        decodeResponsePacket(payload, out);
     }
     
-    private HandshakeInitializationPacket decodeHandshakeInitializationPacket(final ByteBuf in) {
-        HandshakeInitializationPacket result = new HandshakeInitializationPacket();
-        result.fromByteBuf(in);
-        if (PacketConstants.PROTOCOL_VERSION != result.getProtocolVersion()) {
-            throw new UnsupportedOperationException();
-        }
+    private MySQLHandshakePacket decodeHandshakePacket(final MySQLPacketPayload payload) {
+        MySQLHandshakePacket result = new MySQLHandshakePacket(payload);
         if (!AuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.equals(result.getAuthPluginName())) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Only supported SECURE_PASSWORD_AUTHENTICATION server");
         }
         return result;
     }
     
-    private void decodeFieldPacket(final ByteBuf in) {
-        if (PacketConstants.EOF_PACKET_MARK != in.getByte(0)) {
-            FieldPacket fieldPacket = new FieldPacket();
-            fieldPacket.fromByteBuf(in);
-            internalResultSet.getFieldDescriptors().add(fieldPacket);
+    private void decodeFieldPacket(final MySQLPacketPayload payload) {
+        if (PacketConstants.EOF_PACKET_MARK != payload.getByteBuf().getByte(1)) {
+            internalResultSet.getFieldDescriptors().add(new MySQLColumnDefinition41Packet(payload));
         } else {
-            EofPacket eofPacket = new EofPacket();
-            eofPacket.fromByteBuf(in);
+            new MySQLEofPacket(payload);
             currentState = States.RowDataPacket;
         }
     }
     
-    private void decodeRowDataPacket(final ByteBuf in, final List<Object> out) {
-        if (PacketConstants.EOF_PACKET_MARK != in.getByte(0)) {
-            RowDataPacket rowDataPacket = new RowDataPacket();
-            rowDataPacket.fromByteBuf(in);
-            internalResultSet.getFieldValues().add(rowDataPacket);
+    private void decodeRowDataPacket(final MySQLPacketPayload payload, final List<Object> out) {
+        if (PacketConstants.EOF_PACKET_MARK != payload.getByteBuf().getByte(1)) {
+            internalResultSet.getFieldValues().add(new MySQLTextResultSetRowPacket(payload, internalResultSet.getHeader().getColumnCount()));
         } else {
-            EofPacket eofPacket = new EofPacket();
-            eofPacket.fromByteBuf(in);
+            new MySQLEofPacket(payload);
             out.add(internalResultSet);
             currentState = States.ResponsePacket;
             internalResultSet = null;
         }
     }
     
-    private void decodeResponsePacket(final ByteBuf in, final List<Object> out) {
-        switch (in.getByte(0)) {
+    private void decodeResponsePacket(final MySQLPacketPayload payload, final List<Object> out) {
+        switch (payload.getByteBuf().getByte(1)) {
             case PacketConstants.ERR_PACKET_MARK:
-                ErrorPacket error = new ErrorPacket();
-                error.fromByteBuf(in);
-                out.add(error);
+                out.add(new MySQLErrPacket(payload));
                 break;
             case PacketConstants.OK_PACKET_MARK:
-                OkPacket ok = new OkPacket();
-                ok.fromByteBuf(in);
-                out.add(ok);
+                out.add(new MySQLOKPacket(payload));
                 break;
             default:
-                ResultSetHeaderPacket resultSetHeaderPacket = new ResultSetHeaderPacket();
-                resultSetHeaderPacket.fromByteBuf(in);
+                MySQLFieldCountPacket fieldCountPacket = new MySQLFieldCountPacket(payload);
                 currentState = States.FieldPacket;
-                internalResultSet = new InternalResultSet(resultSetHeaderPacket);
+                internalResultSet = new InternalResultSet(fieldCountPacket);
         }
     }
 }
