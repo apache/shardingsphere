@@ -23,7 +23,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CollectionOptionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AggregationFunctionContext;
@@ -95,9 +94,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.dialect.mysql.CollectionOptionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.dialect.mysql.DataTypeLengthSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.dialect.mysql.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeLengthSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
@@ -601,15 +599,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
             dataTypeSegment.setDataLength(dataTypeLengthSegment);
         }
-        if (null != ctx.collectionOptions()) {
-            dataTypeSegment.setCollectionOptions((CollectionOptionsSegment) visitCollectionOptions(ctx.collectionOptions()));
-        }
-        if (null != ctx.characterSet_()) {
-            dataTypeSegment.setCharacterSet(ctx.characterSet_().ignoredIdentifier_().getText());
-        }
-        if (null != ctx.collateClause_()) {
-            dataTypeSegment.setCollateClause(ctx.collateClause_().ignoredIdentifier_().getText());
-        }
         return dataTypeSegment;
     }
     
@@ -629,15 +618,6 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             dataTypeLengthSegment.setLengthPair(nums);
         }
         return dataTypeLengthSegment;
-    }
-    
-    @Override
-    public ASTNode visitCollectionOptions(final CollectionOptionsContext ctx) {
-        LinkedList<String> collectionOptions = new LinkedList<>();
-        for (TerminalNode s: ctx.STRING_()) {
-            collectionOptions.add(s.getText());
-        }
-        return new CollectionOptionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), collectionOptions);
     }
     
     @Override

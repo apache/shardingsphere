@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.segment.generic.dialect.mysql;
+package org.apache.shardingsphere.sql.parser.sql.segment.generic;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
-import java.util.LinkedList;
-
 @Getter
 @Setter
-public final class DataTypeLengthSegment implements SQLSegment {
+public final class DataTypeSegment implements SQLSegment {
     
     private int startIndex;
     
     private int stopIndex;
     
-    private int length;
+    private String dataTypeName;
     
-    private LinkedList<Integer> lengthPair;
+    private DataTypeLengthSegment dataLength;
 }
