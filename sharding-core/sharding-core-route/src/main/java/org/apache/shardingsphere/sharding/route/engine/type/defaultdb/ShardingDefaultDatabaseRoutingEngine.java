@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.defaultdb;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -39,13 +39,12 @@ public final class ShardingDefaultDatabaseRoutingEngine implements ShardingRoute
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
-        List<TableUnit> routingTables = new ArrayList<>(logicTables.size());
+        List<RouteMapper> routingTables = new ArrayList<>(logicTables.size());
         for (String each : logicTables) {
-            routingTables.add(new TableUnit(each, each));
+            routingTables.add(new RouteMapper(each, each));
         }
-        RouteUnit routeUnit = new RouteUnit(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName());
-        routeUnit.getTableUnits().addAll(routingTables);
-        result.getRouteUnits().add(routeUnit);
+        String dataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), routingTables));
         return result;
     }
 }

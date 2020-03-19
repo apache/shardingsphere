@@ -40,7 +40,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,9 +79,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {
         RouteResult result = new RouteResult();
         for (DataNode each : routedDataNodes) {
-            RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
-            routeUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
-            result.getRouteUnits().add(routeUnit);
+            result.getRouteUnits().add(
+                    new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName()))));
         }
         return result;
     }

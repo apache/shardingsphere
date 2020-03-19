@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -64,9 +65,7 @@ public final class RouteResultTest {
     }
     
     private RouteUnit mockRouteUnit(final String datasourceName) {
-        RouteUnit result = new RouteUnit(datasourceName);
-        result.getTableUnits().add(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE));
-        return result;
+        return new RouteUnit(new RouteMapper(datasourceName, datasourceName), Collections.singletonList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
     }
     
     @Test
@@ -88,15 +87,15 @@ public final class RouteResultTest {
     }
     
     @Test
-    public void assertGetTableUnit() {
-        Optional<TableUnit> actual = multiRouteResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
+    public void assertGetTableMapper() {
+        Optional<RouteMapper> actual = multiRouteResult.getTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE)));
+        assertThat(actual.get(), is(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
     }
     
     @Test
-    public void assertGetTableUnitNonExist() {
-        Optional<TableUnit> actual = singleRouteResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
+    public void assertGetTableMapperNonExist() {
+        Optional<RouteMapper> actual = singleRouteResult.getTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
         assertFalse(actual.isPresent());
     }
     

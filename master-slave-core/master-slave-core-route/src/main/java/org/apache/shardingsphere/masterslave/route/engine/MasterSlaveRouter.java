@@ -24,9 +24,11 @@ import org.apache.shardingsphere.masterslave.route.log.MasterSlaveSQLLogger;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,7 +50,7 @@ public final class MasterSlaveRouter implements DateNodeRouter {
             MasterSlaveSQLLogger.logSQL(sql, dataSourceName);
         }
         RouteResult routeResult = new RouteResult();
-        routeResult.getRouteUnits().add(new RouteUnit(dataSourceName));
+        routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
         return new RouteContext(null, routeResult);
     }
 }
