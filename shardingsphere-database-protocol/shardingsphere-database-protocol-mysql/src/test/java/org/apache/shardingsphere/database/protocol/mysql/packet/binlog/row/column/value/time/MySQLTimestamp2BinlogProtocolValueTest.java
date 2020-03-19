@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
@@ -37,18 +38,22 @@ public final class MySQLTimestamp2BinlogProtocolValueTest {
     @Mock
     private MySQLPacketPayload payload;
     
+    @Mock
+    private ByteBuf byteBuf;
+    
     private MySQLBinlogColumnDef columnDef;
     
     @Before
     public void setUp() {
         columnDef = new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_TIMESTAMP2);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
     }
     
     @Test
     public void assertReadWithoutFraction() {
         int currentSeconds = new Long(System.currentTimeMillis() / 1000).intValue();
-        when(payload.readInt4()).thenReturn(currentSeconds);
-        assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000))));
+        when(byteBuf.readInt()).thenReturn(currentSeconds);
+        assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000L))));
     }
     
     @Test
@@ -58,14 +63,14 @@ public final class MySQLTimestamp2BinlogProtocolValueTest {
         int currentSeconds = new Long(currentTimeMillis / 1000).intValue();
         int currentMilliseconds = new Long(currentTimeMillis % 10).intValue();
         when(payload.readInt1()).thenReturn(currentMilliseconds);
-        when(payload.readInt4()).thenReturn(currentSeconds);
+        when(byteBuf.readInt()).thenReturn(currentSeconds);
         assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload),
                    is(MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000)) + "." + currentMilliseconds));
     }
     
     @Test
     public void assertReadNullTime() {
-        when(payload.readInt4()).thenReturn(0);
+        when(byteBuf.readInt()).thenReturn(0);
         assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.DATETIME_OF_ZERO));
     }
 }
