@@ -100,7 +100,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
         for (RouteUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getSqlParserEngine(),
                 SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).route(rewriteSQL, Collections.emptyList(), false).getRouteResult().getRouteUnits()) {
-            result.getExecutionUnits().add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(rewriteSQL, Collections.emptyList())));
+            result.getExecutionUnits().add(new ExecutionUnit(each.getDataSourceUnit().getActualName(), new SQLUnit(rewriteSQL, Collections.emptyList())));
         }
         return result;
     }

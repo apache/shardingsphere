@@ -68,6 +68,6 @@ public final class ShardingMasterInstanceBroadcastRoutingEngineTest {
     public void assertRoute() {
         RouteResult actual = masterInstanceBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
-        assertThat(actual.getRouteUnits().iterator().next().getActualDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(actual.getRouteUnits().iterator().next().getDataSourceUnit().getActualName(), is(DATASOURCE_NAME));
     }
 }

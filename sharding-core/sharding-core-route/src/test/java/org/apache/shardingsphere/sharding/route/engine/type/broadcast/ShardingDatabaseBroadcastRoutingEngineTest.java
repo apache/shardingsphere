@@ -44,7 +44,7 @@ public final class ShardingDatabaseBroadcastRoutingEngineTest {
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(2));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds0"));
-        assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds1"));
+        assertThat(tableUnitList.get(0).getDataSourceUnit().getActualName(), is("ds0"));
+        assertThat(tableUnitList.get(1).getDataSourceUnit().getActualName(), is("ds1"));
     }
 }

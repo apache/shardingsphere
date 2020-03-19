@@ -56,7 +56,7 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
+        assertThat(tableUnitList.get(0).getDataSourceUnit().getActualName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_order_1"));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_order"));
@@ -74,7 +74,7 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
+        assertThat(tableUnitList.get(0).getDataSourceUnit().getActualName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_order_1"));
         assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_order"));

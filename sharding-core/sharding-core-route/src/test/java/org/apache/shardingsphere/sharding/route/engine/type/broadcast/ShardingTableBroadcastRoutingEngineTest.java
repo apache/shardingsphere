@@ -124,7 +124,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     }
     
     private void assertRouteUnit(final RouteUnit routeUnit, final String dataSourceName, final String actualTableName) {
-        assertThat(routeUnit.getActualDataSourceName(), is(dataSourceName));
+        assertThat(routeUnit.getDataSourceUnit().getActualName(), is(dataSourceName));
         assertThat(routeUnit.getTableUnits().size(), is(1));
         assertThat(routeUnit.getTableUnits().get(0), is(new TableUnit("t_order", actualTableName)));
     }

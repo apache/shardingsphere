@@ -37,15 +37,16 @@ import java.util.Set;
 @ToString
 public final class RouteUnit {
     
-    private final String logicDataSourceName;
-    
-    private final String actualDataSourceName;
+    private final DataSourceUnit dataSourceUnit;
     
     private final List<TableUnit> tableUnits = new LinkedList<>();
     
     public RouteUnit(final String dataSourceName) {
-        logicDataSourceName = dataSourceName;
-        actualDataSourceName = dataSourceName;
+        dataSourceUnit = new DataSourceUnit(dataSourceName, dataSourceName);
+    }
+    
+    public RouteUnit(final String logicDataSourceName, final String actualDataSourceName) {
+        dataSourceUnit = new DataSourceUnit(logicDataSourceName, actualDataSourceName);
     }
     
     /**
@@ -57,7 +58,7 @@ public final class RouteUnit {
      */
     public Optional<TableUnit> getTableUnit(final String dataSourceName, final String actualTableName) {
         for (TableUnit each : tableUnits) {
-            if (dataSourceName.equalsIgnoreCase(logicDataSourceName) && actualTableName.equalsIgnoreCase(each.getActualName())) {
+            if (dataSourceName.equalsIgnoreCase(dataSourceUnit.getLogicName()) && actualTableName.equalsIgnoreCase(each.getActualName())) {
                 return Optional.of(each);
             }
         }

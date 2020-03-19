@@ -88,9 +88,9 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
         RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(3));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
-        assertThat(iterator.next().getActualDataSourceName(), is("ds3"));
-        assertThat(Arrays.asList("ds9", "ds10", "ds11"), hasItems(iterator.next().getActualDataSourceName()));
-        assertThat(iterator.next().getActualDataSourceName(), is("default"));
+        assertThat(iterator.next().getDataSourceUnit().getActualName(), is("ds3"));
+        assertThat(Arrays.asList("ds9", "ds10", "ds11"), hasItems(iterator.next().getDataSourceUnit().getActualName()));
+        assertThat(iterator.next().getDataSourceUnit().getActualName(), is("default"));
     }
     
     @Test
@@ -104,6 +104,6 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
         RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
-        assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getActualDataSourceName()));
+        assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getDataSourceUnit().getActualName()));
     }
 }

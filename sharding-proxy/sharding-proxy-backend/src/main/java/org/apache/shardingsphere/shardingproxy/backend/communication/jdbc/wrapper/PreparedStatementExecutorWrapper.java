@@ -93,6 +93,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return shardingEngine.shard(sql, parameters);
     }
     
+    @SuppressWarnings("unchecked")
     private ExecutionContext doMasterSlaveRoute(final String sql) {
         SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
@@ -102,7 +103,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
         for (RouteUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getSqlParserEngine(),
                 SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).route(rewriteSQL, parameters, true).getRouteResult().getRouteUnits()) {
-            result.getExecutionUnits().add(new ExecutionUnit(each.getActualDataSourceName(), new SQLUnit(rewriteSQL, parameters)));
+            result.getExecutionUnits().add(new ExecutionUnit(each.getDataSourceUnit().getActualName(), new SQLUnit(rewriteSQL, parameters)));
         }
         return result;
     }

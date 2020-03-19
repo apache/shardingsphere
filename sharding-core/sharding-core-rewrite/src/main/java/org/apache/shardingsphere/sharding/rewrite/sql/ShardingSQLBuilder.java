@@ -64,7 +64,7 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
         for (TableUnit each : routeUnit.getTableUnits()) {
             String logicTableName = each.getLogicName().toLowerCase();
             result.put(logicTableName, each.getActualName());
-            result.putAll(getLogicAndActualTablesFromBindingTable(routeUnit.getLogicDataSourceName(), each, tableNames));
+            result.putAll(getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceUnit().getLogicName(), each, tableNames));
         }
         return result;
     }
