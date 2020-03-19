@@ -192,7 +192,7 @@
                                 </where>
                             </select>
                         </between-subquery-expression>
-                        <and-parameter-marker-expression value="0" />
+                        <and-parameter-marker-expression value="0" start-index="103" stop-index="103" />
                         <and-literal-expression value="12" />
                     </between-right-value>
                 </predicate>

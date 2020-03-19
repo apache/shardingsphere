@@ -53,8 +53,7 @@ public final class ExpressionAssert {
                                                         final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
         assertNotNull(assertContext.getText("Expected parameter marker expression should exist."), expected);
         assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     /**
