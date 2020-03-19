@@ -1021,7 +1021,7 @@
             <assignment start-index="51" stop-index="111" literal-stop-index="116">
                 <column name="status" start-index="51" stop-index="56" />
                 <assignment-value>
-                    <common-expression text="convert(to_base64(aes_encrypt(?,'key'))USINGutf8)" literal-text="convert(to_base64(aes_encrypt('init','key'))USINGutf8)" />
+                    <common-expression text="convert(to_base64(aes_encrypt(?,'key'))USINGutf8)" literal-text="convert(to_base64(aes_encrypt('init','key'))USINGutf8)" start-index="60" stop-index="111" literal-start-index="60" literal-stop-index="116" />
                 </assignment-value>
             </assignment>
         </set>
@@ -1029,7 +1029,7 @@
             <assignment start-index="118" stop-index="164" literal-start-index="123" literal-stop-index="169">
                 <column name="status" start-index="137" stop-index="142" literal-start-index="142" literal-stop-index="147" />
                 <assignment-value>
-                    <common-expression text="VALUES(status)" />
+                    <common-expression text="VALUES(status)" start-index="146" stop-index="159" literal-start-index="151" literal-stop-index="164" />
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
