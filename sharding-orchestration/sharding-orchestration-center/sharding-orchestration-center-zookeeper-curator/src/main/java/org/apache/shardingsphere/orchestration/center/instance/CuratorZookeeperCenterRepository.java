@@ -228,7 +228,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             }
             DataChangedEvent.ChangedType changedType = getChangedType(event);
             if (DataChangedEvent.ChangedType.IGNORED != changedType) {
-                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8"), changedType));
+                dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), Charsets.UTF_8), changedType));
             }
         });
     }
