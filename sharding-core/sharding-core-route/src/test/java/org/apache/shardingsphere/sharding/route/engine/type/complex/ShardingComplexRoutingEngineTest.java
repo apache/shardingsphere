@@ -58,8 +58,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(0).getTableMappers().get(0).getActualName(), is("t_order_1"));
-        assertThat(routeUnits.get(0).getTableMappers().get(0).getLogicName(), is("t_order"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test
@@ -76,8 +76,8 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(0).getTableMappers().get(0).getActualName(), is("t_order_1"));
-        assertThat(routeUnits.get(0).getTableMappers().get(0).getLogicName(), is("t_order"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test(expected = ShardingSphereException.class)

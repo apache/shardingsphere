@@ -22,9 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,15 +38,7 @@ public final class RouteUnit {
     
     private final RouteMapper dataSourceMapper;
     
-    private final List<RouteMapper> tableMappers = new LinkedList<>();
-    
-    public RouteUnit(final String dataSourceName) {
-        dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
-    }
-    
-    public RouteUnit(final String logicDataSourceName, final String actualDataSourceName) {
-        dataSourceMapper = new RouteMapper(logicDataSourceName, actualDataSourceName);
-    }
+    private final Collection<RouteMapper> tableMappers;
     
     /**
      * Find table mapper.

@@ -45,8 +45,7 @@ public final class RouteUnitTest {
     
     @Before
     public void setUp() {
-        routeUnit = new RouteUnit(DATASOURCE_NAME);
-        routeUnit.getTableMappers().addAll(mockTableMappers());
+        routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), mockTableMappers());
     }
     
     private Collection<RouteMapper> mockTableMappers() {
@@ -96,9 +95,7 @@ public final class RouteUnitTest {
     
     @Test
     public void assertEquals() {
-        RouteUnit expected = new RouteUnit(DATASOURCE_NAME, DATASOURCE_NAME);
-        expected.getTableMappers().addAll(mockTableMappers());
-        assertTrue(expected.equals(routeUnit));
+        assertTrue(new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), mockTableMappers()).equals(routeUnit));
     }
     
     @Test

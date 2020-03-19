@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -64,9 +65,7 @@ public final class RouteResultTest {
     }
     
     private RouteUnit mockRouteUnit(final String datasourceName) {
-        RouteUnit result = new RouteUnit(datasourceName);
-        result.getTableMappers().add(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE));
-        return result;
+        return new RouteUnit(new RouteMapper(datasourceName, datasourceName), Collections.singletonList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
     }
     
     @Test

@@ -19,12 +19,14 @@ package org.apache.shardingsphere.sharding.route.engine.type.defaultdb;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -46,9 +48,12 @@ public final class ShardingDefaultDatabaseRoutingEngineTest {
         assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
         assertThat(routeUnits.get(0).getTableMappers().size(), is(2));
-        assertThat(routeUnits.get(0).getTableMappers().get(0).getActualName(), is("t_order"));
-        assertThat(routeUnits.get(0).getTableMappers().get(0).getLogicName(), is("t_order"));
-        assertThat(routeUnits.get(0).getTableMappers().get(1).getActualName(), is("t_order_item"));
-        assertThat(routeUnits.get(0).getTableMappers().get(1).getLogicName(), is("t_order_item"));
+        Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();
+        RouteMapper tableMapper0 = tableMappers.next();
+        assertThat(tableMapper0.getActualName(), is("t_order"));
+        assertThat(tableMapper0.getLogicName(), is("t_order"));
+        RouteMapper tableMapper1 = tableMappers.next();
+        assertThat(tableMapper1.getActualName(), is("t_order_item"));
+        assertThat(tableMapper1.getLogicName(), is("t_order_item"));
     }
 }

@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -120,10 +121,9 @@ public final class MasterSlaveRouteDecoratorTest {
     
     private RouteResult mockRouteResult() {
         RouteResult result = new RouteResult();
-        RouteUnit routeUnit = new RouteUnit(DATASOURCE_NAME);
-        routeUnit.getTableMappers().add(new RouteMapper("table", "table_0"));
+        RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
         result.getRouteUnits().add(routeUnit);
-        result.getRouteUnits().add(new RouteUnit(NON_MASTER_SLAVE_DATASOURCE_NAME));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_MASTER_SLAVE_DATASOURCE_NAME, NON_MASTER_SLAVE_DATASOURCE_NAME), Collections.emptyList()));
         return result;
     }
 }

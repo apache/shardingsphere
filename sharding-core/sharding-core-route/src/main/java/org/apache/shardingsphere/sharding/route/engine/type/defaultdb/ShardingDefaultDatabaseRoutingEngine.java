@@ -43,9 +43,8 @@ public final class ShardingDefaultDatabaseRoutingEngine implements ShardingRoute
         for (String each : logicTables) {
             routingTables.add(new RouteMapper(each, each));
         }
-        RouteUnit routeUnit = new RouteUnit(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName());
-        routeUnit.getTableMappers().addAll(routingTables);
-        result.getRouteUnits().add(routeUnit);
+        String dataSourceName = shardingRule.getShardingDataSourceNames().getDefaultDataSourceName();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), routingTables));
         return result;
     }
 }

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -82,8 +83,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         Collection<RouteUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
-            routeUnit.getTableMappers().add(new RouteMapper(logicTableName, each.getTableName()));
+            RouteUnit routeUnit = new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName())));
             result.add(routeUnit);
         }
         return result;

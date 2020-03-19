@@ -79,9 +79,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {
         RouteResult result = new RouteResult();
         for (DataNode each : routedDataNodes) {
-            RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
-            routeUnit.getTableMappers().add(new RouteMapper(logicTableName, each.getTableName()));
-            result.getRouteUnits().add(routeUnit);
+            result.getRouteUnits().add(
+                    new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName()))));
         }
         return result;
     }
