@@ -47,6 +47,24 @@
     </select>
     -->
 
+    <select sql-case-id="select_sub_query_with_project">
+        <tables>
+            <simple-table name="t_order" start-index="40" stop-index="46" />
+        </tables>
+        <projections start-index="7" stop-index="33">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+            <subquery-projection start-index="17" stop-index="26" alias="num">
+                <subquery>
+                    <select>
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection start-index="25" stop-index="25" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_sub_query_with_table" parameters="3, 4">
         <tables>
             <subquery-table start-index="17" stop-index="62" alias="t">
