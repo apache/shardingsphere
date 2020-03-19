@@ -93,7 +93,7 @@
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <operator type="=" />
                     <compare-right-value>
-                        <subquery-expression>
+                        <subquery-expression start-index="38" stop-index="85" literal-start-index="38" literal-stop-index="85">
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="59" stop-index="70" />
@@ -132,7 +132,7 @@
                 <predicate start-index="28" literal-stop-index="93">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <in-right-value>
-                        <subquery-expression>
+                        <subquery-expression start-index="39" stop-index="93" literal-start-index="39" literal-stop-index="93">
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="60" stop-index="71" />
@@ -171,7 +171,7 @@
                 <predicate start-index="28" stop-index="103" literal-stop-index="104">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <between-right-value>
-                        <between-subquery-expression>
+                        <between-subquery-expression start-index="44" stop-index="97" literal-start-index="44" literal-stop-index="97" >
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="65" stop-index="76" />

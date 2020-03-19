@@ -34,8 +34,8 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCente
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterRepositoryServiceLoader;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 
 import java.util.Collection;
 import java.util.Map;

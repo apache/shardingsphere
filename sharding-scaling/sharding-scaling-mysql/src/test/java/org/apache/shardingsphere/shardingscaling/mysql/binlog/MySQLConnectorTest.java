@@ -20,8 +20,9 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.concurrent.Promise;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.BinlogDumpCommandPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.QueryCommandPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.RegisterSlaveCommandPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
@@ -73,20 +74,20 @@ public final class MySQLConnectorTest {
     
     @Test
     public void assertExecute() throws NoSuchFieldException, IllegalAccessException {
-        mockChannelResponse(new OkPacket());
+        mockChannelResponse(new MySQLOKPacket(0));
         ReflectionUtil.setFieldValueToClass(mySQLConnector, "channel", channel);
         assertTrue(mySQLConnector.execute(""));
-        verify(channel).writeAndFlush(ArgumentMatchers.any(QueryCommandPacket.class));
+        verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
     @Test
     public void assertExecuteUpdate() throws NoSuchFieldException, IllegalAccessException {
-        OkPacket expected = new OkPacket();
+        MySQLOKPacket expected = new MySQLOKPacket(0, 10, 0);
         ReflectionUtil.setFieldValueToClass(expected, "affectedRows", 10);
         mockChannelResponse(expected);
         ReflectionUtil.setFieldValueToClass(mySQLConnector, "channel", channel);
         assertThat(mySQLConnector.executeUpdate(""), is(10));
-        verify(channel).writeAndFlush(ArgumentMatchers.any(QueryCommandPacket.class));
+        verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
     @Test
@@ -95,7 +96,7 @@ public final class MySQLConnectorTest {
         mockChannelResponse(expected);
         ReflectionUtil.setFieldValueToClass(mySQLConnector, "channel", channel);
         assertThat(mySQLConnector.executeQuery(""), is(expected));
-        verify(channel).writeAndFlush(ArgumentMatchers.any(QueryCommandPacket.class));
+        verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
     @Test

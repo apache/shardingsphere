@@ -25,7 +25,7 @@
     </parent>
     <artifactId>sharding-orchestration-core-common</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

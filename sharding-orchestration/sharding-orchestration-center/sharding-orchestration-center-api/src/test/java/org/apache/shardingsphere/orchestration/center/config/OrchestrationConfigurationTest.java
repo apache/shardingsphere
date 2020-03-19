@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.registrycenter;
+package org.apache.shardingsphere.orchestration.center.config;
 
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.core.registrycenter.fixture.SecondTestRegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class RegistryCenterRepositoryServiceLoaderTest {
+public final class OrchestrationConfigurationTest {
     
     @Test
-    public void assertLoad() {
-        RegistryCenterRepository registryCenterRepository = new RegistryCenterRepositoryServiceLoader().load(new CenterConfiguration("SecondTestRegistryCenter"));
-        assertThat(registryCenterRepository, instanceOf(SecondTestRegistryCenterRepository.class));
+    public void assertInstanceConfigurationMap() {
+        Map<String, CenterConfiguration> configurationMap = new HashMap<>();
+        assertThat(new OrchestrationConfiguration(configurationMap).getInstanceConfigurationMap(), is(configurationMap));
     }
 }

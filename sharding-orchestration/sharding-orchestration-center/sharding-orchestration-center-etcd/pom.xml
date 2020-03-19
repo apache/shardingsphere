@@ -37,6 +37,7 @@
             <artifactId>sharding-orchestration-center-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>io.etcd</groupId>
             <artifactId>jetcd-core</artifactId>

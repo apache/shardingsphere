@@ -15,21 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.core.configcenter;
+package org.apache.shardingsphere.underlying.common.properties.fixture;
 
-import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.core.configcenter.fixture.FirstTestConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.junit.Test;
+import org.apache.shardingsphere.underlying.common.properties.TypedProperties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import java.util.Properties;
 
-public final class ConfigCenterRepositoryServiceLoaderTest {
+public final class TestTypedProperties extends TypedProperties<TestTypedPropertyKey> {
     
-    @Test
-    public void assertLoad() {
-        ConfigCenterRepository configCenterRepository = new ConfigCenterRepositoryServiceLoader().load(new CenterConfiguration("FirstTestConfigCenter"));
-        assertThat(configCenterRepository, instanceOf(FirstTestConfigCenterRepository.class));
+    public TestTypedProperties(final Properties props) {
+        super(TestTypedPropertyKey.class, props);
     }
 }
