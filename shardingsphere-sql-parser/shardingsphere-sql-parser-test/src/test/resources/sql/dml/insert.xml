@@ -69,7 +69,7 @@
                     <literal-expression value="insert" />
                 </assignment-value>
                 <assignment-value>
-                    <common-expression text="now()" start-index="104" stop-index="108" literal-start-index="109" literal-stop-index="113"/>
+                    <common-expression text="now()" start-index="104" stop-index="108" literal-start-index="109" literal-stop-index="113" />
                 </assignment-value>
             </value>
         </values>
@@ -217,15 +217,15 @@
         <values>
             <value>
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
                     <literal-expression value="1" />
                 </assignment-value>
                 <assignment-value>
-                    <parameter-marker-expression value="1" />
+                    <parameter-marker-expression value="1" start-index="31" stop-index="31" />
                     <literal-expression value="1" />
                 </assignment-value>
                 <assignment-value>
-                    <parameter-marker-expression value="2" />
+                    <parameter-marker-expression value="2" start-index="34" stop-index="34" />
                     <literal-expression value="init" />
                 </assignment-value>
             </value>
@@ -760,15 +760,15 @@
         <values>
             <value>
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="32" stop-index="32" />
                     <literal-expression value="10000" />
                 </assignment-value>
                 <assignment-value>
-                    <parameter-marker-expression value="1" />
+                    <parameter-marker-expression value="1" start-index="35" stop-index="35" />
                     <literal-expression value="1000" />
                 </assignment-value>
                 <assignment-value>
-                    <parameter-marker-expression value="2" />
+                    <parameter-marker-expression value="2" start-index="38" stop-index="38" />
                     <literal-expression value="10" />
                 </assignment-value>
                 <assignment-value>
@@ -787,11 +787,11 @@
         <values>
             <value>
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="32" stop-index="32" />
                     <literal-expression value="1000" />
                 </assignment-value>
                 <assignment-value>
-                    <parameter-marker-expression value="1" />
+                    <parameter-marker-expression value="1" start-index="35" stop-index="35" />
                     <literal-expression value="10" />
                 </assignment-value>
                 <assignment-value>
@@ -898,19 +898,19 @@
         <values>
             <value>
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="52" stop-index="52" />
                     <literal-expression value="1" />
                 </assignment-value>
                 <assignment-value>
-                    <parameter-marker-expression value="1" />
+                    <parameter-marker-expression value="1" start-index="54" stop-index="54" />
                     <literal-expression value="2" />
                 </assignment-value>
                 <assignment-value>
-                    <parameter-marker-expression value="2" />
+                    <parameter-marker-expression value="2" start-index="56" stop-index="56" />
                     <literal-expression value="45" />
                 </assignment-value>
                 <assignment-value>
-                    <parameter-marker-expression value="3" />
+                    <parameter-marker-expression value="3" start-index="58" stop-index="58" />
                     <literal-expression value="2000" />
                 </assignment-value>
             </value>
@@ -937,7 +937,7 @@
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="unix_timestamp(?)" literal-text="unix_timestamp(2019-10-19)" start-index="55" stop-index="71" literal-start-index="55" literal-stop-index="80"/>
+                    <common-expression text="unix_timestamp(?)" literal-text="unix_timestamp(2019-10-19)" start-index="55" stop-index="71" literal-start-index="55" literal-stop-index="80" />
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression value="1" start-index="74" stop-index="74" />
@@ -1007,14 +1007,14 @@
             <assignment start-index="24" stop-index="35">
                 <column name="order_id" start-index="24" stop-index="31" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" />
+                    <parameter-marker-expression value="0" start-index="35" stop-index="35" />
                     <literal-expression value="1" />
                 </assignment-value>
             </assignment>
             <assignment start-index="38" stop-index="48">
                 <column name="user_id" start-index="38" stop-index="44" />
                 <assignment-value>
-                    <parameter-marker-expression value="1" />
+                    <parameter-marker-expression value="1" start-index="48" stop-index="48" />
                     <literal-expression value="1" />
                 </assignment-value>
             </assignment>
