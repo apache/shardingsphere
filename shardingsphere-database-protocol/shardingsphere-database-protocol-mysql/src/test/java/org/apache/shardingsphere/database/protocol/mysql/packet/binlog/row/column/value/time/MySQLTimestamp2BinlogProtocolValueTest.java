@@ -65,7 +65,7 @@ public final class MySQLTimestamp2BinlogProtocolValueTest {
         when(payload.readInt1()).thenReturn(currentMilliseconds);
         when(byteBuf.readInt()).thenReturn(currentSeconds);
         assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload),
-                   is(MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000)) + "." + currentMilliseconds));
+                   is(MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000L)) + "." + currentMilliseconds));
     }
     
     @Test
