@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.BinlogContext;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.ColumnDef;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog.TableMapEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +29,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class BinlogContextTest {
@@ -40,7 +43,7 @@ public final class BinlogContextTest {
     private static final long TEST_TABLE_ID = 1L;
     
     @Mock
-    private TableMapEventPacket tableMapEventPacket;
+    private MySQLBinlogTableMapEventPacket tableMapEventPacket;
     
     private BinlogContext binlogContext;
     
@@ -66,9 +69,15 @@ public final class BinlogContextTest {
     @Test
     public void assertGetColumnDefs() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
-        ColumnDef[] columnDefs = new ColumnDef[1];
-        columnDefs[0] = new ColumnDef();
+        List<MySQLBinlogColumnDef> columnDefs = new ArrayList<>(1);
+        columnDefs.add(new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_LONG));
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         assertThat(binlogContext.getColumnDefs(TEST_TABLE_ID), is(columnDefs));
+    }
+    
+    @Test
+    public void assertGetTableMapEvent() {
+        binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
+        assertThat(binlogContext.getTableMapEvent(TEST_TABLE_ID), is(tableMapEventPacket));
     }
 }

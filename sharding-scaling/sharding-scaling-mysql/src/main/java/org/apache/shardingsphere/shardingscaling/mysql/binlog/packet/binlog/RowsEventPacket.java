@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.binlog;
 
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DateAndTimeValueDecoder;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.BinlogContext;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.BinlogContext;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.BlobValueDecoder;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DecimalValueDecoder;
@@ -92,14 +93,14 @@ public final class RowsEventPacket {
                 || EventTypes.UPDATE_ROWS_EVENT_V2 == binlogEventHeader.getTypeCode()) {
             columnsPresentBitmap2 = DataTypesCodec.readBitmap(columnsLength, in);
         }
-        ColumnDef[] columnDefs = binlogContext.getColumnDefs(tableId);
+        List<MySQLBinlogColumnDef> columnDefs = binlogContext.getColumnDefs(tableId);
         while (in.isReadable()) {
             //TODO support minimal binlog row image
             BitSet nullBitmap = DataTypesCodec.readBitmap(columnsLength, in);
             Serializable[] row = new Serializable[columnsLength];
             for (int i = 0; i < columnsLength; i++) {
                 if (!nullBitmap.get(i)) {
-                    row[i] = decodeColumnValue(columnDefs[i], in);
+                    row[i] = decodeColumnValue(columnDefs.get(i), in);
                 } else {
                     row[i] = null;
                 }
@@ -111,7 +112,7 @@ public final class RowsEventPacket {
                 row = new Serializable[columnsLength];
                 for (int i = 0; i < columnsLength; i++) {
                     if (!nullBitmap.get(i)) {
-                        row[i] = decodeColumnValue(columnDefs[i], in);
+                        row[i] = decodeColumnValue(columnDefs.get(i), in);
                     } else {
                         row[i] = null;
                     }
@@ -121,49 +122,49 @@ public final class RowsEventPacket {
         }
     }
     
-    private Serializable decodeColumnValue(final ColumnDef columnDef, final ByteBuf in) {
-        switch (columnDef.getType()) {
+    private Serializable decodeColumnValue(final MySQLBinlogColumnDef columnDef, final ByteBuf in) {
+        switch (columnDef.getColumnType().getValue()) {
             case ColumnTypes.MYSQL_TYPE_LONG:
-                return decodeLong(columnDef.getMeta(), in);
+                return decodeLong(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TINY:
-                return decodeTiny(columnDef.getMeta(), in);
+                return decodeTiny(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_SHORT:
-                return decodeShort(columnDef.getMeta(), in);
+                return decodeShort(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_INT24:
-                return decodeInt24(columnDef.getMeta(), in);
+                return decodeInt24(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_LONGLONG:
-                return decodeLonglong(columnDef.getMeta(), in);
+                return decodeLonglong(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_FLOAT:
-                return decodeFloat(columnDef.getMeta(), in);
+                return decodeFloat(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_NEWDECIMAL:
-                return decodeNewDecimal(columnDef.getMeta(), in);
+                return decodeNewDecimal(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DOUBLE:
                 return DataTypesCodec.readDoubleLE(in);
             case ColumnTypes.MYSQL_TYPE_TIMESTAMP2:
-                return DateAndTimeValueDecoder.decodeTimestamp2(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeTimestamp2(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DATETIME2:
-                return DateAndTimeValueDecoder.decodeDatetime2(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeDatetime2(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TIME:
-                return DateAndTimeValueDecoder.decodeTime(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeTime(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TIME2:
-                return DateAndTimeValueDecoder.decodeTime2(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeTime2(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DATE:
-                return DateAndTimeValueDecoder.decodeDate(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeDate(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_DATETIME:
-                return DateAndTimeValueDecoder.decodeDateTime(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeDateTime(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_TIMESTAMP:
-                return DateAndTimeValueDecoder.decodeTimestamp(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeTimestamp(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_YEAR:
-                return DateAndTimeValueDecoder.decodeYear(columnDef.getMeta(), in);
+                return DateAndTimeValueDecoder.decodeYear(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_BLOB:
-                return BlobValueDecoder.decodeBlob(columnDef.getMeta(), in);
+                return BlobValueDecoder.decodeBlob(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_VARCHAR:
             case ColumnTypes.MYSQL_TYPE_VAR_STRING:
-                return decodeVarString(columnDef.getMeta(), in);
+                return decodeVarString(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_STRING:
-                return decodeString(columnDef.getMeta(), in);
+                return decodeString(columnDef.getColumnMeta(), in);
             case ColumnTypes.MYSQL_TYPE_JSON:
-                return decodeJson(columnDef.getMeta(), in);
+                return decodeJson(columnDef.getColumnMeta(), in);
             default:
                 throw new UnsupportedOperationException();
         }
