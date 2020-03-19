@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLNullBitmap;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,10 +86,10 @@ public final class MySQLBinlogTableMapEventPacketTest {
         assertThat(actual.getColumnMeta(), is(columnMeta));
     }
     
-    private void assertNullBitmap(final MySQLBinlogBitmap actualNullBitMap) {
-        assertFalse(actualNullBitMap.containBit(0));
-        assertTrue(actualNullBitMap.containBit(1));
-        assertTrue(actualNullBitMap.containBit(2));
-        assertTrue(actualNullBitMap.containBit(3));
+    private void assertNullBitmap(final MySQLNullBitmap actualNullBitMap) {
+        assertFalse(actualNullBitMap.isNullParameter(0));
+        assertTrue(actualNullBitMap.isNullParameter(1));
+        assertTrue(actualNullBitMap.isNullParameter(2));
+        assertTrue(actualNullBitMap.isNullParameter(3));
     }
 }

@@ -21,10 +21,14 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.concurrent.Promise;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.auth.ClientAuthenticationPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.auth.HandshakeInitializationPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.ErrorPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
+
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerErrorCode;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLAuthPluginData;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
 
 import org.junit.Before;
@@ -41,8 +45,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLNegotiateHandlerTest {
-    
-    private static final String SERVER_VERSION = "5.7.13-log";
     
     private static final String USER_NAME = "username";
     
@@ -71,23 +73,19 @@ public final class MySQLNegotiateHandlerTest {
     
     @Test
     public void assertChannelReadHandshakeInitPacket() throws NoSuchFieldException, IllegalAccessException {
-        HandshakeInitializationPacket handshakeInitializationPacket = new HandshakeInitializationPacket();
-        handshakeInitializationPacket.setServerVersion(SERVER_VERSION);
-        handshakeInitializationPacket.setAuthPluginName("");
-        handshakeInitializationPacket.setServerCapabilities(1);
-        handshakeInitializationPacket.setAuthPluginDataPart1(new byte[8]);
-        handshakeInitializationPacket.setAuthPluginDataPart2(new byte[12]);
-        mySQLNegotiateHandler.channelRead(channelHandlerContext, handshakeInitializationPacket);
-        verify(channel).writeAndFlush(ArgumentMatchers.any(ClientAuthenticationPacket.class));
+        MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, new MySQLAuthPluginData(new byte[8], new byte[12]));
+        handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
+        mySQLNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
+        verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
         ServerInfo serverInfo = ReflectionUtil.getFieldValueFromClass(mySQLNegotiateHandler, "serverInfo", ServerInfo.class);
         assertThat(serverInfo.getServerVersion().getMajor(), is(5));
-        assertThat(serverInfo.getServerVersion().getMinor(), is(7));
-        assertThat(serverInfo.getServerVersion().getSeries(), is(13));
+        assertThat(serverInfo.getServerVersion().getMinor(), is(6));
+        assertThat(serverInfo.getServerVersion().getSeries(), is(4));
     }
     
     @Test
     public void assertChannelReadOkPacket() throws NoSuchFieldException, IllegalAccessException {
-        OkPacket okPacket = new OkPacket();
+        MySQLOKPacket okPacket = new MySQLOKPacket(0);
         ServerInfo serverInfo = new ServerInfo();
         ReflectionUtil.setFieldValueToClass(mySQLNegotiateHandler, "serverInfo", serverInfo);
         mySQLNegotiateHandler.channelRead(channelHandlerContext, okPacket);
@@ -97,7 +95,7 @@ public final class MySQLNegotiateHandlerTest {
     
     @Test(expected = RuntimeException.class)
     public void assertChannelReadErrorPacket() {
-        ErrorPacket errorPacket = new ErrorPacket();
+        MySQLErrPacket errorPacket = new MySQLErrPacket(0, MySQLServerErrorCode.ER_NO_DB_ERROR);
         mySQLNegotiateHandler.channelRead(channelHandlerContext, errorPacket);
     }
 }

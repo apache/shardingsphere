@@ -38,8 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 /**
  * Orchestration encrypt data source.
@@ -52,11 +52,11 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     private EncryptDataSource dataSource;
     
     public OrchestrationEncryptDataSource(final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         ConfigCenter configService = getShardingOrchestrationFacade().getConfigCenter();
-        EncryptRuleConfiguration encryptRuleConfig = configService.loadEncryptRuleConfiguration(ShardingConstant.LOGIC_SCHEMA_NAME);
+        EncryptRuleConfiguration encryptRuleConfig = configService.loadEncryptRuleConfiguration(DefaultSchema.LOGIC_NAME);
         Preconditions.checkState(!encryptRuleConfig.getEncryptors().isEmpty(), "No available encrypt rule configuration to load.");
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME);
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = configService.loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME);
         checkDataSourceConfiguration(dataSourceConfigurations);
         dataSource = new EncryptDataSource(
                 DataSourceConverter.getDataSourceMap(dataSourceConfigurations).values().iterator().next(), new EncryptRule(encryptRuleConfig), configService.loadProperties());
@@ -64,11 +64,11 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     }
     
     public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
         this.dataSource = new EncryptDataSource(
                 dataSource.getDataSource(), new EncryptRule(dataSource.getRuntimeContext().getRule().getRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
         initShardingOrchestrationFacade(
-            Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
+            Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
             getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
     }
     
@@ -78,7 +78,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     
     private Map<String, RuleConfiguration> getRuleConfigurationMap() {
         Map<String, RuleConfiguration> result = new HashMap<>(1);
-        result.put(ShardingConstant.LOGIC_SCHEMA_NAME, dataSource.getRuntimeContext().getRule().getRuleConfiguration());
+        result.put(DefaultSchema.LOGIC_NAME, dataSource.getRuntimeContext().getRule().getRuleConfiguration());
         return result;
     }
     

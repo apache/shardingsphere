@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.log.MetaDataLogger;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -41,22 +41,23 @@ import java.util.Properties;
  * @param <T> type of rule
  */
 @Getter
+@Slf4j(topic = "ShardingSphere-metadata")
 public abstract class MultipleDataSourcesRuntimeContext<T extends BaseRule> extends AbstractRuntimeContext<T> {
     
     private final ShardingSphereMetaData metaData;
     
     protected MultipleDataSourcesRuntimeContext(final Map<String, DataSource> dataSourceMap, final T rule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(rule, props, databaseType);
-        long start = System.currentTimeMillis();
-        MetaDataLogger.log("Start loading meta data.");
         metaData = createMetaData(dataSourceMap, databaseType);
-        MetaDataLogger.log("Meta data loading finished, cost {} milliseconds.", System.currentTimeMillis() - start);
     }
     
     private ShardingSphereMetaData createMetaData(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) throws SQLException {
+        long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSourceMap));
-        SchemaMetaData schemaMetaData = loadSchemaMetaData(dataSourceMap, dataSourceMetas);
-        return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
+        SchemaMetaData schemaMetaData = loadSchemaMetaData(dataSourceMap);
+        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
+        log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
+        return result;
     }
     
     private Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap(final Map<String, DataSource> dataSourceMap) throws SQLException {
@@ -71,5 +72,5 @@ public abstract class MultipleDataSourcesRuntimeContext<T extends BaseRule> exte
         return result;
     }
     
-    protected abstract SchemaMetaData loadSchemaMetaData(Map<String, DataSource> dataSourceMap, DataSourceMetas dataSourceMetas) throws SQLException;
+    protected abstract SchemaMetaData loadSchemaMetaData(Map<String, DataSource> dataSourceMap) throws SQLException;
 }

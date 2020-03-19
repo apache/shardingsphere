@@ -23,8 +23,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.Cach
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -53,7 +52,7 @@ public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeC
     }
     
     @Override
-    protected SchemaMetaData loadSchemaMetaData(final Map<String, DataSource> dataSourceMap, final DataSourceMetas dataSourceMetas) throws SQLException {
-        return SchemaMetaDataLoader.load(dataSourceMap.values().iterator().next(), getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
+    protected SchemaMetaData loadSchemaMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        return SchemaMetaDataLoader.load(dataSourceMap.values().iterator().next(), getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
     }
 }

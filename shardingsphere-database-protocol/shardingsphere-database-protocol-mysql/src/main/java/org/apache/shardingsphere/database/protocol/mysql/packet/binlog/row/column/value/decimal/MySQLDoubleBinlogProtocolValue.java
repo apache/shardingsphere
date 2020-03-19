@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colum
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Double type value of MySQL binlog protocol.
+ * DOUBLE type value of MySQL binlog protocol.
  */
 public final class MySQLDoubleBinlogProtocolValue implements MySQLBinlogProtocolValue {
     

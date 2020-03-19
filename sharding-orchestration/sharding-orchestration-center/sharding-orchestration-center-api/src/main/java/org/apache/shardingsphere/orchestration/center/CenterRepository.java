@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.center;
 
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
 import org.apache.shardingsphere.spi.TypeBasedSPI;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 import java.util.List;
 

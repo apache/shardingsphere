@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.core.registrycenter.schema;
 
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +28,7 @@ public final class OrchestrationShardingSchemaTest {
     @Test
     public void assertNewOrchestrationSchemaWithDataSourceNameOnly() {
         OrchestrationShardingSchema actual = new OrchestrationShardingSchema("test_ds");
-        assertThat(actual.getSchemaName(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+        assertThat(actual.getSchemaName(), is(DefaultSchema.LOGIC_NAME));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }
     

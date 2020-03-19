@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colum
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * Float type value of MySQL binlog protocol.
+ * FLOAT type value of MySQL binlog protocol.
  */
 public final class MySQLFloatBinlogProtocolValue implements MySQLBinlogProtocolValue {
     

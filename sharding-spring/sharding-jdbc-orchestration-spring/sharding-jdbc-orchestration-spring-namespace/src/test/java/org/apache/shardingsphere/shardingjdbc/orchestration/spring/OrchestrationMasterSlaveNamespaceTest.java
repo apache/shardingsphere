@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring;
 
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.core.strategy.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
@@ -85,11 +85,11 @@ public class OrchestrationMasterSlaveNamespaceTest extends AbstractJUnit4SpringC
     
     @Test
     public void assertProperties() {
-        boolean showSQL = getProperties("defaultMasterSlaveDataSourceOrchestration").getValue(PropertiesConstant.SQL_SHOW);
+        boolean showSQL = getProperties("defaultMasterSlaveDataSourceOrchestration").getValue(ConfigurationPropertyKey.SQL_SHOW);
         assertTrue(showSQL);
     }
     
-    private ShardingSphereProperties getProperties(final String masterSlaveDataSourceName) {
+    private ConfigurationProperties getProperties(final String masterSlaveDataSourceName) {
         OrchestrationSpringMasterSlaveDataSource masterSlaveDataSource = applicationContext.getBean(masterSlaveDataSourceName, OrchestrationSpringMasterSlaveDataSource.class);
         MasterSlaveDataSource dataSource = (MasterSlaveDataSource) FieldValueUtil.getFieldValue(masterSlaveDataSource, "dataSource", true);
         return dataSource.getRuntimeContext().getProperties();

@@ -108,7 +108,7 @@
             <assignment start-index="47" stop-index="116" literal-start-index="58" literal-stop-index="131">
                 <column name="start_point" start-index="47" stop-index="57" literal-start-index="58" literal-stop-index="68" />
                 <assignment-value>
-                    <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" />
+                    <common-expression text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="61" stop-index="116" literal-start-index="72" literal-stop-index="131"/>
                 </assignment-value>
             </assignment>
             <assignment start-index="119" stop-index="133" literal-start-index="134" literal-stop-index="166">

@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.auth.HandshakeInitializationPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.ErrorPacket;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
+import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -43,7 +48,7 @@ public final class MySQLCommandPacketDecoderTest {
     @Mock
     private ByteBuf byteBuf;
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertDecodeUnsupportedProtocolVersion() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         commandPacketDecoder.decode(null, byteBuf, null);
@@ -51,34 +56,22 @@ public final class MySQLCommandPacketDecoderTest {
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertDecodeUnsupportedAuthenticationMethod() {
+        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) MySQLServerInfo.PROTOCOL_VERSION);
+        when(byteBuf.readShortLE()).thenReturn((short) MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
-        when(byteBuf.readUnsignedByte()).thenReturn((short) PacketConstants.PROTOCOL_VERSION);
         commandPacketDecoder.decode(null, byteBuf, null);
     }
     
     @Test
-    public void assertDecode() {
+    public void assertDecodeHandshakePacket() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new ArrayList<>();
         commandPacketDecoder.decode(null, mockHandshakePacket(), actual);
-        assertInitial(actual);
-        actual.clear();
-        commandPacketDecoder.decode(null, mockOkPacket(), actual);
-        assertPacketByType(actual, OkPacket.class);
-        actual.clear();
-        commandPacketDecoder.decode(null, mockErrPacket(), actual);
-        assertPacketByType(actual, ErrorPacket.class);
-        actual.clear();
-        commandPacketDecoder.decode(null, mockResultSetPacket(), actual);
-        commandPacketDecoder.decode(null, mockResultSetPacket(), actual);
-        commandPacketDecoder.decode(null, mockEofPacket(), actual);
-        commandPacketDecoder.decode(null, mockResultSetPacket(), actual);
-        commandPacketDecoder.decode(null, mockEofPacket(), actual);
-        assertPacketByType(actual, InternalResultSet.class);
+        assertHandshakePacket(actual);
     }
     
     private ByteBuf mockHandshakePacket() {
-        String handshakePacket = "0a352e372e32312d6c6f6700090000004a592a1f725a0d0900fff7210200ff8115000000000000000000001a437b30323a4d2b514b5870006d"
+        String handshakePacket = "000a352e372e32312d6c6f6700090000004a592a1f725a0d0900fff7210200ff8115000000000000000000001a437b30323a4d2b514b5870006d"
             + "7973716c5f6e61746976655f70617373776f72640000000002000000";
         byte[] handshakePacketBytes = ByteBufUtil.decodeHexDump(handshakePacket);
         ByteBuf result = Unpooled.buffer(handshakePacketBytes.length);
@@ -86,37 +79,82 @@ public final class MySQLCommandPacketDecoderTest {
         return result;
     }
     
-    private void assertInitial(final List<Object> actual) {
+    private void assertHandshakePacket(final List<Object> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), instanceOf(HandshakeInitializationPacket.class));
-        HandshakeInitializationPacket actualPacket = (HandshakeInitializationPacket) actual.get(0);
-        assertThat(actualPacket.getProtocolVersion(), is((short) 0x0a));
+        assertThat(actual.get(0), instanceOf(MySQLHandshakePacket.class));
+        MySQLHandshakePacket actualPacket = (MySQLHandshakePacket) actual.get(0);
+        assertThat(actualPacket.getProtocolVersion(), is(0x0a));
         assertThat(actualPacket.getServerVersion(), is("5.7.21-log"));
-        assertThat(actualPacket.getThreadId(), is(9L));
-        assertThat(actualPacket.getServerCharsetSet(), is((short) 33));
-        assertThat(actualPacket.getServerStatus(), is(2));
-        assertThat(actualPacket.getServerCapabilities(), is(63487));
-        assertThat(actualPacket.getServerCapabilities2(), is(33279));
+        assertThat(actualPacket.getConnectionId(), is(9));
+        assertThat(actualPacket.getCharacterSet(), is(33));
+        assertThat(actualPacket.getStatusFlag().getValue(), is(2));
+        assertThat(actualPacket.getCapabilityFlagsLower(), is(63487));
+        assertThat(actualPacket.getCapabilityFlagsUpper(), is(33279));
         assertThat(actualPacket.getAuthPluginName(), is("mysql_native_password"));
     }
     
+    @Test
+    public void assertDecodeOkPacket() throws NoSuchFieldException, IllegalAccessException {
+        MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
+        List<Object> actual = new ArrayList<>();
+        ReflectionUtil.setFieldValueToClass(commandPacketDecoder, "auth", true);
+        commandPacketDecoder.decode(null, mockOkPacket(), actual);
+        assertPacketByType(actual, MySQLOKPacket.class);
+    }
+    
     private ByteBuf mockOkPacket() {
-        when(byteBuf.getByte(0)).thenReturn(PacketConstants.OK_PACKET_MARK);
+        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) MySQLOKPacket.HEADER);
+        when(byteBuf.getByte(1)).thenReturn((byte) MySQLOKPacket.HEADER);
         return byteBuf;
+    }
+    
+    @Test
+    public void assertDecodeErrPacket() throws NoSuchFieldException, IllegalAccessException {
+        MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
+        List<Object> actual = new ArrayList<>();
+        ReflectionUtil.setFieldValueToClass(commandPacketDecoder, "auth", true);
+        commandPacketDecoder.decode(null, mockErrPacket(), actual);
+        assertPacketByType(actual, MySQLErrPacket.class);
     }
     
     private ByteBuf mockErrPacket() {
-        when(byteBuf.getByte(0)).thenReturn(PacketConstants.ERR_PACKET_MARK);
+        when(byteBuf.getByte(1)).thenReturn((byte) MySQLErrPacket.HEADER);
+        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) MySQLErrPacket.HEADER);
         return byteBuf;
     }
     
-    private ByteBuf mockResultSetPacket() {
-        when(byteBuf.getByte(0)).thenReturn((byte) 1);
+    @Test
+    public void assertDecodeQueryCommPacket() throws NoSuchFieldException, IllegalAccessException {
+        MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
+        List<Object> actual = new ArrayList<>();
+        ReflectionUtil.setFieldValueToClass(commandPacketDecoder, "auth", true);
+        commandPacketDecoder.decode(null, mockEmptyResultSetPacket(), actual);
+        commandPacketDecoder.decode(null, mockFieldDefinition41Packet(), actual);
+        commandPacketDecoder.decode(null, mockEofPacket(), actual);
+        commandPacketDecoder.decode(null, mockEmptyResultSetPacket(), actual);
+        commandPacketDecoder.decode(null, mockEofPacket(), actual);
+        assertPacketByType(actual, InternalResultSet.class);
+    }
+    
+    private ByteBuf mockEmptyResultSetPacket() {
+        when(byteBuf.getByte(1)).thenReturn((byte) 3);
+        return byteBuf;
+    }
+    
+    private ByteBuf mockFieldDefinition41Packet() {
+        when(byteBuf.getByte(1)).thenReturn((byte) 3);
+        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) 3, (byte) 0x0c);
+        when(byteBuf.readBytes(new byte[3])).then(invocationOnMock -> {
+            byte[] input = invocationOnMock.getArgument(0);
+            System.arraycopy("def".getBytes(), 0, input, 0, input.length);
+            return byteBuf;
+        });
         return byteBuf;
     }
     
     private ByteBuf mockEofPacket() {
-        when(byteBuf.getByte(0)).thenReturn(PacketConstants.EOF_PACKET_MARK);
+        when(byteBuf.getByte(1)).thenReturn((byte) MySQLEofPacket.HEADER);
+        when(byteBuf.readByte()).thenReturn((byte) 0, (byte) MySQLEofPacket.HEADER);
         return byteBuf;
     }
     

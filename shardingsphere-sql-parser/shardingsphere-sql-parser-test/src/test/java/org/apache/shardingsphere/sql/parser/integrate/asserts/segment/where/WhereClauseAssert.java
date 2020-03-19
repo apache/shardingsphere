@@ -109,7 +109,6 @@ public final class WhereClauseAssert {
             assertNotNull(assertContext.getText("Operator assertion error: "), expected);
             assertThat(assertContext.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator(), is(expected.getType()));
         }
-        // TODO assert operator start index and stop index
     }
     
     private static void assertCompareRightValue(final SQLCaseAssertContext assertContext, final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
@@ -120,10 +119,8 @@ public final class WhereClauseAssert {
         } else if (actual.getExpression() instanceof CommonExpressionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual.getExpression(), expected.getCommonExpression());
         } else if (actual.getExpression() instanceof SubqueryExpressionSegment) {
-            ExpressionAssert.assertSubquery(assertContext, (SubqueryExpressionSegment) actual.getExpression(), expected.getSubquery());
+            ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual.getExpression(), expected.getSubquery());
         }
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertInRightValue(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
@@ -132,8 +129,6 @@ public final class WhereClauseAssert {
         assertLiteralExpressionSegment(assertContext, actual, expected);
         assertCommonExpressionSegment(assertContext, actual, expected);
         assertSubqueryExpressionSegment(assertContext, actual, expected);
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertParameterMarkerExpressionSegment(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
@@ -170,7 +165,7 @@ public final class WhereClauseAssert {
         int count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
             if (each instanceof SubqueryExpressionSegment) {
-                ExpressionAssert.assertSubquery(assertContext, (SubqueryExpressionSegment) each, expected.getSubqueries().get(count));
+                ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) each, expected.getSubqueries().get(count));
                 count++;
             }
         }
@@ -180,8 +175,6 @@ public final class WhereClauseAssert {
         assertNotNull(assertContext.getText("Expected predicate between right value can not be null"), expected);
         assertBetweenExpression(assertContext, actual.getBetweenExpression(), expected);
         assertAndExpression(assertContext, actual.getAndExpression(), expected);
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertBetweenExpression(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
@@ -192,7 +185,7 @@ public final class WhereClauseAssert {
         } else if (actual instanceof CommonExpressionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getBetweenCommonExpression());
         } else if (actual instanceof SubqueryExpressionSegment) {
-            ExpressionAssert.assertSubquery(assertContext, (SubqueryExpressionSegment) actual, expected.getBetweenSubquery());
+            ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getBetweenSubquery());
         }
     }
     
@@ -204,7 +197,7 @@ public final class WhereClauseAssert {
         } else if (actual instanceof CommonExpressionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getAndCommonExpression());
         } else if (actual instanceof SubqueryExpressionSegment) {
-            ExpressionAssert.assertSubquery(assertContext, (SubqueryExpressionSegment) actual, expected.getAndSubquery());
+            ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getAndSubquery());
         }
     }
 }

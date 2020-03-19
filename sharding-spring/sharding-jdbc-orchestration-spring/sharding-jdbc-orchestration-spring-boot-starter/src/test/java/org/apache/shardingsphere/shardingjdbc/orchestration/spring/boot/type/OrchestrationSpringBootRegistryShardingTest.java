@@ -28,8 +28,8 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataS
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.registry.TestCenterRepository;
 import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -128,10 +128,10 @@ public class OrchestrationSpringBootRegistryShardingTest {
         for (DataSource each : shardingDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
-        assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        ShardingSphereProperties properties = runtimeContext.getProperties();
-        assertTrue(properties.getValue(PropertiesConstant.SQL_SHOW));
-        assertThat(properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
+        assertTrue(runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        ConfigurationProperties properties = runtimeContext.getProperties();
+        assertTrue(properties.getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
     }
     
     @Test

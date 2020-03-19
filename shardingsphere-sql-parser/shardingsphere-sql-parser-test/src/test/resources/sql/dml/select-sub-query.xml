@@ -47,15 +47,38 @@
     </select>
     -->
 
-<!--    <select sql-case-id="select_sub_query_with_table" parameters="1, 2">-->
-<!--        <simple-table name="t_order" alias="o" start-index="33" stop-index="39" />-->
-<!--        <conditions>-->
-<!--            <condition column-name="order_id" table-name="t_order" operator="IN">-->
-<!--                <value index="0" literal="1" type="int" />-->
-<!--                <value index="1" literal="2" type="int" />-->
-<!--            </condition>-->
-<!--        </conditions>-->
-<!--    </select>-->
+    <select sql-case-id="select_sub_query_with_table" parameters="3, 4">
+        <tables>
+            <subquery-table start-index="17" stop-index="62" alias="t">
+                <select>
+                    <tables>
+                        <simple-table name="t_order" start-index="31" stop-index="37" />
+                    </tables>
+                    <projections start-index="24" stop-index="24">
+                        <shorthand-projection start-index="24" stop-index="24" />
+                    </projections>
+                    <where start-index="39" stop-index="62" literal-stop-index="62">
+                        <and-predicate>
+                            <predicate start-index="45" stop-index="62" literal-stop-index="62">
+                                <column-left-value name="order_id" start-index="45" stop-index="52" />
+                                <in-right-value>
+                                    <parameter-marker-expression value="1" />
+                                    <parameter-marker-expression value="2" />
+                                    <literal-expression value="3" />
+                                    <literal-expression value="4" />
+                                </in-right-value>
+                            </predicate>
+                        </and-predicate>
+                    </where>
+                </select>
+            </subquery-table>
+        </tables>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9" >
+                <owner name="t" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+    </select>
     
     <select sql-case-id="select_with_equal_subquery">
         <tables>
@@ -70,7 +93,7 @@
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <operator type="=" />
                     <compare-right-value>
-                        <subquery>
+                        <subquery-expression start-index="38" stop-index="85" literal-start-index="38" literal-stop-index="85">
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="59" stop-index="70" />
@@ -90,7 +113,7 @@
                                     </and-predicate>
                                 </where>
                             </select>
-                        </subquery>
+                        </subquery-expression>
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -109,7 +132,7 @@
                 <predicate start-index="28" literal-stop-index="93">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <in-right-value>
-                        <subquery>
+                        <subquery-expression start-index="39" stop-index="93" literal-start-index="39" literal-stop-index="93">
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="60" stop-index="71" />
@@ -129,7 +152,7 @@
                                     </and-predicate>
                                 </where>
                             </select>
-                        </subquery>
+                        </subquery-expression>
                     </in-right-value>
                 </predicate>
             </and-predicate>
@@ -148,7 +171,7 @@
                 <predicate start-index="28" stop-index="103" literal-stop-index="104">
                     <column-left-value name="user_id" start-index="28" stop-index="34" />
                     <between-right-value>
-                        <between-subquery>
+                        <between-subquery-expression start-index="44" stop-index="97" literal-start-index="44" literal-stop-index="97" >
                             <select>
                                 <tables>
                                     <simple-table name="t_order_item" start-index="65" stop-index="76" />
@@ -168,7 +191,7 @@
                                     </and-predicate>
                                 </where>
                             </select>
-                        </between-subquery>
+                        </between-subquery-expression>
                         <and-parameter-marker-expression value="0" start-index="103" stop-index="103" />
                         <and-literal-expression value="12" />
                     </between-right-value>

@@ -69,7 +69,7 @@
                     <literal-expression value="insert" />
                 </assignment-value>
                 <assignment-value>
-                    <common-expression text="now()" />
+                    <common-expression text="now()" start-index="104" stop-index="108" literal-start-index="109" literal-stop-index="113"/>
                 </assignment-value>
             </value>
         </values>
@@ -468,7 +468,7 @@
             <assignment start-index="89" stop-index="111" literal-start-index="94" literal-stop-index="116">
                 <column name="status" start-index="89" stop-index="94" literal-start-index="94" literal-stop-index="99" />
                 <assignment-value>
-                    <common-expression text="VALUES(status)" />
+                    <common-expression text="VALUES(status)" start-index="98" stop-index="111" literal-start-index="103" literal-stop-index="116"  />
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
@@ -542,7 +542,7 @@
                     <owner name="t_order" start-index="113" stop-index="119" literal-start-index="118" literal-stop-index="124" />
                 </column>
                 <assignment-value>
-                    <common-expression text="VALUES(t_order.status)" />
+                    <common-expression text="VALUES(t_order.status)" start-index="130" stop-index="151" literal-start-index="135" literal-stop-index="156" />
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
@@ -744,7 +744,7 @@
                     <literal-expression value="200" />
                 </assignment-value>
                 <assignment-value>
-                    <common-expression text="ST_GeographyFromText('SRID=4326;POINT(100 200)')" />
+                    <common-expression text="ST_GeographyFromText('SRID=4326;POINT(100 200)')" start-index="71" stop-index="118" literal-start-index="73" literal-stop-index="120" />
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression value="2" start-index="121" stop-index="128" />
@@ -873,7 +873,7 @@
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="curdate()" />
+                    <common-expression text="curdate()" start-index="61" stop-index="69" literal-start-index="61" literal-stop-index="69" />
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression value="0" start-index="72" stop-index="72" />
@@ -937,7 +937,7 @@
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="unix_timestamp(?)" literal-text="unix_timestamp(2019-10-19)" />
+                    <common-expression text="unix_timestamp(?)" literal-text="unix_timestamp(2019-10-19)" start-index="55" stop-index="71" literal-start-index="55" literal-stop-index="80"/>
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression value="1" start-index="74" stop-index="74" />
@@ -987,7 +987,7 @@
             <value>
                 <assignment-value>
                     <parameter-marker-expression value="0" start-index="89" stop-index="89" />
-                    <common-expression text="str_to_date(?,'%Y-%m-%d')" literal-text="str_to_date(2019-12-10,'%Y-%m-%d')" />
+                    <common-expression text="str_to_date(?,'%Y-%m-%d')" literal-text="str_to_date(2019-12-10,'%Y-%m-%d')" start-index="61" stop-index="86" literal-start-index="61" literal-stop-index="95" />
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression value="1" start-index="89" stop-index="89" />
@@ -1100,7 +1100,7 @@
             <value>
                 <assignment-value>
                     <parameter-marker-expression value="0" start-index="96" stop-index="96" />
-                    <common-expression text="date_add(now(),interval?second)" literal-text="date_add(now(),interval1second)" />
+                    <common-expression text="date_add(now(),interval?second)" literal-text="date_add(now(),interval1second)" start-index="61" stop-index="93" literal-start-index="61" literal-stop-index="93" />
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression value="1" start-index="96" stop-index="96" />

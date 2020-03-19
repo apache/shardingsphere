@@ -52,6 +52,6 @@ public final class MySQLTimeBinlogProtocolValueTest {
     public void assertReadNullTime() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(0);
-        assertThat(new MySQLTimeBinlogProtocolValue().read(columnDef, payload), is("00:00:00"));
+        assertThat(new MySQLTimeBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.ZERO_OF_TIME));
     }
 }

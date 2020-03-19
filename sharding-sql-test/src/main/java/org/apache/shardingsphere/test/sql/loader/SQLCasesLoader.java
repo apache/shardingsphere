@@ -73,13 +73,14 @@ public final class SQLCasesLoader {
         return result;
     }
     
+    @SneakyThrows
     private static Map<String, SQLCase> loadSQLCasesFromTargetDirectory(final String path) {
         Map<String, SQLCase> result = new TreeMap<>();
         URL url = SQLCasesLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return result;
         }
-        File filePath = new File(url.getPath());
+        File filePath = new File(url.toURI().getPath());
         if (!filePath.exists()) {
             return result;
         }

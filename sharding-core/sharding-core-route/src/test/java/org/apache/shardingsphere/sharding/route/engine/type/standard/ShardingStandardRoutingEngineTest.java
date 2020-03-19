@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatement
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -62,7 +62,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         when(sqlStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
         TablesContext tablesContext = mock(TablesContext.class);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null, new ShardingSphereProperties(new Properties()));
+        ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null, new ConfigurationProperties(new Properties()));
         standardRoutingEngine.route(mock(ShardingRule.class));
     }
     
@@ -192,6 +192,6 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         return new ShardingStandardRoutingEngine(logicTableName, new SelectStatementContext(new SelectStatement(),
                 new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
-                new PaginationContext(null, null, Collections.emptyList())), shardingConditions, new ShardingSphereProperties(new Properties()));
+                new PaginationContext(null, null, Collections.emptyList())), shardingConditions, new ConfigurationProperties(new Properties()));
     }
 }

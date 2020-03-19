@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupport
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
@@ -98,7 +98,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(runtimeContext.getMetaData().getSchema(), sql, Collections.emptyList(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData(), 
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema(), 
                 runtimeContext.getProperties()).createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
         String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);
@@ -112,8 +112,7 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     }
     
     private void showSQL(final String sql) {
-        boolean showSQL = runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW);
-        if (showSQL) {
+        if (runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             log.info("Rule Type: encrypt");
             log.info("SQL: {}", sql);
         }
