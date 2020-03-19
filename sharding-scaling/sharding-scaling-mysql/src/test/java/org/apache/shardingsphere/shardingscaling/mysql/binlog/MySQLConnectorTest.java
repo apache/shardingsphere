@@ -20,12 +20,12 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.concurrent.Promise;
+
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.BinlogDumpCommandPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.RegisterSlaveCommandPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,10 +105,10 @@ public final class MySQLConnectorTest {
         serverInfo.setServerVersion(new ServerVersion("5.5.0-log"));
         ReflectionUtil.setFieldValueToClass(mySQLConnector, "serverInfo", serverInfo);
         ReflectionUtil.setFieldValueToClass(mySQLConnector, "channel", channel);
-        mockChannelResponse(new OkPacket());
+        mockChannelResponse(new MySQLOKPacket(0));
         mySQLConnector.subscribe("", 4L);
-        verify(channel).writeAndFlush(ArgumentMatchers.any(RegisterSlaveCommandPacket.class));
-        verify(channel).writeAndFlush(ArgumentMatchers.any(BinlogDumpCommandPacket.class));
+        verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComRegisterSlaveCommandPacket.class));
+        verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComBinlogDumpCommandPacket.class));
     }
     
     private void mockChannelResponse(final Object response) {
