@@ -32,9 +32,9 @@ public enum CenterType {
     
     REGISTRY_CENTER("registry_center"),
     CONFIG_CENTER("config_center");
-
+    
     private final String value;
-
+    
     /**
      * Find OrchestrationType via property value.
      *
