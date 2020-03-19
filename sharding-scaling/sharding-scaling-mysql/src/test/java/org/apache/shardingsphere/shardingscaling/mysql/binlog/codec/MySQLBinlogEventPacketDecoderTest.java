@@ -61,6 +61,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
     
     @Test(expected = RuntimeException.class)
     public void assertDecodeWithPacketError() {
+        when(byteBuf.readByte()).thenReturn((byte) 255);
         binlogEventPacketDecoder.decode(null, byteBuf, null);
     }
     
