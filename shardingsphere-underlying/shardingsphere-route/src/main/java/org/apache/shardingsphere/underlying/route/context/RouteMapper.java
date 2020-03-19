@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.mysql.constant;
+package org.apache.shardingsphere.underlying.route.context;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-import org.junit.Test;
-
-public final class MySQLBinlogEventTypeTest {
+/**
+ * Route mapper.
+ */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class RouteMapper {
     
-    @Test
-    public void assertGetValue() {
-        assertThat(MySQLBinlogEventType.WRITE_ROWS_EVENTv2.getValue(), is(0x1e));
-    }
+    private final String logicName;
     
-    @Test
-    public void assertValueOfByInt() {
-        assertThat(MySQLBinlogEventType.valueOf(0x01), is(MySQLBinlogEventType.START_EVENT_V3));
-    }
+    private final String actualName;
 }

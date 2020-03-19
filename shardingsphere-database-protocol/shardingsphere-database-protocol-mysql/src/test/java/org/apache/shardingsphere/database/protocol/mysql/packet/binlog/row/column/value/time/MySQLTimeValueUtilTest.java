@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route.context;
+package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.junit.Test;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
-/**
- * Table unit.
- */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class TableUnit {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class MySQLTimeValueUtilTest {
     
-    private final String logicTableName;
-    
-    private final String actualTableName;
+    @Test
+    public void assertGetSimpleDateFormat() {
+        Timestamp expected = new Timestamp(1584599445000L);
+        assertThat(MySQLTimeValueUtil.getSimpleDateFormat().format(expected), is(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expected)));
+    }
 }

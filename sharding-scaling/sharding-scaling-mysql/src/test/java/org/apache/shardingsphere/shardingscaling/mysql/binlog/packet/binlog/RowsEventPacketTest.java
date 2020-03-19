@@ -22,15 +22,22 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.BinlogContext;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.BinlogContext;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.DataTypesCodec;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,7 +47,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class RowsEventPacketTest {
+    
+    @Mock
+    private MySQLBinlogTableMapEventPacket binlogTableMapEventPacket;
     
     private BinlogEventHeader binlogEventHeader;
     
@@ -50,7 +61,7 @@ public final class RowsEventPacketTest {
     public void setUp() {
         binlogContext = new BinlogContext();
         binlogContext.setTableMap(new HashMap<>());
-        binlogContext.getTableMap().put(0L, new TableMapEventPacket());
+        binlogContext.getTableMap().put(0L, binlogTableMapEventPacket);
         binlogEventHeader = new BinlogEventHeader();
     }
     
@@ -100,7 +111,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteLongRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_LONG);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_LONG);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeIntLE(Integer.MIN_VALUE);
@@ -112,7 +123,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateLongRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_LONG);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_LONG);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeIntLE(Integer.MAX_VALUE);
@@ -127,7 +138,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteTinyRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TINY);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TINY);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeByte(0x80);
@@ -139,7 +150,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateTinyRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TINY);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TINY);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeByte(0x79);
@@ -154,7 +165,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteShortRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_SHORT);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_SHORT);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeShortLE(Short.MIN_VALUE);
@@ -166,7 +177,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateShortRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_SHORT);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_SHORT);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeShortLE(Short.MAX_VALUE);
@@ -181,7 +192,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteInt24Row() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_INT24);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_INT24);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeMediumLE(0x800000);
@@ -193,7 +204,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateInt24Row() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_INT24);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_INT24);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeMediumLE(0x7f0000);
@@ -208,7 +219,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteLongLongRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_LONGLONG);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_LONGLONG);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeLongLE(Long.MIN_VALUE);
@@ -220,7 +231,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateLongLongRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_LONGLONG);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_LONGLONG);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeLongLE(Long.MAX_VALUE);
@@ -235,7 +246,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteFloatRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_FLOAT);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_FLOAT);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeFloatLE(Float.MIN_VALUE);
@@ -247,7 +258,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateFloatRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_FLOAT);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_FLOAT);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeFloatLE(Float.MAX_VALUE);
@@ -262,7 +273,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteNewDecimalRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent((14 << 8) + 4, ColumnTypes.MYSQL_TYPE_NEWDECIMAL);
+        mockTableMapEvent((14 << 8) + 4, MySQLColumnType.MYSQL_TYPE_NEWDECIMAL);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeBytes(ByteBufUtil.decodeHexDump("7EF204C72DFB2D"));
@@ -274,7 +285,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateNewDecimalRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent((14 << 8) + 4, ColumnTypes.MYSQL_TYPE_NEWDECIMAL);
+        mockTableMapEvent((14 << 8) + 4, MySQLColumnType.MYSQL_TYPE_NEWDECIMAL);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeBytes(ByteBufUtil.decodeHexDump("810DFB38D204D2"));
@@ -289,7 +300,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteDoubleRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_DOUBLE);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_DOUBLE);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeDoubleLE(Double.MIN_VALUE);
@@ -301,7 +312,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateDoubleRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_DOUBLE);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_DOUBLE);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeDoubleLE(Double.MAX_VALUE);
@@ -316,7 +327,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteTimestampRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TIMESTAMP);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TIMESTAMP);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeIntLE(0);
@@ -328,7 +339,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateTimestampRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TIMESTAMP);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TIMESTAMP);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeIntLE(1571214733);
@@ -343,7 +354,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteTimestamp2Row() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TIMESTAMP2);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TIMESTAMP2);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeInt(0);
@@ -355,7 +366,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateTimestamp2Row() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TIMESTAMP2);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TIMESTAMP2);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeInt(1571214733);
@@ -370,7 +381,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteDatetimeRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_DATETIME);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_DATETIME);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeLongLE(0);
@@ -382,7 +393,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateDatetimeRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_DATETIME);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_DATETIME);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeLongLE(20191017111500L);
@@ -397,7 +408,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteDatetime2Row() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_DATETIME2);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_DATETIME2);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         DataTypesCodec.writeInt5(0x8000000000L, byteBuf);
@@ -409,7 +420,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateDatetime2Row() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_DATETIME2);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_DATETIME2);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         DataTypesCodec.writeInt5(659887819813L, byteBuf);
@@ -424,7 +435,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteTimeRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TIME);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TIME);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeMediumLE(0);
@@ -436,7 +447,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateTimeRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TIME);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TIME);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeMediumLE(101531);
@@ -451,7 +462,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteTime2Row() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TIME2);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TIME2);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeMedium(0x800000);
@@ -463,7 +474,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateTime2Row() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_TIME2);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_TIME2);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeMedium(8432343);
@@ -478,7 +489,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteDateRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_DATE);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_DATE);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeMediumLE(0);
@@ -490,7 +501,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateDateRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_DATE);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_DATE);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeMediumLE(1034065);
@@ -505,7 +516,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteYearRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_YEAR);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_YEAR);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeByte(0);
@@ -517,7 +528,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateYearRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(0, ColumnTypes.MYSQL_TYPE_YEAR);
+        mockTableMapEvent(0, MySQLColumnType.MYSQL_TYPE_YEAR);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeByte(255);
@@ -532,7 +543,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteBlobRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(1, ColumnTypes.MYSQL_TYPE_BLOB);
+        mockTableMapEvent(1, MySQLColumnType.MYSQL_TYPE_BLOB);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeByte(0);
@@ -544,7 +555,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateBlobRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(1, ColumnTypes.MYSQL_TYPE_BLOB);
+        mockTableMapEvent(1, MySQLColumnType.MYSQL_TYPE_BLOB);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byte[] value1 = new byte[255];
@@ -561,7 +572,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteVarCharRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(8, ColumnTypes.MYSQL_TYPE_VARCHAR);
+        mockTableMapEvent(8, MySQLColumnType.MYSQL_TYPE_VARCHAR);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         String value = Strings.repeat("1", 4);
@@ -575,7 +586,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateVarCharRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(300, ColumnTypes.MYSQL_TYPE_VARCHAR);
+        mockTableMapEvent(300, MySQLColumnType.MYSQL_TYPE_VARCHAR);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         String value1 = Strings.repeat("1", 299);
@@ -592,7 +603,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteVarStringRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(8, ColumnTypes.MYSQL_TYPE_VAR_STRING);
+        mockTableMapEvent(8, MySQLColumnType.MYSQL_TYPE_VAR_STRING);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         String value = Strings.repeat("1", 4);
@@ -606,7 +617,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateVarStringRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(300, ColumnTypes.MYSQL_TYPE_VAR_STRING);
+        mockTableMapEvent(300, MySQLColumnType.MYSQL_TYPE_VAR_STRING);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         String value1 = Strings.repeat("1", 299);
@@ -623,7 +634,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteEnumRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent((ColumnTypes.MYSQL_TYPE_ENUM << 8) | 1, ColumnTypes.MYSQL_TYPE_STRING);
+        mockTableMapEvent((MySQLColumnType.MYSQL_TYPE_ENUM.getValue() << 8) | 1, MySQLColumnType.MYSQL_TYPE_STRING);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeByte(0);
@@ -631,7 +642,7 @@ public final class RowsEventPacketTest {
         actual.parsePayload(binlogContext, byteBuf);
         assertColumnValue(actual.getRows1(), (short) 0);
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent((ColumnTypes.MYSQL_TYPE_ENUM << 8) | 2, ColumnTypes.MYSQL_TYPE_STRING);
+        mockTableMapEvent((MySQLColumnType.MYSQL_TYPE_ENUM.getValue() << 8) | 2, MySQLColumnType.MYSQL_TYPE_STRING);
         byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeShortLE(256);
@@ -643,7 +654,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateEnumRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent((ColumnTypes.MYSQL_TYPE_ENUM << 8) | 1, ColumnTypes.MYSQL_TYPE_STRING);
+        mockTableMapEvent((MySQLColumnType.MYSQL_TYPE_ENUM.getValue() << 8) | 1, MySQLColumnType.MYSQL_TYPE_STRING);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeByte(255);
@@ -658,7 +669,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteSetRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(ColumnTypes.MYSQL_TYPE_SET << 8, ColumnTypes.MYSQL_TYPE_STRING);
+        mockTableMapEvent(MySQLColumnType.MYSQL_TYPE_SET.getValue() << 8, MySQLColumnType.MYSQL_TYPE_STRING);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         byteBuf.writeByte(-128);
@@ -670,7 +681,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateSetRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(ColumnTypes.MYSQL_TYPE_SET << 8, ColumnTypes.MYSQL_TYPE_STRING);
+        mockTableMapEvent(MySQLColumnType.MYSQL_TYPE_SET.getValue() << 8, MySQLColumnType.MYSQL_TYPE_STRING);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         byteBuf.writeByte(127);
@@ -685,7 +696,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithWriteStringRow() {
         binlogEventHeader.setTypeCode(EventTypes.WRITE_ROWS_EVENT_V2);
-        mockTableMapEvent(ColumnTypes.MYSQL_TYPE_STRING << 8, ColumnTypes.MYSQL_TYPE_STRING);
+        mockTableMapEvent(MySQLColumnType.MYSQL_TYPE_STRING.getValue() << 8, MySQLColumnType.MYSQL_TYPE_STRING);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0});
         String value = "";
@@ -699,7 +710,7 @@ public final class RowsEventPacketTest {
     @Test
     public void assertParsePayloadWithUpdateStringRow() {
         binlogEventHeader.setTypeCode(EventTypes.UPDATE_ROWS_EVENT_V2);
-        mockTableMapEvent(ColumnTypes.MYSQL_TYPE_STRING << 8, ColumnTypes.MYSQL_TYPE_STRING);
+        mockTableMapEvent(MySQLColumnType.MYSQL_TYPE_STRING.getValue() << 8, MySQLColumnType.MYSQL_TYPE_STRING);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeBytes(new byte[]{1, 0, 0, 0});
         String value1 = Strings.repeat("1", 127);
@@ -721,13 +732,11 @@ public final class RowsEventPacketTest {
         assertThat(actual.get(0)[0], is(value));
     }
     
-    private void mockTableMapEvent(final int meta, final int columnType) {
-        TableMapEventPacket result = mock(TableMapEventPacket.class);
-        ColumnDef longColumnDef = new ColumnDef();
-        longColumnDef.setMeta(meta);
-        longColumnDef.setType(columnType);
-        when(result.getColumnDefs()).thenReturn(new ColumnDef[]{longColumnDef});
-        binlogContext.getTableMap().put(0L, result);
+    private void mockTableMapEvent(final int meta, final MySQLColumnType columnType) {
+        MySQLBinlogColumnDef columnDef = new MySQLBinlogColumnDef(columnType);
+        columnDef.setColumnMeta(meta);
+        when(binlogTableMapEventPacket.getColumnDefs()).thenReturn(Collections.singletonList(columnDef));
+        binlogContext.getTableMap().put(0L, binlogTableMapEventPacket);
     }
 }
 

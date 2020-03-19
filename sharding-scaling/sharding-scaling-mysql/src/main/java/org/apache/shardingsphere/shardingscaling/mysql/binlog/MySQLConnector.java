@@ -19,16 +19,15 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.mysql.codec.MySQLPacketCodecEngine;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.MySQLCommandPacketDecoder;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.BinlogDumpCommandPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.command.RegisterSlaveCommandPacket;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -144,24 +143,22 @@ public final class MySQLConnector {
      */
     public synchronized void subscribe(final String binlogFileName, final long binlogPosition) {
         initDumpConnectSession();
-        final int checksumLength = queryChecksumLength();
         registerSlave();
-        responseCallback = null;
-        BinlogDumpCommandPacket binlogDumpCmd = new BinlogDumpCommandPacket();
-        binlogDumpCmd.setBinlogFileName(binlogFileName);
-        binlogDumpCmd.setBinlogPosition(binlogPosition);
-        binlogDumpCmd.setSlaveServerId(serverId);
-        channel.pipeline().remove(MySQLCommandPacketDecoder.class);
-        channel.pipeline().remove(MySQLCommandResponseHandler.class);
-        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength));
-        channel.pipeline().addLast(new MySQLBinlogEventHandler());
-        channel.writeAndFlush(binlogDumpCmd);
+        dumpBinlog(binlogFileName, binlogPosition, queryChecksumLength());
     }
     
     private void initDumpConnectSession() {
         if (serverInfo.getServerVersion().greaterThanOrEqualTo(5, 6, 0)) {
             execute("SET @MASTER_BINLOG_CHECKSUM= @@GLOBAL.BINLOG_CHECKSUM");
         }
+    }
+    
+    private void registerSlave() {
+        responseCallback = new DefaultPromise<>(eventLoopGroup.next());
+        InetSocketAddress localAddress = (InetSocketAddress) channel.localAddress();
+        MySQLComRegisterSlaveCommandPacket registerSlaveCommandPacket = new MySQLComRegisterSlaveCommandPacket(serverId, localAddress.getHostName(), username, password, localAddress.getPort());
+        channel.writeAndFlush(registerSlaveCommandPacket);
+        waitExpectedResponse(MySQLOKPacket.class);
     }
     
     private int queryChecksumLength() {
@@ -180,17 +177,13 @@ public final class MySQLConnector {
         }
     }
     
-    private void registerSlave() {
-        responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        RegisterSlaveCommandPacket cmd = new RegisterSlaveCommandPacket();
-        InetSocketAddress localAddress = (InetSocketAddress) channel.localAddress();
-        cmd.setReportHost(localAddress.getHostName());
-        cmd.setReportPort((short) localAddress.getPort());
-        cmd.setReportPassword(password);
-        cmd.setReportUser(username);
-        cmd.setServerId(123456);
-        channel.writeAndFlush(cmd);
-        waitExpectedResponse(OkPacket.class);
+    private void dumpBinlog(final String binlogFileName, final long binlogPosition, final int checksumLength) {
+        responseCallback = null;
+        channel.pipeline().remove(MySQLCommandPacketDecoder.class);
+        channel.pipeline().remove(MySQLCommandResponseHandler.class);
+        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength));
+        channel.pipeline().addLast(new MySQLBinlogEventHandler());
+        channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, serverId, binlogFileName));
     }
 
     /**

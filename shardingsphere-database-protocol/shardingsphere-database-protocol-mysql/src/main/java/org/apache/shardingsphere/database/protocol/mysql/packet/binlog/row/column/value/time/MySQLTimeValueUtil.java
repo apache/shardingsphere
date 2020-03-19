@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 /**
  * Time value util of MySQL.
@@ -33,11 +32,7 @@ public final class MySQLTimeValueUtil {
     
     public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
     
-    private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = ThreadLocal.withInitial(() -> {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
-        return sdf;
-    });
+    private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     
     /**
      * Get simple date format for current thread.

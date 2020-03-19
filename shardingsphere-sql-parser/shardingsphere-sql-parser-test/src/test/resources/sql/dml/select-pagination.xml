@@ -35,8 +35,8 @@
                         <owner name="o" start-index="105" stop-index="105" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
+                        <parameter-marker-expression value="1" start-index="122" stop-index="122" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -46,9 +46,9 @@
                         <owner name="o" start-index="129" stop-index="129" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="148" stop-index="148" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="154" stop-index="154" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -81,8 +81,8 @@
                         <owner name="o" start-index="105" stop-index="105" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
+                        <parameter-marker-expression value="1" start-index="122" stop-index="122" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -92,9 +92,9 @@
                         <owner name="o" start-index="129" stop-index="129" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
-                        <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <between-parameter-marker-expression value="2" start-index="148" stop-index="148" />
+                        <between-literal-expression value="9" start-index="151" stop-index="151" />
+                        <and-parameter-marker-expression value="3" start-index="154" stop-index="154" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -127,8 +127,8 @@
                         <owner name="o" start-index="109" stop-index="109" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="125" stop-index="125" />
+                        <parameter-marker-expression value="1" start-index="128" stop-index="128" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -138,9 +138,9 @@
                         <owner name="o" start-index="135" stop-index="135" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="156" stop-index="156" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="162" stop-index="162" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -174,8 +174,8 @@
                         <owner name="o" start-index="109" stop-index="109" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="125" stop-index="125" />
+                        <parameter-marker-expression value="1" start-index="128" stop-index="128" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -185,9 +185,9 @@
                         <owner name="o" start-index="135" stop-index="135" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="156" stop-index="156" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="162" stop-index="162" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -278,8 +278,8 @@
                         <owner name="o" start-index="105" stop-index="105" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
+                        <parameter-marker-expression value="1" start-index="122" stop-index="122" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -289,9 +289,9 @@
                         <owner name="o" start-index="129" stop-index="129" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="148" stop-index="148" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="154" stop-index="154" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -325,8 +325,8 @@
                         <owner name="o" start-index="105" stop-index="105" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="0" />
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
+                        <parameter-marker-expression value="1" start-index="122" stop-index="122" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>
@@ -336,9 +336,9 @@
                         <owner name="o" start-index="129" stop-index="129" />
                     </column-left-value>
                     <between-right-value>
-                        <between-parameter-marker-expression value="2" />
+                        <between-parameter-marker-expression value="2" start-index="148" stop-index="148" />
                         <between-literal-expression value="9" />
-                        <and-parameter-marker-expression value="3" />
+                        <and-parameter-marker-expression value="3" start-index="154" stop-index="154" />
                         <and-literal-expression value="10" />
                     </between-right-value>
                 </predicate>
@@ -586,7 +586,7 @@
                     <column-left-value name="ROWNUM" start-index="28" stop-index="33" />
                     <operator type="&lt;=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="38" stop-index="38" />
                         <literal-expression value="20" />
                     </compare-right-value>
                 </predicate>

@@ -60,7 +60,7 @@ import java.util.Optional;
 public final class ShardingRouter implements DateNodeRouter {
     
     private final ShardingRule shardingRule;
-
+    
     private final ConfigurationProperties properties;
     
     private final ShardingSphereMetaData metaData;
@@ -71,7 +71,7 @@ public final class ShardingRouter implements DateNodeRouter {
     @SuppressWarnings("unchecked")
     public ShardingRouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
         SQLStatement sqlStatement = parse(sql, useCache);
-        ShardingStatementValidatorFactory.newInstance(sqlStatement).ifPresent(shardingStatementValidator -> shardingStatementValidator.validate(shardingRule, sqlStatement, parameters));
+        ShardingStatementValidatorFactory.newInstance(sqlStatement).ifPresent(validator -> validator.validate(shardingRule, sqlStatement, parameters));
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), sql, parameters, sqlStatement);
         Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
                 ? GeneratedKey.getGenerateKey(shardingRule, metaData.getSchema(), parameters, (InsertStatement) sqlStatement) : Optional.empty();
@@ -159,8 +159,7 @@ public final class ShardingRouter implements DateNodeRouter {
     }
     
     private boolean isSameRouteValue(final ListRouteValue routeValue1, final ListRouteValue routeValue2) {
-        return isSameLogicTable(routeValue1, routeValue2)
-                && routeValue1.getColumnName().equals(routeValue2.getColumnName()) && routeValue1.getValues().equals(routeValue2.getValues());
+        return isSameLogicTable(routeValue1, routeValue2) && routeValue1.getColumnName().equals(routeValue2.getColumnName()) && routeValue1.getValues().equals(routeValue2.getValues());
     }
     
     private boolean isSameLogicTable(final ListRouteValue shardingValue1, final ListRouteValue shardingValue2) {

@@ -54,21 +54,21 @@ public final class RouteResult {
     public Collection<String> getDataSourceNames() {
         Collection<String> result = new HashSet<>(routeUnits.size(), 1);
         for (RouteUnit each : routeUnits) {
-            result.add(each.getActualDataSourceName());
+            result.add(each.getDataSourceMapper().getActualName());
         }
         return result;
     }
     
     /**
-     * Get routing table unit via data source name and actual table name.
+     * Get table mapper via data source name and actual table name.
      *
      * @param dataSourceName data source name
      * @param actualTableName actual table name
-     * @return routing table unit
+     * @return table mapper
      */
-    public Optional<TableUnit> getTableUnit(final String dataSourceName, final String actualTableName) {
+    public Optional<RouteMapper> getTableMapper(final String dataSourceName, final String actualTableName) {
         for (RouteUnit each : routeUnits) {
-            Optional<TableUnit> result = each.getTableUnit(dataSourceName, actualTableName);
+            Optional<RouteMapper> result = each.findTableMapper(dataSourceName, actualTableName);
             if (result.isPresent()) {
                 return result;
             }
@@ -100,7 +100,7 @@ public final class RouteResult {
     private Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
         Set<String> result = new HashSet<>();
         for (RouteUnit each : routeUnits) {
-            if (dataSourceName.equalsIgnoreCase(each.getActualDataSourceName())) {
+            if (dataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 result.addAll(each.getActualTableNames(logicTableName));
             }
         }
@@ -127,7 +127,7 @@ public final class RouteResult {
     private Set<String> getLogicTableNames(final String dataSourceName) {
         Set<String> result = new HashSet<>();
         for (RouteUnit each : routeUnits) {
-            if (dataSourceName.equalsIgnoreCase(each.getActualDataSourceName())) {
+            if (dataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 result.addAll(each.getLogicTableNames());
             }
         }

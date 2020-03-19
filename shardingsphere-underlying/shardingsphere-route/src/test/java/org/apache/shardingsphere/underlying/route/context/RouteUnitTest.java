@@ -45,29 +45,27 @@ public final class RouteUnitTest {
     
     @Before
     public void setUp() {
-        routeUnit = new RouteUnit(DATASOURCE_NAME);
-        routeUnit.getTableUnits().addAll(mockTableUnits());
+        routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), mockTableMappers());
     }
     
-    private Collection<TableUnit> mockTableUnits() {
-        List<TableUnit> result = new ArrayList<>();
-        result.add(new TableUnit(LOGIC_TABLE, SHARD_TABLE_0));
-        result.add(new TableUnit(LOGIC_TABLE, SHARD_TABLE_1));
+    private Collection<RouteMapper> mockTableMappers() {
+        List<RouteMapper> result = new ArrayList<>();
+        result.add(new RouteMapper(LOGIC_TABLE, SHARD_TABLE_0));
+        result.add(new RouteMapper(LOGIC_TABLE, SHARD_TABLE_1));
         return result;
     }
     
     @Test
-    public void assertGetTableUnit() {
-        Optional<TableUnit> actual = routeUnit.getTableUnit(DATASOURCE_NAME, SHARD_TABLE_0);
+    public void assertFindTableMapper() {
+        Optional<RouteMapper> actual = routeUnit.findTableMapper(DATASOURCE_NAME, SHARD_TABLE_0);
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getLogicTableName(), is(LOGIC_TABLE));
-        assertThat(actual.get().getActualTableName(), is(SHARD_TABLE_0));
+        assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
+        assertThat(actual.get().getActualName(), is(SHARD_TABLE_0));
     }
     
     @Test
-    public void assertGetTableUnitNonExist() {
-        Optional<TableUnit> actual = routeUnit.getTableUnit(DATASOURCE_NAME, "");
-        assertFalse(actual.isPresent());
+    public void assertFindTableMapperNonExist() {
+        assertFalse(routeUnit.findTableMapper(DATASOURCE_NAME, "").isPresent());
     }
     
     @Test
@@ -87,25 +85,23 @@ public final class RouteUnitTest {
     
     @Test
     public void assertGetDataSourceName() {
-        assertThat(routeUnit.getActualDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is(DATASOURCE_NAME));
     }
     
     @Test
     public void assertGetMasterSlaveLogicDataSourceName() {
-        assertThat(routeUnit.getLogicDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is(DATASOURCE_NAME));
     }
     
     @Test
     public void assertEquals() {
-        RouteUnit expected = new RouteUnit(DATASOURCE_NAME, DATASOURCE_NAME);
-        expected.getTableUnits().addAll(mockTableUnits());
-        assertTrue(expected.equals(routeUnit));
+        assertTrue(new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), mockTableMappers()).equals(routeUnit));
     }
     
     @Test
     public void assertToString() {
         assertThat(routeUnit.toString(), is(String.format(
-            "RouteUnit(logicDataSourceName=%s, actualDataSourceName=%s, tableUnits=[TableUnit(logicTableName=%s, actualTableName=%s), TableUnit(logicTableName=%s, actualTableName=%s)])",
-            DATASOURCE_NAME, DATASOURCE_NAME, LOGIC_TABLE, SHARD_TABLE_0, LOGIC_TABLE, SHARD_TABLE_1)));
+                "RouteUnit(dataSourceMapper=RouteMapper(logicName=%s, actualName=%s), tableMappers=[RouteMapper(logicName=%s, actualName=%s), RouteMapper(logicName=%s, actualName=%s)])", 
+                DATASOURCE_NAME, DATASOURCE_NAME, LOGIC_TABLE, SHARD_TABLE_0, LOGIC_TABLE, SHARD_TABLE_1)));
     }
 }

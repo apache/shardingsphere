@@ -64,7 +64,7 @@ public final class MySQLBinlogRowsEventPacket extends AbstractMySQLBinlogEventPa
     
     private void skipExtraData(final MySQLPacketPayload payload) {
         if (isRowsEventVersion2(getBinlogEventHeader().getEventType())) {
-            int extraDataLength = payload.readInt2();
+            int extraDataLength = payload.readInt2() - 2;
             payload.skipReserved(extraDataLength);
         }
     }

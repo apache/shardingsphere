@@ -70,38 +70,38 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     public void assertRouteByNonConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", new ShardingConditions(Collections.emptyList()));
         RouteResult routeResult = standardRoutingEngine.route(createBasedShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(4));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_0"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_0"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
-        assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds_0"));
-        assertThat(tableUnitList.get(1).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicTableName(), is("t_order"));
-        assertThat(tableUnitList.get(2).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(2).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(2).getTableUnits().get(0).getActualTableName(), is("t_order_0"));
-        assertThat(tableUnitList.get(2).getTableUnits().get(0).getLogicTableName(), is("t_order"));
-        assertThat(tableUnitList.get(3).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(3).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(3).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(3).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_0"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(1).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+        assertThat(routeUnits.get(2).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(2).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(2).getTableMappers().iterator().next().getActualName(), is("t_order_0"));
+        assertThat(routeUnits.get(2).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+        assertThat(routeUnits.get(3).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(3).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(3).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(3).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test
     public void assertRouteByShardingConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
         RouteResult routeResult = standardRoutingEngine.route(createBasedShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test
@@ -111,13 +111,13 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         hintManager.addDatabaseShardingValue("t_hint_test", 1);
         hintManager.addTableShardingValue("t_hint_test", 1);
         RouteResult routeResult = standardRoutingEngine.route(createHintShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_test_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_test"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_test_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_test"));
     }
     
     @Test
@@ -126,13 +126,13 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
         RouteResult routeResult = standardRoutingEngine.route(createMixedShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_ds_test_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_ds_test"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_ds_test_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_ds_test"));
     }
     
     @Test
@@ -141,17 +141,17 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
         RouteResult routeResult = standardRoutingEngine.route(createMixedShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(2));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_ds_test_0"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_ds_test"));
-        assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(1).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualTableName(), is("t_hint_ds_test_1"));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicTableName(), is("t_hint_ds_test"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_ds_test_0"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_ds_test"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(1).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getActualName(), is("t_hint_ds_test_1"));
+        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getLogicName(), is("t_hint_ds_test"));
     }
     
     @Test
@@ -160,13 +160,13 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
         RouteResult routeResult = standardRoutingEngine.route(createMixedShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_table_test_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_table_test"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_table_test_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_table_test"));
     }
     
     @Test
@@ -175,17 +175,17 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
         RouteResult routeResult = standardRoutingEngine.route(createMixedShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(2));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_0"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_table_test_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_table_test"));
-        assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(1).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualTableName(), is("t_hint_table_test_1"));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicTableName(), is("t_hint_table_test"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_table_test_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_table_test"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(1).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getActualName(), is("t_hint_table_test_1"));
+        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getLogicName(), is("t_hint_table_test"));
     }
     
     private ShardingStandardRoutingEngine createShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions) {
