@@ -114,9 +114,8 @@ public final class ShardingMetaDataLoader {
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
         Collection<TableMetaDataViolation> violations = new LinkedList<>();
         for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
-            TableMetaData tableMetaData = entry.getValue();
-            if (!sample.equals(decorator.decorate(tableMetaData, logicTableName, shardingRule))) {
-                violations.add(new TableMetaDataViolation(entry.getKey(), tableMetaData));
+            if (!sample.equals(decorator.decorate(entry.getValue(), logicTableName, shardingRule))) {
+                violations.add(new TableMetaDataViolation(entry.getKey(), entry.getValue()));
             }
         }
         throwExceptionIfNecessary(violations, logicTableName);
