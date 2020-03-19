@@ -50,13 +50,13 @@ public final class RouteUnit {
     }
     
     /**
-     * Get table mapper via data source name and actual table name.
+     * Find table mapper.
      *
      * @param dataSourceName data source name
      * @param actualTableName actual table name
      * @return table mapper
      */
-    public Optional<RouteMapper> getTableMapper(final String dataSourceName, final String actualTableName) {
+    public Optional<RouteMapper> findTableMapper(final String dataSourceName, final String actualTableName) {
         for (RouteMapper each : tableMappers) {
             if (dataSourceName.equalsIgnoreCase(dataSourceMapper.getLogicName()) && actualTableName.equalsIgnoreCase(each.getActualName())) {
                 return Optional.of(each);
@@ -66,10 +66,10 @@ public final class RouteUnit {
     }
     
     /**
-     * Get actual tables' names via data source name.
+     * Get actual table names.
      *
      * @param logicTableName logic table name
-     * @return  actual tables' names
+     * @return actual table names
      */
     public Set<String> getActualTableNames(final String logicTableName) {
         Set<String> result = new HashSet<>();
@@ -82,9 +82,9 @@ public final class RouteUnit {
     }
     
     /**
-     * Get logic tables' names via data source name.
+     * Get logic table names.
      *
-     * @return  logic tables' names
+     * @return  logic table names
      */
     public Set<String> getLogicTableNames() {
         Set<String> result = new HashSet<>(tableMappers.size(), 1);

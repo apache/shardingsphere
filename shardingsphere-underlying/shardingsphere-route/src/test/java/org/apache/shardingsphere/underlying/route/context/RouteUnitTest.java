@@ -57,17 +57,16 @@ public final class RouteUnitTest {
     }
     
     @Test
-    public void assertGetTableMapper() {
-        Optional<RouteMapper> actual = routeUnit.getTableMapper(DATASOURCE_NAME, SHARD_TABLE_0);
+    public void assertFindTableMapper() {
+        Optional<RouteMapper> actual = routeUnit.findTableMapper(DATASOURCE_NAME, SHARD_TABLE_0);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
         assertThat(actual.get().getActualName(), is(SHARD_TABLE_0));
     }
     
     @Test
-    public void assertGetTableMapperNonExist() {
-        Optional<RouteMapper> actual = routeUnit.getTableMapper(DATASOURCE_NAME, "");
-        assertFalse(actual.isPresent());
+    public void assertFindTableMapperNonExist() {
+        assertFalse(routeUnit.findTableMapper(DATASOURCE_NAME, "").isPresent());
     }
     
     @Test

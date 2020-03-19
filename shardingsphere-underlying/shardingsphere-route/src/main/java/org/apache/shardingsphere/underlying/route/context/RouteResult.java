@@ -68,7 +68,7 @@ public final class RouteResult {
      */
     public Optional<RouteMapper> getTableMapper(final String dataSourceName, final String actualTableName) {
         for (RouteUnit each : routeUnits) {
-            Optional<RouteMapper> result = each.getTableMapper(dataSourceName, actualTableName);
+            Optional<RouteMapper> result = each.findTableMapper(dataSourceName, actualTableName);
             if (result.isPresent()) {
                 return result;
             }
