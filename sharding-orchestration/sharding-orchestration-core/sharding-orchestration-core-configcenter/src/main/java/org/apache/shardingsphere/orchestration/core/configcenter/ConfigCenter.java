@@ -21,7 +21,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -40,12 +39,13 @@ import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.core.configuration.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +96,7 @@ public final class ConfigCenter {
     
     /**
      * Judge whether schema has data source configuration.
-     * 
+     *
      * @param shardingSchemaName shading schema name
      * @return has data source configuration or not
      */
@@ -180,12 +180,13 @@ public final class ConfigCenter {
             repository.persist(node.getSchemaPath(), shardingSchemaName);
             return;
         }
-        List<String> schemaNameList = Lists.newArrayList(Splitter.on(",").split(shardingSchemaNames));
+        List<String> schemaNameList = Splitter.on(",").splitToList(shardingSchemaNames);
         if (schemaNameList.contains(shardingSchemaName)) {
             return;
         }
-        schemaNameList.add(shardingSchemaName);
-        repository.persist(node.getSchemaPath(), Joiner.on(",").join(schemaNameList));
+        List<String> newArrayList = new ArrayList<>(schemaNameList);
+        newArrayList.add(shardingSchemaName);
+        repository.persist(node.getSchemaPath(), Joiner.on(",").join(newArrayList));
     }
     
     /**
