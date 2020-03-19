@@ -85,7 +85,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         }
         return new IteratorStreamMergedResult(queryResults);
     }
-
+    
     private boolean isNeedProcessGroupBy(final SelectStatementContext selectStatementContext) {
         return !selectStatementContext.getGroupByContext().getItems().isEmpty() || !selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty();
     }

@@ -53,22 +53,22 @@ import java.util.concurrent.TimeUnit;
  * Distributed lock center for zookeeper with curator.
  */
 public final class CuratorZookeeperCenterRepository implements ConfigCenterRepository, RegistryCenterRepository {
-
+    
     private final Map<String, TreeCache> caches = new HashMap<>();
-
+    
     private CuratorFramework client;
-
+    
     @Getter
     @Setter
     private Properties properties = new Properties();
-
+    
     @Override
     public void init(final CenterConfiguration config) {
         ZookeeperProperties zookeeperProperties = new ZookeeperProperties(properties);
         client = buildCuratorClient(config, zookeeperProperties);
         initCuratorClient(zookeeperProperties);
     }
-
+    
     private CuratorFramework buildCuratorClient(final CenterConfiguration config, final ZookeeperProperties zookeeperProperties) {
         int retryIntervalMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS);
         int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
@@ -88,12 +88,12 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization("digest", digest.getBytes(Charsets.UTF_8))
                 .aclProvider(new ACLProvider() {
-
+                    
                     @Override
                     public List<ACL> getDefaultAcl() {
                         return ZooDefs.Ids.CREATOR_ALL_ACL;
                     }
-
+                    
                     @Override
                     public List<ACL> getAclForPath(final String path) {
                         return ZooDefs.Ids.CREATOR_ALL_ACL;
@@ -102,7 +102,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
         }
         return builder.build();
     }
-
+    
     private void initCuratorClient(final ZookeeperProperties zookeeperProperties) {
         client.start();
         try {
@@ -116,7 +116,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
     }
-
+    
     @Override
     public String get(final String key) {
         TreeCache cache = findTreeCache(key);
@@ -129,7 +129,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
         }
         return getDirectly(key);
     }
-
+    
     private TreeCache findTreeCache(final String key) {
         for (Entry<String, TreeCache> entry : caches.entrySet()) {
             if (key.startsWith(entry.getKey())) {
@@ -138,7 +138,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
         }
         return null;
     }
-
+    
     @Override
     public void persist(final String key, final String value) {
         try {
@@ -153,7 +153,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
     }
-
+    
     private void update(final String key, final String value) {
         try {
             client.inTransaction().check().forPath(key).and().setData().forPath(key, value.getBytes(Charsets.UTF_8)).and().commit();
@@ -163,7 +163,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
     }
-
+    
     private String getDirectly(final String key) {
         try {
             return new String(client.getData().forPath(key), Charsets.UTF_8);
@@ -174,7 +174,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             return null;
         }
     }
-
+    
     private boolean isExisted(final String key) {
         try {
             return null != client.checkExists().forPath(key);
@@ -185,7 +185,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             return false;
         }
     }
-
+    
     @Override
     public void persistEphemeral(final String key, final String value) {
         try {
@@ -199,7 +199,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
     }
-
+    
     @Override
     public List<String> getChildrenKeys(final String key) {
         try {
@@ -213,7 +213,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
             return Collections.emptyList();
         }
     }
-
+    
     @Override
     public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         final String path = key + "/";
