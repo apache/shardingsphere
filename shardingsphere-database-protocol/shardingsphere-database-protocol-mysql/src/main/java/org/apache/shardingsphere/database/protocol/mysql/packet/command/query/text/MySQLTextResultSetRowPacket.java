@@ -33,11 +33,11 @@ import java.util.List;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
  */
 @RequiredArgsConstructor
+@Getter
 public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     
     private static final int NULL = 0xfb;
     
-    @Getter
     private final int sequenceId;
     
     private final List<Object> data;

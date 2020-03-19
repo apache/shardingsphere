@@ -19,9 +19,13 @@ package org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Internal Result Set.
@@ -30,9 +34,9 @@ import java.util.List;
 @Getter
 public final class InternalResultSet {
     
-    private final ResultSetHeaderPacket header;
+    private final MySQLFieldCountPacket header;
     
-    private List<FieldPacket> fieldDescriptors = new ArrayList<>();
+    private List<MySQLColumnDefinition41Packet> fieldDescriptors = new ArrayList<>();
     
-    private List<RowDataPacket> fieldValues = new ArrayList<>();
+    private List<MySQLTextResultSetRowPacket> fieldValues = new ArrayList<>();
 }

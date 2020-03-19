@@ -24,7 +24,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.util.EmbedTestingServer;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import java.util.List;

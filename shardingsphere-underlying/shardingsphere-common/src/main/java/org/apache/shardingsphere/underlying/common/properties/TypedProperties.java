@@ -72,6 +72,6 @@ public abstract class TypedProperties<E extends Enum & TypedPropertyKey> {
      */
     @SuppressWarnings("unchecked")
     public <T> T getValue(final E key) {
-        return (T) (cache.containsKey(key) ? cache.get(key).getValue() : null);
+        return (T) cache.get(key).getValue();
     }
 }

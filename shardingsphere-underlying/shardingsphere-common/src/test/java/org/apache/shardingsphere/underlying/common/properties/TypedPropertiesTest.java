@@ -17,70 +17,60 @@
 
 package org.apache.shardingsphere.underlying.common.properties;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.underlying.common.properties.fixture.TestTypedProperties;
+import org.apache.shardingsphere.underlying.common.properties.fixture.TestTypedPropertyKey;
 import org.junit.Test;
-
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 
 import java.util.Properties;
 
-public class TypedPropertiesTest {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+public final class TypedPropertiesTest {
+    
     @Test
-    public void assertTypes() throws Exception {
-
+    public void assertGetValue() {
         Properties props = new Properties();
-        AProperties properties = new AProperties(APropertyKey.class, props);
-        assertThat(properties.getValue(APropertyKey.A1), is(1));
-        assertThat(properties.getValue(APropertyKey.A2), is(200L));
-        assertThat(properties.getValue(APropertyKey.A3), is(Boolean.TRUE));
-        assertThat(properties.getValue(APropertyKey.A4), is("a4"));
-        assertThat(properties.getValue(APropertyKey.A5), is(1));
-        assertThat(properties.getValue(APropertyKey.A6), is(200L));
-        assertThat(properties.getValue(APropertyKey.A7), is(Boolean.TRUE));
-
-        // test override
-        props.put("a1", 11);
-        props.put("a2", 222L);
-        props.put("a3", Boolean.FALSE);
-        props.put("a4", "a44");
-        props.put("a5", 11);
-        props.put("a6", 222L);
-        props.put("a7", Boolean.FALSE);
-
-        properties = new AProperties(APropertyKey.class, props);
-        assertThat(properties.getValue(APropertyKey.A1), is(11));
-        assertThat(properties.getValue(APropertyKey.A2), is(222L));
-        assertThat(properties.getValue(APropertyKey.A3), is(Boolean.FALSE));
-        assertThat(properties.getValue(APropertyKey.A4), is("a44"));
-        assertThat(properties.getValue(APropertyKey.A5), is(11));
-        assertThat(properties.getValue(APropertyKey.A6), is(222L));
-        assertThat(properties.getValue(APropertyKey.A7), is(Boolean.FALSE));
+        props.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString());
+        props.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString());
+        props.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "100");
+        props.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "100");
+        props.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "10000");
+        props.setProperty(TestTypedPropertyKey.LONG_OBJECT_VALUE.getKey(), "10000");
+        props.setProperty(TestTypedPropertyKey.STRING_VALUE.getKey(), "new_value");
+        TestTypedProperties actual = new TestTypedProperties(props);
+        assertTrue(actual.getValue(TestTypedPropertyKey.BOOLEAN_VALUE));
+        assertTrue(actual.getValue(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE));
+        assertThat(actual.getValue(TestTypedPropertyKey.INT_VALUE), is(100));
+        assertThat(actual.getValue(TestTypedPropertyKey.INT_OBJECT_VALUE), is(100));
+        assertThat(actual.getValue(TestTypedPropertyKey.LONG_VALUE), is(10000L));
+        assertThat(actual.getValue(TestTypedPropertyKey.LONG_OBJECT_VALUE), is(10000L));
+        assertThat(actual.getValue(TestTypedPropertyKey.STRING_VALUE), is("new_value"));
     }
-
-    @RequiredArgsConstructor
-    @Getter
-    private enum APropertyKey implements TypedPropertyKey {
-        A1("a1", "1", int.class),
-        A2("a2", "200", long.class),
-        A3("a3", "true", boolean.class),
-        A4("a4", "a4", String.class),
-        A5("a5", "1", Integer.class),
-        A6("a6", "200", Long.class),
-        A7("a7", "true", Boolean.class);
-
-        private final String key;
-
-        private final String defaultValue;
-
-        private final Class<?> type;
+    
+    @Test
+    public void assertGetDefaultValue() {
+        TestTypedProperties actual = new TestTypedProperties(new Properties());
+        assertFalse(actual.getValue(TestTypedPropertyKey.BOOLEAN_VALUE));
+        assertFalse(actual.getValue(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE));
+        assertThat(actual.getValue(TestTypedPropertyKey.INT_VALUE), is(10));
+        assertThat(actual.getValue(TestTypedPropertyKey.INT_OBJECT_VALUE), is(10));
+        assertThat(actual.getValue(TestTypedPropertyKey.LONG_VALUE), is(1000L));
+        assertThat(actual.getValue(TestTypedPropertyKey.LONG_OBJECT_VALUE), is(1000L));
+        assertThat(actual.getValue(TestTypedPropertyKey.STRING_VALUE), is("value"));
     }
-
-    private static class AProperties extends TypedProperties<APropertyKey> {
-        AProperties(final Class<APropertyKey> keyClass, final Properties props) {
-            super(keyClass, props);
-        }
+    
+    @Test(expected = ShardingSphereConfigurationException.class)
+    public void assertGetInvalidValue() {
+        Properties props = new Properties();
+        props.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), "test");
+        props.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), "test");
+        props.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "test");
+        props.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "test");
+        props.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "test");
+        new TestTypedProperties(props);
     }
 }

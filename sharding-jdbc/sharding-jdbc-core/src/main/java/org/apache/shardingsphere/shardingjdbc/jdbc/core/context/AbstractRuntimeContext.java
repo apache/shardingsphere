@@ -51,7 +51,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     protected AbstractRuntimeContext(final T rule, final Properties props, final DatabaseType databaseType) {
         this.rule = rule;
-        this.properties = new ConfigurationProperties(null == props ? new Properties() : props);
+        properties = new ConfigurationProperties(null == props ? new Properties() : props);
         this.databaseType = databaseType;
         executorEngine = new ExecutorEngine(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
