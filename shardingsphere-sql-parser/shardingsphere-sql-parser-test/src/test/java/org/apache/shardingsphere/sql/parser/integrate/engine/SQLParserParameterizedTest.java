@@ -124,6 +124,13 @@ public final class SQLParserParameterizedTest {
         sqlCases.add("create_table_with_exist_index");
         // TODO cannot support insert all
         sqlCases.add("insert_all_with_all_placeholders");
+        // TODO Correct for new parser, please remove them after using new parser
+        sqlCases.add("insert_on_duplicate_key_update_with_base64_aes_encrypt");
+        sqlCases.add("insert_with_one_auto_increment_column");
+        sqlCases.add("insert_on_duplicate_key_update_with_complicated_expression");
+        sqlCases.add("insert_without_columns_and_with_generate_key_column");
+        sqlCases.add("insert_without_columns_and_without_generate_key_column");
+        sqlCases.add("insert_without_columns_with_all_placeholders");
         return sqlCases.contains(sqlCaseId);
     }
     
