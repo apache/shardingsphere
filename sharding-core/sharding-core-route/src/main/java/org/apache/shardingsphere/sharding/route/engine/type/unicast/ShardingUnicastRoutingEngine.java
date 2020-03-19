@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,12 +46,12 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     public RouteResult route(final ShardingRule shardingRule) {
         RouteResult result = new RouteResult();
         if (shardingRule.isAllBroadcastTables(logicTables)) {
-            List<TableUnit> tableUnits = new ArrayList<>(logicTables.size());
+            List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
             for (String each : logicTables) {
-                tableUnits.add(new TableUnit(each, each));
+                tableMappers.add(new RouteMapper(each, each));
             }
             RouteUnit routeUnit = new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
-            routeUnit.getTableUnits().addAll(tableUnits);
+            routeUnit.getTableMappers().addAll(tableMappers);
             result.getRouteUnits().add(routeUnit);
         } else if (logicTables.isEmpty()) {
             result.getRouteUnits().add(new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
@@ -63,16 +63,16 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             }
             DataNode dataNode = shardingRule.getDataNode(logicTableName);
             RouteUnit routeUnit = new RouteUnit(dataNode.getDataSourceName());
-            routeUnit.getTableUnits().add(new TableUnit(logicTableName, dataNode.getTableName()));
+            routeUnit.getTableMappers().add(new RouteMapper(logicTableName, dataNode.getTableName()));
             result.getRouteUnits().add(routeUnit);
         } else {
-            List<TableUnit> tableUnits = new ArrayList<>(logicTables.size());
+            List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
             Set<String> availableDatasourceNames = null;
             boolean first = true;
             for (String each : logicTables) {
                 TableRule tableRule = shardingRule.getTableRule(each);
                 DataNode dataNode = tableRule.getActualDataNodes().get(0);
-                tableUnits.add(new TableUnit(each, dataNode.getTableName()));
+                tableMappers.add(new RouteMapper(each, dataNode.getTableName()));
                 Set<String> currentDataSourceNames = new HashSet<>(tableRule.getActualDatasourceNames().size());
                 for (DataNode eachDataNode : tableRule.getActualDataNodes()) {
                     currentDataSourceNames.add(eachDataNode.getDataSourceName());
@@ -88,7 +88,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
                 throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
             }
             RouteUnit routeUnit = new RouteUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
-            routeUnit.getTableUnits().addAll(tableUnits);
+            routeUnit.getTableMappers().addAll(tableMappers);
             result.getRouteUnits().add(routeUnit);
         }
         return result;

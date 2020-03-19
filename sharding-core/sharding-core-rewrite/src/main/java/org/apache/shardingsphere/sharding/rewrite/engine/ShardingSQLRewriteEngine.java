@@ -72,7 +72,7 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
             return true;
         }
         for (DataNode each : shardingCondition.getDataNodes()) {
-            if (routeUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
+            if (routeUnit.getTableMapper(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
         }

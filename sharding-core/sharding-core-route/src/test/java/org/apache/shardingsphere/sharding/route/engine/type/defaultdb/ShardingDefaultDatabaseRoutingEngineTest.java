@@ -41,14 +41,14 @@ public final class ShardingDefaultDatabaseRoutingEngineTest {
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         RouteResult routeResult = shardingDefaultDatabaseRoutingEngine.route(shardingRule);
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getDataSourceUnit().getActualName(), is("ds_0"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(2));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(1).getActualName(), is("t_order_item"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(1).getLogicName(), is("t_order_item"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(2));
+        assertThat(routeUnits.get(0).getTableMappers().get(0).getActualName(), is("t_order"));
+        assertThat(routeUnits.get(0).getTableMappers().get(0).getLogicName(), is("t_order"));
+        assertThat(routeUnits.get(0).getTableMappers().get(1).getActualName(), is("t_order_item"));
+        assertThat(routeUnits.get(0).getTableMappers().get(1).getLogicName(), is("t_order_item"));
     }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +50,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
         RouteResult result = new RouteResult();
         for (Entry<String, Set<String>> entry : getDataSourceLogicTablesMap().entrySet()) {
             List<Set<String>> actualTableGroups = getActualTableGroups(entry.getKey(), entry.getValue());
-            List<Set<TableUnit>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
+            List<Set<RouteMapper>> routingTableGroups = toRoutingTableGroups(entry.getKey(), actualTableGroups);
             result.getRouteUnits().addAll(getRouteUnits(entry.getKey(), Sets.cartesianProduct(routingTableGroups)));
         }
         return result;
@@ -90,17 +90,17 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
         return result;
     }
     
-    private List<Set<TableUnit>> toRoutingTableGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
-        List<Set<TableUnit>> result = new ArrayList<>(actualTableGroups.size());
+    private List<Set<RouteMapper>> toRoutingTableGroups(final String dataSource, final List<Set<String>> actualTableGroups) {
+        List<Set<RouteMapper>> result = new ArrayList<>(actualTableGroups.size());
         for (Set<String> each : actualTableGroups) {
             result.add(new HashSet<>(new ArrayList<>(each).stream().map(input -> findRoutingTable(dataSource, input)).collect(Collectors.toList())));
         }
         return result;
     }
     
-    private TableUnit findRoutingTable(final String dataSource, final String actualTable) {
+    private RouteMapper findRoutingTable(final String dataSource, final String actualTable) {
         for (RouteResult each : routeResults) {
-            Optional<TableUnit> result = each.getTableUnit(dataSource, actualTable);
+            Optional<RouteMapper> result = each.getTableMapper(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();
             }
@@ -108,11 +108,11 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
         throw new IllegalStateException(String.format("Cannot found routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
     }
     
-    private Collection<RouteUnit> getRouteUnits(final String dataSource, final Set<List<TableUnit>> cartesianRoutingTableGroups) {
+    private Collection<RouteUnit> getRouteUnits(final String dataSource, final Set<List<RouteMapper>> cartesianRoutingTableGroups) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
-        for (List<TableUnit> each : cartesianRoutingTableGroups) {
+        for (List<RouteMapper> each : cartesianRoutingTableGroups) {
             RouteUnit routeUnit = new RouteUnit(dataSource);
-            routeUnit.getTableUnits().addAll(each);
+            routeUnit.getTableMappers().addAll(each);
             result.add(routeUnit);
         }
         return result;

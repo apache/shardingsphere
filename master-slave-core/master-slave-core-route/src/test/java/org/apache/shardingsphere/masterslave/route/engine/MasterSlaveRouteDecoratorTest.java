@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -121,7 +121,7 @@ public final class MasterSlaveRouteDecoratorTest {
     private RouteResult mockRouteResult() {
         RouteResult result = new RouteResult();
         RouteUnit routeUnit = new RouteUnit(DATASOURCE_NAME);
-        routeUnit.getTableUnits().add(new TableUnit("table", "table_0"));
+        routeUnit.getTableMappers().add(new RouteMapper("table", "table_0"));
         result.getRouteUnits().add(routeUnit);
         result.getRouteUnits().add(new RouteUnit(NON_MASTER_SLAVE_DATASOURCE_NAME));
         return result;

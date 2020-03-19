@@ -103,7 +103,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
         for (RouteUnit each : new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), logicSchema.getSqlParserEngine(),
                 SHARDING_PROXY_CONTEXT.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).route(rewriteSQL, parameters, true).getRouteResult().getRouteUnits()) {
-            result.getExecutionUnits().add(new ExecutionUnit(each.getDataSourceUnit().getActualName(), new SQLUnit(rewriteSQL, parameters)));
+            result.getExecutionUnits().add(new ExecutionUnit(each.getDataSourceMapper().getActualName(), new SQLUnit(rewriteSQL, parameters)));
         }
         return result;
     }

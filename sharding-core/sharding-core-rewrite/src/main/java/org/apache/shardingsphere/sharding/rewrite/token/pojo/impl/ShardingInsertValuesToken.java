@@ -53,7 +53,7 @@ public final class ShardingInsertValuesToken extends InsertValuesToken implement
             return true;
         }
         for (DataNode each : insertValueToken.getDataNodes()) {
-            if (routeUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
+            if (routeUnit.getTableMapper(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
         }

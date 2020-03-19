@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Table unit.
+ * Route mapper.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class TableUnit {
+public final class RouteMapper {
     
     private final String logicName;
     

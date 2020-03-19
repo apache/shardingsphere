@@ -37,28 +37,28 @@ import java.util.Set;
 @ToString
 public final class RouteUnit {
     
-    private final DataSourceUnit dataSourceUnit;
+    private final RouteMapper dataSourceMapper;
     
-    private final List<TableUnit> tableUnits = new LinkedList<>();
+    private final List<RouteMapper> tableMappers = new LinkedList<>();
     
     public RouteUnit(final String dataSourceName) {
-        dataSourceUnit = new DataSourceUnit(dataSourceName, dataSourceName);
+        dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
     }
     
     public RouteUnit(final String logicDataSourceName, final String actualDataSourceName) {
-        dataSourceUnit = new DataSourceUnit(logicDataSourceName, actualDataSourceName);
+        dataSourceMapper = new RouteMapper(logicDataSourceName, actualDataSourceName);
     }
     
     /**
-     * Get routing table unit via data source name and actual table name.
+     * Get table mapper via data source name and actual table name.
      *
      * @param dataSourceName data source name
      * @param actualTableName actual table name
-     * @return routing table unit
+     * @return table mapper
      */
-    public Optional<TableUnit> getTableUnit(final String dataSourceName, final String actualTableName) {
-        for (TableUnit each : tableUnits) {
-            if (dataSourceName.equalsIgnoreCase(dataSourceUnit.getLogicName()) && actualTableName.equalsIgnoreCase(each.getActualName())) {
+    public Optional<RouteMapper> getTableMapper(final String dataSourceName, final String actualTableName) {
+        for (RouteMapper each : tableMappers) {
+            if (dataSourceName.equalsIgnoreCase(dataSourceMapper.getLogicName()) && actualTableName.equalsIgnoreCase(each.getActualName())) {
                 return Optional.of(each);
             }
         }
@@ -73,7 +73,7 @@ public final class RouteUnit {
      */
     public Set<String> getActualTableNames(final String logicTableName) {
         Set<String> result = new HashSet<>();
-        for (TableUnit each : tableUnits) {
+        for (RouteMapper each : tableMappers) {
             if (logicTableName.equalsIgnoreCase(each.getLogicName())) {
                 result.add(each.getActualName());
             }
@@ -87,8 +87,8 @@ public final class RouteUnit {
      * @return  logic tables' names
      */
     public Set<String> getLogicTableNames() {
-        Set<String> result = new HashSet<>(tableUnits.size(), 1);
-        for (TableUnit each : tableUnits) {
+        Set<String> result = new HashSet<>(tableMappers.size(), 1);
+        for (RouteMapper each : tableMappers) {
             result.add(each.getLogicName());
         }
         return result;

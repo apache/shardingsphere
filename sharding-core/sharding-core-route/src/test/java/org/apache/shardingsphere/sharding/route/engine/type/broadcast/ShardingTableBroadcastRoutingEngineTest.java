@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -124,8 +124,8 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     }
     
     private void assertRouteUnit(final RouteUnit routeUnit, final String dataSourceName, final String actualTableName) {
-        assertThat(routeUnit.getDataSourceUnit().getActualName(), is(dataSourceName));
-        assertThat(routeUnit.getTableUnits().size(), is(1));
-        assertThat(routeUnit.getTableUnits().get(0), is(new TableUnit("t_order", actualTableName)));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is(dataSourceName));
+        assertThat(routeUnit.getTableMappers().size(), is(1));
+        assertThat(routeUnit.getTableMappers().get(0), is(new RouteMapper("t_order", actualTableName)));
     }
 }

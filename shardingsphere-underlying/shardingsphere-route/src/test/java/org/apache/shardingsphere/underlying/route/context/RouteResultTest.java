@@ -65,7 +65,7 @@ public final class RouteResultTest {
     
     private RouteUnit mockRouteUnit(final String datasourceName) {
         RouteUnit result = new RouteUnit(datasourceName);
-        result.getTableUnits().add(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE));
+        result.getTableMappers().add(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE));
         return result;
     }
     
@@ -88,15 +88,15 @@ public final class RouteResultTest {
     }
     
     @Test
-    public void assertGetTableUnit() {
-        Optional<TableUnit> actual = multiRouteResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
+    public void assertGetTableMapper() {
+        Optional<RouteMapper> actual = multiRouteResult.getTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE)));
+        assertThat(actual.get(), is(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
     }
     
     @Test
-    public void assertGetTableUnitNonExist() {
-        Optional<TableUnit> actual = singleRouteResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
+    public void assertGetTableMapperNonExist() {
+        Optional<RouteMapper> actual = singleRouteResult.getTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
         assertFalse(actual.isPresent());
     }
     

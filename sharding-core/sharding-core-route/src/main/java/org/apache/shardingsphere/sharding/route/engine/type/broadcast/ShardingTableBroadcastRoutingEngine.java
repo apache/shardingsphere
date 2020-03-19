@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -83,7 +83,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
             RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
-            routeUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
+            routeUnit.getTableMappers().add(new RouteMapper(logicTableName, each.getTableName()));
             result.add(routeUnit);
         }
         return result;
