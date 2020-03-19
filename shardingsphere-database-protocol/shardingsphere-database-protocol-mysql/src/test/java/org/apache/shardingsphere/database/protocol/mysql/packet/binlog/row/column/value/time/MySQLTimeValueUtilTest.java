@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.colu
 
 import org.junit.Test;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -28,6 +29,6 @@ public class MySQLTimeValueUtilTest {
     @Test
     public void assertGetSimpleDateFormat() {
         Timestamp expected = new Timestamp(1584599445000L);
-        assertThat(MySQLTimeValueUtil.getSimpleDateFormat().format(expected), is("2020-03-19 14:30:45"));
+        assertThat(MySQLTimeValueUtil.getSimpleDateFormat().format(expected), is(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expected)));
     }
 }
