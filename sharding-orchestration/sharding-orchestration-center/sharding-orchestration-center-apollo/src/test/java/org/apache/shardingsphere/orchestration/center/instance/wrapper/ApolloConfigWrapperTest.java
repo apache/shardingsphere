@@ -23,7 +23,7 @@ import com.ctrip.framework.apollo.mockserver.EmbeddedApollo;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.google.common.util.concurrent.SettableFuture;
 import org.apache.shardingsphere.orchestration.center.instance.ApolloProperties;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;

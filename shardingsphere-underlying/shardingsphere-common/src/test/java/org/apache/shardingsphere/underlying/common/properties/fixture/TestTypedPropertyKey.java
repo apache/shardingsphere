@@ -15,26 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.config.orchestration;
+package org.apache.shardingsphere.underlying.common.properties.fixture;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.underlying.common.properties.TypedPropertyKey;
 
-import java.util.Map;
-
-/**
- * Config center configuration.
- */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public final class OrchestrationConfiguration {
+public enum TestTypedPropertyKey implements TypedPropertyKey {
     
-    /**
-     * Instance configuration map.
-     */
-    private Map<String, CenterConfiguration> instanceConfigurationMap;
+    BOOLEAN_VALUE("boolean", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    BOOLEAN_OBJECT_VALUE("Boolean", String.valueOf(Boolean.FALSE), Boolean.class),
+    
+    INT_VALUE("int", "10", int.class),
+    
+    INT_OBJECT_VALUE("Integer", "10", Integer.class),
+    
+    LONG_VALUE("long", "1000", long.class),
+    
+    LONG_OBJECT_VALUE("Long", "1000", Long.class),
+    
+    STRING_VALUE("String", "value", String.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }

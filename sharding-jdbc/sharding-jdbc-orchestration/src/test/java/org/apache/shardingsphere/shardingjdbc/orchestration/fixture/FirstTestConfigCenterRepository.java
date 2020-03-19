@@ -26,7 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 public final class FirstTestConfigCenterRepository implements ConfigCenterRepository {
     

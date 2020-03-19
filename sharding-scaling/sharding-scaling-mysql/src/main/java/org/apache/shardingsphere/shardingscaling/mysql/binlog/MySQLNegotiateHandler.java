@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.shardingscaling.mysql.binlog;
 
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.auth.ClientAuthenticationPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.auth.HandshakeInitializationPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.ErrorPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.OkPacket;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
+
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Promise;
@@ -31,6 +35,10 @@ import io.netty.util.concurrent.Promise;
  */
 @RequiredArgsConstructor
 public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
+    
+    private static final int MAX_PACKET_SIZE = 1 << 24;
+    
+    private static final int CHARACTER_SET = 33;
     
     private final String username;
     
@@ -42,37 +50,36 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
-        if (msg instanceof HandshakeInitializationPacket) {
-            HandshakeInitializationPacket handshake = (HandshakeInitializationPacket) msg;
-            ClientAuthenticationPacket clientAuth = new ClientAuthenticationPacket();
-            clientAuth.setSequenceNumber((byte) (handshake.getSequenceNumber() + 1));
-            clientAuth.setCharsetNumber((byte) 33);
-            clientAuth.setUsername(username);
-            clientAuth.setPassword(password);
-            clientAuth.setServerCapabilities(handshake.getServerCapabilities());
-            // use default database
-            clientAuth.setDatabaseName("mysql");
-            clientAuth.setAuthPluginData(joinAndCreateAuthPluginData(handshake));
-            clientAuth.setAuthPluginName(handshake.getAuthPluginName());
-            ctx.channel().writeAndFlush(clientAuth);
+        if (msg instanceof MySQLHandshakePacket) {
+            MySQLHandshakePacket handshake = (MySQLHandshakePacket) msg;
+            MySQLHandshakeResponse41Packet handshakeResponsePacket = new MySQLHandshakeResponse41Packet(1, MAX_PACKET_SIZE, CHARACTER_SET, username);
+            handshakeResponsePacket.setAuthResponse(generateAuthResponse(handshake.getAuthPluginData().getAuthPluginData()));
+            handshakeResponsePacket.setCapabilityFlags(generateClientCapability());
+            handshakeResponsePacket.setDatabase("mysql");
+            handshakeResponsePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
+            ctx.channel().writeAndFlush(handshakeResponsePacket);
             serverInfo = new ServerInfo();
             serverInfo.setServerVersion(new ServerVersion(handshake.getServerVersion()));
             return;
         }
-        if (msg instanceof OkPacket) {
+        if (msg instanceof MySQLOKPacket) {
             ctx.channel().pipeline().remove(this);
             authResultCallback.setSuccess(serverInfo);
             return;
         }
-        ErrorPacket error = (ErrorPacket) msg;
+        MySQLErrPacket error = (MySQLErrPacket) msg;
         ctx.channel().close();
-        throw new RuntimeException(error.getMessage());
+        throw new RuntimeException(error.getErrorMessage());
     }
     
-    private byte[] joinAndCreateAuthPluginData(final HandshakeInitializationPacket handshakePacket) {
-        byte[] result = new byte[handshakePacket.getAuthPluginDataPart1().length + handshakePacket.getAuthPluginDataPart2().length];
-        System.arraycopy(handshakePacket.getAuthPluginDataPart1(), 0, result, 0, handshakePacket.getAuthPluginDataPart1().length);
-        System.arraycopy(handshakePacket.getAuthPluginDataPart2(), 0, result, handshakePacket.getAuthPluginDataPart1().length, handshakePacket.getAuthPluginDataPart2().length);
-        return result;
+    private int generateClientCapability() {
+        return MySQLCapabilityFlag.calculateCapabilityFlags(MySQLCapabilityFlag.CLIENT_LONG_PASSWORD, MySQLCapabilityFlag.CLIENT_LONG_FLAG,
+            MySQLCapabilityFlag.CLIENT_PROTOCOL_41, MySQLCapabilityFlag.CLIENT_INTERACTIVE, MySQLCapabilityFlag.CLIENT_TRANSACTIONS,
+            MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION, MySQLCapabilityFlag.CLIENT_MULTI_STATEMENTS, MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH);
+    }
+    
+    @SneakyThrows
+    private byte[] generateAuthResponse(final byte[] authPluginData) {
+        return (null == password || 0 == password.length()) ? new byte[0] : MySQLPasswordEncryptor.encryptWithMySQL41(password.getBytes(), authPluginData);
     }
 }
