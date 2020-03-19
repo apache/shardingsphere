@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Order by value.
@@ -60,20 +61,28 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     @SneakyThrows
     private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) {
         List<Boolean> result = new ArrayList<>(orderByItems.size());
-        for (OrderByItem each : orderByItems) {
-            Collection<SimpleTableSegment> simpleTableSegments = selectStatementContext.getAllTables();
-            if (0 == simpleTableSegments.size()) {
-                break;
-            }
-            String tableName = simpleTableSegments.iterator().next().getTableName().getIdentifier().getValue();
-            TableMetaData tableMetaData = schemaMetaData.get(tableName);
-            OrderByItemSegment orderByItemSegment = each.getSegment();
-            if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-                result.add(tableMetaData.getColumns().get(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue()).isCaseSensitive());
-            } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
-                result.add(((ColumnMetaData) tableMetaData.getColumns().values().toArray()[((IndexOrderByItemSegment) orderByItemSegment).getColumnIndex() - 1]).isCaseSensitive());
-            } else {
-                result.add(false);
+        for (OrderByItem eachOrderByItem : orderByItems) {
+            for (SimpleTableSegment eachSimpleTableSegment : selectStatementContext.getAllTables()) {
+                String tableName = eachSimpleTableSegment.getTableName().getIdentifier().getValue();
+                TableMetaData tableMetaData = schemaMetaData.get(tableName);
+                Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
+                OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
+                if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
+                    String columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue();
+                    if (columns.containsKey(columnName)) {
+                        result.add(columns.get(columnName).isCaseSensitive());
+                        break;
+                    }
+                } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
+                    int columnIndex = ((IndexOrderByItemSegment) orderByItemSegment).getColumnIndex();
+                    if (columns.values().toArray().length >= columnIndex) {
+                        result.add(((ColumnMetaData) columns.values().toArray()[columnIndex - 1]).isCaseSensitive());
+                        break;
+                    }
+                } else {
+                    result.add(false);
+                    break;
+                }
             }
         }
         return result;
