@@ -60,12 +60,32 @@ public final class ColumnMetaDataLoader {
                 result.add(new ColumnMetaData(columnName, columnType, isPrimaryKey));
             }
         }
-        try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM " + table + " WHERE 1 != 1;")) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(connection, table))) {
             for (ColumnMetaData each : result) {
                 each.setCaseSensitive(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each.getName())));
             }
         }
         return result;
+    }
+    
+    private static String generateEmptyResultSQL(final Connection connection, final String table) throws SQLException {
+        String delimiterLeft;
+        String delimiterRight;
+        String url = connection.getMetaData().getURL();
+        if (url.startsWith("jdbc:mysql:")) {
+            delimiterLeft = "`";
+            delimiterRight = "`";
+        } else if (url.startsWith("jdbc:oracle:") || url.startsWith("jdbc:postgresql:") || url.startsWith("jdbc:h2:")) {
+            delimiterLeft = "\"";
+            delimiterRight = "\"";
+        } else if (url.startsWith("jdbc:sqlserver:")) {
+            delimiterLeft = "[";
+            delimiterRight = "]";
+        } else {
+            delimiterLeft = "";
+            delimiterRight = "";
+        }
+        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1;";
     }
     
     private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
