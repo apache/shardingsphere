@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 
@@ -60,11 +62,18 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         List<Boolean> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem each : orderByItems) {
             Collection<SimpleTableSegment> simpleTableSegments = selectStatementContext.getAllTables();
-            if (simpleTableSegments.size() > 0) {
-                String tableName = simpleTableSegments.iterator().next().getTableName().getIdentifier().getValue();
-                TableMetaData tableMetaData = schemaMetaData.get(tableName);
-                ColumnMetaData columnMetaData = tableMetaData.getColumns().get(((ColumnOrderByItemSegment) each.getSegment()).getColumn().getIdentifier().getValue());
-                result.add(columnMetaData.isCaseSensitive());
+            if (0 == simpleTableSegments.size()) {
+                break;
+            }
+            String tableName = simpleTableSegments.iterator().next().getTableName().getIdentifier().getValue();
+            TableMetaData tableMetaData = schemaMetaData.get(tableName);
+            OrderByItemSegment orderByItemSegment = each.getSegment();
+            if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
+                result.add(tableMetaData.getColumns().get(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue()).isCaseSensitive());
+            } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
+                result.add(((ColumnMetaData) tableMetaData.getColumns().values().toArray()[((IndexOrderByItemSegment) orderByItemSegment).getColumnIndex() - 1]).isCaseSensitive());
+            } else {
+                result.add(false);
             }
         }
         return result;

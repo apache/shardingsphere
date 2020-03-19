@@ -124,7 +124,7 @@ public final class OrderByValueTest {
             selectStatementContext, schemaMetaData);
         FieldSetter.setField(orderByValue1, OrderByValue.class.getDeclaredField("orderValuesCaseSensitive"), Arrays.asList(false, false));
         assertTrue(orderByValue1.next());
-        QueryResult queryResult2 = createQueryResult("3", "4");
+        QueryResult queryResult2 = createQueryResult("1", "2");
         OrderByValue orderByValue2 = new OrderByValue(queryResult2, Arrays.asList(
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
             createOrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, OrderDirection.ASC))),

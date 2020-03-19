@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
@@ -27,8 +31,11 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.Pag
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -53,7 +60,7 @@ public final class GroupByStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), createSchemaMetaData());
         assertFalse(actual.next());
     }
     
@@ -77,7 +84,7 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(5, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(20, 20, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -119,7 +126,7 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(5, Object.class)).thenReturn(1, 1, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(10, 10, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class), is(new BigDecimal(10)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
@@ -159,10 +166,23 @@ public final class GroupByStreamMergedResultTest {
         aggregationProjection2.setIndex(6);
         aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection2);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(aggregationProjection1, aggregationProjection2));
-        return new SelectStatementContext(new SelectStatement(),
+        SelectStatement selectStatement = new SelectStatement();
+        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
+        selectStatement.getTables().add(tableSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        selectStatement.setProjections(projectionsSegment);
+        return new SelectStatementContext(selectStatement,
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
+    }
+    
+    private SchemaMetaData createSchemaMetaData() {
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "dataType", false);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "dataType", false);
+        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", "dataType", false);
+        TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
+        return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
     }
     
     private QueryResult createQueryResult() throws SQLException {

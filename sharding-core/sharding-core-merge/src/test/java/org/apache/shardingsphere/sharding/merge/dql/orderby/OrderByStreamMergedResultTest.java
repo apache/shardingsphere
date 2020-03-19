@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
@@ -25,8 +29,11 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderB
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -51,17 +58,23 @@ public final class OrderByStreamMergedResultTest {
     
     @Before
     public void setUp() {
-        selectStatementContext = new SelectStatementContext(new SelectStatement(), 
-                new GroupByContext(Collections.emptyList(), 0), 
-                new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC))), false), 
-                new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
+        SelectStatement selectStatement = new SelectStatement();
+        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
+        selectStatement.getTables().add(tableSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        selectStatement.setProjections(projectionsSegment);
+        OrderByContext orderByContext = new OrderByContext(Arrays.asList(
+            new OrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
+            new OrderByItem(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))), false);
+        selectStatementContext = new SelectStatementContext(selectStatement, new GroupByContext(Collections.emptyList(), 0), orderByContext,
+            new ProjectionsContext(0, 0, false, Collections.emptyList()), new PaginationContext(null, null, Collections.emptyList()));
     }
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
         assertFalse(actual.next());
     }
     
@@ -73,7 +86,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -93,7 +106,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("2", "2", "3", "3", "4", "4");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("1", "1", "3", "3");
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("1"));
         assertTrue(actual.next());
@@ -122,7 +135,7 @@ public final class OrderByStreamMergedResultTest {
         when(queryResults.get(2).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("A"));
         assertTrue(actual.next());
@@ -138,24 +151,31 @@ public final class OrderByStreamMergedResultTest {
     public void assertNextForCaseInsensitive() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         when(queryResults.get(0).next()).thenReturn(true, false);
-        when(queryResults.get(0).isCaseSensitive(1)).thenReturn(false);
-        when(queryResults.get(0).getValue(1, Object.class)).thenReturn("b");
+        when(queryResults.get(0).getValue(2, Object.class)).thenReturn("b");
         when(queryResults.get(1).next()).thenReturn(true, true, false);
-        when(queryResults.get(1).isCaseSensitive(1)).thenReturn(false);
-        when(queryResults.get(1).getValue(1, Object.class)).thenReturn("a", "a", "B", "B");
+        when(queryResults.get(1).getValue(2, Object.class)).thenReturn("a", "a", "B", "B");
         when(queryResults.get(2).next()).thenReturn(true, false);
-        when(queryResults.get(2).isCaseSensitive(1)).thenReturn(false);
-        when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
+        when(queryResults.get(2).getValue(2, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, null);
+        MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class).toString(), is("a"));
+        assertThat(actual.getValue(2, Object.class).toString(), is("a"));
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class).toString(), is("A"));
+        assertThat(actual.getValue(2, Object.class).toString(), is("A"));
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class).toString(), is("B"));
+        assertThat(actual.getValue(2, Object.class).toString(), is("B"));
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class).toString(), is("b"));
+        assertThat(actual.getValue(2, Object.class).toString(), is("b"));
         assertFalse(actual.next());
     }
+    
+    private SchemaMetaData createSchemaMetaData() {
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "dataType", false);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "dataType", false);
+        columnMetaData1.setCaseSensitive(true);
+        columnMetaData2.setCaseSensitive(false);
+        TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList());
+        return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
+    }
+    
 }
