@@ -30,21 +30,21 @@ public final class ComparableAggregationUnitTest {
     public void assertComparableAggregationForAsc() {
         ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(true);
         comparableAggregation.merge(null);
-        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(null));
-        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(1));
-        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(10));
-        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(5));
-        assertThat((Integer) comparableAggregation.getResult(), is(1));
+        comparableAggregation.merge(Collections.singletonList(null));
+        comparableAggregation.merge(Collections.singletonList(1));
+        comparableAggregation.merge(Collections.singletonList(10));
+        comparableAggregation.merge(Collections.singletonList(5));
+        assertThat(comparableAggregation.getResult(), is(1));
     }
     
     @Test
     public void assertComparableAggregationForDesc() {
         ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(false);
         comparableAggregation.merge(null);
-        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(null));
-        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(1));
-        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(10));
-        comparableAggregation.merge(Collections.<Comparable<?>>singletonList(5));
-        assertThat((Integer) comparableAggregation.getResult(), is(10));
+        comparableAggregation.merge(Collections.singletonList(null));
+        comparableAggregation.merge(Collections.singletonList(1));
+        comparableAggregation.merge(Collections.singletonList(10));
+        comparableAggregation.merge(Collections.singletonList(5));
+        assertThat(comparableAggregation.getResult(), is(10));
     }
 }

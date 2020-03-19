@@ -21,10 +21,10 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.underlying.merge.engine.merger.impl.TransparentResultMerger;
 import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMergerEngine;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMergerEngi
 public final class ShardingResultMergerEngine implements ResultMergerEngine<ShardingRule> {
     
     @Override
-    public ResultMerger newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final ShardingSphereProperties properties, final SQLStatementContext sqlStatementContext) {
+    public ResultMerger newInstance(final DatabaseType databaseType, final ShardingRule shardingRule, final ConfigurationProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             return new ShardingDQLResultMerger(databaseType);
         } 

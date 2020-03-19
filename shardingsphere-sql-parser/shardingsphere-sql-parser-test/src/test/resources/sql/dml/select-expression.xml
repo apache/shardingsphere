@@ -18,7 +18,9 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_with_expression">
-        <table name="t_order" alias="o" start-index="38" stop-index="44" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="38" stop-index="44" />
+        </tables>
         <projections start-index="7" stop-index="31">
             <!-- TODO check expression-projection's stop-index whether include alias --> 
             <expression-projection alias="exp" start-index="7" stop-index="24" />
@@ -31,7 +33,9 @@
     </select>
     
     <select sql-case-id="select_with_date_function">
-        <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
+        <tables>
+            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
+        </tables>
         <projections start-index="7" stop-index="44">
             <expression-projection alias="creation_date" start-index="7" stop-index="27" />
         </projections>
@@ -41,7 +45,9 @@
     </select>
     
     <select sql-case-id="select_with_regexp" parameters="'init', 1, 2">
-        <table name="t_order_item" alias="t" start-index="14" stop-index="25" />
+        <tables>
+            <simple-table name="t_order_item" alias="t" start-index="14" stop-index="25" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>

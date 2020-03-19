@@ -34,13 +34,13 @@ public final class EncryptPredicateInRightValueTokenTest {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         indexValues.put(1, "b");
-        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, indexValues, Collections.<Integer>emptyList());
+        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, indexValues, Collections.emptyList());
         assertThat(actual.toString(), is("('a', 'b')"));
     }
     
     @Test
     public void assertToStringWithPlaceholderWithoutTableOwnerWithIn() {
-        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, Collections.<Integer, Object>emptyMap(), Collections.singletonList(0));
+        EncryptPredicateInRightValueToken actual = new EncryptPredicateInRightValueToken(0, 0, Collections.emptyMap(), Collections.singletonList(0));
         assertThat(actual.toString(), is("(?)"));
     }
 }

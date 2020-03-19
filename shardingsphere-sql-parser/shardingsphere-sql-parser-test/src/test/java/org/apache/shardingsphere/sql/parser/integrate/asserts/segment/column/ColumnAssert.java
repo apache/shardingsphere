@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.table.Tabl
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -51,7 +51,7 @@ public final class ColumnAssert {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             // TODO OwnerAssert is needed.
             OwnerSegment owner = actual.getOwner().get();
-            TableAssert.assertOwner(assertContext, new TableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }

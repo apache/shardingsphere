@@ -30,14 +30,14 @@ import static org.junit.Assert.assertThat;
 
 public final class StandardParameterBuilderTest {
     
-    private final List<Object> parameters = Arrays.<Object>asList(1, 2, 1, 5);
+    private final List<Object> parameters = Arrays.asList(1, 2, 1, 5);
     
     private StandardParameterBuilder parameterBuilder;
     
     @Before
     public void setUp() {
         parameterBuilder = new StandardParameterBuilder(parameters);
-        parameterBuilder.addAddedParameters(4, Collections.<Object>singleton(7));
+        parameterBuilder.addAddedParameters(4, Collections.singleton(7));
         parameterBuilder.addRemovedParameters(1);
     }
     

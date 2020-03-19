@@ -18,25 +18,22 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Adapter for {@code ResultSet}.
@@ -56,57 +53,26 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Getter
     private final ShardingExecutionContext shardingExecutionContext;
     
-    @Getter(AccessLevel.PROTECTED)
-    private final Map<String, String> logicAndActualColumns; 
-    
     public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ShardingExecutionContext shardingExecutionContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
         this.shardingExecutionContext = shardingExecutionContext;
-        logicAndActualColumns = createLogicAndActualColumns();
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), shardingExecutionContext.getSqlStatementContext(), logicAndActualColumns);
-    }
-    
-    private Map<String, String> createLogicAndActualColumns() {
-        return isQueryWithCipherColumn() ? createLogicAndCipherColumns() : createLogicAndPlainColumns();
-    }
-    
-    private Map<String, String> createLogicAndCipherColumns() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : shardingExecutionContext.getSqlStatementContext().getTablesContext().getTableNames()) {
-            result.putAll(getShardingRule().getEncryptRule().getLogicAndCipherColumns(each));
-        }
-        return result;
-    }
-    
-    private Map<String, String> createLogicAndPlainColumns() {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : shardingExecutionContext.getSqlStatementContext().getTablesContext().getTableNames()) {
-            result.putAll(getShardingRule().getEncryptRule().getLogicAndPlainColumns(each));
-        }
-        return result;
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), shardingExecutionContext.getSqlStatementContext());
     }
     
     private ShardingRule getShardingRule() {
-        return statement instanceof ShardingPreparedStatement 
-                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getRule() 
-                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getRule();
-    }
-    
-    private boolean isQueryWithCipherColumn() {
-        return statement instanceof ShardingPreparedStatement
-                ? ((ShardingPreparedStatement) statement).getConnection().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN)
-                : ((ShardingStatement) statement).getConnection().getRuntimeContext().getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN);
+        ShardingConnection connection = statement instanceof ShardingPreparedStatement ? ((ShardingPreparedStatement) statement).getConnection() : ((ShardingStatement) statement).getConnection();
+        return connection.getRuntimeContext().getRule();
     }
     
     @Override
     public final int findColumn(final String columnLabel) throws SQLException {
-        return resultSets.get(0).findColumn(getActualColumnLabel(columnLabel));
+        return resultSets.get(0).findColumn(columnLabel);
     }
     
     @Override
@@ -158,9 +124,5 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Override
     public final void clearWarnings() throws SQLException {
         forceExecuteTemplate.execute(resultSets, ResultSet::clearWarnings);
-    }
-    
-    protected final String getActualColumnLabel(final String columnLabel) {
-        return getLogicAndActualColumns().keySet().contains(columnLabel) ? getLogicAndActualColumns().get(columnLabel) : columnLabel;
     }
 }

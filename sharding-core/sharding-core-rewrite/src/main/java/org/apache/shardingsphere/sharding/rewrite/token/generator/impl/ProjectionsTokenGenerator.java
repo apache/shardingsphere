@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ProjectionsToken;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.DerivedProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 
 import java.util.Collection;

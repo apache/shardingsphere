@@ -19,22 +19,19 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -65,13 +62,13 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         when(sqlStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
         TablesContext tablesContext = mock(TablesContext.class);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null, new ShardingSphereProperties(new Properties()));
+        ShardingStandardRoutingEngine standardRoutingEngine = new ShardingStandardRoutingEngine(null, sqlStatementContext, null, new ConfigurationProperties(new Properties()));
         standardRoutingEngine.route(mock(ShardingRule.class));
     }
     
     @Test
     public void assertRouteByNonConditions() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", new ShardingConditions(Collections.emptyList()));
         RouteResult routeResult = standardRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
@@ -109,7 +106,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test
     public void assertRouteByHint() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_test", new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_test", new ShardingConditions(Collections.emptyList()));
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_test", 1);
         hintManager.addTableShardingValue("t_hint_test", 1);
@@ -140,7 +137,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test
     public void assertRouteByMixedWithHintDatasourceOnly() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", new ShardingConditions(Collections.emptyList()));
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
         RouteResult routeResult = standardRoutingEngine.route(createMixedShardingRule());
@@ -174,7 +171,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test
     public void assertRouteByMixedWithHintTableOnly() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", new ShardingConditions(Collections.emptyList()));
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
         RouteResult routeResult = standardRoutingEngine.route(createMixedShardingRule());
@@ -193,8 +190,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     private ShardingStandardRoutingEngine createShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions) {
         return new ShardingStandardRoutingEngine(logicTableName, new SelectStatementContext(new SelectStatement(),
-                new GroupByContext(Collections.<OrderByItem>emptyList(), 0), new OrderByContext(Collections.<OrderByItem>emptyList(), false),
-                new ProjectionsContext(0, 0, false, Collections.<Projection>emptyList(), Collections.<String>emptyList()),
-                new PaginationContext(null, null, Collections.emptyList())), shardingConditions, new ShardingSphereProperties(new Properties()));
+                new GroupByContext(Collections.emptyList(), 0), new OrderByContext(Collections.emptyList(), false),
+                new ProjectionsContext(0, 0, false, Collections.emptyList()),
+                new PaginationContext(null, null, Collections.emptyList())), shardingConditions, new ConfigurationProperties(new Properties()));
     }
 }

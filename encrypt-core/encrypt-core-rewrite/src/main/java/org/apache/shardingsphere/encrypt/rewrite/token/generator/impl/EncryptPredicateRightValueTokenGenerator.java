@@ -25,12 +25,12 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInConditi
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 import java.util.Collection;
@@ -46,9 +46,9 @@ import java.util.Optional;
  */
 @Setter
 public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptSQLTokenGenerator 
-        implements CollectionSQLTokenGenerator, RelationMetasAware, ParametersAware, QueryWithCipherColumnAware {
+        implements CollectionSQLTokenGenerator, SchemaMetaDataAware, ParametersAware, QueryWithCipherColumnAware {
     
-    private RelationMetas relationMetas;
+    private SchemaMetaData schemaMetaData;
     
     private List<Object> parameters;
     
@@ -56,12 +56,12 @@ public final class EncryptPredicateRightValueTokenGenerator extends BaseEncryptS
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent();
+        return sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent();
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), relationMetas).createEncryptConditions(sqlStatementContext);
+        List<EncryptCondition> encryptConditions = new EncryptConditionEngine(getEncryptRule(), schemaMetaData).createEncryptConditions(sqlStatementContext);
         return encryptConditions.isEmpty() ? Collections.emptyList() : generateSQLTokens(encryptConditions);
     }
     

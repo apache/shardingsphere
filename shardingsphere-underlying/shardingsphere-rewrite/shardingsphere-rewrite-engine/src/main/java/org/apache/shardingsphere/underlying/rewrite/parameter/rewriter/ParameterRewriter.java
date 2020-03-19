@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.parameter.rewriter;
 
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 
 import java.util.List;

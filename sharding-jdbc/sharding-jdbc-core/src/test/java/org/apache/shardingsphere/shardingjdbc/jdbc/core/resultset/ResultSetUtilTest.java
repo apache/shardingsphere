@@ -35,26 +35,25 @@ public final class ResultSetUtilTest {
     @Test
     public void assertConvertValue() {
         Object object = new Object();
-        assertThat((String) ResultSetUtil.convertValue(object, String.class), is(object.toString()));
-        assertThat((String) ResultSetUtil.convertValue("1", int.class), is("1"));
+        assertThat(ResultSetUtil.convertValue(object, String.class), is(object.toString()));
+        assertThat(ResultSetUtil.convertValue("1", int.class), is("1"));
     }
     
     @Test
     public void assertConvertNumberValueSuccess() {
-        assertThat((String) ResultSetUtil.convertValue("1", String.class), is("1"));
-        assertThat((boolean) ResultSetUtil.convertValue(1, boolean.class), is(true));
-        assertThat((byte) ResultSetUtil.convertValue((byte) 1, byte.class), is((byte) 1));
-        assertThat((short) ResultSetUtil.convertValue((short) 1, short.class), is((short) 1));
-        assertThat((int) ResultSetUtil.convertValue(new BigDecimal("1"), int.class), is(1));
-        assertThat((long) ResultSetUtil.convertValue(new BigDecimal("1"), long.class), is(1L));
-        assertThat((double) ResultSetUtil.convertValue(new BigDecimal("1"), double.class), is(1d));
-        assertThat((float) ResultSetUtil.convertValue(new BigDecimal("1"), float.class), is(1f));
-        assertThat((BigDecimal) ResultSetUtil.convertValue(new BigDecimal("1"), BigDecimal.class), is(new BigDecimal("1")));
-        assertThat((BigDecimal) ResultSetUtil.convertValue((short) 1, BigDecimal.class), is(new BigDecimal("1")));
-    
-        assertThat((Date) ResultSetUtil.convertValue(new Date(0L), Date.class), is(new Date(0L)));
-        assertThat(ResultSetUtil.convertValue((short) 1, Object.class), is((Object) Short.valueOf("1")));
-        assertThat(ResultSetUtil.convertValue((short) 1, String.class), is((Object) "1"));
+        assertThat(ResultSetUtil.convertValue("1", String.class), is("1"));
+        assertThat(ResultSetUtil.convertValue(1, boolean.class), is(true));
+        assertThat(ResultSetUtil.convertValue((byte) 1, byte.class), is((byte) 1));
+        assertThat(ResultSetUtil.convertValue((short) 1, short.class), is((short) 1));
+        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), int.class), is(1));
+        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), long.class), is(1L));
+        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), double.class), is(1d));
+        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), float.class), is(1f));
+        assertThat(ResultSetUtil.convertValue(new BigDecimal("1"), BigDecimal.class), is(new BigDecimal("1")));
+        assertThat(ResultSetUtil.convertValue((short) 1, BigDecimal.class), is(new BigDecimal("1")));
+        assertThat(ResultSetUtil.convertValue(new Date(0L), Date.class), is(new Date(0L)));
+        assertThat(ResultSetUtil.convertValue((short) 1, Object.class), is(Short.valueOf("1")));
+        assertThat(ResultSetUtil.convertValue((short) 1, String.class), is("1"));
     }
     
     @Test(expected = ShardingSphereException.class)
@@ -64,13 +63,13 @@ public final class ResultSetUtilTest {
     
     @Test
     public void assertConvertNullValue() {
-        assertThat(ResultSetUtil.convertValue(null, boolean.class), is((Object) false));
-        assertThat(ResultSetUtil.convertValue(null, byte.class), is((Object) (byte) 0));
-        assertThat(ResultSetUtil.convertValue(null, short.class), is((Object) (short) 0));
-        assertThat(ResultSetUtil.convertValue(null, int.class), is((Object) 0));
-        assertThat(ResultSetUtil.convertValue(null, long.class), is((Object) 0L));
-        assertThat(ResultSetUtil.convertValue(null, double.class), is((Object) 0D));
-        assertThat(ResultSetUtil.convertValue(null, float.class), is((Object) 0F));
+        assertThat(ResultSetUtil.convertValue(null, boolean.class), is(false));
+        assertThat(ResultSetUtil.convertValue(null, byte.class), is((byte) 0));
+        assertThat(ResultSetUtil.convertValue(null, short.class), is((short) 0));
+        assertThat(ResultSetUtil.convertValue(null, int.class), is(0));
+        assertThat(ResultSetUtil.convertValue(null, long.class), is(0L));
+        assertThat(ResultSetUtil.convertValue(null, double.class), is(0D));
+        assertThat(ResultSetUtil.convertValue(null, float.class), is(0F));
         assertThat(ResultSetUtil.convertValue(null, String.class), is((Object) null));
         assertThat(ResultSetUtil.convertValue(null, Object.class), is((Object) null));
         assertThat(ResultSetUtil.convertValue(null, BigDecimal.class), is((Object) null));
@@ -80,24 +79,24 @@ public final class ResultSetUtilTest {
     @Test
     public void assertConvertDateValueSuccess() {
         Date now = new Date();
-        assertThat((Date) ResultSetUtil.convertValue(now, Date.class), is(now));
-        assertThat((java.sql.Date) ResultSetUtil.convertValue(now, java.sql.Date.class), is(now));
-        assertThat((Time) ResultSetUtil.convertValue(now, Time.class), is(now));
-        assertThat((Timestamp) ResultSetUtil.convertValue(now, Timestamp.class), is(new Timestamp(now.getTime())));
-        assertThat((String) ResultSetUtil.convertValue(now, String.class), is(now.toString()));
+        assertThat(ResultSetUtil.convertValue(now, Date.class), is(now));
+        assertThat(ResultSetUtil.convertValue(now, java.sql.Date.class), is(now));
+        assertThat(ResultSetUtil.convertValue(now, Time.class), is(now));
+        assertThat(ResultSetUtil.convertValue(now, Timestamp.class), is(new Timestamp(now.getTime())));
+        assertThat(ResultSetUtil.convertValue(now, String.class), is(now.toString()));
     }
     
     @Test
     public void assertConvertByteArrayValueSuccess() {
         byte[] bytesValue = new byte[] {};
-        assertThat((byte[]) ResultSetUtil.convertValue(bytesValue, byte.class), is(bytesValue));
-        assertThat((byte) ResultSetUtil.convertValue(new byte[] {1}, byte.class), is((byte) 1));
-        assertThat((short) ResultSetUtil.convertValue(Shorts.toByteArray((short) 1), short.class), is((short) 1));
-        assertThat((int) ResultSetUtil.convertValue(Ints.toByteArray(1), int.class), is(1));
-        assertThat((long) ResultSetUtil.convertValue(Longs.toByteArray(1L), long.class), is(1L));
-        assertThat((double) ResultSetUtil.convertValue(Longs.toByteArray(1L), double.class), is(1d));
-        assertThat((float) ResultSetUtil.convertValue(Longs.toByteArray(1L), float.class), is(1f));
-        assertThat((BigDecimal) ResultSetUtil.convertValue(Longs.toByteArray(1L), BigDecimal.class), is(new BigDecimal("1")));
+        assertThat(ResultSetUtil.convertValue(bytesValue, byte.class), is(bytesValue));
+        assertThat(ResultSetUtil.convertValue(new byte[] {1}, byte.class), is((byte) 1));
+        assertThat(ResultSetUtil.convertValue(Shorts.toByteArray((short) 1), short.class), is((short) 1));
+        assertThat(ResultSetUtil.convertValue(Ints.toByteArray(1), int.class), is(1));
+        assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), long.class), is(1L));
+        assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), double.class), is(1d));
+        assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), float.class), is(1f));
+        assertThat(ResultSetUtil.convertValue(Longs.toByteArray(1L), BigDecimal.class), is(new BigDecimal("1")));
     }
     
     @Test(expected = ShardingSphereException.class)

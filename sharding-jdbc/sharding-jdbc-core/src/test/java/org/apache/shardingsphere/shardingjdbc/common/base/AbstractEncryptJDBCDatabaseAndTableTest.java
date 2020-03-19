@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,6 +35,7 @@ import javax.sql.DataSource;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -59,8 +60,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static Properties createProperties() {
         Properties result = new Properties();
-        result.put(PropertiesConstant.SQL_SHOW.getKey(), true);
-        result.put(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
+        result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), true);
+        result.put(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
         return result;
     }
     
@@ -69,22 +70,32 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     }
     
     private static EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
-        EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "test");
-        EncryptTableRuleConfiguration tableConfig1 = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig1));
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "cipher_pwd", "assist_pwd", "assistedTest");
-        EncryptTableRuleConfiguration tableConfig2 = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig2));
-        EncryptColumnRuleConfiguration columnConfig3 = new EncryptColumnRuleConfiguration("plain_pwd2", "cipher_pwd2", "", "test");
-        EncryptTableRuleConfiguration tableConfig3 = new EncryptTableRuleConfiguration(Collections.singletonMap("plain_pwd2", columnConfig3));
-        tableConfig3.getColumns().put("plain_pwd", columnConfig1);
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptors().put("test", encryptorConfig);
-        result.getEncryptors().put("assistedTest", encryptorQueryConfig);
-        result.getTables().put("t_encrypt", tableConfig1);
-        result.getTables().put("t_query_encrypt", tableConfig2);
-        result.getTables().put("t_encrypt_contains_column", tableConfig3);
+        result.getEncryptors().put("test", new EncryptorRuleConfiguration("test", new Properties()));
+        result.getEncryptors().put("assistedTest", new EncryptorRuleConfiguration("assistedTest", new Properties()));
+        result.getTables().put("t_encrypt", createEncryptTableRule());
+        result.getTables().put("t_query_encrypt", createQueryEncryptTableRule());
+        result.getTables().put("t_encrypt_contains_column", createEncryptContainsColumnTableRule());
         return result;
+    }
+    
+    private static EncryptTableRuleConfiguration createEncryptTableRule() {
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "test");
+        return new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnRuleConfig));
+    }
+    
+    private static EncryptTableRuleConfiguration createQueryEncryptTableRule() {
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("", "cipher_pwd", "assist_pwd", "assistedTest");
+        return new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnRuleConfig));
+    }
+    
+    private static EncryptTableRuleConfiguration createEncryptContainsColumnTableRule() {
+        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "test");
+        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("plain_pwd2", "cipher_pwd2", "", "test");
+        Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>(2, 1);
+        columns.put("plain_pwd", columnConfig1);
+        columns.put("plain_pwd2", columnConfig2);
+        return new EncryptTableRuleConfiguration(columns);
     }
     
     @Before

@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
@@ -55,7 +55,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
             parametersCount += insertStatementContext.getInsertValueContexts().get(count).getParametersCount();
             Comparable<?> generatedValue = generatedValues.next();
             if (!each.isEmpty()) {
-                ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parametersCount, Lists.<Object>newArrayList(generatedValue));
+                ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parametersCount, Lists.newArrayList(generatedValue));
             }
             count++;
         }

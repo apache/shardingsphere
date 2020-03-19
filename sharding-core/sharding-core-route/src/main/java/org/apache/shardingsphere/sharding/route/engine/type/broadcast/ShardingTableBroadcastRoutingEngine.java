@@ -23,10 +23,10 @@ import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.underlying.route.context.TableUnit;
@@ -41,7 +41,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteEngine {
     
-    private final TableMetas tableMetas;
+    private final SchemaMetaData schemaMetaData;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -70,8 +70,8 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     }
     
     private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
-        for (String each : tableMetas.getAllTableNames()) {
-            if (tableMetas.get(each).containsIndex(logicIndexName)) {
+        for (String each : schemaMetaData.getAllTableNames()) {
+            if (schemaMetaData.get(each).getIndexes().containsKey(logicIndexName)) {
                 return Optional.of(each);
             }
         }

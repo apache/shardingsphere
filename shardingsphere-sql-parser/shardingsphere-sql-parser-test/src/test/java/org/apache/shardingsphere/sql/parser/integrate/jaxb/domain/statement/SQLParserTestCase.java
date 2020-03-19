@@ -38,9 +38,6 @@ public abstract class SQLParserTestCase {
     @XmlAttribute(name = "sql-case-id")
     private String sqlCaseId;
     
-    @XmlAttribute(name = "long-sql")
-    private boolean longSQL;
-    
     @XmlAttribute
     private String parameters;
     
@@ -50,6 +47,6 @@ public abstract class SQLParserTestCase {
      * @return parameters
      */
     public List<String> getParameters() {
-        return null == parameters ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(parameters);
+        return null == parameters ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(parameters);
     }
 }

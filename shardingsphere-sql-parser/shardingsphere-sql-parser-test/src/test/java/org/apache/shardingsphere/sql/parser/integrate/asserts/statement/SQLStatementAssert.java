@@ -48,7 +48,7 @@ public final class SQLStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
-        ParameterMarkerAssert.assertCount(assertContext, actual.getParametersCount(), expected.getParameters().size());
+        ParameterMarkerAssert.assertCount(assertContext, actual.getParameterCount(), expected.getParameters().size());
         if (actual instanceof DMLStatement) {
             DMLStatementAssert.assertIs(assertContext, (DMLStatement) actual, expected);
         } else if (actual instanceof DDLStatement) {

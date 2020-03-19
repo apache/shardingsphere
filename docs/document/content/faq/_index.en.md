@@ -222,3 +222,10 @@ The solutions are as follows:
 1. Create JPA Entity with logicColumn which needs to encrypt.
 2. Disable JPA auto-ddl, For example setting auto-ddl=none.
 3. Create table manually. Table structure should use `cipherColumn`,`plainColumn` and `assistedQueryColumn` to replace the logicColumn.
+
+#### 18. How to speed up the metadata loading when service starts up?
+
+Answer:
+
+1. Update to 4.0.1 above, which helps speed up the process of loading table metadata from `the default dataSource`.
+2. Configure `max.connections.size.per.query`(Default value is 1) higher referring to connection pool you adopt(Version >= 3.0.0.M3).

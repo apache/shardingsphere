@@ -22,13 +22,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RelationMetasAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 
 import java.util.Collection;
@@ -40,22 +40,22 @@ import java.util.Optional;
  * Predicate column token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, RelationMetasAware, QueryWithCipherColumnAware {
+public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator, SchemaMetaDataAware, QueryWithCipherColumnAware {
     
-    private RelationMetas relationMetas;
+    private SchemaMetaData schemaMetaData;
     
     private boolean queryWithCipherColumn;
     
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable && ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent();
+        return sqlStatementContext instanceof WhereAvailable && ((WhereAvailable) sqlStatementContext).getWhere().isPresent();
     }
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Preconditions.checkState(((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().isPresent());
+        Preconditions.checkState(((WhereAvailable) sqlStatementContext).getWhere().isPresent());
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
-        for (AndPredicate each : ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere().get().getAndPredicates()) {
+        for (AndPredicate each : ((WhereAvailable) sqlStatementContext).getWhere().get().getAndPredicates()) {
             result.addAll(generateSQLTokens(sqlStatementContext, each));
         }
         return result;
@@ -86,7 +86,6 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     }
     
     private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final PredicateSegment segment) {
-        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(segment, relationMetas);
-        return tableName.isPresent() ? getEncryptRule().findEncryptTable(tableName.get()) : Optional.empty();
+        return sqlStatementContext.getTablesContext().findTableName(segment, schemaMetaData).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
     }
 }

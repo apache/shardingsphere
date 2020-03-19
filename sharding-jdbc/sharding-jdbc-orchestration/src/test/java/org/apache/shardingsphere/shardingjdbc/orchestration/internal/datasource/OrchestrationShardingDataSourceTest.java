@@ -24,18 +24,18 @@ import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfi
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.constant.OrchestrationType;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.orchestration.core.common.CenterType;
+import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -68,23 +68,23 @@ public final class OrchestrationShardingDataSourceTest {
     }
     
     private static OrchestrationConfiguration getOrchestrationConfiguration() {
-        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<>();
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<>();
         instanceConfigurationMap.put("test_sharding_registry_name", getRegistryCenterConfiguration());
         instanceConfigurationMap.put("test_sharding_config_name", getConfigCenterConfiguration());
         return new OrchestrationConfiguration(instanceConfigurationMap);
     }
     
-    private static InstanceConfiguration getRegistryCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("FourthTestRegistryCenter");
-        result.setOrchestrationType(OrchestrationType.REGISTRY_CENTER.getValue());
+    private static CenterConfiguration getRegistryCenterConfiguration() {
+        CenterConfiguration result = new CenterConfiguration("FourthTestRegistryCenter");
+        result.setOrchestrationType(CenterType.REGISTRY_CENTER.getValue());
         result.setNamespace("test_sharding_registry");
         result.setServerLists("localhost:3181");
         return result;
     }
     
-    private static InstanceConfiguration getConfigCenterConfiguration() {
-        InstanceConfiguration result = new InstanceConfiguration("FourthTestConfigCenter");
-        result.setOrchestrationType(OrchestrationType.CONFIG_CENTER.getValue());
+    private static CenterConfiguration getConfigCenterConfiguration() {
+        CenterConfiguration result = new CenterConfiguration("FourthTestConfigCenter");
+        result.setOrchestrationType(CenterType.CONFIG_CENTER.getValue());
         result.setNamespace("test_sharding_config");
         result.setServerLists("localhost:3181");
         return result;
@@ -99,7 +99,7 @@ public final class OrchestrationShardingDataSourceTest {
     
     @Test
     public void assertRenewRule() {
-        shardingDataSource.renew(new ShardingRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getShardingRuleConfig()));
+        shardingDataSource.renew(new ShardingRuleChangedEvent(DefaultSchema.LOGIC_NAME, getShardingRuleConfig()));
         assertThat(shardingDataSource.getDataSource().getRuntimeContext().getRule().getTableRules().size(), is(1));
     }
     
@@ -116,7 +116,7 @@ public final class OrchestrationShardingDataSourceTest {
     
     @Test
     public void assertRenewDataSource() {
-        shardingDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurations()));
+        shardingDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
         assertThat(shardingDataSource.getDataSource().getDataSourceMap().size(), is(3));
         
     }

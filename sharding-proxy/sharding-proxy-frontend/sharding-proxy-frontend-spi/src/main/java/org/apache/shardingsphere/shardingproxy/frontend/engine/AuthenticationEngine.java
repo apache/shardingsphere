@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.frontend.engine;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
 
 /**
  * Authentication engine.

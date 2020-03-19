@@ -25,7 +25,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
  * Databases shadow rule.
  */
 @Getter
-public class ShadowRule implements BaseRule {
+public final class ShadowRule implements BaseRule {
     
     private ShadowRuleConfiguration ruleConfiguration;
     
@@ -35,5 +35,4 @@ public class ShadowRule implements BaseRule {
         column = shadowRuleConfiguration.getColumn();
         ruleConfiguration = shadowRuleConfiguration;
     }
-    
 }

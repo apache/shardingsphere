@@ -33,7 +33,4 @@ public final class ExpectedColumnPosition extends AbstractExpectedSQLSegment {
     
     @XmlElement
     private ExpectedColumn column;
-    
-    @XmlElement(name = "after-column")
-    private ExpectedColumn afterColumn;
 }

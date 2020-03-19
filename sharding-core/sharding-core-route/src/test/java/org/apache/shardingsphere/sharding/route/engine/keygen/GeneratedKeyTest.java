@@ -24,10 +24,10 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumns
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,25 +52,25 @@ public final class GeneratedKeyTest {
     private ShardingRule shardingRule;
     
     @Mock
-    private TableMetas tableMetas;
+    private SchemaMetaData schemaMetaData;
     
     @Before
     public void setUp() {
-        insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
     }
     
     @Test
     public void assertGetGenerateKeyWithoutGenerateKeyColumnConfiguration() {
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.empty());
-        assertFalse(GeneratedKey.getGenerateKey(shardingRule, tableMetas, Collections.singletonList(1), insertStatement).isPresent());
+        assertFalse(GeneratedKey.getGenerateKey(shardingRule, schemaMetaData, Collections.singletonList(1), insertStatement).isPresent());
     }
     
     @Test
     public void assertGetGenerateKeyWhenCreateWithGenerateKeyColumnConfiguration() {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id1"));
-        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, tableMetas, Collections.singletonList(1), insertStatement);
+        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, schemaMetaData, Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
     }
@@ -82,12 +82,12 @@ public final class GeneratedKeyTest {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, "value"))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
         when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
-        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, tableMetas, Collections.singletonList(1), insertStatement);
+        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, schemaMetaData, Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
         assertThat(actual.get().getGeneratedValues().get(0), is((Comparable) 1));
         assertThat(actual.get().getGeneratedValues().get(1), is((Comparable) 100));
         assertThat(actual.get().getGeneratedValues().get(2), is((Comparable) "value"));
-        assertTrue(GeneratedKey.getGenerateKey(shardingRule, tableMetas, Collections.singletonList(1), insertStatement).isPresent());
+        assertTrue(GeneratedKey.getGenerateKey(shardingRule, schemaMetaData, Collections.singletonList(1), insertStatement).isPresent());
     }
 }

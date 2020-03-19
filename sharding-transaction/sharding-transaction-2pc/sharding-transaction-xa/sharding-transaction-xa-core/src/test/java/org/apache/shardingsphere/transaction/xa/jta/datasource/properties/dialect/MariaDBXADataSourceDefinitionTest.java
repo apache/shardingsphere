@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.mariadb.jdbc.MariaDbDataSource;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -33,8 +31,7 @@ public final class MariaDBXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new MariaDBXADataSourceDefinition().getXADriverClassName(),
-                CoreMatchers.<Collection<String>>is(Collections.singletonList(MariaDbDataSource.class.getName())));
+        assertThat(new MariaDBXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList(MariaDbDataSource.class.getName())));
     }
     
     @Test

@@ -93,7 +93,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getInt(1)).thenReturn(1);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat((Integer) actual.getValue(1, int.class), is(1));
+        assertThat(actual.getValue(1, int.class), is(1));
         assertFalse(actual.next());
     }
     
@@ -103,7 +103,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getInt(1)).thenReturn(1);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat((Integer) actual.getValue(1, int.class), is(1));
+        assertThat(actual.getValue(1, int.class), is(1));
         assertFalse(actual.next());
     }
     
@@ -114,7 +114,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getMetaData().isSigned(1)).thenReturn(true);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, int.class), is((Object) 1));
+        assertThat(actual.getValue(1, int.class), is(1));
         assertFalse(actual.next());
     }
     
@@ -125,7 +125,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getMetaData().isSigned(1)).thenReturn(false);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, int.class), is((Object) 1L));
+        assertThat(actual.getValue(1, int.class), is(1L));
         assertFalse(actual.next());
     }
     
@@ -136,7 +136,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getMetaData().isSigned(1)).thenReturn(true);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, long.class), is((Object) 1L));
+        assertThat(actual.getValue(1, long.class), is(1L));
         assertFalse(actual.next());
     }
     
@@ -147,7 +147,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getMetaData().isSigned(1)).thenReturn(false);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, long.class), is((Object) new BigDecimal("1").toBigInteger()));
+        assertThat(actual.getValue(1, long.class), is(new BigDecimal("1").toBigInteger()));
         assertFalse(actual.next());
     }
     
@@ -157,7 +157,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, BigDecimal.class), is((Object) new BigDecimal("1")));
+        assertThat(actual.getValue(1, BigDecimal.class), is(new BigDecimal("1")));
         assertFalse(actual.next());
     }
     
@@ -167,7 +167,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, BigDecimal.class), is((Object) new BigDecimal("1")));
+        assertThat(actual.getValue(1, BigDecimal.class), is(new BigDecimal("1")));
         assertFalse(actual.next());
     }
     
@@ -177,7 +177,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getDouble(1)).thenReturn(1D);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, double.class), is((Object) 1D));
+        assertThat(actual.getValue(1, double.class), is(1D));
         assertFalse(actual.next());
     }
     
@@ -187,7 +187,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getDouble(1)).thenReturn(1D);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, double.class), is((Object) 1D));
+        assertThat(actual.getValue(1, double.class), is(1D));
         assertFalse(actual.next());
     }
     
@@ -197,7 +197,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getString(1)).thenReturn("value");
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class), is((Object) "value"));
+        assertThat(actual.getValue(1, String.class), is("value"));
         assertFalse(actual.next());
     }
     
@@ -207,7 +207,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getString(1)).thenReturn("value");
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class), is((Object) "value"));
+        assertThat(actual.getValue(1, String.class), is("value"));
         assertFalse(actual.next());
     }
     
@@ -217,7 +217,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getString(1)).thenReturn("value");
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, String.class), is((Object) "value"));
+        assertThat(actual.getValue(1, String.class), is("value"));
         assertFalse(actual.next());
     }
     
@@ -227,7 +227,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getDate(1)).thenReturn(new Date(0L));
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Date.class), is((Object) new Date(0L)));
+        assertThat(actual.getValue(1, Date.class), is(new Date(0L)));
         assertFalse(actual.next());
     }
     
@@ -237,7 +237,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getTime(1)).thenReturn(new Time(0L));
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Time.class), is((Object) new Time(0L)));
+        assertThat(actual.getValue(1, Time.class), is(new Time(0L)));
         assertFalse(actual.next());
     }
     
@@ -247,7 +247,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(0L));
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Timestamp.class), is((Object) new Timestamp(0L)));
+        assertThat(actual.getValue(1, Timestamp.class), is(new Timestamp(0L)));
         assertFalse(actual.next());
     }
     
@@ -258,7 +258,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getClob(1)).thenReturn(value);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Clob.class), is((Object) value));
+        assertThat(actual.getValue(1, Clob.class), is(value));
         assertFalse(actual.next());
     }
     
@@ -269,7 +269,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getBlob(1)).thenReturn(value);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Blob.class), is((Object) value));
+        assertThat(actual.getValue(1, Blob.class), is(value));
         assertFalse(actual.next());
     }
     
@@ -280,7 +280,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getBlob(1)).thenReturn(value);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Blob.class), is((Object) value));
+        assertThat(actual.getValue(1, Blob.class), is(value));
         assertFalse(actual.next());
     }
     
@@ -291,7 +291,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getBlob(1)).thenReturn(value);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Blob.class), is((Object) value));
+        assertThat(actual.getValue(1, Blob.class), is(value));
         assertFalse(actual.next());
     }
     
@@ -302,7 +302,7 @@ public final class MemoryQueryResultTest {
         when(resultSet.getBlob(1)).thenReturn(value);
         MemoryQueryResult actual = new MemoryQueryResult(resultSet);
         assertTrue(actual.next());
-        assertThat(actual.getValue(1, Blob.class), is((Object) value));
+        assertThat(actual.getValue(1, Blob.class), is(value));
         assertFalse(actual.next());
     }
     
@@ -320,7 +320,7 @@ public final class MemoryQueryResultTest {
     public void assertGetCalendarValue() throws SQLException {
         MemoryQueryResult queryResult = new MemoryQueryResult(getResultSet());
         queryResult.next();
-        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.<Object>is(1));
+        assertThat(queryResult.getCalendarValue(1, Integer.class, Calendar.getInstance()), Is.is(1));
     }
     
     @Test

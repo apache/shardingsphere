@@ -124,7 +124,7 @@ public final class MasterSlaveDataSourceTest {
     private Connection mockConnection(final String url) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(metaData.getTables(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(mock(ResultSet.class));
+        when(metaData.getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(mock(ResultSet.class));
         when(result.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn(url);
         return result;

@@ -18,24 +18,24 @@
 package org.apache.shardingsphere.shardingproxy.frontend.postgresql.command;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacket;
+import org.apache.shardingsphere.database.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketFactory;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketTypeLoader;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.api.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.api.QueryCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.packet.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.payload.PacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketTypeLoader;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
 
@@ -77,7 +77,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             return;
         }
         int count = 0;
-        int proxyFrontendFlushThreshold = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int proxyFrontendFlushThreshold = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {

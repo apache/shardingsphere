@@ -25,6 +25,7 @@ import io.seata.core.rpc.netty.TmRpcClient;
 import io.seata.rm.RMClient;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.TMClient;
+import io.seata.tm.api.GlobalTransaction;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
@@ -74,9 +75,9 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     @Override
     @SneakyThrows
     public void begin() {
-        SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        SeataTransactionHolder.get().begin();
-        SeataTransactionBroadcaster.collectGlobalTxId();
+        GlobalTransaction globalTransaction = GlobalTransactionContext.getCurrentOrCreate();
+        globalTransaction.begin();
+        SeataTransactionHolder.set(globalTransaction);
     }
     
     @Override
@@ -85,8 +86,8 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
         try {
             SeataTransactionHolder.get().commit();
         } finally {
-            SeataTransactionBroadcaster.clear();
             SeataTransactionHolder.clear();
+            RootContext.unbind();
         }
     }
     
@@ -96,8 +97,8 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
         try {
             SeataTransactionHolder.get().rollback();
         } finally {
-            SeataTransactionBroadcaster.clear();
             SeataTransactionHolder.clear();
+            RootContext.unbind();
         }
     }
     

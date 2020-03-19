@@ -54,7 +54,7 @@ public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCe
              InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8)) {
             return new Yaml(new Constructor(RegistryCenterConfigs.class)).loadAs(inputStreamReader, RegistryCenterConfigs.class);
         } catch (IOException e) {
-            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "load config error");
+            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "load registry config error");
         }
         
     }
@@ -66,7 +66,7 @@ public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCe
             bufferedOutputStream.write(yaml.dumpAsMap(registryCenterConfigs).getBytes());
             bufferedOutputStream.flush();
         } catch (IOException e) {
-            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "save config error");
+            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "save registry config error");
         }
     }
     
