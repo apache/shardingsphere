@@ -62,8 +62,8 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
         Map<String, String> result = new HashMap<>();
         Collection<String> tableNames = getContext().getSqlStatementContext().getTablesContext().getTableNames();
         for (TableUnit each : routeUnit.getTableUnits()) {
-            String logicTableName = each.getLogicTableName().toLowerCase();
-            result.put(logicTableName, each.getActualTableName());
+            String logicTableName = each.getLogicName().toLowerCase();
+            result.put(logicTableName, each.getActualName());
             result.putAll(getLogicAndActualTablesFromBindingTable(routeUnit.getLogicDataSourceName(), each, tableNames));
         }
         return result;
@@ -71,7 +71,7 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     
     private Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, final TableUnit tableUnit, final Collection<String> tableNames) {
         Map<String, String> result = new LinkedHashMap<>();
-        shardingRule.findBindingTableRule(tableUnit.getLogicTableName()).ifPresent(
+        shardingRule.findBindingTableRule(tableUnit.getLogicName()).ifPresent(
             bindingTableRule -> result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableUnit, tableNames, bindingTableRule)));
         return result;
     }
@@ -81,8 +81,8 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : parsedTableNames) {
             String tableName = each.toLowerCase();
-            if (!tableName.equals(tableUnit.getLogicTableName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
-                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualTableName()));
+            if (!tableName.equals(tableUnit.getLogicName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
+                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableUnit.getActualName()));
             }
         }
         return result;

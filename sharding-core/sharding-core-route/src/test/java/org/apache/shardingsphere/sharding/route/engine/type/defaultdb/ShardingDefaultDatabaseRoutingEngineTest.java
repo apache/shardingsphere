@@ -46,9 +46,9 @@ public final class ShardingDefaultDatabaseRoutingEngineTest {
         assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_0"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(2));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(1).getActualTableName(), is("t_order_item"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(1).getLogicTableName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(1).getActualName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(1).getLogicName(), is("t_order_item"));
     }
 }

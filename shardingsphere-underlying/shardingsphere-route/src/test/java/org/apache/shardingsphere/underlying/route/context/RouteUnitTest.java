@@ -60,8 +60,8 @@ public final class RouteUnitTest {
     public void assertGetTableUnit() {
         Optional<TableUnit> actual = routeUnit.getTableUnit(DATASOURCE_NAME, SHARD_TABLE_0);
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getLogicTableName(), is(LOGIC_TABLE));
-        assertThat(actual.get().getActualTableName(), is(SHARD_TABLE_0));
+        assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
+        assertThat(actual.get().getActualName(), is(SHARD_TABLE_0));
     }
     
     @Test

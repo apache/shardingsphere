@@ -75,20 +75,20 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeResult.getRouteUnits().size(), is(4));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_0"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_0"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_order_0"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_order"));
         assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds_0"));
         assertThat(tableUnitList.get(1).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualName(), is("t_order_1"));
+        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicName(), is("t_order"));
         assertThat(tableUnitList.get(2).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(2).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(2).getTableUnits().get(0).getActualTableName(), is("t_order_0"));
-        assertThat(tableUnitList.get(2).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(2).getTableUnits().get(0).getActualName(), is("t_order_0"));
+        assertThat(tableUnitList.get(2).getTableUnits().get(0).getLogicName(), is("t_order"));
         assertThat(tableUnitList.get(3).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(3).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(3).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(3).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(3).getTableUnits().get(0).getActualName(), is("t_order_1"));
+        assertThat(tableUnitList.get(3).getTableUnits().get(0).getLogicName(), is("t_order"));
     }
     
     @Test
@@ -100,8 +100,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_order_1"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_order"));
     }
     
     @Test
@@ -116,8 +116,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_test_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_test"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_hint_test_1"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_hint_test"));
     }
     
     @Test
@@ -131,8 +131,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_ds_test_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_ds_test"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_hint_ds_test_1"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_hint_ds_test"));
     }
     
     @Test
@@ -146,12 +146,12 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeResult.getRouteUnits().size(), is(2));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_ds_test_0"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_ds_test"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_hint_ds_test_0"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_hint_ds_test"));
         assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(1).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualTableName(), is("t_hint_ds_test_1"));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicTableName(), is("t_hint_ds_test"));
+        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualName(), is("t_hint_ds_test_1"));
+        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicName(), is("t_hint_ds_test"));
     }
     
     @Test
@@ -165,8 +165,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeResult.getRouteUnits().size(), is(1));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_table_test_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_table_test"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_hint_table_test_1"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_hint_table_test"));
     }
     
     @Test
@@ -180,12 +180,12 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeResult.getRouteUnits().size(), is(2));
         assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_0"));
         assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_hint_table_test_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_hint_table_test"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualName(), is("t_hint_table_test_1"));
+        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicName(), is("t_hint_table_test"));
         assertThat(tableUnitList.get(1).getActualDataSourceName(), is("ds_1"));
         assertThat(tableUnitList.get(1).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualTableName(), is("t_hint_table_test_1"));
-        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicTableName(), is("t_hint_table_test"));
+        assertThat(tableUnitList.get(1).getTableUnits().get(0).getActualName(), is("t_hint_table_test_1"));
+        assertThat(tableUnitList.get(1).getTableUnits().get(0).getLogicName(), is("t_hint_table_test"));
     }
     
     private ShardingStandardRoutingEngine createShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions) {

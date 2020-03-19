@@ -57,7 +57,7 @@ public final class RouteUnit {
      */
     public Optional<TableUnit> getTableUnit(final String dataSourceName, final String actualTableName) {
         for (TableUnit each : tableUnits) {
-            if (dataSourceName.equalsIgnoreCase(logicDataSourceName) && actualTableName.equalsIgnoreCase(each.getActualTableName())) {
+            if (dataSourceName.equalsIgnoreCase(logicDataSourceName) && actualTableName.equalsIgnoreCase(each.getActualName())) {
                 return Optional.of(each);
             }
         }
@@ -73,8 +73,8 @@ public final class RouteUnit {
     public Set<String> getActualTableNames(final String logicTableName) {
         Set<String> result = new HashSet<>();
         for (TableUnit each : tableUnits) {
-            if (logicTableName.equalsIgnoreCase(each.getLogicTableName())) {
-                result.add(each.getActualTableName());
+            if (logicTableName.equalsIgnoreCase(each.getLogicName())) {
+                result.add(each.getActualName());
             }
         }
         return result;
@@ -88,7 +88,7 @@ public final class RouteUnit {
     public Set<String> getLogicTableNames() {
         Set<String> result = new HashSet<>(tableUnits.size(), 1);
         for (TableUnit each : tableUnits) {
-            result.add(each.getLogicTableName());
+            result.add(each.getLogicName());
         }
         return result;
     }

@@ -31,7 +31,7 @@ import lombok.ToString;
 @ToString
 public final class TableUnit {
     
-    private final String logicTableName;
+    private final String logicName;
     
-    private final String actualTableName;
+    private final String actualName;
 }
