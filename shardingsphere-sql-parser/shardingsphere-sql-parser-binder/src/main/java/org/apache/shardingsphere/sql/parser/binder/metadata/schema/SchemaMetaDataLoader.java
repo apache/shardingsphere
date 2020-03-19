@@ -67,7 +67,7 @@ public final class SchemaMetaDataLoader {
         }
         log.info("Loading {} tables' meta data.", tableNames.size());
         if (0 == tableNames.size()) {
-            return new SchemaMetaData(Collections.EMPTY_MAP);
+            return new SchemaMetaData(Collections.emptyMap());
         }
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
         Map<String, TableMetaData> tableMetaDataMap = 1 == tableGroups.size()
