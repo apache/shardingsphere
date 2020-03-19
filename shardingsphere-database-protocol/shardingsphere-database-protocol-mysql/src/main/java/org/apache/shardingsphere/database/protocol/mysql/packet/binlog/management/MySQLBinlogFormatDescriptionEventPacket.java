@@ -43,27 +43,39 @@ public final class MySQLBinlogFormatDescriptionEventPacket extends AbstractMySQL
     
     private final int eventHeaderLength = 19;
     
-    public MySQLBinlogFormatDescriptionEventPacket(final MySQLBinlogEventHeader binlogEventHeader, final byte[] mysqlServerVersion, final int createTimestamp) {
-        super(binlogEventHeader);
-        this.mysqlServerVersion = mysqlServerVersion;
-        this.createTimestamp = createTimestamp;
-    }
-    
     public MySQLBinlogFormatDescriptionEventPacket(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         super(binlogEventHeader);
         Preconditions.checkArgument(binlogVersion == payload.readInt2(), "Binlog version of FORMAT_DESCRIPTION_EVENT should always 4");
         mysqlServerVersion = payload.readStringFixByBytes(50);
         createTimestamp = payload.readInt4();
         Preconditions.checkArgument(eventHeaderLength == payload.readInt1(), "Length of the Binlog Event Header should always be 19.");
-        payload.skipReserved(MySQLBinlogEventType.getEventTypeHeaderLength(MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT) - 2 - 50 - 4 - 1);
+        skipTypeHeaderLength(payload);
+        skipCheckSums(payload);
+    }
+    
+    /**
+     * Type header length is not fixed value, it depends on mysql server version.
+     * Because the binlog event type may add in future version.
+     * During test, the length in version 5.7.21, the length of FORMAT_DESCRIPTION_EVENT is 95 not 84.
+     *
+     * @param payload MySQL binlog packet payload
+     */
+    private void skipTypeHeaderLength(final MySQLPacketPayload payload) {
+        payload.skipReserved(MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue() - 1);
+        int eventLength = payload.readInt1();
+        int remainLength = eventLength - 2 - 50 - 4 - 1 - (MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue() - 1) - 1;
+        payload.skipReserved(remainLength);
+    }
+    
+    private void skipCheckSums(final MySQLPacketPayload payload) {
+        int checksumAlgorithmFlag = payload.readInt1();
+        if (1 == checksumAlgorithmFlag) {
+            payload.skipReserved(4);
+        }
     }
     
     @Override
     protected void writeEvent(final MySQLPacketPayload payload) {
-        payload.writeInt2(binlogVersion);
-        payload.writeBytes(mysqlServerVersion);
-        payload.writeInt4(createTimestamp);
-        payload.writeInt1(eventHeaderLength);
-        payload.writeBytes(MySQLBinlogEventType.getEventTypeHeaderLengthsByBinlogVersion4());
+        // TODO
     }
 }

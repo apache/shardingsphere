@@ -17,29 +17,18 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.time;
 
+import org.junit.Test;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
-/**
- * Time value util of MySQL.
- */
-public final class MySQLTimeValueUtil {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class MySQLTimeValueUtilTest {
     
-    public static final String ZERO_OF_TIME = "00:00:00";
-    
-    public static final String ZERO_OF_DATE = "0000-00-00";
-    
-    public static final String YEAR_OF_ZERO = "0000";
-    
-    public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
-    
-    private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-    
-    /**
-     * Get simple date format for current thread.
-     *
-     * @return simple date format
-     */
-    public static SimpleDateFormat getSimpleDateFormat() {
-        return TIMESTAMP_FORMAT.get();
+    @Test
+    public void assertGetSimpleDateFormat() {
+        Timestamp expected = new Timestamp(1584599445000L);
+        assertThat(MySQLTimeValueUtil.getSimpleDateFormat().format(expected), is(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expected)));
     }
 }

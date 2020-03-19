@@ -30,12 +30,7 @@ public final class MySQLBinlogEventTypeTest {
     }
     
     @Test
-    public void assertGetEventTypeHeaderLengthsByBinlogVersion4() {
-        assertThat(MySQLBinlogEventType.getEventTypeHeaderLengthsByBinlogVersion4().length, is(35));
-    }
-    
-    @Test
-    public void assertGetEventTypeHeaderLength() {
-        assertThat(MySQLBinlogEventType.getEventTypeHeaderLength(MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT), is(84));
+    public void assertValueOfByInt() {
+        assertThat(MySQLBinlogEventType.valueOf(0x01), is(MySQLBinlogEventType.START_EVENT_V3));
     }
 }
