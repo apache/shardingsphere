@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.p
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.column.ExpectedColumnProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.expression.ExpectedExpressionProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.shorthand.ExpectedShorthandProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.subquery.ExpectedSubqueryProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.top.ExpectedTopProjection;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -60,13 +61,17 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
     @XmlElement(name = "top-projection")
     private final Collection<ExpectedTopProjection> topProjections = new LinkedList<>();
     
+    @XmlElement(name = "subquery-projection")
+    private final Collection<ExpectedSubqueryProjection> subqueryProjections = new LinkedList<>();
+    
     /**
      * Get size.
      * 
      * @return size
      */
     public int getSize() {
-        return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size() + expressionProjections.size() + topProjections.size();
+        return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size() 
+                + expressionProjections.size() + topProjections.size() + subqueryProjections.size();
     }
     
     /**
@@ -82,6 +87,7 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
         result.addAll(aggregationDistinctProjections);
         result.addAll(expressionProjections);
         result.addAll(topProjections);
+        result.addAll(subqueryProjections);
         result.sort(Comparator.comparingInt(ExpectedSQLSegment::getStartIndex));
         return result;
     }
