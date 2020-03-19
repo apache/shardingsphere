@@ -35,10 +35,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding meta data loader.
@@ -112,12 +112,9 @@ public final class ShardingMetaDataLoader {
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
-        Collection<TableMetaDataViolation> violations = new LinkedList<>();
-        for (Entry<String, TableMetaData> entry : actualTableMetaDataMap.entrySet()) {
-            if (!sample.equals(decorator.decorate(entry.getValue(), logicTableName, shardingRule))) {
-                violations.add(new TableMetaDataViolation(entry.getKey(), entry.getValue()));
-            }
-        }
+        Collection<TableMetaDataViolation> violations = actualTableMetaDataMap.entrySet().stream()
+                .filter(entry -> !sample.equals(decorator.decorate(entry.getValue(), logicTableName, shardingRule)))
+                .map(entry -> new TableMetaDataViolation(entry.getKey(), entry.getValue())).collect(Collectors.toList());
         throwExceptionIfNecessary(violations, logicTableName);
     }
 
