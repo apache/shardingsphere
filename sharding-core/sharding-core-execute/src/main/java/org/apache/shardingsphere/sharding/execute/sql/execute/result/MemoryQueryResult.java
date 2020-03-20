@@ -164,9 +164,4 @@ public final class MemoryQueryResult implements QueryResult {
     public String getColumnLabel(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnLabel(columnIndex);
     }
-    
-    @Override
-    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
-        return resultSetMetaData.isCaseSensitive(columnIndex);
-    }
 }
