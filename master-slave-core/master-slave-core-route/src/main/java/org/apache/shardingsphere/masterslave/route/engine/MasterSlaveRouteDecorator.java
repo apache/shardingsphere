@@ -20,7 +20,7 @@ package org.apache.shardingsphere.masterslave.route.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
-import org.apache.shardingsphere.underlying.route.DateNodeRouteDecorator;
+import org.apache.shardingsphere.underlying.route.decorator.DateNodeRouteDecorator;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;

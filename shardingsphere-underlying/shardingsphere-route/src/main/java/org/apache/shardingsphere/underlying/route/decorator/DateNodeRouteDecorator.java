@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route;
+package org.apache.shardingsphere.underlying.route.decorator;
 
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
