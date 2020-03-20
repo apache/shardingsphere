@@ -138,13 +138,10 @@ public final class OrderByStreamMergedResultTest {
             when(queryResults.get(i).getColumnName(2)).thenReturn("col2");
         }
         when(queryResults.get(0).next()).thenReturn(true, false);
-        when(queryResults.get(0).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("b");
         when(queryResults.get(1).next()).thenReturn(true, true, false);
-        when(queryResults.get(1).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(1).getValue(1, Object.class)).thenReturn("B", "B", "a", "a");
         when(queryResults.get(2).next()).thenReturn(true, false);
-        when(queryResults.get(2).isCaseSensitive(1)).thenReturn(true);
         when(queryResults.get(2).getValue(1, Object.class)).thenReturn("A");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createSchemaMetaData());

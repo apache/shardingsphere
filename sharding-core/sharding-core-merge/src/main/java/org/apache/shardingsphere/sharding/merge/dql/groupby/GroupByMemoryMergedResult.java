@@ -23,11 +23,14 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryQueryResultRow;
@@ -45,8 +48,8 @@ import java.util.Map.Entry;
  */
 public final class GroupByMemoryMergedResult extends MemoryMergedResult<ShardingRule> {
     
-    public GroupByMemoryMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext) throws SQLException {
-        super(null, null, selectStatementContext, queryResults);
+    public GroupByMemoryMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
+        super(null, schemaMetaData, selectStatementContext, queryResults);
     }
     
     @Override
@@ -63,7 +66,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             }
         }
         setAggregationValueToMemoryRow(selectStatementContext, dataMap, aggregationMap);
-        List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.emptyList() : getValueCaseSensitive(queryResults.iterator().next());
+        List<Boolean> valueCaseSensitive = queryResults.isEmpty() ? Collections.emptyList() : getValueCaseSensitive(queryResults.iterator().next(), selectStatementContext, schemaMetaData);
         return getMemoryResultSetRows(selectStatementContext, dataMap, valueCaseSensitive);
     }
     
@@ -110,10 +113,19 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         }
     }
     
-    private List<Boolean> getValueCaseSensitive(final QueryResult queryResult) throws SQLException {
+    private List<Boolean> getValueCaseSensitive(final QueryResult queryResult, final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         List<Boolean> result = Lists.newArrayList(false);
         for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-            result.add(queryResult.isCaseSensitive(columnIndex));
+            for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
+                String tableName = each.getTableName().getIdentifier().getValue();
+                TableMetaData tableMetaData = schemaMetaData.get(tableName);
+                Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
+                String columnName = queryResult.getColumnName(columnIndex);
+                if (columns.containsKey(columnName)) {
+                    result.add(columns.get(columnName).isCaseSensitive());
+                    break;
+                }
+            }
         }
         return result;
     }

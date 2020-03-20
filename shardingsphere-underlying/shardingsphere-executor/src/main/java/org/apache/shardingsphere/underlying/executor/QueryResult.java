@@ -98,13 +98,4 @@ public interface QueryResult {
      * @throws SQLException SQL Exception
      */
     String getColumnLabel(int columnIndex) throws SQLException;
-    
-    /**
-     * Whether value is case sensitive or not.
-     *
-     * @param columnIndex column index
-     * @return true if column is case sensitive, otherwise false
-     * @throws SQLException SQL Exception
-     */
-    boolean isCaseSensitive(int columnIndex) throws SQLException;
 }

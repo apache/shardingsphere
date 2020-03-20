@@ -238,12 +238,6 @@ public final class StreamQueryResultTest {
     }
     
     @Test
-    public void assertIsCaseSensitive() throws SQLException {
-        StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
-        assertFalse(queryResult.isCaseSensitive(1));
-    }
-    
-    @Test
     public void assertGetColumnCount() throws SQLException {
         StreamQueryResult queryResult = new StreamQueryResult(getResultSet());
         assertThat(queryResult.getColumnCount(), is(1));
