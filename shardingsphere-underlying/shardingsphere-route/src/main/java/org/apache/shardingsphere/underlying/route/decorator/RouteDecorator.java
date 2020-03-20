@@ -20,15 +20,15 @@ package org.apache.shardingsphere.underlying.route.decorator;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
- * Data node route decorator.
+ * Route decorator.
  */
-public interface DateNodeRouteDecorator {
+public interface RouteDecorator {
     
     /**
-     * Decorate route result.
+     * Decorate route context.
      *
      * @param routeContext route context
-     * @return decorated route result
+     * @return decorated route context
      */
     RouteContext decorate(RouteContext routeContext);
 }
