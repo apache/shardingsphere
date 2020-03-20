@@ -76,7 +76,7 @@ public final class CenterConfigServiceImpl implements CenterConfigService {
         if (null == config) {
             throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "Center not existed!");
         }
-        CenterConfig activatedConfig = findActivatedCenterConfiguration(configs);
+        CenterConfig activatedConfig = findActivatedCenterConfiguration(configs, orchestrationType);
         if (!config.equals(activatedConfig)) {
             if (null != activatedConfig) {
                 activatedConfig.setActivated(false);
@@ -109,8 +109,16 @@ public final class CenterConfigServiceImpl implements CenterConfigService {
                 .orElse(null);
     }
     
+    private CenterConfig findActivatedCenterConfiguration(final CenterConfigs centerConfigs, final String orchestrationType) {
+        return centerConfigs.getCenterConfigs().stream()
+                .filter(each->each.isActivated() && orchestrationType.equals(each.getOrchestrationType()))
+                .findAny()
+                .orElse(null);
+    }
+    
     private CenterConfig find(final String name, final String orchestrationType, final CenterConfigs configs) {
-        return configs.getCenterConfigs().stream().filter(each->name.equals(each.getName()) && orchestrationType.equals(each.getOrchestrationType()))
+        return configs.getCenterConfigs().stream()
+                .filter(each->name.equals(each.getName()) && orchestrationType.equals(each.getOrchestrationType()))
                 .findAny()
                 .orElse(null);
     }
