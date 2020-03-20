@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.servcie;
+package org.apache.shardingsphere.ui.common.domain;
 
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
-import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Registry center service.
+ * Center configs.
  */
-public interface RegistryCenterService {
+@Getter
+@Setter
+public final class CenterConfigs {
     
-    /**
-     * Get activated registry center.
-     *
-     * @return registry center
-     */
-    RegistryCenterRepository getActivatedRegistryCenter();
-    
-    /**
-     * Get activated state node.
-     *
-     * @return state node
-     */
-    RegistryCenterNode getActivatedStateNode();
+    private List<CenterConfig> centerConfigs = new ArrayList<>();
 }

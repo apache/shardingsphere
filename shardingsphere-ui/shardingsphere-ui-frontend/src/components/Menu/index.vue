@@ -33,11 +33,21 @@
           <i class="icon-sidebar"/>
           <span slot="title">{{ item.title }}</span>
         </template>
-        <el-menu-item-group>
-          <a v-for="(itm, idx) in item.child" :href="'#' + itm.href" :key="idx">
-            <el-menu-item :index="itm.href">{{ itm.title }}</el-menu-item>
+        <template v-for="(itemChild, idx) in item.child">
+          <el-submenu v-if="itemChild.child && itemChild.child.length" :index="String(idx+3)" :key="String(idx+4)">
+            <template slot="title">
+              <i class="icon-sidebar"/>
+              <span slot="title">{{ itemChild.title }}</span>
+            </template>
+            <!--三级菜单-->
+            <a v-for="(itemChild_child, idx_child) in itemChild.child" :href="'#' + itemChild_child.href" :key="idx_child">
+              <el-menu-item :index="itemChild_child.href">{{ itemChild_child.title }}</el-menu-item>
+            </a>
+          </el-submenu>
+          <a v-else :href="'#' + itemChild.href" :key="idx">
+            <el-menu-item :index="itemChild.href">{{itemChild.title}}</el-menu-item>
           </a>
-        </el-menu-item-group>
+        </template>
       </el-submenu>
     </el-menu>
   </div>

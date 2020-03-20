@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.repository;
+import API from '@/utils/api'
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
-
-/**
- * Registry center configs repository interface.
- */
-public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
+export default {
+  getRegCenter: (params = {}) => API.get(`/api/config-center`, params),
+  deleteRegCenter: (params = {}) => API.delete(`/api/config-center`, params),
+  postRegCenter: (params = {}) => API.post(`/api/config-center`, params),
+  getRegCenterActivated: (params = {}) => API.get(`/api/config-center/activated`, params),
+  postRegCenterConnect: (params = {}) => API.post(`/api/config-center/connect`, params)
 }

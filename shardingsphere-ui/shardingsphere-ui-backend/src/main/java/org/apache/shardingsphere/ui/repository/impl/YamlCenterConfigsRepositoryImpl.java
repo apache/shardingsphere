@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.ui.repository.impl;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
+import org.apache.shardingsphere.ui.common.domain.CenterConfigs;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
-import org.apache.shardingsphere.ui.repository.RegistryCenterConfigsRepository;
+import org.apache.shardingsphere.ui.repository.CenterConfigsRepository;
 import org.springframework.stereotype.Repository;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -33,40 +33,40 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Implementation of Registry center configs repository.
+ * Implementation of Center configs repository.
  */
 @Repository
-public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCenterConfigsRepository {
+public final class YamlCenterConfigsRepositoryImpl implements CenterConfigsRepository {
     
     private final File file;
     
-    public YamlRegistryCenterConfigsRepositoryImpl() {
+    public YamlCenterConfigsRepositoryImpl() {
         file = new File(new File(System.getProperty("user.home")), "shardingsphere-ui-configs.yaml");
     }
     
     @Override
-    public RegistryCenterConfigs load() {
+    public CenterConfigs load() {
         if (!file.exists()) {
-            return new RegistryCenterConfigs();
+            return new CenterConfigs();
         }
         
         try (FileInputStream fileInputStream = new FileInputStream(file);
              InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8)) {
-            return new Yaml(new Constructor(RegistryCenterConfigs.class)).loadAs(inputStreamReader, RegistryCenterConfigs.class);
+            return new Yaml(new Constructor(CenterConfigs.class)).loadAs(inputStreamReader, CenterConfigs.class);
         } catch (IOException e) {
-            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "load registry config error");
+            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "load center config error");
         }
         
     }
     
     @Override
-    public void save(final RegistryCenterConfigs registryCenterConfigs) {
+    public void save(final CenterConfigs centerConfigs) {
         Yaml yaml = new Yaml();
         try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file))) {
-            bufferedOutputStream.write(yaml.dumpAsMap(registryCenterConfigs).getBytes());
+            bufferedOutputStream.write(yaml.dumpAsMap(centerConfigs).getBytes());
             bufferedOutputStream.flush();
         } catch (IOException e) {
-            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "save registry config error");
+            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "save center config error");
         }
     }
     

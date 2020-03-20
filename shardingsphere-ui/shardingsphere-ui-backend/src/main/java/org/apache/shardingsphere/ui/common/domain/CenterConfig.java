@@ -23,21 +23,23 @@ import lombok.Setter;
 import java.util.Properties;
 
 /**
- * Registry center config.
+ * Center config.
  */
 @Getter
 @Setter
-public final class RegistryCenterConfig {
+public final class CenterConfig {
     
     private String name;
     
-    private String registryCenterType;
+    private String instanceType;
     
     private String serverLists;
     
     private String namespace;
     
     private String orchestrationName;
+    
+    private String orchestrationType;
     
     private String digest;
     

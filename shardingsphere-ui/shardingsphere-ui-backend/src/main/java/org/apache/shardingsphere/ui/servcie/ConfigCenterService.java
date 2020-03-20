@@ -17,26 +17,25 @@
 
 package org.apache.shardingsphere.ui.servcie;
 
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
-import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
 
 /**
- * Registry center service.
+ * Config center service
  */
-public interface RegistryCenterService {
+public interface ConfigCenterService {
     
     /**
-     * Get activated registry center.
+     * Get activated config center.
      *
-     * @return registry center
+     * @return config center
      */
-    RegistryCenterRepository getActivatedRegistryCenter();
+    ConfigCenterRepository getActivatedConfigCenter();
     
     /**
-     * Get activated state node.
+     * Get activated configuration node.
      *
-     * @return state node
+     * @return configuration node
      */
-    RegistryCenterNode getActivatedStateNode();
+    ConfigCenterNode getActivateConfigurationNode();
 }

@@ -19,11 +19,12 @@ package org.apache.shardingsphere.ui.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperCenterRepository;
-import org.apache.shardingsphere.ui.common.constant.RegistryCenterType;
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
+import org.apache.shardingsphere.ui.common.constant.InstanceType;
+import org.apache.shardingsphere.ui.common.domain.CenterConfig;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,19 +36,21 @@ public final class RegistryCenterRepositoryFactory {
     
     private static final ConcurrentHashMap<String, RegistryCenterRepository> REGISTRY_CENTER_MAP = new ConcurrentHashMap<>();
     
+    private static final ConcurrentHashMap<String, ConfigCenterRepository> CONFIG_CENTER_MAP = new ConcurrentHashMap<>();
+    
     /**
      * Create registry center instance.
      *
      * @param config registry center config
      * @return registry center
      */
-    public static RegistryCenterRepository createRegistryCenter(final RegistryCenterConfig config) {
+    public static RegistryCenterRepository createRegistryCenter(final CenterConfig config) {
         RegistryCenterRepository result = REGISTRY_CENTER_MAP.get(config.getName());
         if (null != result) {
             return result;
         }
-        RegistryCenterType registryCenterType = RegistryCenterType.nameOf(config.getRegistryCenterType());
-        switch (registryCenterType) {
+        InstanceType instanceType = InstanceType.nameOf(config.getInstanceType());
+        switch (instanceType) {
             case ZOOKEEPER:
                 result = new CuratorZookeeperCenterRepository();
                 break;
@@ -59,8 +62,32 @@ public final class RegistryCenterRepositoryFactory {
         return result;
     }
     
-    private static CenterConfiguration convert(final RegistryCenterConfig config) {
-        CenterConfiguration result = new CenterConfiguration(config.getRegistryCenterType());
+    /**
+     * Create config center instance
+     * @param config config center config
+     * @return config center
+     */
+    public static ConfigCenterRepository createConfigCenter(final CenterConfig config) {
+        ConfigCenterRepository result = CONFIG_CENTER_MAP.get(config.getName());
+        if (null != result) {
+            return result;
+        }
+        InstanceType instanceType = InstanceType.nameOf(config.getInstanceType());
+        switch (instanceType) {
+            case ZOOKEEPER:
+                result = new CuratorZookeeperCenterRepository();
+                break;
+            default:
+                throw new UnsupportedOperationException(config.getName());
+        }
+        result.init(convert(config));
+        CONFIG_CENTER_MAP.put(config.getName(), result);
+        return result;
+    }
+    
+    
+    private static CenterConfiguration convert(final CenterConfig config) {
+        CenterConfiguration result = new CenterConfiguration(config.getInstanceType());
         result.setServerLists(config.getServerLists());
         result.setNamespace(config.getNamespace());
         result.getProperties().put("digest", config.getDigest());

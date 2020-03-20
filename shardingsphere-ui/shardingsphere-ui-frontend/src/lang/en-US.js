@@ -23,16 +23,30 @@ export default {
         title: 'Data governance',
         child: [
           {
+            title: 'Config Center',
+            child: [
+              {
+                title: 'Config Server',
+                href: '/config-center'
+              },
+              {
+                title: 'Rule Config',
+                href: '/rule-config'
+              }
+            ]
+          },
+          {
             title: 'Registry Center',
-            href: '/registry-center'
-          },
-          {
-            title: 'Rule Config',
-            href: '/rule-config'
-          },
-          {
-            title: 'Runtime Status',
-            href: '/runtime-status'
+            child: [
+              {
+                title: 'Registry Server',
+                href: '/registry-center'
+              },
+              {
+                title: 'Runtime Status',
+                href: '/runtime-status'
+              }
+            ]
           }
         ]
       },
@@ -51,6 +65,7 @@ export default {
     del: 'Delete',
     notify: {
       title: 'Prompt',
+      addSucMessage: 'Add Succeeded',
       conSucMessage: 'Connection Succeeded',
       conFailMessage: 'Connection Failed',
       delSucMessage: 'Delete Succeeded',
@@ -87,9 +102,9 @@ export default {
   registryCenter: {
     btnTxt: 'ADD',
     registDialog: {
-      title: 'Add a registry',
+      title: 'Add a registry center',
       name: 'Name',
-      centerType: 'Center Type',
+      centerType: 'Instance Type',
       address: 'Address',
       orchestrationName: 'Orchestration Name',
       namespaces: 'Namespace',
@@ -106,6 +121,34 @@ export default {
     rules: {
       name: 'Please enter the name of the registration center',
       address: 'Please enter the registration center Address',
+      namespaces: 'Please enter a Namespace',
+      centerType: 'Please select a Center Type',
+      orchestrationName: 'Please enter a Orchestration Name',
+      digest: 'Please enter a digest'
+    }
+  },
+  configCenter: {
+    btnTxt: 'ADD',
+    configDialog: {
+      title: 'Add a config center',
+      name: 'Name',
+      centerType: 'Instance Type',
+      address: 'Address',
+      orchestrationName: 'Orchestration Name',
+      namespaces: 'Namespace',
+      digest: 'Digest',
+      btnConfirmTxt: 'Confirm',
+      btnCancelTxt: 'Cancel'
+    },
+    table: {
+      operate: 'Operate',
+      operateConnect: 'Connect',
+      operateConnected: 'Connected',
+      operateDel: 'Del'
+    },
+    rules: {
+      name: 'Please enter the name of the config center',
+      address: 'Please enter the config center Address',
       namespaces: 'Please enter a Namespace',
       centerType: 'Please select a Center Type',
       orchestrationName: 'Please enter a Orchestration Name',

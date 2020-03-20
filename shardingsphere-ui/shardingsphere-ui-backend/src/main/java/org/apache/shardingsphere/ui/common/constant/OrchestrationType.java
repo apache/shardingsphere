@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.common.domain;
+package org.apache.shardingsphere.ui.common.constant;
 
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Registry center configs.
+ * Orchestration type.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class RegistryCenterConfigs {
+public enum OrchestrationType {
     
-    private List<RegistryCenterConfig> registryCenterConfigs = new ArrayList<>();
+    REGISTRY_CENTER("registry_center"),
+    CONFIG_CENTER("config_center");
+    
+    private final String value;
 }

@@ -32,29 +32,29 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * RESTful API of registry center configuration.
+ * RESTful API of config center configuration.
  */
 @RestController
-@RequestMapping("/api/reg-center")
-public final class RegistryCenterController {
+@RequestMapping("/api/config-center")
+public final class ConfigCenterController {
     
     @Autowired
     private CenterConfigService centerConfigService;
     
     /**
-     * Load all registry center configs.
+     * Load all config center configs.
      *
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseResult<List<CenterConfig>> loadConfigs() {
-        return ResponseResultUtil.build(centerConfigService.loadAll(OrchestrationType.REGISTRY_CENTER.getValue()).getCenterConfigs());
+        return ResponseResultUtil.build(centerConfigService.loadAll(OrchestrationType.CONFIG_CENTER.getValue()).getCenterConfigs());
     }
     
     /**
-     * Add registry center config.
+     * Add config center config.
      *
-     * @param config registry center config
+     * @param config config center config
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
@@ -64,38 +64,38 @@ public final class RegistryCenterController {
     }
     
     /**
-     * Delete registry center config.
+     * Delete config center config.
      *
-     * @param config registry center config
+     * @param config config center config
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public ResponseResult delete(@RequestBody final CenterConfig config) {
-        centerConfigService.delete(config.getName(), OrchestrationType.REGISTRY_CENTER.getValue());
+        centerConfigService.delete(config.getName(), OrchestrationType.CONFIG_CENTER.getValue());
         return ResponseResultUtil.success();
     }
     
     /**
-     * Connect registry center.
+     * Connect config center.
      * 
-     * @param config registry center config
+     * @param config config center config
      * @return response result
      */
     @RequestMapping(value = "/connect", method = RequestMethod.POST)
     public ResponseResult<Boolean> connect(@RequestBody final CenterConfig config) {
-        RegistryCenterRepositoryFactory.createRegistryCenter(centerConfigService.load(config.getName(), OrchestrationType.REGISTRY_CENTER.getValue()));
-        centerConfigService.setActivated(config.getName(), OrchestrationType.REGISTRY_CENTER.getValue());
+        RegistryCenterRepositoryFactory.createConfigCenter(centerConfigService.load(config.getName(), OrchestrationType.CONFIG_CENTER.getValue()));
+        centerConfigService.setActivated(config.getName(), OrchestrationType.CONFIG_CENTER.getValue());
         return ResponseResultUtil.build(Boolean.TRUE);
     }
     
     /**
-     * Get activated registry center config.
+     * Get activated config center config.
      *
      * @return response result
      */
     @RequestMapping(value = "/activated", method = RequestMethod.GET)
     public ResponseResult<CenterConfig> activated() {
-        return ResponseResultUtil.build(centerConfigService.loadActivated(OrchestrationType.REGISTRY_CENTER.getValue()).orElse(null));
+        return ResponseResultUtil.build(centerConfigService.loadActivated(OrchestrationType.CONFIG_CENTER.getValue()).orElse(null));
     }
     
 }

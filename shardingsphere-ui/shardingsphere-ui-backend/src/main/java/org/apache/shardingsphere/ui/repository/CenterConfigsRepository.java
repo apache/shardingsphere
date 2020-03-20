@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.servcie;
+package org.apache.shardingsphere.ui.repository;
 
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
-import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
+import org.apache.shardingsphere.ui.common.domain.CenterConfigs;
 
 /**
- * Registry center service.
+ * Center configs repository interface.
  */
-public interface RegistryCenterService {
-    
-    /**
-     * Get activated registry center.
-     *
-     * @return registry center
-     */
-    RegistryCenterRepository getActivatedRegistryCenter();
-    
-    /**
-     * Get activated state node.
-     *
-     * @return state node
-     */
-    RegistryCenterNode getActivatedStateNode();
+public interface CenterConfigsRepository extends ConfigsRepository<CenterConfigs> {
 }
