@@ -142,7 +142,7 @@ public final class MasterSlaveRouteDecoratorTest {
     
     private RouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(sqlStatementContext, mockRouteResult());
+        return new RouteContext(sqlStatementContext, Collections.emptyList(), mockRouteResult());
     }
     
     private RouteResult mockRouteResult() {
@@ -155,6 +155,6 @@ public final class MasterSlaveRouteDecoratorTest {
     
     private RouteContext mockSQLRouteContextWithoutRouteUnits(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(sqlStatementContext, new RouteResult());
+        return new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
     }
 }

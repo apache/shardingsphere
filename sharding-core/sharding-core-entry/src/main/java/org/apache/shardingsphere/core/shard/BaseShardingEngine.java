@@ -27,12 +27,12 @@ import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecora
 import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -42,6 +42,8 @@ import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
+import org.apache.shardingsphere.underlying.route.DefaultDateNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
@@ -62,7 +64,9 @@ public abstract class BaseShardingEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final ShardingRouter shardingRouter;
+    private final DefaultDateNodeRouter dateNodeRouter;
+    
+    private final ShardingRouteDecorator shardingRouteDecorator;
     
     private final SPIRoutingHook routingHook;
     
@@ -70,7 +74,8 @@ public abstract class BaseShardingEngine {
         this.shardingRule = shardingRule;
         this.properties = properties;
         this.metaData = metaData;
-        shardingRouter = new ShardingRouter(shardingRule, properties, metaData, sqlParserEngine);
+        dateNodeRouter = new DefaultDateNodeRouter(metaData, sqlParserEngine);
+        shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
         routingHook = new SPIRoutingHook();
     }
     
@@ -94,12 +99,12 @@ public abstract class BaseShardingEngine {
     
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
-    protected abstract ShardingRouteContext route(ShardingRouter shardingRouter, String sql, List<Object> parameters);
+    protected abstract RouteContext route(DefaultDateNodeRouter dateNodeRouter, String sql, List<Object> parameters);
     
     private ShardingRouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
         routingHook.start(sql);
         try {
-            ShardingRouteContext result = decorate(route(shardingRouter, sql, clonedParameters));
+            ShardingRouteContext result = decorate(route(dateNodeRouter, sql, clonedParameters));
             routingHook.finishSuccess(result, metaData.getSchema());
             return result;
             // CHECKSTYLE:OFF
@@ -110,8 +115,8 @@ public abstract class BaseShardingEngine {
         }
     }
     
-    private ShardingRouteContext decorate(final ShardingRouteContext shardingRouteContext) {
-        ShardingRouteContext result = shardingRouteContext;
+    private ShardingRouteContext decorate(final RouteContext routeContext) {
+        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
             result = (ShardingRouteContext) new MasterSlaveRouteDecorator(each).decorate(result);
         }

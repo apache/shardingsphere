@@ -44,10 +44,10 @@ public final class DefaultDateNodeRouter implements DateNodeRouter {
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, useCache);
         try {
             SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), sql, parameters, sqlStatement);
-            return new RouteContext(sqlStatementContext, new RouteResult());
+            return new RouteContext(sqlStatementContext, parameters, new RouteResult());
             // TODO should pass parameters for master-slave
         } catch (final IndexOutOfBoundsException ex) {
-            return new RouteContext(new CommonSQLStatementContext(sqlStatement), new RouteResult());
+            return new RouteContext(new CommonSQLStatementContext(sqlStatement), parameters, new RouteResult());
         }
     }
 }
