@@ -20,7 +20,7 @@ package org.apache.shardingsphere.ui.web.controller;
 import org.apache.shardingsphere.ui.common.constant.OrchestrationType;
 import org.apache.shardingsphere.ui.common.domain.CenterConfig;
 import org.apache.shardingsphere.ui.servcie.CenterConfigService;
-import org.apache.shardingsphere.ui.util.RegistryCenterRepositoryFactory;
+import org.apache.shardingsphere.ui.util.CenterRepositoryFactory;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
 import org.apache.shardingsphere.ui.web.response.ResponseResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +83,7 @@ public final class ConfigCenterController {
      */
     @RequestMapping(value = "/connect", method = RequestMethod.POST)
     public ResponseResult<Boolean> connect(@RequestBody final CenterConfig config) {
-        RegistryCenterRepositoryFactory.createConfigCenter(centerConfigService.load(config.getName(), OrchestrationType.CONFIG_CENTER.getValue()));
+        CenterRepositoryFactory.createConfigCenter(centerConfigService.load(config.getName(), OrchestrationType.CONFIG_CENTER.getValue()));
         centerConfigService.setActivated(config.getName(), OrchestrationType.CONFIG_CENTER.getValue());
         return ResponseResultUtil.build(Boolean.TRUE);
     }

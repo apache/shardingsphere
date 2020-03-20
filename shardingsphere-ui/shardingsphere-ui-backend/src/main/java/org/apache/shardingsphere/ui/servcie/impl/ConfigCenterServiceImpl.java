@@ -24,7 +24,7 @@ import org.apache.shardingsphere.ui.common.domain.CenterConfig;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
 import org.apache.shardingsphere.ui.servcie.CenterConfigService;
 import org.apache.shardingsphere.ui.servcie.ConfigCenterService;
-import org.apache.shardingsphere.ui.util.RegistryCenterRepositoryFactory;
+import org.apache.shardingsphere.ui.util.CenterRepositoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +43,7 @@ public final class ConfigCenterServiceImpl implements ConfigCenterService {
     public ConfigCenterRepository getActivatedConfigCenter() {
         Optional<CenterConfig> optional = centerConfigService.loadActivated(OrchestrationType.CONFIG_CENTER.getValue());
         if (optional.isPresent()) {
-            return RegistryCenterRepositoryFactory.createConfigCenter(optional.get());
+            return CenterRepositoryFactory.createConfigCenter(optional.get());
         }
         throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "No activated config center!");
     }

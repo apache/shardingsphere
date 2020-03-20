@@ -29,10 +29,10 @@ import org.apache.shardingsphere.ui.common.domain.CenterConfig;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Registry center factory.
+ * Center factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryCenterRepositoryFactory {
+public final class CenterRepositoryFactory {
     
     private static final ConcurrentHashMap<String, RegistryCenterRepository> REGISTRY_CENTER_MAP = new ConcurrentHashMap<>();
     
