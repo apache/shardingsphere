@@ -82,6 +82,15 @@ public interface QueryResult {
     int getColumnCount() throws SQLException;
     
     /**
+     * Get column name.
+     *
+     * @param columnIndex column index
+     * @return column name
+     * @throws SQLException SQL Exception
+     */
+    String getColumnName(int columnIndex) throws SQLException;
+    
+    /**
      * Get column label.
      *
      * @param columnIndex column index

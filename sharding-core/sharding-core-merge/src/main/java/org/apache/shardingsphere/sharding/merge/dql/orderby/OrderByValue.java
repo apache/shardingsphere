@@ -75,8 +75,9 @@ public final class OrderByValue implements Comparable<OrderByValue> {
                     }
                 } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
                     int columnIndex = ((IndexOrderByItemSegment) orderByItemSegment).getColumnIndex();
-                    if (columns.values().toArray().length >= columnIndex) {
-                        result.add(((ColumnMetaData) columns.values().toArray()[columnIndex - 1]).isCaseSensitive());
+                    String columnName = queryResult.getColumnName(columnIndex);
+                    if (columns.containsKey(columnName)) {
+                        result.add(columns.get(columnName).isCaseSensitive());
                         break;
                     }
                 } else {

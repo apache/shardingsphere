@@ -156,6 +156,11 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     @Override
+    public String getColumnName(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnName(columnIndex);
+    }
+    
+    @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         return resultSetMetaData.getColumnLabel(columnIndex);
     }
