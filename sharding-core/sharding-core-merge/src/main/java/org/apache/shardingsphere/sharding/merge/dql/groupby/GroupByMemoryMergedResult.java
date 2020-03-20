@@ -116,18 +116,23 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     private List<Boolean> getValueCaseSensitive(final QueryResult queryResult, final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         List<Boolean> result = Lists.newArrayList(false);
         for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-            for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
-                String tableName = each.getTableName().getIdentifier().getValue();
-                TableMetaData tableMetaData = schemaMetaData.get(tableName);
-                Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
-                String columnName = queryResult.getColumnName(columnIndex);
-                if (columns.containsKey(columnName)) {
-                    result.add(columns.get(columnName).isCaseSensitive());
-                    break;
-                }
-            }
+            result.add(getValueCaseSensitiveFromTables(queryResult, selectStatementContext, schemaMetaData, columnIndex));
         }
         return result;
+    }
+    
+    private boolean getValueCaseSensitiveFromTables(final QueryResult queryResult, final SelectStatementContext selectStatementContext,
+                                                    final SchemaMetaData schemaMetaData, final int columnIndex) throws SQLException {
+        for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            TableMetaData tableMetaData = schemaMetaData.get(tableName);
+            Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
+            String columnName = queryResult.getColumnName(columnIndex);
+            if (columns.containsKey(columnName)) {
+                return columns.get(columnName).isCaseSensitive();
+            }
+        }
+        return false;
     }
     
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext, 

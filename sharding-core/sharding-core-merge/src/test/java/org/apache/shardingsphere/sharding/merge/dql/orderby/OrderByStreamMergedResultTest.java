@@ -190,5 +190,4 @@ public final class OrderByStreamMergedResultTest {
         TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList());
         return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
     }
-    
 }
