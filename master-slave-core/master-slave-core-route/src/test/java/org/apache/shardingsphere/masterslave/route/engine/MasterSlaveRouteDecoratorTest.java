@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegmen
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -40,6 +42,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -73,7 +76,7 @@ public final class MasterSlaveRouteDecoratorTest {
     
     @Before
     public void setUp() {
-        routeDecorator = new MasterSlaveRouteDecorator(masterSlaveRule);
+        routeDecorator = new MasterSlaveRouteDecorator();
         when(masterSlaveRule.getName()).thenReturn(DATASOURCE_NAME);
         when(masterSlaveRule.getMasterDataSourceName()).thenReturn(MASTER_DATASOURCE);
         when(masterSlaveRule.getSlaveDataSourceNames()).thenReturn(Lists.newArrayList(SLAVE_DATASOURCE));
@@ -88,7 +91,7 @@ public final class MasterSlaveRouteDecoratorTest {
     @Test
     public void assertDecorateToMaster() {
         RouteContext routeContext = mockSQLRouteContext(insertStatement);
-        RouteContext actual = routeDecorator.decorate(routeContext);
+        RouteContext actual = routeDecorator.decorate(routeContext, mock(ShardingSphereMetaData.class), masterSlaveRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
@@ -97,7 +100,7 @@ public final class MasterSlaveRouteDecoratorTest {
     @Test
     public void assertDecorateToMasterWithoutRouteUnits() {
         RouteContext routeContext = mockSQLRouteContextWithoutRouteUnits(insertStatement);
-        RouteContext actual = routeDecorator.decorate(routeContext);
+        RouteContext actual = routeDecorator.decorate(routeContext, mock(ShardingSphereMetaData.class), masterSlaveRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }
@@ -106,7 +109,7 @@ public final class MasterSlaveRouteDecoratorTest {
     public void assertDecorateToSlave() {
         RouteContext routeContext = mockSQLRouteContext(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
-        RouteContext actual = routeDecorator.decorate(routeContext);
+        RouteContext actual = routeDecorator.decorate(routeContext, mock(ShardingSphereMetaData.class), masterSlaveRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(SLAVE_DATASOURCE));
@@ -116,7 +119,7 @@ public final class MasterSlaveRouteDecoratorTest {
     public void assertDecorateToSlaveWithoutRouteUnits() {
         RouteContext routeContext = mockSQLRouteContextWithoutRouteUnits(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
-        RouteContext actual = routeDecorator.decorate(routeContext);
+        RouteContext actual = routeDecorator.decorate(routeContext, mock(ShardingSphereMetaData.class), masterSlaveRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(SLAVE_DATASOURCE));
     }
@@ -125,7 +128,7 @@ public final class MasterSlaveRouteDecoratorTest {
     public void assertLockDecorateToMaster() {
         RouteContext routeContext = mockSQLRouteContext(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
-        RouteContext actual = routeDecorator.decorate(routeContext);
+        RouteContext actual = routeDecorator.decorate(routeContext, mock(ShardingSphereMetaData.class), masterSlaveRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
@@ -135,7 +138,7 @@ public final class MasterSlaveRouteDecoratorTest {
     public void assertLockDecorateToMasterWithoutRouteUnits() {
         RouteContext routeContext = mockSQLRouteContextWithoutRouteUnits(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
-        RouteContext actual = routeDecorator.decorate(routeContext);
+        RouteContext actual = routeDecorator.decorate(routeContext, mock(ShardingSphereMetaData.class), masterSlaveRule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }

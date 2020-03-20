@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.masterslave.route.engine;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
-import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,13 +34,10 @@ import java.util.LinkedList;
 /**
  * Route decorator for master-slave.
  */
-@RequiredArgsConstructor
-public final class MasterSlaveRouteDecorator implements RouteDecorator {
-    
-    private final MasterSlaveRule masterSlaveRule;
+public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSlaveRule> {
     
     @Override
-    public RouteContext decorate(final RouteContext routeContext) {
+    public RouteContext decorate(final RouteContext routeContext, final ShardingSphereMetaData metaData, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) {
         if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
             String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeContext.getSqlStatementContext().getSqlStatement());
             RouteResult routeResult = new RouteResult();

@@ -103,7 +103,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
         DateNodeRouter dateNodeRouter = new DateNodeRouter(logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
-        RouteContext routeContext = new MasterSlaveRouteDecorator(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()).decorate(dateNodeRouter.route(rewriteSQL, parameters, true));
+        RouteContext routeContext = new MasterSlaveRouteDecorator().decorate(
+                dateNodeRouter.route(rewriteSQL, parameters, true), logicSchema.getMetaData(), ((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), SHARDING_PROXY_CONTEXT.getProperties());
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             result.getExecutionUnits().add(new ExecutionUnit(each.getDataSourceMapper().getActualName(), new SQLUnit(rewriteSQL, parameters)));
         }

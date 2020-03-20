@@ -23,9 +23,10 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.route.engine.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.engine.DateNodeRouter;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -41,6 +42,14 @@ import static org.mockito.Mockito.when;
 public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest {
     
     @Mock
+    private ShardingSphereMetaData metaData;
+    
+    @Mock
+    private ShardingRule shardingRule;
+    
+    private ConfigurationProperties properties;
+    
+    @Mock
     private DateNodeRouter dateNodeRouter;
     
     @Mock
@@ -54,12 +63,11 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     
     @Before
     public void setUp() {
-        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(metaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
         EncryptRule encryptRule = mock(EncryptRule.class);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
-        when(shardingSphereMetaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
-        shardingEngine = new SimpleQueryShardingEngine(shardingRule, getProperties(), shardingSphereMetaData, mock(SQLParserEngine.class));
+        properties = getProperties();
+        shardingEngine = new SimpleQueryShardingEngine(shardingRule, properties, metaData, mock(SQLParserEngine.class));
         setRoutingEngine();
     }
     
@@ -76,7 +84,7 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     protected void assertShard() {
         RouteContext routeContext = createSQLRouteContext();
         when(dateNodeRouter.route(getSql(), Collections.emptyList(), false)).thenReturn(routeContext);
-        when(shardingRouteDecorator.decorate(routeContext)).thenReturn(routeContext);
+        when(shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties)).thenReturn(routeContext);
         assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
     }
 }

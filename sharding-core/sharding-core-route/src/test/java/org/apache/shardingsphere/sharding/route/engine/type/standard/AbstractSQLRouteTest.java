@@ -51,8 +51,8 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildSchemaMetaData());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         RouteContext routeContext = new DateNodeRouter(metaData, sqlParserEngine).route(sql, parameters, false);
-        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, new ConfigurationProperties(new Properties()), metaData);
-        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
+        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
+        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, new ConfigurationProperties(new Properties()));
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
         return result;
     }

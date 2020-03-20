@@ -78,8 +78,8 @@ public final class DatabaseTest {
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         ShardingSphereMetaData metaData = getMetaDataForAllRoutingSQL();
         RouteContext routeContext = new DateNodeRouter(metaData, sqlParserEngine).route(originSQL, Collections.emptyList(), false);
-        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
-        ShardingRouteContext actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
+        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
+        ShardingRouteContext actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
         Collection<String> actualDataSources = actual.getRouteResult().getActualDataSourceNames();
         assertThat(actualDataSources.size(), is(1));
@@ -102,14 +102,14 @@ public final class DatabaseTest {
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         ShardingSphereMetaData metaData = getMetaDataForPagination();
         RouteContext routeContext = new DateNodeRouter(metaData, sqlParserEngine).route(originSQL, Collections.emptyList(), false);
-        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
-        ShardingRouteContext actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
+        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
+        ShardingRouteContext actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(0L));
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orElse(null), is(5L));
         originSQL = "select user_id from tbl_pagination limit 5,5";
         routeContext = new DateNodeRouter(metaData, sqlParserEngine).route(originSQL, Collections.emptyList(), false);
-        shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
-        actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
+        shardingRouteDecorator = new ShardingRouteDecorator();
+        actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orElse(null), is(5L));
     }
@@ -142,15 +142,15 @@ public final class DatabaseTest {
         when(metaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         RouteContext routeContext = new DateNodeRouter(metaData, sqlParserEngine).route(originSQL, Lists.newArrayList(13, 173), false);
-        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
-        ShardingRouteContext actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
+        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
+        ShardingRouteContext actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orElse(null), is(10L));
         assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
         originSQL = "select city_id from t_user where city_id in (?,?) limit 5,10";
         routeContext = new DateNodeRouter(metaData, sqlParserEngine).route(originSQL, Lists.newArrayList(89, 84), false);
-        shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
-        actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
+        shardingRouteDecorator = new ShardingRouteDecorator();
+        actual = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualOffset(), is(5L));
         assertThat(((SelectStatementContext) actual.getSqlStatementContext()).getPaginationContext().getActualRowCount().orElse(null), is(10L));
     }

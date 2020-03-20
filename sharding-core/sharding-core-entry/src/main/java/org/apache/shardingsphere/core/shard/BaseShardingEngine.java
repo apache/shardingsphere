@@ -75,7 +75,7 @@ public abstract class BaseShardingEngine {
         this.properties = properties;
         this.metaData = metaData;
         dateNodeRouter = new DateNodeRouter(metaData, sqlParserEngine);
-        shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
+        shardingRouteDecorator = new ShardingRouteDecorator();
         routingHook = new SPIRoutingHook();
     }
     
@@ -116,9 +116,9 @@ public abstract class BaseShardingEngine {
     }
     
     private ShardingRouteContext decorate(final RouteContext routeContext) {
-        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
+        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            result = (ShardingRouteContext) new MasterSlaveRouteDecorator(each).decorate(result);
+            result = (ShardingRouteContext) new MasterSlaveRouteDecorator().decorate(result, metaData, each, properties);
         }
         return result;
     }

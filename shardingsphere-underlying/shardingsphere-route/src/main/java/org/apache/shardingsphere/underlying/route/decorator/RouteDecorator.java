@@ -17,18 +17,26 @@
 
 package org.apache.shardingsphere.underlying.route.decorator;
 
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
  * Route decorator.
+ * 
+ * @param <T> type of rule
  */
-public interface RouteDecorator {
+public interface RouteDecorator<T extends BaseRule> {
     
     /**
      * Decorate route context.
-     *
+     * 
      * @param routeContext route context
+     * @param metaData meta data of ShardingSphere
+     * @param rule rule
+     * @param properties configuration properties
      * @return decorated route context
      */
-    RouteContext decorate(RouteContext routeContext);
+    RouteContext decorate(RouteContext routeContext, ShardingSphereMetaData metaData, T rule, ConfigurationProperties properties);
 }
