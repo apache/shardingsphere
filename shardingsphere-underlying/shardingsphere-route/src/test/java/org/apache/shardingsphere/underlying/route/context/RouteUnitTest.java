@@ -44,19 +44,6 @@ public final class RouteUnitTest {
             new RouteMapper(LOGIC_DATA_SOURCE, ACTUAL_DATA_SOURCE), Arrays.asList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_0), new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_1)));
     
     @Test
-    public void assertFindTableMapper() {
-        Optional<RouteMapper> actual = routeUnit.findTableMapper(ACTUAL_DATA_SOURCE, ACTUAL_TABLE_0);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
-        assertThat(actual.get().getActualName(), is(ACTUAL_TABLE_0));
-    }
-    
-    @Test
-    public void assertCanNotFindTableMapper() {
-        assertFalse(routeUnit.findTableMapper("invalid_ds", "invalid_tbl").isPresent());
-    }
-    
-    @Test
     public void assertGetLogicTableNames() {
         Set<String> actual = routeUnit.getLogicTableNames();
         assertThat(actual.size(), is(1));
@@ -69,5 +56,18 @@ public final class RouteUnitTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains(ACTUAL_TABLE_0));
         assertTrue(actual.contains(ACTUAL_TABLE_1));
+    }
+    
+    @Test
+    public void assertFindTableMapper() {
+        Optional<RouteMapper> actual = routeUnit.findTableMapper(ACTUAL_DATA_SOURCE, ACTUAL_TABLE_0);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
+        assertThat(actual.get().getActualName(), is(ACTUAL_TABLE_0));
+    }
+    
+    @Test
+    public void assertCanNotFindTableMapper() {
+        assertFalse(routeUnit.findTableMapper("invalid_ds", "invalid_tbl").isPresent());
     }
 }
