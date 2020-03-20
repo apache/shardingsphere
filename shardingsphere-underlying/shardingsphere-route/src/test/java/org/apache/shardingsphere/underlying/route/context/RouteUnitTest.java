@@ -60,7 +60,7 @@ public final class RouteUnitTest {
     
     @Test
     public void assertFindTableMapper() {
-        Optional<RouteMapper> actual = routeUnit.findTableMapper(ACTUAL_DATA_SOURCE, ACTUAL_TABLE_0);
+        Optional<RouteMapper> actual = routeUnit.findTableMapper(LOGIC_DATA_SOURCE, ACTUAL_TABLE_0);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
         assertThat(actual.get().getActualName(), is(ACTUAL_TABLE_0));
