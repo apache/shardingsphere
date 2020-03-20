@@ -44,17 +44,26 @@ public final class RouteUnit {
     /**
      * Find table mapper.
      *
-     * @param dataSourceName data source name
+     * @param actualDataSourceName actual data source name
      * @param actualTableName actual table name
      * @return table mapper
      */
-    public Optional<RouteMapper> findTableMapper(final String dataSourceName, final String actualTableName) {
+    public Optional<RouteMapper> findTableMapper(final String actualDataSourceName, final String actualTableName) {
         for (RouteMapper each : tableMappers) {
-            if (dataSourceName.equalsIgnoreCase(dataSourceMapper.getLogicName()) && actualTableName.equalsIgnoreCase(each.getActualName())) {
+            if (actualDataSourceName.equalsIgnoreCase(dataSourceMapper.getActualName()) && actualTableName.equalsIgnoreCase(each.getActualName())) {
                 return Optional.of(each);
             }
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Get logic table names.
+     *
+     * @return  logic table names
+     */
+    public Set<String> getLogicTableNames() {
+        return tableMappers.stream().map(RouteMapper::getLogicName).collect(Collectors.toCollection(() -> new HashSet<>(tableMappers.size(), 1)));
     }
     
     /**
@@ -65,14 +74,5 @@ public final class RouteUnit {
      */
     public Set<String> getActualTableNames(final String logicTableName) {
         return tableMappers.stream().filter(each -> logicTableName.equalsIgnoreCase(each.getLogicName())).map(RouteMapper::getActualName).collect(Collectors.toSet());
-    }
-    
-    /**
-     * Get logic table names.
-     *
-     * @return  logic table names
-     */
-    public Set<String> getLogicTableNames() {
-        return tableMappers.stream().map(RouteMapper::getLogicName).collect(Collectors.toCollection(() -> new HashSet<>(tableMappers.size(), 1)));
     }
 }

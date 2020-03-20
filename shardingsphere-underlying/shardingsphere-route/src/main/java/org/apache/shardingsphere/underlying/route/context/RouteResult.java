@@ -60,15 +60,15 @@ public final class RouteResult {
     }
     
     /**
-     * Get table mapper via data source name and actual table name.
+     * Get table mapper.
      *
-     * @param dataSourceName data source name
+     * @param actualDataSourceName actual data source name
      * @param actualTableName actual table name
      * @return table mapper
      */
-    public Optional<RouteMapper> getTableMapper(final String dataSourceName, final String actualTableName) {
+    public Optional<RouteMapper> getTableMapper(final String actualDataSourceName, final String actualTableName) {
         for (RouteUnit each : routeUnits) {
-            Optional<RouteMapper> result = each.findTableMapper(dataSourceName, actualTableName);
+            Optional<RouteMapper> result = each.findTableMapper(actualDataSourceName, actualTableName);
             if (result.isPresent()) {
                 return result;
             }
