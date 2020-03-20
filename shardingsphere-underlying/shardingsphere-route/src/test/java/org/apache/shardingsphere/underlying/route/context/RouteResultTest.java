@@ -75,28 +75,15 @@ public final class RouteResultTest {
     }
     
     @Test
-    public void assertGetDataSourceNames() {
-        Collection<String> actual = singleRouteResult.getDataSourceNames();
+    public void assertGetActualDataSourceNames() {
+        Collection<String> actual = singleRouteResult.getActualDataSourceNames();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(DATASOURCE_NAME_0));
-        actual = multiRouteResult.getDataSourceNames();
+        actual = multiRouteResult.getActualDataSourceNames();
         assertThat(actual.size(), is(2));
         Iterator<String> iterator = actual.iterator();
         assertThat(iterator.next(), is(DATASOURCE_NAME_0));
         assertThat(iterator.next(), is(DATASOURCE_NAME_1));
-    }
-    
-    @Test
-    public void assertGetTableMapper() {
-        Optional<RouteMapper> actual = multiRouteResult.getTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
-    }
-    
-    @Test
-    public void assertGetTableMapperNonExist() {
-        Optional<RouteMapper> actual = singleRouteResult.getTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
-        assertFalse(actual.isPresent());
     }
     
     @Test
@@ -117,5 +104,17 @@ public final class RouteResultTest {
         assertThat(actual.get(DATASOURCE_NAME_0).iterator().next(), is(LOGIC_TABLE));
         assertThat(actual.get(DATASOURCE_NAME_1).size(), is(1));
         assertThat(actual.get(DATASOURCE_NAME_1).iterator().next(), is(LOGIC_TABLE));
+    }
+    
+    @Test
+    public void assertFindTableMapper() {
+        Optional<RouteMapper> actual = multiRouteResult.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
+    }
+    
+    @Test
+    public void assertTableMapperNotFound() {
+        assertFalse(singleRouteResult.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE).isPresent());
     }
 }

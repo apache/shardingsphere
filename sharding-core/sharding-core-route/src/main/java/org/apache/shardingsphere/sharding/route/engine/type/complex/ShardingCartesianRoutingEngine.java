@@ -75,9 +75,9 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
         Collection<String> result = new HashSet<>();
         for (RouteResult each : routeResults) {
             if (result.isEmpty()) {
-                result.addAll(each.getDataSourceNames());
+                result.addAll(each.getActualDataSourceNames());
             }
-            result.retainAll(each.getDataSourceNames());
+            result.retainAll(each.getActualDataSourceNames());
         }
         return result;
     }
@@ -100,7 +100,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     
     private RouteMapper findRoutingTable(final String dataSource, final String actualTable) {
         for (RouteResult each : routeResults) {
-            Optional<RouteMapper> result = each.getTableMapper(dataSource, actualTable);
+            Optional<RouteMapper> result = each.findTableMapper(dataSource, actualTable);
             if (result.isPresent()) {
                 return result.get();
             }
