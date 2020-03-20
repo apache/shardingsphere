@@ -67,7 +67,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     public MasterSlaveStatement(final MasterSlaveConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        dateNodeRouter = new DateNodeRouter(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getSqlParserEngine());
+        dateNodeRouter = new DateNodeRouter(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getProperties(), connection.getRuntimeContext().getSqlParserEngine());
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;
@@ -80,8 +80,8 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         }
         clearPrevious();
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
+        dateNodeRouter.registerDecorator(runtimeContext.getRule(), new MasterSlaveRouteDecorator());
         RouteContext routeContext = dateNodeRouter.route(sql, Collections.emptyList(), false);
-        routeContext = new MasterSlaveRouteDecorator().decorate(routeContext, runtimeContext.getMetaData(), runtimeContext.getRule(), runtimeContext.getProperties());
         Collection<RouteUnit> routeUnits = routeContext.getRouteResult().getRouteUnits();
         Preconditions.checkState(1 == routeUnits.size(), "Cannot support executeQuery for DML or DDL");
         Statement statement = connection.getConnection(routeUnits.iterator().next().getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);

@@ -66,16 +66,13 @@ public abstract class BaseShardingEngine {
     
     private final DateNodeRouter dateNodeRouter;
     
-    private final ShardingRouteDecorator shardingRouteDecorator;
-    
     private final SPIRoutingHook routingHook;
     
     public BaseShardingEngine(final ShardingRule shardingRule, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         this.shardingRule = shardingRule;
         this.properties = properties;
         this.metaData = metaData;
-        dateNodeRouter = new DateNodeRouter(metaData, sqlParserEngine);
-        shardingRouteDecorator = new ShardingRouteDecorator();
+        dateNodeRouter = new DateNodeRouter(metaData, properties, sqlParserEngine);
         routingHook = new SPIRoutingHook();
     }
     
@@ -104,7 +101,8 @@ public abstract class BaseShardingEngine {
     private ShardingRouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
         routingHook.start(sql);
         try {
-            ShardingRouteContext result = decorate(route(dateNodeRouter, sql, clonedParameters));
+            registerRouteDecorator();
+            ShardingRouteContext result = (ShardingRouteContext) route(dateNodeRouter, sql, clonedParameters);
             routingHook.finishSuccess(result, metaData.getSchema());
             return result;
             // CHECKSTYLE:OFF
@@ -115,12 +113,11 @@ public abstract class BaseShardingEngine {
         }
     }
     
-    private ShardingRouteContext decorate(final RouteContext routeContext) {
-        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
+    private void registerRouteDecorator() {
+        dateNodeRouter.registerDecorator(shardingRule, new ShardingRouteDecorator());
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            result = (ShardingRouteContext) new MasterSlaveRouteDecorator().decorate(result, metaData, each, properties);
+            dateNodeRouter.registerDecorator(each, new MasterSlaveRouteDecorator());
         }
-        return result;
     }
     
     private Collection<ExecutionUnit> convert(final String sql, final List<Object> parameters, final ShardingRouteContext shardingRouteContext) {

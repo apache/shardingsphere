@@ -20,10 +20,8 @@ package org.apache.shardingsphere.core.shard;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.engine.DateNodeRouter;
@@ -49,13 +47,8 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     @Mock
     private ShardingRule shardingRule;
     
-    private ConfigurationProperties properties;
-    
     @Mock
     private DateNodeRouter dateNodeRouter;
-    
-    @Mock
-    private ShardingRouteDecorator shardingRouteDecorator;
     
     private PreparedQueryShardingEngine shardingEngine;
     
@@ -68,8 +61,7 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
         when(metaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
         EncryptRule encryptRule = mock(EncryptRule.class);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        properties = getProperties();
-        shardingEngine = new PreparedQueryShardingEngine(shardingRule, properties, metaData, mock(SQLParserEngine.class));
+        shardingEngine = new PreparedQueryShardingEngine(shardingRule, getProperties(), metaData, mock(SQLParserEngine.class));
         setRoutingEngine();
     }
     
@@ -78,15 +70,11 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
         Field field = BaseShardingEngine.class.getDeclaredField("dateNodeRouter");
         field.setAccessible(true);
         field.set(shardingEngine, dateNodeRouter);
-        field = BaseShardingEngine.class.getDeclaredField("shardingRouteDecorator");
-        field.setAccessible(true);
-        field.set(shardingEngine, shardingRouteDecorator);
     }
     
     protected void assertShard() {
         RouteContext routeContext = createSQLRouteContext();
         when(dateNodeRouter.route(getSql(), getParameters(), true)).thenReturn(routeContext);
-        when(shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties)).thenReturn(routeContext);
         assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
     }
     

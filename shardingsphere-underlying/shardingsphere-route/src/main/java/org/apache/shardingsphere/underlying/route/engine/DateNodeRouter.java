@@ -23,11 +23,17 @@ import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data node router.
@@ -37,7 +43,21 @@ public final class DateNodeRouter {
     
     private final ShardingSphereMetaData metaData;
     
+    private final ConfigurationProperties properties;
+    
     private final SQLParserEngine parserEngine;
+    
+    private final Map<BaseRule, RouteDecorator> routeDecorators = new LinkedHashMap<>();
+    
+    /**
+     * Register route decorator.
+     *
+     * @param rule rule
+     * @param routeDecorator route decorator
+     */
+    public void registerDecorator(final BaseRule rule, final RouteDecorator routeDecorator) {
+        routeDecorators.put(rule, routeDecorator);
+    }
     
     /**
      * Route SQL.
@@ -47,7 +67,16 @@ public final class DateNodeRouter {
      * @param useCache whether cache SQL parse result
      * @return route context
      */
+    @SuppressWarnings("unchecked")
     public RouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
+        RouteContext result = createRouteContext(sql, parameters, useCache);
+        for (Entry<BaseRule, RouteDecorator> entry : routeDecorators.entrySet()) {
+            result = entry.getValue().decorate(result, metaData, entry.getKey(), properties);
+        }
+        return result;
+    }
+    
+    private RouteContext createRouteContext(final String sql, final List<Object> parameters, final boolean useCache) {
         SQLStatement sqlStatement = parserEngine.parse(sql, useCache);
         try {
             SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), sql, parameters, sqlStatement);
