@@ -62,31 +62,34 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     private List<Boolean> getOrderValuesCaseSensitive(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) {
         List<Boolean> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem eachOrderByItem : orderByItems) {
-            for (SimpleTableSegment eachSimpleTableSegment : selectStatementContext.getAllTables()) {
-                String tableName = eachSimpleTableSegment.getTableName().getIdentifier().getValue();
-                TableMetaData tableMetaData = schemaMetaData.get(tableName);
-                Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
-                OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
-                if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-                    String columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue();
-                    if (columns.containsKey(columnName)) {
-                        result.add(columns.get(columnName).isCaseSensitive());
-                        break;
-                    }
-                } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
-                    int columnIndex = ((IndexOrderByItemSegment) orderByItemSegment).getColumnIndex();
-                    String columnName = queryResult.getColumnName(columnIndex);
-                    if (columns.containsKey(columnName)) {
-                        result.add(columns.get(columnName).isCaseSensitive());
-                        break;
-                    }
-                } else {
-                    result.add(false);
-                    break;
-                }
-            }
+            result.add(getOrderValuesCaseSensitiveFromTables(selectStatementContext, schemaMetaData, eachOrderByItem));
         }
         return result;
+    }
+    
+    private boolean getOrderValuesCaseSensitiveFromTables(final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData,
+                                                       final OrderByItem eachOrderByItem) throws SQLException {
+        for (SimpleTableSegment eachSimpleTableSegment : selectStatementContext.getAllTables()) {
+            String tableName = eachSimpleTableSegment.getTableName().getIdentifier().getValue();
+            TableMetaData tableMetaData = schemaMetaData.get(tableName);
+            Map<String, ColumnMetaData> columns = tableMetaData.getColumns();
+            OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
+            if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
+                String columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue();
+                if (columns.containsKey(columnName)) {
+                    return columns.get(columnName).isCaseSensitive();
+                }
+            } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
+                int columnIndex = ((IndexOrderByItemSegment) orderByItemSegment).getColumnIndex();
+                String columnName = queryResult.getColumnName(columnIndex);
+                if (columns.containsKey(columnName)) {
+                    return columns.get(columnName).isCaseSensitive();
+                }
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
     
     /**
