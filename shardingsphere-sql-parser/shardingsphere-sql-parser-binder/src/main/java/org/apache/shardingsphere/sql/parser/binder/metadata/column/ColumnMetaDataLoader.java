@@ -67,8 +67,8 @@ public final class ColumnMetaDataLoader {
             }
         }
         try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(connection, table))) {
-            for (ColumnMetaData each : result) {
-                isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each.getName())));
+            for (String each : columnNames) {
+                isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each)));
             }
         }
         for (int i = 0; i < columnNames.size(); i++) {
