@@ -85,9 +85,8 @@ public class ShardingRule implements BaseRule {
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
-        return shardingRuleConfig.getTableRuleConfigs().stream()
-        .map(each -> new TableRule(each, shardingDataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig)))
-        .collect(Collectors.toList());
+        return shardingRuleConfig.getTableRuleConfigs().stream().map(each ->
+                new TableRule(each, shardingDataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig))).collect(Collectors.toList());
     }
     
     private String getDefaultGenerateKeyColumn(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -99,10 +98,7 @@ public class ShardingRule implements BaseRule {
     }
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
-        List<TableRule> tableRules = Splitter.on(",").trimResults()
-                .splitToList(bindingTableGroup).stream()
-                .map(this::getTableRule)
-                .collect(Collectors.toCollection(LinkedList::new));
+        List<TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream().map(this::getTableRule).collect(Collectors.toCollection(LinkedList::new));
         return new BindingTableRule(tableRules);
     }
     
