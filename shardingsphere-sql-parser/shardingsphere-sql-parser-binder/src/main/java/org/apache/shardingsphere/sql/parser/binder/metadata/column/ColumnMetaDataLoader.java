@@ -23,10 +23,12 @@ import lombok.NoArgsConstructor;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Column meta data loader.
@@ -52,18 +54,25 @@ public final class ColumnMetaDataLoader {
         }
         Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
+        List<String> columnNames = new ArrayList<>();
+        List<String> columnTypes = new ArrayList<>();
+        List<Boolean> isPrimaryKeys = new ArrayList<>();
+        List<Boolean> isCaseSensitives = new ArrayList<>();
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
-                String columnType = resultSet.getString(TYPE_NAME);
-                boolean isPrimaryKey = primaryKeys.contains(columnName);
-                result.add(new ColumnMetaData(columnName, columnType, isPrimaryKey));
+                columnTypes.add(resultSet.getString(TYPE_NAME));
+                isPrimaryKeys.add(primaryKeys.contains(columnName));
+                columnNames.add(columnName);
             }
         }
         try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(connection, table))) {
             for (ColumnMetaData each : result) {
-                each.setCaseSensitive(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each.getName())));
+                isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each.getName())));
             }
+        }
+        for (int i = 0; i < columnNames.size(); i++) {
+            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), isCaseSensitives.get(i)));
         }
         return result;
     }

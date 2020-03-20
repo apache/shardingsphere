@@ -178,9 +178,9 @@ public final class GroupByStreamMergedResultTest {
     }
     
     private SchemaMetaData createSchemaMetaData() {
-        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "dataType", false);
-        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "dataType", false);
-        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", "dataType", false);
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "dataType", false, false);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "dataType", false, false);
+        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", "dataType", false, false);
         TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
         return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
     }

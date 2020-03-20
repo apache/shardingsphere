@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -38,6 +37,5 @@ public class ColumnMetaData {
     
     private final boolean primaryKey;
     
-    @Setter
-    private boolean isCaseSensitive;
+    private final boolean isCaseSensitive;
 }
