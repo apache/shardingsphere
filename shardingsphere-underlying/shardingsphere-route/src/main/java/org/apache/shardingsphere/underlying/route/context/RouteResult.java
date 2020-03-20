@@ -19,7 +19,6 @@ package org.apache.shardingsphere.underlying.route.context;
 
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Route result.
@@ -52,38 +52,28 @@ public final class RouteResult {
      * @return actual data source names
      */
     public Collection<String> getActualDataSourceNames() {
-        Collection<String> result = new HashSet<>(routeUnits.size(), 1);
-        for (RouteUnit each : routeUnits) {
-            result.add(each.getDataSourceMapper().getActualName());
-        }
-        return result;
+        return routeUnits.stream().map(each -> each.getDataSourceMapper().getActualName()).collect(Collectors.toCollection(() -> new HashSet<>(routeUnits.size(), 1)));
     }
     
     /**
-     * Get actual tables group via data source name and logic tables' names.
+     * Get actual tables groups.
+     * 
      * <p>
      * Actual tables in same group are belong one logic name.
      * </p>
      *
-     * @param dataSourceName data source name
-     * @param logicTableNames logic tables' names
-     * @return actual tables group
+     * @param actualDataSourceName actual data source name
+     * @param logicTableNames logic table names
+     * @return actual table groups
      */
-    public List<Set<String>> getActualTableNameGroups(final String dataSourceName, final Set<String> logicTableNames) {
-        List<Set<String>> result = new ArrayList<>();
-        for (String each : logicTableNames) {
-            Set<String> actualTableNames = getActualTableNames(dataSourceName, each);
-            if (!actualTableNames.isEmpty()) {
-                result.add(actualTableNames);
-            }
-        }
-        return result;
+    public List<Set<String>> getActualTableNameGroups(final String actualDataSourceName, final Set<String> logicTableNames) {
+        return logicTableNames.stream().map(each -> getActualTableNames(actualDataSourceName, each)).filter(actualTableNames -> !actualTableNames.isEmpty()).collect(Collectors.toList());
     }
     
-    private Set<String> getActualTableNames(final String dataSourceName, final String logicTableName) {
+    private Set<String> getActualTableNames(final String actualDataSourceName, final String logicTableName) {
         Set<String> result = new HashSet<>();
         for (RouteUnit each : routeUnits) {
-            if (dataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+            if (actualDataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 result.addAll(each.getActualTableNames(logicTableName));
             }
         }
@@ -91,14 +81,14 @@ public final class RouteResult {
     }
     
     /**
-     * Get map relationship between data source and logic tables via data sources' names.
+     * Get map relationship between actual data source and logic tables.
      *
-     * @param dataSourceNames data sources' names
+     * @param actualDataSourceNames actual data source names
      * @return  map relationship between data source and logic tables
      */
-    public Map<String, Set<String>> getDataSourceLogicTablesMap(final Collection<String> dataSourceNames) {
+    public Map<String, Set<String>> getDataSourceLogicTablesMap(final Collection<String> actualDataSourceNames) {
         Map<String, Set<String>> result = new HashMap<>();
-        for (String each : dataSourceNames) {
+        for (String each : actualDataSourceNames) {
             Set<String> logicTableNames = getLogicTableNames(each);
             if (!logicTableNames.isEmpty()) {
                 result.put(each, logicTableNames);
@@ -107,10 +97,10 @@ public final class RouteResult {
         return result;
     }
     
-    private Set<String> getLogicTableNames(final String dataSourceName) {
+    private Set<String> getLogicTableNames(final String actualDataSourceName) {
         Set<String> result = new HashSet<>();
         for (RouteUnit each : routeUnits) {
-            if (dataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
+            if (actualDataSourceName.equalsIgnoreCase(each.getDataSourceMapper().getActualName())) {
                 result.addAll(each.getLogicTableNames());
             }
         }
