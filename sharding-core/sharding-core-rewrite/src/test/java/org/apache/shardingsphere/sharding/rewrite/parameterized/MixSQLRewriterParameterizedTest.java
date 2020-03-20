@@ -80,9 +80,9 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties properties = new ConfigurationProperties(ruleConfiguration.getProps());
-        RouteContext routeContext = new DateNodeRouter(metaData, sqlParserEngine).route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
-        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
-        ShardingRouteContext shardingRouteContext = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
+        RouteContext routeContext = new DateNodeRouter(metaData, properties, sqlParserEngine).route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
+        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
+        ShardingRouteContext shardingRouteContext = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(
                 mock(SchemaMetaData.class), shardingRouteContext.getSqlStatementContext(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         new ShardingSQLRewriteContextDecorator(shardingRouteContext).decorate(shardingRule, properties, sqlRewriteContext);
