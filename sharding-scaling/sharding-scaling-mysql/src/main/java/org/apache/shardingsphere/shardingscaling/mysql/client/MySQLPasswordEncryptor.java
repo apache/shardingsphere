@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog;
+package org.apache.shardingsphere.shardingscaling.mysql.client;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

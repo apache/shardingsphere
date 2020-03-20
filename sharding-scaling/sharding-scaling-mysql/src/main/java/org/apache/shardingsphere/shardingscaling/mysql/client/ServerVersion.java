@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog;
+package org.apache.shardingsphere.shardingscaling.mysql.client;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

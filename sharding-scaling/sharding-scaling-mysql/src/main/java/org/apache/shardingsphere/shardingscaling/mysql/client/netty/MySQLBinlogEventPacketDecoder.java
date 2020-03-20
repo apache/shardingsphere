@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
+package org.apache.shardingsphere.shardingscaling.mysql.client.netty;
 
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinlogEventType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.managemen
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogRowsEventPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.BinlogContext;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.PlaceholderEvent;

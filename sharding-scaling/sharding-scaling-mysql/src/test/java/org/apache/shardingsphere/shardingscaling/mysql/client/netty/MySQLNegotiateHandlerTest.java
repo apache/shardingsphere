@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog;
+package org.apache.shardingsphere.shardingscaling.mysql.client.netty;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKP
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
+import org.apache.shardingsphere.shardingscaling.mysql.client.ServerInfo;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
 
 import org.junit.Before;

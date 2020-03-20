@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog;
+package org.apache.shardingsphere.shardingscaling.mysql.client;
 
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.mysql.codec.MySQLPacketCodecEngine;
@@ -24,10 +24,11 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.M
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.MySQLBinlogEventPacketDecoder;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.codec.MySQLCommandPacketDecoder;
+import org.apache.shardingsphere.shardingscaling.mysql.client.netty.MySQLNegotiateHandler;
+import org.apache.shardingsphere.shardingscaling.mysql.client.netty.MySQLBinlogEventPacketDecoder;
+import org.apache.shardingsphere.shardingscaling.mysql.client.netty.MySQLCommandPacketDecoder;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -52,7 +53,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class MySQLConnector {
+public final class MySQLClient {
     
     private final int serverId;
     

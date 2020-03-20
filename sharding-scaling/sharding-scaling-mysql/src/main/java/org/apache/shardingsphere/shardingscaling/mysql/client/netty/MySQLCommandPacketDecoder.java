@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
+package org.apache.shardingsphere.shardingscaling.mysql.client.netty;
 
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
+import org.apache.shardingsphere.shardingscaling.mysql.client.InternalResultSet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -73,14 +74,14 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private MySQLHandshakePacket decodeHandshakePacket(final MySQLPacketPayload payload) {
         MySQLHandshakePacket result = new MySQLHandshakePacket(payload);
-        if (!AuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.equals(result.getAuthPluginName())) {
+        if (!MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(result.getAuthPluginName())) {
             throw new UnsupportedOperationException("Only supported SECURE_PASSWORD_AUTHENTICATION server");
         }
         return result;
     }
     
     private void decodeFieldPacket(final MySQLPacketPayload payload) {
-        if (PacketConstants.EOF_PACKET_MARK != payload.getByteBuf().getByte(1)) {
+        if (MySQLEofPacket.HEADER != (payload.getByteBuf().getByte(1) & 0xff)) {
             internalResultSet.getFieldDescriptors().add(new MySQLColumnDefinition41Packet(payload));
         } else {
             new MySQLEofPacket(payload);
@@ -89,7 +90,7 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeRowDataPacket(final MySQLPacketPayload payload, final List<Object> out) {
-        if (PacketConstants.EOF_PACKET_MARK != payload.getByteBuf().getByte(1)) {
+        if (MySQLEofPacket.HEADER != (payload.getByteBuf().getByte(1) & 0xff)) {
             internalResultSet.getFieldValues().add(new MySQLTextResultSetRowPacket(payload, internalResultSet.getHeader().getColumnCount()));
         } else {
             new MySQLEofPacket(payload);
@@ -100,11 +101,11 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeResponsePacket(final MySQLPacketPayload payload, final List<Object> out) {
-        switch (payload.getByteBuf().getByte(1)) {
-            case PacketConstants.ERR_PACKET_MARK:
+        switch (payload.getByteBuf().getByte(1) & 0xff) {
+            case MySQLErrPacket.HEADER:
                 out.add(new MySQLErrPacket(payload));
                 break;
-            case PacketConstants.OK_PACKET_MARK:
+            case MySQLOKPacket.HEADER:
                 out.add(new MySQLOKPacket(payload));
                 break;
             default:

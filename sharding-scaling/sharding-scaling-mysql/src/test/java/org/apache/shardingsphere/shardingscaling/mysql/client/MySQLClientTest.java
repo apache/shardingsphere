@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog;
+package org.apache.shardingsphere.shardingscaling.mysql.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
@@ -25,7 +25,6 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.M
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.packet.response.InternalResultSet;
 import org.apache.shardingsphere.shardingscaling.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLConnectorTest {
+public final class MySQLClientTest {
     
     @Mock
     private Channel channel;
@@ -53,11 +52,11 @@ public final class MySQLConnectorTest {
     
     private InetSocketAddress inetSocketAddress;
     
-    private MySQLConnector mySQLConnector;
+    private MySQLClient mySQLClient;
     
     @Before
     public void setUp() {
-        mySQLConnector = new MySQLConnector(1, "host", 3306, "username", "password");
+        mySQLClient = new MySQLClient(1, "host", 3306, "username", "password");
         when(channel.pipeline()).thenReturn(pipeline);
         inetSocketAddress = new InetSocketAddress("host", 3306);
         when(channel.localAddress()).thenReturn(inetSocketAddress);
@@ -67,16 +66,16 @@ public final class MySQLConnectorTest {
     public void assertConnect() throws NoSuchFieldException, IllegalAccessException {
         final ServerInfo expected = new ServerInfo();
         mockChannelResponse(expected);
-        mySQLConnector.connect();
-        ServerInfo actual = ReflectionUtil.getFieldValueFromClass(mySQLConnector, "serverInfo", ServerInfo.class);
+        mySQLClient.connect();
+        ServerInfo actual = ReflectionUtil.getFieldValueFromClass(mySQLClient, "serverInfo", ServerInfo.class);
         assertThat(actual, is(expected));
     }
     
     @Test
     public void assertExecute() throws NoSuchFieldException, IllegalAccessException {
         mockChannelResponse(new MySQLOKPacket(0));
-        ReflectionUtil.setFieldValueToClass(mySQLConnector, "channel", channel);
-        assertTrue(mySQLConnector.execute(""));
+        ReflectionUtil.setFieldValueToClass(mySQLClient, "channel", channel);
+        assertTrue(mySQLClient.execute(""));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
@@ -85,8 +84,8 @@ public final class MySQLConnectorTest {
         MySQLOKPacket expected = new MySQLOKPacket(0, 10, 0);
         ReflectionUtil.setFieldValueToClass(expected, "affectedRows", 10);
         mockChannelResponse(expected);
-        ReflectionUtil.setFieldValueToClass(mySQLConnector, "channel", channel);
-        assertThat(mySQLConnector.executeUpdate(""), is(10));
+        ReflectionUtil.setFieldValueToClass(mySQLClient, "channel", channel);
+        assertThat(mySQLClient.executeUpdate(""), is(10));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
@@ -94,8 +93,8 @@ public final class MySQLConnectorTest {
     public void assertExecuteQuery() throws NoSuchFieldException, IllegalAccessException {
         InternalResultSet expected = new InternalResultSet(null);
         mockChannelResponse(expected);
-        ReflectionUtil.setFieldValueToClass(mySQLConnector, "channel", channel);
-        assertThat(mySQLConnector.executeQuery(""), is(expected));
+        ReflectionUtil.setFieldValueToClass(mySQLClient, "channel", channel);
+        assertThat(mySQLClient.executeQuery(""), is(expected));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
@@ -103,10 +102,10 @@ public final class MySQLConnectorTest {
     public void assertSubscribeBelow56Version() throws NoSuchFieldException, IllegalAccessException {
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setServerVersion(new ServerVersion("5.5.0-log"));
-        ReflectionUtil.setFieldValueToClass(mySQLConnector, "serverInfo", serverInfo);
-        ReflectionUtil.setFieldValueToClass(mySQLConnector, "channel", channel);
+        ReflectionUtil.setFieldValueToClass(mySQLClient, "serverInfo", serverInfo);
+        ReflectionUtil.setFieldValueToClass(mySQLClient, "channel", channel);
         mockChannelResponse(new MySQLOKPacket(0));
-        mySQLConnector.subscribe("", 4L);
+        mySQLClient.subscribe("", 4L);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComRegisterSlaveCommandPacket.class));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComBinlogDumpCommandPacket.class));
     }
@@ -116,7 +115,7 @@ public final class MySQLConnectorTest {
             while (true) {
                 Promise responseCallback = null;
                 try {
-                    responseCallback = ReflectionUtil.getFieldValueFromClass(mySQLConnector, "responseCallback", Promise.class);
+                    responseCallback = ReflectionUtil.getFieldValueFromClass(mySQLClient, "responseCallback", Promise.class);
                 } catch (final NoSuchFieldException ex) {
                     throw new RuntimeException(ex);
                 } catch (IllegalAccessException ex) {

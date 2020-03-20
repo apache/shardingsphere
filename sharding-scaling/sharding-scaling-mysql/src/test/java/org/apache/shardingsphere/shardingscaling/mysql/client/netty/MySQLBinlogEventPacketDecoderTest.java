@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog.codec;
+package org.apache.shardingsphere.shardingscaling.mysql.client.netty;
 
 import io.netty.buffer.ByteBuf;
 
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinlogEventType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
+import org.apache.shardingsphere.shardingscaling.mysql.binlog.BinlogContext;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.WriteRowsEvent;

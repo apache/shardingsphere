@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog;
+package org.apache.shardingsphere.shardingscaling.mysql.client.netty;
 
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
@@ -23,6 +23,9 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErr
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
+import org.apache.shardingsphere.shardingscaling.mysql.client.MySQLPasswordEncryptor;
+import org.apache.shardingsphere.shardingscaling.mysql.client.ServerInfo;
+import org.apache.shardingsphere.shardingscaling.mysql.client.ServerVersion;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingscaling.mysql.binlog;
+package org.apache.shardingsphere.shardingscaling.mysql;
 
-import org.apache.shardingsphere.shardingscaling.mysql.BinlogPosition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
