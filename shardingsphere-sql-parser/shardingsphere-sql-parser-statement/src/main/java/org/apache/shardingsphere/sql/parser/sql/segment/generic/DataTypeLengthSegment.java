@@ -31,15 +31,15 @@ public final class DataTypeLengthSegment implements SQLSegment {
     
     private int stopIndex;
     
-    private int firstNumber;
+    private int precision;
     
-    private int secondNumber;
+    private int scale;
     
     /**
      * get secondNumber.
      * @return Optional.
      */
-    public Optional<Integer> getSecondNumber() {
-        return Optional.ofNullable(secondNumber);
+    public Optional<Integer> getScale() {
+        return Optional.ofNullable(scale);
     }
 }

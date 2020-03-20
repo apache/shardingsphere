@@ -521,11 +521,11 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
         dataTypeLengthSegment.setStopIndex(ctx.stop.getStartIndex());
         List<TerminalNode> numbers = ctx.NUMBER_();
         if (numbers.size() == 1) {
-            dataTypeLengthSegment.setFirstNumber(Integer.parseInt(numbers.get(0).getText()));
+            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
         }
         if (numbers.size() == 2) {
-            dataTypeLengthSegment.setFirstNumber(Integer.parseInt(numbers.get(0).getText()));
-            dataTypeLengthSegment.setSecondNumber(Integer.parseInt(numbers.get(1).getText()));
+            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+            dataTypeLengthSegment.setScale(Integer.parseInt(numbers.get(1).getText()));
         }
         return dataTypeLengthSegment;
     }
