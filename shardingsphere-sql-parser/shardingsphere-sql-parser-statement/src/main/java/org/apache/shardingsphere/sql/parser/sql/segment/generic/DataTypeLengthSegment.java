@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 
-import java.util.LinkedList;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -31,7 +31,15 @@ public final class DataTypeLengthSegment implements SQLSegment {
     
     private int stopIndex;
     
-    private int length;
+    private int firstNumber;
     
-    private LinkedList<Integer> lengthPair;
+    private int secondNumber;
+    
+    /**
+     * get secondNumber.
+     * @return Optional.
+     */
+    public Optional<Integer> getSecondNumber() {
+        return Optional.ofNullable(secondNumber);
+    }
 }

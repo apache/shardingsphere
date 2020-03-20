@@ -524,13 +524,12 @@ public abstract class OracleVisitor extends OracleStatementBaseVisitor<ASTNode> 
         dataTypeLengthSegment.setStopIndex(ctx.stop.getStartIndex());
         List<TerminalNode> numbers = ctx.NUMBER_();
         if (numbers.size() == 1) {
-            dataTypeLengthSegment.setLength(Integer.parseInt(numbers.get(0).getText()));
+            dataTypeLengthSegment.setFirstNumber(Integer.parseInt(numbers.get(0).getText()));
         }
         if (numbers.size() == 2) {
-            LinkedList<Integer> nums = new LinkedList<>();
-            nums.add(Integer.parseInt(numbers.get(0).getText()));
-            nums.add(Integer.parseInt(numbers.get(1).getText()));
-            dataTypeLengthSegment.setLengthPair(nums);
+            dataTypeLengthSegment.setFirstNumber(Integer.parseInt(numbers.get(0).getText()));
+            dataTypeLengthSegment.setSecondNumber(Integer.parseInt(numbers.get(1).getText()));
+    
         }
         return dataTypeLengthSegment;
     }
