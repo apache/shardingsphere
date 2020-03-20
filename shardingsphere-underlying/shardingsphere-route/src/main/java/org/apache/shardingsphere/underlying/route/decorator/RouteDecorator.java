@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route;
+package org.apache.shardingsphere.underlying.route.decorator;
 
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
-import java.util.List;
-
 /**
- * Data node router.
+ * Route decorator.
  */
-public interface DateNodeRouter {
+public interface RouteDecorator {
     
     /**
-     * Route SQL.
+     * Decorate route context.
      *
-     * @param sql SQL
-     * @param parameters SQL parameters
-     * @param useCache whether use cache to save SQL parse result
-     * @return parse result
+     * @param routeContext route context
+     * @return decorated route context
      */
-    RouteContext route(String sql, List<Object> parameters, boolean useCache);
+    RouteContext decorate(RouteContext routeContext);
 }

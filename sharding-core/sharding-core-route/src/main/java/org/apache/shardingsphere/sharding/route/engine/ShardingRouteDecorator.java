@@ -35,18 +35,16 @@ import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
-import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
 import java.util.Collections;
@@ -54,10 +52,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding router.
+ * Sharding route decorator.
  */
 @RequiredArgsConstructor
-public final class ShardingRouter implements DateNodeRouter {
+public final class ShardingRouteDecorator implements RouteDecorator {
     
     private final ShardingRule shardingRule;
     
@@ -65,16 +63,15 @@ public final class ShardingRouter implements DateNodeRouter {
     
     private final ShardingSphereMetaData metaData;
     
-    private final SQLParserEngine sqlParserEngine;
-    
-    @Override
     @SuppressWarnings("unchecked")
-    public ShardingRouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
-        SQLStatement sqlStatement = parse(sql, useCache);
-        ShardingStatementValidatorFactory.newInstance(sqlStatement).ifPresent(validator -> validator.validate(shardingRule, sqlStatement, parameters));
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), sql, parameters, sqlStatement);
-        Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
-                ? GeneratedKey.getGenerateKey(shardingRule, metaData.getSchema(), parameters, (InsertStatement) sqlStatement) : Optional.empty();
+    @Override
+    public RouteContext decorate(final RouteContext routeContext) {
+        SQLStatementContext sqlStatementContext = routeContext.getSqlStatementContext();
+        List<Object> parameters = routeContext.getParameters();
+        ShardingStatementValidatorFactory.newInstance(
+                sqlStatementContext.getSqlStatement()).ifPresent(validator -> validator.validate(shardingRule, sqlStatementContext.getSqlStatement(), parameters));
+        Optional<GeneratedKey> generatedKey = sqlStatementContext.getSqlStatement() instanceof InsertStatement
+                ? GeneratedKey.getGenerateKey(shardingRule, metaData.getSchema(), parameters, (InsertStatement) sqlStatementContext.getSqlStatement()) : Optional.empty();
         ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orElse(null), metaData.getSchema());
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext);
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
@@ -86,18 +83,7 @@ public final class ShardingRouter implements DateNodeRouter {
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routeResult.getRouteUnits().size(), "Must have one sharding with subquery.");
         }
-        return new ShardingRouteContext(sqlStatementContext, routeResult, shardingConditions, generatedKey.orElse(null));
-    }
-    
-    /*
-     * To make sure SkyWalking will be available at the next release of ShardingSphere,
-     * a new plugin should be provided to SkyWalking project if this API changed.
-     *
-     * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
-     *
-     */
-    private SQLStatement parse(final String sql, final boolean useCache) {
-        return sqlParserEngine.parse(sql, useCache);
+        return new ShardingRouteContext(sqlStatementContext, parameters, routeResult, shardingConditions, generatedKey.orElse(null));
     }
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, 

@@ -18,26 +18,34 @@
 package org.apache.shardingsphere.masterslave.route.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.DateNodeRouteDecorator;
-import org.apache.shardingsphere.underlying.route.context.RouteMapper;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * Route decorator for master-slave.
  */
 @RequiredArgsConstructor
-public final class MasterSlaveRouteDecorator implements DateNodeRouteDecorator {
+public final class MasterSlaveRouteDecorator implements RouteDecorator {
     
     private final MasterSlaveRule masterSlaveRule;
     
     @Override
     public RouteContext decorate(final RouteContext routeContext) {
+        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
+            String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(routeContext.getSqlStatementContext().getSqlStatement());
+            RouteResult routeResult = new RouteResult();
+            routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
+            return new RouteContext(routeContext.getSqlStatementContext(), Collections.emptyList(), routeResult);
+        }
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {

@@ -95,6 +95,14 @@ public final class MasterSlaveRouteDecoratorTest {
     }
     
     @Test
+    public void assertDecorateToMasterWithoutRouteUnits() {
+        RouteContext routeContext = mockSQLRouteContextWithoutRouteUnits(insertStatement);
+        RouteContext actual = routeDecorator.decorate(routeContext);
+        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
+    }
+    
+    @Test
     public void assertDecorateToSlave() {
         RouteContext routeContext = mockSQLRouteContext(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
@@ -103,7 +111,16 @@ public final class MasterSlaveRouteDecoratorTest {
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(SLAVE_DATASOURCE));
     }
-
+    
+    @Test
+    public void assertDecorateToSlaveWithoutRouteUnits() {
+        RouteContext routeContext = mockSQLRouteContextWithoutRouteUnits(selectStatement);
+        when(selectStatement.getLock()).thenReturn(Optional.empty());
+        RouteContext actual = routeDecorator.decorate(routeContext);
+        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(SLAVE_DATASOURCE));
+    }
+    
     @Test
     public void assertLockDecorateToMaster() {
         RouteContext routeContext = mockSQLRouteContext(selectStatement);
@@ -114,9 +131,18 @@ public final class MasterSlaveRouteDecoratorTest {
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }
     
+    @Test
+    public void assertLockDecorateToMasterWithoutRouteUnits() {
+        RouteContext routeContext = mockSQLRouteContextWithoutRouteUnits(selectStatement);
+        when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
+        RouteContext actual = routeDecorator.decorate(routeContext);
+        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
+    }
+    
     private RouteContext mockSQLRouteContext(final SQLStatement sqlStatement) {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        return new RouteContext(sqlStatementContext, mockRouteResult());
+        return new RouteContext(sqlStatementContext, Collections.emptyList(), mockRouteResult());
     }
     
     private RouteResult mockRouteResult() {
@@ -125,5 +151,10 @@ public final class MasterSlaveRouteDecoratorTest {
         result.getRouteUnits().add(routeUnit);
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(NON_MASTER_SLAVE_DATASOURCE_NAME, NON_MASTER_SLAVE_DATASOURCE_NAME), Collections.emptyList()));
         return result;
+    }
+    
+    private RouteContext mockSQLRouteContextWithoutRouteUnits(final SQLStatement sqlStatement) {
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        return new RouteContext(sqlStatementContext, Collections.emptyList(), new RouteResult());
     }
 }
