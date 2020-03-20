@@ -47,33 +47,16 @@ public final class RouteResult {
     }
     
     /**
-     * Get all data source names.
+     * Get actual data source names.
      *
-     * @return all data source names
+     * @return actual data source names
      */
-    public Collection<String> getDataSourceNames() {
+    public Collection<String> getActualDataSourceNames() {
         Collection<String> result = new HashSet<>(routeUnits.size(), 1);
         for (RouteUnit each : routeUnits) {
             result.add(each.getDataSourceMapper().getActualName());
         }
         return result;
-    }
-    
-    /**
-     * Get table mapper.
-     *
-     * @param logicDataSourceName logic data source name
-     * @param actualTableName actual table name
-     * @return table mapper
-     */
-    public Optional<RouteMapper> getTableMapper(final String logicDataSourceName, final String actualTableName) {
-        for (RouteUnit each : routeUnits) {
-            Optional<RouteMapper> result = each.findTableMapper(logicDataSourceName, actualTableName);
-            if (result.isPresent()) {
-                return result;
-            }
-        }
-        return Optional.empty();
     }
     
     /**
@@ -132,5 +115,22 @@ public final class RouteResult {
             }
         }
         return result;
+    }
+    
+    /**
+     * Find table mapper.
+     *
+     * @param logicDataSourceName logic data source name
+     * @param actualTableName actual table name
+     * @return table mapper
+     */
+    public Optional<RouteMapper> findTableMapper(final String logicDataSourceName, final String actualTableName) {
+        for (RouteUnit each : routeUnits) {
+            Optional<RouteMapper> result = each.findTableMapper(logicDataSourceName, actualTableName);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.empty();
     }
 }

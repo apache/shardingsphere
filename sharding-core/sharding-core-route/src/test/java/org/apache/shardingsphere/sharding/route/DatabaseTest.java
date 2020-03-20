@@ -77,7 +77,7 @@ public final class DatabaseTest {
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         ShardingRouteContext actual = new ShardingRouter(shardingRule, properties, getMetaDataForAllRoutingSQL(), sqlParserEngine).route(originSQL, Collections.emptyList(), false);
         assertThat(actual.getRouteResult().getRouteUnits().size(), is(1));
-        Collection<String> actualDataSources = actual.getRouteResult().getDataSourceNames();
+        Collection<String> actualDataSources = actual.getRouteResult().getActualDataSourceNames();
         assertThat(actualDataSources.size(), is(1));
     }
     

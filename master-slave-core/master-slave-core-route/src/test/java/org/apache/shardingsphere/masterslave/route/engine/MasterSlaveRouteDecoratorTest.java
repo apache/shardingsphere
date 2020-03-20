@@ -89,7 +89,7 @@ public final class MasterSlaveRouteDecoratorTest {
     public void assertDecorateToMaster() {
         RouteContext routeContext = mockSQLRouteContext(insertStatement);
         RouteContext actual = routeDecorator.decorate(routeContext);
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }
@@ -99,7 +99,7 @@ public final class MasterSlaveRouteDecoratorTest {
         RouteContext routeContext = mockSQLRouteContext(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.empty());
         RouteContext actual = routeDecorator.decorate(routeContext);
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(SLAVE_DATASOURCE));
     }
@@ -109,7 +109,7 @@ public final class MasterSlaveRouteDecoratorTest {
         RouteContext routeContext = mockSQLRouteContext(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(mock(LockSegment.class)));
         RouteContext actual = routeDecorator.decorate(routeContext);
-        Iterator<String> routedDataSourceNames = actual.getRouteResult().getDataSourceNames().iterator();
+        Iterator<String> routedDataSourceNames = actual.getRouteResult().getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is(NON_MASTER_SLAVE_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(MASTER_DATASOURCE));
     }

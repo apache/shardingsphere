@@ -67,7 +67,7 @@ public final class RouteUnitTest {
     }
     
     @Test
-    public void assertCanNotFindTableMapper() {
+    public void assertTableMapperNotFound() {
         assertFalse(routeUnit.findTableMapper("invalid_ds", "invalid_tbl").isPresent());
     }
 }
