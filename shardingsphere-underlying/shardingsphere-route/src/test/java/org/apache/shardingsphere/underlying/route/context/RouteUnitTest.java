@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.route.context;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -41,12 +40,8 @@ public final class RouteUnitTest {
     
     private static final String ACTUAL_TABLE_1 = "tbl_1";
     
-    private RouteUnit routeUnit;
-    
-    @Before
-    public void setUp() {
-        routeUnit = new RouteUnit(new RouteMapper(LOGIC_DATA_SOURCE, ACTUAL_DATA_SOURCE), Arrays.asList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_0), new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_1)));
-    }
+    private final RouteUnit routeUnit = new RouteUnit(
+            new RouteMapper(LOGIC_DATA_SOURCE, ACTUAL_DATA_SOURCE), Arrays.asList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_0), new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_1)));
     
     @Test
     public void assertFindTableMapper() {
@@ -58,7 +53,7 @@ public final class RouteUnitTest {
     
     @Test
     public void assertCanNotFindTableMapper() {
-        assertFalse(routeUnit.findTableMapper(ACTUAL_DATA_SOURCE, "").isPresent());
+        assertFalse(routeUnit.findTableMapper("invalid_ds", "invalid_tbl").isPresent());
     }
     
     @Test
