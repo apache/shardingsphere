@@ -46,7 +46,7 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
-import org.apache.shardingsphere.underlying.route.DefaultDateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
@@ -99,7 +99,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
         sqlRewriteContext.generateSQLTokens();
         String rewriteSQL = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        DefaultDateNodeRouter dateNodeRouter = new DefaultDateNodeRouter(logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
+        DateNodeRouter dateNodeRouter = new DateNodeRouter(logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
         RouteContext routeContext = new MasterSlaveRouteDecorator(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()).decorate(dateNodeRouter.route(rewriteSQL, Collections.emptyList(), false));
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             result.getExecutionUnits().add(new ExecutionUnit(each.getDataSourceMapper().getActualName(), new SQLUnit(rewriteSQL, Collections.emptyList())));

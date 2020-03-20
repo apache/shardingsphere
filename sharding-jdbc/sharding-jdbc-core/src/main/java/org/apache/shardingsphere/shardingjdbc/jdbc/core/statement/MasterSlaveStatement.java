@@ -25,7 +25,7 @@ import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecora
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
-import org.apache.shardingsphere.underlying.route.DefaultDateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
@@ -45,7 +45,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     private final MasterSlaveConnection connection;
     
     @Getter(AccessLevel.NONE)
-    private final DefaultDateNodeRouter dateNodeRouter;
+    private final DateNodeRouter dateNodeRouter;
     
     private final int resultSetType;
     
@@ -66,7 +66,7 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
     public MasterSlaveStatement(final MasterSlaveConnection connection, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability) {
         super(Statement.class);
         this.connection = connection;
-        dateNodeRouter = new DefaultDateNodeRouter(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getSqlParserEngine());
+        dateNodeRouter = new DateNodeRouter(connection.getRuntimeContext().getMetaData(), connection.getRuntimeContext().getSqlParserEngine());
         this.resultSetType = resultSetType;
         this.resultSetConcurrency = resultSetConcurrency;
         this.resultSetHoldability = resultSetHoldability;

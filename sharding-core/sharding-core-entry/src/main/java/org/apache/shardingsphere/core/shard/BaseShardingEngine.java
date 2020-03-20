@@ -42,7 +42,7 @@ import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.route.DefaultDateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
@@ -64,7 +64,7 @@ public abstract class BaseShardingEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DefaultDateNodeRouter dateNodeRouter;
+    private final DateNodeRouter dateNodeRouter;
     
     private final ShardingRouteDecorator shardingRouteDecorator;
     
@@ -74,7 +74,7 @@ public abstract class BaseShardingEngine {
         this.shardingRule = shardingRule;
         this.properties = properties;
         this.metaData = metaData;
-        dateNodeRouter = new DefaultDateNodeRouter(metaData, sqlParserEngine);
+        dateNodeRouter = new DateNodeRouter(metaData, sqlParserEngine);
         shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, properties, metaData);
         routingHook = new SPIRoutingHook();
     }
@@ -99,7 +99,7 @@ public abstract class BaseShardingEngine {
     
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
-    protected abstract RouteContext route(DefaultDateNodeRouter dateNodeRouter, String sql, List<Object> parameters);
+    protected abstract RouteContext route(DateNodeRouter dateNodeRouter, String sql, List<Object> parameters);
     
     private ShardingRouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
         routingHook.start(sql);

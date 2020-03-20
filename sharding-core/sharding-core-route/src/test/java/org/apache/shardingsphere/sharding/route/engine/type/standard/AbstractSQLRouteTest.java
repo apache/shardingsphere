@@ -31,7 +31,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.route.DefaultDateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildSchemaMetaData());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
-        RouteContext routeContext = new DefaultDateNodeRouter(metaData, sqlParserEngine).route(sql, parameters, false);
+        RouteContext routeContext = new DateNodeRouter(metaData, sqlParserEngine).route(sql, parameters, false);
         ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator(shardingRule, new ConfigurationProperties(new Properties()), metaData);
         ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext);
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));

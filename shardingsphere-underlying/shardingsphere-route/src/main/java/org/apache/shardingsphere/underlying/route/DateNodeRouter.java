@@ -17,14 +17,27 @@
 
 package org.apache.shardingsphere.underlying.route;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
 import java.util.List;
 
 /**
  * Data node router.
  */
-public interface DateNodeRouter {
+@RequiredArgsConstructor
+public final class DateNodeRouter {
+    
+    private final ShardingSphereMetaData metaData;
+    
+    private final SQLParserEngine parserEngine;
     
     /**
      * Route SQL.
@@ -34,5 +47,14 @@ public interface DateNodeRouter {
      * @param useCache whether cache SQL parse result
      * @return route context
      */
-    RouteContext route(String sql, List<Object> parameters, boolean useCache);
+    public RouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
+        SQLStatement sqlStatement = parserEngine.parse(sql, useCache);
+        try {
+            SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), sql, parameters, sqlStatement);
+            return new RouteContext(sqlStatementContext, parameters, new RouteResult());
+            // TODO should pass parameters for master-slave
+        } catch (final IndexOutOfBoundsException ex) {
+            return new RouteContext(new CommonSQLStatementContext(sqlStatement), parameters, new RouteResult());
+        }
+    }
 }

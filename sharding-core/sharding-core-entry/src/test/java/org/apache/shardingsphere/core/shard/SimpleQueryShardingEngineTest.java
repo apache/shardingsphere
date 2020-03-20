@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.route.DefaultDateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest {
     
     @Mock
-    private DefaultDateNodeRouter dateNodeRouter;
+    private DateNodeRouter dateNodeRouter;
     
     @Mock
     private ShardingRouteDecorator shardingRouteDecorator;
