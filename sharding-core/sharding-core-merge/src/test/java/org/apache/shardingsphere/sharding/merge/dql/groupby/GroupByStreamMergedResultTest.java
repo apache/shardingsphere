@@ -194,6 +194,9 @@ public final class GroupByStreamMergedResultTest {
         when(result.getColumnLabel(4)).thenReturn("date");
         when(result.getColumnLabel(5)).thenReturn("AVG_DERIVED_COUNT_0");
         when(result.getColumnLabel(6)).thenReturn("AVG_DERIVED_SUM_0");
+        when(result.getColumnName(1)).thenReturn("col1");
+        when(result.getColumnName(2)).thenReturn("col2");
+        when(result.getColumnName(3)).thenReturn("col3");
         return result;
     }
 }
