@@ -15,42 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.route.engine;
+package org.apache.shardingsphere.underlying.route;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
-import org.apache.shardingsphere.masterslave.route.log.MasterSlaveSQLLogger;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Master slave router interface.
+ * Data node router.
  */
 @RequiredArgsConstructor
-public final class MasterSlaveRouter implements DateNodeRouter {
+public final class DefaultDateNodeRouter implements DateNodeRouter {
     
-    private final MasterSlaveRule masterSlaveRule;
+    private final ShardingSphereMetaData metaData;
     
     private final SQLParserEngine sqlParserEngine;
     
-    private final boolean showSQL;
-    
     @Override
     public RouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
-        String dataSourceName = new MasterSlaveDataSourceRouter(masterSlaveRule).route(sqlParserEngine.parse(sql, useCache));
-        if (showSQL) {
-            MasterSlaveSQLLogger.logSQL(sql, dataSourceName);
+        SQLStatement sqlStatement = sqlParserEngine.parse(sql, useCache);
+        try {
+            SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData.getSchema(), sql, parameters, sqlStatement);
+            return new RouteContext(sqlStatementContext, new RouteResult());
+            // TODO should pass parameters for master-slave
+        } catch (final IndexOutOfBoundsException ex) {
+            return new RouteContext(new CommonSQLStatementContext(sqlStatement), new RouteResult());
         }
-        RouteResult routeResult = new RouteResult();
-        routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.emptyList()));
-        return new RouteContext(null, routeResult);
     }
 }
