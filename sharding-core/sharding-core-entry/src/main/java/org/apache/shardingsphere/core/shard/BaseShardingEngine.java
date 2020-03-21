@@ -42,7 +42,7 @@ import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
@@ -64,7 +64,7 @@ public abstract class BaseShardingEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DateNodeRouter dateNodeRouter;
+    private final DataNodeRouter dataNodeRouter;
     
     private final SPIRoutingHook routingHook;
     
@@ -72,7 +72,7 @@ public abstract class BaseShardingEngine {
         this.shardingRule = shardingRule;
         this.properties = properties;
         this.metaData = metaData;
-        dateNodeRouter = new DateNodeRouter(metaData, properties, sqlParserEngine);
+        dataNodeRouter = new DataNodeRouter(metaData, properties, sqlParserEngine);
         routingHook = new SPIRoutingHook();
     }
     
@@ -96,13 +96,13 @@ public abstract class BaseShardingEngine {
     
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
-    protected abstract RouteContext route(DateNodeRouter dateNodeRouter, String sql, List<Object> parameters);
+    protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
     
     private ShardingRouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
         routingHook.start(sql);
         try {
             registerRouteDecorator();
-            ShardingRouteContext result = (ShardingRouteContext) route(dateNodeRouter, sql, clonedParameters);
+            ShardingRouteContext result = (ShardingRouteContext) route(dataNodeRouter, sql, clonedParameters);
             routingHook.finishSuccess(result, metaData.getSchema());
             return result;
             // CHECKSTYLE:OFF
@@ -114,9 +114,9 @@ public abstract class BaseShardingEngine {
     }
     
     private void registerRouteDecorator() {
-        dateNodeRouter.registerDecorator(shardingRule, new ShardingRouteDecorator());
+        dataNodeRouter.registerDecorator(shardingRule, new ShardingRouteDecorator());
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            dateNodeRouter.registerDecorator(each, new MasterSlaveRouteDecorator());
+            dataNodeRouter.registerDecorator(each, new MasterSlaveRouteDecorator());
         }
     }
     

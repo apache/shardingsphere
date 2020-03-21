@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -46,7 +46,7 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     private ShardingRule shardingRule;
     
     @Mock
-    private DateNodeRouter dateNodeRouter;
+    private DataNodeRouter dataNodeRouter;
     
     private SimpleQueryShardingEngine shardingEngine;
     
@@ -65,14 +65,14 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     
     @SneakyThrows
     private void setRoutingEngine() {
-        Field field = BaseShardingEngine.class.getDeclaredField("dateNodeRouter");
+        Field field = BaseShardingEngine.class.getDeclaredField("dataNodeRouter");
         field.setAccessible(true);
-        field.set(shardingEngine, dateNodeRouter);
+        field.set(shardingEngine, dataNodeRouter);
     }
     
     protected void assertShard() {
         RouteContext routeContext = createSQLRouteContext();
-        when(dateNodeRouter.route(getSql(), Collections.emptyList(), false)).thenReturn(routeContext);
+        when(dataNodeRouter.route(getSql(), Collections.emptyList(), false)).thenReturn(routeContext);
         assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
     }
 }

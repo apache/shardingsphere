@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +48,7 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     private ShardingRule shardingRule;
     
     @Mock
-    private DateNodeRouter dateNodeRouter;
+    private DataNodeRouter dataNodeRouter;
     
     private PreparedQueryShardingEngine shardingEngine;
     
@@ -67,20 +67,20 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     
     @SneakyThrows
     private void setRoutingEngine() {
-        Field field = BaseShardingEngine.class.getDeclaredField("dateNodeRouter");
+        Field field = BaseShardingEngine.class.getDeclaredField("dataNodeRouter");
         field.setAccessible(true);
-        field.set(shardingEngine, dateNodeRouter);
+        field.set(shardingEngine, dataNodeRouter);
     }
     
     protected void assertShard() {
         RouteContext routeContext = createSQLRouteContext();
-        when(dateNodeRouter.route(getSql(), getParameters(), true)).thenReturn(routeContext);
+        when(dataNodeRouter.route(getSql(), getParameters(), true)).thenReturn(routeContext);
         assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
     }
     
     @Test(expected = SQLException.class)
     public void assertWithRouteException() {
-        when(dateNodeRouter.route(getSql(), getParameters(), true)).thenThrow(SQLException.class);
+        when(dataNodeRouter.route(getSql(), getParameters(), true)).thenThrow(SQLException.class);
         shardingEngine.shard(getSql(), getParameters());
     }
 }
