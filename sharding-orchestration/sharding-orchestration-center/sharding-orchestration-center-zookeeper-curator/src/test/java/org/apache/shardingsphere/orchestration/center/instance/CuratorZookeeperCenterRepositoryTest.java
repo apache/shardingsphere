@@ -41,8 +41,6 @@ import static org.junit.Assert.assertThat;
 public final class CuratorZookeeperCenterRepositoryTest {
     
     private static CuratorZookeeperCenterRepository centerRepository = new CuratorZookeeperCenterRepository();
-    
-    private static CuratorFramework client;
 
     private static String SERVER_LISTS;
     
@@ -54,9 +52,6 @@ public final class CuratorZookeeperCenterRepositoryTest {
         CenterConfiguration configuration = new CenterConfiguration(centerRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
         centerRepository.init(configuration);
-        Field field = CuratorZookeeperCenterRepository.class.getDeclaredField("client");
-        field.setAccessible(true);
-        client = (CuratorFramework) field.get(centerRepository);
     }
     
     @Test
@@ -105,6 +100,9 @@ public final class CuratorZookeeperCenterRepositoryTest {
         centerRepository.persist("/test/children_deleted/5", "value5");
         SettableFuture<DataChangedEvent> future = SettableFuture.create();
         centerRepository.watch("/test/children_deleted/5", future::set);
+        Field field = CuratorZookeeperCenterRepository.class.getDeclaredField("client");
+        field.setAccessible(true);
+        CuratorFramework client = (CuratorFramework) field.get(centerRepository);
         client.delete().forPath("/test/children_deleted/5");
         DataChangedEvent dataChangedEvent = future.get(5, TimeUnit.SECONDS);
         assertNotNull(dataChangedEvent);
