@@ -135,7 +135,6 @@ public final class CuratorZookeeperCenterRepositoryTest {
         properties.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "100");
         properties.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "1000");
-        EmbedTestingServer.start();
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
         customCenterRepository.setProperties(properties);
@@ -153,7 +152,6 @@ public final class CuratorZookeeperCenterRepositoryTest {
         final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
-        EmbedTestingServer.start();
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
         customCenterRepository.setProperties(properties);
@@ -168,7 +166,6 @@ public final class CuratorZookeeperCenterRepositoryTest {
         final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
-        EmbedTestingServer.start();
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
         customCenterRepository.setProperties(properties);
@@ -183,7 +180,6 @@ public final class CuratorZookeeperCenterRepositoryTest {
         final CuratorZookeeperCenterRepository customCenterRepository = new CuratorZookeeperCenterRepository();
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        EmbedTestingServer.start();
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
         customCenterRepository.setProperties(properties);
