@@ -200,7 +200,7 @@ public final class EncryptRule implements BaseRule {
     }
     
     private Collection<String> getPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getPlainColumns() : Collections.emptyList();
+        return Optional.ofNullable(tables.get(logicTable.toLowerCase())).map(EncryptTable::getPlainColumns).orElse(Collections.emptyList());
     }
     
     /**
@@ -210,7 +210,7 @@ public final class EncryptRule implements BaseRule {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLogicAndCipherColumns() : Collections.emptyMap();
+        return Optional.ofNullable(tables.get(logicTable.toLowerCase())).map(EncryptTable::getLogicAndCipherColumns).orElse(Collections.emptyMap());
     }
     
     /**
@@ -219,8 +219,8 @@ public final class EncryptRule implements BaseRule {
      * @param logicTable logic table 
      * @return logic and plain columns
      */
-    public Map<String, String> getLogicAndPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLogicAndPlainColumns() : Collections.emptyMap();
+    public Map<String, String> getLogicAndPlainColumns(final String logicTable) { 
+        return Optional.ofNullable(tables.get(logicTable.toLowerCase())).map(EncryptTable::getLogicAndPlainColumns).orElse(Collections.emptyMap());
     }
     
     /**
