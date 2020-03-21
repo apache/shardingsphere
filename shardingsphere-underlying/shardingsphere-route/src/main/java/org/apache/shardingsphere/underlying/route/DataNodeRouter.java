@@ -53,10 +53,10 @@ public final class DataNodeRouter {
      * Register route decorator.
      *
      * @param rule rule
-     * @param routeDecorator route decorator
+     * @param decorator route decorator
      */
-    public void registerDecorator(final BaseRule rule, final RouteDecorator routeDecorator) {
-        routeDecorators.put(rule, routeDecorator);
+    public void registerDecorator(final BaseRule rule, final RouteDecorator decorator) {
+        routeDecorators.put(rule, decorator);
     }
     
     /**
