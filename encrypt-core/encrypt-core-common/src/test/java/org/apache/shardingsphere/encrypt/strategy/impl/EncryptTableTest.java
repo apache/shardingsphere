@@ -82,4 +82,10 @@ public final class EncryptTableTest {
         assertTrue(encryptTable.findEncryptor("key").isPresent());
         assertFalse(encryptTable.findEncryptor("notExistLogicColumn").isPresent());
     }
+    
+    @Test
+    public void assertContainsLogicColumn() {
+        assertTrue(encryptTable.containsLogicColumn("key"));
+        assertFalse(encryptTable.containsLogicColumn("notExistLogicColumn"));
+    }
 }

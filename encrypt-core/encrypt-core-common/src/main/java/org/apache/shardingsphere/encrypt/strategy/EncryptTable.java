@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.strategy;
 
 import com.google.common.collect.Maps;
+import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
@@ -36,19 +37,22 @@ public final class EncryptTable {
     private final Map<String, EncryptColumn> columns;
     
     public EncryptTable(final EncryptTableRuleConfiguration config) {
-        columns = new LinkedHashMap<>(new LinkedHashMap<>(Maps.transformValues(config.getColumns(), 
-            input -> new EncryptColumn(input.getCipherColumn(), input.getAssistedQueryColumn(), input.getPlainColumn(), input.getEncryptor()))));
+        columns = new LinkedHashMap<>(config.getColumns().size(), 1);
+        for (Map.Entry<String, EncryptColumnRuleConfiguration> entry : config.getColumns().entrySet()) {
+            columns.put(entry.getKey().toLowerCase(), new EncryptColumn(entry.getValue().getCipherColumn(),
+                    entry.getValue().getAssistedQueryColumn(), entry.getValue().getPlainColumn(), entry.getValue().getEncryptor()));
+        }
     }
     
     /**
      * Get logic column of cipher column.
-     * 
+     *
      * @param cipherColumn cipher column
      * @return logic column
      */
     public String getLogicColumnOfCipher(final String cipherColumn) {
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
-            if (entry.getValue().getCipherColumn().equals(cipherColumn)) {
+            if (entry.getValue().getCipherColumn().equalsIgnoreCase(cipherColumn)) {
                 return entry.getKey();
             }
         }
@@ -66,12 +70,12 @@ public final class EncryptTable {
     
     /**
      * Find plain column.
-     * 
+     *
      * @param logicColumn logic column name
      * @return plain column
      */
     public Optional<String> findPlainColumn(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.empty();
+        return columns.containsKey(logicColumn.toLowerCase()) ? columns.get(logicColumn.toLowerCase()).getPlainColumn() : Optional.empty();
     }
     
     /**
@@ -96,7 +100,7 @@ public final class EncryptTable {
      * @return cipher column
      */
     public String getCipherColumn(final String logicColumn) {
-        return columns.get(logicColumn).getCipherColumn();
+        return columns.get(logicColumn.toLowerCase()).getCipherColumn();
     }
     
     /**
@@ -119,7 +123,7 @@ public final class EncryptTable {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getAssistedQueryColumn() : Optional.empty();
+        return columns.containsKey(logicColumn.toLowerCase()) ? columns.get(logicColumn.toLowerCase()).getAssistedQueryColumn() : Optional.empty();
     }
     
     /**
@@ -179,5 +183,15 @@ public final class EncryptTable {
             }
             throw new ShardingSphereException("Plain column is null.");
         });
+    }
+    
+    /**
+     * Contains logic column.
+     *
+     * @param logicColumn column name
+     * @return contains or not
+     */
+    public boolean containsLogicColumn(final String logicColumn) {
+        return columns.containsKey(logicColumn.toLowerCase());
     }
 }

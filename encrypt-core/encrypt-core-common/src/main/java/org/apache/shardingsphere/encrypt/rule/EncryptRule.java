@@ -97,18 +97,18 @@ public final class EncryptRule implements BaseRule {
     
     private void initTables(final Map<String, EncryptTableRuleConfiguration> tables) {
         for (Entry<String, EncryptTableRuleConfiguration> entry : tables.entrySet()) {
-            this.tables.put(entry.getKey(), new EncryptTable(entry.getValue()));
+            this.tables.put(entry.getKey().toLowerCase(), new EncryptTable(entry.getValue()));
         }
     }
     
     /**
      * Find encrypt table.
-     * 
+     *
      * @param logicTable logic table
      * @return encrypt table
      */
     public Optional<EncryptTable> findEncryptTable(final String logicTable) {
-        return Optional.ofNullable(tables.get(logicTable));
+        return Optional.ofNullable(tables.get(logicTable.toLowerCase()));
     }
     
     /**
@@ -119,7 +119,7 @@ public final class EncryptRule implements BaseRule {
      * @return logic column
      */
     public String getLogicColumnOfCipher(final String logicTable, final String cipherColumn) {
-        return tables.get(logicTable).getLogicColumnOfCipher(cipherColumn);
+        return tables.get(logicTable.toLowerCase()).getLogicColumnOfCipher(cipherColumn);
     }
     
     /**
@@ -130,12 +130,12 @@ public final class EncryptRule implements BaseRule {
      * @return plain column
      */
     public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
-        Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
-        return originColumnName.isPresent() && tables.containsKey(logicTable) ? tables.get(logicTable).findPlainColumn(originColumnName.get()) : Optional.empty();
+        Optional<String> originColumnName = findOriginColumnName(logicTable.toLowerCase(), logicColumn);
+        return originColumnName.isPresent() && tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findPlainColumn(originColumnName.get()) : Optional.empty();
     }
-
+    
     private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
-        for (String each : tables.get(logicTable).getLogicColumns()) {
+        for (String each : tables.get(logicTable.toLowerCase()).getLogicColumns()) {
             if (logicColumn.equalsIgnoreCase(each)) {
                 return Optional.of(each);
             }
@@ -151,7 +151,7 @@ public final class EncryptRule implements BaseRule {
      * @return cipher column
      */
     public String getCipherColumn(final String logicTable, final String logicColumn) {
-        return tables.get(logicTable).getCipherColumn(logicColumn);
+        return tables.get(logicTable.toLowerCase()).getCipherColumn(logicColumn);
     }
     
     /**
@@ -162,7 +162,7 @@ public final class EncryptRule implements BaseRule {
      * @return cipher column or not
      */
     public boolean isCipherColumn(final String tableName, final String columnName) {
-        return tables.containsKey(tableName) && tables.get(tableName).getCipherColumns().contains(columnName);
+        return tables.containsKey(tableName.toLowerCase()) && tables.get(tableName.toLowerCase()).getCipherColumns().contains(columnName);
     }
     
     /**
@@ -173,17 +173,17 @@ public final class EncryptRule implements BaseRule {
      * @return assisted query column
      */
     public Optional<String> findAssistedQueryColumn(final String logicTable, final String logicColumn) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).findAssistedQueryColumn(logicColumn) : Optional.empty();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findAssistedQueryColumn(logicColumn) : Optional.empty();
     }
     
     /**
      * Get assisted query columns.
-     * 
+     *
      * @param logicTable logic table
      * @return assisted query columns
      */
     public Collection<String> getAssistedQueryColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getAssistedQueryColumns() : Collections.emptyList();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getAssistedQueryColumns() : Collections.emptyList();
     }
     
     /**
@@ -200,7 +200,7 @@ public final class EncryptRule implements BaseRule {
     }
     
     private Collection<String> getPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getPlainColumns() : Collections.emptyList();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getPlainColumns() : Collections.emptyList();
     }
     
     /**
@@ -210,7 +210,7 @@ public final class EncryptRule implements BaseRule {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndCipherColumns() : Collections.emptyMap();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLogicAndCipherColumns() : Collections.emptyMap();
     }
     
     /**
@@ -220,7 +220,7 @@ public final class EncryptRule implements BaseRule {
      * @return logic and plain columns
      */
     public Map<String, String> getLogicAndPlainColumns(final String logicTable) {
-        return tables.containsKey(logicTable) ? tables.get(logicTable).getLogicAndPlainColumns() : Collections.emptyMap();
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLogicAndPlainColumns() : Collections.emptyMap();
     }
     
     /**
@@ -260,10 +260,10 @@ public final class EncryptRule implements BaseRule {
      * @return sharding encryptor
      */
     public Optional<Encryptor> findEncryptor(final String logicTable, final String logicColumn) {
-        if (!tables.containsKey(logicTable)) {
+        if (!tables.containsKey(logicTable.toLowerCase())) {
             return Optional.empty();
         }
-        Optional<String> encryptor = tables.get(logicTable).findEncryptor(logicColumn);
+        Optional<String> encryptor = tables.get(logicTable.toLowerCase()).findEncryptor(logicColumn);
         return encryptor.map(encryptors::get);
     }
     
