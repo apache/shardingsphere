@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.Show
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.mysql.ShowTablesStatement;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -52,7 +52,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
         if (dalStatement instanceof ShowDatabasesStatement) {
-            return new SingleLocalDataMergedResult(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
+            return new SingleLocalDataMergedResult(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         }
         if (dalStatement instanceof ShowTablesStatement || dalStatement instanceof ShowTableStatusStatement || dalStatement instanceof ShowIndexStatement) {
             return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schemaMetaData, queryResults);

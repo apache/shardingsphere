@@ -60,6 +60,6 @@ public final class OrchestrationShardingSchemaGroup {
      * @return data source names
      */
     public Collection<String> getDataSourceNames(final String shardingSchemaName) {
-        return schemaGroup.containsKey(shardingSchemaName) ? schemaGroup.get(shardingSchemaName) : Collections.emptyList();
+        return schemaGroup.getOrDefault(shardingSchemaName, Collections.emptyList());
     }
 }

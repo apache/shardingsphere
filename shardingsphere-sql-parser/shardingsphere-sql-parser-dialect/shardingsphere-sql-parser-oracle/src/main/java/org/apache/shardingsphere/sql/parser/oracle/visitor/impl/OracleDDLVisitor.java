@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.DropCol
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
@@ -58,7 +59,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -106,10 +106,10 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
+        DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType.getValue(), isPrimaryKey);
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey);
         for (InlineConstraintContext each : ctx.inlineConstraint()) {
             if (null != each.referencesClause()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.referencesClause().tableName()));
@@ -219,9 +219,9 @@ public final class OracleDDLVisitor extends OracleVisitor implements DDLVisitor 
     @Override
     public ASTNode visitModifyColProperties(final ModifyColPropertiesContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
+        DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
         // TODO visit pk and reference table
-        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType.getValue(), false);
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false);
     }
     
     @Override

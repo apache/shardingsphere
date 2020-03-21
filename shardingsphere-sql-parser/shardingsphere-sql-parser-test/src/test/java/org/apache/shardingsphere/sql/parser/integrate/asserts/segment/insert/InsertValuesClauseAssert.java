@@ -60,7 +60,5 @@ public final class InsertValuesClauseAssert {
             AssignmentValueAssert.assertIs(assertContext, each, expected.getAssignmentValues().get(count));
             count++;
         }
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

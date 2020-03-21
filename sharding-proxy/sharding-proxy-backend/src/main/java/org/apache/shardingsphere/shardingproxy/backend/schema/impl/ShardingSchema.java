@@ -51,7 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.decorator.SchemaMetaDataDecorator;
@@ -173,8 +173,8 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private SchemaMetaData loadSchemaMetaData() throws SQLException {
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
+        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
         SchemaMetaData result = new ShardingMetaDataLoader(getBackendDataSource().getDataSources(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load();
         result = SchemaMetaDataDecorator.decorate(result, shardingRule, new ShardingTableMetaDataDecorator());
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
@@ -184,8 +184,8 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private TableMetaData loadTableMeta(final String tableName) throws SQLException {
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.CHECK_TABLE_METADATA_ENABLED);
+        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
         TableMetaData result = new ShardingMetaDataLoader(getBackendDataSource().getDataSources(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName);
         result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {

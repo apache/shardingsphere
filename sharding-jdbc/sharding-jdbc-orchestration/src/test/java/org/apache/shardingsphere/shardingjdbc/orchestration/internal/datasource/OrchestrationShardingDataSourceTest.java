@@ -33,9 +33,9 @@ import org.apache.shardingsphere.orchestration.core.registrycenter.schema.Orches
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -99,7 +99,7 @@ public final class OrchestrationShardingDataSourceTest {
     
     @Test
     public void assertRenewRule() {
-        shardingDataSource.renew(new ShardingRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getShardingRuleConfig()));
+        shardingDataSource.renew(new ShardingRuleChangedEvent(DefaultSchema.LOGIC_NAME, getShardingRuleConfig()));
         assertThat(shardingDataSource.getDataSource().getRuntimeContext().getRule().getTableRules().size(), is(1));
     }
     
@@ -116,7 +116,7 @@ public final class OrchestrationShardingDataSourceTest {
     
     @Test
     public void assertRenewDataSource() {
-        shardingDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurations()));
+        shardingDataSource.renew(new DataSourceChangedEvent(DefaultSchema.LOGIC_NAME, getDataSourceConfigurations()));
         assertThat(shardingDataSource.getDataSource().getDataSourceMap().size(), is(3));
         
     }

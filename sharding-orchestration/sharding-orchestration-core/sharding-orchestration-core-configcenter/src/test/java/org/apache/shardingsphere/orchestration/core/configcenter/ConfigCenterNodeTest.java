@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.core.configcenter;
 
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,17 +33,17 @@ public final class ConfigCenterNodeTest {
     
     @Test
     public void assertGetSchemaPath() {
-        assertThat(configurationNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/schema/logic_db/rule"));
+        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/test/config/schema/logic_db/rule"));
     }
     
     @Test
     public void assertGetDataSourcePath() {
-        assertThat(configurationNode.getDataSourcePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/schema/logic_db/datasource"));
+        assertThat(configurationNode.getDataSourcePath(DefaultSchema.LOGIC_NAME), is("/test/config/schema/logic_db/datasource"));
     }
     
     @Test
     public void assertGetRulePath() {
-        assertThat(configurationNode.getRulePath(ShardingConstant.LOGIC_SCHEMA_NAME), is("/test/config/schema/logic_db/rule"));
+        assertThat(configurationNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/test/config/schema/logic_db/rule"));
     }
     
     @Test
@@ -58,12 +58,12 @@ public final class ConfigCenterNodeTest {
     
     @Test
     public void assertGetSchemaName() {
-        assertThat(configurationNode.getSchemaName("/test/config/schema/logic_db/rule"), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+        assertThat(configurationNode.getSchemaName("/test/config/schema/logic_db/rule"), is(DefaultSchema.LOGIC_NAME));
     }
     
     @Test
     public void assertGetAllSchemaConfigPaths() {
-        Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Arrays.asList(ShardingConstant.LOGIC_SCHEMA_NAME));
+        Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         assertThat(actual.size(), is(4));
         assertThat(actual, hasItems("/test/config/schema"));
         assertThat(actual, hasItems("/test/config/schema/logic_db"));

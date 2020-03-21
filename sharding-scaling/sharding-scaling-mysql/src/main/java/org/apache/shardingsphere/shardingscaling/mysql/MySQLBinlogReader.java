@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Re
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.shardingscaling.mysql.binlog.MySQLConnector;
+import org.apache.shardingsphere.shardingscaling.mysql.client.MySQLClient;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.DeleteRowsEvent;
@@ -78,7 +78,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
     public void read(final Channel channel) {
         JDBCDataSourceConfiguration jdbcDataSourceConfiguration = (JDBCDataSourceConfiguration) rdbmsConfiguration.getDataSourceConfiguration();
         final JdbcUri uri = new JdbcUri(jdbcDataSourceConfiguration.getJdbcUrl());
-        MySQLConnector client = new MySQLConnector(123456, uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
+        MySQLClient client = new MySQLClient(123456, uri.getHostname(), uri.getPort(), jdbcDataSourceConfiguration.getUsername(), jdbcDataSourceConfiguration.getPassword());
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.dat
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.ShardingConstant;
+import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -103,13 +103,13 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     
     protected final void initShardingOrchestrationFacade() {
         shardingOrchestrationFacade.init();
-        dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME));
+        dataSourceConfigurations.putAll(shardingOrchestrationFacade.getConfigCenter().loadDataSourceConfigurations(DefaultSchema.LOGIC_NAME));
     }
     
     protected final void initShardingOrchestrationFacade(
             final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigurations, final Map<String, RuleConfiguration> schemaRuleMap, final Properties props) {
         shardingOrchestrationFacade.init(dataSourceConfigurations, schemaRuleMap, null, props);
-        this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(ShardingConstant.LOGIC_SCHEMA_NAME));
+        this.dataSourceConfigurations.putAll(dataSourceConfigurations.get(DefaultSchema.LOGIC_NAME));
     }
     
     protected final synchronized Map<String, DataSource> getChangedDataSources(final Map<String, DataSource> oldDataSources, final Map<String, DataSourceConfiguration> newDataSources) {

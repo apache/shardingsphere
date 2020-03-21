@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDa
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.YamlCenterRepositoryConfigurationSwapperUtil;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;

@@ -27,8 +27,8 @@ import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationEncryptDataSource;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

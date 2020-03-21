@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.Pag
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -51,15 +51,15 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_order_item"), selectStatementContext,
-                createShardingConditions("t_order"), new ShardingSphereProperties(new Properties()));
+                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
         RouteResult routeResult = complexRoutingEngine.route(createBindingShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test
@@ -69,21 +69,21 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
                 new ProjectionsContext(0, 0, false, Collections.emptyList()),
                 new PaginationContext(null, null, Collections.emptyList()));
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_config"), selectStatementContext,
-                createShardingConditions("t_order"), new ShardingSphereProperties(new Properties()));
+                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
         RouteResult routeResult = complexRoutingEngine.route(createBroadcastShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test(expected = ShardingSphereException.class)
     public void assertRoutingForNonLogicTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Collections.emptyList(), null,
-                createShardingConditions("t_order"), new ShardingSphereProperties(new Properties()));
+                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
         complexRoutingEngine.route(mock(ShardingRule.class));
     }
 }

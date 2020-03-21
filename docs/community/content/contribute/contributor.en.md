@@ -57,7 +57,7 @@ git push origin issueNo
 
 ### Submit Pull Request
 
- - Send a pull request to the master branch rather than the master branch of shardingsphere after it is finished.
+ - Send a pull request to the master branch.
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
  - At last, congratulate to be an official contributor of ShardingSphere
 

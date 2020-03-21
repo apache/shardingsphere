@@ -21,8 +21,8 @@ import com.ctrip.framework.apollo.openapi.client.ApolloOpenApiClient;
 import com.ctrip.framework.apollo.openapi.dto.NamespaceReleaseDTO;
 import com.ctrip.framework.apollo.openapi.dto.OpenItemDTO;
 import org.apache.shardingsphere.orchestration.center.instance.ApolloProperties;
-import org.apache.shardingsphere.orchestration.center.instance.ApolloPropertiesEnum;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.instance.ApolloPropertyKey;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 /**
  * Apollo open api client wrapper.
@@ -43,14 +43,14 @@ public final class ApolloOpenApiWrapper {
     
     public ApolloOpenApiWrapper(final CenterConfiguration config, final ApolloProperties properties) {
         namespace = config.getNamespace();
-        appId = properties.getValue(ApolloPropertiesEnum.APP_ID);
-        env = properties.getValue(ApolloPropertiesEnum.ENV);
-        clusterName = properties.getValue(ApolloPropertiesEnum.CLUSTER_NAME);
-        administrator = properties.getValue(ApolloPropertiesEnum.ADMINISTRATOR);
-        String apolloToken = properties.getValue(ApolloPropertiesEnum.TOKEN);
-        String portalUrl = properties.getValue(ApolloPropertiesEnum.PORTAL_URL);
-        Integer connectTimeout = properties.getValue(ApolloPropertiesEnum.CONNECT_TIMEOUT);
-        Integer readTimeout = properties.getValue(ApolloPropertiesEnum.READ_TIMEOUT);
+        appId = properties.getValue(ApolloPropertyKey.APP_ID);
+        env = properties.getValue(ApolloPropertyKey.ENV);
+        clusterName = properties.getValue(ApolloPropertyKey.CLUSTER_NAME);
+        administrator = properties.getValue(ApolloPropertyKey.ADMINISTRATOR);
+        String apolloToken = properties.getValue(ApolloPropertyKey.TOKEN);
+        String portalUrl = properties.getValue(ApolloPropertyKey.PORTAL_URL);
+        Integer connectTimeout = properties.getValue(ApolloPropertyKey.CONNECT_TIMEOUT);
+        Integer readTimeout = properties.getValue(ApolloPropertyKey.READ_TIMEOUT);
         client = ApolloOpenApiClient.newBuilder().withPortalUrl(portalUrl).withConnectTimeout(connectTimeout)
                 .withReadTimeout(readTimeout).withToken(apolloToken).build();
     }
