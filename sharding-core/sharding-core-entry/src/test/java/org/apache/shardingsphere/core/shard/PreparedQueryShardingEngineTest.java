@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.engine.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

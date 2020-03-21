@@ -30,7 +30,7 @@ import java.util.List;
 public final class SQLRewriteEngineTestParameters {
     
     private final String type;
-            
+    
     private final String name;
     
     private final String fileName;
