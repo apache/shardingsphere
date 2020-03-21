@@ -42,7 +42,7 @@ public final class ColumnDefinitionAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
         assertThat(assertContext.getText("Column definition name assertion error: "), actual.getColumnName().getIdentifier().getValue(), is(expected.getColumn().getName()));
-        assertThat(assertContext.getText("Column definition data type assertion error: "), actual.getDataType(), is(expected.getType()));
+        assertThat(assertContext.getText("Column definition data type assertion error: "), actual.getDataType().getDataTypeName(), is(expected.getType()));
         assertThat(assertContext.getText("Column definition primary key assertion error: "), actual.isPrimaryKey(), is(expected.isPrimaryKey()));
         TableAssert.assertIs(assertContext, actual.getReferencedTables(), expected.getReferencedTables());
         assertThat(assertContext.getText("Column definition start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
