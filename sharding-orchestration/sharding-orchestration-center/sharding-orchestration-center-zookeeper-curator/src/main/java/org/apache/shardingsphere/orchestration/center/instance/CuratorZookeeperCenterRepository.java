@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -131,12 +132,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     }
     
     private TreeCache findTreeCache(final String key) {
-        for (Entry<String, TreeCache> entry : caches.entrySet()) {
-            if (key.startsWith(entry.getKey())) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return caches.entrySet().stream().filter(entry -> key.startsWith(entry.getKey())).findFirst().map(Map.Entry::getValue).orElse(null);
     }
     
     @Override
@@ -258,9 +254,7 @@ public final class CuratorZookeeperCenterRepository implements ConfigCenterRepos
     
     @Override
     public void close() {
-        for (Entry<String, TreeCache> each : caches.entrySet()) {
-            each.getValue().close();
-        }
+        caches.values().forEach(TreeCache::close);
         waitForCacheClose();
         CloseableUtils.closeQuietly(client);
     }

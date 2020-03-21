@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.orchestration.center.instance;
 
 import com.google.common.util.concurrent.SettableFuture;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.center.util.EmbedTestingServer;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -42,17 +43,20 @@ public final class CuratorZookeeperCenterRepositoryTest {
     private static CuratorZookeeperCenterRepository centerRepository = new CuratorZookeeperCenterRepository();
     
     private static CuratorFramework client;
-    
-    private static final String SERVER_LISTS = "127.0.0.1:3181";
+
+    private static String SERVER_LISTS;
     
     @BeforeClass
+    @SneakyThrows
     public static void init() {
         EmbedTestingServer.start();
+        SERVER_LISTS = EmbedTestingServer.getTestingServerConnectionString();
         CenterConfiguration configuration = new CenterConfiguration(centerRepository.getType(), new Properties());
         configuration.setServerLists(SERVER_LISTS);
         centerRepository.init(configuration);
-        client = CuratorFrameworkFactory.newClient(SERVER_LISTS, new ExponentialBackoffRetry(1000, 3));
-        client.start();
+        Field field = CuratorZookeeperCenterRepository.class.getDeclaredField("client");
+        field.setAccessible(true);
+        client = (CuratorFramework) field.get(centerRepository);
     }
     
     @Test
@@ -114,7 +118,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         centerRepository.persist("/test/children_added/4", "value4");
         AtomicReference<DataChangedEvent> actualDataChangedEvent = new AtomicReference<>();
         centerRepository.watch("/test/children_added", actualDataChangedEvent::set);
-        Thread.sleep(2000L);
+        Thread.sleep(50L);
         assertNull(actualDataChangedEvent.get());
     }
     
