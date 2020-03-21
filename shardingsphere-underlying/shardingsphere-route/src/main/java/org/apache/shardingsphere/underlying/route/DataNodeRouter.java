@@ -39,7 +39,7 @@ import java.util.Map.Entry;
  * Data node router.
  */
 @RequiredArgsConstructor
-public final class DateNodeRouter {
+public final class DataNodeRouter {
     
     private final ShardingSphereMetaData metaData;
     
