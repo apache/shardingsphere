@@ -59,8 +59,10 @@ public final class EmbedTestingServer {
 
     /**
      * Get testingServer connection string.
+     *
+     * @return connection string
      */
-    public static String getTestingServerConnectionString(){
+    public static String getTestingServerConnectionString() {
         return testingServer.getConnectString();
     }
     

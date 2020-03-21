@@ -42,15 +42,15 @@ public final class CuratorZookeeperCenterRepositoryTest {
     
     private static CuratorZookeeperCenterRepository centerRepository = new CuratorZookeeperCenterRepository();
 
-    private static String SERVER_LISTS;
+    private static String serverLists;
     
     @BeforeClass
     @SneakyThrows
     public static void init() {
         EmbedTestingServer.start();
-        SERVER_LISTS = EmbedTestingServer.getTestingServerConnectionString();
+        serverLists = EmbedTestingServer.getTestingServerConnectionString();
         CenterConfiguration configuration = new CenterConfiguration(centerRepository.getType(), new Properties());
-        configuration.setServerLists(SERVER_LISTS);
+        configuration.setServerLists(serverLists);
         centerRepository.init(configuration);
     }
     
@@ -134,7 +134,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "100");
         properties.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "1000");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
-        configuration.setServerLists(SERVER_LISTS);
+        configuration.setServerLists(serverLists);
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
@@ -151,7 +151,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
-        configuration.setServerLists(SERVER_LISTS);
+        configuration.setServerLists(serverLists);
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
@@ -165,7 +165,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
-        configuration.setServerLists(SERVER_LISTS);
+        configuration.setServerLists(serverLists);
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
@@ -179,7 +179,7 @@ public final class CuratorZookeeperCenterRepositoryTest {
         Properties properties = new Properties();
         properties.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
         CenterConfiguration configuration = new CenterConfiguration(customCenterRepository.getType(), new Properties());
-        configuration.setServerLists(SERVER_LISTS);
+        configuration.setServerLists(serverLists);
         customCenterRepository.setProperties(properties);
         customCenterRepository.init(configuration);
         assertThat(customCenterRepository.getProperties().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
