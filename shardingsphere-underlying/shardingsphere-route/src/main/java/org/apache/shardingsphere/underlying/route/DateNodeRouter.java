@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.route.engine;
+package org.apache.shardingsphere.underlying.route;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;

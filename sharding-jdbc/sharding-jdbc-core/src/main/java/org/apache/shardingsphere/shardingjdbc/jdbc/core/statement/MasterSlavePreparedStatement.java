@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionCon
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.engine.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DateNodeRouter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
