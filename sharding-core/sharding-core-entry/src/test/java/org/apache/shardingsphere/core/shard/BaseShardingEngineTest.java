@@ -58,7 +58,7 @@ public abstract class BaseShardingEngineTest {
     protected final ShardingRouteContext createSQLRouteContext() {
         RouteResult routeResult = new RouteResult();
         routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds"), Collections.emptyList()));
-        return new ShardingRouteContext(new CommonSQLStatementContext(new ShowStatement()), routeResult, new ShardingConditions(Collections.emptyList()));
+        return new ShardingRouteContext(new CommonSQLStatementContext(new ShowStatement()), Collections.emptyList(), routeResult, new ShardingConditions(Collections.emptyList()));
     }
     
     protected final void assertExecutionContext(final ExecutionContext actual) {

@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.underlying.route.context;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,48 +30,18 @@ import static org.junit.Assert.assertTrue;
 
 public final class RouteUnitTest {
     
-    private static final String DATASOURCE_NAME = "ds";
+    private static final String LOGIC_DATA_SOURCE = "logic_ds";
     
-    private static final String LOGIC_TABLE = "table";
+    private static final String ACTUAL_DATA_SOURCE = "actual_ds";
     
-    private static final String SHARD_TABLE_0 = "table_0";
+    private static final String LOGIC_TABLE = "tbl";
     
-    private static final String SHARD_TABLE_1 = "table_1";
+    private static final String ACTUAL_TABLE_0 = "tbl_0";
     
-    private RouteUnit routeUnit;
+    private static final String ACTUAL_TABLE_1 = "tbl_1";
     
-    @Before
-    public void setUp() {
-        routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), mockTableMappers());
-    }
-    
-    private Collection<RouteMapper> mockTableMappers() {
-        List<RouteMapper> result = new ArrayList<>();
-        result.add(new RouteMapper(LOGIC_TABLE, SHARD_TABLE_0));
-        result.add(new RouteMapper(LOGIC_TABLE, SHARD_TABLE_1));
-        return result;
-    }
-    
-    @Test
-    public void assertFindTableMapper() {
-        Optional<RouteMapper> actual = routeUnit.findTableMapper(DATASOURCE_NAME, SHARD_TABLE_0);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
-        assertThat(actual.get().getActualName(), is(SHARD_TABLE_0));
-    }
-    
-    @Test
-    public void assertFindTableMapperNonExist() {
-        assertFalse(routeUnit.findTableMapper(DATASOURCE_NAME, "").isPresent());
-    }
-    
-    @Test
-    public void assertGetActualTableNames() {
-        Set<String> actual = routeUnit.getActualTableNames(LOGIC_TABLE);
-        assertThat(actual.size(), is(2));
-        assertTrue(actual.contains(SHARD_TABLE_0));
-        assertTrue(actual.contains(SHARD_TABLE_1));
-    }
+    private final RouteUnit routeUnit = new RouteUnit(
+            new RouteMapper(LOGIC_DATA_SOURCE, ACTUAL_DATA_SOURCE), Arrays.asList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_0), new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_1)));
     
     @Test
     public void assertGetLogicTableNames() {
@@ -84,24 +51,23 @@ public final class RouteUnitTest {
     }
     
     @Test
-    public void assertGetDataSourceName() {
-        assertThat(routeUnit.getDataSourceMapper().getActualName(), is(DATASOURCE_NAME));
+    public void assertGetActualTableNames() {
+        Set<String> actual = routeUnit.getActualTableNames(LOGIC_TABLE);
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.contains(ACTUAL_TABLE_0));
+        assertTrue(actual.contains(ACTUAL_TABLE_1));
     }
     
     @Test
-    public void assertGetMasterSlaveLogicDataSourceName() {
-        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is(DATASOURCE_NAME));
+    public void assertFindTableMapper() {
+        Optional<RouteMapper> actual = routeUnit.findTableMapper(LOGIC_DATA_SOURCE, ACTUAL_TABLE_0);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
+        assertThat(actual.get().getActualName(), is(ACTUAL_TABLE_0));
     }
     
     @Test
-    public void assertEquals() {
-        assertTrue(new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), mockTableMappers()).equals(routeUnit));
-    }
-    
-    @Test
-    public void assertToString() {
-        assertThat(routeUnit.toString(), is(String.format(
-                "RouteUnit(dataSourceMapper=RouteMapper(logicName=%s, actualName=%s), tableMappers=[RouteMapper(logicName=%s, actualName=%s), RouteMapper(logicName=%s, actualName=%s)])", 
-                DATASOURCE_NAME, DATASOURCE_NAME, LOGIC_TABLE, SHARD_TABLE_0, LOGIC_TABLE, SHARD_TABLE_1)));
+    public void assertTableMapperNotFound() {
+        assertFalse(routeUnit.findTableMapper("invalid_ds", "invalid_tbl").isPresent());
     }
 }

@@ -112,7 +112,7 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     }
     
     private void assertRouteResult(final RouteResult actual) {
-        assertThat(actual.getDataSourceNames().size(), is(2));
+        assertThat(actual.getActualDataSourceNames().size(), is(2));
         assertThat(actual.getRouteUnits().size(), is(6));
         Iterator<RouteUnit> routeUnits = actual.getRouteUnits().iterator();
         assertRouteUnit(routeUnits.next(), "ds0", "t_order_0");

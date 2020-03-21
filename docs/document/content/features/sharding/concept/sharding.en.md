@@ -53,7 +53,7 @@ With Groovy expressions, `InlineShardingStrategy` provides single-key support fo
 
 - Hint Sharding Strategy
 
-`HintShardingStrategy` refers to the sharding strategy by Hint rather than SQL parsing.
+`HintShardingStrategy` refers to the sharding strategy which get sharding values by hint rather than extracted from SQL.
 
 - None sharding strategy
 

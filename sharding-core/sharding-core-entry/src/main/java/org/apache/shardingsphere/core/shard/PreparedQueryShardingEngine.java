@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.core.shard;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.route.engine.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public final class PreparedQueryShardingEngine extends BaseShardingEngine {
     }
     
     @Override
-    protected ShardingRouteContext route(final ShardingRouter shardingRouter, final String sql, final List<Object> parameters) {
-        return shardingRouter.route(sql, parameters, true);
+    protected RouteContext route(final DateNodeRouter dateNodeRouter, final String sql, final List<Object> parameters) {
+        return dateNodeRouter.route(sql, parameters, true);
     }
 }
