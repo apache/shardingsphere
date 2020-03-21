@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.rewrite.parameterized.entity;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -30,6 +31,7 @@ import java.util.LinkedList;
  */
 @XmlRootElement(name = "rewrite-assertions")
 @Getter
+@Setter
 public final class RewriteAssertionsRootEntity {
     
     @XmlAttribute(name = "yaml-rule", required = true)
