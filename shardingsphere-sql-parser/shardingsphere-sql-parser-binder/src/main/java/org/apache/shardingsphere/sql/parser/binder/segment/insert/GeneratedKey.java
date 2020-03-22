@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.keygen;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
