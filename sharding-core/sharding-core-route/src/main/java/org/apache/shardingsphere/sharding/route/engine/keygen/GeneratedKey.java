@@ -20,16 +20,17 @@ package org.apache.shardingsphere.sharding.route.engine.keygen;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -49,16 +50,27 @@ public final class GeneratedKey {
     /**
      * Get generate key.
      *
-     * @param shardingRule sharding rule
      * @param schemaMetaData schema meta data
      * @param parameters SQL parameters
      * @param insertStatement insert statement
      * @return generate key
      */
-    public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement) {
+    public static Optional<GeneratedKey> getGenerateKey(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
-        return shardingRule.findGenerateKeyColumnName(tableName).map(generateKeyColumnName -> containsGenerateKey(schemaMetaData, insertStatement, generateKeyColumnName)
-                ? findGeneratedKey(schemaMetaData, parameters, insertStatement, generateKeyColumnName) : createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName));
+        return findGenerateKeyColumn(schemaMetaData, tableName).map(generateKeyColumnName -> containsGenerateKey(schemaMetaData, insertStatement, generateKeyColumnName)
+                ? findGeneratedKey(schemaMetaData, parameters, insertStatement, generateKeyColumnName) : new GeneratedKey(generateKeyColumnName, true));
+    }
+    
+    private static Optional<String> findGenerateKeyColumn(final SchemaMetaData schemaMetaData, final String tableName) {
+        if (!schemaMetaData.containsTable(tableName)) {
+            return Optional.empty();
+        }
+        for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
+            if (entry.getValue().isGenerated()) {
+                return Optional.of(entry.getKey());
+            }
+        }
+        return Optional.empty();
     }
     
     private static boolean containsGenerateKey(final SchemaMetaData schemaMetaData, final InsertStatement insertStatement, final String generateKeyColumnName) {
@@ -90,13 +102,5 @@ public final class GeneratedKey {
     private static int findGenerateKeyIndex(final SchemaMetaData schemaMetaData, final InsertStatement insertStatement, final String generateKeyColumnName) {
         return insertStatement.getColumnNames().isEmpty() ? schemaMetaData.getAllColumnNames(insertStatement.getTable().getTableName().getIdentifier().getValue()).indexOf(generateKeyColumnName) 
                 : insertStatement.getColumnNames().indexOf(generateKeyColumnName);
-    }
-    
-    private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final String generateKeyColumnName) {
-        GeneratedKey result = new GeneratedKey(generateKeyColumnName, true);
-        for (int i = 0; i < insertStatement.getValueListCount(); i++) {
-            result.getGeneratedValues().add(shardingRule.generateKey(insertStatement.getTable().getTableName().getIdentifier().getValue()));
-        }
-        return result;
     }
 }

@@ -19,18 +19,18 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
+import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
-import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
-import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.Collection;
@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Sharding condition engine for insert clause.
@@ -62,8 +64,11 @@ public final class InsertClauseShardingConditionEngine {
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
         }
-        if (null != generatedKey && generatedKey.isGenerated() && shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName)) {
-            appendGeneratedKeyCondition(generatedKey, tableName, result);
+        if (null != generatedKey && generatedKey.isGenerated()) {
+            generatedKey.getGeneratedValues().addAll(getGeneratedKeys(tableName, insertStatementContext.getSqlStatement().getValueListCount()));
+            if (shardingRule.isShardingColumn(generatedKey.getColumnName(), tableName)) {
+                appendGeneratedKeyCondition(generatedKey, tableName, result);
+            }
         }
         return result;
     }
@@ -106,10 +111,14 @@ public final class InsertClauseShardingConditionEngine {
         return (Comparable) result;
     }
     
+    private Collection<Comparable<?>> getGeneratedKeys(final String tableName, final int valueListCount) {
+        return IntStream.range(0, valueListCount).mapToObj(i -> shardingRule.generateKey(tableName)).collect(Collectors.toCollection(LinkedList::new));
+    }
+    
     private void appendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName, final List<ShardingCondition> shardingConditions) {
-        Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().iterator();
+        Iterator<Comparable<?>> generatedValuesIterator = generatedKey.getGeneratedValues().iterator();
         for (ShardingCondition each : shardingConditions) {
-            each.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValues.next())));
+            each.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValuesIterator.next())));
         }
     }
 }
