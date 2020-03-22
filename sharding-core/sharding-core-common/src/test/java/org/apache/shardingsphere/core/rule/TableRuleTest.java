@@ -70,7 +70,8 @@ public final class TableRuleTest {
         assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", "table_2")));
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
-        assertThat(actual.getGenerateKeyColumn(), is("col_1"));
+        assertTrue(actual.getGenerateKeyColumn().isPresent());
+        assertThat(actual.getGenerateKeyColumn().get(), is("col_1"));
         assertThat(actual.getShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
     }
     

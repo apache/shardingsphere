@@ -43,13 +43,13 @@ public final class ShardingTableMetaDataDecorator implements TableMetaDataDecora
     }
     
     private Collection<ColumnMetaData> getColumnMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {
-        String generateKeyColumn = tableRule.getGenerateKeyColumn();
-        if (null == generateKeyColumn) {
+        Optional<String> generateKeyColumn = tableRule.getGenerateKeyColumn();
+        if (!generateKeyColumn.isPresent()) {
             return tableMetaData.getColumns().values();
         }
         Collection<ColumnMetaData> result = new LinkedList<>();
         for (Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(generateKeyColumn)) {
+            if (entry.getKey().equalsIgnoreCase(generateKeyColumn.get())) {
                 result.add(new ColumnMetaData(entry.getValue().getName(), entry.getValue().getDataType(), entry.getValue().isPrimaryKey(), true));
             } else {
                 result.add(entry.getValue());
