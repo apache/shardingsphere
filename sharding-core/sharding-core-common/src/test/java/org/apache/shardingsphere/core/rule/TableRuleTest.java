@@ -120,15 +120,6 @@ public final class TableRuleTest {
         new TableRule(tableRuleConfiguration, createShardingDataSourceNames(), null);
     }
     
-    @Test
-    public void assertToString() {
-        TableRule actual = new TableRule(new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), createShardingDataSourceNames(), null);
-        String actualString = "TableRule(logicTable=logic_table, actualDataNodes=[DataNode(dataSourceName=ds0, tableName=table_0), DataNode(dataSourceName=ds0, tableName=table_1), "
-                + "DataNode(dataSourceName=ds0, tableName=table_2), DataNode(dataSourceName=ds1, tableName=table_0), DataNode(dataSourceName=ds1, tableName=table_1), "
-                + "DataNode(dataSourceName=ds1, tableName=table_2)], databaseShardingStrategy=null, tableShardingStrategy=null, generateKeyColumn=null, shardingKeyGenerator=null)";
-        assertThat(actual.toString(), is(actualString));
-    }
-    
     private ShardingDataSourceNames createShardingDataSourceNames() {
         return new ShardingDataSourceNames(new ShardingRuleConfiguration(), Arrays.asList("ds0", "ds1"));
     }
