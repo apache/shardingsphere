@@ -57,7 +57,7 @@ public final class ColumnMetaDataLoader {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 String columnType = resultSet.getString(TYPE_NAME);
                 boolean isPrimaryKey = primaryKeys.contains(columnName);
-                result.add(new ColumnMetaData(columnName, columnType, isPrimaryKey));
+                result.add(new ColumnMetaData(columnName, columnType, isPrimaryKey, false));
             }
         }
         return result;

@@ -20,12 +20,14 @@ package org.apache.shardingsphere.core.metadata;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.decorator.TableMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -36,17 +38,30 @@ public final class ShardingTableMetaDataDecorator implements TableMetaDataDecora
     
     @Override
     public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
-        return new TableMetaData(tableMetaData.getColumns().values(), getIndexMetaDataList(tableMetaData, tableName, shardingRule));
+        return shardingRule.findTableRule(tableName).map(
+            tableRule -> new TableMetaData(getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
     }
     
-    private Collection<IndexMetaData> getIndexMetaDataList(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
-        Optional<TableRule> tableRule = shardingRule.findTableRule(tableName);
-        if (!tableRule.isPresent()) {
-            return tableMetaData.getIndexes().values();
+    private Collection<ColumnMetaData> getColumnMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {
+        String generateKeyColumn = tableRule.getGenerateKeyColumn();
+        if (null == generateKeyColumn) {
+            return tableMetaData.getColumns().values();
         }
+        Collection<ColumnMetaData> result = new LinkedList<>();
+        for (Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(generateKeyColumn)) {
+                result.add(new ColumnMetaData(entry.getValue().getName(), entry.getValue().getDataType(), entry.getValue().isPrimaryKey(), true));
+            } else {
+                result.add(entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<IndexMetaData> getIndexMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {
         Collection<IndexMetaData> result = new HashSet<>();
         for (Entry<String, IndexMetaData> entry : tableMetaData.getIndexes().entrySet()) {
-            for (DataNode each : tableRule.get().getActualDataNodes()) {
+            for (DataNode each : tableRule.getActualDataNodes()) {
                 getLogicIndex(entry.getKey(), each.getTableName()).ifPresent(logicIndex -> result.add(new IndexMetaData(logicIndex)));
             }
         }
