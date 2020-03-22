@@ -48,6 +48,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
+
     private static EncryptDataSource encryptDataSource;
 
     private static EncryptDataSource encryptDataSourceWithProps;
