@@ -150,4 +150,4 @@ The list here will be shown in the alphabetical order.
 1. <a href="https://www.zto.com/" rel="nofollow">ZTO Express</a>
 1. <a href="https://www.zyhealth.com/" rel="nofollow">ZYHealth</a>
 
-<img src="http://apache.org/foundation/press/kit/poweredBy/pb-shardingsphere.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
+<img src="https://shardingsphere.apache.org/community/image/users/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

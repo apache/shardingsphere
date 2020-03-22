@@ -150,4 +150,4 @@ chapter = true
 1. <a href="https://www.zmn.cn/" rel="nofollow">啄木鸟网络科技</a>
 1. <a href="https://www.fotoplace.cc/" rel="nofollow">足记</a>
 
-<img src="http://apache.org/foundation/press/kit/poweredBy/pb-shardingsphere.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
+<img src="https://shardingsphere.apache.org/community/image/users/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
