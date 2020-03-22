@@ -89,7 +89,8 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
             Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>(2, 1);
             for (Map.Entry<String, YamlEncryptColumnRuleConfiguration> columnMap : tableMap.getValue().getColumns().entrySet()) {
                 YamlEncryptColumnRuleConfiguration yamlConfig = columnMap.getValue();
-                EncryptColumnRuleConfiguration columnRuleConfiguration = new EncryptColumnRuleConfiguration(yamlConfig.getPlainColumn(), yamlConfig.getCipherColumn(), yamlConfig.getAssistedQueryColumn(),
+                EncryptColumnRuleConfiguration columnRuleConfiguration = new EncryptColumnRuleConfiguration(yamlConfig.getPlainColumn(), yamlConfig.getCipherColumn(),
+                    yamlConfig.getAssistedQueryColumn(),
                     yamlConfig.getEncryptor());
                 columns.put(columnMap.getKey(), columnRuleConfiguration);
             }
