@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -39,13 +39,13 @@ public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends 
     }
     
     @Override
-    protected UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
+    protected UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey) {
         Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
         return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, generatedKey));
     }
     
-    private List<String> getColumnNames(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
+    private List<String> getColumnNames(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey) {
         List<String> result = new ArrayList<>(insertStatementContext.getColumnNames());
         result.remove(generatedKey.getColumnName());
         result.add(generatedKey.getColumnName());

@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
@@ -50,5 +50,5 @@ public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLToken
         return generateSQLToken(insertStatementContext, shardingRouteContext.getGeneratedKey().get());
     }
     
-    protected abstract SQLToken generateSQLToken(InsertStatementContext insertStatementContext, GeneratedKey generatedKey);
+    protected abstract SQLToken generateSQLToken(InsertStatementContext insertStatementContext, GeneratedKeyContext generatedKey);
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
@@ -35,10 +35,10 @@ public final class ShardingRouteContext extends RouteContext {
     
     private final ShardingConditions shardingConditions;
     
-    private final GeneratedKey generatedKey;
+    private final GeneratedKeyContext generatedKey;
     
     public ShardingRouteContext(final SQLStatementContext sqlStatementContext, 
-                                final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
+                                final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions, final GeneratedKeyContext generatedKey) {
         super(sqlStatementContext, parameters, routeResult);
         this.shardingConditions = shardingConditions;
         this.generatedKey = generatedKey;
@@ -53,7 +53,7 @@ public final class ShardingRouteContext extends RouteContext {
      * 
      * @return generated key
      */
-    public Optional<GeneratedKey> getGeneratedKey() {
+    public Optional<GeneratedKeyContext> getGeneratedKey() {
         return Optional.ofNullable(generatedKey);
     }
 }

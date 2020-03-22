@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GeneratedKeyTest {
+public final class GeneratedKeyContextTest {
     
     private SchemaMetaData schemaMetaData;
     
@@ -62,7 +62,7 @@ public final class GeneratedKeyTest {
         InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl1")));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
-        assertFalse(GeneratedKey.getGenerateKey(schemaMetaData, Collections.singletonList(1), insertStatement).isPresent());
+        assertFalse(GeneratedKeyContext.getGenerateKey(schemaMetaData, Collections.singletonList(1), insertStatement).isPresent());
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class GeneratedKeyTest {
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
-        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(schemaMetaData, Collections.singletonList(1), insertStatement);
+        Optional<GeneratedKeyContext> actual = GeneratedKeyContext.getGenerateKey(schemaMetaData, Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
     }
@@ -85,12 +85,12 @@ public final class GeneratedKeyTest {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, 100))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, "value"))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
-        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(schemaMetaData, Collections.singletonList(1), insertStatement);
+        Optional<GeneratedKeyContext> actual = GeneratedKeyContext.getGenerateKey(schemaMetaData, Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
         assertThat(actual.get().getGeneratedValues().get(0), is((Comparable) 1));
         assertThat(actual.get().getGeneratedValues().get(1), is((Comparable) 100));
         assertThat(actual.get().getGeneratedValues().get(2), is((Comparable) "value"));
-        assertTrue(GeneratedKey.getGenerateKey(schemaMetaData, Collections.singletonList(1), insertStatement).isPresent());
+        assertTrue(GeneratedKeyContext.getGenerateKey(schemaMetaData, Collections.singletonList(1), insertStatement).isPresent());
     }
 }

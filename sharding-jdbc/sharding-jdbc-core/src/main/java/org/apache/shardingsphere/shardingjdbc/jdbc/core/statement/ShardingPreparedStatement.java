@@ -27,7 +27,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -189,7 +189,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
-        Optional<GeneratedKey> generatedKey = getGeneratedKey();
+        Optional<GeneratedKeyContext> generatedKey = getGeneratedKey();
         if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
             Preconditions.checkState(shardingExecutionContext.getGeneratedKey().isPresent());
             return new GeneratedKeysResultSet(generatedValues.iterator(), generatedKey.get().getColumnName(), this);
@@ -200,7 +200,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return new GeneratedKeysResultSet();
     }
     
-    private Optional<GeneratedKey> getGeneratedKey() {
+    private Optional<GeneratedKeyContext> getGeneratedKey() {
         return null != shardingExecutionContext && shardingExecutionContext.getSqlStatementContext() instanceof InsertStatementContext
                 ? shardingExecutionContext.getGeneratedKey() : Optional.empty();
     }

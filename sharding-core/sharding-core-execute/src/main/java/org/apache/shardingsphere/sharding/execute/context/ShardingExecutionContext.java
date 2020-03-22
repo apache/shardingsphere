@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.execute.context;
 
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 
@@ -28,9 +28,9 @@ import java.util.Optional;
  */
 public final class ShardingExecutionContext extends ExecutionContext {
     
-    private final GeneratedKey generatedKey;
+    private final GeneratedKeyContext generatedKey;
     
-    public ShardingExecutionContext(final SQLStatementContext sqlStatementContext, final GeneratedKey generatedKey) {
+    public ShardingExecutionContext(final SQLStatementContext sqlStatementContext, final GeneratedKeyContext generatedKey) {
         super(sqlStatementContext);
         this.generatedKey = generatedKey;
     }
@@ -40,7 +40,7 @@ public final class ShardingExecutionContext extends ExecutionContext {
      * 
      * @return generated key
      */
-    public Optional<GeneratedKey> getGeneratedKey() {
+    public Optional<GeneratedKeyContext> getGeneratedKey() {
         return Optional.ofNullable(generatedKey);
     }
 }

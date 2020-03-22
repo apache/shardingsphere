@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
@@ -62,8 +62,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         List<Object> parameters = routeContext.getParameters();
         ShardingStatementValidatorFactory.newInstance(
                 sqlStatementContext.getSqlStatement()).ifPresent(validator -> validator.validate(shardingRule, sqlStatementContext.getSqlStatement(), parameters));
-        Optional<GeneratedKey> generatedKey = sqlStatementContext.getSqlStatement() instanceof InsertStatement
-                ? GeneratedKey.getGenerateKey(metaData.getSchema(), parameters, (InsertStatement) sqlStatementContext.getSqlStatement()) : Optional.empty();
+        Optional<GeneratedKeyContext> generatedKey = sqlStatementContext.getSqlStatement() instanceof InsertStatement
+                ? GeneratedKeyContext.getGenerateKey(metaData.getSchema(), parameters, (InsertStatement) sqlStatementContext.getSqlStatement()) : Optional.empty();
         ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orElse(null), metaData.getSchema(), shardingRule);
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext, shardingRule);
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
@@ -78,8 +78,8 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         return new ShardingRouteContext(sqlStatementContext, parameters, routeResult, shardingConditions, generatedKey.orElse(null));
     }
     
-    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext, 
-                                                     final GeneratedKey generatedKey, final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
+    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext,
+                                                     final GeneratedKeyContext generatedKey, final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             if (sqlStatementContext instanceof InsertStatementContext) {
                 InsertStatementContext shardingInsertStatement = (InsertStatementContext) sqlStatementContext;

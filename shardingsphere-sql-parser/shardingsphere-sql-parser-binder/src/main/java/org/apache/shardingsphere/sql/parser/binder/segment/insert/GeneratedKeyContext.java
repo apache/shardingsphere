@@ -34,12 +34,12 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Generated key.
+ * Generated key context.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class GeneratedKey {
+public final class GeneratedKeyContext {
     
     private final String columnName;
     
@@ -55,10 +55,10 @@ public final class GeneratedKey {
      * @param insertStatement insert statement
      * @return generate key
      */
-    public static Optional<GeneratedKey> getGenerateKey(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement) {
+    public static Optional<GeneratedKeyContext> getGenerateKey(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         return findGenerateKeyColumn(schemaMetaData, tableName).map(generateKeyColumnName -> containsGenerateKey(schemaMetaData, insertStatement, generateKeyColumnName)
-                ? findGeneratedKey(schemaMetaData, parameters, insertStatement, generateKeyColumnName) : new GeneratedKey(generateKeyColumnName, true));
+                ? findGeneratedKey(schemaMetaData, parameters, insertStatement, generateKeyColumnName) : new GeneratedKeyContext(generateKeyColumnName, true));
     }
     
     private static Optional<String> findGenerateKeyColumn(final SchemaMetaData schemaMetaData, final String tableName) {
@@ -79,8 +79,8 @@ public final class GeneratedKey {
                 : insertStatement.getColumnNames().contains(generateKeyColumnName);
     }
     
-    private static GeneratedKey findGeneratedKey(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
-        GeneratedKey result = new GeneratedKey(generateKeyColumnName, false);
+    private static GeneratedKeyContext findGeneratedKey(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement, final String generateKeyColumnName) {
+        GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
         for (ExpressionSegment each : findGenerateKeyExpressions(schemaMetaData, insertStatement, generateKeyColumnName)) {
             if (each instanceof ParameterMarkerExpressionSegment) {
                 result.getGeneratedValues().add((Comparable<?>) parameters.get(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()));

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.sharding.route.spi.SPITimeService;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
@@ -57,7 +57,7 @@ public final class InsertClauseShardingConditionEngine {
      * @param parameters SQL parameters
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey, final List<Object> parameters) {
+    public List<ShardingCondition> createShardingConditions(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey, final List<Object> parameters) {
         List<ShardingCondition> result = new LinkedList<>();
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<String> columnNames = getColumnNames(insertStatementContext, generatedKey);
@@ -73,7 +73,7 @@ public final class InsertClauseShardingConditionEngine {
         return result;
     }
     
-    private Collection<String> getColumnNames(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
+    private Collection<String> getColumnNames(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey) {
         if (null == generatedKey || !generatedKey.isGenerated()) {
             return insertStatementContext.getColumnNames();
         }
@@ -115,7 +115,7 @@ public final class InsertClauseShardingConditionEngine {
         return IntStream.range(0, valueListCount).mapToObj(i -> shardingRule.generateKey(tableName)).collect(Collectors.toCollection(LinkedList::new));
     }
     
-    private void appendGeneratedKeyCondition(final GeneratedKey generatedKey, final String tableName, final List<ShardingCondition> shardingConditions) {
+    private void appendGeneratedKeyCondition(final GeneratedKeyContext generatedKey, final String tableName, final List<ShardingCondition> shardingConditions) {
         Iterator<Comparable<?>> generatedValuesIterator = generatedKey.getGeneratedValues().iterator();
         for (ShardingCondition each : shardingConditions) {
             each.getRouteValues().add(new ListRouteValue<>(generatedKey.getColumnName(), tableName, Collections.<Comparable<?>>singletonList(generatedValuesIterator.next())));

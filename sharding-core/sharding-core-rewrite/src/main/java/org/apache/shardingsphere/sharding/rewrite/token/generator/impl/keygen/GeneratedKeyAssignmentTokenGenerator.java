@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.GeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.LiteralGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ParameterMarkerGeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKey;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
@@ -43,7 +43,7 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
     }
     
     @Override
-    protected GeneratedKeyAssignmentToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
+    protected GeneratedKeyAssignmentToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey) {
         Preconditions.checkState(insertStatementContext.getSqlStatement().getSetAssignment().isPresent());
         int startIndex = insertStatementContext.getSqlStatement().getSetAssignment().get().getStopIndex() + 1;
         return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName(), generatedKey.getGeneratedValues().getLast())
