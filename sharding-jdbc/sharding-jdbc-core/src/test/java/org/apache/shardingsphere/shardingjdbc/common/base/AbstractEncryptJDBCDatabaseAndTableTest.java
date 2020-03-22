@@ -17,21 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.h2.tools.RunScript;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
-import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -39,17 +28,38 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import javax.sql.DataSource;
+import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptorRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
+import org.h2.tools.RunScript;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
-    
     private static EncryptDataSource encryptDataSource;
-    
+
     private static EncryptDataSource encryptDataSourceWithProps;
-    
+
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
-    
+
+    private static YamlEncryptRuleConfiguration encryptRuleConfig;
+
     @BeforeClass
-    public static void initEncryptDataSource() throws SQLException {
+    public static void initEncryptDataSource() throws SQLException, IOException {
+        encryptRuleConfig = getEncryptRuleConfig(getFile("encrypt_config.yaml"));
+        System.out.println(encryptRuleConfig);
         if (null != encryptDataSource && null != encryptDataSourceWithProps) {
             return;
         }
@@ -57,47 +67,38 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), new Properties());
         encryptDataSourceWithProps = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), createProperties());
     }
-    
+
     private static Properties createProperties() {
         Properties result = new Properties();
         result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), true);
         result.put(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
         return result;
     }
-    
+
     private static Map<String, DataSource> getDataSources() {
         return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
     }
-    
+
     private static EncryptRuleConfiguration createEncryptRuleConfiguration() {
         EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptors().put("test", new EncryptorRuleConfiguration("test", new Properties()));
-        result.getEncryptors().put("assistedTest", new EncryptorRuleConfiguration("assistedTest", new Properties()));
-        result.getTables().put("t_encrypt", createEncryptTableRule());
-        result.getTables().put("t_query_encrypt", createQueryEncryptTableRule());
-        result.getTables().put("t_encrypt_contains_column", createEncryptContainsColumnTableRule());
+        for (Map.Entry<String, YamlEncryptorRuleConfiguration> entry : encryptRuleConfig.getEncryptors().entrySet()) {
+            result.getEncryptors().put(entry.getKey(), new EncryptorRuleConfiguration(entry.getValue().getType(), entry.getValue().getProps()));
+        }
+
+        for (Map.Entry<String, YamlEncryptTableRuleConfiguration> tableMap : encryptRuleConfig.getTables().entrySet()) {
+            Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>(2, 1);
+            for (Map.Entry<String, YamlEncryptColumnRuleConfiguration> columnMap : tableMap.getValue().getColumns().entrySet()) {
+                YamlEncryptColumnRuleConfiguration yamlConfig = columnMap.getValue();
+                EncryptColumnRuleConfiguration columnRuleConfiguration = new EncryptColumnRuleConfiguration(yamlConfig.getPlainColumn(), yamlConfig.getCipherColumn(), yamlConfig.getAssistedQueryColumn(),
+                    yamlConfig.getEncryptor());
+                columns.put(columnMap.getKey(), columnRuleConfiguration);
+            }
+            result.getTables().put(tableMap.getKey(), new EncryptTableRuleConfiguration(columns));
+        }
+
         return result;
     }
-    
-    private static EncryptTableRuleConfiguration createEncryptTableRule() {
-        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "test");
-        return new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnRuleConfig));
-    }
-    
-    private static EncryptTableRuleConfiguration createQueryEncryptTableRule() {
-        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("", "cipher_pwd", "assist_pwd", "assistedTest");
-        return new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnRuleConfig));
-    }
-    
-    private static EncryptTableRuleConfiguration createEncryptContainsColumnTableRule() {
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "test");
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("plain_pwd2", "cipher_pwd2", "", "test");
-        Map<String, EncryptColumnRuleConfiguration> columns = new LinkedHashMap<>(2, 1);
-        columns.put("plain_pwd", columnConfig1);
-        columns.put("plain_pwd2", columnConfig2);
-        return new EncryptTableRuleConfiguration(columns);
-    }
-    
+
     @Before
     public void initTable() {
         try {
@@ -108,15 +109,24 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
             ex.printStackTrace();
         }
     }
-    
+
     protected final EncryptConnection getEncryptConnection() throws SQLException {
         return encryptDataSource.getConnection();
     }
-    
+
     protected final EncryptConnection getEncryptConnectionWithProps() throws SQLException {
         return encryptDataSourceWithProps.getConnection();
     }
-    
+
+    private static File getFile(final String fileName) {
+        return new File(Preconditions.checkNotNull(AbstractEncryptJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName),
+            "file resource must not be null : " + fileName).getFile());
+    }
+
+    private static YamlEncryptRuleConfiguration getEncryptRuleConfig(final File file) throws IOException {
+        return YamlEngine.unmarshal(file, YamlEncryptRuleConfiguration.class);
+    }
+
     @AfterClass
     public static void close() throws Exception {
         if (encryptDataSource == null) {
