@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge;
 
 import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
@@ -44,6 +45,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ShardingResultMergerEngineTest {
     
@@ -56,6 +58,7 @@ public final class ShardingResultMergerEngineTest {
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(ShardingDQLResultMerger.class));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertNewInstanceWithDALStatement() {
         ConfigurationProperties properties = new ConfigurationProperties(new Properties());
@@ -69,7 +72,7 @@ public final class ShardingResultMergerEngineTest {
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         insertStatement.setInsertColumns(insertColumnsSegment);
-        SQLStatementContext sqlStatementContext = new InsertStatementContext(null, Collections.emptyList(), insertStatement);
+        SQLStatementContext sqlStatementContext = new InsertStatementContext(mock(SchemaMetaData.class), Collections.emptyList(), insertStatement);
         ConfigurationProperties properties = new ConfigurationProperties(new Properties());
         assertThat(new ShardingResultMergerEngine().newInstance(DatabaseTypes.getActualDatabaseType("MySQL"), null, properties, sqlStatementContext), instanceOf(TransparentResultMerger.class));
     }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.binder.statement.dml;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert SQL statement context.
@@ -47,11 +49,14 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private final List<InsertValueContext> insertValueContexts;
     
+    private final GeneratedKeyContext generatedKeyContext;
+    
     public InsertStatementContext(final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
         columnNames = sqlStatement.useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
         insertValueContexts = getInsertValueContexts(parameters);
+        generatedKeyContext = GeneratedKeyContext.getGenerateKey(schemaMetaData, parameters, sqlStatement).orElse(null);
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters) {
@@ -85,6 +90,15 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             result.add(each.getParameters());
         }
         return result;
+    }
+    
+    /**
+     * Get generated key context.
+     * 
+     * @return generated key context
+     */
+    public Optional<GeneratedKeyContext> getGeneratedKeyContext() {
+        return Optional.ofNullable(generatedKeyContext);
     }
     
     @Override
