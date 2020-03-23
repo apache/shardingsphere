@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.keygen;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.engine;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
@@ -27,67 +30,68 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.Paramete
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GeneratedKeyTest {
+public final class GeneratedKeyContextEngineTest {
     
-    private final InsertStatement insertStatement = new InsertStatement();
-    
-    @Mock
-    private ShardingRule shardingRule;
-    
-    @Mock
     private SchemaMetaData schemaMetaData;
     
     @Before
     public void setUp() {
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "INT", true, true, false)), Collections.emptyList());
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
+        tableMetaDataMap.put("tbl", tableMetaData);
+        schemaMetaData = new SchemaMetaData(tableMetaDataMap);
+    }
+    
+    @Test
+    public void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration() {
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl1")));
+        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
+        assertFalse(new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement).isPresent());
+    }
+    
+    @Test
+    public void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
+        InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
-    }
-    
-    @Test
-    public void assertGetGenerateKeyWithoutGenerateKeyColumnConfiguration() {
-        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.empty());
-        assertFalse(GeneratedKey.getGenerateKey(shardingRule, schemaMetaData, Collections.singletonList(1), insertStatement).isPresent());
-    }
-    
-    @Test
-    public void assertGetGenerateKeyWhenCreateWithGenerateKeyColumnConfiguration() {
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
-        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id1"));
-        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, schemaMetaData, Collections.singletonList(1), insertStatement);
+        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(1));
     }
     
     @Test
-    public void assertGetGenerateKeyWhenFind() {
+    public void assertCreateGenerateKeyContextWhenFind() {
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
+        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(1, 2, 0))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, 100))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, "value"))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
-        when(shardingRule.findGenerateKeyColumnName("tbl")).thenReturn(Optional.of("id"));
-        Optional<GeneratedKey> actual = GeneratedKey.getGenerateKey(shardingRule, schemaMetaData, Collections.singletonList(1), insertStatement);
+        Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
         assertThat(actual.get().getGeneratedValues().get(0), is((Comparable) 1));
         assertThat(actual.get().getGeneratedValues().get(1), is((Comparable) 100));
         assertThat(actual.get().getGeneratedValues().get(2), is((Comparable) "value"));
-        assertTrue(GeneratedKey.getGenerateKey(shardingRule, schemaMetaData, Collections.singletonList(1), insertStatement).isPresent());
+        assertTrue(new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(Collections.singletonList(1), insertStatement).isPresent());
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.segment.insert;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert.values;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;

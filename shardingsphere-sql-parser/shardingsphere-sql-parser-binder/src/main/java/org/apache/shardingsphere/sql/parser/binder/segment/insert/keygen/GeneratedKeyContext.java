@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.segment.insert.expression;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+
+import java.util.LinkedList;
 
 /**
- * Derived parameter marker expression segment.
+ * Generated key context.
  */
+@RequiredArgsConstructor
 @Getter
-@ToString(callSuper = true)
-public final class DerivedParameterMarkerExpressionSegment extends ParameterMarkerExpressionSegment implements DerivedSimpleExpressionSegment {
+@ToString
+public final class GeneratedKeyContext {
     
-    public DerivedParameterMarkerExpressionSegment(final int parameterMarkerIndex) {
-        super(0, 0, parameterMarkerIndex);
-    }
+    private final String columnName;
+    
+    private final boolean generated;
+    
+    private final LinkedList<Comparable<?>> generatedValues = new LinkedList<>();
 }

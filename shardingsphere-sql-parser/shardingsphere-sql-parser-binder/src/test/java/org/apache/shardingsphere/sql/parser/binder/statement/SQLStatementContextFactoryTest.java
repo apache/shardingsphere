@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.binder.statement;
 
 import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
@@ -46,7 +47,7 @@ public final class SQLStatementContextFactoryTest {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, selectStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, null, selectStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof SelectStatementContext);
     }
@@ -57,14 +58,14 @@ public final class SQLStatementContextFactoryTest {
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0,
                 Collections.singleton(new AssignmentSegment(0, 0, new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")), null))));
         insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, insertStatement);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, null, insertStatement);
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof InsertStatementContext);
     }
     
     @Test
     public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, null, null, mock(SQLStatement.class));
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(mock(SchemaMetaData.class), null, null, mock(SQLStatement.class));
         assertNotNull(sqlStatementContext);
         assertTrue(sqlStatementContext instanceof CommonSQLStatementContext);
     }

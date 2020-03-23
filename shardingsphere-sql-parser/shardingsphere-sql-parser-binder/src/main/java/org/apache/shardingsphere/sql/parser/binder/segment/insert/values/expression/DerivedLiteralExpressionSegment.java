@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.context;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-
-import java.util.List;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 
 /**
- * SQL route context.
+ * Derived literal expression segment.
  */
 @Getter
-public final class ShardingRouteContext extends RouteContext {
+@ToString(callSuper = true)
+public final class DerivedLiteralExpressionSegment extends LiteralExpressionSegment implements DerivedSimpleExpressionSegment {
     
-    private final ShardingConditions shardingConditions;
-    
-    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions) {
-        super(sqlStatementContext, parameters, routeResult);
-        this.shardingConditions = shardingConditions;
+    public DerivedLiteralExpressionSegment(final Object literals) {
+        super(0, 0, literals);
     }
 }

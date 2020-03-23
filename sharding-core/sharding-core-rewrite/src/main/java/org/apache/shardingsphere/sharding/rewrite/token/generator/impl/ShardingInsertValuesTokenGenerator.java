@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsert
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValuesToken;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;

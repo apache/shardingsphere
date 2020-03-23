@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.segment.insert.expression;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression;
 
 import org.junit.Test;
 
