@@ -15,31 +15,35 @@
 #  * limitations under the License.
 #  */
 #  This Test configuration of encrypt rule used in AbstractEncryptJDBCDatabaseAndTableTest.java
-encryptors:
-  test:
-    type: test
-  assistedTest:
-    type: assistedTest
-tables:
-  t_encrypt:
-    columns:
-      pwd:
-        plainColumn: plain_pwd
-        cipherColumn: cipher_pwd
-        encryptor: test
-  t_query_encrypt:
-    columns:
-      pwd:
-        cipherColumn: cipher_pwd
-        assistedQueryColumn: assist_pwd
-        encryptor: assistedTest
-  t_encrypt_contains_column:
-    columns:
-      plain_pwd:
-        plainColumn: plain_pwd
-        cipherColumn: cipher_pwd
-        encryptor: test
-      plain_pwd2:
-        plainColumn: plain_pwd2
-        cipherColumn: cipher_pwd2
-        encryptor: test
+encryptRule:
+  encryptors:
+    test:
+      type: test
+    assistedTest:
+      type: assistedTest
+  tables:
+    t_encrypt:
+      columns:
+        pwd:
+          plainColumn: plain_pwd
+          cipherColumn: cipher_pwd
+          encryptor: test
+    t_query_encrypt:
+      columns:
+        pwd:
+          cipherColumn: cipher_pwd
+          assistedQueryColumn: assist_pwd
+          encryptor: assistedTest
+    t_encrypt_contains_column:
+      columns:
+        plain_pwd:
+          plainColumn: plain_pwd
+          cipherColumn: cipher_pwd
+          encryptor: test
+        plain_pwd2:
+          plainColumn: plain_pwd2
+          cipherColumn: cipher_pwd2
+          encryptor: test
+props:
+  sql.show: true
+  query.with.cipher.column: false
