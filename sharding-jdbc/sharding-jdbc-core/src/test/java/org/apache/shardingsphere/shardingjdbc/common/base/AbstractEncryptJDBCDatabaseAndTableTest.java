@@ -91,10 +91,6 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
             "file resource must not be null : " + fileName).getFile());
     }
     
-    private static YamlRootEncryptRuleConfiguration getEncryptRuleConfig(final File file) throws IOException {
-        return YamlEngine.unmarshal(file, YamlRootEncryptRuleConfiguration.class);
-    }
-    
     private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
         YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
         return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), new Properties());
