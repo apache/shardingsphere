@@ -63,7 +63,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
                 sqlStatementContext.getSqlStatement()).ifPresent(validator -> validator.validate(shardingRule, sqlStatementContext.getSqlStatement(), parameters));
         Optional<GeneratedKeyContext> generatedKey = sqlStatementContext instanceof InsertStatementContext
                 ? ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext() : Optional.empty();
-        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, generatedKey.orElse(null), metaData.getSchema(), shardingRule);
+        ShardingConditions shardingConditions = getShardingConditions(parameters, sqlStatementContext, metaData.getSchema(), shardingRule);
         boolean needMergeShardingValues = isNeedMergeShardingValues(sqlStatementContext, shardingRule);
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && needMergeShardingValues) {
             checkSubqueryShardingValues(sqlStatementContext, shardingRule, shardingConditions);
@@ -77,12 +77,11 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         return new ShardingRouteContext(sqlStatementContext, parameters, routeResult, shardingConditions, generatedKey.orElse(null));
     }
     
-    private ShardingConditions getShardingConditions(final List<Object> parameters, final SQLStatementContext sqlStatementContext,
-                                                     final GeneratedKeyContext generatedKey, final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
+    private ShardingConditions getShardingConditions(final List<Object> parameters, 
+                                                     final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData, final ShardingRule shardingRule) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             if (sqlStatementContext instanceof InsertStatementContext) {
-                InsertStatementContext shardingInsertStatement = (InsertStatementContext) sqlStatementContext;
-                return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions(shardingInsertStatement, generatedKey, parameters));
+                return new ShardingConditions(new InsertClauseShardingConditionEngine(shardingRule).createShardingConditions((InsertStatementContext) sqlStatementContext, parameters));
             }
             return new ShardingConditions(new WhereClauseShardingConditionEngine(shardingRule, schemaMetaData).createShardingConditions(sqlStatementContext, parameters));
         }
