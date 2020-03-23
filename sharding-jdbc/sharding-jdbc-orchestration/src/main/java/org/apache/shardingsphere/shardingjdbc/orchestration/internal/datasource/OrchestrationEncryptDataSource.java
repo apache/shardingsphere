@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 
 /**

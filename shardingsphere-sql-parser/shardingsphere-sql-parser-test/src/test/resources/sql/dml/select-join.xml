@@ -35,7 +35,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="98" stop-index="98" />
                         <literal-expression value="1000" />
                     </compare-right-value>
                 </predicate>
@@ -64,7 +64,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="122" stop-index="122" />
                         <literal-expression value="1000" />
                     </compare-right-value>
                 </predicate>
@@ -90,7 +90,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="81" stop-index="81" />
                         <literal-expression value="1000" />
                     </compare-right-value>
                 </predicate>

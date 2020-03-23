@@ -34,6 +34,11 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket {
     
     private final String sql;
     
+    public MySQLComQueryPacket(final String sql) {
+        super(MySQLCommandPacketType.COM_QUERY);
+        this.sql = sql;
+    }
+    
     public MySQLComQueryPacket(final MySQLPacketPayload payload) {
         super(MySQLCommandPacketType.COM_QUERY);
         sql = payload.readStringEOF();

@@ -89,14 +89,14 @@ public final class ConfigCenter {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
             Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
             Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream()
-                    .collect(Collectors.toMap(e -> e.getKey(), e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue())));
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue())));
             repository.persist(node.getDataSourcePath(shardingSchemaName), YamlEngine.marshal(yamlDataSourceConfigurations));
         }
     }
     
     /**
      * Judge whether schema has data source configuration.
-     * 
+     *
      * @param shardingSchemaName shading schema name
      * @return has data source configuration or not
      */
@@ -239,7 +239,7 @@ public final class ConfigCenter {
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, YamlDataSourceConfiguration> result = (Map) YamlEngine.unmarshal(repository.get(node.getDataSourcePath(shardingSchemaName)));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
-        return result.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue())));
+        return result.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> new DataSourceConfigurationYamlSwapper().swap(e.getValue())));
     }
     
     /**

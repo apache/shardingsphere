@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.Inval
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommand;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutor;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.hint.internal.HintCommandExecutorFactory;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -51,7 +51,7 @@ public final class ShardingCTLHintBackendHandler implements TextProtocolBackendH
     @Override
     public BackendResponse execute() {
         if (!backendConnection.isSupportHint()) {
-            throw new UnsupportedOperationException(String.format("%s should be true, please check your config", PropertiesConstant.PROXY_HINT_ENABLED.getKey()));
+            throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey()));
         }
         Optional<ShardingCTLHintStatement> shardingTCLStatement = new ShardingCTLHintParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.asserts.segment.expressio
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.sql.parser.integrate.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.sql.parser.integrate.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple.ExpectedLiteralExpression;
@@ -52,8 +53,7 @@ public final class ExpressionAssert {
                                                         final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
         assertNotNull(assertContext.getText("Expected parameter marker expression should exist."), expected);
         assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     /**
@@ -83,8 +83,7 @@ public final class ExpressionAssert {
         assertNotNull(assertContext.getText("Expected common expression should exist."));
         String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
         assertThat(assertContext.getText("Common expression text assertion error: "), actual.getText(), is(expectedText));
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     /**
@@ -95,8 +94,7 @@ public final class ExpressionAssert {
      * @param expected expected subquery expression
      */
     public static void assertSubqueryExpression(final SQLCaseAssertContext assertContext, final SubqueryExpressionSegment actual, final ExpectedSubquery expected) {
-        // TODO assert start index, stop index and sub select statement.
         SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSelectTestCases());
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

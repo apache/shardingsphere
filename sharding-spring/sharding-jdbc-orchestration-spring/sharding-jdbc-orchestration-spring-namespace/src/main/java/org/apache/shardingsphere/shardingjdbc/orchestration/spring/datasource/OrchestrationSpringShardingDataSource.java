@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 
 /**
  * Orchestration sharding datasource for spring namespace.

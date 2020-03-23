@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.ui.util;
 
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.instance.CuratorZookeeperCenterRepository;
 import org.apache.shardingsphere.ui.common.constant.RegistryCenterType;
 import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registry center factory.

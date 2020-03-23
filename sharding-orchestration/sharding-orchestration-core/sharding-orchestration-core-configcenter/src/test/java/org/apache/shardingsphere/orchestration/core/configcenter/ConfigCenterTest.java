@@ -38,7 +38,7 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYa
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configuration.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -264,7 +264,7 @@ public final class ConfigCenterTest {
     }
     
     private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
-        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> DataSourceConfiguration.getDataSourceConfiguration(e.getValue())));
+        return createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> DataSourceConfiguration.getDataSourceConfiguration(entry.getValue())));
     }
     
     private DataSourceConfiguration createDataSourceConfiguration(final DataSource dataSource) {
@@ -309,7 +309,7 @@ public final class ConfigCenterTest {
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.put(PropertiesConstant.SQL_SHOW.getKey(), Boolean.FALSE);
+        result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
         return result;
     }
     
@@ -417,7 +417,7 @@ public final class ConfigCenterTest {
         when(configCenterRepository.get("/test/config/props")).thenReturn(PROPS_YAML);
         ConfigCenter configurationService = new ConfigCenter("test", configCenterRepository);
         Properties actual = configurationService.loadProperties();
-        assertThat(actual.get(PropertiesConstant.SQL_SHOW.getKey()), is(Boolean.FALSE));
+        assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
     }
     
     @Test

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -48,8 +49,8 @@ import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSett
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -128,7 +129,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Bean
     @Conditional(LocalShardingRuleCondition.class)
     public DataSource shardingDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
-        ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(this.shardingRule), dataSourceMap.keySet());
+        ShardingRule shardingRule = new OrchestrationShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(this.shardingRule), dataSourceMap.keySet());
         return new OrchestrationShardingDataSource(new ShardingDataSource(dataSourceMap, shardingRule, root.getProps()), orchestrationConfiguration);
     }
     

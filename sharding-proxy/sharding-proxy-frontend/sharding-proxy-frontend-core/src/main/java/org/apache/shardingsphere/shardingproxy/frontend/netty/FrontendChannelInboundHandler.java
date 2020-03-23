@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.executor.ChannelThreadEx
 import org.apache.shardingsphere.shardingproxy.frontend.executor.CommandExecutorSelector;
 import org.apache.shardingsphere.shardingproxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 /**
  * Frontend channel inbound handler.
@@ -45,8 +45,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private volatile boolean authorized;
     
     private final BackendConnection backendConnection = new BackendConnection(
-            TransactionType.valueOf(ShardingProxyContext.getInstance().getProperties().getValue(PropertiesConstant.PROXY_TRANSACTION_TYPE)),
-            ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.PROXY_HINT_ENABLED));
+            TransactionType.valueOf(ShardingProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE)),
+            ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
     
     @Override
     public void channelActive(final ChannelHandlerContext context) {

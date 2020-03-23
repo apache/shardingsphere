@@ -44,7 +44,7 @@ public final class MySQLBlobBinlogProtocolValue implements MySQLBinlogProtocolVa
             case 4:
                 return payload.readInt4();
             default:
-                throw new UnsupportedOperationException("MySQL blob type meta in binlog should be range 1 to 4, but actual value is: " + columnMeta);
+                throw new UnsupportedOperationException("MySQL BLOB type meta in binlog should be range 1 to 4, but actual value is: " + columnMeta);
         }
     }
 }

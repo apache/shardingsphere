@@ -108,7 +108,7 @@ unreservedWord
     | SUBJECT | ISSUER | OLD | RANDOM | RETAIN | MAX_USER_CONNECTIONS | MAX_CONNECTIONS_PER_HOUR | MAX_UPDATES_PER_HOUR
     | MAX_QUERIES_PER_HOUR | REUSE | OPTIONAL | HISTORY | NEVER | EXPIRE | TYPE | CONTEXT | CODE | CHANNEL | SOURCE
     | IO_THREAD | SQL_THREAD | SQL_BEFORE_GTIDS | SQL_AFTER_GTIDS | MASTER_LOG_FILE | MASTER_LOG_POS | RELAY_LOG_FILE
-    | RELAY_LOG_POS | SQL_AFTER_MTS_GAPS | UNTIL | DEFAULT_AUTH | PLUGIN_DIR | STOP
+    | RELAY_LOG_POS | SQL_AFTER_MTS_GAPS | UNTIL | DEFAULT_AUTH | PLUGIN_DIR | STOP | SIGNED
     ;
 
 variable
@@ -494,7 +494,7 @@ orderByItem
     ;
 
 dataType
-    : dataTypeName dataTypeLength? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | dataTypeName LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
+    : dataTypeName dataTypeLength? characterSet_? collateClause_? (UNSIGNED | SIGNED)? ZEROFILL? | dataTypeName collectionOptions characterSet_? collateClause_?
     ;
 
 dataTypeName
@@ -506,6 +506,10 @@ dataTypeName
 
 dataTypeLength
     : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
+    ;
+
+collectionOptions
+    : LP_ STRING_ (COMMA_ STRING_)* RP_
     ;
 
 characterSet_

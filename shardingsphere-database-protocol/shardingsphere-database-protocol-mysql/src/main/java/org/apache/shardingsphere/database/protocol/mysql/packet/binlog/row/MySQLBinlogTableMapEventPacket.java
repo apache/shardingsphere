@@ -21,12 +21,12 @@ import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLColumnTyp
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.AbstractMySQLBinlogEventPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLNullBitmap;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
-
-import java.util.Collection;
-import java.util.LinkedList;
-
 import lombok.Getter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * MySQL binlog table map event packet.
@@ -46,11 +46,11 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
     
     private final int columnCount;
     
-    private final Collection<MySQLBinlogColumnDef> columnDefs;
+    private final List<MySQLBinlogColumnDef> columnDefs;
     
-    private final MySQLBinlogBitmap nullBitMap;
+    private final MySQLNullBitmap nullBitMap;
     
-    protected MySQLBinlogTableMapEventPacket(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+    public MySQLBinlogTableMapEventPacket(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
         super(binlogEventHeader);
         this.tableId = payload.readInt6();
         this.flags = payload.readInt2();
@@ -62,7 +62,7 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
         columnDefs = new LinkedList<>();
         readColumnDefs(payload);
         readColumnMetaDefs(payload);
-        nullBitMap = new MySQLBinlogBitmap(columnCount, payload);
+        nullBitMap = new MySQLNullBitmap(columnCount, payload);
     }
     
     private void readColumnDefs(final MySQLPacketPayload payload) {

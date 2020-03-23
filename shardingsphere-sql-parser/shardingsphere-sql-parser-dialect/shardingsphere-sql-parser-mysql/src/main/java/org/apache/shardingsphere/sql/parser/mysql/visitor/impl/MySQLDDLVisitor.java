@@ -65,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.ddl.column.position.Colu
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.DropPrimaryKeySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateDatabaseStatement;
@@ -78,7 +79,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.sql.value.keyword.KeywordValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -225,10 +225,10 @@ public final class MySQLDDLVisitor extends MySQLVisitor implements DDLVisitor {
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        KeywordValue dataType = (KeywordValue) visit(ctx.dataType().dataTypeName());
+        DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType.getValue(), isPrimaryKey);
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey);
         result.getReferencedTables().addAll(getReferencedTables(ctx));
         return result;
     }

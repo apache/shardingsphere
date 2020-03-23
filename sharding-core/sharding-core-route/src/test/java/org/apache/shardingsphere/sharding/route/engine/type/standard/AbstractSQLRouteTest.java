@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.Arrays;
@@ -48,9 +49,11 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createAllShardingRule();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(buildDataSourceMetas(), buildSchemaMetaData());
+        ConfigurationProperties properties = new ConfigurationProperties(new Properties());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
-        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, new ShardingSphereProperties(new Properties()), metaData, sqlParserEngine);
-        ShardingRouteContext result = shardingRouter.route(sql, parameters, false);
+        RouteContext routeContext = new DataNodeRouter(metaData, properties, sqlParserEngine).route(sql, parameters, false);
+        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
+        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
         return result;
     }
@@ -68,16 +71,16 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     private SchemaMetaData buildSchemaMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, false),
-                new ColumnMetaData("user_id", "int", false, false),
-                new ColumnMetaData("status", "int", false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true, false),
-                new ColumnMetaData("order_id", "int", false, false),
-                new ColumnMetaData("user_id", "int", false, false),
-                new ColumnMetaData("status", "varchar", false, false),
-                new ColumnMetaData("c_date", "timestamp", false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, false, false),
+                new ColumnMetaData("user_id", "int", false, false, false),
+                new ColumnMetaData("status", "int", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true, false, false),
+                new ColumnMetaData("order_id", "int", false, false, false),
+                new ColumnMetaData("user_id", "int", false, false, false),
+                new ColumnMetaData("status", "varchar", false, false, false),
+                new ColumnMetaData("c_date", "timestamp", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false, false)), Collections.emptySet()));
         return new SchemaMetaData(tableMetaDataMap);
     }
 }

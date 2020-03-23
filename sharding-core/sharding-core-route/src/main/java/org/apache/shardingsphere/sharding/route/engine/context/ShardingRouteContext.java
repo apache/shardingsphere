@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -36,14 +37,15 @@ public final class ShardingRouteContext extends RouteContext {
     
     private final GeneratedKey generatedKey;
     
-    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final RouteResult routeResult, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
-        super(sqlStatementContext, routeResult);
+    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, 
+                                final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions, final GeneratedKey generatedKey) {
+        super(sqlStatementContext, parameters, routeResult);
         this.shardingConditions = shardingConditions;
         this.generatedKey = generatedKey;
     }
     
-    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final RouteResult routeResult, final ShardingConditions shardingConditions) {
-        this(sqlStatementContext, routeResult, shardingConditions, null);
+    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions) {
+        this(sqlStatementContext, parameters, routeResult, shardingConditions, null);
     }
     
     /**

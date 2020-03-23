@@ -24,7 +24,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
@@ -42,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Databases and tables sharding rule.
@@ -85,36 +85,25 @@ public class ShardingRule implements BaseRule {
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<TableRuleConfiguration> tableRuleConfigurations = shardingRuleConfig.getTableRuleConfigs();
-        Collection<TableRule> result = new ArrayList<>(tableRuleConfigurations.size());
-        for (TableRuleConfiguration each : tableRuleConfigurations) {
-            result.add(new TableRule(each, shardingDataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig)));
-        }
-        return result;
+        return shardingRuleConfig.getTableRuleConfigs().stream().map(each ->
+                new TableRule(each, shardingDataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig))).collect(Collectors.toList());
     }
     
     private String getDefaultGenerateKeyColumn(final ShardingRuleConfiguration shardingRuleConfig) {
-        return null == shardingRuleConfig.getDefaultKeyGeneratorConfig() ? null : shardingRuleConfig.getDefaultKeyGeneratorConfig().getColumn();
+        return Optional.ofNullable(shardingRuleConfig.getDefaultKeyGeneratorConfig()).map(KeyGeneratorConfiguration::getColumn).orElse(null);
     }
     
     private Collection<BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
-        Collection<BindingTableRule> result = new ArrayList<>(bindingTableGroups.size());
-        for (String each : bindingTableGroups) {
-            result.add(createBindingTableRule(each));
-        }
-        return result;
+        return bindingTableGroups.stream().map(this::createBindingTableRule).collect(Collectors.toList());
     }
     
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
-        List<TableRule> tableRules = new LinkedList<>();
-        for (String each : Splitter.on(",").trimResults().splitToList(bindingTableGroup)) {
-            tableRules.add(getTableRule(each));
-        }
+        List<TableRule> tableRules = Splitter.on(",").trimResults().splitToList(bindingTableGroup).stream().map(this::getTableRule).collect(Collectors.toCollection(LinkedList::new));
         return new BindingTableRule(tableRules);
     }
     
     private ShardingStrategy createDefaultShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        return null == shardingStrategyConfiguration ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration);
+        return Optional.ofNullable(shardingStrategyConfiguration).map(ShardingStrategyFactory::newInstance).orElse(new NoneShardingStrategy());
     }
     
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
@@ -136,7 +125,7 @@ public class ShardingRule implements BaseRule {
     }
     
     private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {
-        return null == encryptRuleConfig ? new EncryptRule() : new EncryptRule(ruleConfiguration.getEncryptRuleConfig());
+        return Optional.ofNullable(encryptRuleConfig).map(e -> new EncryptRule(ruleConfiguration.getEncryptRuleConfig())).orElse(new EncryptRule());
     }
     
     /**
@@ -214,7 +203,7 @@ public class ShardingRule implements BaseRule {
      * @return table sharding strategy
      */
     public ShardingStrategy getTableShardingStrategy(final TableRule tableRule) {
-        return null == tableRule.getTableShardingStrategy() ? defaultTableShardingStrategy : tableRule.getTableShardingStrategy();
+        return Optional.ofNullable(tableRule.getTableShardingStrategy()).orElse(defaultDatabaseShardingStrategy);
     }
     
     /**
@@ -355,8 +344,8 @@ public class ShardingRule implements BaseRule {
      */
     public Optional<String> findGenerateKeyColumnName(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(logicTableName) && null != each.getGenerateKeyColumn()) {
-                return Optional.of(each.getGenerateKeyColumn());
+            if (each.getLogicTable().equalsIgnoreCase(logicTableName) && each.getGenerateKeyColumn().isPresent()) {
+                return each.getGenerateKeyColumn();
             }
         }
         return Optional.empty();
@@ -373,8 +362,7 @@ public class ShardingRule implements BaseRule {
         if (!tableRule.isPresent()) {
             throw new ShardingSphereConfigurationException("Cannot find strategy for generate keys.");
         }
-        ShardingKeyGenerator shardingKeyGenerator = null == tableRule.get().getShardingKeyGenerator() ? defaultShardingKeyGenerator : tableRule.get().getShardingKeyGenerator();
-        return shardingKeyGenerator.generateKey();
+        return Optional.ofNullable(tableRule.get().getShardingKeyGenerator()).orElse(defaultShardingKeyGenerator).generateKey();
     }
     
     /**

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.binlog.management;
 
-import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinlogEventType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,16 +52,5 @@ public final class MySQLBinlogFormatDescriptionEventPacketTest {
         assertThat(actual.getEventHeaderLength(), is(19));
         assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getBinlogEventHeader(), is(binlogEventHeader));
-    }
-    
-    @Test
-    public void assertWrite() {
-        new MySQLBinlogFormatDescriptionEventPacket(binlogEventHeader, MYSQL_SERVER_VERSION.getBytes(), 1234567890).write(payload);
-        verify(binlogEventHeader).write(payload);
-        verify(payload).writeInt2(4);
-        verify(payload).writeBytes(MYSQL_SERVER_VERSION.getBytes());
-        verify(payload).writeInt4(1234567890);
-        verify(payload).writeInt1(19);
-        verify(payload).writeBytes(MySQLBinlogEventType.getEventTypeHeaderLengthsByBinlogVersion4());
     }
 }

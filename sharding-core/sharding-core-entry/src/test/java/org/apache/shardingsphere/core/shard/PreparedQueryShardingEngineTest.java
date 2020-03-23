@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.core.shard;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,13 @@ import static org.mockito.Mockito.when;
 public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTest {
     
     @Mock
-    private ShardingRouter shardingRouter;
+    private ShardingSphereMetaData metaData;
+    
+    @Mock
+    private ShardingRule shardingRule;
+    
+    @Mock
+    private DataNodeRouter dataNodeRouter;
     
     private PreparedQueryShardingEngine shardingEngine;
     
@@ -51,30 +58,29 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     
     @Before
     public void setUp() {
-        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(metaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
         EncryptRule encryptRule = mock(EncryptRule.class);
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
-        when(shardingSphereMetaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
-        shardingEngine = new PreparedQueryShardingEngine(shardingRule, getProperties(), shardingSphereMetaData, mock(SQLParserEngine.class));
+        shardingEngine = new PreparedQueryShardingEngine(shardingRule, getProperties(), metaData, mock(SQLParserEngine.class));
         setRoutingEngine();
     }
     
     @SneakyThrows
     private void setRoutingEngine() {
-        Field field = BaseShardingEngine.class.getDeclaredField("shardingRouter");
+        Field field = BaseShardingEngine.class.getDeclaredField("dataNodeRouter");
         field.setAccessible(true);
-        field.set(shardingEngine, shardingRouter);
+        field.set(shardingEngine, dataNodeRouter);
     }
     
     protected void assertShard() {
-        when(shardingRouter.route(getSql(), getParameters(), true)).thenReturn(createSQLRouteContext());
+        RouteContext routeContext = createSQLRouteContext();
+        when(dataNodeRouter.route(getSql(), getParameters(), true)).thenReturn(routeContext);
         assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
     }
     
     @Test(expected = SQLException.class)
     public void assertWithRouteException() {
-        when(shardingRouter.route(getSql(), getParameters(), true)).thenThrow(SQLException.class);
+        when(dataNodeRouter.route(getSql(), getParameters(), true)).thenThrow(SQLException.class);
         shardingEngine.shard(getSql(), getParameters());
     }
 }

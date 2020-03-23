@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.context;
 
 import org.apache.shardingsphere.orchestration.core.common.event.AuthenticationChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.rule.ProxyUser;
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
@@ -42,12 +42,12 @@ public final class ShardingProxyContextTest {
         Authentication authentication = new Authentication();
         authentication.getUsers().put("root", proxyUser);
         Properties props = new Properties();
-        props.setProperty(PropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        props.setProperty(PropertiesConstant.PROXY_TRANSACTION_TYPE.getKey(), "BASE");
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
+        props.setProperty(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE.getKey(), "BASE");
         ShardingProxyContext.getInstance().init(authentication, props);
         assertThat(ShardingProxyContext.getInstance().getAuthentication(), is(authentication));
-        assertTrue(ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        assertThat(ShardingProxyContext.getInstance().getProperties().<String>getValue(PropertiesConstant.PROXY_TRANSACTION_TYPE), is("BASE"));
+        assertTrue(ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(ShardingProxyContext.getInstance().getProperties().getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("BASE"));
     }
     
     @Test
@@ -58,7 +58,7 @@ public final class ShardingProxyContextTest {
         ShardingProxyContext.getInstance().init(authentication, new Properties());
         assertTrue(ShardingProxyContext.getInstance().getProperties().getProps().isEmpty());
         Properties props = new Properties();
-        props.setProperty(PropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
+        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         ShardingOrchestrationEventBus.getInstance().post(new PropertiesChangedEvent(props));
         assertFalse(ShardingProxyContext.getInstance().getProperties().getProps().isEmpty());
     }

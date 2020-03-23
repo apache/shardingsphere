@@ -24,7 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
@@ -167,7 +167,7 @@ public final class Bootstrap {
     }
     
     private static void initOpenTracing() {
-        if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(PropertiesConstant.PROXY_OPENTRACING_ENABLED)) {
+        if (ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
             ShardingTracer.init();
         }
     }

@@ -25,7 +25,7 @@
                     <column-left-value name="order_id" start-index="26" stop-index="33" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
                         <literal-expression value="1000" />
                     </compare-right-value>
                 </predicate>
@@ -33,7 +33,7 @@
                     <column-left-value name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
                         <literal-expression value="1001" />
                     </compare-right-value>
                 </predicate>
@@ -41,7 +41,7 @@
                     <column-left-value name="status" start-index="59" stop-index="64" literal-start-index="65" literal-stop-index="70" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="66" stop-index="66" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -57,7 +57,7 @@
                     <column-left-value name="status" start-index="26" stop-index="31" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="33" stop-index="33" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -119,7 +119,7 @@
                     <column-left-value name="status" start-index="33" stop-index="38" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>

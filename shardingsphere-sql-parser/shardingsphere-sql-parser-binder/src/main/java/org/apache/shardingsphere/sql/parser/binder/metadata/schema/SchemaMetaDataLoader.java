@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +66,9 @@ public final class SchemaMetaDataLoader {
             tableNames = loadAllTableNames(connection);
         }
         log.info("Loading {} tables' meta data.", tableNames.size());
+        if (0 == tableNames.size()) {
+            return new SchemaMetaData(Collections.emptyMap());
+        }
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
         Map<String, TableMetaData> tableMetaDataMap = 1 == tableGroups.size()
                 ? load(dataSource.getConnection(), tableGroups.get(0)) : asyncLoad(dataSource, maxConnectionCount, tableNames, tableGroups);
@@ -101,7 +105,7 @@ public final class SchemaMetaDataLoader {
     private static Map<String, TableMetaData> asyncLoad(final DataSource dataSource,
                                                         final int maxConnectionCount, final List<String> tableNames, final List<List<String>> tableGroups) throws SQLException {
         Map<String, TableMetaData> result = new ConcurrentHashMap<>(tableNames.size(), 1);
-        ExecutorService executorService = Executors.newFixedThreadPool(maxConnectionCount);
+        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(tableGroups.size(), maxConnectionCount));
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (List<String> each : tableGroups) {
             futures.add(executorService.submit(() -> load(dataSource.getConnection(), each)));

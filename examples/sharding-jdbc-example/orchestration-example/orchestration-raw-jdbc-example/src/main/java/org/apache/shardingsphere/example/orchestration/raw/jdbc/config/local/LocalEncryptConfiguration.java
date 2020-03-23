@@ -23,9 +23,9 @@ import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
-import org.apache.shardingsphere.orchestration.center.configuration.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationEncryptDataSourceFactory;
+import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,10 +35,10 @@ import java.util.Properties;
 
 public class LocalEncryptConfiguration implements ExampleConfiguration {
     
-    private final Map<String, InstanceConfiguration> instanceConfigurationMap;
+    private final Map<String, CenterConfiguration> centerConfigurationMap;
     
-    public LocalEncryptConfiguration(final Map<String, InstanceConfiguration> instanceConfigurationMap) {
-        this.instanceConfigurationMap = instanceConfigurationMap;
+    public LocalEncryptConfiguration(final Map<String, CenterConfiguration> centerConfigurationMap) {
+        this.centerConfigurationMap = centerConfigurationMap;
     }
     
     @Override
@@ -47,7 +47,7 @@ public class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration(instanceConfigurationMap);
+        return new OrchestrationConfiguration(centerConfigurationMap);
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {

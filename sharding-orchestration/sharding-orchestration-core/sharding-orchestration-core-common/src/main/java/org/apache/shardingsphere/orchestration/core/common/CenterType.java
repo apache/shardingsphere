@@ -19,6 +19,7 @@ package org.apache.shardingsphere.orchestration.core.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.orchestration.center.exception.OrchestrationException;
 
 import java.util.Arrays;
 
@@ -41,6 +42,8 @@ public enum CenterType {
      * @return OrchestrationType enum, return {@code null} if not found
      */
     public static CenterType findByValue(final String value) {
-        return Arrays.stream(CenterType.values()).filter(each -> each.getValue().equals(value)).findFirst().get();
+        return Arrays.stream(CenterType.values())
+                .filter(each -> each.getValue().equals(value)).findFirst()
+                .orElseThrow(() -> new OrchestrationException("now only support :{},{}", CenterType.CONFIG_CENTER.getValue(), CenterType.REGISTRY_CENTER.getValue()));
     }
 }

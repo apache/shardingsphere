@@ -72,7 +72,8 @@ public final class ColumnMetaDataLoader {
             }
         }
         for (int i = 0; i < columnNames.size(); i++) {
-            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), isCaseSensitives.get(i)));
+            // TODO load auto generated from database meta data
+            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), isCaseSensitives.get(i), false));
         }
         return result;
     }
