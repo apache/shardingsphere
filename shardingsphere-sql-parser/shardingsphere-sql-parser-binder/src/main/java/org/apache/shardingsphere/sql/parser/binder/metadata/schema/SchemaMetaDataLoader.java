@@ -57,10 +57,11 @@ public final class SchemaMetaDataLoader {
      *
      * @param dataSource data source
      * @param maxConnectionCount count of max connections permitted to use for this query
+     * @param databaseType database type
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount) throws SQLException {
+    public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount, final String databaseType) throws SQLException {
         List<String> tableNames;
         try (Connection connection = dataSource.getConnection()) {
             tableNames = loadAllTableNames(connection);
@@ -71,15 +72,15 @@ public final class SchemaMetaDataLoader {
         }
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
         Map<String, TableMetaData> tableMetaDataMap = 1 == tableGroups.size()
-                ? load(dataSource.getConnection(), tableGroups.get(0)) : asyncLoad(dataSource, maxConnectionCount, tableNames, tableGroups);
+                ? load(dataSource.getConnection(), tableGroups.get(0), databaseType) : asyncLoad(dataSource, maxConnectionCount, tableNames, tableGroups, databaseType);
         return new SchemaMetaData(tableMetaDataMap);
     }
     
-    private static Map<String, TableMetaData> load(final Connection connection, final Collection<String> tables) throws SQLException {
+    private static Map<String, TableMetaData> load(final Connection connection, final Collection<String> tables, final String databaseType) throws SQLException {
         try (Connection con = connection) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tables) {
-                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each), IndexMetaDataLoader.load(con, each)));
+                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each, databaseType), IndexMetaDataLoader.load(con, each)));
             }
             return result;
         }
@@ -102,13 +103,13 @@ public final class SchemaMetaDataLoader {
         return table.contains("$") || table.contains("/");
     }
     
-    private static Map<String, TableMetaData> asyncLoad(final DataSource dataSource,
-                                                        final int maxConnectionCount, final List<String> tableNames, final List<List<String>> tableGroups) throws SQLException {
+    private static Map<String, TableMetaData> asyncLoad(final DataSource dataSource, final int maxConnectionCount, final List<String> tableNames,
+                                                        final List<List<String>> tableGroups, final String databaseType) throws SQLException {
         Map<String, TableMetaData> result = new ConcurrentHashMap<>(tableNames.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(tableGroups.size(), maxConnectionCount));
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         for (List<String> each : tableGroups) {
-            futures.add(executorService.submit(() -> load(dataSource.getConnection(), each)));
+            futures.add(executorService.submit(() -> load(dataSource.getConnection(), each, databaseType)));
         }
         for (Future<Map<String, TableMetaData>> each : futures) {
             try {

@@ -156,12 +156,12 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public String getColumnLabel(final int columnIndex) throws SQLException {
-        return resultSetMetaData.getColumnLabel(columnIndex);
+    public String getColumnName(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnName(columnIndex);
     }
     
     @Override
-    public boolean isCaseSensitive(final int columnIndex) throws SQLException {
-        return resultSetMetaData.isCaseSensitive(columnIndex);
+    public String getColumnLabel(final int columnIndex) throws SQLException {
+        return resultSetMetaData.getColumnLabel(columnIndex);
     }
 }
