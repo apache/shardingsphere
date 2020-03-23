@@ -21,7 +21,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.Collections;
@@ -49,7 +49,7 @@ public final class SimpleQueryShardingEngine extends BaseShardingEngine {
     }
     
     @Override
-    protected RouteContext route(final DateNodeRouter dateNodeRouter, final String sql, final List<Object> parameters) {
-        return dateNodeRouter.route(sql, Collections.emptyList(), false);
+    protected RouteContext route(final DataNodeRouter dataNodeRouter, final String sql, final List<Object> parameters) {
+        return dataNodeRouter.route(sql, Collections.emptyList(), false);
     }
 }

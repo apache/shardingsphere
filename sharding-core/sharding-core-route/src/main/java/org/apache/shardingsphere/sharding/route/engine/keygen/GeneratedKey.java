@@ -56,8 +56,8 @@ public final class GeneratedKey {
      * @return generate key
      */
     public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final SchemaMetaData schemaMetaData, final List<Object> parameters, final InsertStatement insertStatement) {
-        Optional<String> generateKeyColumnNameOptional = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName().getIdentifier().getValue());
-        return generateKeyColumnNameOptional.map(generateKeyColumnName -> containsGenerateKey(schemaMetaData, insertStatement, generateKeyColumnName)
+        String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
+        return shardingRule.findGenerateKeyColumnName(tableName).map(generateKeyColumnName -> containsGenerateKey(schemaMetaData, insertStatement, generateKeyColumnName)
                 ? findGeneratedKey(schemaMetaData, parameters, insertStatement, generateKeyColumnName) : createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName));
     }
     

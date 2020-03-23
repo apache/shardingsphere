@@ -41,7 +41,7 @@ import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
-import org.apache.shardingsphere.underlying.route.DateNodeRouter;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.runners.Parameterized.Parameters;
@@ -79,7 +79,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
         ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties properties = new ConfigurationProperties(ruleConfiguration.getProps());
-        RouteContext routeContext = new DateNodeRouter(metaData, properties, sqlParserEngine).route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
+        RouteContext routeContext = new DataNodeRouter(metaData, properties, sqlParserEngine).route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
         ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
         ShardingRouteContext shardingRouteContext = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(
