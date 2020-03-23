@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.segment.insert.expression;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression;
 
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 

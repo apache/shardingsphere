@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.segment.insert;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert.values;
 
 import lombok.Getter;
 import lombok.ToString;

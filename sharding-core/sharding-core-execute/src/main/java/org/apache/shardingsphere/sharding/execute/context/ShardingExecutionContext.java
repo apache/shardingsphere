@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.execute.context;
 
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.expression.DerivedLiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.expression.DerivedSimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;

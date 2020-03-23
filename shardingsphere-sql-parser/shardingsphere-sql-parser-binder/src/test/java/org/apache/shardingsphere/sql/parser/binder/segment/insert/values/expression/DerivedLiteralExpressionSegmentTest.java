@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.binder.segment.insert.expression;
+package org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.junit.Test;
 
-/**
- * Derived parameter marker expression segment.
- */
-@Getter
-@ToString(callSuper = true)
-public final class DerivedParameterMarkerExpressionSegment extends ParameterMarkerExpressionSegment implements DerivedSimpleExpressionSegment {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class DerivedLiteralExpressionSegmentTest {
     
-    public DerivedParameterMarkerExpressionSegment(final int parameterMarkerIndex) {
-        super(0, 0, parameterMarkerIndex);
+    @Test
+    public void assertInstanceConstructedOk() {
+        Object literals = new Object();
+        DerivedLiteralExpressionSegment derivedLiteralExpressionSegment = new DerivedLiteralExpressionSegment(literals);
+        assertThat(derivedLiteralExpressionSegment.getStartIndex(), is(0));
+        assertThat(derivedLiteralExpressionSegment.getStopIndex(), is(0));
+        assertThat(derivedLiteralExpressionSegment.getLiterals(), is(literals));
     }
 }
