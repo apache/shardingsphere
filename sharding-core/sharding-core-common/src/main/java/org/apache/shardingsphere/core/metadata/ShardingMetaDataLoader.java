@@ -110,7 +110,7 @@ public final class ShardingMetaDataLoader {
         try {
             return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
         } catch (SQLException e) {
-            throw new IllegalStateException(String.format("SQLException for DataNode=%s", dataNode), e);
+            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
         }
     }
     
