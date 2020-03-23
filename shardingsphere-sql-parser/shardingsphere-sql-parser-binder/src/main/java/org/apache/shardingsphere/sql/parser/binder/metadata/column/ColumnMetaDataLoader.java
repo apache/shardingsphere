@@ -45,10 +45,11 @@ public final class ColumnMetaDataLoader {
      * 
      * @param connection connection
      * @param table table name
+     * @param databaseType database type
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<ColumnMetaData> load(final Connection connection, final String table) throws SQLException {
+    public static Collection<ColumnMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
         if (!isTableExist(connection, connection.getCatalog(), table)) {
             return Collections.emptyList();
         }
@@ -66,7 +67,7 @@ public final class ColumnMetaDataLoader {
                 columnNames.add(columnName);
             }
         }
-        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(connection, table))) {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(table, databaseType))) {
             for (String each : columnNames) {
                 isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each)));
             }
@@ -78,17 +79,16 @@ public final class ColumnMetaDataLoader {
         return result;
     }
     
-    private static String generateEmptyResultSQL(final Connection connection, final String table) throws SQLException {
+    private static String generateEmptyResultSQL(final String table, final String databaseType) {
         String delimiterLeft;
         String delimiterRight;
-        String url = connection.getMetaData().getURL();
-        if (url.startsWith("jdbc:mysql:")) {
+        if ("MySQL".equals(databaseType) || "MariaDB".equals(databaseType)) {
             delimiterLeft = "`";
             delimiterRight = "`";
-        } else if (url.startsWith("jdbc:oracle:") || url.startsWith("jdbc:postgresql:") || url.startsWith("jdbc:h2:")) {
+        } else if ("Oracle".equals(databaseType) || "PostgreSQL".equals(databaseType) || "H2".equals(databaseType) || "SQL92".equals(databaseType)) {
             delimiterLeft = "\"";
             delimiterRight = "\"";
-        } else if (url.startsWith("jdbc:sqlserver:")) {
+        } else if ("SQLServer".equals(databaseType)) {
             delimiterLeft = "[";
             delimiterRight = "]";
         } else {
