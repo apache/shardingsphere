@@ -376,7 +376,7 @@
             <column-definition type="VARCHAR" start-index="24" stop-index="42">
                 <column name="column3" />
             </column-definition>
-            <column-position/>
+            <column-position start-index="44" stop-index="48" />
         </add-column>
     </alter-table>
     
@@ -386,7 +386,7 @@
             <column-definition type="VARCHAR" start-index="24" stop-index="42">
                 <column name="column4" />
             </column-definition>
-            <column-position>
+            <column-position start-index="44" stop-index="57">
                 <column name="order_id" />
                 <after-column name="order_id" />
             </column-position>
@@ -399,19 +399,19 @@
             <column-definition type="VARCHAR" start-index="24" stop-index="42">
                 <column name="column5" />
             </column-definition>
-            <column-position/>
+            <column-position start-index="44" stop-index="48" />
         </add-column>
         <add-column>
             <column-definition type="VARCHAR" start-index="55" stop-index="73">
                 <column name="column6" />
             </column-definition>
-            <column-position/>
+            <column-position start-index="75" stop-index="79" />
         </add-column>
         <add-column>
             <column-definition type="VARCHAR" start-index="86" stop-index="104">
                 <column name="column7" />
             </column-definition>
-            <column-position>
+            <column-position start-index="106" stop-index="118">
                 <column name="column5" />
             </column-position>
         </add-column>
@@ -419,7 +419,7 @@
             <column-definition type="VARCHAR" start-index="125" stop-index="143">
                 <column name="column8" />
             </column-definition>
-            <column-position column-name="column8">
+            <column-position column-name="column8" start-index="145" stop-index="157">
                 <column name="column6" />
             </column-position>
         </add-column>
@@ -459,7 +459,7 @@
             <column-definition type="VARCHAR" start-index="27" stop-index="44">
                 <column name="status" />
             </column-definition>
-            <column-position/>
+            <column-position start-index="46" stop-index="50" />
         </modify-column>
     </alter-table>
     
@@ -469,7 +469,7 @@
             <column-definition type="VARCHAR" start-index="27" stop-index="44">
                 <column name="status" />
             </column-definition>
-            <column-position>
+            <column-position start-index="46" stop-index="59">
                 <column name="order_id" />
                 <after-column name="order_id" />
             </column-position>
@@ -482,13 +482,13 @@
             <column-definition type="VARCHAR" start-index="27" stop-index="44">
                 <column name="status" />
             </column-definition>
-            <column-position/>
+            <column-position start-index="46" stop-index="50" />
         </modify-column>
         <modify-column>
             <column-definition type="INT" start-index="60" stop-index="70">
                 <column name="user_id" />
             </column-definition>
-            <column-position>
+            <column-position start-index="72" stop-index="83">
                 <column name="status" />
                 <after-column name="status" />
             </column-position>
