@@ -70,7 +70,8 @@ public final class EncryptSchema extends LogicSchema {
     private SchemaMetaData createSchemaMetaData() throws SQLException {
         DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataDecorator.decorate(SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery), encryptRule, new EncryptTableMetaDataDecorator());
+        return SchemaMetaDataDecorator.decorate(SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery,
+            LogicSchemas.getInstance().getDatabaseType().getName()), encryptRule, new EncryptTableMetaDataDecorator());
     }
     
     /**

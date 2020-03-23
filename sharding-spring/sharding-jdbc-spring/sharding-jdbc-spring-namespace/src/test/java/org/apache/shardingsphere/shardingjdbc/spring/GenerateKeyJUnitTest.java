@@ -77,9 +77,11 @@ public class GenerateKeyJUnitTest extends AbstractSpringJUnitTest {
         assertThat(((Collection<TableRule>) tableRules).size(), is(2));
         Iterator<TableRule> tableRuleIterator = ((Collection<TableRule>) tableRules).iterator();
         TableRule orderRule = tableRuleIterator.next();
-        assertThat(orderRule.getGenerateKeyColumn(), is("order_id"));
+        assertTrue(orderRule.getGenerateKeyColumn().isPresent());
+        assertThat(orderRule.getGenerateKeyColumn().get(), is("order_id"));
         TableRule orderItemRule = tableRuleIterator.next();
-        assertThat(orderItemRule.getGenerateKeyColumn(), is("order_item_id"));
+        assertTrue(orderItemRule.getGenerateKeyColumn().isPresent());
+        assertThat(orderItemRule.getGenerateKeyColumn().get(), is("order_item_id"));
         assertTrue(orderItemRule.getShardingKeyGenerator() instanceof DecrementKeyGenerator);
     }
 }

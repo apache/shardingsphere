@@ -344,8 +344,8 @@ public class ShardingRule implements BaseRule {
      */
     public Optional<String> findGenerateKeyColumnName(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equalsIgnoreCase(logicTableName) && null != each.getGenerateKeyColumn()) {
-                return Optional.of(each.getGenerateKeyColumn());
+            if (each.getLogicTable().equalsIgnoreCase(logicTableName) && each.getGenerateKeyColumn().isPresent()) {
+                return each.getGenerateKeyColumn();
             }
         }
         return Optional.empty();
