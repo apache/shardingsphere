@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
@@ -56,7 +57,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         tablesContext = new TablesContext(sqlStatement.getTable());
         columnNames = sqlStatement.useDefaultColumns() ? schemaMetaData.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue()) : sqlStatement.getColumnNames();
         insertValueContexts = getInsertValueContexts(parameters);
-        generatedKeyContext = GeneratedKeyContext.getGenerateKey(schemaMetaData, parameters, sqlStatement).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(schemaMetaData).createGenerateKeyContext(parameters, sqlStatement).orElse(null);
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> parameters) {
