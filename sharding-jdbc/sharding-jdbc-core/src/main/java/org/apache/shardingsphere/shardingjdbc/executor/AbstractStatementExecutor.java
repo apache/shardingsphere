@@ -179,12 +179,12 @@ public abstract class AbstractStatementExecutor {
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final CreateTableStatement createTableStatement) throws SQLException {
         String tableName = createTableStatement.getTable().getTableName().getIdentifier().getValue();
-        runtimeContext.getMetaData().getSchema().put(tableName, loadTableMeta(tableName));
+        runtimeContext.getMetaData().getSchema().put(tableName, loadTableMeta(tableName, databaseType));
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final AlterTableStatement alterTableStatement) throws SQLException {
         String tableName = alterTableStatement.getTable().getTableName().getIdentifier().getValue();
-        runtimeContext.getMetaData().getSchema().put(tableName, loadTableMeta(tableName));
+        runtimeContext.getMetaData().getSchema().put(tableName, loadTableMeta(tableName, databaseType));
     }
     
     private void refreshTableMetaData(final ShardingRuntimeContext runtimeContext, final DropTableStatement dropTableStatement) {
@@ -233,11 +233,11 @@ public abstract class AbstractStatementExecutor {
         return Optional.empty();
     }
     
-    private TableMetaData loadTableMeta(final String tableName) throws SQLException {
+    private TableMetaData loadTableMeta(final String tableName, final DatabaseType databaseType) throws SQLException {
         ShardingRule shardingRule = connection.getRuntimeContext().getRule();
         int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = connection.getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        TableMetaData result = new ShardingMetaDataLoader(connection.getDataSourceMap(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName);
+        TableMetaData result = new ShardingMetaDataLoader(connection.getDataSourceMap(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName, databaseType);
         result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
