@@ -40,6 +40,12 @@ import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Sharding meta data loader.
@@ -49,7 +55,11 @@ import java.util.stream.Collectors;
 public final class ShardingMetaDataLoader {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
+    
+    private static final int CORES = Runtime.getRuntime().availableProcessors();
+    
+    private static final int FUTURE_GET_TIME_OUT_SEC = 5;
+    
     private final Map<String, DataSource> dataSourceMap;
     
     private final ShardingRule shardingRule;
@@ -75,14 +85,33 @@ public final class ShardingMetaDataLoader {
         }
         Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
         Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
-        // TODO use multiple threads to load meta data for different data sources
+        Map<String, Future<TableMetaData>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
+        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CORES * 2, dataNodeGroups.size()));
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
             for (DataNode each : entry.getValue()) {
-                actualTableMetaDataMap.put(each.getTableName(), TableMetaDataLoader.load(dataSourceMap.get(each.getDataSourceName()), each.getTableName(), databaseType.getName()));
+                Future<TableMetaData> futures = executorService.submit(() -> load(each, databaseType));
+                tableFutureMap.put(each.getTableName(), futures);
             }
         }
+        tableFutureMap.forEach((key, value) -> {
+            try {
+                TableMetaData tableMetaData = value.get(FUTURE_GET_TIME_OUT_SEC, TimeUnit.SECONDS);
+                actualTableMetaDataMap.put(key, tableMetaData);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                throw new IllegalStateException(String.format("Error while fetching tableMetaData with key= %s and Value=%s", key, value), e);
+            }
+        });
+        executorService.shutdownNow();
         checkUniformed(logicTableName, actualTableMetaDataMap);
         return actualTableMetaDataMap.values().iterator().next();
+    }
+
+    private TableMetaData load(final DataNode dataNode, final DatabaseType databaseType) {
+        try {
+            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
+        } catch (SQLException e) {
+            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
+        }
     }
     
     /**
