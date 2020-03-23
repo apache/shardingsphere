@@ -35,7 +35,6 @@ import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
