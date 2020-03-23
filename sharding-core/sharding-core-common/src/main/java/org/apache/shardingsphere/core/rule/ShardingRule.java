@@ -117,11 +117,7 @@ public class ShardingRule implements BaseRule {
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
-        Collection<MasterSlaveRule> result = new ArrayList<>(masterSlaveRuleConfigurations.size());
-        for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigurations) {
-            result.add(new MasterSlaveRule(each));
-        }
-        return result;
+        return masterSlaveRuleConfigurations.stream().map(MasterSlaveRule::new).collect(Collectors.toList());
     }
     
     private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {

@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source utility class.
@@ -54,7 +55,7 @@ public final class DataSourceUtil {
     public static DataSource getDataSource(final String dataSourceClassName, final Map<String, Object> dataSourceProperties) throws ReflectiveOperationException {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).newInstance();
         for (Entry<String, Object> entry : dataSourceProperties.entrySet()) {
-            callSetterMethod(result, getSetterMethodName(entry.getKey()), null == entry.getValue() ? null : entry.getValue().toString());
+            callSetterMethod(result, getSetterMethodName(entry.getKey()), Optional.ofNullable(entry.getValue()).map(Object::toString).orElse(null));
         }
         return result;
     }
@@ -63,7 +64,7 @@ public final class DataSourceUtil {
         if (propertyName.contains("-")) {
             return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, SET_METHOD_PREFIX + "-" + propertyName);
         }
-        return SET_METHOD_PREFIX + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1, propertyName.length());
+        return SET_METHOD_PREFIX + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1);
     }
     
     private static void callSetterMethod(final DataSource dataSource, final String methodName, final String setterValue) {

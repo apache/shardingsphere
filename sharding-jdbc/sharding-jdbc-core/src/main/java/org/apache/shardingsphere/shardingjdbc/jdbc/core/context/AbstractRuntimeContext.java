@@ -29,6 +29,7 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -51,7 +52,7 @@ public abstract class AbstractRuntimeContext<T extends BaseRule> implements Runt
     
     protected AbstractRuntimeContext(final T rule, final Properties props, final DatabaseType databaseType) {
         this.rule = rule;
-        properties = new ConfigurationProperties(null == props ? new Properties() : props);
+        properties = new ConfigurationProperties(Optional.ofNullable(props).orElse(new Properties()));
         this.databaseType = databaseType;
         executorEngine = new ExecutorEngine(properties.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(databaseType));
