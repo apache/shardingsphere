@@ -37,5 +37,7 @@ public class ColumnMetaData {
     
     private final boolean primaryKey;
     
+    private final boolean caseSensitive;
+    
     private final boolean generated;
 }

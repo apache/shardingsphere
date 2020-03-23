@@ -53,6 +53,7 @@ public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeC
     
     @Override
     protected SchemaMetaData loadSchemaMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return SchemaMetaDataLoader.load(dataSourceMap.values().iterator().next(), getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+        return SchemaMetaDataLoader.load(dataSourceMap.values().iterator().next(),
+            getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), getDatabaseType().getName());
     }
 }
