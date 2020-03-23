@@ -31,8 +31,6 @@ import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
@@ -49,7 +47,6 @@ import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Base sharding engine.
@@ -88,9 +85,7 @@ public abstract class BaseShardingEngine {
     public ExecutionContext shard(final String sql, final List<Object> parameters) {
         List<Object> clonedParameters = cloneParameters(parameters);
         ShardingRouteContext shardingRouteContext = executeRoute(sql, clonedParameters);
-        Optional<GeneratedKeyContext> generatedKeyContext = shardingRouteContext.getSqlStatementContext() instanceof InsertStatementContext
-                ? ((InsertStatementContext) shardingRouteContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
-        ShardingExecutionContext result = new ShardingExecutionContext(shardingRouteContext.getSqlStatementContext(), generatedKeyContext.orElse(null));
+        ShardingExecutionContext result = new ShardingExecutionContext(shardingRouteContext.getSqlStatementContext());
         result.getExecutionUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, shardingRouteContext) : rewriteAndConvert(sql, clonedParameters, shardingRouteContext));
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             ShardingSQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), result.getSqlStatementContext(), result.getExecutionUnits());
