@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.executor.engine.impl;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -39,7 +38,7 @@ public final class ShardingSphereThreadFactoryBuilder {
      * @return default ShardingSphere thread factory
      */
     public static ThreadFactory build() {
-        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(DEFAULT_EXECUTOR_NAME_FORMAT).build();
+        return ShadingSphereThreadFactory.create(DEFAULT_EXECUTOR_NAME_FORMAT, true);
     }
     
     /**
@@ -49,6 +48,6 @@ public final class ShardingSphereThreadFactoryBuilder {
      * @return ShardingSphere thread factory
      */
     public static ThreadFactory build(final String nameFormat) {
-        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(NAME_FORMAT_PREFIX + nameFormat).build();
+        return ShadingSphereThreadFactory.create(NAME_FORMAT_PREFIX + nameFormat, true);
     }
 }
