@@ -19,13 +19,11 @@ package org.apache.shardingsphere.sharding.route.engine.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * SQL route context.
@@ -35,25 +33,8 @@ public final class ShardingRouteContext extends RouteContext {
     
     private final ShardingConditions shardingConditions;
     
-    private final GeneratedKeyContext generatedKey;
-    
-    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, 
-                                final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions, final GeneratedKeyContext generatedKey) {
+    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions) {
         super(sqlStatementContext, parameters, routeResult);
         this.shardingConditions = shardingConditions;
-        this.generatedKey = generatedKey;
-    }
-    
-    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions) {
-        this(sqlStatementContext, parameters, routeResult, shardingConditions, null);
-    }
-    
-    /**
-     * Get generated key.
-     * 
-     * @return generated key
-     */
-    public Optional<GeneratedKeyContext> getGeneratedKey() {
-        return Optional.ofNullable(generatedKey);
     }
 }
