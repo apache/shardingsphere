@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.shard.BaseShardingEngine;
 import org.apache.shardingsphere.core.shard.SimpleQueryShardingEngine;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
 import org.apache.shardingsphere.shardingjdbc.executor.StatementExecutor;
@@ -39,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
@@ -66,7 +66,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private boolean returnGeneratedKeys;
     
-    private ShardingExecutionContext shardingExecutionContext;
+    private ExecutionContext executionContext;
     
     private ResultSet currentResultSet;
     
@@ -116,15 +116,15 @@ public final class ShardingStatement extends AbstractStatementAdapter {
                 queryResults.add(new StreamQueryResult(resultSet));
             }
         }
-        if (shardingExecutionContext.getSqlStatementContext() instanceof SelectStatementContext || shardingExecutionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
-            currentResultSet = new ShardingResultSet(resultSets, createMergedResult(resultSets, queryResults), this, shardingExecutionContext);
+        if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+            currentResultSet = new ShardingResultSet(resultSets, createMergedResult(resultSets, queryResults), this, executionContext);
         }
         return currentResultSet;
     }
     
     private ShardingResultSet getResultSet(final List<QueryResult> queryResults) throws SQLException {
         List<ResultSet> resultSets = statementExecutor.getResultSets();
-        return new ShardingResultSet(resultSets, createMergedResult(resultSets, queryResults), this, shardingExecutionContext);
+        return new ShardingResultSet(resultSets, createMergedResult(resultSets, queryResults), this, executionContext);
     }
     
     private MergedResult createMergedResult(final List<ResultSet> resultSets, final List<QueryResult> queryResults) throws SQLException {
@@ -136,7 +136,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         }
         MergeEntry mergeEntry = new MergeEntry(connection.getRuntimeContext().getDatabaseType(), 
                 connection.getRuntimeContext().getMetaData().getSchema(), connection.getRuntimeContext().getProperties(), engines);
-        return mergeEntry.process(queryResults, shardingExecutionContext.getSqlStatementContext());
+        return mergeEntry.process(queryResults, executionContext.getSqlStatementContext());
     }
     
     @Override
@@ -246,7 +246,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private void initStatementExecutor() throws SQLException {
-        statementExecutor.init(shardingExecutionContext);
+        statementExecutor.init(executionContext);
         replayMethodForStatements();
     }
     
@@ -259,7 +259,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     private void shard(final String sql) {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
         BaseShardingEngine shardingEngine = new SimpleQueryShardingEngine(runtimeContext.getRule(), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
-        shardingExecutionContext = (ShardingExecutionContext) shardingEngine.shard(sql, Collections.emptyList());
+        executionContext = shardingEngine.shard(sql, Collections.emptyList());
     }
     
     private void clearPrevious() throws SQLException {
@@ -285,7 +285,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(shardingExecutionContext.getSqlStatementContext().getTablesContext().getTableNames());
+        return !connection.getRuntimeContext().getRule().isAllBroadcastTables(executionContext.getSqlStatementContext().getTablesContext().getTableNames());
     }
     
     @Override
@@ -306,7 +306,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
-        return shardingExecutionContext.getSqlStatementContext() instanceof InsertStatementContext
-                ? ((InsertStatementContext) shardingExecutionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
+        return executionContext.getSqlStatementContext() instanceof InsertStatementContext
+                ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
 }

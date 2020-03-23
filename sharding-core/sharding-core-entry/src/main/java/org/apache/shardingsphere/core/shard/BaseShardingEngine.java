@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.shard.log.ShardingSQLLogger;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
@@ -85,7 +84,7 @@ public abstract class BaseShardingEngine {
     public ExecutionContext shard(final String sql, final List<Object> parameters) {
         List<Object> clonedParameters = cloneParameters(parameters);
         ShardingRouteContext shardingRouteContext = executeRoute(sql, clonedParameters);
-        ShardingExecutionContext result = new ShardingExecutionContext(shardingRouteContext.getSqlStatementContext());
+        ExecutionContext result = new ExecutionContext(shardingRouteContext.getSqlStatementContext());
         result.getExecutionUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, shardingRouteContext) : rewriteAndConvert(sql, clonedParameters, shardingRouteContext));
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             ShardingSQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), result.getSqlStatementContext(), result.getExecutionUnits());

@@ -20,13 +20,13 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -51,18 +51,18 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     @Getter
-    private final ShardingExecutionContext shardingExecutionContext;
+    private final ExecutionContext executionContext;
     
-    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ShardingExecutionContext shardingExecutionContext) {
+    public AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ExecutionContext executionContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
-        this.shardingExecutionContext = shardingExecutionContext;
+        this.executionContext = executionContext;
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), shardingExecutionContext.getSqlStatementContext());
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingRule(), executionContext.getSqlStatementContext());
     }
     
     private ShardingRule getShardingRule() {
