@@ -1,31 +1,47 @@
-# Quick Start
++++
+pre = "<b>4.5.1. </b>"
+toc = true
+title = "Build&Quick Start"
+weight = 1
++++
 
-## Deployment
+## Quick Start
+
+### Deployment
+
 1. Execute the following command to compile and generate the sharding-scaling binary package:
+
 ```
 git clone https://github.com/apache/incubator-shardingsphere.git；
 cd incubarot-shardingsphere;
 mvn clean install -Prelease;
 ```
+
 The binary package's directory is:`/sharding-distribution/sharding-scaling-distribution/target/apache-shardingsphere-incubating-${latest.release.version}-sharding-scaling-bin.tar.gz`。
 
 2. Unzip the distribution package, modify the configuration file `conf/server.yaml`, we should ensure the port does not conflict with others, and other values can be left as default:
+
 ```
 port: 8888
 blockQueueSize: 10000
 pushTimeout: 1000
 workerThread: 30
 ```
+
 3. start up sharding-scaling:
+
 ```
 sh bin/start.sh
 ```
+
 4. See the log file `logs/stdout.log`，ensure successful startup.
 
-## Start scaling job
+### Start scaling job
+
 ShardingScaling provides a corresponding HTTP interface to manage the migration jobs. We can invoke the appropriate interface to start the migration job.
 
 Start scaling job:
+
 ```
 curl -X POST \
   http://localhost:8888/shardingscaling/job/start \
@@ -46,11 +62,13 @@ curl -X POST \
    }
 }'
 ```
+
 Note: The `ruleConfiguration.sourceDatasource` and `ruleConfiguration.sourceRule` should be changed to source's ShardingSphere's datasource and table rule.
 
 What's more, the `ruleConfiguration.destinationDataSources` should be changed to destination's sharding-proxy.
 
 The following information is returned, indicating that the job was successfully created:
+
 ```
 {
    "success": true,
@@ -59,15 +77,20 @@ The following information is returned, indicating that the job was successfully 
    "model": null
 }
 ```
+
 It should be noted that, after the ShardingScaling's job is successfully created, it will automatically run.
 
-## Get scaling progress
+### Get scaling progress
+
 Run the following command to get all current migration jobs:
+
 ```
 curl -X GET \
   http://localhost:8888/shardingscaling/job/list
 ```
+
 Response:
+
 ```
 {
   "success": true,
@@ -81,12 +104,16 @@ Response:
   ]
 }
 ```
+
 Further query job's specific migration status：
+
 ```
 curl -X GET \
   http://localhost:8888/shardingscaling/job/progress/1
 ```
+
 Response：
+
 ```
 {
    "success": true,
@@ -137,8 +164,11 @@ Response：
    }
 }
 ```
-## Stop scaling job
+
+### Stop scaling job
+
 After the data migration is over, we can call the interface to end the job:
+
 ```
 curl -X POST \
   http://localhost:8888/shardingscaling/job/stop \
@@ -147,7 +177,9 @@ curl -X POST \
    "jobId":1
 }'
 ```
+
 Response：
+
 ```
 {
    "success": true,
@@ -156,10 +188,14 @@ Response：
    "model": null
 }
 ```
-## Shutdown ShardingScaling
+
+### Shutdown ShardingScaling
+
 ```
 sh bin/stop.sh
 ```
-## Operate through the UI interface
+
+### Operate through the UI interface
+
 We provide user interface in sharding-ui, so all the operations related can be implemented with a click of the UI interface.
 For more information, please refer to the sharding-ui module.
