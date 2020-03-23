@@ -52,7 +52,7 @@ public final class GeneratedKeyContextEngineTest {
     
     @Before
     public void setUp() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "INT", true, true)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "INT", true, true, false)), Collections.emptyList());
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         tableMetaDataMap.put("tbl", tableMetaData);
         schemaMetaData = new SchemaMetaData(tableMetaDataMap);
