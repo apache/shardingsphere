@@ -35,7 +35,6 @@ import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -117,11 +116,7 @@ public class ShardingRule implements BaseRule {
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
-        Collection<MasterSlaveRule> result = new ArrayList<>(masterSlaveRuleConfigurations.size());
-        for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigurations) {
-            result.add(new MasterSlaveRule(each));
-        }
-        return result;
+        return masterSlaveRuleConfigurations.stream().map(MasterSlaveRule::new).collect(Collectors.toList());
     }
     
     private EncryptRule createEncryptRule(final EncryptRuleConfiguration encryptRuleConfig) {

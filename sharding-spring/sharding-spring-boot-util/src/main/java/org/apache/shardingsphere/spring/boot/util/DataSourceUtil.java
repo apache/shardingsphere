@@ -63,7 +63,7 @@ public final class DataSourceUtil {
         if (propertyName.contains("-")) {
             return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, SET_METHOD_PREFIX + "-" + propertyName);
         }
-        return SET_METHOD_PREFIX + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1, propertyName.length());
+        return SET_METHOD_PREFIX + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1);
     }
     
     private static void callSetterMethod(final DataSource dataSource, final String methodName, final String setterValue) {
