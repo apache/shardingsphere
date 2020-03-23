@@ -39,16 +39,18 @@ public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends 
     }
     
     @Override
-    protected UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey) {
+    public UseDefaultInsertColumnsToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(insertColumnsSegment.isPresent());
-        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, generatedKey));
+        return new UseDefaultInsertColumnsToken(insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext));
     }
     
-    private List<String> getColumnNames(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey) {
+    private List<String> getColumnNames(final InsertStatementContext insertStatementContext) {
+        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Preconditions.checkState(generatedKey.isPresent());
         List<String> result = new ArrayList<>(insertStatementContext.getColumnNames());
-        result.remove(generatedKey.getColumnName());
-        result.add(generatedKey.getColumnName());
+        result.remove(generatedKey.get().getColumnName());
+        result.add(generatedKey.get().getColumnName());
         return result;
     }
 }

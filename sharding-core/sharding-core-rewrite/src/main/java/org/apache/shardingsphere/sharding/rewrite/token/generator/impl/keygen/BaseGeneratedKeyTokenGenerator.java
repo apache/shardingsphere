@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
  * Base generated key token generator.
@@ -37,12 +34,4 @@ public abstract class BaseGeneratedKeyTokenGenerator implements OptionalSQLToken
     }
     
     protected abstract boolean isGenerateSQLToken(InsertStatement insertStatement);
-    
-    @Override
-    public final SQLToken generateSQLToken(final InsertStatementContext insertStatementContext) {
-        Preconditions.checkState(insertStatementContext.getGeneratedKeyContext().isPresent());
-        return generateSQLToken(insertStatementContext, insertStatementContext.getGeneratedKeyContext().get());
-    }
-    
-    protected abstract SQLToken generateSQLToken(InsertStatementContext insertStatementContext, GeneratedKeyContext generatedKey);
 }

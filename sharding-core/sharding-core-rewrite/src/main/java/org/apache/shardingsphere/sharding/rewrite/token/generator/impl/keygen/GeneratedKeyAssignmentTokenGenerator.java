@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.ParametersAware;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Generated key assignment token generator.
@@ -43,10 +44,12 @@ public final class GeneratedKeyAssignmentTokenGenerator extends BaseGeneratedKey
     }
     
     @Override
-    protected GeneratedKeyAssignmentToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey) {
+    public GeneratedKeyAssignmentToken generateSQLToken(final InsertStatementContext insertStatementContext) {
+        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Preconditions.checkState(generatedKey.isPresent());
         Preconditions.checkState(insertStatementContext.getSqlStatement().getSetAssignment().isPresent());
         int startIndex = insertStatementContext.getSqlStatement().getSetAssignment().get().getStopIndex() + 1;
-        return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName(), generatedKey.getGeneratedValues().getLast())
-                : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.getColumnName());
+        return parameters.isEmpty() ? new LiteralGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().getLast())
+                : new ParameterMarkerGeneratedKeyAssignmentToken(startIndex, generatedKey.get().getColumnName());
     }
 }

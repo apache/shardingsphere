@@ -38,9 +38,11 @@ public final class GeneratedKeyInsertColumnTokenGenerator extends BaseGeneratedK
     }
     
     @Override
-    protected GeneratedKeyInsertColumnToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKeyContext generatedKey) {
+    public GeneratedKeyInsertColumnToken generateSQLToken(final InsertStatementContext insertStatementContext) {
+        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Preconditions.checkState(generatedKey.isPresent());
         Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
-        return new GeneratedKeyInsertColumnToken(sqlSegment.get().getStopIndex(), generatedKey.getColumnName());
+        return new GeneratedKeyInsertColumnToken(sqlSegment.get().getStopIndex(), generatedKey.get().getColumnName());
     }
 }
