@@ -80,6 +80,7 @@ public final class ColumnMetaDataLoader {
     }
     
     private static String generateEmptyResultSQL(final String table, final String databaseType) {
+        // TODO consider add a getDialectDelimeter() interface in parse module
         String delimiterLeft;
         String delimiterRight;
         if ("MySQL".equals(databaseType) || "MariaDB".equals(databaseType)) {
