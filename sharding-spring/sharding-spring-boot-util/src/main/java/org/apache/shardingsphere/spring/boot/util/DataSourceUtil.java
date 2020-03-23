@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Data source utility class.
@@ -55,7 +54,7 @@ public final class DataSourceUtil {
     public static DataSource getDataSource(final String dataSourceClassName, final Map<String, Object> dataSourceProperties) throws ReflectiveOperationException {
         DataSource result = (DataSource) Class.forName(dataSourceClassName).newInstance();
         for (Entry<String, Object> entry : dataSourceProperties.entrySet()) {
-            callSetterMethod(result, getSetterMethodName(entry.getKey()), Optional.ofNullable(entry.getValue()).map(Object::toString).orElse(null));
+            callSetterMethod(result, getSetterMethodName(entry.getKey()), null == entry.getValue() ? null : entry.getValue().toString());
         }
         return result;
     }
