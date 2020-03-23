@@ -43,7 +43,7 @@ public final class ShardingSphereThreadFactoryBuilder {
     }
     
     /**
-     * Build ShardingSphere thread factory.
+     * Build ShardingSphere  thread factory.
      *
      * @param nameFormat thread name format
      * @return ShardingSphere thread factory
