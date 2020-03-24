@@ -88,7 +88,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         sqlRewriteContext.generateSQLTokens();
         Collection<SQLRewriteResult> result = new LinkedList<>();
         for (RouteUnit each : shardingRouteContext.getRouteResult().getRouteUnits()) {
-            result.add(new ShardingSQLRewriteEngine(shardingRule, shardingRouteContext.getShardingConditions(), each).rewrite(sqlRewriteContext));
+            result.add(new ShardingSQLRewriteEngine(shardingRule, shardingRouteContext.getRouteResult().getOriginalDataNodes(), each).rewrite(sqlRewriteContext));
         }
         return result;
     }

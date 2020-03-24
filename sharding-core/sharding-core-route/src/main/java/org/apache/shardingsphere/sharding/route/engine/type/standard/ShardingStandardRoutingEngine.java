@@ -64,6 +64,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private final ConfigurationProperties properties;
     
+    private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
+    
     @Override
     public RouteResult route(final ShardingRule shardingRule) {
         if (isDMLForModify(sqlStatementContext) && 1 != ((TableAvailable) sqlStatementContext).getAllTables().size()) {
@@ -78,6 +80,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private RouteResult generateRouteResult(final Collection<DataNode> routedDataNodes) {
         RouteResult result = new RouteResult();
+        result.getOriginalDataNodes().addAll(originalDataNodes);
         for (DataNode each : routedDataNodes) {
             result.getRouteUnits().add(
                     new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName()))));
@@ -118,8 +121,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
             Collection<DataNode> dataNodes = route0(shardingRule, tableRule, 
                     getShardingValuesFromShardingConditions(shardingRule, shardingRule.getDatabaseShardingStrategy(tableRule).getShardingColumns(), each),
                     getShardingValuesFromShardingConditions(shardingRule, shardingRule.getTableShardingStrategy(tableRule).getShardingColumns(), each));
-            each.getDataNodes().addAll(dataNodes);
             result.addAll(dataNodes);
+            originalDataNodes.add(dataNodes);
         }
         return result;
     }
@@ -132,8 +135,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         Collection<DataNode> result = new LinkedList<>();
         for (ShardingCondition each : shardingConditions.getConditions()) {
             Collection<DataNode> dataNodes = route0(shardingRule, tableRule, getDatabaseShardingValues(shardingRule, tableRule, each), getTableShardingValues(shardingRule, tableRule, each));
-            each.getDataNodes().addAll(dataNodes);
             result.addAll(dataNodes);
+            originalDataNodes.add(dataNodes);
         }
         return result;
     }

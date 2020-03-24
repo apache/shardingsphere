@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ZookeeperPropertiesTest {
-
+    
     @Test
     public void assertGetValue() {
         Properties props = new Properties();
@@ -41,7 +41,7 @@ public final class ZookeeperPropertiesTest {
         assertThat(actual.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS), is(6000));
         assertThat(actual.getValue(ZookeeperPropertyKey.DIGEST), is("any"));
     }
-
+    
     @Test
     public void assertGetDefaultValue() {
         Properties props = new Properties();
