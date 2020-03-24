@@ -1,4 +1,4 @@
-# ShardingScaling - ShardingSphere横向扩展组件
+# ShardingScaling - ShardingSphere弹性伸缩组件
 
 ## 概述
 
@@ -15,7 +15,7 @@
 
 3. 如果源schema中的表有主键，Sharding-Scaling就能够使用 `where`声明的条件，并发地迁移表中的数据。
 
-## 必备条件
+## 环境准备
 
 MySQL：5.1.15 ~ 5.7.x
 
