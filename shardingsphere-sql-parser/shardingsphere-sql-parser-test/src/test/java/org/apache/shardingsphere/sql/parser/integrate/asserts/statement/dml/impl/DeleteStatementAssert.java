@@ -42,7 +42,7 @@ public final class DeleteStatementAssert {
      * @param expected expected delete statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-//        assertTable(assertContext, actual, expected);
+        assertTable(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
     }
     
