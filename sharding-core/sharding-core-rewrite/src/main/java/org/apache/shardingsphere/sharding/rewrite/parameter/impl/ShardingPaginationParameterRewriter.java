@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
+import org.apache.shardingsphere.sharding.rewrite.aware.RouteContextAware;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.List;
 
@@ -33,14 +33,14 @@ import java.util.List;
  * Sharding pagination parameter rewriter.
  */
 @Setter
-public final class ShardingPaginationParameterRewriter implements ParameterRewriter<SelectStatementContext>, ShardingRouteContextAware {
+public final class ShardingPaginationParameterRewriter implements ParameterRewriter<SelectStatementContext>, RouteContextAware {
     
-    private ShardingRouteContext shardingRouteContext;
+    private RouteContext routeContext;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext
-                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !shardingRouteContext.getRouteResult().isSingleRouting();
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !routeContext.getRouteResult().isSingleRouting();
     }
     
     @Override
