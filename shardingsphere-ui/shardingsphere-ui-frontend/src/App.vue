@@ -48,19 +48,14 @@ export default {
   watch: {
     $route(to, from) {
       for (const parentMenuItem of this.$t('common').menuData) {
+        if (!parentMenuItem.child && parentMenuItem.href === to.path) {
+          this.menus = [parentMenuItem.title]
+          break
+        }
         for (const childMenuItem of parentMenuItem.child) {
-          if (childMenuItem.child) {
-            for (const item of childMenuItem.child) {
-              if (item.href === to.path) {
-                this.menus = [parentMenuItem.title, childMenuItem.title, item.title]
-                break
-              }
-            }
-          } else {
-            if (childMenuItem.href === to.path) {
-              this.menus = [parentMenuItem.title, childMenuItem.title]
-              break
-            }
+          if (childMenuItem.href === to.path) {
+            this.menus = [parentMenuItem.title, childMenuItem.title]
+            break
           }
         }
       }
