@@ -21,25 +21,17 @@ import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
-import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Schema meta data loader.
@@ -72,18 +64,8 @@ public final class SchemaMetaDataLoader {
         }
         List<List<String>> tableGroups = Lists.partition(tableNames, Math.max(tableNames.size() / maxConnectionCount, 1));
         Map<String, TableMetaData> tableMetaDataMap = 1 == tableGroups.size()
-                ? load(dataSource.getConnection(), tableGroups.get(0), databaseType) : asyncLoad(dataSource, maxConnectionCount, tableNames, tableGroups, databaseType);
+                ? TableMetaDataLoader.load(dataSource, tableGroups.get(0), databaseType) : TableMetaDataLoader.asyncLoad(dataSource, maxConnectionCount, tableNames, tableGroups, databaseType);
         return new SchemaMetaData(tableMetaDataMap);
-    }
-    
-    private static Map<String, TableMetaData> load(final Connection connection, final Collection<String> tables, final String databaseType) throws SQLException {
-        try (Connection con = connection) {
-            Map<String, TableMetaData> result = new LinkedHashMap<>();
-            for (String each : tables) {
-                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each, databaseType), IndexMetaDataLoader.load(con, each)));
-            }
-            return result;
-        }
     }
     
     private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
@@ -103,24 +85,4 @@ public final class SchemaMetaDataLoader {
         return table.contains("$") || table.contains("/");
     }
     
-    private static Map<String, TableMetaData> asyncLoad(final DataSource dataSource, final int maxConnectionCount, final List<String> tableNames,
-                                                        final List<List<String>> tableGroups, final String databaseType) throws SQLException {
-        Map<String, TableMetaData> result = new ConcurrentHashMap<>(tableNames.size(), 1);
-        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(tableGroups.size(), maxConnectionCount));
-        Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
-        for (List<String> each : tableGroups) {
-            futures.add(executorService.submit(() -> load(dataSource.getConnection(), each, databaseType)));
-        }
-        for (Future<Map<String, TableMetaData>> each : futures) {
-            try {
-                result.putAll(each.get());
-            } catch (final InterruptedException | ExecutionException ex) {
-                if (ex.getCause() instanceof SQLException) {
-                    throw (SQLException) ex.getCause();
-                }
-                Thread.currentThread().interrupt();
-            }
-        }
-        return result;
-    }
 }

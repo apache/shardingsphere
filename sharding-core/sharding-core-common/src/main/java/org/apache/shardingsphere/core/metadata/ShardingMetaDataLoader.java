@@ -32,20 +32,14 @@ import org.apache.shardingsphere.underlying.common.exception.ShardingSphereExcep
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Sharding meta data loader.
@@ -55,10 +49,6 @@ import java.util.concurrent.TimeoutException;
 public final class ShardingMetaDataLoader {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    
-    private static final int CORES = Runtime.getRuntime().availableProcessors();
-    
-    private static final int FUTURE_GET_TIME_OUT_SEC = 5;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -81,37 +71,11 @@ public final class ShardingMetaDataLoader {
         if (!isCheckingMetaData) {
             DataNode dataNode = tableRule.getActualDataNodes().iterator().next();
             return TableMetaDataLoader.load(dataSourceMap.get(shardingRule.getShardingDataSourceNames().getRawMasterDataSourceName(
-                dataNode.getDataSourceName())), dataNode.getTableName(), databaseType.getName());
+                    dataNode.getDataSourceName())), dataNode.getTableName(), databaseType.getName());
         }
-        Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
-        Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
-        Map<String, Future<TableMetaData>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
-        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CORES * 2, dataNodeGroups.size()));
-        for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
-            for (DataNode each : entry.getValue()) {
-                Future<TableMetaData> futures = executorService.submit(() -> load(each, databaseType));
-                tableFutureMap.put(each.getTableName(), futures);
-            }
-        }
-        tableFutureMap.forEach((key, value) -> {
-            try {
-                TableMetaData tableMetaData = value.get(FUTURE_GET_TIME_OUT_SEC, TimeUnit.SECONDS);
-                actualTableMetaDataMap.put(key, tableMetaData);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                throw new IllegalStateException(String.format("Error while fetching tableMetaData with key= %s and Value=%s", key, value), e);
-            }
-        });
-        executorService.shutdownNow();
-        checkUniformed(logicTableName, actualTableMetaDataMap);
-        return actualTableMetaDataMap.values().iterator().next();
-    }
-
-    private TableMetaData load(final DataNode dataNode, final DatabaseType databaseType) {
-        try {
-            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
-        } catch (SQLException e) {
-            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
-        }
+        final Map<String, Map<String, TableMetaData>> tableMetaDataMap = TableMetaDataLoader.asyncLoad(buildDataNodeMap(), databaseType.getName());
+        checkUniformed(logicTableName, tableMetaDataMap.get(logicTableName));
+        return tableMetaDataMap.get(logicTableName).values().iterator().next();
     }
     
     /**
@@ -129,11 +93,37 @@ public final class ShardingMetaDataLoader {
     
     private SchemaMetaData loadShardingSchemaMetaData(final DatabaseType databaseType) throws SQLException {
         log.info("Loading {} logic tables' meta data.", shardingRule.getTableRules().size());
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
-        for (TableRule each : shardingRule.getTableRules()) {
-            tableMetaDataMap.put(each.getLogicTable(), load(each.getLogicTable(), databaseType));
+        Map<String, TableMetaData> metaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        if (!isCheckingMetaData) {
+            for (TableRule each : shardingRule.getTableRules()) {
+                metaDataMap.put(each.getLogicTable(), load(each.getLogicTable(), databaseType));
+            }
+        } else {
+            final Map<String, Map<String, TableMetaData>> dataMap = TableMetaDataLoader.asyncLoad(buildDataNodeMap(), databaseType.getName());
+            for (TableRule each : shardingRule.getTableRules()) {
+                checkUniformed(each.getLogicTable(), dataMap.get(each.getLogicTable()));
+                metaDataMap.put(each.getLogicTable(), dataMap.get(each.getLogicTable()).values().iterator().next());
+            }
         }
-        return new SchemaMetaData(tableMetaDataMap);
+        return new SchemaMetaData(metaDataMap);
+    }
+    
+    private Map<DataSource, Map<String, List<String>>> buildDataNodeMap() {
+        Map<DataSource, Map<String, List<String>>> dataNode = new HashMap<>();
+        for (TableRule each : shardingRule.getTableRules()) {
+            final Map<String, List<DataNode>> dataNodeGroups = each.getDataNodeGroups();
+            Map<String, List<String>> maps = new HashMap<>();
+            for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
+                maps.put(each.getLogicTable(), entry.getValue().stream().map(DataNode::getTableName).collect(Collectors.toList()));
+                final DataSource dataSource = dataSourceMap.get(entry.getKey());
+                if (dataNode.containsKey(dataSource)) {
+                    dataNode.get(dataSource).putAll(maps);
+                } else {
+                    dataNode.put(dataSource, maps);
+                }
+            }
+        }
+        return dataNode;
     }
     
     private SchemaMetaData loadDefaultSchemaMetaData(final DatabaseType databaseType) throws SQLException {
