@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.sql.ShardingSQLBuilder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;

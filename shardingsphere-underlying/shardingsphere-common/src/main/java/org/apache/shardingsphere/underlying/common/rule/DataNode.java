@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.rule;
+package org.apache.shardingsphere.underlying.common.rule;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphe
 import java.util.List;
 
 /**
- * Sharding data unit node.
+ * Data node.
  */
 @RequiredArgsConstructor
 @Getter
