@@ -68,10 +68,17 @@ export default {
     $route: {
       handler(route) {
         for (const v of this.menuData) {
-          for (const vv of v.child) {
-            if (route.path === vv.href) {
-              this.defActive = vv.href
+          if (!v.child) {
+            if (v.href === route.path) {
+              this.defActive = v.href
               break
+            }
+          } else {
+            for (const vv of v.child) {
+              if (route.path === vv.href) {
+                this.defActive = vv.href
+                break
+              }
             }
           }
         }
