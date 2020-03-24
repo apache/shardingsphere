@@ -34,9 +34,9 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
@@ -109,7 +109,6 @@ public final class WhereClauseAssert {
             assertNotNull(assertContext.getText("Operator assertion error: "), expected);
             assertThat(assertContext.getText("Operator assertion error: "), ((PredicateCompareRightValue) actual.getRightValue()).getOperator(), is(expected.getType()));
         }
-        // TODO assert operator start index and stop index
     }
     
     private static void assertCompareRightValue(final SQLCaseAssertContext assertContext, final PredicateCompareRightValue actual, final ExpectedPredicateCompareRightValue expected) {
@@ -119,15 +118,20 @@ public final class WhereClauseAssert {
             ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual.getExpression(), expected.getLiteralExpression());
         } else if (actual.getExpression() instanceof CommonExpressionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual.getExpression(), expected.getCommonExpression());
-        } else if (actual.getExpression() instanceof SubquerySegment) {
-            ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) actual.getExpression(), expected.getSubquery());
+        } else if (actual.getExpression() instanceof SubqueryExpressionSegment) {
+            ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual.getExpression(), expected.getSubquery());
         }
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertInRightValue(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
         assertNotNull(assertContext.getText("Expected predicate in right value can not be null"), expected);
+        assertParameterMarkerExpressionSegment(assertContext, actual, expected);
+        assertLiteralExpressionSegment(assertContext, actual, expected);
+        assertCommonExpressionSegment(assertContext, actual, expected);
+        assertSubqueryExpressionSegment(assertContext, actual, expected);
+    }
+    
+    private static void assertParameterMarkerExpressionSegment(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
         int count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
             if (each instanceof ParameterMarkerExpressionSegment) {
@@ -135,37 +139,42 @@ public final class WhereClauseAssert {
                 count++;
             }
         }
-        count = 0;
+    }
+    
+    private static void assertLiteralExpressionSegment(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
+        int count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
             if (each instanceof LiteralExpressionSegment) {
                 ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) each, expected.getLiteralExpressions().get(count));
                 count++;
             }
         }
-        count = 0;
+    }
+    
+    private static void assertCommonExpressionSegment(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
+        int count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
             if (each instanceof CommonExpressionSegment) {
                 ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) each, expected.getCommonExpressions().get(count));
                 count++;
             }
         }
-        count = 0;
+    }
+    
+    private static void assertSubqueryExpressionSegment(final SQLCaseAssertContext assertContext, final PredicateInRightValue actual, final ExpectedPredicateInRightValue expected) {
+        int count = 0;
         for (ExpressionSegment each : actual.getSqlExpressions()) {
-            if (each instanceof SubquerySegment) {
-                ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) each, expected.getSubqueries().get(count));
+            if (each instanceof SubqueryExpressionSegment) {
+                ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) each, expected.getSubqueries().get(count));
                 count++;
             }
         }
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertBetweenRightValue(final SQLCaseAssertContext assertContext, final PredicateBetweenRightValue actual, final ExpectedPredicateBetweenRightValue expected) {
         assertNotNull(assertContext.getText("Expected predicate between right value can not be null"), expected);
         assertBetweenExpression(assertContext, actual.getBetweenExpression(), expected);
         assertAndExpression(assertContext, actual.getAndExpression(), expected);
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertBetweenExpression(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedPredicateBetweenRightValue expected) {
@@ -175,8 +184,8 @@ public final class WhereClauseAssert {
             ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getBetweenLiteralExpression());
         } else if (actual instanceof CommonExpressionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getBetweenCommonExpression());
-        } else if (actual instanceof SubquerySegment) {
-            ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) actual, expected.getBetweenSubquery());
+        } else if (actual instanceof SubqueryExpressionSegment) {
+            ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getBetweenSubquery());
         }
     }
     
@@ -187,8 +196,8 @@ public final class WhereClauseAssert {
             ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getAndLiteralExpression());
         } else if (actual instanceof CommonExpressionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getAndCommonExpression());
-        } else if (actual instanceof SubquerySegment) {
-            ExpressionAssert.assertSubquery(assertContext, (ComplexExpressionSegment) actual, expected.getAndSubquery());
+        } else if (actual instanceof SubqueryExpressionSegment) {
+            ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getAndSubquery());
         }
     }
 }

@@ -26,12 +26,12 @@ import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.junit.After;
@@ -98,7 +98,7 @@ public abstract class AbstractBaseExecutorTest {
         return shardingRule;
     }
 
-    protected SQLStatementContext getSQLStatementContext() {
+    protected final SQLStatementContext getSQLStatementContext() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table_x"));
@@ -106,10 +106,10 @@ public abstract class AbstractBaseExecutorTest {
         return sqlStatementContext;
     }
     
-    private ShardingSphereProperties getProperties() {
+    private ConfigurationProperties getProperties() {
         Properties props = new Properties();
-        props.setProperty(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
-        return new ShardingSphereProperties(props);
+        props.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
+        return new ConfigurationProperties(props);
     }
     
     @After

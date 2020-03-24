@@ -44,6 +44,6 @@ public final class ConfigKeyUtils {
      * @return config path
      */
     public static String key2Path(final String key) {
-        return new StringBuilder(PATH_SEPARATOR).append(key.replace(DOT_SEPARATOR, PATH_SEPARATOR)).toString();
+        return PATH_SEPARATOR + key.replace(DOT_SEPARATOR, PATH_SEPARATOR);
     }
 }

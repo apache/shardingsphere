@@ -136,7 +136,8 @@ Suppose ShardingSphere source codes downloaded from github is under `~/incubator
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
-git clone -b ${branch} https://github.com/apache/incubator-shardingsphere.git ~/incubator-shardingsphere
+## ${name} is the properly branch, e.g. master, dev-4.x
+git clone --branch ${name} https://github.com/apache/incubator-shardingsphere.git ~/incubator-shardingsphere
 cd ~/incubator-shardingsphere/
 git pull
 git checkout -b ${RELEASE.VERSION}-release
@@ -321,7 +322,7 @@ diff -r apache-shardingsphere-incubating-${RELEASE.VERSION}-src tag-${RELEASE.VE
 *   Correct year in `NOTICE` file
 *   There is only text files but no binary files
 *   All source files have ASF headers
-*   Codes can be compiled and pass the unit tests (mvn install)
+*   Codes can be compiled and pass the unit tests (./mvnw install)
 *   Check if there is any extra files or folders, empty folders for example
 
 #### Check binary packages

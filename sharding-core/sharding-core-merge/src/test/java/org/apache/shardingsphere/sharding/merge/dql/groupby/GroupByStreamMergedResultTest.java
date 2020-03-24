@@ -17,20 +17,26 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
-import org.apache.shardingsphere.sql.parser.core.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.core.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.Projection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.sql.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.junit.Test;
@@ -54,7 +60,7 @@ public final class GroupByStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), createSchemaMetaData());
         assertFalse(actual.next());
     }
     
@@ -78,21 +84,21 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(5, Object.class)).thenReturn(2, 2, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(20, 20, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createSchemaMetaData());
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(2));
-        assertThat((Date) actual.getCalendarValue(4, Date.class, Calendar.getInstance()), is(new Date(0L)));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(4)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(3, Object.class), is(2));
+        assertThat(actual.getCalendarValue(4, Date.class, Calendar.getInstance()), is(new Date(0L)));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(4)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(40)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(30)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(3));
-        assertThat((Date) actual.getCalendarValue(4, Date.class, Calendar.getInstance()), is(new Date(0L)));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(3)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(30)));
+        assertThat(actual.getValue(3, Object.class), is(3));
+        assertThat(actual.getCalendarValue(4, Date.class, Calendar.getInstance()), is(new Date(0L)));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(3)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(30)));
         assertFalse(actual.next());
     }
     
@@ -120,31 +126,31 @@ public final class GroupByStreamMergedResultTest {
         when(queryResult3.getValue(5, Object.class)).thenReturn(1, 1, 3);
         when(queryResult3.getValue(6, Object.class)).thenReturn(10, 10, 30);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypes.getActualDatabaseType("MySQL"));
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), null);
+        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), createSchemaMetaData());
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(10)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(10)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(1));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(1)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(10)));
+        assertThat(actual.getValue(3, Object.class), is(1));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(1)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(10)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(2));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(4)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(3, Object.class), is(2));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(4)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(40)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(60)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(60)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(3));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(6)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(60)));
+        assertThat(actual.getValue(3, Object.class), is(3));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(6)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(60)));
         assertTrue(actual.next());
-        assertThat((BigDecimal) actual.getValue(1, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
         assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat((Integer) actual.getValue(3, Object.class), is(4));
-        assertThat((BigDecimal) actual.getValue(5, Object.class), is(new BigDecimal(4)));
-        assertThat((BigDecimal) actual.getValue(6, Object.class), is(new BigDecimal(40)));
+        assertThat(actual.getValue(3, Object.class), is(4));
+        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(4)));
+        assertThat(actual.getValue(6, Object.class), is(new BigDecimal(40)));
         assertFalse(actual.next());
     }
     
@@ -159,11 +165,24 @@ public final class GroupByStreamMergedResultTest {
         AggregationProjection derivedAggregationProjection2 = new AggregationProjection(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationProjection2.setIndex(6);
         aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection2);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.<Projection>asList(aggregationProjection1, aggregationProjection2), Collections.<String>emptyList());
-        return new SelectStatementContext(new SelectStatement(),
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(aggregationProjection1, aggregationProjection2));
+        SelectStatement selectStatement = new SelectStatement();
+        SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
+        selectStatement.getTables().add(tableSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        selectStatement.setProjections(projectionsSegment);
+        return new SelectStatementContext(selectStatement,
                 new GroupByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), 0),
                 new OrderByContext(Collections.singletonList(new OrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC))), false),
                 projectionsContext, new PaginationContext(null, null, Collections.emptyList()));
+    }
+    
+    private SchemaMetaData createSchemaMetaData() {
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "dataType", false, false, false);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "dataType", false, false, false);
+        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", "dataType", false, false, false);
+        TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
+        return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
     }
     
     private QueryResult createQueryResult() throws SQLException {
@@ -175,6 +194,9 @@ public final class GroupByStreamMergedResultTest {
         when(result.getColumnLabel(4)).thenReturn("date");
         when(result.getColumnLabel(5)).thenReturn("AVG_DERIVED_COUNT_0");
         when(result.getColumnLabel(6)).thenReturn("AVG_DERIVED_SUM_0");
+        when(result.getColumnName(1)).thenReturn("col1");
+        when(result.getColumnName(2)).thenReturn("col2");
+        when(result.getColumnName(3)).thenReturn("col3");
         return result;
     }
 }

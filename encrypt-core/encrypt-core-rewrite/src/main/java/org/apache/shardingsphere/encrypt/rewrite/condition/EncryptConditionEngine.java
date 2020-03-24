@@ -21,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredicate;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBetweenRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
-import org.apache.shardingsphere.sql.parser.sql.statement.generic.WhereSegmentAvailable;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.Collection;
@@ -49,7 +49,7 @@ public final class EncryptConditionEngine {
     
     private final EncryptRule encryptRule;
     
-    private final RelationMetas relationMetas;
+    private final SchemaMetaData schemaMetaData;
     
     /**
      * Create encrypt conditions.
@@ -58,10 +58,10 @@ public final class EncryptConditionEngine {
      * @return encrypt conditions
      */
     public List<EncryptCondition> createEncryptConditions(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext.getSqlStatement() instanceof WhereSegmentAvailable)) {
+        if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();
         }
-        Optional<WhereSegment> whereSegment = ((WhereSegmentAvailable) sqlStatementContext.getSqlStatement()).getWhere();
+        Optional<WhereSegment> whereSegment = ((WhereAvailable) sqlStatementContext).getWhere();
         if (!whereSegment.isPresent()) {
             return Collections.emptyList();
         }
@@ -90,7 +90,7 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final SQLStatementContext sqlStatementContext, final PredicateSegment predicateSegment) {
-        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(predicateSegment, relationMetas);
+        Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(predicateSegment, schemaMetaData);
         return tableName.isPresent() && encryptRule.findEncryptor(tableName.get(), predicateSegment.getColumn().getIdentifier().getValue()).isPresent()
                 ? createEncryptCondition(predicateSegment, tableName.get()) : Optional.empty();
     }

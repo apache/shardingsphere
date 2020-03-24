@@ -18,7 +18,9 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_or_with_same_sharding_columns" parameters="1, 2">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -28,7 +30,7 @@
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -38,7 +40,7 @@
                     <column-left-value name="order_id" start-index="44" stop-index="51" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="55" stop-index="55" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -47,7 +49,9 @@
     </select>
     
     <select sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -57,7 +61,7 @@
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -67,7 +71,7 @@
                     <column-left-value name="user_id" start-index="44" stop-index="50" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="54" stop-index="54" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -76,7 +80,9 @@
     </select>
     
     <select sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -86,7 +92,7 @@
                     <column-left-value name="order_id" start-index="28" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -96,7 +102,7 @@
                     <column-left-value name="status" start-index="44" stop-index="49" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -105,7 +111,9 @@
     </select>
     
     <select sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -115,7 +123,7 @@
                     <column-left-value name="order_id" start-index="29" stop-index="36" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -123,7 +131,7 @@
                     <column-left-value name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="71" stop-index="71" />
                         <literal-expression value="3" />
                     </compare-right-value>
                 </predicate>
@@ -133,7 +141,7 @@
                     <column-left-value name="status" start-index="45" stop-index="50" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="54" stop-index="54" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -141,7 +149,7 @@
                     <column-left-value name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="71" stop-index="71" />
                         <literal-expression value="3" />
                     </compare-right-value>
                 </predicate>
@@ -150,7 +158,9 @@
     </select>
     
     <select sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
-        <table name="t_order" start-index="14" stop-index="20" />
+        <tables>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </tables>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -160,7 +170,7 @@
                     <column-left-value name="status" start-index="30" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -168,7 +178,7 @@
                     <column-left-value name="order_id" start-index="46" stop-index="53" literal-start-index="51" literal-stop-index="58" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="57" stop-index="57" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -176,7 +186,7 @@
                     <column-left-value name="user_id" start-index="83" stop-index="89" literal-start-index="88" literal-stop-index="94" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="3" />
+                        <parameter-marker-expression value="3" start-index="93" stop-index="93" />
                         <literal-expression value="3" />
                     </compare-right-value>
                 </predicate>
@@ -186,7 +196,7 @@
                     <column-left-value name="status" start-index="30" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -194,7 +204,7 @@
                     <column-left-value name="order_id" start-index="46" stop-index="53" literal-start-index="51" literal-stop-index="58" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="57" stop-index="57" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -202,7 +212,7 @@
                     <column-left-value name="user_id" start-index="99" stop-index="105" literal-start-index="104" literal-stop-index="110" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="4" start-index="109" stop-index="109" />
                         <literal-expression value="4" />
                     </compare-right-value>
                 </predicate>
@@ -212,7 +222,7 @@
                     <column-left-value name="status" start-index="30" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -220,7 +230,7 @@
                     <column-left-value name="order_id" start-index="63" stop-index="70" literal-start-index="68" literal-stop-index="75" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -228,7 +238,7 @@
                     <column-left-value name="user_id" start-index="83" stop-index="89" literal-start-index="88" literal-stop-index="94" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="3" />
+                        <parameter-marker-expression value="3" start-index="93" stop-index="93" />
                         <literal-expression value="3" />
                     </compare-right-value>
                 </predicate>
@@ -238,7 +248,7 @@
                     <column-left-value name="status" start-index="30" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -246,7 +256,7 @@
                     <column-left-value name="order_id" start-index="63" stop-index="70" literal-start-index="68" literal-stop-index="75" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -254,7 +264,7 @@
                     <column-left-value name="user_id" start-index="99" stop-index="105" literal-start-index="104" literal-stop-index="110" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="4" />
+                        <parameter-marker-expression value="4" start-index="109" stop-index="109" />
                         <literal-expression value="4" />
                     </compare-right-value>
                 </predicate>
@@ -263,8 +273,10 @@
     </select>
     
     <select sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
-        <table name="t_order" alias="o" start-index="16" stop-index="22" />
-        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -278,7 +290,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -288,7 +300,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="156" stop-index="156" />
                         <literal-expression value="3" />
                     </compare-right-value>
                 </predicate>
@@ -300,7 +312,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="137" stop-index="137" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -310,7 +322,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="156" stop-index="156" />
                         <literal-expression value="3" />
                     </compare-right-value>
                 </predicate>
@@ -319,9 +331,11 @@
     </select>
     
     <select sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
-        <table name="t_order" alias="o" start-index="16" stop-index="22" />
-        <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
+        <tables>
+            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
+            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+            <simple-table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
+        </tables>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -335,7 +349,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="0" />
+                        <parameter-marker-expression value="0" start-index="167" stop-index="167" />
                         <literal-expression value="1" />
                     </compare-right-value>
                 </predicate>
@@ -345,7 +359,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="204" stop-index="204" />
                         <literal-expression value="3" />
                     </compare-right-value>
                 </predicate>
@@ -355,7 +369,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="3" />
+                        <parameter-marker-expression value="3" start-index="221" stop-index="221" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>
@@ -367,7 +381,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" />
+                        <parameter-marker-expression value="1" start-index="185" stop-index="185" />
                         <literal-expression value="2" />
                     </compare-right-value>
                 </predicate>
@@ -377,7 +391,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="2" start-index="204" stop-index="204" />
                         <literal-expression value="3" />
                     </compare-right-value>
                 </predicate>
@@ -387,7 +401,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="3" />
+                        <parameter-marker-expression value="3" start-index="221" stop-index="221" />
                         <literal-expression value="init" />
                     </compare-right-value>
                 </predicate>

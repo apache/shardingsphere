@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.yaml.engine;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.apache.shardingsphere.core.yaml.constructor.YamlRootShardingConfigurationConstructor;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -29,7 +28,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -141,19 +139,19 @@ public final class YamlEngineShardingConfigurationTest {
     private void assertMasterSlaveRuleForDs0(final YamlRootShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(),
-                CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
+                is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
     private void assertMasterSlaveRuleForDs1(final YamlRootShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(),
-                CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
+                is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
     }
     
     private void assertProps(final YamlRootShardingConfiguration actual) {
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().get("sql.show"), is((Object) true));
+        assertThat(actual.getProps().get("sql.show"), is(true));
     }
 }

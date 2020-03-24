@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shadow.rewrite.judgement.impl;
 
 import org.apache.shardingsphere.api.config.shadow.ShadowRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.InsertColumnsSegment;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.AndPredica
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateCompareRightValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
@@ -50,14 +50,14 @@ import static org.mockito.Mockito.when;
 
 public final class SimpleJudgementEngineTest {
     
-    private RelationMetas relationMetas;
+    private SchemaMetaData schemaMetaData;
     
     private ShadowRule shadowRule;
     
     @Before
     public void setUp() {
-        relationMetas = mock(RelationMetas.class);
-        when(relationMetas.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
+        schemaMetaData = mock(SchemaMetaData.class);
+        when(schemaMetaData.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "shadow"));
         ShadowRuleConfiguration shadowRuleConfiguration = new ShadowRuleConfiguration();
         shadowRuleConfiguration.setColumn("shadow");
         shadowRule = new ShadowRule(shadowRuleConfiguration);
@@ -66,7 +66,7 @@ public final class SimpleJudgementEngineTest {
     @Test
     public void judgeForInsert() {
         InsertStatement insertStatement = new InsertStatement();
-        insertStatement.setTable(new TableSegment(0, 0, new IdentifierValue("tbl")));
+        insertStatement.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("tbl")));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, 
                 Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")), new ColumnSegment(0, 0, new IdentifierValue("shadow"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
@@ -78,7 +78,7 @@ public final class SimpleJudgementEngineTest {
                         add(new LiteralExpressionSegment(0, 0, "true"));
                     }
                 })));
-        InsertStatementContext insertStatementContext = new InsertStatementContext(relationMetas, Collections.emptyList(), insertStatement);
+        InsertStatementContext insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
         SimpleJudgementEngine simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, insertStatementContext);
         Assert.assertTrue("should be shadow", simpleJudgementEngine.isShadowSQL());
         insertStatement.getValues().clear();
@@ -90,7 +90,7 @@ public final class SimpleJudgementEngineTest {
                         add(new LiteralExpressionSegment(0, 0, "false"));
                     }
                 })));
-        insertStatementContext = new InsertStatementContext(relationMetas, Collections.emptyList(), insertStatement);
+        insertStatementContext = new InsertStatementContext(schemaMetaData, Collections.emptyList(), insertStatement);
         simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, insertStatementContext);
         Assert.assertFalse("should not be shadow", simpleJudgementEngine.isShadowSQL());
     }
@@ -108,7 +108,7 @@ public final class SimpleJudgementEngineTest {
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(Collections.singletonList(new ExpressionProjectionSegment(0, 0, "true")));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(relationMetas, "", Collections.emptyList(), selectStatement);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(schemaMetaData, "", Collections.emptyList(), selectStatement);
         SimpleJudgementEngine simpleJudgementEngine = new SimpleJudgementEngine(shadowRule, selectStatementContext);
         Assert.assertTrue("should be shadow", simpleJudgementEngine.isShadowSQL());
         andPredicate.getPredicates().clear();

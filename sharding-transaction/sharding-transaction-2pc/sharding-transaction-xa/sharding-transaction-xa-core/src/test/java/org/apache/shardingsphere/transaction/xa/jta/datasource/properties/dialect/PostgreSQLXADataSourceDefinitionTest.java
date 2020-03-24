@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -32,7 +30,7 @@ public final class PostgreSQLXADataSourceDefinitionTest {
     
     @Test
     public void assertGetXADriverClassName() {
-        assertThat(new PostgreSQLXADataSourceDefinition().getXADriverClassName(), CoreMatchers.<Collection<String>>is(Collections.singletonList("org.postgresql.xa.PGXADataSource")));
+        assertThat(new PostgreSQLXADataSourceDefinition().getXADriverClassName(), is(Collections.singletonList("org.postgresql.xa.PGXADataSource")));
     }
     
     @Test

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryRespo
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -47,7 +46,7 @@ public final class ShardingCTLShowBackendHandlerTest {
         assertThat(((QueryResponse) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         QueryData queryData = backendHandler.getQueryData();
-        assertThat(queryData.getData().iterator().next(), CoreMatchers.<Object>is("LOCAL"));
+        assertThat(queryData.getData().iterator().next(), is("LOCAL"));
     }
     
     @Test
@@ -59,7 +58,7 @@ public final class ShardingCTLShowBackendHandlerTest {
         assertThat(((QueryResponse) actual).getQueryHeaders().size(), is(1));
         backendHandler.next();
         QueryData queryData = backendHandler.getQueryData();
-        assertThat(queryData.getData().iterator().next(), CoreMatchers.<Object>is(0));
+        assertThat(queryData.getData().iterator().next(), is(0));
     }
     
     @Test

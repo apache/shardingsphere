@@ -19,9 +19,9 @@ package org.apache.shardingsphere.underlying.rewrite.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -40,7 +40,7 @@ import java.util.List;
 @Getter
 public final class SQLRewriteContext {
     
-    private final RelationMetas relationMetas;
+    private final SchemaMetaData schemaMetaData;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -48,15 +48,15 @@ public final class SQLRewriteContext {
     
     private final List<Object> parameters;
     
-    private final List<SQLToken> sqlTokens = new LinkedList<>();
-    
     private final ParameterBuilder parameterBuilder;
+    
+    private final List<SQLToken> sqlTokens = new LinkedList<>();
     
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
-    public SQLRewriteContext(final RelationMetas relationMetas, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
-        this.relationMetas = relationMetas;
+    public SQLRewriteContext(final SchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> parameters) {
+        this.schemaMetaData = schemaMetaData;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
@@ -78,6 +78,6 @@ public final class SQLRewriteContext {
      * Generate SQL tokens.
      */
     public void generateSQLTokens() {
-        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, relationMetas));
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(sqlStatementContext, parameters, schemaMetaData));
     }
 }

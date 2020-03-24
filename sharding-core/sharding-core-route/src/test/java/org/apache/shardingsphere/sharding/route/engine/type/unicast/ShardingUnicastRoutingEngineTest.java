@@ -65,7 +65,7 @@ public final class ShardingUnicastRoutingEngineTest {
 
     @Test
     public void assertRoutingForNoTable() {
-        ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.<String>emptyList());
+        ShardingUnicastRoutingEngine unicastRoutingEngine = new ShardingUnicastRoutingEngine(Collections.emptyList());
         RouteResult routeResult = unicastRoutingEngine.route(shardingRule);
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));

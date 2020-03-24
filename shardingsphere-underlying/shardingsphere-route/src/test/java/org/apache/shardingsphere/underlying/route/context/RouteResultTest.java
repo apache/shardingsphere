@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -64,9 +65,7 @@ public final class RouteResultTest {
     }
     
     private RouteUnit mockRouteUnit(final String datasourceName) {
-        RouteUnit result = new RouteUnit(datasourceName);
-        result.getTableUnits().add(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE));
-        return result;
+        return new RouteUnit(new RouteMapper(datasourceName, datasourceName), Collections.singletonList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
     }
     
     @Test
@@ -76,28 +75,15 @@ public final class RouteResultTest {
     }
     
     @Test
-    public void assertGetDataSourceNames() {
-        Collection<String> actual = singleRouteResult.getDataSourceNames();
+    public void assertGetActualDataSourceNames() {
+        Collection<String> actual = singleRouteResult.getActualDataSourceNames();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(DATASOURCE_NAME_0));
-        actual = multiRouteResult.getDataSourceNames();
+        actual = multiRouteResult.getActualDataSourceNames();
         assertThat(actual.size(), is(2));
         Iterator<String> iterator = actual.iterator();
         assertThat(iterator.next(), is(DATASOURCE_NAME_0));
         assertThat(iterator.next(), is(DATASOURCE_NAME_1));
-    }
-    
-    @Test
-    public void assertGetTableUnit() {
-        Optional<TableUnit> actual = multiRouteResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(new TableUnit(LOGIC_TABLE, ACTUAL_TABLE)));
-    }
-    
-    @Test
-    public void assertGetTableUnitNonExist() {
-        Optional<TableUnit> actual = singleRouteResult.getTableUnit(DATASOURCE_NAME_1, ACTUAL_TABLE);
-        assertFalse(actual.isPresent());
     }
     
     @Test
@@ -118,5 +104,17 @@ public final class RouteResultTest {
         assertThat(actual.get(DATASOURCE_NAME_0).iterator().next(), is(LOGIC_TABLE));
         assertThat(actual.get(DATASOURCE_NAME_1).size(), is(1));
         assertThat(actual.get(DATASOURCE_NAME_1).iterator().next(), is(LOGIC_TABLE));
+    }
+    
+    @Test
+    public void assertFindTableMapper() {
+        Optional<RouteMapper> actual = multiRouteResult.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
+    }
+    
+    @Test
+    public void assertTableMapperNotFound() {
+        assertFalse(singleRouteResult.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE).isPresent());
     }
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.frontend.mysql.command.query.text.query;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;

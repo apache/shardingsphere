@@ -41,7 +41,6 @@
         <project.build.locale>zh_CN</project.build.locale>
         
         <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
-        <shardingsphere.spi.impl.version>5.0.0-RC1-SNAPSHOT</shardingsphere.spi.impl.version>
         
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <spring-framework.version>4.3.20.RELEASE</spring-framework.version>
@@ -140,9 +139,9 @@
                 <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-orchestration-reg-etcd</artifactId>
-                <version>${shardingsphere.spi.impl.version}</version>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-orchestration-center-etcd</artifactId>
+                <version>${shardingsphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>

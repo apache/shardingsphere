@@ -22,9 +22,10 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;
@@ -46,9 +47,9 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private List<?> currentGroupByValues;
     
-    public GroupByStreamMergedResult(
-            final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext) throws SQLException {
-        super(queryResults, selectStatementContext.getOrderByContext().getItems());
+    public GroupByStreamMergedResult(final Map<String, Integer> labelAndIndexMap, final List<QueryResult> queryResults,
+                                     final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
+        super(queryResults, selectStatementContext, schemaMetaData);
         this.selectStatementContext = selectStatementContext;
         currentRow = new ArrayList<>(labelAndIndexMap.size());
         currentGroupByValues = getOrderByValuesQueue().isEmpty()
