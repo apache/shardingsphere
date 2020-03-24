@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingK
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.junit.Test;
 
 import java.util.Arrays;

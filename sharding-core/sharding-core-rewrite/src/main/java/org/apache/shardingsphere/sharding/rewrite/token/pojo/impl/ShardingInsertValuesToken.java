@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
 
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValue;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValuesToken;
