@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
+import org.apache.shardingsphere.sharding.rewrite.aware.RouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValue;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingInsertValuesToken;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,9 +40,9 @@ import java.util.List;
  * Insert values token generator for sharding.
  */
 @Setter
-public final class ShardingInsertValuesTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, ShardingRouteContextAware {
+public final class ShardingInsertValuesTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, RouteContextAware {
     
-    private ShardingRouteContext shardingRouteContext;
+    private RouteContext routeContext;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -53,8 +53,8 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
     public InsertValuesToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Collection<InsertValuesSegment> insertValuesSegments = (insertStatementContext.getSqlStatement()).getValues();
         InsertValuesToken result = new ShardingInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        Iterator<Collection<DataNode>> originalDataNodesIterator = null == shardingRouteContext || shardingRouteContext.getRouteResult().getOriginalDataNodes().isEmpty()
-                ? null : shardingRouteContext.getRouteResult().getOriginalDataNodes().iterator();
+        Iterator<Collection<DataNode>> originalDataNodesIterator = null == routeContext || routeContext.getRouteResult().getOriginalDataNodes().isEmpty()
+                ? null : routeContext.getRouteResult().getOriginalDataNodes().iterator();
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
             Collection<DataNode> dataNodes = null == originalDataNodesIterator ? Collections.emptyList() : originalDataNodesIterator.next();

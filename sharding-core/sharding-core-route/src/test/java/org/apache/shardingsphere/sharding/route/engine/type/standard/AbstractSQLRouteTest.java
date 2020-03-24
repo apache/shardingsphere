@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
@@ -53,7 +52,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         RouteContext routeContext = new DataNodeRouter(metaData, properties, sqlParserEngine).route(sql, parameters, false);
         ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
-        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
+        RouteContext result = shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
         return result;
     }

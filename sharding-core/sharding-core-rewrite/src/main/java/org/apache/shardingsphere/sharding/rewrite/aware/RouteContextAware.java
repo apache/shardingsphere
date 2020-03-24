@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.sharding.rewrite.aware;
 
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
- * Sharding route context aware.
+ * Route context aware.
  */
-public interface ShardingRouteContextAware {
+public interface RouteContextAware {
     
     /**
-     * Set sharding route context.
+     * Set route context.
      * 
-     * @param shardingRouteContext sharding route context
+     * @param routeContext route context
      */
-    void setShardingRouteContext(ShardingRouteContext shardingRouteContext);
+    void setRouteContext(RouteContext routeContext);
 }
