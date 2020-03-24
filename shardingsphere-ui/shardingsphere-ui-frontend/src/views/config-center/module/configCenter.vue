@@ -222,7 +222,7 @@ export default {
       this.tableData = data.splice(val - 1, this.pageSize)
     },
     getRegCenter() {
-      API.getRegCenter().then(res => {
+      API.getConfigCenter().then(res => {
         const data = res.model
         this.total = data.length
         this.cloneTableData = clone(res.model)
@@ -231,7 +231,7 @@ export default {
       this.getRegCenterActivated()
     },
     getRegCenterActivated() {
-      API.getRegCenterActivated().then(res => {
+      API.getConfigCenterActivated().then(res => {
         this.setRegCenterActivated(res.model.name)
       })
     },
@@ -246,7 +246,7 @@ export default {
         const params = {
           name: row.name
         }
-        API.postRegCenterConnect(params).then(res => {
+        API.postConfigCenterConnect(params).then(res => {
           this.$notify({
             title: this.$t('common').notify.title,
             message: this.$t('common').notify.conSucMessage,
@@ -260,7 +260,7 @@ export default {
       const params = {
         name: row.name
       }
-      API.deleteRegCenter(params).then(res => {
+      API.deleteConfigCenter(params).then(res => {
         this.$notify({
           title: this.$t('common').notify.title,
           message: this.$t('common').notify.delSucMessage,
@@ -281,7 +281,7 @@ export default {
             instanceType: this.form.centerType,
             serverLists: this.form.address
           }
-          API.postRegCenter(params).then(res => {
+          API.postConfigCenter(params).then(res => {
             this.regustDialogVisible = false
             this.$notify({
               title: this.$t('common').notify.title,

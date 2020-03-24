@@ -18,9 +18,9 @@
 import API from '@/utils/api'
 
 export default {
-  getRegCenter: (params = {}) => API.get(`/api/config-center`, params),
-  deleteRegCenter: (params = {}) => API.delete(`/api/config-center`, params),
-  postRegCenter: (params = {}) => API.post(`/api/config-center`, params),
-  getRegCenterActivated: (params = {}) => API.get(`/api/config-center/activated`, params),
-  postRegCenterConnect: (params = {}) => API.post(`/api/config-center/connect`, params)
+  getConfigCenter: (params = {}) => API.get(`/api/config-center`, params),
+  deleteConfigCenter: (params = {}) => API.delete(`/api/config-center`, params),
+  postConfigCenter: (params = {}) => API.post(`/api/config-center`, params),
+  getConfigCenterActivated: (params = {}) => API.get(`/api/config-center/activated`, params),
+  postConfigCenterConnect: (params = {}) => API.post(`/api/config-center/connect`, params)
 }
