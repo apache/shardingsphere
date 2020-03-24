@@ -24,12 +24,12 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDa
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import java.io.File;
 import java.io.IOException;
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.File;
+import javax.sql.DataSource;
 
 public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
@@ -47,7 +47,7 @@ public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends Abstra
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap,getFile(CONFIG_MASTER_SLAVE) );
+        masterSlaveDataSource = (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, getFile(CONFIG_MASTER_SLAVE));
     }
     
     protected final MasterSlaveDataSource getMasterSlaveDataSource() {

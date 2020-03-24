@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import java.io.IOException;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
@@ -32,15 +31,15 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import javax.sql.DataSource;
-import java.io.InputStreamReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
+import javax.sql.DataSource;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
@@ -57,10 +56,10 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         if (null != encryptDataSource && null != encryptDataSourceWithProps) {
             return;
         }
-        File encryptFile =  getFile(ENCRYPT_CONFIG_FILE);
+        File encryptFile = getFile(ENCRYPT_CONFIG_FILE);
         DataSource dataSource = getDataSources().values().iterator().next();
-        encryptDataSource = (EncryptDataSource)createDataSourceWithEmptyProps(dataSource, encryptFile);
-        encryptDataSourceWithProps = (EncryptDataSource)YamlEncryptDataSourceFactory.createDataSource(dataSource, getFile(ENCRYPT_CONFIG_FILE));
+        encryptDataSource = (EncryptDataSource) createDataSourceWithEmptyProps(dataSource, encryptFile);
+        encryptDataSourceWithProps = (EncryptDataSource) YamlEncryptDataSourceFactory.createDataSource(dataSource, getFile(ENCRYPT_CONFIG_FILE));
     }
     
     private static Map<String, DataSource> getDataSources() {
