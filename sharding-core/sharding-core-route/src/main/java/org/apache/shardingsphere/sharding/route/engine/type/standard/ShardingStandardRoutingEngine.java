@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
@@ -61,7 +61,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private final SQLStatementContext sqlStatementContext;
     
     private final ShardingConditions shardingConditions;
-
+    
     private final ConfigurationProperties properties;
     
     @Override

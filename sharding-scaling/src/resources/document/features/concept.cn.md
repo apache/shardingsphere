@@ -11,7 +11,7 @@ weight = 1
 
 ## 数据节点
 
-同数据分片中的[数据节点](https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/sql/)
+同数据分片中的[数据节点](/cn/features/sharding/concept/sql/)
 
 ## 存量数据
 
