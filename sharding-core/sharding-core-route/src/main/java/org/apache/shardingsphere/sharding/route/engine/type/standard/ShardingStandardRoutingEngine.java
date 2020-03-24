@@ -61,7 +61,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private final SQLStatementContext sqlStatementContext;
     
     private final ShardingConditions shardingConditions;
-
+    
     private final ConfigurationProperties properties;
     
     @Override
