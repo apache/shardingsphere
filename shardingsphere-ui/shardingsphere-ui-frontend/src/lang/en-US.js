@@ -20,44 +20,34 @@ export default {
     home: 'Home',
     menuData: [
       {
-        title: 'Data governance',
+        title: 'Config Center',
         child: [
           {
-            title: 'Config Center',
-            child: [
-              {
-                title: 'Config Server',
-                href: '/config-center'
-              },
-              {
-                title: 'Rule Config',
-                href: '/rule-config'
-              }
-            ]
+            title: 'Config Server',
+            href: '/config-center'
           },
           {
-            title: 'Registry Center',
-            child: [
-              {
-                title: 'Registry Server',
-                href: '/registry-center'
-              },
-              {
-                title: 'Runtime Status',
-                href: '/runtime-status'
-              }
-            ]
+            title: 'Rule Config',
+            href: '/rule-config'
           }
         ]
       },
       {
-        title: 'Data move',
+        title: 'Registry Center',
         child: [
           {
-            title: 'Data scaling',
-            href: '/data-scaling'
+            title: 'Registry Server',
+            href: '/registry-center'
+          },
+          {
+            title: 'Runtime Status',
+            href: '/runtime-status'
           }
         ]
+      },
+      {
+        title: 'Data scaling',
+        href: '/data-scaling'
       }
     ],
     connected: 'Connected',

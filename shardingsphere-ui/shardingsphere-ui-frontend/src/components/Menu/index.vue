@@ -28,26 +28,20 @@
       @close="handleClose"
     >
       <s-logo/>
-      <el-submenu v-for="(item, index) in menuData" :key="String(index)" :index="String(index)">
-        <template slot="title">
-          <i class="icon-sidebar"/>
-          <span slot="title">{{ item.title }}</span>
-        </template>
-        <template v-for="(itemChild, idx) in item.child">
-          <el-submenu v-if="itemChild.child && itemChild.child.length" :index="idx" :key="idx">
-            <template slot="title">
-              <i class="icon-sidebar"/>
-              <span slot="title">{{ itemChild.title }}</span>
-            </template>
-            <a v-for="(itemChild_child, idx_child) in itemChild.child" :href="'#' + itemChild_child.href" :key="idx_child">
-              <el-menu-item :index="itemChild_child.href">{{ itemChild_child.title }}</el-menu-item>
-            </a>
-          </el-submenu>
-          <a v-else :href="'#' + itemChild.href" :key="idx">
-            <el-menu-item :index="itemChild.href">{{itemChild.title}}</el-menu-item>
+      <template v-for="(item, index) in menuData">
+        <el-submenu v-if="item.child && item.child.length" :index="String(index)" :key="String(index)">
+          <template slot="title">
+            <i class="icon-sidebar"/>
+            <span slot="title">{{ item.title }}</span>
+          </template>
+          <a v-for="(itm, idx) in item.child" :href="'#' + itm.href" :key="String(idx)">
+            <el-menu-item :index="itm.href">{{ itm.title }}</el-menu-item>
           </a>
-        </template>
-      </el-submenu>
+        </el-submenu>
+        <a v-else :href="'#' + item.href" :key="String(index)">
+          <el-menu-item :index="item.href">{{ item.title }}</el-menu-item>
+        </a>
+      </template>
     </el-menu>
   </div>
 </template>

@@ -20,44 +20,34 @@ export default {
     home: '主页',
     menuData: [
       {
-        title: '数据治理',
+        title: '配置中心',
         child: [
           {
-            title: '配置中心',
-            child: [
-              {
-                title: '服务列表',
-                href: '/config-center'
-              },
-              {
-                title: '配置管理',
-                href: '/rule-config'
-              }
-            ]
+            title: '服务列表',
+            href: '/config-center'
           },
           {
-            title: '注册中心',
-            child: [
-              {
-                title: '服务列表',
-                href: '/registry-center'
-              },
-              {
-                title: '运行状态',
-                href: '/runtime-status'
-              }
-            ]
+            title: '配置管理',
+            href: '/rule-config'
           }
         ]
       },
       {
-        title: '数据迁移',
+        title: '注册中心',
         child: [
           {
-            title: '数据扩容',
-            href: '/data-scaling'
+            title: '服务列表',
+            href: '/registry-center'
+          },
+          {
+            title: '运行状态',
+            href: '/runtime-status'
           }
         ]
+      },
+      {
+        title: '数据扩容',
+        href: '/data-scaling'
       }
     ],
     connect: '已连接',
