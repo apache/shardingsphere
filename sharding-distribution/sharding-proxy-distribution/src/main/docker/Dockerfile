@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM java:7
+FROM java:8
 MAINTAINER ShardingSphere "dev@shardingsphere.incubator.apache.org"
 
 ENV CURRENT_VERSION 5.0.0-RC1
