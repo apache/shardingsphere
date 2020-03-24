@@ -50,7 +50,7 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
-    private static final String ENCRYPT_CONFIG_FILE = "encrypt_config.yaml";
+    private static final String ENCRYPT_CONFIG_FILE = "encrypt-config.yaml";
     
     @BeforeClass
     public static void initEncryptDataSource() throws SQLException, IOException {
