@@ -33,7 +33,7 @@ public enum ApolloPropertyKey implements TypedPropertyKey {
     /**
      * Apollo config client app id param.
      */
-    APP_ID("appId", "APOLLO_SHARDING_SPHERE", String.class),
+    APP_ID("appId", "APOLLO_SHARDINGSPHERE", String.class),
     
     /**
      * Apollo system environment param.

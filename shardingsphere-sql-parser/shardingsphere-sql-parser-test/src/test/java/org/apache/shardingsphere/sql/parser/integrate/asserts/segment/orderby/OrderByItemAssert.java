@@ -105,14 +105,12 @@ public final class OrderByItemAssert {
     private static void assertIndexOrderByItem(final SQLCaseAssertContext assertContext,
                                                final IndexOrderByItemSegment actual, final ExpectedIndexOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item index assertion error: ", type)), actual.getColumnIndex(), is(expected.getIndex()));
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertExpressionOrderByItem(final SQLCaseAssertContext assertContext,
                                                     final ExpressionOrderByItemSegment actual, final ExpectedExpressionOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item expression assertion error: ", type)), actual.getExpression(), is(expected.getExpression()));
-        // TODO assert start index and stop index
-        //        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

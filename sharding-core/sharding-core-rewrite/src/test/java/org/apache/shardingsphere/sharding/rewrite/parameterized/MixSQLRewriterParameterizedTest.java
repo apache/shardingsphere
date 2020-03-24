@@ -25,14 +25,14 @@ import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYaml
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouter;
+import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
@@ -42,6 +42,8 @@ import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -54,7 +56,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,9 +78,11 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         YamlRootShardingConfiguration ruleConfiguration = createRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(ruleConfiguration.getShardingRule()), ruleConfiguration.getDataSources().keySet());
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType());
-        ShardingRouter shardingRouter = new ShardingRouter(shardingRule, new ConfigurationProperties(new Properties()), createShardingSphereMetaData(), sqlParserEngine);
-        ShardingRouteContext shardingRouteContext = shardingRouter.route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
+        ShardingSphereMetaData metaData = createShardingSphereMetaData();
         ConfigurationProperties properties = new ConfigurationProperties(ruleConfiguration.getProps());
+        RouteContext routeContext = new DataNodeRouter(metaData, properties, sqlParserEngine).route(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), false);
+        ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
+        ShardingRouteContext shardingRouteContext = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(
                 mock(SchemaMetaData.class), shardingRouteContext.getSqlStatementContext(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         new ShardingSQLRewriteContextDecorator(shardingRouteContext).decorate(shardingRule, properties, sqlRewriteContext);
@@ -106,9 +109,11 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         Map<String, IndexMetaData> indexMetaDataMap = new HashMap<>(1, 1);
         indexMetaDataMap.put("index_name", new IndexMetaData("index_name"));
         when(accountTableMetaData.getIndexes()).thenReturn(indexMetaDataMap);
+        when(schemaMetaData.containsTable("t_account")).thenReturn(true);
         when(schemaMetaData.get("t_account")).thenReturn(accountTableMetaData);
         TableMetaData accountBakTableMetaData = mock(TableMetaData.class);
         when(accountBakTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
+        when(schemaMetaData.containsTable("t_account_bak")).thenReturn(true);
         when(schemaMetaData.get("t_account_bak")).thenReturn(accountBakTableMetaData);
         when(schemaMetaData.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
         when(schemaMetaData.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
@@ -118,7 +123,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>();
-        result.put("account_id", mock(ColumnMetaData.class));
+        result.put("account_id", new ColumnMetaData("account_id", "INT", true, true, false));
         result.put("password", mock(ColumnMetaData.class));
         result.put("amount", mock(ColumnMetaData.class));
         result.put("status", mock(ColumnMetaData.class));

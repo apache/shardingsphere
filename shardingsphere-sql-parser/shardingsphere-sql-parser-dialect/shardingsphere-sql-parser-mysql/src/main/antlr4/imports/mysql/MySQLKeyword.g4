@@ -219,6 +219,10 @@ UNSIGNED
     : U N S I G N E D
     ;
 
+SIGNED
+    : S I G N E D
+    ;
+
 UPGRADE
     : U P G R A D E
     ;

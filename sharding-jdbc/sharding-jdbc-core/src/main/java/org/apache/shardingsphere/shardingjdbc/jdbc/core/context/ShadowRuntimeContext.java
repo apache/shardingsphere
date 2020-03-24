@@ -66,7 +66,7 @@ public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<S
     
     @Override
     protected SchemaMetaData loadSchemaMetaData(final DataSource dataSource) throws SQLException {
-        return SchemaMetaDataLoader.load(dataSource, getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+        return SchemaMetaDataLoader.load(dataSource, getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), getDatabaseType().getName());
     }
     
     public enum ShadowType {

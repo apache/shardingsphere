@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source converter.
@@ -39,11 +40,7 @@ public final class DataSourceConverter {
      * @return data source map
      */
     public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
-        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().createDataSource());
-        }
-        return result;
+        return dataSourceConfigurationMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().createDataSource(), (key, repeatKey) -> key, LinkedHashMap::new));
     }
     
     /**
@@ -53,10 +50,7 @@ public final class DataSourceConverter {
      * @return data source configuration map
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()));
-        }
-        return result;
+        return dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry ->
+                DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()), (key, repeatKey) -> key, LinkedHashMap::new));
     }
 }

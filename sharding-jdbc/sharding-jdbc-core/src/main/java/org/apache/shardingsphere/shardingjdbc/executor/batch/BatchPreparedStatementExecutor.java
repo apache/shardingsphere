@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.executor.batch;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.shardingjdbc.executor.AbstractStatementExecutor
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
@@ -99,11 +99,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     /**
      * Add batch for route units.
      *
-     * @param shardingExecutionContext sharding execution context
+     * @param executionContext execution context
      */
-    public void addBatchForRouteUnits(final ShardingExecutionContext shardingExecutionContext) {
-        handleOldBatchRouteUnits(createBatchRouteUnits(shardingExecutionContext.getExecutionUnits()));
-        handleNewBatchRouteUnits(createBatchRouteUnits(shardingExecutionContext.getExecutionUnits()));
+    public void addBatchForRouteUnits(final ExecutionContext executionContext) {
+        handleOldBatchRouteUnits(createBatchRouteUnits(executionContext.getExecutionUnits()));
+        handleNewBatchRouteUnits(createBatchRouteUnits(executionContext.getExecutionUnits()));
         batchCount++;
     }
     

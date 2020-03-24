@@ -36,4 +36,8 @@ public class ColumnMetaData {
     private final String dataType;
     
     private final boolean primaryKey;
+    
+    private final boolean generated;
+    
+    private final boolean caseSensitive;
 }

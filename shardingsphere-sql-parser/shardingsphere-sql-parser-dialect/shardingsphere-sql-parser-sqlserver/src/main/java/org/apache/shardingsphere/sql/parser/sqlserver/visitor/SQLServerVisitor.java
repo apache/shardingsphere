@@ -23,6 +23,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BitValueLiteralsContext;
@@ -83,6 +85,8 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.Pred
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateLeftBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateRightValue;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeLengthSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
@@ -100,6 +104,7 @@ import org.apache.shardingsphere.sql.parser.sql.value.parametermarker.ParameterM
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * SQLServer visitor.
@@ -494,5 +499,34 @@ public abstract class SQLServerVisitor extends SQLServerStatementBaseVisitor<AST
                     SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
         }
         return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), ctx.expr().getText(), orderDirection);
+    }
+    
+    @Override
+    public final ASTNode visitDataType(final DataTypeContext ctx) {
+        DataTypeSegment dataTypeSegment = new DataTypeSegment();
+        dataTypeSegment.setDataTypeName(((KeywordValue) visit(ctx.dataTypeName())).getValue());
+        dataTypeSegment.setStartIndex(ctx.start.getStartIndex());
+        dataTypeSegment.setStopIndex(ctx.stop.getStopIndex());
+        if (null != ctx.dataTypeLength()) {
+            DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.dataTypeLength());
+            dataTypeSegment.setDataLength(dataTypeLengthSegment);
+        }
+        return dataTypeSegment;
+    }
+    
+    @Override
+    public final ASTNode visitDataTypeLength(final DataTypeLengthContext ctx) {
+        DataTypeLengthSegment dataTypeLengthSegment = new DataTypeLengthSegment();
+        dataTypeLengthSegment.setStartIndex(ctx.start.getStartIndex());
+        dataTypeLengthSegment.setStopIndex(ctx.stop.getStartIndex());
+        List<TerminalNode> numbers = ctx.NUMBER_();
+        if (numbers.size() == 1) {
+            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+        }
+        if (numbers.size() == 2) {
+            dataTypeLengthSegment.setPrecision(Integer.parseInt(numbers.get(0).getText()));
+            dataTypeLengthSegment.setScale(Integer.parseInt(numbers.get(1).getText()));
+        }
+        return dataTypeLengthSegment;
     }
 }
