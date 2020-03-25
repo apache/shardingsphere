@@ -38,3 +38,4 @@ public final class EtcdPropertiesTest {
         assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
     }
 }
+                                                                                                           
