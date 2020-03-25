@@ -137,7 +137,9 @@ public abstract class BaseShardingEngine {
     }
     
     private void registerRewriteDecorator(final RouteContext routeContext) {
-        sqlRewriteEntry.registerDecorator(shardingRule, new ShardingSQLRewriteContextDecorator(routeContext));
+        ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();
+        shardingSQLRewriteContextDecorator.setRouteContext(routeContext);
+        sqlRewriteEntry.registerDecorator(shardingRule, shardingSQLRewriteContextDecorator);
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             sqlRewriteEntry.registerDecorator(shardingRule.getEncryptRule(), new EncryptSQLRewriteContextDecorator());
         }
