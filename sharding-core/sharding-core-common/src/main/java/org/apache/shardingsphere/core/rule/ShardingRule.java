@@ -111,11 +111,11 @@ public class ShardingRule implements BaseRule {
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
         ShardingKeyGeneratorServiceLoader serviceLoader = new ShardingKeyGeneratorServiceLoader();
         return containsKeyGeneratorConfiguration(keyGeneratorConfiguration)
-                ? serviceLoader.newService(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProperties()) : serviceLoader.newService();
+                ? keyGeneratorConfiguration.getKeyGenerator() : serviceLoader.newService();
     }
     
     private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        return null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getType());
+        return null != keyGeneratorConfiguration && null != keyGeneratorConfiguration.getKeyGenerator();
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {

@@ -17,20 +17,22 @@
 
 package org.apache.shardingsphere.core.yaml.swapper;
 
-import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
-import org.junit.Test;
-
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
+import java.util.Properties;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.junit.Test;
 
 public final class KeyGeneratorConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("UUID", "id", new Properties()));
+        ShardingKeyGenerator keyGenerator = new ShardingKeyGeneratorServiceLoader().newService("UUID", new Properties());
+        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("id", keyGenerator));
         assertThat(actual.getType(), is("UUID"));
         assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getProps(), is(new Properties()));
@@ -42,8 +44,8 @@ public final class KeyGeneratorConfigurationYamlSwapperTest {
         yamlConfiguration.setType("UUID");
         yamlConfiguration.setColumn("id");
         KeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration);
-        assertThat(actual.getType(), is("UUID"));
+        assertThat(actual.getKeyGenerator().getType(), is("UUID"));
         assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getProperties(), is(new Properties()));
+        assertThat(actual.getKeyGenerator().getProperties(), is(new Properties()));
     }
 }

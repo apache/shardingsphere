@@ -20,27 +20,21 @@ package org.apache.shardingsphere.api.config.sharding;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.config.TypeBasedSPIConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 /**
  * Key generator configuration.
 */
 @Getter
-public final class KeyGeneratorConfiguration extends TypeBasedSPIConfiguration {
-    
+public final class KeyGeneratorConfiguration {
+
     private final String column;
-    
-    public KeyGeneratorConfiguration(final String type, final String column) {
-        super(type);
+
+    private final ShardingKeyGenerator keyGenerator;
+
+    public KeyGeneratorConfiguration(final String column, final ShardingKeyGenerator keyGenerator) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
         this.column = column;
-    }
-    
-    public KeyGeneratorConfiguration(final String type, final String column, final Properties properties) {
-        super(type, properties);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
-        this.column = column;
+        this.keyGenerator = keyGenerator;
     }
 }
