@@ -14,7 +14,7 @@
 #  * See the License for the specific language governing permissions and
 #  * limitations under the License.
 #  */
-#  This Test configuration of encrypt rule used in AbstractEncryptJDBCDatabaseAndTableTest.java
+
 encryptRule:
   encryptors:
     test:
@@ -44,6 +44,7 @@ encryptRule:
           plainColumn: plain_pwd2
           cipherColumn: cipher_pwd2
           encryptor: test
+
 props:
   sql.show: true
   query.with.cipher.column: false

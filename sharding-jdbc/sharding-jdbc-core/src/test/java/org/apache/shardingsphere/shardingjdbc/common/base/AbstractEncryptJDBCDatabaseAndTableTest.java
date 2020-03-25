@@ -31,6 +31,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,7 +40,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javax.sql.DataSource;
 
 public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
@@ -59,19 +59,26 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         File encryptFile = getFile(ENCRYPT_CONFIG_FILE);
         DataSource dataSource = getDataSources().values().iterator().next();
         encryptDataSource = (EncryptDataSource) createDataSourceWithEmptyProps(dataSource, encryptFile);
-        encryptDataSourceWithProps = (EncryptDataSource) YamlEncryptDataSourceFactory.createDataSource(dataSource, getFile(ENCRYPT_CONFIG_FILE));
+        encryptDataSourceWithProps = (EncryptDataSource) YamlEncryptDataSourceFactory.createDataSource(dataSource, encryptFile);
+    }
+    
+    private static File getFile(final String fileName) {
+        return new File(Preconditions.checkNotNull(AbstractEncryptJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     private static Map<String, DataSource> getDataSources() {
         return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
     }
     
+    private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
+        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
+        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), new Properties());
+    }
+    
     @Before
     public void initTable() {
-        try {
-            EncryptConnection conn = encryptDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql")));
-            conn.close();
+        try (EncryptConnection connection = encryptDataSource.getConnection()) {
+            RunScript.execute(connection, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql")));
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }
@@ -85,22 +92,17 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
         return encryptDataSourceWithProps.getConnection();
     }
     
-    private static File getFile(final String fileName) {
-        return new File(Preconditions.checkNotNull(AbstractEncryptJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName),
-            "file resource must not be null : " + fileName).getFile());
-    }
-    
-    private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
-        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
-        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), new Properties());
-    }
-    
     @AfterClass
     public static void close() throws Exception {
-        if (encryptDataSource == null) {
+        if (null == encryptDataSource) {
             return;
         }
         encryptDataSource.close();
         encryptDataSource = null;
+        if (null == encryptDataSourceWithProps) {
+            return;
+        }
+        encryptDataSourceWithProps.close();
+        encryptDataSourceWithProps = null;
     }
 }

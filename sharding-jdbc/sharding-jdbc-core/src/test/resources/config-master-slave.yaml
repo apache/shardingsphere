@@ -13,11 +13,11 @@
 #  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  * See the License for the specific language governing permissions and
 #  * limitations under the License.
-#  */  
+#  */
+
 masterSlaveRule:
   name: test_ds
   masterDataSourceName: test_ds_master
   slaveDataSourceNames:
     - test_ds_slave
   loadBalanceAlgorithmType: ROUND_ROBIN
-     

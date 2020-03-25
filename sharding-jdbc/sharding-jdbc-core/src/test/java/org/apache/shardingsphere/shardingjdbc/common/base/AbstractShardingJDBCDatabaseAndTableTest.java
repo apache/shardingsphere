@@ -49,12 +49,15 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
         if (null != shardingDataSource) {
             return;
         }
-        Map<String, DataSource> dataSources = getDataSources();
-        shardingDataSource = (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(dataSources, getFile(CONFIG_SHARDING));
+        shardingDataSource = (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_SHARDING));
     }
     
     private static Map<String, DataSource> getDataSources() {
         return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
+    }
+    
+    private static File getFile(final String fileName) {
+        return new File(Preconditions.checkNotNull(AbstractShardingJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     @Before
@@ -70,11 +73,6 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     
     protected final ShardingDataSource getShardingDataSource() {
         return shardingDataSource;
-    }
-    
-    private static File getFile(final String fileName) {
-        return new File(Preconditions.checkNotNull(AbstractShardingJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName),
-            "file resource must not be null : " + fileName).getFile());
     }
     
     @AfterClass

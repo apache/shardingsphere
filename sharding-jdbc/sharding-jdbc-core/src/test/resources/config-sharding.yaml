@@ -14,7 +14,7 @@
 #  * See the License for the specific language governing permissions and
 #  * limitations under the License.
 #  */
-#  This Test configuration of shardingRule rule used in AbstractShardingJDBCDatabaseAndTableTest.java
+
 shardingRule:
   tables:
     t_order:

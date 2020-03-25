@@ -24,17 +24,17 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDa
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.sql.DataSource;
 
 public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
     private static MasterSlaveDataSource masterSlaveDataSource;
-
+    
     private static final String CONFIG_MASTER_SLAVE = "config-master-slave.yaml";
     
     @BeforeClass
@@ -50,13 +50,13 @@ public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends Abstra
         masterSlaveDataSource = (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, getFile(CONFIG_MASTER_SLAVE));
     }
     
+    private static File getFile(final String fileName) {
+        return new File(Preconditions.checkNotNull(
+                AbstractMasterSlaveJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+    }
+    
     protected final MasterSlaveDataSource getMasterSlaveDataSource() {
         return masterSlaveDataSource;
-    }
-
-    private static File getFile(final String fileName) {
-        return new File(Preconditions.checkNotNull(AbstractMasterSlaveJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName),
-            "file resource must not be null : " + fileName).getFile());
     }
     
     @AfterClass
