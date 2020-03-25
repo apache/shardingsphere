@@ -8,7 +8,7 @@ The following figure may clearly express this component's role:
 
 Supplementary instruction about the figure:
 
-1. Support to migrate tables in shardingRule configuration only, can't support to migrate specified tables.
+1. Support to migrate tables in sharding rule configuration only, can't support to migrate specified tables.
 
 2. The process of migration splits into two steps, inventory data migration and incremental data synchronization.
 
