@@ -43,6 +43,4 @@ public final class NacosPropertiesTest {
         assertThat(actual.getValue(NacosPropertyKey.GROUP), is("SHARDING_SPHERE_DEFAULT_GROUP"));
         assertThat(actual.getValue(NacosPropertyKey.TIMEOUT), is(3000L));
     }
-
 }
-
