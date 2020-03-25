@@ -43,7 +43,6 @@ import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.paramet
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
@@ -53,7 +52,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -87,11 +85,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         new ShardingSQLRewriteContextDecorator(routeContext).decorate(shardingRule, properties, sqlRewriteContext);
         new EncryptSQLRewriteContextDecorator().decorate(shardingRule.getEncryptRule(), properties, sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
-        Collection<SQLRewriteResult> result = new LinkedList<>();
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-            result.add(new ShardingSQLRewriteEngine(shardingRule, routeContext.getRouteResult().getOriginalDataNodes(), each).rewrite(sqlRewriteContext));
-        }
-        return result;
+        return new ShardingSQLRewriteEngine().rewrite(shardingRule, sqlRewriteContext, routeContext.getRouteResult()).values();
     }
     
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {
