@@ -40,6 +40,4 @@ public final class OrchestrationPropertiesTest {
         OrchestrationProperties actual = new OrchestrationProperties(props);
         assertFalse(actual.getValue(OrchestrationPropertyKey.OVERWRITE));
     }
-
 }
-
