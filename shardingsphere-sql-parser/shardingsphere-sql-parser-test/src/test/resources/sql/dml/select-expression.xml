@@ -40,7 +40,7 @@
             <expression-projection alias="creation_date" start-index="7" stop-index="27" />
         </projections>
         <order-by>
-            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" />
+            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100" />
         </order-by>
     </select>
     
@@ -64,8 +64,8 @@
                         <owner name="t" start-index="57" stop-index="57" literal-start-index="62" literal-stop-index="62" />
                     </column-left-value>
                     <in-right-value>
-                        <parameter-marker-expression value="1" />
-                        <parameter-marker-expression value="2" />
+                        <parameter-marker-expression value="1" start-index="71" stop-index="71" />
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
                         <literal-expression value="1" />
                         <literal-expression value="2" />
                     </in-right-value>

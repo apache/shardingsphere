@@ -20,10 +20,8 @@ package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
@@ -35,20 +33,19 @@ import java.util.List;
  * Sharding generated key insert value parameter rewriter.
  */
 @Setter
-public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, ShardingRouteContextAware {
-    
-    private ShardingRouteContext shardingRouteContext;
+public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext> {
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof InsertStatementContext && shardingRouteContext.getGeneratedKey().isPresent() && shardingRouteContext.getGeneratedKey().get().isGenerated();
+        return sqlStatementContext instanceof InsertStatementContext 
+                && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().isPresent() && ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext().get().isGenerated();
     }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
-        Preconditions.checkState(shardingRouteContext.getGeneratedKey().isPresent());
-        ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(shardingRouteContext.getGeneratedKey().get().getColumnName());
-        Iterator<Comparable<?>> generatedValues = shardingRouteContext.getGeneratedKey().get().getGeneratedValues().descendingIterator();
+        Preconditions.checkState(insertStatementContext.getGeneratedKeyContext().isPresent());
+        ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(insertStatementContext.getGeneratedKeyContext().get().getColumnName());
+        Iterator<Comparable<?>> generatedValues = insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().descendingIterator();
         int count = 0;
         int parametersCount = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {

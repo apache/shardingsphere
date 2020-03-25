@@ -82,6 +82,15 @@ public interface QueryResult {
     int getColumnCount() throws SQLException;
     
     /**
+     * Get column name.
+     *
+     * @param columnIndex column index
+     * @return column name
+     * @throws SQLException SQL Exception
+     */
+    String getColumnName(int columnIndex) throws SQLException;
+    
+    /**
      * Get column label.
      *
      * @param columnIndex column index
@@ -89,13 +98,4 @@ public interface QueryResult {
      * @throws SQLException SQL Exception
      */
     String getColumnLabel(int columnIndex) throws SQLException;
-    
-    /**
-     * Whether value is case sensitive or not.
-     *
-     * @param columnIndex column index
-     * @return true if column is case sensitive, otherwise false
-     * @throws SQLException SQL Exception
-     */
-    boolean isCaseSensitive(int columnIndex) throws SQLException;
 }

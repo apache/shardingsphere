@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -64,6 +66,7 @@ public final class TableRule {
     
     private final ShardingStrategy tableShardingStrategy;
     
+    @Getter(AccessLevel.NONE)
     private final String generateKeyColumn;
     
     private final ShardingKeyGenerator shardingKeyGenerator;
@@ -104,7 +107,8 @@ public final class TableRule {
         actualTables = getActualTables();
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
-        generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
+        final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGeneratorConfig();
+        generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
         shardingKeyGenerator = containsKeyGeneratorConfiguration(tableRuleConfig)
                 ? new ShardingKeyGeneratorServiceLoader().newService(tableRuleConfig.getKeyGeneratorConfig().getType(), tableRuleConfig.getKeyGeneratorConfig().getProperties()) : null;
         checkRule(dataNodes);
@@ -131,13 +135,6 @@ public final class TableRule {
     
     private boolean containsKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
         return null != tableRuleConfiguration.getKeyGeneratorConfig() && !Strings.isNullOrEmpty(tableRuleConfiguration.getKeyGeneratorConfig().getType());
-    }
-    
-    private String getGenerateKeyColumn(final KeyGeneratorConfiguration keyGeneratorConfiguration, final String defaultGenerateKeyColumn) {
-        if (null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn())) {
-            return keyGeneratorConfiguration.getColumn();
-        }
-        return defaultGenerateKeyColumn;
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {
@@ -227,5 +224,14 @@ public final class TableRule {
         if (isEmptyDataNodes(dataNodes) && null != tableShardingStrategy && !(tableShardingStrategy instanceof NoneShardingStrategy)) {
             throw new ShardingSphereConfigurationException("ActualDataNodes must be configured if want to shard tables for logicTable [%s]", logicTable);
         }
+    }
+    
+    /**
+     * Get generate key column.
+     * 
+     * @return generate key column
+     */
+    public Optional<String> getGenerateKeyColumn() {
+        return Optional.ofNullable(generateKeyColumn);
     }
 }

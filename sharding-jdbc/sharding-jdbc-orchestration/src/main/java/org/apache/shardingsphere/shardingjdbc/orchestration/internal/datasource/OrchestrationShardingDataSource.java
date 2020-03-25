@@ -66,8 +66,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
-        dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getRuntimeContext().getRule().getRuleConfiguration(),
-                shardingDataSource.getDataSourceMap().keySet()), shardingDataSource.getRuntimeContext().getProperties().getProps());
+        dataSource = shardingDataSource;
         initShardingOrchestrationFacade(Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
                 getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());
     }

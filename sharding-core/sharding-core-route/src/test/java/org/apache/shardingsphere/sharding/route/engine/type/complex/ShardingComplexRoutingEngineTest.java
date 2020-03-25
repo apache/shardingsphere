@@ -53,13 +53,13 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_order_item"), selectStatementContext,
                 createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
         RouteResult routeResult = complexRoutingEngine.route(createBindingShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test
@@ -71,13 +71,13 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(Arrays.asList("t_order", "t_config"), selectStatementContext,
                 createShardingConditions("t_order"), new ConfigurationProperties(new Properties()));
         RouteResult routeResult = complexRoutingEngine.route(createBroadcastShardingRule());
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
     @Test(expected = ShardingSphereException.class)

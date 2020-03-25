@@ -22,11 +22,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Route unit.
@@ -37,59 +37,42 @@ import java.util.Set;
 @ToString
 public final class RouteUnit {
     
-    private final String logicDataSourceName;
+    private final RouteMapper dataSourceMapper;
     
-    private final String actualDataSourceName;
+    private final Collection<RouteMapper> tableMappers;
     
-    private final List<TableUnit> tableUnits = new LinkedList<>();
-    
-    public RouteUnit(final String dataSourceName) {
-        logicDataSourceName = dataSourceName;
-        actualDataSourceName = dataSourceName;
+    /**
+     * Get logic table names.
+     *
+     * @return  logic table names
+     */
+    public Set<String> getLogicTableNames() {
+        return tableMappers.stream().map(RouteMapper::getLogicName).collect(Collectors.toCollection(() -> new HashSet<>(tableMappers.size(), 1)));
     }
     
     /**
-     * Get routing table unit via data source name and actual table name.
+     * Get actual table names.
      *
-     * @param dataSourceName data source name
-     * @param actualTableName actual table name
-     * @return routing table unit
+     * @param logicTableName logic table name
+     * @return actual table names
      */
-    public Optional<TableUnit> getTableUnit(final String dataSourceName, final String actualTableName) {
-        for (TableUnit each : tableUnits) {
-            if (dataSourceName.equalsIgnoreCase(logicDataSourceName) && actualTableName.equalsIgnoreCase(each.getActualTableName())) {
+    public Set<String> getActualTableNames(final String logicTableName) {
+        return tableMappers.stream().filter(each -> logicTableName.equalsIgnoreCase(each.getLogicName())).map(RouteMapper::getActualName).collect(Collectors.toSet());
+    }
+    
+    /**
+     * Find table mapper.
+     *
+     * @param logicDataSourceName logic data source name
+     * @param actualTableName actual table name
+     * @return table mapper
+     */
+    public Optional<RouteMapper> findTableMapper(final String logicDataSourceName, final String actualTableName) {
+        for (RouteMapper each : tableMappers) {
+            if (logicDataSourceName.equalsIgnoreCase(dataSourceMapper.getLogicName()) && actualTableName.equalsIgnoreCase(each.getActualName())) {
                 return Optional.of(each);
             }
         }
         return Optional.empty();
-    }
-    
-    /**
-     * Get actual tables' names via data source name.
-     *
-     * @param logicTableName logic table name
-     * @return  actual tables' names
-     */
-    public Set<String> getActualTableNames(final String logicTableName) {
-        Set<String> result = new HashSet<>();
-        for (TableUnit each : tableUnits) {
-            if (logicTableName.equalsIgnoreCase(each.getLogicTableName())) {
-                result.add(each.getActualTableName());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get logic tables' names via data source name.
-     *
-     * @return  logic tables' names
-     */
-    public Set<String> getLogicTableNames() {
-        Set<String> result = new HashSet<>(tableUnits.size(), 1);
-        for (TableUnit each : tableUnits) {
-            result.add(each.getLogicTableName());
-        }
-        return result;
     }
 }

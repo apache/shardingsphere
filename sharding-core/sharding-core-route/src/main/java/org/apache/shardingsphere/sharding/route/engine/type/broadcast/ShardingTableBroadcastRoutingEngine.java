@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
@@ -29,9 +29,10 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.context.TableUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -82,8 +83,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         Collection<RouteUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            RouteUnit routeUnit = new RouteUnit(each.getDataSourceName());
-            routeUnit.getTableUnits().add(new TableUnit(logicTableName, each.getTableName()));
+            RouteUnit routeUnit = new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName())));
             result.add(routeUnit);
         }
         return result;

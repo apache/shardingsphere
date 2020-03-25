@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -88,9 +88,9 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
         RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(3));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
-        assertThat(iterator.next().getActualDataSourceName(), is("ds3"));
-        assertThat(Arrays.asList("ds9", "ds10", "ds11"), hasItems(iterator.next().getActualDataSourceName()));
-        assertThat(iterator.next().getActualDataSourceName(), is("default"));
+        assertThat(iterator.next().getDataSourceMapper().getActualName(), is("ds3"));
+        assertThat(Arrays.asList("ds9", "ds10", "ds11"), hasItems(iterator.next().getDataSourceMapper().getActualName()));
+        assertThat(iterator.next().getDataSourceMapper().getActualName(), is("default"));
     }
     
     @Test
@@ -104,6 +104,6 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
         RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
-        assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getActualDataSourceName()));
+        assertThat(Arrays.asList("ds1", "ds2", "ds3"), hasItems(iterator.next().getDataSourceMapper().getActualName()));
     }
 }

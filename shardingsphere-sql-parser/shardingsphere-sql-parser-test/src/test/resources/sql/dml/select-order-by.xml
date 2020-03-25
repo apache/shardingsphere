@@ -28,7 +28,7 @@
             <column-item name="order_id" start-index="33" stop-index="42">
                 <owner name="o" start-index="33" stop-index="33" />
             </column-item>
-            <index-item index="2" order-direction="DESC" />
+            <index-item index="2" order-direction="DESC" start-index="45" stop-index="45" />
         </order-by>
     </select>
     
@@ -69,7 +69,7 @@
             <column-item name="order_id" order-direction="DESC" start-index="103" stop-index="112">
                 <owner name="o" start-index="103" stop-index="103" />
             </column-item>
-            <index-item index="1" />
+            <index-item index="1" start-index="120" stop-index="120" />
         </order-by>
     </select>
     

@@ -170,7 +170,7 @@ public final class MySQLBinlogRowsEventPacketTest {
     private void assertBinlogRowsEventV2BeforeRows(final MySQLBinlogRowsEventPacket actual) {
         assertThat(actual.getTableId(), is(1L));
         assertThat(actual.getFlags(), is(2));
-        verify(payload).skipReserved(2);
+        verify(payload).skipReserved(0);
         assertThat(actual.getColumnNumber(), is(1));
     }
 }

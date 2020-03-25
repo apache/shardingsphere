@@ -17,35 +17,23 @@
   -->
 
 <sql-parser-test-cases>
-    <!-- TODO cannot pass,add later 
-    <select sql-case-id="select_sub_query_with_multiple_tables" parameters="1, 2">
-        <simple-table name="t_order" alias="o" start-index="33" stop-index="39" />
-        <simple-table name="t_order_item" alias="i" start-index="44" stop-index="55" />
-        <conditions>
-            <condition column-name="order_id" table-name="t_order" operator="IN">
-                <value index="0" literal="1" type="int" />
-                <value index="1" literal="2" type="int" />
-            </condition>
-        </conditions>
-    </select>
-    -->
-    
-    <!-- TODO Can not support subquery at current
-    <select sql-case-id="select_sub_query_with_order_by">
-        <simple-table name="t_order" start-index="52" stop-index="58" />
-        <projections start-index="45" stop-index="45">
-            <aggregation-projection type="COUNT" alias="orders_count" />
-            <shorthand-projection start-index="45" stop-index="45" />
+    <select sql-case-id="select_sub_query_with_project">
+        <tables>
+            <simple-table name="t_order" start-index="40" stop-index="46" />
+        </tables>
+        <projections start-index="7" stop-index="33">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+            <subquery-projection start-index="17" stop-index="26" alias="num">
+                <subquery>
+                    <select>
+                        <projections start-index="25" stop-index="25">
+                            <expression-projection start-index="25" stop-index="25" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-projection>
         </projections>
     </select>
-    
-    <select sql-case-id="select_sub_query_with_group_by">
-        <simple-table name="t_order_item" start-index="64" stop-index="75" />
-        <projections start-index="50" stop-index="57">
-            <column-projection name="order_id" start-index="50" stop-index="57" />
-        </projections>
-    </select>
-    -->
 
     <select sql-case-id="select_sub_query_with_table" parameters="3, 4">
         <tables>
@@ -192,7 +180,7 @@
                                 </where>
                             </select>
                         </between-subquery-expression>
-                        <and-parameter-marker-expression value="0" />
+                        <and-parameter-marker-expression value="0" start-index="103" stop-index="103" />
                         <and-literal-expression value="12" />
                     </between-right-value>
                 </predicate>

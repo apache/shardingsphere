@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.execute.context.ShardingExecutionContext;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.MemoryQueryResult;
@@ -28,8 +27,9 @@ import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareC
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
-import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -56,12 +56,12 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
     /**
      * Initialize executor.
      *
-     * @param shardingExecutionContext sharding execution context
+     * @param executionContext execution context
      * @throws SQLException SQL exception
      */
-    public void init(final ShardingExecutionContext shardingExecutionContext) throws SQLException {
-        setSqlStatementContext(shardingExecutionContext.getSqlStatementContext());
-        getInputGroups().addAll(obtainExecuteGroups(shardingExecutionContext.getExecutionUnits()));
+    public void init(final ExecutionContext executionContext) throws SQLException {
+        setSqlStatementContext(executionContext.getSqlStatementContext());
+        getInputGroups().addAll(obtainExecuteGroups(executionContext.getExecutionUnits()));
         cacheStatements();
     }
     

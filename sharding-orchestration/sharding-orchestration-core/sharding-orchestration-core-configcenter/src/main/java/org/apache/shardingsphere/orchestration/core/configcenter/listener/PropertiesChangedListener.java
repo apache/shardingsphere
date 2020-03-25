@@ -19,12 +19,12 @@ package org.apache.shardingsphere.orchestration.core.configcenter.listener;
 
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 import org.apache.shardingsphere.orchestration.core.common.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.listener.PostShardingConfigCenterEventListener;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Properties changed listener.
@@ -32,7 +32,7 @@ import java.util.Arrays;
 public final class PropertiesChangedListener extends PostShardingConfigCenterEventListener {
     
     public PropertiesChangedListener(final String name, final ConfigCenterRepository configCenterRepository) {
-        super(configCenterRepository, Arrays.asList(new ConfigCenterNode(name).getPropsPath()));
+        super(configCenterRepository, Collections.singletonList(new ConfigCenterNode(name).getPropsPath()));
     }
     
     @Override

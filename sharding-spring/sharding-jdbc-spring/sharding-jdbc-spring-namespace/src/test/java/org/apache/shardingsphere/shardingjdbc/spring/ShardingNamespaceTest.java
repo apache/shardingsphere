@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
@@ -175,7 +175,8 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
                 new String[]{applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class).getShardingColumn()}));
         assertTrue(Arrays.equals(tableRule.getTableShardingStrategy().getShardingColumns().toArray(new String[]{}), 
                 new String[]{applicationContext.getBean("inlineStrategy", InlineShardingStrategyConfiguration.class).getShardingColumn()}));
-        assertThat(tableRule.getGenerateKeyColumn(), is("order_id"));
+        assertTrue(tableRule.getGenerateKeyColumn().isPresent());
+        assertThat(tableRule.getGenerateKeyColumn().get(), is("order_id"));
         assertThat(tableRule.getShardingKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
     }
     

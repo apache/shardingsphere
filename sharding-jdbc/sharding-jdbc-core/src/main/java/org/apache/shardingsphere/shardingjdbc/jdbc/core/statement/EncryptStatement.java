@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
@@ -31,10 +30,8 @@ import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
 
 import java.sql.ResultSet;
@@ -42,8 +39,6 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Encrypt statement.
@@ -98,16 +93,11 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
     private String getRewriteSQL(final String sql) {
         SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, false);
         sqlStatementContext = SQLStatementContextFactory.newInstance(runtimeContext.getMetaData().getSchema(), sql, Collections.emptyList(), sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema(), 
-                runtimeContext.getProperties()).createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, createSQLRewriteContextDecorator(runtimeContext.getRule()));
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema(), runtimeContext.getProperties());
+        sqlRewriteEntry.registerDecorator(runtimeContext.getRule(), new EncryptSQLRewriteContextDecorator());
+        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext);
         String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);
-        return result;
-    }
-    
-    private Map<BaseRule, SQLRewriteContextDecorator> createSQLRewriteContextDecorator(final EncryptRule encryptRule) {
-        Map<BaseRule, SQLRewriteContextDecorator> result = new HashMap<>(1, 1);
-        result.put(encryptRule, new EncryptSQLRewriteContextDecorator());
         return result;
     }
     

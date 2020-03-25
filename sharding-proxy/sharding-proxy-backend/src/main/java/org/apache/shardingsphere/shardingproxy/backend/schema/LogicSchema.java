@@ -33,9 +33,8 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Logic schema.
@@ -57,13 +56,8 @@ public abstract class LogicSchema {
     }
     
     protected final Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap() {
-        Map<String, DatabaseAccessConfiguration> result = new HashMap<>(backendDataSource.getDataSourceParameters().size(), 1);
-        for (Entry<String, YamlDataSourceParameter> entry : backendDataSource.getDataSourceParameters().entrySet()) {
-            YamlDataSourceParameter dataSource = entry.getValue();
-            DatabaseAccessConfiguration dataSourceInfo = new DatabaseAccessConfiguration(dataSource.getUrl(), null, null);
-            result.put(entry.getKey(), dataSourceInfo);
-        }
-        return result;
+        return backendDataSource.getDataSourceParameters().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> new DatabaseAccessConfiguration(entry.getValue().getUrl(), null, null)));
     }
     
     /**
@@ -98,10 +92,9 @@ public abstract class LogicSchema {
      */
     @Subscribe
     public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) throws Exception {
-        if (!name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
-            return;
+        if (name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
+            backendDataSource.renew(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
         }
-        backendDataSource.renew(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
     }
     
     /**

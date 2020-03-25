@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.sharding.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.sql.ShardingSQLBuilder;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
@@ -31,6 +29,7 @@ import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.Group
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,23 +41,22 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingConditions shardingConditions;
+    private final Collection<Collection<DataNode>> originalDataNodes;
     
     private final RouteUnit routeUnit;
     
     @Override
     public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(
-                new ShardingSQLBuilder(sqlRewriteContext, shardingRule, routeUnit).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
+        return new SQLRewriteResult(new ShardingSQLBuilder(sqlRewriteContext, shardingRule, routeUnit).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder()));
     }
     
     private List<Object> getParameters(final ParameterBuilder parameterBuilder) {
-        if (parameterBuilder instanceof StandardParameterBuilder || shardingConditions.getConditions().isEmpty() || parameterBuilder.getParameters().isEmpty()) {
+        if (parameterBuilder instanceof StandardParameterBuilder || originalDataNodes.isEmpty() || parameterBuilder.getParameters().isEmpty()) {
             return parameterBuilder.getParameters();
         }
         List<Object> result = new LinkedList<>();
         int count = 0;
-        for (ShardingCondition each : shardingConditions.getConditions()) {
+        for (Collection<DataNode> each : originalDataNodes) {
             if (isInSameDataNode(each)) {
                 result.addAll(((GroupedParameterBuilder) parameterBuilder).getParameters(count));
             }
@@ -67,12 +65,12 @@ public final class ShardingSQLRewriteEngine implements SQLRewriteEngine {
         return result;
     }
     
-    private boolean isInSameDataNode(final ShardingCondition shardingCondition) {
-        if (shardingCondition.getDataNodes().isEmpty()) {
+    private boolean isInSameDataNode(final Collection<DataNode> dataNodes) {
+        if (dataNodes.isEmpty()) {
             return true;
         }
-        for (DataNode each : shardingCondition.getDataNodes()) {
-            if (routeUnit.getTableUnit(each.getDataSourceName(), each.getTableName()).isPresent()) {
+        for (DataNode each : dataNodes) {
+            if (routeUnit.findTableMapper(each.getDataSourceName(), each.getTableName()).isPresent()) {
                 return true;
             }
         }

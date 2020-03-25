@@ -76,7 +76,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     private SchemaMetaData loadSchemaMetaData() throws SQLException {
         DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery);
+        return SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery, LogicSchemas.getInstance().getDatabaseType().getName());
     }
     
     /**
