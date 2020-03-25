@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.repository;
+package org.apache.shardingsphere.ui.common.constant;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Registry center configs repository interface.
+ * Orchestration type.
  */
-public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
+@RequiredArgsConstructor
+@Getter
+public enum OrchestrationType {
+    
+    REGISTRY_CENTER("registry_center"),
+    CONFIG_CENTER("config_center");
+    
+    private final String value;
 }

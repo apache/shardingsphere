@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.servcie;
+import API from '@/utils/api'
 
-import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
-import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
-
-/**
- * Registry center service.
- */
-public interface RegistryCenterService {
-    
-    /**
-     * Get activated registry center.
-     *
-     * @return registry center
-     */
-    RegistryCenterRepository getActivatedRegistryCenter();
-    
-    /**
-     * Get activated state node.
-     *
-     * @return state node
-     */
-    RegistryCenterNode getActivatedStateNode();
+export default {
+  getConfigCenter: (params = {}) => API.get(`/api/config-center`, params),
+  deleteConfigCenter: (params = {}) => API.delete(`/api/config-center`, params),
+  postConfigCenter: (params = {}) => API.post(`/api/config-center`, params),
+  getConfigCenterActivated: (params = {}) => API.get(`/api/config-center/activated`, params),
+  postConfigCenterConnect: (params = {}) => API.post(`/api/config-center/connect`, params)
 }

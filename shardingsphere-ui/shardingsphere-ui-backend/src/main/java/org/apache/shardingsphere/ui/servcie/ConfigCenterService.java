@@ -15,33 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.common.domain;
+package org.apache.shardingsphere.ui.servcie;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Properties;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 
 /**
- * Registry center config.
+ * Config center service
  */
-@Getter
-@Setter
-public final class RegistryCenterConfig {
+public interface ConfigCenterService {
     
-    private String name;
+    /**
+     * Get activated config center.
+     *
+     * @return config center
+     */
+    ConfigCenterRepository getActivatedConfigCenter();
     
-    private String registryCenterType;
-    
-    private String serverLists;
-    
-    private String namespace;
-    
-    private String orchestrationName;
-    
-    private String digest;
-    
-    private boolean activated;
-    
-    private Properties props = new Properties();
+    /**
+     * Get activated configuration node.
+     *
+     * @return configuration node
+     */
+    ConfigCenterNode getActivateConfigurationNode();
 }

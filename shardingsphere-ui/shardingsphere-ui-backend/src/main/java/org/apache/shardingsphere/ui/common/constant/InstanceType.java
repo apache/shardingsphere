@@ -20,30 +20,30 @@ package org.apache.shardingsphere.ui.common.constant;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
 
 /**
- * Registry center type.
+ * Orchestration instance type.
  */
-public enum RegistryCenterType {
+public enum InstanceType {
     
     ZOOKEEPER("Zookeeper"), ETCD("Etcd");
     
     private final String name;
     
-    RegistryCenterType(final String name) {
+    InstanceType(final String name) {
         this.name = name;
     }
     
     /**
-     * Get registry center type via name.
+     * Get instance type via name.
      *
-     * @param name registry center name
-     * @return registry center type
+     * @param name instance name
+     * @return instance type
      */
-    public static RegistryCenterType nameOf(final String name) {
-        for (RegistryCenterType each : RegistryCenterType.values()) {
+    public static InstanceType nameOf(final String name) {
+        for (InstanceType each : InstanceType.values()) {
             if ((each.name).equals(name)) {
                 return each;
             }
         }
-        throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, String.format("Unsupported registry center `%s`", name));
+        throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, String.format("Unsupported orchestration instance type `%s`", name));
     }
 }
