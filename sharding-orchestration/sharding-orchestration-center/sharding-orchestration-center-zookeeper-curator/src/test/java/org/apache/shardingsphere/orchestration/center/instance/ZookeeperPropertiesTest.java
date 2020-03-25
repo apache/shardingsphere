@@ -52,5 +52,4 @@ public final class ZookeeperPropertiesTest {
         assertThat(actual.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS), is(500));
         assertThat(actual.getValue(ZookeeperPropertyKey.DIGEST), is(""));
     }
-
 }
