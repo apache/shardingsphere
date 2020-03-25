@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class NacosPropertiesTest {
-
+    
     @Test
     public void assertGetValue() {
         Properties props = new Properties();
@@ -35,7 +35,7 @@ public final class NacosPropertiesTest {
         assertThat(actual.getValue(NacosPropertyKey.GROUP), is("SHARDING_SPHERE_TEST_GROUP"));
         assertThat(actual.getValue(NacosPropertyKey.TIMEOUT), is(6000L));
     }
-
+    
     @Test
     public void assertGetDefaultValue() {
         Properties props = new Properties();
