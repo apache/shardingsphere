@@ -21,17 +21,17 @@ The configuration can be modified by the YAML format.
 
 ![Configuration ditor](https://shardingsphere.apache.org/document/current/img/sharding-ui/config-edit.png)
 
-## 编排治理
+## Orchestration
 
 Registry center can disable the access to slave database and the access of application.
 
-### 熔断实例
+### Circuit Breaker
 
 Users can disable or enable the instance.
 
 ![Circuit Breaker](https://shardingsphere.apache.org/document/current/img/sharding-ui/circuit-breaker.png)
 
-### 禁用从库
+### Disable Slave Database
 
 Users can disable or enable the access to slave database.
 
