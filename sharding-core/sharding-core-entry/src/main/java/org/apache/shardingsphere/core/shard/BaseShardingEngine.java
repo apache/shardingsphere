@@ -93,8 +93,6 @@ public abstract class BaseShardingEngine {
     
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
-    protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
-    
     private RouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
         routingHook.start(sql);
         try {
@@ -109,6 +107,8 @@ public abstract class BaseShardingEngine {
             throw ex;
         }
     }
+    
+    protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
     
     private void registerRouteDecorator() {
         dataNodeRouter.registerDecorator(shardingRule, new ShardingRouteDecorator());
