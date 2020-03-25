@@ -20,4 +20,3 @@ masterSlaveRule:
   slaveDataSourceNames:
     - test_ds_slave
   loadBalanceAlgorithmType: ROUND_ROBIN
-     
