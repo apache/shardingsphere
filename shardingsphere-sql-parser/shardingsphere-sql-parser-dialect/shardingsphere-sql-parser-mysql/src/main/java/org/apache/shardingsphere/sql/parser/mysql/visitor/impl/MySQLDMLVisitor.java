@@ -209,7 +209,6 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         for (TableReferenceSegment t : tableReferences.getValue()) {
             result.getTables().addAll(t.getTables());
         }
-//        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableReferences())).getValue());
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -500,8 +499,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             result.setTableFactor(tableFactor);
         }
         if (!ctx.joinedTable().isEmpty()) {
-            for (JoinedTableContext jc : ctx.joinedTable()) {
-                JoinedTableSegment joinedTableSegment = (JoinedTableSegment) visit(jc);
+            for (JoinedTableContext each : ctx.joinedTable()) {
+                JoinedTableSegment joinedTableSegment = (JoinedTableSegment) visit(each);
                 result.getJoinedTables().add(joinedTableSegment);
             }
         }
