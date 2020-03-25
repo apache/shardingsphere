@@ -89,7 +89,7 @@ shardingsphere-example
 
 ### 分片与编排的最佳实践
 
-* 使用本地配置文件对zookeeper/etcd和分片
+* 使用本地配置文件和zookeeper/etcd配置分片
 * 使用注册中心（zookeeper/etcd）的配置进行分片
 
 您可以从业务[orchestration-example](./sharding-jdbc-example/orchestration-example)中获取更多细节
