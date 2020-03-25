@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class OrchestrationPropertiesTest {
-
+    
     @Test
     public void assertGetValue() {
         Properties props = new Properties();
@@ -33,7 +33,7 @@ public final class OrchestrationPropertiesTest {
         OrchestrationProperties actual = new OrchestrationProperties(props);
         assertTrue(actual.getValue(OrchestrationPropertyKey.OVERWRITE));
     }
-
+    
     @Test
     public void assertGetDefaultValue() {
         Properties props = new Properties();
