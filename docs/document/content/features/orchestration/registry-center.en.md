@@ -1,13 +1,15 @@
 +++
 pre = "<b>3.3.2. </b>"
 toc = true
-title = "Orchestration"
+title = "Registry Center"
 weight = 2
 +++
 
 ## Motivation
 
-Registry center can disable the access to slave database and the access of application. Orchestration still has many functions to be developed.
+- As config center manage configuration data, registry center hold all ephemeral status data dynamically generated in runtime(such as available proxy instances, disabled datasource instances etc).
+
+- Registry center can disable the access to slave database and the access of application. Orchestration still has many functions(such as flow control) to be developed.
 
 ## Data Structure in Registry Center
 
@@ -66,4 +68,3 @@ Zookeeper command is as follow:
 ```
 [zk: localhost:2181(CONNECTED) 0] set /your_zk_namespace/your_app_name/state/datasources/your_slave_datasource_name DISABLED
 ```
-
