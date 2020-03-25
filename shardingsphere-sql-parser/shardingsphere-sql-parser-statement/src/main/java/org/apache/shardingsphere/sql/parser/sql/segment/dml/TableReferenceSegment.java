@@ -37,8 +37,6 @@ public final class TableReferenceSegment implements SQLSegment {
     
     private final Collection<JoinedTableSegment> joinedTables = new LinkedList<>();
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
-    
     /**
      *  get all tables.
      * @return Collection.
@@ -46,7 +44,9 @@ public final class TableReferenceSegment implements SQLSegment {
     public Collection<SimpleTableSegment> getTables() {
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         if (null != tableFactor) {
-            tables.add((SimpleTableSegment) tableFactor.getTable());
+            if (tableFactor.getTable() instanceof SimpleTableSegment) {
+                tables.add((SimpleTableSegment) tableFactor.getTable());
+            }
         }
         
         if (!joinedTables.isEmpty()) {

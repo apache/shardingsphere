@@ -101,6 +101,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
@@ -206,8 +207,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
         CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
-        for (TableReferenceSegment t : tableReferences.getValue()) {
-            result.getTables().addAll(t.getTables());
+        for (TableReferenceSegment each : tableReferences.getValue()) {
+            result.getTables().addAll(each.getTables());
         }
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
@@ -512,7 +513,12 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         TableFactorSegment result = new TableFactorSegment();
         if (null != ctx.subquery()) {
             SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
-            result.setSubquery(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery));
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
+            SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment);
+            if (null != ctx.alias()) {
+                subqueryTableSegment.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            result.setTable(subqueryTableSegment);
         }
         if (null != ctx.tableName()) {
             SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
@@ -521,11 +527,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
             }
             result.setTable(table);
         }
-        if (null != ctx.alias()) {
-            result.setAlias(((AliasSegment) visit(ctx.alias())).getIdentifier().toString());
-        }
         if (null != ctx.tableReferences()) {
-            
             CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue) visit(ctx.tableReferences());
             result.getTableReferences().addAll(tableReferences.getValue());
         }

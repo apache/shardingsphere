@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 
 @Getter
@@ -40,7 +41,9 @@ public final class JoinedTableSegment implements SQLSegment {
      */
     public TableSegment getTable() {
         if (null != tableFactor.getTable()) {
-            return tableFactor.getTable();
+            if (tableFactor.getTable() instanceof SimpleTableSegment) {
+                return tableFactor.getTable();
+            }
         }
         return null;
     }

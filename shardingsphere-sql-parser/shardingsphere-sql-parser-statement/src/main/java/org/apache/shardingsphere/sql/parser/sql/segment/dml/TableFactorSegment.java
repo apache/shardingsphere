@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 
 import java.util.Collection;
@@ -36,10 +35,6 @@ public final class TableFactorSegment implements SQLSegment {
     private int stopIndex;
     
     private TableSegment table;
-    
-    private String alias;
-    
-    private SubquerySegment subquery;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
