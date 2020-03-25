@@ -8,7 +8,7 @@
 
 关于图片的补充说明：
 
-1. 只支持迁移整个数据库，暂不支持迁移指定的表。
+1. 只支持迁移在分片规则中配置的表，暂不支持迁移指定的表。
 2. 迁移过程分为两步——历史数据迁移和实时数据迁移。
   - 在历史数据迁移过程中，Sharding-Scaling使用 `select *`语句去获取数据，使用`insert`语句将数据迁移到目标库中；
   - 在实时数据迁移过程中，Sharding-Scaling使用binlog来迁移数据，并且在迁移前会标记下binlog位置。
@@ -23,11 +23,11 @@ Sharding-Proxy：3.x ~ 5.x
 
 ## 如何运行
 
-参考[快速入门](./src/resources/Quick%20Start_zh.md)
+参考[快速入门](./src/resources/document/manual/quick-start.cn.md)
 
 ## 更多文档
 
-[管理指南](./src/resources/Admin%20Guide_zh.md)
+[概览](./src/resources/document/features/_index.cn.md)
 
-[ShardingScaling架构](./src/resources/Architecture_zh.md)
+[实现原理](./src/resources/document/features/principle.cn.md)
 
