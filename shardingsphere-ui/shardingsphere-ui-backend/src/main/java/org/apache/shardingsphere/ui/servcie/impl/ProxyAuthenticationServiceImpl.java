@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.ui.servcie.impl;
 
+import org.apache.shardingsphere.ui.servcie.ConfigCenterService;
 import org.apache.shardingsphere.ui.servcie.ProxyAuthenticationService;
-import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.apache.shardingsphere.ui.util.ConfigurationYamlConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,18 +30,18 @@ import org.springframework.stereotype.Service;
 public final class ProxyAuthenticationServiceImpl implements ProxyAuthenticationService {
     
     @Autowired
-    private RegistryCenterService registryCenterService;
+    private ConfigCenterService configCenterService;
     
     @Override
     public String getAuthentication() {
-        return registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivateConfigurationNode().getAuthenticationPath());
+        return configCenterService.getActivatedConfigCenter().get(configCenterService.getActivateConfigurationNode().getAuthenticationPath());
     }
     
     @Override
     public void updateAuthentication(final String authentication) {
         checkAuthenticationConfiguration(authentication);
-        registryCenterService.getActivatedRegistryCenter()
-                .persist(registryCenterService.getActivateConfigurationNode().getAuthenticationPath(), authentication);
+        configCenterService.getActivatedConfigCenter()
+                .persist(configCenterService.getActivateConfigurationNode().getAuthenticationPath(), authentication);
     }
     
     private void checkAuthenticationConfiguration(final String data) {

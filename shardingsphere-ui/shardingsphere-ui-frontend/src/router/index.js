@@ -26,6 +26,12 @@ export const constantRouterMap = [
     redirect: '/registry-center'
   },
   {
+    path: '/config-center',
+    component: () => import('@/views/config-center'),
+    hidden: true,
+    name: 'Config center'
+  },
+  {
     path: '/registry-center',
     component: () => import('@/views/registry-center'),
     hidden: true,

@@ -15,35 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.hook;
+package org.apache.shardingsphere.underlying.rewrite.engine;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteResult;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+
+import java.util.Map;
 
 /**
- * Routing hook.
+ * SQL rewrite engine with route.
+ * 
+ * @param <T> type of rule
  */
-public interface RoutingHook {
+public interface SQLRouteRewriteEngine<T extends BaseRule> {
     
     /**
-     * Handle when routing started.
-     *
-     * @param sql SQL to be routing
-     */
-    void start(String sql);
-    
-    /**
-     * Handle when routing finished success.
-     *
-     * @param routeContext route context
-     * @param schemaMetaData schema meta data
-     */
-    void finishSuccess(RouteContext routeContext, SchemaMetaData schemaMetaData);
-    
-    /**
-     * Handle when routing finished failure.
+     * Rewrite SQL and parameters.
      * 
-     * @param cause failure cause
+     * @param rule rule
+     * @param sqlRewriteContext SQL rewrite context
+     * @param routeResult route result
+     * @return SQL map of route unit and rewrite result
      */
-    void finishFailure(Exception cause);
+    Map<RouteUnit, SQLRewriteResult> rewrite(T rule, SQLRewriteContext sqlRewriteContext, RouteResult routeResult);
 }

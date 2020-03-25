@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.common.domain;
+package org.apache.shardingsphere.orchestration.core.facade.properties;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.Test;
 
 import java.util.Properties;
 
-/**
- * Registry center config.
- */
-@Getter
-@Setter
-public final class RegistryCenterConfig {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class OrchestrationPropertiesTest {
     
-    private String name;
+    @Test
+    public void assertGetValue() {
+        Properties props = new Properties();
+        props.setProperty(OrchestrationPropertyKey.OVERWRITE.getKey(), "true");
+        OrchestrationProperties actual = new OrchestrationProperties(props);
+        assertTrue(actual.getValue(OrchestrationPropertyKey.OVERWRITE));
+    }
     
-    private String registryCenterType;
-    
-    private String serverLists;
-    
-    private String namespace;
-    
-    private String orchestrationName;
-    
-    private String digest;
-    
-    private boolean activated;
-    
-    private Properties props = new Properties();
+    @Test
+    public void assertGetDefaultValue() {
+        Properties props = new Properties();
+        OrchestrationProperties actual = new OrchestrationProperties(props);
+        assertFalse(actual.getValue(OrchestrationPropertyKey.OVERWRITE));
+    }
 }

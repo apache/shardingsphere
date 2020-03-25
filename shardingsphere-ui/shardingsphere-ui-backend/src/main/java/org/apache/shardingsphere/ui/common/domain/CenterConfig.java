@@ -20,15 +20,30 @@ package org.apache.shardingsphere.ui.common.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Properties;
 
 /**
- * Registry center configs.
+ * Center config.
  */
 @Getter
 @Setter
-public final class RegistryCenterConfigs {
+public final class CenterConfig {
     
-    private List<RegistryCenterConfig> registryCenterConfigs = new ArrayList<>();
+    private String name;
+    
+    private String instanceType;
+    
+    private String serverLists;
+    
+    private String namespace;
+    
+    private String orchestrationName;
+    
+    private String orchestrationType;
+    
+    private String digest;
+    
+    private boolean activated;
+    
+    private Properties props = new Properties();
 }

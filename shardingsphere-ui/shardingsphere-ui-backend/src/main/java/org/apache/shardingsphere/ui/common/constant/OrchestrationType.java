@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.context;
+package org.apache.shardingsphere.ui.common.constant;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteResult;
-
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL route context.
+ * Orchestration type.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ShardingRouteContext extends RouteContext {
+public enum OrchestrationType {
     
-    private final ShardingConditions shardingConditions;
+    REGISTRY_CENTER("registry_center"),
+    CONFIG_CENTER("config_center");
     
-    public ShardingRouteContext(final SQLStatementContext sqlStatementContext, final List<Object> parameters, final RouteResult routeResult, final ShardingConditions shardingConditions) {
-        super(sqlStatementContext, parameters, routeResult);
-        this.shardingConditions = shardingConditions;
-    }
+    private final String value;
 }

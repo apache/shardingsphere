@@ -15,19 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.aware;
+package org.apache.shardingsphere.ui.common.constant;
 
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
+import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
 
 /**
- * Sharding route context aware.
+ * Orchestration instance type.
  */
-public interface ShardingRouteContextAware {
+public enum InstanceType {
+    
+    ZOOKEEPER("Zookeeper"), ETCD("Etcd");
+    
+    private final String name;
+    
+    InstanceType(final String name) {
+        this.name = name;
+    }
     
     /**
-     * Set sharding route context.
-     * 
-     * @param shardingRouteContext sharding route context
+     * Get instance type via name.
+     *
+     * @param name instance name
+     * @return instance type
      */
-    void setShardingRouteContext(ShardingRouteContext shardingRouteContext);
+    public static InstanceType nameOf(final String name) {
+        for (InstanceType each : InstanceType.values()) {
+            if ((each.name).equals(name)) {
+                return each;
+            }
+        }
+        throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, String.format("Unsupported orchestration instance type `%s`", name));
+    }
 }

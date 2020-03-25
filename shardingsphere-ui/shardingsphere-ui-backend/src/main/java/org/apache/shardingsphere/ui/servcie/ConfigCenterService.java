@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.fixture;
+package org.apache.shardingsphere.ui.servcie;
 
-import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
+import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 
 /**
- * Routing hook fixture.
+ * Config center service
  */
-public final class RoutingHookFixture implements RoutingHook {
+public interface ConfigCenterService {
     
-    @Override
-    public void start(final String sql) {
-    }
+    /**
+     * Get activated config center.
+     *
+     * @return config center
+     */
+    ConfigCenterRepository getActivatedConfigCenter();
     
-    @Override
-    public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
-    }
+    /**
+     * Get activated configuration node.
+     *
+     * @return configuration node
+     */
+    ConfigCenterNode getActivateConfigurationNode();
 }

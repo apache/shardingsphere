@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.fixture;
+package org.apache.shardingsphere.sharding.rewrite.aware;
 
-import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
- * Routing hook fixture.
+ * Route context aware.
  */
-public final class RoutingHookFixture implements RoutingHook {
+public interface RouteContextAware {
     
-    @Override
-    public void start(final String sql) {
-    }
-    
-    @Override
-    public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
-    }
+    /**
+     * Set route context.
+     * 
+     * @param routeContext route context
+     */
+    void setRouteContext(RouteContext routeContext);
 }

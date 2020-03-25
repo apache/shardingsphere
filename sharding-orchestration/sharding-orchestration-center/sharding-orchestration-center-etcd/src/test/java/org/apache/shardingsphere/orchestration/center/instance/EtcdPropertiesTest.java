@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ui.repository;
+package org.apache.shardingsphere.orchestration.center.instance;
 
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfigs;
+import org.junit.Test;
+import java.util.Properties;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Registry center configs repository interface.
- */
-public interface RegistryCenterConfigsRepository extends ConfigsRepository<RegistryCenterConfigs> {
+public final class EtcdPropertiesTest {
+    
+    @Test
+    public void assertGetValue() {
+        Properties props = new Properties();
+        props.setProperty(EtcdPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50");
+        EtcdProperties actual = new EtcdProperties(props);
+        assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(50L));
+    }
+    
+    @Test
+    public void assertGetDefaultValue() {
+        EtcdProperties actual = new EtcdProperties(new Properties());
+        assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
+    }
 }

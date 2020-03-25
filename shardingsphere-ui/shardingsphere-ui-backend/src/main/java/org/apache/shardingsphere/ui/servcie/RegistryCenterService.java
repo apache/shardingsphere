@@ -34,13 +34,6 @@ public interface RegistryCenterService {
     RegistryCenterRepository getActivatedRegistryCenter();
     
     /**
-     * Get activated configuration node.
-     *
-     * @return configuration node
-     */
-    ConfigCenterNode getActivateConfigurationNode();
-    
-    /**
      * Get activated state node.
      *
      * @return state node

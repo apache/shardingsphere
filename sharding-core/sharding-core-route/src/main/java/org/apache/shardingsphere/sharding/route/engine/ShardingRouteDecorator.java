@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.InsertClauseShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.WhereClauseShardingConditionEngine;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
@@ -71,7 +70,7 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
         if (needMergeShardingValues) {
             Preconditions.checkState(1 == routeResult.getRouteUnits().size(), "Must have one sharding with subquery.");
         }
-        return new ShardingRouteContext(sqlStatementContext, parameters, routeResult, shardingConditions);
+        return new RouteContext(sqlStatementContext, parameters, routeResult);
     }
     
     private ShardingConditions getShardingConditions(final List<Object> parameters, 

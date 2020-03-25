@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.fixture;
+package org.apache.shardingsphere.ui.common.domain;
 
-import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Routing hook fixture.
+ * Center configs.
  */
-public final class RoutingHookFixture implements RoutingHook {
+@Getter
+@Setter
+public final class CenterConfigs {
     
-    @Override
-    public void start(final String sql) {
-    }
-    
-    @Override
-    public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
-    }
+    private List<CenterConfig> centerConfigs = new ArrayList<>();
 }

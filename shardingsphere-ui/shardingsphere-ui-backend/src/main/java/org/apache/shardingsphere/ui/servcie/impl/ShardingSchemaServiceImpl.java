@@ -19,6 +19,7 @@ package org.apache.shardingsphere.ui.servcie.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.ui.servcie.ConfigCenterService;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
 import org.apache.shardingsphere.ui.servcie.ShardingSchemaService;
@@ -35,21 +36,21 @@ import java.util.Map;
 public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     
     @Autowired
-    private RegistryCenterService registryCenterService;
+    private ConfigCenterService configCenterService;
     
     @Override
     public Collection<String> getAllSchemaNames() {
-        return registryCenterService.getActivatedRegistryCenter().getChildrenKeys(registryCenterService.getActivateConfigurationNode().getSchemaPath());
+        return configCenterService.getActivatedConfigCenter().getChildrenKeys(configCenterService.getActivateConfigurationNode().getSchemaPath());
     }
     
     @Override
     public String getRuleConfiguration(final String schemaName) {
-        return registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName));
+        return configCenterService.getActivatedConfigCenter().get(configCenterService.getActivateConfigurationNode().getRulePath(schemaName));
     }
     
     @Override
     public String getDataSourceConfiguration(final String schemaName) {
-        return registryCenterService.getActivatedRegistryCenter().get(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName));
+        return configCenterService.getActivatedConfigCenter().get(configCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName));
     }
     
     @Override
@@ -90,7 +91,7 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     }
     
     private void persistRuleConfiguration(final String schemaName, final String ruleConfiguration) {
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName), ruleConfiguration);
+        configCenterService.getActivatedConfigCenter().persist(configCenterService.getActivateConfigurationNode().getRulePath(schemaName), ruleConfiguration);
     }
     
     private void checkDataSourceConfiguration(final String configData) {
@@ -105,7 +106,7 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     }
     
     private void persistDataSourceConfiguration(final String schemaName, final String dataSourceConfiguration) {
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), dataSourceConfiguration);
+        configCenterService.getActivatedConfigCenter().persist(configCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), dataSourceConfiguration);
     }
     
     private void checkSchemaName(final String schemaName, final Collection<String> existedSchemaNames) {

@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.fixture;
+import API from '@/utils/api'
 
-import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-
-/**
- * Routing hook fixture.
- */
-public final class RoutingHookFixture implements RoutingHook {
-    
-    @Override
-    public void start(final String sql) {
-    }
-    
-    @Override
-    public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
-    }
+export default {
+  getConfigCenter: (params = {}) => API.get(`/api/config-center`, params),
+  deleteConfigCenter: (params = {}) => API.delete(`/api/config-center`, params),
+  postConfigCenter: (params = {}) => API.post(`/api/config-center`, params),
+  getConfigCenterActivated: (params = {}) => API.get(`/api/config-center/activated`, params),
+  postConfigCenterConnect: (params = {}) => API.post(`/api/config-center/connect`, params)
 }

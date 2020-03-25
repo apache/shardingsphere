@@ -28,7 +28,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public class RouteContext {
+public final class RouteContext {
     
     private final SQLStatementContext sqlStatementContext;
     

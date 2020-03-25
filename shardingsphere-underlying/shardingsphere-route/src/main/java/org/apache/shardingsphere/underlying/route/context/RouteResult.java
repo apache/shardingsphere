@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.underlying.route.context;
 
 import lombok.Getter;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +36,8 @@ import java.util.stream.Collectors;
  */
 @Getter
 public final class RouteResult {
+    
+    private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
