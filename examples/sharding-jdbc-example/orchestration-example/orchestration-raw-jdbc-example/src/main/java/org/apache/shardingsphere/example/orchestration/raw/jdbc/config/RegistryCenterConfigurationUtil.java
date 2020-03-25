@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
