@@ -30,7 +30,18 @@ public final class JoinedTableSegment implements SQLSegment {
     
     private int stopIndex;
     
-    private TableSegment table;
+    private TableFactorSegment tableFactor;
     
     private JoinSpecificationSegment joinSpecification;
+    
+    /**
+     * get table.
+     * @return tableSegment.
+     */
+    public TableSegment getTable() {
+        if (null != tableFactor.getTable()) {
+            return tableFactor.getTable();
+        }
+        return null;
+    }
 }

@@ -66,6 +66,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereCl
 import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinSpecificationSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinedTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.assignment.InsertValuesSegment;
@@ -77,6 +78,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ExpressionProjectionSegment;
@@ -99,7 +101,6 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegme
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DoStatement;
@@ -287,10 +288,9 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
         result.combine((CollectionValue<SimpleTableSegment>) visit(ctx.multipleTableNames()));
         CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
-        for (TableReferenceSegment t : tableReferences.getValue()) {
-            result.getValue().addAll(t.getTables());
+        for (TableReferenceSegment each : tableReferences.getValue()) {
+            result.getValue().addAll(each.getTables());
         }
-//        result.combine((CollectionValue<SimpleTableSegment>) visit(ctx.tableReferences()));
         return result;
     }
     
@@ -327,11 +327,10 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         }
         if (null != ctx.fromClause()) {
             CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.fromClause());
-            for (TableReferenceSegment t : tableReferences.getValue()) {
-                result.getTables().addAll(t.getTables());
-                result.getTableReferences().add(t);
+            for (TableReferenceSegment each : tableReferences.getValue()) {
+                result.getTables().addAll(each.getTables());
+                result.getTableReferences().add(each);
             }
-//            result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.fromClause())).getValue());
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -497,10 +496,8 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         TableReferenceSegment result = new TableReferenceSegment();
         if (null != ctx.tableFactor()) {
-            ASTNode tableFactor = visit(ctx.tableFactor());
-            if (null != tableFactor) {
-                result.setTable((TableSegment) tableFactor);
-            }
+            TableFactorSegment tableFactor = (TableFactorSegment) visit(ctx.tableFactor());
+            result.setTableFactor(tableFactor);
         }
         if (!ctx.joinedTable().isEmpty()) {
             for (JoinedTableContext jc : ctx.joinedTable()) {
@@ -513,27 +510,35 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
     
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
+        TableFactorSegment result = new TableFactorSegment();
         if (null != ctx.subquery()) {
-            visit(ctx.subquery());
+            SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
+            result.setSubquery(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery));
         }
         if (null != ctx.tableName()) {
-            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
+            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
             if (null != ctx.alias()) {
-                result.setAlias((AliasSegment) visit(ctx.alias()));
+                table.setAlias((AliasSegment) visit(ctx.alias()));
             }
-            return result;
+            result.setTable(table);
         }
-        return null;
+        if (null != ctx.alias()) {
+            result.setAlias(((AliasSegment) visit(ctx.alias())).getIdentifier().toString());
+        }
+        if (null != ctx.tableReferences()) {
+            
+            CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue) visit(ctx.tableReferences());
+            result.getTableReferences().addAll(tableReferences.getValue());
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitJoinedTable(final JoinedTableContext ctx) {
         JoinedTableSegment result = new JoinedTableSegment();
-        ASTNode tableFactor = visit(ctx.tableFactor());
-        if (null != tableFactor) {
-            result.setTable((TableSegment) tableFactor);
-        }
+        TableFactorSegment tableFactor = (TableFactorSegment) visit(ctx.tableFactor());
+        result.setTableFactor(tableFactor);
         if (null != ctx.joinSpecification()) {
             result.setJoinSpecification((JoinSpecificationSegment) visit(ctx.joinSpecification()));
         }

@@ -20,42 +20,28 @@ package org.apache.shardingsphere.sql.parser.sql.segment.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 @Getter
 @Setter
-public final class TableReferenceSegment implements SQLSegment {
+public final class TableFactorSegment implements SQLSegment {
     
     private int startIndex;
     
     private int stopIndex;
     
-    private TableFactorSegment tableFactor;
+    private TableSegment table;
     
-    private final Collection<JoinedTableSegment> joinedTables = new LinkedList<>();
+    private String alias;
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private SubquerySegment subquery;
     
-    /**
-     *  get all tables.
-     * @return Collection.
-     */
-    public Collection<SimpleTableSegment> getTables() {
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        if (null != tableFactor) {
-            tables.add((SimpleTableSegment) tableFactor.getTable());
-        }
-        
-        if (!joinedTables.isEmpty()) {
-            for (JoinedTableSegment each : joinedTables) {
-                if (null != each.getTable()) {
-                    tables.add((SimpleTableSegment) each.getTable());
-                }
-            }
-        }
-        return tables;
-    }
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
+    private Collection<TableReferenceSegment> tableReferences = new LinkedList<>();
 }
