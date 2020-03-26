@@ -19,33 +19,55 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.LogicAndActualTablesAware;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Table token.
  */
-public final class TableToken extends SQLToken implements Substitutable, LogicAndActualTablesAware {
+public final class TableToken extends SQLToken implements Substitutable, RouteUnitAware {
     
     @Getter
     private final int stopIndex;
     
     private final IdentifierValue identifier;
     
-    public TableToken(final int startIndex, final int stopIndex, final IdentifierValue identifier) {
+    private final SQLStatementContext sqlStatementContext;
+    
+    private final ShardingRule shardingRule;
+    
+    public TableToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.identifier = identifier;
+        this.sqlStatementContext = sqlStatementContext;
+        this.shardingRule = shardingRule;
     }
     
     @Override
-    public String toString(final Map<String, String> logicAndActualTables) {
-        String actualTableName = logicAndActualTables.get(identifier.getValue().toLowerCase());
+    public String toString(final RouteUnit routeUnit) {
+        String actualTableName = getLogicAndActualTables(routeUnit).get(identifier.getValue().toLowerCase());
         actualTableName = null == actualTableName ? identifier.getValue().toLowerCase() : actualTableName;
         return Joiner.on("").join(identifier.getQuoteCharacter().getStartDelimiter(), actualTableName, identifier.getQuoteCharacter().getEndDelimiter());
+    }
+    
+    private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        Map<String, String> result = new HashMap<>(tableNames.size(), 1);
+        for (RouteMapper each : routeUnit.getTableMappers()) {
+            result.put(each.getLogicName().toLowerCase(), each.getActualName());
+            result.putAll(shardingRule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));
+        }
+        return result;
     }
 }
