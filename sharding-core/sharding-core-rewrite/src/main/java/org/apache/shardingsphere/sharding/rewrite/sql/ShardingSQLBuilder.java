@@ -17,31 +17,21 @@
 
 package org.apache.shardingsphere.sharding.rewrite.sql;
 
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.LogicAndActualTablesAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.impl.AbstractSQLBuilder;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * SQL builder for sharding.
  */
 public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     
-    private final ShardingRule shardingRule;
-    
     private final RouteUnit routeUnit;
     
-    public ShardingSQLBuilder(final SQLRewriteContext context, final ShardingRule shardingRule, final RouteUnit routeUnit) {
+    public ShardingSQLBuilder(final SQLRewriteContext context, final RouteUnit routeUnit) {
         super(context);
-        this.shardingRule = shardingRule;
         this.routeUnit = routeUnit;
     }
     
@@ -50,19 +40,6 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
         if (sqlToken instanceof RouteUnitAware) {
             return ((RouteUnitAware) sqlToken).toString(routeUnit);
         }
-        if (sqlToken instanceof LogicAndActualTablesAware) {
-            return ((LogicAndActualTablesAware) sqlToken).toString(getLogicAndActualTables());
-        }
         return sqlToken.toString();
-    }
-    
-    private Map<String, String> getLogicAndActualTables() {
-        Collection<String> tableNames = getContext().getSqlStatementContext().getTablesContext().getTableNames();
-        Map<String, String> result = new HashMap<>(tableNames.size(), 1);
-        for (RouteMapper each : routeUnit.getTableMappers()) {
-            result.put(each.getLogicName().toLowerCase(), each.getActualName());
-            result.putAll(shardingRule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));
-        }
-        return result;
     }
 }

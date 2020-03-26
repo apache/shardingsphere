@@ -44,7 +44,7 @@ public final class ShardingSQLRewriteEngine implements SQLRouteRewriteEngine<Sha
     public Map<RouteUnit, SQLRewriteResult> rewrite(final ShardingRule shardingRule, final SQLRewriteContext sqlRewriteContext, final RouteResult routeResult) {
         Map<RouteUnit, SQLRewriteResult> result = new LinkedHashMap<>(routeResult.getRouteUnits().size(), 1);
         for (RouteUnit each : routeResult.getRouteUnits()) {
-            result.put(each, new SQLRewriteResult(new ShardingSQLBuilder(sqlRewriteContext, shardingRule, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeResult, each)));
+            result.put(each, new SQLRewriteResult(new ShardingSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeResult, each)));
         }
         return result;
     }
