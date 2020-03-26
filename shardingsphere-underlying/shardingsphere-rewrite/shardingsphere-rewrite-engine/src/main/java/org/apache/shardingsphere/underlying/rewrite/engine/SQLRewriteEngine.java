@@ -18,17 +18,20 @@
 package org.apache.shardingsphere.underlying.rewrite.engine;
 
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.sql.impl.DefaultSQLBuilder;
 
 /**
  * SQL rewrite engine.
  */
-public interface SQLRewriteEngine {
+public final class SQLRewriteEngine {
     
     /**
      * Rewrite SQL and parameters.
-     * 
+     *
      * @param sqlRewriteContext SQL rewrite context
      * @return SQL rewrite result
      */
-    SQLRewriteResult rewrite(SQLRewriteContext sqlRewriteContext);
+    public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
+        return new SQLRewriteResult(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
+    }
 }

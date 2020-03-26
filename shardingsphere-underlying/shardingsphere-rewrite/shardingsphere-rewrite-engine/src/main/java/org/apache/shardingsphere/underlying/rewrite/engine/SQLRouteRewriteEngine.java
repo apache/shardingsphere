@@ -17,27 +17,65 @@
 
 package org.apache.shardingsphere.underlying.rewrite.engine;
 
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
+import org.apache.shardingsphere.underlying.rewrite.sql.impl.RouteSQLBuilder;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * SQL rewrite engine with route.
- * 
- * @param <T> type of rule
  */
-public interface SQLRouteRewriteEngine<T extends BaseRule> {
+public final class SQLRouteRewriteEngine {
     
     /**
      * Rewrite SQL and parameters.
-     * 
-     * @param rule rule
+     *
      * @param sqlRewriteContext SQL rewrite context
      * @param routeResult route result
      * @return SQL map of route unit and rewrite result
      */
-    Map<RouteUnit, SQLRewriteResult> rewrite(T rule, SQLRewriteContext sqlRewriteContext, RouteResult routeResult);
+    public Map<RouteUnit, SQLRewriteResult> rewrite(final SQLRewriteContext sqlRewriteContext, final RouteResult routeResult) {
+        Map<RouteUnit, SQLRewriteResult> result = new LinkedHashMap<>(routeResult.getRouteUnits().size(), 1);
+        for (RouteUnit each : routeResult.getRouteUnits()) {
+            result.put(each, new SQLRewriteResult(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeResult, each)));
+        }
+        return result;
+    }
+    
+    private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RouteResult routeResult, final RouteUnit routeUnit) {
+        if (parameterBuilder instanceof StandardParameterBuilder || routeResult.getOriginalDataNodes().isEmpty() || parameterBuilder.getParameters().isEmpty()) {
+            return parameterBuilder.getParameters();
+        }
+        List<Object> result = new LinkedList<>();
+        int count = 0;
+        for (Collection<DataNode> each : routeResult.getOriginalDataNodes()) {
+            if (isInSameDataNode(each, routeUnit)) {
+                result.addAll(((GroupedParameterBuilder) parameterBuilder).getParameters(count));
+            }
+            count++;
+        }
+        return result;
+    }
+    
+    private boolean isInSameDataNode(final Collection<DataNode> dataNodes, final RouteUnit routeUnit) {
+        if (dataNodes.isEmpty()) {
+            return true;
+        }
+        for (DataNode each : dataNodes) {
+            if (routeUnit.findTableMapper(each.getDataSourceName(), each.getTableName()).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

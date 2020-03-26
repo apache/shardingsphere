@@ -176,10 +176,15 @@ ShardingSphere采用snowflake算法作为默认的分布式自增主键策略，
 
 解决方案如下：
 
-打开cmd.exe（你需要将git添加到环境变量中）并执行下面的命令：
+打开cmd.exe（你需要将git添加到环境变量中）并执行下面的命令，可以让git支持长文件名：
 ```
 git config --global core.longpaths true
 ```
+
+如果是Windows 10，还需要通过注册表或组策略，解除操作系统的文件名长度限制（需要重启）：
+> 在注册表编辑器中创建`HKLM\SYSTEM\CurrentControlSet\Control\FileSystem LongPathsEnabled`， 类型为`REG_DWORD`，并设置为1。
+> 或者从系统菜单点击设置图标，输入“编辑组策略”， 然后在打开的窗口依次进入“计算机管理” > “管理模板” > “系统” > “文件系统”，在右侧双击“启用 win32 长路径”。
+
 参考资料：
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
@@ -221,9 +226,9 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 解决方案如下：
 
-1. 以需要脱敏的逻辑列名编写JPA的实体类(Entity).
-2. 关闭JPA的auto-ddl，如 auto-ddl=none.
-3. 手动建表，建表时应使用数据脱敏配置的`cipherColumn`,`plainColumn`和`assistedQueryColumn`代替逻辑列.
+1. 以需要脱敏的逻辑列名编写JPA的实体类(Entity)。
+2. 关闭JPA的auto-ddl，如 auto-ddl=none。
+3. 手动建表，建表时应使用数据脱敏配置的`cipherColumn`,`plainColumn`和`assistedQueryColumn`代替逻辑列。
 
 #### 18. 服务启动时如何加快`metadata`加载速度？
 
@@ -231,3 +236,11 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 
 1. 升级到`4.0.1`以上的版本，以提高`default dataSource`的table metadata的加载速度。
 2. 参照你采用的连接池，将配置项`max.connections.size.per.query`（默认值为1）调高（版本 >= 3.0.0.M3）。
+
+#### 19. 如何在inline分表策略时，允许执行范围查询操作（BETWEEN AND、\>、\<、\>=、\<=）？
+
+回答：
+
+1. 需要使用4.1.0以上版本。
+2. 将配置项`allow.range.query.with.inline.sharding`设置为true即可（默认为false）。
+3. 需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表。

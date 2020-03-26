@@ -31,7 +31,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
@@ -67,7 +67,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext();
         new EncryptSQLRewriteContextDecorator().decorate(encryptRule, new ConfigurationProperties(ruleConfiguration.getProps()), sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
-        return Collections.singletonList(new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext));
+        return Collections.singletonList(new SQLRewriteEngine().rewrite(sqlRewriteContext));
     }
     
     private YamlRootEncryptRuleConfiguration createRuleConfiguration() throws IOException {
