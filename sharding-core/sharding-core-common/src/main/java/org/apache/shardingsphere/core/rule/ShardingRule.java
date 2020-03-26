@@ -489,4 +489,19 @@ public class ShardingRule implements BaseRule {
             bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
         return result;
     }
+    
+    /**
+     * To rules.
+     * 
+     * @return rules
+     */
+    public Collection<BaseRule> toRules() {
+        Collection<BaseRule> result = new LinkedList<>();
+        result.add(this);
+        if (!encryptRule.getEncryptTableNames().isEmpty()) {
+            result.add(encryptRule);
+        }
+        result.addAll(masterSlaveRules);
+        return result;
+    }
 }

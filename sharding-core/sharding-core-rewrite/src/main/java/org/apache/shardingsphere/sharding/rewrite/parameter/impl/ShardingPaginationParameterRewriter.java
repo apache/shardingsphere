@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.rewrite.aware.RouteContextAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
