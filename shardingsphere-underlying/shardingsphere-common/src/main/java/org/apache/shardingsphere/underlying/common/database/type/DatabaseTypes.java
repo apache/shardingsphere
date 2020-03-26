@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.underlying.common.database.type;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.spi.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 /**
@@ -40,8 +41,8 @@ public final class DatabaseTypes {
     
     /**
      * Get name of trunk database type.
-     * 
      * @param databaseType database type
+     *
      * @return name of trunk database type
      */
     public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
@@ -50,8 +51,8 @@ public final class DatabaseTypes {
     
     /**
      * Get trunk database type.
+     * @param name database name
      *
-     * @param name database name 
      * @return trunk database type
      */
     public static DatabaseType getTrunkDatabaseType(final String name) {
@@ -60,28 +61,22 @@ public final class DatabaseTypes {
     
     /**
      * Get actual database type.
+     * @param name database name
      *
-     * @param name database name 
      * @return actual database type
      */
     public static DatabaseType getActualDatabaseType(final String name) {
-        Preconditions.checkState(DATABASE_TYPES.containsKey(name), "Unsupported database: '%s'", name);
-        return DATABASE_TYPES.get(name);
+        return Optional.ofNullable(DATABASE_TYPES.get(name)).orElseThrow(() -> new ShardingSphereException("Unsupported database:'%s'", name));
     }
     
     /**
      * Get database type by URL.
-     * 
      * @param url database URL
+     *
      * @return database type
      */
     public static DatabaseType getDatabaseTypeByURL(final String url) {
-        for (DatabaseType each : DATABASE_TYPES.values()) {
-            if (matchStandardURL(url, each) || matchURLAlias(url, each)) {
-                return each;
-            }
-        }
-        return DATABASE_TYPES.get("SQL92");
+        return DATABASE_TYPES.values().stream().filter(each -> matchStandardURL(url, each) || matchURLAlias(url, each)).findAny().orElse(DATABASE_TYPES.get("SQL92"));
     }
     
     private static boolean matchStandardURL(final String url, final DatabaseType databaseType) {
@@ -89,11 +84,6 @@ public final class DatabaseTypes {
     }
     
     private static boolean matchURLAlias(final String url, final DatabaseType databaseType) {
-        for (String each : databaseType.getJdbcUrlPrefixAlias()) {
-            if (url.startsWith(each)) {
-                return true;
-            }
-        }
-        return false;
+        return databaseType.getJdbcUrlPrefixAlias().stream().anyMatch(url::startsWith);
     }
 }
