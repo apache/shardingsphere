@@ -18,15 +18,15 @@
 FROM java:8
 MAINTAINER ShardingSphere "dev@shardingsphere.incubator.apache.org"
 
-ENV CURRENT_VERSION 5.0.0-RC1
+ENV CURRENT_VERSION 4.0.1
 ENV APP_NAME apache-shardingsphere-incubating
 ENV MODULE_NAME sharding-proxy
 ENV LOCAL_PATH /opt/sharding-proxy
-ENV CLASSPATH ${CLASSPATH}:${LOCAL_PATH}/libs:${EXT_LIB_PATH}
 
 RUN wget https://dist.apache.org/repos/dist/release/incubator/shardingsphere/${CURRENT_VERSION}/${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin.tar.gz && \
     tar -xzvf ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin.tar.gz && \
     mv ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin ${LOCAL_PATH} && \
     rm -f ${APP_NAME}-${CURRENT_VERSION}-${MODULE_NAME}-bin.tar.gz
+RUN mkdir -p ${LOCAL_PATH}/ext-lib
 
 ENTRYPOINT ${LOCAL_PATH}/bin/start.sh ${PORT} && tail -f ${LOCAL_PATH}/logs/stdout.log
