@@ -38,6 +38,7 @@ import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -136,6 +138,10 @@ public abstract class BaseShardingEngine {
     
     private Collection<ExecutionUnit> convert(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
+        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
+            String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
+            return Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sql, parameters)));
+        }
         for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
             result.add(new ExecutionUnit(each.getDataSourceMapper().getActualName(), new SQLUnit(sql, parameters)));
         }
@@ -143,9 +149,14 @@ public abstract class BaseShardingEngine {
     }
     
     private Collection<ExecutionUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        Collection<ExecutionUnit> result = new LinkedHashSet<>();
         registerRewriteDecorator();
         SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
+        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
+            SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
+            String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
+            return Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
+        }
+        Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (Entry<RouteUnit, SQLRewriteResult> entry : new SQLRouteRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult()).entrySet()) {
             result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
         }
