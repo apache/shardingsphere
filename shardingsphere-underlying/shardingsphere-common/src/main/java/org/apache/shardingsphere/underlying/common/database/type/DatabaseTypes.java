@@ -41,8 +41,8 @@ public final class DatabaseTypes {
     
     /**
      * Get name of trunk database type.
-     * @param databaseType database type
      *
+     * @param databaseType database type
      * @return name of trunk database type
      */
     public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
@@ -51,8 +51,8 @@ public final class DatabaseTypes {
     
     /**
      * Get trunk database type.
-     * @param name database name
      *
+     * @param name database name
      * @return trunk database type
      */
     public static DatabaseType getTrunkDatabaseType(final String name) {
@@ -61,8 +61,8 @@ public final class DatabaseTypes {
     
     /**
      * Get actual database type.
-     * @param name database name
      *
+     * @param name database name
      * @return actual database type
      */
     public static DatabaseType getActualDatabaseType(final String name) {
@@ -71,8 +71,8 @@ public final class DatabaseTypes {
     
     /**
      * Get database type by URL.
-     * @param url database URL
      *
+     * @param url database URL
      * @return database type
      */
     public static DatabaseType getDatabaseTypeByURL(final String url) {
