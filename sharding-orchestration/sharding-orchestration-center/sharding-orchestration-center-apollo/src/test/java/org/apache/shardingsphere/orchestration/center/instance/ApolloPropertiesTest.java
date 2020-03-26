@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ApolloPropertiesTest {
-
+    
     @Test
     public void assertGetValue() {
         Properties props = new Properties();
@@ -45,7 +45,7 @@ public final class ApolloPropertiesTest {
         assertThat(actual.getValue(ApolloPropertyKey.CONNECT_TIMEOUT), is(3000));
         assertThat(actual.getValue(ApolloPropertyKey.READ_TIMEOUT), is(6000));
     }
-
+    
     @Test
     public void assertGetDefaultValue() {
         ApolloProperties actual = new ApolloProperties(new Properties());

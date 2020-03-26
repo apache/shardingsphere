@@ -246,7 +246,7 @@ public final class BackendConnection implements AutoCloseable {
         MasterVisitedManager.clear();
         exceptions.addAll(closeResultSets());
         exceptions.addAll(closeStatements());
-        if (!stateHandler.isInTransaction() || forceClose) {
+        if (!stateHandler.isInTransaction() || forceClose || TransactionType.BASE == transactionType) {
             exceptions.addAll(releaseConnections(forceClose));
         }
         stateHandler.doNotifyIfNecessary();

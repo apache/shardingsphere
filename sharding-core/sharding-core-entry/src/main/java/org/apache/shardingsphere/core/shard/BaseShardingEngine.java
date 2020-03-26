@@ -45,6 +45,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Base sharding engine.
@@ -93,8 +94,6 @@ public abstract class BaseShardingEngine {
     
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
-    protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
-    
     private RouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
         routingHook.start(sql);
         try {
@@ -109,6 +108,8 @@ public abstract class BaseShardingEngine {
             throw ex;
         }
     }
+    
+    protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
     
     private void registerRouteDecorator() {
         dataNodeRouter.registerDecorator(shardingRule, new ShardingRouteDecorator());
@@ -129,10 +130,8 @@ public abstract class BaseShardingEngine {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         registerRewriteDecorator(routeContext);
         SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext());
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-            ShardingSQLRewriteEngine sqlRewriteEngine = new ShardingSQLRewriteEngine(shardingRule, routeContext.getRouteResult().getOriginalDataNodes(), each);
-            SQLRewriteResult sqlRewriteResult = sqlRewriteEngine.rewrite(sqlRewriteContext);
-            result.add(new ExecutionUnit(each.getDataSourceMapper().getActualName(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
+        for (Entry<RouteUnit, SQLRewriteResult> entry : new ShardingSQLRewriteEngine().rewrite(shardingRule, sqlRewriteContext, routeContext.getRouteResult()).entrySet()) {
+            result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
         }
         return result;
     }
