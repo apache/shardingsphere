@@ -133,6 +133,9 @@ public final class SQLParserParameterizedTest {
     
     @Test
     public void assertSupportedSQL() {
+        if ("delete_with_alias".equals(sqlCaseId) && "SQLServer".equals(databaseType)) {
+            System.out.println("hghgjh");
+        }
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
