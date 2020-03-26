@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.rewrite.engine;
 
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -26,18 +25,15 @@ import java.util.Map;
 
 /**
  * SQL rewrite engine with route.
- * 
- * @param <T> type of rule
  */
-public interface SQLRouteRewriteEngine<T extends BaseRule> {
+public interface SQLRouteRewriteEngine {
     
     /**
      * Rewrite SQL and parameters.
      * 
-     * @param rule rule
      * @param sqlRewriteContext SQL rewrite context
      * @param routeResult route result
      * @return SQL map of route unit and rewrite result
      */
-    Map<RouteUnit, SQLRewriteResult> rewrite(T rule, SQLRewriteContext sqlRewriteContext, RouteResult routeResult);
+    Map<RouteUnit, SQLRewriteResult> rewrite(SQLRewriteContext sqlRewriteContext, RouteResult routeResult);
 }
