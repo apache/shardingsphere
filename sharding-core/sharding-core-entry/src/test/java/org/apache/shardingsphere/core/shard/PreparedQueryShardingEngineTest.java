@@ -23,8 +23,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
@@ -59,9 +60,8 @@ public final class PreparedQueryShardingEngineTest extends BaseShardingEngineTes
     @Before
     public void setUp() {
         when(metaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
-        EncryptRule encryptRule = mock(EncryptRule.class);
-        when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        shardingEngine = new PreparedQueryShardingEngine(shardingRule, getProperties(), metaData, mock(SQLParserEngine.class));
+        when(shardingRule.toRules()).thenReturn(Arrays.asList(shardingRule, mock(EncryptRule.class)));
+        shardingEngine = new PreparedQueryShardingEngine(shardingRule.toRules(), getProperties(), metaData, mock(SQLParserEngine.class));
         setRoutingEngine();
     }
     

@@ -48,7 +48,6 @@ import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -70,23 +69,13 @@ public abstract class BaseShardingEngine {
     
     private final SPIRoutingHook routingHook;
     
-    public BaseShardingEngine(final ShardingRule shardingRule, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
-        rules = createRules(shardingRule);
+    public BaseShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+        this.rules = rules;
         this.properties = properties;
         this.metaData = metaData;
         dataNodeRouter = new DataNodeRouter(metaData, properties, sqlParserEngine);
         sqlRewriteEntry = new SQLRewriteEntry(metaData.getSchema(), properties);
         routingHook = new SPIRoutingHook();
-    }
-    
-    private Collection<BaseRule> createRules(final ShardingRule shardingRule) {
-        Collection<BaseRule> result = new LinkedList<>();
-        result.add(shardingRule);
-        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            result.add(shardingRule.getEncryptRule());
-        }
-        result.addAll(shardingRule.getMasterSlaveRules());
-        return result;
     }
     
     /**

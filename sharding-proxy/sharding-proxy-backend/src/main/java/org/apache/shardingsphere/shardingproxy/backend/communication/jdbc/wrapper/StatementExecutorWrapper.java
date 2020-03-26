@@ -81,7 +81,7 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     private ExecutionContext doShardingRoute(final String sql) {
         SimpleQueryShardingEngine shardingEngine = new SimpleQueryShardingEngine(
-                logicSchema.getShardingRule(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
+                logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
         return shardingEngine.shard(sql, Collections.emptyList());
     }
     
