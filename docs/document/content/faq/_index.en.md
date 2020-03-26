@@ -172,7 +172,7 @@ Since the Git version of Windows is compiled using msys,it uses the old version 
 
 The solutions are as follows: 
 
-Open cmd.exe (you need to add git to environment variables) and execute the following command: 
+Open cmd.exe (you need to add git to environment variables) and execute the following command to allow git supporting log paths: 
 ```
 git config --global core.longpaths true
 ```
