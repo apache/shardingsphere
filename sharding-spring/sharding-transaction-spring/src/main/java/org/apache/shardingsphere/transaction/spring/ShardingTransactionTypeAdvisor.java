@@ -23,6 +23,7 @@ import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
 import org.springframework.aop.support.ComposablePointcut;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
+import org.springframework.core.Ordered;
 
 /**
  * Sharding transaction type advisor.
@@ -40,6 +41,7 @@ public final class ShardingTransactionTypeAdvisor extends AbstractPointcutAdviso
         Pointcut methodPointcut = new ComposablePointcut(AnnotationMatchingPointcut.forMethodAnnotation(ShardingTransactionType.class));
         transactionTypePointcut = new ComposablePointcut(classPointcut).union(methodPointcut);
         transactionTypeInterceptor = new ShardingTransactionTypeInterceptor();
+        setOrder(Ordered.LOWEST_PRECEDENCE - 1);
     }
     
     @Override

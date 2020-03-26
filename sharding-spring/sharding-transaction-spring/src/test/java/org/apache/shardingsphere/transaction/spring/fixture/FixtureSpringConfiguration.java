@@ -17,61 +17,14 @@
 
 package org.apache.shardingsphere.transaction.spring.fixture;
 
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 
 @Configuration
-@EnableTransactionManagement
 @ComponentScan(basePackages = {"org.apache.shardingsphere.transaction.spring"})
 public class FixtureSpringConfiguration {
-    
-    /**
-     * Data source configuration.
-     *
-     * @return data source
-     * @throws IOException IO exception
-     * @throws SQLException SQL exception
-     */
-    @Bean
-    public DataSource dataSource() throws IOException, SQLException {
-        return YamlShardingDataSourceFactory.createDataSource(new File(FixtureSpringConfiguration.class.getResource("/META-INF/sharding-databases-tables.yaml").getFile()));
-    }
-    
-    /**
-     * Create platform transaction manager bean.
-     *
-     * @return platform transaction manager
-     * @throws IOException IO exception
-     * @throws SQLException SQL exception
-     */
-    @Bean
-    public PlatformTransactionManager txManager() throws IOException, SQLException {
-        return new DataSourceTransactionManager(dataSource());
-    }
-    
-    /**
-     * Create JDBC template bean.
-     *
-     * @throws IOException IO exception
-     * @throws SQLException SQL exception
-     * @return JDBC template bean
-     */
-    @Bean
-    public JdbcTemplate jdbcTemplate() throws IOException, SQLException {
-        return new JdbcTemplate(dataSource());
-    }
     
     /**
      * Sharding transaction type scanner configuration.

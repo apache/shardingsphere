@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.transaction.spring;
 
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spring.fixture.MockService;
 import org.apache.shardingsphere.transaction.spring.fixture.FixtureSpringConfiguration;
-import org.junit.Before;
+import org.apache.shardingsphere.transaction.spring.fixture.MockService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -36,21 +34,12 @@ import static org.junit.Assert.assertThat;
 public class ShardingTransactionTypeScannerTest {
     
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-    
-    @Autowired
     private MockService mockService;
-    
-    @Before
-    public void setUp() {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS t_order");
-        jdbcTemplate.execute("CREATE TABLE t_order (order_id BIGINT AUTO_INCREMENT, user_id INT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))");
-    }
     
     @Test
     public void assertShardingTransaction() {
-        assertThat(mockService.executeXA(), is(TransactionType.XA));
         assertThat(mockService.executeLocal(), is(TransactionType.LOCAL));
-        assertThat(mockService.execute(), is(TransactionType.LOCAL));
+        assertThat(mockService.executeBase(), is(TransactionType.BASE));
+        assertThat(mockService.execute(), is(TransactionType.XA));
     }
 }
