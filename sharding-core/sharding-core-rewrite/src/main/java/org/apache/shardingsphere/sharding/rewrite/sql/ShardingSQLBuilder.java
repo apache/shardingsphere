@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.sharding.rewrite.sql;
 
-import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.LogicAndActualTablesAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.sql.impl.AbstractSQLBuilder;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -59,31 +57,11 @@ public final class ShardingSQLBuilder extends AbstractSQLBuilder {
     }
     
     private Map<String, String> getLogicAndActualTables() {
-        Map<String, String> result = new HashMap<>();
         Collection<String> tableNames = getContext().getSqlStatementContext().getTablesContext().getTableNames();
+        Map<String, String> result = new HashMap<>(tableNames.size(), 1);
         for (RouteMapper each : routeUnit.getTableMappers()) {
-            String logicTableName = each.getLogicName().toLowerCase();
-            result.put(logicTableName, each.getActualName());
-            result.putAll(getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each, tableNames));
-        }
-        return result;
-    }
-    
-    private Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, final RouteMapper tableMapper, final Collection<String> tableNames) {
-        Map<String, String> result = new LinkedHashMap<>();
-        shardingRule.findBindingTableRule(tableMapper.getLogicName()).ifPresent(
-            bindingTableRule -> result.putAll(getLogicAndActualTablesFromBindingTable(dataSourceName, tableMapper, tableNames, bindingTableRule)));
-        return result;
-    }
-    
-    private Map<String, String> getLogicAndActualTablesFromBindingTable(
-            final String dataSourceName, final RouteMapper tableMapper, final Collection<String> parsedTableNames, final BindingTableRule bindingTableRule) {
-        Map<String, String> result = new LinkedHashMap<>();
-        for (String each : parsedTableNames) {
-            String tableName = each.toLowerCase();
-            if (!tableName.equals(tableMapper.getLogicName().toLowerCase()) && bindingTableRule.hasLogicTable(tableName)) {
-                result.put(tableName, bindingTableRule.getBindingActualTable(dataSourceName, tableName, tableMapper.getActualName()));
-            }
+            result.put(each.getLogicName().toLowerCase(), each.getActualName());
+            result.putAll(shardingRule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));
         }
         return result;
     }
