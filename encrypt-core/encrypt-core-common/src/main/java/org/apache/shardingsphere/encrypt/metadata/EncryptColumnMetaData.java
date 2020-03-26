@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.underlying.common.metadata.column.ColumnMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 
 /**
  * Column meta data for encrypt.
@@ -36,9 +36,9 @@ public final class EncryptColumnMetaData extends ColumnMetaData {
     
     private final String assistedQueryColumnName;
     
-    public EncryptColumnMetaData(final String name, final String dataType, final boolean primaryKey, final String cipherColumnName, 
-                                 final String plainColumnName, final String assistedQueryColumnName) {
-        super(name, dataType, primaryKey);
+    public EncryptColumnMetaData(final String name, final String dataType, final boolean primaryKey, 
+                                 final String cipherColumnName, final String plainColumnName, final String assistedQueryColumnName) {
+        super(name, dataType, primaryKey, false, false);
         this.cipherColumnName = cipherColumnName;
         this.plainColumnName = plainColumnName;
         this.assistedQueryColumnName = assistedQueryColumnName;

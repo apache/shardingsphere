@@ -27,14 +27,12 @@ import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Field;
@@ -160,20 +158,16 @@ public final class ConfigurationLoggerTest {
     
     private Properties getProperties() {
         Properties result = new Properties();
-        result.put(PropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        result.put(PropertiesConstant.SQL_SIMPLE.getKey(), Boolean.TRUE.toString());
+        result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
+        result.put(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString());
         return result;
     }
     
     private void assertLogInfo(final String type, final String logContent) {
-        doAnswer(new Answer() {
-            
-            @Override
-            public Void answer(final InvocationOnMock invocationOnMock) {
-                assertThat(invocationOnMock.getArgument(1).toString(), is(type));
-                assertThat(invocationOnMock.getArgument(2).toString(), is(logContent));
-                return null;
-            }
+        doAnswer(invocationOnMock -> {
+            assertThat(invocationOnMock.getArgument(1).toString(), is(type));
+            assertThat(invocationOnMock.getArgument(2).toString(), is(logContent));
+            return null;
         }).when(log).info(anyString(), anyString(), anyString());
     }
 }

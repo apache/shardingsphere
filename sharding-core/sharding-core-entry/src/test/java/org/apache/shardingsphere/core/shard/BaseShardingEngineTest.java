@@ -20,15 +20,14 @@ package org.apache.shardingsphere.core.shard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.Test;
@@ -48,16 +47,17 @@ public abstract class BaseShardingEngineTest {
     
     private final List<Object> parameters;
     
-    protected final ShardingSphereProperties getProperties() {
+    protected final ConfigurationProperties getProperties() {
         Properties result = new Properties();
-        result.setProperty(PropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        return new ShardingSphereProperties(result);
+        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
+        return new ConfigurationProperties(result);
     }
     
-    protected final ShardingRouteContext createSQLRouteContext() {
+    @SuppressWarnings("unchecked")
+    protected final RouteContext createSQLRouteContext() {
         RouteResult routeResult = new RouteResult();
-        routeResult.getRouteUnits().add(new RouteUnit("ds"));
-        return new ShardingRouteContext(new CommonSQLStatementContext(new ShowStatement()), routeResult, new ShardingConditions(Collections.<ShardingCondition>emptyList()));
+        routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds"), Collections.emptyList()));
+        return new RouteContext(new CommonSQLStatementContext(new ShowStatement()), Collections.emptyList(), routeResult);
     }
     
     protected final void assertExecutionContext(final ExecutionContext actual) {

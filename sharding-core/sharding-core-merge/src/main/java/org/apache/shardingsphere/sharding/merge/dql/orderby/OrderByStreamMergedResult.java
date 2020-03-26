@@ -19,9 +19,11 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.stream.StreamMergedResult;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -42,16 +44,16 @@ public class OrderByStreamMergedResult extends StreamMergedResult {
     @Getter(AccessLevel.PROTECTED)
     private boolean isFirstNext;
     
-    public OrderByStreamMergedResult(final List<QueryResult> queryResults, final Collection<OrderByItem> orderByItems) throws SQLException {
-        this.orderByItems = orderByItems;
+    public OrderByStreamMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
+        this.orderByItems = selectStatementContext.getOrderByContext().getItems();
         this.orderByValuesQueue = new PriorityQueue<>(queryResults.size());
-        orderResultSetsToQueue(queryResults);
+        orderResultSetsToQueue(queryResults, selectStatementContext, schemaMetaData);
         isFirstNext = true;
     }
     
-    private void orderResultSetsToQueue(final List<QueryResult> queryResults) throws SQLException {
+    private void orderResultSetsToQueue(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext, final SchemaMetaData schemaMetaData) throws SQLException {
         for (QueryResult each : queryResults) {
-            OrderByValue orderByValue = new OrderByValue(each, orderByItems);
+            OrderByValue orderByValue = new OrderByValue(each, orderByItems, selectStatementContext, schemaMetaData);
             if (orderByValue.next()) {
                 orderByValuesQueue.offer(orderByValue);
             }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.item.ExpectedOrderByItem;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTableOwner;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTableOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -36,5 +36,5 @@ public final class ExpectedColumnOrderByItem extends ExpectedOrderByItem {
     private String name;
     
     @XmlElement
-    private ExpectedTableOwner owner;
+    private ExpectedSimpleTableOwner owner;
 }

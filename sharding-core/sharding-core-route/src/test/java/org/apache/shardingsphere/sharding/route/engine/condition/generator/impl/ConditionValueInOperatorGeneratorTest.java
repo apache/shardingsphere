@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.core.strategy.route.value.ListRouteValue;
 import org.apache.shardingsphere.core.strategy.route.value.RouteValue;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateBracketValue;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.value.PredicateInRightValue;
@@ -32,6 +30,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -46,7 +45,7 @@ public final class ConditionValueInOperatorGeneratorTest {
     @Test
     public void assertNowExpression() {
         PredicateBracketValue predicateBracketValue = new PredicateBracketValue(new PredicateLeftBracketValue(0, 1), new PredicateRightBracketValue(0, 1));
-        PredicateInRightValue inRightValue = new PredicateInRightValue(predicateBracketValue, Collections.<ExpressionSegment>singletonList(new CommonExpressionSegment(0, 0, "now()")));
+        PredicateInRightValue inRightValue = new PredicateInRightValue(predicateBracketValue, Collections.singletonList(new CommonExpressionSegment(0, 0, "now()")));
         Optional<RouteValue> routeValue = generator.generate(inRightValue, column, new LinkedList<>());
         assertTrue(routeValue.isPresent());
         assertThat(((ListRouteValue) routeValue.get()).getValues().iterator().next(), instanceOf(Date.class));

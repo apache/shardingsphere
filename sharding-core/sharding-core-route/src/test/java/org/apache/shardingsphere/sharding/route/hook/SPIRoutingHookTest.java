@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.sharding.route.hook;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.underlying.common.metadata.table.TableMetas;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.RoutingHookFixture;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import java.util.Collection;
+
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -38,10 +39,10 @@ public final class SPIRoutingHookTest {
     private final SPIRoutingHook spiRoutingHook = new SPIRoutingHook();
     
     @Mock
-    private ShardingRouteContext routeContext;
+    private RouteContext routeContext;
     
     @Mock
-    private TableMetas tableMetas;
+    private SchemaMetaData schemaMetaData;
     
     @Mock
     private Exception exception;
@@ -57,11 +58,11 @@ public final class SPIRoutingHookTest {
     
     @Test
     public void assertFinishSuccess() {
-        spiRoutingHook.finishSuccess(routeContext, tableMetas);
+        spiRoutingHook.finishSuccess(routeContext, schemaMetaData);
         RoutingHook routingHook = getFixtureHook();
         assertThat(routingHook, instanceOf(RoutingHookFixture.class));
         assertThat(((RoutingHookFixture) routingHook).getRouteContext(), is(routeContext));
-        assertThat(((RoutingHookFixture) routingHook).getTableMetas(), is(tableMetas));
+        assertThat(((RoutingHookFixture) routingHook).getSchemaMetaData(), is(schemaMetaData));
     }
     
     @Test

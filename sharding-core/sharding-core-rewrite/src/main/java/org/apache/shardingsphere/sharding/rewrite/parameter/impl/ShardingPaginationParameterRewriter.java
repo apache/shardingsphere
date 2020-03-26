@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
 
-import com.google.common.base.Optional;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sharding.rewrite.aware.ShardingRouteContextAware;
+import org.apache.shardingsphere.sharding.rewrite.aware.RouteContextAware;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.List;
 
@@ -34,27 +33,22 @@ import java.util.List;
  * Sharding pagination parameter rewriter.
  */
 @Setter
-public final class ShardingPaginationParameterRewriter implements ParameterRewriter<SelectStatementContext>, ShardingRouteContextAware {
+public final class ShardingPaginationParameterRewriter implements ParameterRewriter<SelectStatementContext>, RouteContextAware {
     
-    private ShardingRouteContext shardingRouteContext;
+    private RouteContext routeContext;
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext
-                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !shardingRouteContext.getRouteResult().isSingleRouting();
+                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !routeContext.getRouteResult().isSingleRouting();
     }
     
     @Override
     public void rewrite(final ParameterBuilder parameterBuilder, final SelectStatementContext selectStatementContext, final List<Object> parameters) {
         PaginationContext pagination = selectStatementContext.getPaginationContext();
-        Optional<Integer> offsetParameterIndex = pagination.getOffsetParameterIndex();
-        if (offsetParameterIndex.isPresent()) {
-            rewriteOffset(pagination, offsetParameterIndex.get(), (StandardParameterBuilder) parameterBuilder);
-        }
-        Optional<Integer> rowCountParameterIndex = pagination.getRowCountParameterIndex();
-        if (rowCountParameterIndex.isPresent()) {
-            rewriteRowCount(pagination, rowCountParameterIndex.get(), (StandardParameterBuilder) parameterBuilder, selectStatementContext);
-        }
+        pagination.getOffsetParameterIndex().ifPresent(offsetParameterIndex -> rewriteOffset(pagination, offsetParameterIndex, (StandardParameterBuilder) parameterBuilder));
+        pagination.getRowCountParameterIndex().ifPresent(
+            rowCountParameterIndex -> rewriteRowCount(pagination, rowCountParameterIndex, (StandardParameterBuilder) parameterBuilder, selectStatementContext));
     }
     
     private void rewriteOffset(final PaginationContext pagination, final int offsetParameterIndex, final StandardParameterBuilder parameterBuilder) {

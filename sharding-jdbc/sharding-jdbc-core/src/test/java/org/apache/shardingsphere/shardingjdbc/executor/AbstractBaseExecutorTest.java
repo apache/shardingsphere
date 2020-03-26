@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.shardingjdbc.executor;
 
-import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
-import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
-import org.apache.shardingsphere.sql.parser.relation.segment.table.TablesContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
+import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.sharding.execute.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.sql.parser.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
+import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.MockitoAnnotations;
@@ -46,6 +44,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -85,7 +84,7 @@ public abstract class AbstractBaseExecutorTest {
     
     private ShardingRule getShardingRule() {
         ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.<String>emptyList());
+        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.emptyList());
         Encryptor encryptor = mock(Encryptor.class);
         when(encryptor.decrypt(anyString())).thenReturn("decryptValue");
         EncryptRule encryptRule = mock(EncryptRule.class);
@@ -95,11 +94,11 @@ public abstract class AbstractBaseExecutorTest {
         when(encryptRule.findEncryptTable("table_x")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getCipherColumns()).thenReturn(Collections.singleton("column"));
         when(shardingRule.getEncryptRule()).thenReturn(encryptRule);
-        when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.<TableRule>absent());
+        when(shardingRule.findTableRuleByActualTable("table_x")).thenReturn(Optional.empty());
         return shardingRule;
     }
 
-    protected SQLStatementContext getSQLStatementContext() {
+    protected final SQLStatementContext getSQLStatementContext() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.singleton("table_x"));
@@ -107,10 +106,10 @@ public abstract class AbstractBaseExecutorTest {
         return sqlStatementContext;
     }
     
-    private ShardingSphereProperties getProperties() {
+    private ConfigurationProperties getProperties() {
         Properties props = new Properties();
-        props.setProperty(PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), PropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
-        return new ShardingSphereProperties(props);
+        props.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getDefaultValue());
+        return new ConfigurationProperties(props);
     }
     
     @After

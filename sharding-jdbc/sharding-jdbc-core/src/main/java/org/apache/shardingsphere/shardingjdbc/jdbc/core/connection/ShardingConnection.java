@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
@@ -143,13 +142,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     private void closeCachedConnections() throws SQLException {
-        getForceExecuteTemplate().execute(getCachedConnections().values(), new ForceExecuteCallback<Connection>() {
-            
-            @Override
-            public void execute(final Connection connection) throws SQLException {
-                connection.close();
-            }
-        });
+        getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::close);
         getCachedConnections().clear();
     }
     

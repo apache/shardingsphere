@@ -48,17 +48,11 @@ public final class SnowflakeShardingKeyGeneratorTest {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
-        final SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         keyGenerator.setProperties(new Properties());
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
-            actual.add(executor.submit(new Callable<Comparable<?>>() {
-                
-                @Override
-                public Comparable<?> call() {
-                    return keyGenerator.generateKey();
-                }
-            }).get());
+            actual.add(executor.submit((Callable<Comparable<?>>) keyGenerator::generateKey).get());
         }
         assertThat(actual.size(), is(taskNumber));
     }
@@ -68,7 +62,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
         SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         keyGenerator.setProperties(new Properties());
         SnowflakeShardingKeyGenerator.setTimeService(new FixedTimeService(1));
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
+        List<Comparable<?>> expected = Arrays.asList(0L, 4194305L, 4194306L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
@@ -120,7 +114,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
         SnowflakeShardingKeyGenerator.setTimeService(timeService);
         keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
+        List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
@@ -154,7 +148,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
         keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis());
         setSequence(keyGenerator, (1 << DEFAULT_SEQUENCE_BITS) - 1);
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
+        List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
@@ -221,7 +215,7 @@ public final class SnowflakeShardingKeyGeneratorTest {
         keyGenerator.setProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("worker.id"), is((Object) "1"));
+        assertThat(((Properties) props.get(keyGenerator)).get("worker.id"), is("1"));
     }
     
     @Test
@@ -233,6 +227,6 @@ public final class SnowflakeShardingKeyGeneratorTest {
         keyGenerator.setProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("max.tolerate.time.difference.milliseconds"), is((Object) "1"));
+        assertThat(((Properties) props.get(keyGenerator)).get("max.tolerate.time.difference.milliseconds"), is("1"));
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.underlying.merge.result.impl.memory.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.relation.metadata.RelationMetas;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.fixture.TestRule;
 import org.apache.shardingsphere.underlying.merge.result.impl.memory.MemoryMergedResult;
@@ -37,12 +37,11 @@ public final class TestMemoryMergedResult extends MemoryMergedResult<TestRule> {
     private MemoryQueryResultRow memoryQueryResultRow;
     
     public TestMemoryMergedResult() throws SQLException {
-        super(null, null, null, Collections.<QueryResult>emptyList());
+        super(null, null, null, Collections.emptyList());
     }
     
     @Override
-    protected List<MemoryQueryResultRow> init(final TestRule rule, 
-                                              final RelationMetas relationMetas, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
+    protected List<MemoryQueryResultRow> init(final TestRule rule, final SchemaMetaData schemaMetaData, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) {
         memoryQueryResultRow = mock(MemoryQueryResultRow.class);
         return Collections.singletonList(memoryQueryResultRow);
     }

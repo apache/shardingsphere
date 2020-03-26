@@ -82,8 +82,8 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     private Iterator<DatabaseMetaDataObject> initIterator(final ResultSet resultSet) throws SQLException {
         LinkedList<DatabaseMetaDataObject> result = new LinkedList<>();
         Set<DatabaseMetaDataObject> removeDuplicationSet = new HashSet<>();
-        int tableNameColumnIndex = columnLabelIndexMap.containsKey(TABLE_NAME) ? columnLabelIndexMap.get(TABLE_NAME) : -1;
-        int indexNameColumnIndex = columnLabelIndexMap.containsKey(INDEX_NAME) ? columnLabelIndexMap.get(INDEX_NAME) : -1;
+        int tableNameColumnIndex = columnLabelIndexMap.getOrDefault(TABLE_NAME, -1);
+        int indexNameColumnIndex = columnLabelIndexMap.getOrDefault(INDEX_NAME, -1);
         while (resultSet.next()) {
             DatabaseMetaDataObject databaseMetaDataObject = generateDatabaseMetaDataObject(tableNameColumnIndex, indexNameColumnIndex, resultSet);
             if (!removeDuplicationSet.contains(databaseMetaDataObject)) {
@@ -99,7 +99,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                Collection<String> logicTableNames = null == shardingRule ? Collections.<String>emptyList() : shardingRule.getLogicTableNames(tableName);
+                Collection<String> logicTableNames = null == shardingRule ? Collections.emptyList() : shardingRule.getLogicTableNames(tableName);
                 result.addObject(logicTableNames.isEmpty() ? tableName : logicTableNames.iterator().next());
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);

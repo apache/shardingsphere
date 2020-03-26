@@ -35,7 +35,7 @@ public class YamlConfigurationExampleMain {
     }
     
     private static File getFile() {
-        return new File(Thread.currentThread().getClass().getResource("/META-INF/encrypt-databases.yaml").getFile());
+        return new File(YamlConfigurationExampleMain.class.getResource("/META-INF/encrypt-databases.yaml").getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

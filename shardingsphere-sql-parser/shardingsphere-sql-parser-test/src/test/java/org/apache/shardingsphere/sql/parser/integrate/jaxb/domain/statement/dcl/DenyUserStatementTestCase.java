@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dcl
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -32,5 +32,5 @@ import javax.xml.bind.annotation.XmlElement;
 public final class DenyUserStatementTestCase extends SQLParserTestCase {
     
     @XmlElement
-    private ExpectedTable table;
+    private ExpectedSimpleTable table;
 }

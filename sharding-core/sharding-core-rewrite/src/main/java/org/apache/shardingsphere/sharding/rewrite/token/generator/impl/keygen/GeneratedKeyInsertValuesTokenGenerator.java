@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.route.engine.keygen.GeneratedKey;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.InsertValueContext;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedLiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.relation.segment.insert.expression.DerivedSimpleExpressionSegment;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.expression.DerivedSimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.Inser
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert values token generator for sharding.
@@ -49,10 +49,12 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
     }
     
     @Override
-    protected SQLToken generateSQLToken(final InsertStatementContext insertStatementContext, final GeneratedKey generatedKey) {
+    public SQLToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Optional<InsertValuesToken> result = findPreviousSQLToken();
         Preconditions.checkState(result.isPresent());
-        Iterator<Comparable<?>> generatedValues = generatedKey.getGeneratedValues().descendingIterator();
+        Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
+        Preconditions.checkState(generatedKey.isPresent());
+        Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().descendingIterator();
         int count = 0;
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);
@@ -70,7 +72,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
                 return Optional.of((InsertValuesToken) each);
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
     
     private boolean isToAddDerivedLiteralExpression(final InsertStatementContext insertStatementContext, final int insertValueCount) {

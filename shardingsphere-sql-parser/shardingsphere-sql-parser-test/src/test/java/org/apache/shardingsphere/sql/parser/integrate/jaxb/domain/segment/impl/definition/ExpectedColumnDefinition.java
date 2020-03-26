@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -45,5 +45,5 @@ public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     private ExpectedColumn column;
     
     @XmlElement(name = "referenced-table")
-    private final List<ExpectedTable> referencedTables = new LinkedList<>();
+    private final List<ExpectedSimpleTable> referencedTables = new LinkedList<>();
 }

@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.Nu
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.List;
 
@@ -104,31 +104,33 @@ public final class ProjectionAssert {
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             OwnerSegment owner = actual.getOwner().get();
-            TableAssert.assertOwner(assertContext, new TableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
     }
     
     private static void assertColumnProjection(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
-        assertThat(assertContext.getText("Column projection name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
-        assertThat(assertContext.getText("Column projection start delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertContext.getText("Column projection end delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
-        assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+        assertThat(assertContext.getText("Column projection name assertion error: "), actual.getColumn().getIdentifier().getValue(), is(expected.getName()));
+        assertThat(assertContext.getText("Column projection start delimiter assertion error: "), 
+                actual.getColumn().getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertContext.getText("Column projection end delimiter assertion error: "), 
+                actual.getColumn().getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (null != expected.getOwner()) {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
             // TODO OwnerAssert is needed.
-            OwnerSegment owner = actual.getOwner().get();
-            TableAssert.assertOwner(assertContext, new TableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            OwnerSegment owner = actual.getColumn().getOwner().get();
+            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
         } else {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
     }
     
     private static void assertAggregationProjection(final SQLCaseAssertContext assertContext, final AggregationProjectionSegment actual, final ExpectedAggregationProjection expected) {
         assertThat(assertContext.getText("Aggregation projection type assertion error: "), actual.getType().name(), is(expected.getType()));
         assertThat(assertContext.getText("Aggregation projection inner expression start index assertion error: "), actual.getInnerExpressionStartIndex(), is(expected.getInnerExpressionStartIndex()));
-        assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+        assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (actual instanceof AggregationDistinctProjectionSegment) {
             assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedAggregationDistinctProjection.class));
             assertThat(assertContext.getText("Aggregation projection alias assertion error: "), 
@@ -137,7 +139,7 @@ public final class ProjectionAssert {
     }
     
     private static void assertExpressionProjection(final SQLCaseAssertContext assertContext, final ExpressionProjectionSegment actual, final ExpectedExpressionProjection expected) {
-        assertThat(assertContext.getText("Expression projection alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+        assertThat(assertContext.getText("Expression projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
     }
     
     private static void assertTopProjection(final SQLCaseAssertContext assertContext, final TopProjectionSegment actual, final ExpectedTopProjection expected) {

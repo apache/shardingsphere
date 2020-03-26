@@ -54,7 +54,7 @@ public class ExampleMain {
     }
     
     private static File getFile(final String fileName) {
-        return new File(Thread.currentThread().getClass().getResource(fileName).getFile());
+        return new File(ExampleMain.class.getResource(fileName).getFile());
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

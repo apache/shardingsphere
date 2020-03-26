@@ -20,17 +20,18 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.ExpectedSQLSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.column.ExpectedColumnProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.expression.ExpectedExpressionProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.shorthand.ExpectedShorthandProjection;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.subquery.ExpectedSubqueryProjection;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.projection.impl.top.ExpectedTopProjection;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,13 +61,17 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
     @XmlElement(name = "top-projection")
     private final Collection<ExpectedTopProjection> topProjections = new LinkedList<>();
     
+    @XmlElement(name = "subquery-projection")
+    private final Collection<ExpectedSubqueryProjection> subqueryProjections = new LinkedList<>();
+    
     /**
      * Get size.
      * 
      * @return size
      */
     public int getSize() {
-        return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size() + expressionProjections.size() + topProjections.size();
+        return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size() 
+                + expressionProjections.size() + topProjections.size() + subqueryProjections.size();
     }
     
     /**
@@ -82,13 +87,8 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
         result.addAll(aggregationDistinctProjections);
         result.addAll(expressionProjections);
         result.addAll(topProjections);
-        Collections.sort(result, new Comparator<ExpectedProjection>() {
-            
-            @Override
-            public int compare(final ExpectedProjection o1, final ExpectedProjection o2) {
-                return o1.getStartIndex() - o2.getStartIndex();
-            }
-        });
+        result.addAll(subqueryProjections);
+        result.sort(Comparator.comparingInt(ExpectedSQLSegment::getStartIndex));
         return result;
     }
 }

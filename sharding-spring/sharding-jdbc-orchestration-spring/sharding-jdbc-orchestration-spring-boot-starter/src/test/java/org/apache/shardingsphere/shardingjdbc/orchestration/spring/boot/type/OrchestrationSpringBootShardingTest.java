@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.type;
 
-import java.lang.reflect.Field;
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.core.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.spring.boot.util.EmbedTestingServer;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +36,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -67,10 +68,10 @@ public class OrchestrationSpringBootShardingTest {
         for (DataSource each : shardingDataSource.getDataSourceMap().values()) {
             assertThat(((BasicDataSource) each).getMaxTotal(), is(16));
         }
-        assertTrue(runtimeContext.getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        ShardingSphereProperties properties = runtimeContext.getProperties();
-        assertTrue((Boolean) properties.getValue(PropertiesConstant.SQL_SHOW));
-        assertThat((Integer) properties.getValue(PropertiesConstant.EXECUTOR_SIZE), is(100));
+        assertTrue(runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        ConfigurationProperties properties = runtimeContext.getProperties();
+        assertTrue(properties.getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertThat(properties.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(100));
     }
     
     @Test
@@ -97,7 +98,8 @@ public class OrchestrationSpringBootShardingTest {
         assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_0", "t_order_1")));
         assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_0")));
         assertTrue(orderRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_1")));
-        assertThat(orderRule.getGenerateKeyColumn(), is("order_id"));
+        assertTrue(orderRule.getGenerateKeyColumn().isPresent());
+        assertThat(orderRule.getGenerateKeyColumn().get(), is("order_id"));
         TableRule itemRule = shardingRule.getTableRule("t_order_item");
         assertThat(itemRule.getLogicTable(), is("t_order_item"));
         assertThat(itemRule.getActualDataNodes().size(), is(4));
@@ -107,7 +109,8 @@ public class OrchestrationSpringBootShardingTest {
         assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
         assertThat(itemRule.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
-        assertThat(itemRule.getGenerateKeyColumn(), is("order_item_id"));
+        assertTrue(itemRule.getGenerateKeyColumn().isPresent());
+        assertThat(itemRule.getGenerateKeyColumn().get(), is("order_item_id"));
         assertThat(itemRule.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
         
@@ -135,11 +138,12 @@ public class OrchestrationSpringBootShardingTest {
         assertTrue(itemRule.getActualDataNodes().contains(new DataNode("ds_1", "t_order_item_1")));
         assertThat(itemRule.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
-        assertThat(itemRule.getGenerateKeyColumn(), is("order_item_id"));
+        assertTrue(itemRule.getGenerateKeyColumn().isPresent());
+        assertThat(itemRule.getGenerateKeyColumn().get(), is("order_item_id"));
         assertThat(itemRule.getTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(itemRule.getTableShardingStrategy().getShardingColumns().iterator().next(), is("order_id"));
-        assertThat(orderRule.getGenerateKeyColumn(), is("order_id"));
-        
+        assertTrue(orderRule.getGenerateKeyColumn().isPresent());
+        assertThat(orderRule.getGenerateKeyColumn().get(), is("order_id"));
     }
     
     @Test

@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import org.apache.shardingsphere.sql.parser.relation.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.core.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.dml.SelectStatement;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.OrderByToken;
 
@@ -39,7 +41,7 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
     
     @Override
     public OrderByToken generateSQLToken(final SelectStatementContext selectStatementContext) {
-        OrderByToken result = new OrderByToken(selectStatementContext.getGroupByContext().getLastIndex() + 1);
+        OrderByToken result = new OrderByToken(generateOrderByIndex(selectStatementContext));
         String columnLabel;
         for (OrderByItem each : selectStatementContext.getOrderByContext().getItems()) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
@@ -56,5 +58,16 @@ public final class OrderByTokenGenerator implements OptionalSQLTokenGenerator<Se
         }
         return result;
     }
-    
+
+    private int generateOrderByIndex(final SelectStatementContext selectStatementContext) {
+        if (selectStatementContext.getGroupByContext().getLastIndex() > 0) {
+            return selectStatementContext.getGroupByContext().getLastIndex() + 1;
+        }
+        SelectStatement selectStatement = selectStatementContext.getSqlStatement();
+        if (selectStatement.getWhere().isPresent()) {
+            return selectStatement.getWhere().get().getStopIndex() + 1;
+        } else {
+            return selectStatement.getSimpleTableSegments().stream().mapToInt(SimpleTableSegment::getStopIndex).max().getAsInt() + 1;
+        }
+    }
 }

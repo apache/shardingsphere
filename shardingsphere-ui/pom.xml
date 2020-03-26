@@ -36,12 +36,14 @@
     </modules>
     
     <properties>
+        <java.version>1.8</java.version>
         <spring-boot.version>1.5.21.RELEASE</spring-boot.version>
-
+        
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
-        <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
+        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
+        <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
@@ -70,6 +72,17 @@
 
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <testSource>${java.version}</testSource>
+                        <testTarget>${java.version}</testTarget>
+                    </configuration>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
                 <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.5.4 -->
                 <plugin>
                     <groupId>io.takari</groupId>

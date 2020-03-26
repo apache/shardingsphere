@@ -43,6 +43,6 @@ public final class UUIDShardingKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("key1", "value1");
         uuidKeyGenerator.setProperties(properties);
-        assertThat(uuidKeyGenerator.getProperties().get("key1"), is((Object) "value1"));
+        assertThat(uuidKeyGenerator.getProperties().get("key1"), is("value1"));
     }
 }

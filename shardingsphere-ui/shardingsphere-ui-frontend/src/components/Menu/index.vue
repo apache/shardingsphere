@@ -28,17 +28,20 @@
       @close="handleClose"
     >
       <s-logo/>
-      <el-submenu v-for="(item, index) in menuData" :key="String(index)" :index="String(index)">
-        <template slot="title">
-          <i class="icon-sidebar"/>
-          <span slot="title">{{ item.title }}</span>
-        </template>
-        <el-menu-item-group>
-          <a v-for="(itm, idx) in item.child" :href="'#' + itm.href" :key="idx">
+      <template v-for="(item, index) in menuData">
+        <el-submenu v-if="item.child && item.child.length" :index="String(index)" :key="String(index)">
+          <template slot="title">
+            <i class="icon-sidebar"/>
+            <span slot="title">{{ item.title }}</span>
+          </template>
+          <a v-for="(itm, idx) in item.child" :href="'#' + itm.href" :key="String(idx)">
             <el-menu-item :index="itm.href">{{ itm.title }}</el-menu-item>
           </a>
-        </el-menu-item-group>
-      </el-submenu>
+        </el-submenu>
+        <a v-else :href="'#' + item.href" :key="String(index)">
+          <el-menu-item :index="item.href">{{ item.title }}</el-menu-item>
+        </a>
+      </template>
     </el-menu>
   </div>
 </template>
@@ -65,10 +68,17 @@ export default {
     $route: {
       handler(route) {
         for (const v of this.menuData) {
-          for (const vv of v.child) {
-            if (route.path === vv.href) {
-              this.defActive = vv.href
+          if (!v.child) {
+            if (v.href === route.path) {
+              this.defActive = v.href
               break
+            }
+          } else {
+            for (const vv of v.child) {
+              if (route.path === vv.href) {
+                this.defActive = vv.href
+                break
+              }
             }
           }
         }

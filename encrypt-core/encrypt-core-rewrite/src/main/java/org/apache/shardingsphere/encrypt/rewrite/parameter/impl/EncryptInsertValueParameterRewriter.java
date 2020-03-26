@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.parameter.impl;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriter;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.relation.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.underlying.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -33,6 +32,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Insert value parameter rewriter for encrypt.
@@ -50,10 +50,8 @@ public final class EncryptInsertValueParameterRewriter extends EncryptParameterR
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<Encryptor> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
-            if (encryptor.isPresent()) {
-                encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptor.get(), tableName, columnName);
-            }
+            getEncryptRule().findEncryptor(tableName, columnName).ifPresent(
+                encryptor -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, encryptor, tableName, columnName));
         }
     }
     

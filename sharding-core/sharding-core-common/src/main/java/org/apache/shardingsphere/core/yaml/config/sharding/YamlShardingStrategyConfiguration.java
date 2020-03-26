@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlStandard
  */
 @Getter
 @Setter
-public class YamlShardingStrategyConfiguration implements YamlConfiguration {
+public final class YamlShardingStrategyConfiguration implements YamlConfiguration {
     
     private YamlStandardShardingStrategyConfiguration standard;
     

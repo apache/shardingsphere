@@ -19,12 +19,14 @@ package org.apache.shardingsphere.sharding.route.engine.type.defaultdb;
 
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -41,14 +43,17 @@ public final class ShardingDefaultDatabaseRoutingEngineTest {
         shardingRuleConfig.setDefaultDataSourceName("ds_0");
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         RouteResult routeResult = shardingDefaultDatabaseRoutingEngine.route(shardingRule);
-        List<RouteUnit> tableUnitList = new ArrayList<>(routeResult.getRouteUnits());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());
         assertThat(routeResult, instanceOf(RouteResult.class));
         assertThat(routeResult.getRouteUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getActualDataSourceName(), is("ds_0"));
-        assertThat(tableUnitList.get(0).getTableUnits().size(), is(2));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getActualTableName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(0).getLogicTableName(), is("t_order"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(1).getActualTableName(), is("t_order_item"));
-        assertThat(tableUnitList.get(0).getTableUnits().get(1).getLogicTableName(), is("t_order_item"));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(2));
+        Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();
+        RouteMapper tableMapper0 = tableMappers.next();
+        assertThat(tableMapper0.getActualName(), is("t_order"));
+        assertThat(tableMapper0.getLogicName(), is("t_order"));
+        RouteMapper tableMapper1 = tableMappers.next();
+        assertThat(tableMapper1.getActualName(), is("t_order_item"));
+        assertThat(tableMapper1.getLogicName(), is("t_order_item"));
     }
 }

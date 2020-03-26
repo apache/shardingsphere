@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.spring.boot.datasource;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Datasource properties setter holder.
@@ -44,6 +44,6 @@ public final class DataSourcePropertiesSetterHolder {
      * @return data source properties setter
      */
     public static Optional<DataSourcePropertiesSetter> getDataSourcePropertiesSetterByType(final String type) {
-        return DATA_SOURCE_PROPERTIES_SETTER_MAP.containsKey(type) ? Optional.of(DATA_SOURCE_PROPERTIES_SETTER_MAP.get(type)) : Optional.<DataSourcePropertiesSetter>absent();
+        return DATA_SOURCE_PROPERTIES_SETTER_MAP.containsKey(type) ? Optional.of(DATA_SOURCE_PROPERTIES_SETTER_MAP.get(type)) : Optional.empty();
     }
 }

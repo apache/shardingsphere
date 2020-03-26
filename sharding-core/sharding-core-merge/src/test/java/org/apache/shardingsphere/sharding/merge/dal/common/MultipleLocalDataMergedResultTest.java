@@ -35,7 +35,7 @@ public final class MultipleLocalDataMergedResultTest {
     
     @Test
     public void assertNext() {
-        List<Object> row = Collections.<Object>singletonList("value");
+        List<Object> row = Collections.singletonList("value");
         MultipleLocalDataMergedResult actual = new MultipleLocalDataMergedResult(Collections.singletonList(row));
         assertTrue(actual.next());
         assertFalse(actual.next());
@@ -43,7 +43,7 @@ public final class MultipleLocalDataMergedResultTest {
     
     @Test
     public void assertGetValue() {
-        List<Object> row = Collections.<Object>singletonList("value");
+        List<Object> row = Collections.singletonList("value");
         MultipleLocalDataMergedResult actual = new MultipleLocalDataMergedResult(Collections.singletonList(row));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, Object.class).toString(), is("value"));
@@ -51,22 +51,22 @@ public final class MultipleLocalDataMergedResultTest {
     
     @Test
     public void assertGetCalendarValue() {
-        List<Object> row = Collections.<Object>singletonList(new Date(0L));
+        List<Object> row = Collections.singletonList(new Date(0L));
         MultipleLocalDataMergedResult actual = new MultipleLocalDataMergedResult(Collections.singletonList(row));
         assertTrue(actual.next());
-        assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) new Date(0L)));
+        assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetInputStream() throws SQLException {
-        List<Object> row = Collections.<Object>singletonList("value");
+        List<Object> row = Collections.singletonList("value");
         MultipleLocalDataMergedResult actual = new MultipleLocalDataMergedResult(Collections.singletonList(row));
         actual.getInputStream(1, "Ascii");
     }
     
     @Test
     public void assertWasNull() {
-        List<Object> row = Collections.<Object>singletonList("value");
+        List<Object> row = Collections.singletonList("value");
         MultipleLocalDataMergedResult actual = new MultipleLocalDataMergedResult(Collections.singletonList(row));
         assertTrue(actual.next());
         assertFalse(actual.wasNull());

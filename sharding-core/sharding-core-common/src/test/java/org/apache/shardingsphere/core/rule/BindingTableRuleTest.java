@@ -23,7 +23,6 @@ import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphe
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -59,7 +58,7 @@ public final class BindingTableRuleTest {
     
     @Test
     public void assertGetAllLogicTables() {
-        assertThat(createBindingTableRule().getAllLogicTables(), is((Collection<String>) Arrays.asList("logic_table", "sub_logic_table")));
+        assertThat(createBindingTableRule().getAllLogicTables(), is(Arrays.asList("logic_table", "sub_logic_table")));
     }
     
     @Test

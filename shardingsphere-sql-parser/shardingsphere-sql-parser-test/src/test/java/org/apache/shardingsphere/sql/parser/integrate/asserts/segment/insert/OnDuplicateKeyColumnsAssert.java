@@ -45,7 +45,6 @@ public final class OnDuplicateKeyColumnsAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OnDuplicateKeyColumnsSegment actual, final ExpectedOnDuplicateKeyColumns expected) {
         assertNotNull(assertContext.getText("On duplicate key columns should exist."), expected);
-        // TODO assert start index and stop index
         assertThat(assertContext.getText("On duplicate key columns size assertion error: "), actual.getColumns().size(), is(expected.getAssignments().size()));
         int count = 0;
         for (AssignmentSegment each : actual.getColumns()) {

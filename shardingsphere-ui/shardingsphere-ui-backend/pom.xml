@@ -33,27 +33,27 @@
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-sql-parser-spi</artifactId>
-                    <groupId>org.apache.shardingsphere</groupId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-sql-parser-engine</artifactId>
-                    <groupId>org.apache.shardingsphere</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>shardingsphere-sql-parser-relation</artifactId>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-sql-parser-binder</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-core</artifactId>
+            <artifactId>sharding-orchestration-core-facade</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>sharding-core-entry</artifactId>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>sharding-core-entry</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -74,6 +74,10 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
         
         <dependency>

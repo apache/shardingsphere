@@ -57,7 +57,7 @@ public final class SQLParserFactory {
     
     @SneakyThrows
     private static SQLParser createSQLParser(final String sql, final SQLParserConfiguration configuration) {
-        Lexer lexer = configuration.getLexerClass().getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
+        Lexer lexer = (Lexer) configuration.getLexerClass().getConstructor(CharStream.class).newInstance(CharStreams.fromString(sql));
         return configuration.getParserClass().getConstructor(TokenStream.class).newInstance(new CommonTokenStream(lexer));
     }
 }

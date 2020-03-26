@@ -29,13 +29,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecutorDataMap {
     
-    private static ThreadLocal<Map<String, Object>> dataMap = new ThreadLocal<Map<String, Object>>() {
-        
-        @Override
-        protected Map<String, Object> initialValue() {
-            return new LinkedHashMap<>();
-        }
-    };
+    private static ThreadLocal<Map<String, Object>> dataMap = ThreadLocal.withInitial(LinkedHashMap::new);
     
     /**
      * Get value.

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
@@ -29,6 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -67,6 +68,6 @@ public final class ShardingMasterInstanceBroadcastRoutingEngineTest {
     public void assertRoute() {
         RouteResult actual = masterInstanceBroadcastRoutingEngine.route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
-        assertThat(actual.getRouteUnits().iterator().next().getActualDataSourceName(), is(DATASOURCE_NAME));
+        assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is(DATASOURCE_NAME));
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.orchestration.raw.jdbc.config;
 
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.orchestration.center.configuration.InstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,11 +34,11 @@ public class RegistryCenterConfigurationUtil {
 
     private static final String NACOS_NAMESPACE = "";
     
-    public static Map<String, InstanceConfiguration> getZooKeeperConfiguration(String overwrite, ShardingType shardingType) {
-        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<String, InstanceConfiguration>();
+    public static Map<String, CenterConfiguration> getZooKeeperConfiguration(String overwrite, ShardingType shardingType) {
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
         Properties properties = new Properties();
         properties.setProperty("overwrite", overwrite);
-        InstanceConfiguration result = new InstanceConfiguration("zookeeper", properties);
+        CenterConfiguration result = new CenterConfiguration("zookeeper", properties);
         result.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         result.setNamespace(NAMESPACE);
         result.setOrchestrationType("registry_center,config_center");
@@ -56,19 +56,19 @@ public class RegistryCenterConfigurationUtil {
         return instanceConfigurationMap;
     }
     
-    public static Map<String, InstanceConfiguration> getNacosConfiguration(String overwrite, ShardingType shardingType) {
-        Map<String, InstanceConfiguration> instanceConfigurationMap = new HashMap<String, InstanceConfiguration>();
+    public static Map<String, CenterConfiguration> getNacosConfiguration(String overwrite, ShardingType shardingType) {
+        Map<String, CenterConfiguration> instanceConfigurationMap = new HashMap<String, CenterConfiguration>();
         Properties nacosProperties = new Properties();
         nacosProperties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
         nacosProperties.setProperty("timeout", "3000");
         nacosProperties.setProperty("overwrite", overwrite);
-        InstanceConfiguration nacosResult = new InstanceConfiguration("nacos", nacosProperties);
+        CenterConfiguration nacosResult = new CenterConfiguration("nacos", nacosProperties);
         nacosResult.setServerLists(NACOS_CONNECTION_STRING);
         nacosResult.setNamespace(NACOS_NAMESPACE);
         nacosResult.setOrchestrationType("config_center");
         Properties zookeeperProperties = new Properties();
         zookeeperProperties.setProperty("overwrite", overwrite);
-        InstanceConfiguration zookeeperResult = new InstanceConfiguration("zookeeper", zookeeperProperties);
+        CenterConfiguration zookeeperResult = new CenterConfiguration("zookeeper", zookeeperProperties);
         zookeeperResult.setServerLists(ZOOKEEPER_CONNECTION_STRING);
         zookeeperResult.setNamespace(NAMESPACE);
         zookeeperResult.setOrchestrationType("registry_center");

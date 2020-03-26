@@ -17,42 +17,42 @@
 
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
-import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends AbstractSQLTest {
     
-    private static DataSource masterDataSource;
-    
-    private static DataSource slaveDataSource;
-    
     private static MasterSlaveDataSource masterSlaveDataSource;
     
+    private static final String CONFIG_MASTER_SLAVE = "config-master-slave.yaml";
+    
     @BeforeClass
-    public static void initMasterSlaveDataSources() throws SQLException {
+    public static void initMasterSlaveDataSources() throws SQLException, IOException {
         if (null != masterSlaveDataSource) {
             return;
         }
-        masterDataSource = new TestDataSource("test_ds_master");
-        slaveDataSource = new TestDataSource("test_ds_slave");
+        DataSource masterDataSource = new TestDataSource("test_ds_master");
+        DataSource slaveDataSource = new TestDataSource("test_ds_slave");
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
-        MasterSlaveRule masterSlaveRule = new MasterSlaveRule(
-                new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN")));
-        masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, masterSlaveRule, new Properties());
+        masterSlaveDataSource = (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, getFile(CONFIG_MASTER_SLAVE));
+    }
+    
+    private static File getFile(final String fileName) {
+        return new File(Preconditions.checkNotNull(
+                AbstractMasterSlaveJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     protected final MasterSlaveDataSource getMasterSlaveDataSource() {

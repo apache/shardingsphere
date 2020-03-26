@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -108,13 +107,7 @@ public final class ExecutorEngine implements AutoCloseable {
     
     private <I, O> ListenableFuture<Collection<O>> asyncExecute(final InputGroup<I> inputGroup, final GroupedCallback<I, O> callback) {
         final Map<String, Object> dataMap = ExecutorDataMap.getValue();
-        return executorService.getExecutorService().submit(new Callable<Collection<O>>() {
-            
-            @Override
-            public Collection<O> call() throws SQLException {
-                return callback.execute(inputGroup.getInputs(), false, dataMap);
-            }
-        });
+        return executorService.getExecutorService().submit(() -> callback.execute(inputGroup.getInputs(), false, dataMap));
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<ListenableFuture<Collection<O>>> restFutures) throws SQLException {

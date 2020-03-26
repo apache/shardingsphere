@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.dbtest.env.authority;
 
-import com.google.common.base.Function;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Authority SQL set xml entry.
@@ -59,7 +58,7 @@ public final class AuthoritySQLSet {
      * @return create user SQLs
      */
     public Collection<String> getCreateUserSQLs(final DatabaseType databaseType) {
-        return getDatabaseTypes().contains(databaseType) ? useCreateSQLs : Collections.<String>emptyList();
+        return getDatabaseTypes().contains(databaseType) ? useCreateSQLs : Collections.emptyList();
     }
     
     /**
@@ -69,16 +68,10 @@ public final class AuthoritySQLSet {
      * @return create user SQLs
      */
     public Collection<String> getDropUserSQLs(final DatabaseType databaseType) {
-        return getDatabaseTypes().contains(databaseType) ? useDropSQLs : Collections.<String>emptyList();
+        return getDatabaseTypes().contains(databaseType) ? useDropSQLs : Collections.emptyList();
     }
     
     private Collection<DatabaseType> getDatabaseTypes() {
-        return Lists.transform(Splitter.on(",").trimResults().splitToList(databaseTypes), new Function<String, DatabaseType>() {
-                
-                @Override
-                public DatabaseType apply(final String input) {
-                    return DatabaseTypes.getActualDatabaseType(input);
-                }
-            });
+        return Splitter.on(",").trimResults().splitToList(databaseTypes).stream().map(DatabaseTypes::getActualDatabaseType).collect(Collectors.toList());
     }
 }

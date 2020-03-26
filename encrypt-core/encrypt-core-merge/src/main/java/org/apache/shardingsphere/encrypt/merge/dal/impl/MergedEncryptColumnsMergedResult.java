@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.merge.dal.impl;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.sql.parser.relation.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 
 import java.sql.SQLException;

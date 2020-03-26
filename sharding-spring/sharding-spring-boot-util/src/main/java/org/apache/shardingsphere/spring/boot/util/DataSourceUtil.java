@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +40,7 @@ public final class DataSourceUtil {
     private static final Collection<Class<?>> GENERAL_CLASS_TYPE;
     
     static {
-        GENERAL_CLASS_TYPE = Sets.<Class<?>>newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class);
+        GENERAL_CLASS_TYPE = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class);
     }
     
     /**
@@ -62,7 +63,7 @@ public final class DataSourceUtil {
         if (propertyName.contains("-")) {
             return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, SET_METHOD_PREFIX + "-" + propertyName);
         }
-        return SET_METHOD_PREFIX + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1, propertyName.length());
+        return SET_METHOD_PREFIX + String.valueOf(propertyName.charAt(0)).toUpperCase() + propertyName.substring(1);
     }
     
     private static void callSetterMethod(final DataSource dataSource, final String methodName, final String setterValue) {
@@ -75,6 +76,8 @@ public final class DataSourceUtil {
                     method.invoke(dataSource, Integer.parseInt(setterValue));
                 } else if (long.class == each || Long.class == each) {
                     method.invoke(dataSource, Long.parseLong(setterValue));
+                } else if (Collection.class == each) {
+                    method.invoke(dataSource, Arrays.asList(setterValue.split(",")));
                 } else {
                     method.invoke(dataSource, setterValue);
                 }

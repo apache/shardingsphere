@@ -20,21 +20,34 @@ export default {
     home: 'Home',
     menuData: [
       {
-        title: 'Data governance',
+        title: 'Config Center',
         child: [
           {
-            title: 'Registry Center',
-            href: '/registry-center'
+            title: 'Config Server',
+            href: '/config-center'
           },
           {
             title: 'Rule Config',
             href: '/rule-config'
+          }
+        ]
+      },
+      {
+        title: 'Registry Center',
+        child: [
+          {
+            title: 'Registry Server',
+            href: '/registry-center'
           },
           {
             title: 'Runtime Status',
             href: '/runtime-status'
           }
         ]
+      },
+      {
+        title: 'Data scaling',
+        href: '/data-scaling'
       }
     ],
     connected: 'Connected',
@@ -42,6 +55,7 @@ export default {
     del: 'Delete',
     notify: {
       title: 'Prompt',
+      addSucMessage: 'Add Succeeded',
       conSucMessage: 'Connection Succeeded',
       conFailMessage: 'Connection Failed',
       delSucMessage: 'Delete Succeeded',
@@ -78,9 +92,9 @@ export default {
   registryCenter: {
     btnTxt: 'ADD',
     registDialog: {
-      title: 'Add a registry',
+      title: 'Add a registry center',
       name: 'Name',
-      centerType: 'Center Type',
+      centerType: 'Instance Type',
       address: 'Address',
       orchestrationName: 'Orchestration Name',
       namespaces: 'Namespace',
@@ -97,6 +111,34 @@ export default {
     rules: {
       name: 'Please enter the name of the registration center',
       address: 'Please enter the registration center Address',
+      namespaces: 'Please enter a Namespace',
+      centerType: 'Please select a Center Type',
+      orchestrationName: 'Please enter a Orchestration Name',
+      digest: 'Please enter a digest'
+    }
+  },
+  configCenter: {
+    btnTxt: 'ADD',
+    configDialog: {
+      title: 'Add a config center',
+      name: 'Name',
+      centerType: 'Instance Type',
+      address: 'Address',
+      orchestrationName: 'Orchestration Name',
+      namespaces: 'Namespace',
+      digest: 'Digest',
+      btnConfirmTxt: 'Confirm',
+      btnCancelTxt: 'Cancel'
+    },
+    table: {
+      operate: 'Operate',
+      operateConnect: 'Connect',
+      operateConnected: 'Connected',
+      operateDel: 'Del'
+    },
+    rules: {
+      name: 'Please enter the name of the config center',
+      address: 'Please enter the config center Address',
       namespaces: 'Please enter a Namespace',
       centerType: 'Please select a Center Type',
       orchestrationName: 'Please enter a Orchestration Name',
@@ -134,6 +176,49 @@ export default {
       schema: 'Schema',
       authentication: 'Authentication',
       props: 'Props'
+    }
+  },
+  dataScaling: {
+    btnTxt: 'ADD',
+    tableList: {
+      jobId: 'jobId',
+      jobName: 'jobName',
+      status: 'status',
+      operate: 'operate',
+      operateStop: 'stop',
+      operateSee: 'see'
+    },
+    registDialog: {
+      title: 'Add a job',
+      source: 'Source',
+      target: 'Target',
+      jobCount: 'JobCount',
+      jobCountPlaceholder: 'Please enter jobCount',
+      username: 'Username',
+      usernamePlaceholder: 'Please enter username',
+      password: 'Password',
+      passwordPlaceholder: 'Please enter password',
+      url: 'Url',
+      urlPlaceholder: 'Please enter url',
+      btnConfirmTxt: 'Confirm',
+      btnCancelTxt: 'Cancel'
+    },
+    rules: {
+      source: 'Please select the source of the registration center',
+      target: 'Please select a target',
+      serviceUrl: 'ServiceUrl must fill'
+    },
+    notify: {
+      title: 'Prompt',
+      conSucMessage: 'Add Succeeded',
+      conFailMessage: 'Add Failed',
+      delSucMessage: 'Delete Succeeded',
+      delFailMessage: 'Delete Failed'
+    },
+    serviceDialog: {
+      serviceName: 'Please enter serviceName',
+      serviceType: 'Please enter serviceType',
+      serviceUrl: 'Please enter serviceUrl'
     }
   }
 }

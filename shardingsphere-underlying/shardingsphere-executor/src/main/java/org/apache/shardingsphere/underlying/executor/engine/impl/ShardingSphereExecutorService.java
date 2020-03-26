@@ -56,18 +56,14 @@ public final class ShardingSphereExecutorService {
      * Close executor service.
      */
     public void close() {
-        SHUTDOWN_EXECUTOR.execute(new Runnable() {
-            
-            @Override
-            public void run() {
-                try {
-                    executorService.shutdown();
-                    while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                        executorService.shutdownNow();
-                    }
-                } catch (final InterruptedException ex) {
-                    Thread.currentThread().interrupt();
+        SHUTDOWN_EXECUTOR.execute(() -> {
+            try {
+                executorService.shutdown();
+                while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                    executorService.shutdownNow();
                 }
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
             }
         });
     }

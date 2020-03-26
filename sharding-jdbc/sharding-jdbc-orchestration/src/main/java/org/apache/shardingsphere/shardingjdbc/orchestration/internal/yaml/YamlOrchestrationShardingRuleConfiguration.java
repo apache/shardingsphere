@@ -21,7 +21,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
-import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceConfiguration;
+import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 
 /**
  * Orchestration sharding configuration for YAML.
@@ -30,5 +30,5 @@ import org.apache.shardingsphere.orchestration.center.yaml.config.YamlInstanceCo
 @Setter
 public final class YamlOrchestrationShardingRuleConfiguration extends YamlRootShardingConfiguration {
     
-    private Map<String, YamlInstanceConfiguration> orchestration;
+    private Map<String, YamlCenterRepositoryConfiguration> orchestration;
 }

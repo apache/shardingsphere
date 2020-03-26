@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.underlying.common.constant.properties.ShardingSphereProperties;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.impl.AESEncryptor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,8 +42,8 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertThat(encryptRule.getCipherColumn("t_order", "user_id"), is("user_encrypt"));
         assertTrue(encryptRule.findEncryptor("t_order", "user_id").get() instanceof AESEncryptor);
         assertThat(encryptRule.findPlainColumn("t_order", "order_id"), is(Optional.of("order_decrypt")));
-        assertTrue(getProperties().<Boolean>getValue(PropertiesConstant.SQL_SHOW));
-        assertTrue(getProperties().<Boolean>getValue(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN));
+        assertTrue(getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue(getProperties().<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
     }
     
     private EncryptRule getEncryptRuleRule() {
@@ -50,7 +51,7 @@ public class EncryptNamespaceTest extends AbstractJUnit4SpringContextTests {
         return encryptDataSource.getRuntimeContext().getRule();
     }
     
-    private ShardingSphereProperties getProperties() {
+    private ConfigurationProperties getProperties() {
         EncryptDataSource encryptDataSource = applicationContext.getBean("encryptDataSource", EncryptDataSource.class);
         return encryptDataSource.getRuntimeContext().getProperties();
     }

@@ -67,11 +67,13 @@ public final class ShardingDataSourceFactoryTest {
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(Mockito.anyString())).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(connection);
-        when(statement.getConnection().getMetaData().getTables(
-                ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any(), ArgumentMatchers.<String[]>any())).thenReturn(resultSet);
+        when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        Map<String, DataSource> result = new HashMap<>(1);
         when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        when(statement.getConnection().getMetaData().getColumns(null, null, "table_0", "%")).thenReturn(mock(ResultSet.class));
+        when(statement.getConnection().getMetaData().getPrimaryKeys(null, null, "table_0")).thenReturn(mock(ResultSet.class));
+        when(statement.getConnection().getMetaData().getIndexInfo(null, null, "table_0", false, false)).thenReturn(mock(ResultSet.class));
+        Map<String, DataSource> result = new HashMap<>(1);
         result.put("ds", dataSource);
         return result;
     }

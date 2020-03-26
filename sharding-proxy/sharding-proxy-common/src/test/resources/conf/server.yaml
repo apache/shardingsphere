@@ -16,11 +16,11 @@
 #
 
 orchestration:
-  testname1:
+  test_name_1:
     orchestrationType: configuration_center
     instanceType: zookeeper
     serverLists: localhost:2181
-    namespace: testnamspace1
+    namespace: test_namespace_1
 
 authentication:
   users:

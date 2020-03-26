@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
-import com.google.common.base.Predicate;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.encrypt.api.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
-import org.apache.shardingsphere.underlying.common.constant.properties.PropertiesConstant;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlRootEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.shardingjdbc.api.EncryptDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlEncryptDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
+import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -48,58 +49,36 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
+    private static final String ENCRYPT_CONFIG_FILE = "encrypt-config.yaml";
+    
     @BeforeClass
-    public static void initEncryptDataSource() throws SQLException {
+    public static void initEncryptDataSource() throws SQLException, IOException {
         if (null != encryptDataSource && null != encryptDataSourceWithProps) {
             return;
         }
-        Map<String, DataSource> dataSources = getDataSources();
-        encryptDataSource = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), new Properties());
-        encryptDataSourceWithProps = new EncryptDataSource(dataSources.values().iterator().next(), new EncryptRule(createEncryptRuleConfiguration()), createProperties());
+        File encryptFile = getFile(ENCRYPT_CONFIG_FILE);
+        DataSource dataSource = getDataSources().values().iterator().next();
+        encryptDataSource = (EncryptDataSource) createDataSourceWithEmptyProps(dataSource, encryptFile);
+        encryptDataSourceWithProps = (EncryptDataSource) YamlEncryptDataSourceFactory.createDataSource(dataSource, encryptFile);
     }
     
-    private static Properties createProperties() {
-        Properties result = new Properties();
-        result.put(PropertiesConstant.SQL_SHOW.getKey(), true);
-        result.put(PropertiesConstant.QUERY_WITH_CIPHER_COLUMN.getKey(), false);
-        return result;
+    private static File getFile(final String fileName) {
+        return new File(Preconditions.checkNotNull(AbstractEncryptJDBCDatabaseAndTableTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), new Predicate<String>() {
-            
-            @Override
-            public boolean apply(final String input) {
-                return ENCRYPT_DB_NAMES.contains(input);
-            }
-        });
+        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
     }
     
-    private static EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        EncryptorRuleConfiguration encryptorConfig = new EncryptorRuleConfiguration("test", new Properties());
-        EncryptorRuleConfiguration encryptorQueryConfig = new EncryptorRuleConfiguration("assistedTest", new Properties());
-        EncryptColumnRuleConfiguration columnConfig1 = new EncryptColumnRuleConfiguration("plain_pwd", "cipher_pwd", "", "test");
-        EncryptTableRuleConfiguration tableConfig1 = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig1));
-        EncryptColumnRuleConfiguration columnConfig2 = new EncryptColumnRuleConfiguration("", "cipher_pwd", "assist_pwd", "assistedTest");
-        EncryptTableRuleConfiguration tableConfig2 = new EncryptTableRuleConfiguration(Collections.singletonMap("pwd", columnConfig2));
-        EncryptColumnRuleConfiguration columnConfig3 = new EncryptColumnRuleConfiguration("plain_pwd2", "cipher_pwd2", "", "test");
-        EncryptTableRuleConfiguration tableConfig3 = new EncryptTableRuleConfiguration(Collections.singletonMap("plain_pwd2", columnConfig3));
-        tableConfig3.getColumns().put("plain_pwd", columnConfig1);
-        EncryptRuleConfiguration result = new EncryptRuleConfiguration();
-        result.getEncryptors().put("test", encryptorConfig);
-        result.getEncryptors().put("assistedTest", encryptorQueryConfig);
-        result.getTables().put("t_encrypt", tableConfig1);
-        result.getTables().put("t_query_encrypt", tableConfig2);
-        result.getTables().put("t_encrypt_contains_column", tableConfig3);
-        return result;
+    private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
+        YamlRootEncryptRuleConfiguration config = YamlEngine.unmarshal(yamlFile, YamlRootEncryptRuleConfiguration.class);
+        return EncryptDataSourceFactory.createDataSource(dataSource, new EncryptRuleConfigurationYamlSwapper().swap(config.getEncryptRule()), new Properties());
     }
     
     @Before
     public void initTable() {
-        try {
-            EncryptConnection conn = encryptDataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql")));
-            conn.close();
+        try (EncryptConnection connection = encryptDataSource.getConnection()) {
+            RunScript.execute(connection, new InputStreamReader(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql")));
         } catch (final SQLException ex) {
             ex.printStackTrace();
         }
@@ -115,10 +94,15 @@ public abstract class AbstractEncryptJDBCDatabaseAndTableTest extends AbstractSQ
     
     @AfterClass
     public static void close() throws Exception {
-        if (encryptDataSource == null) {
+        if (null == encryptDataSource) {
             return;
         }
         encryptDataSource.close();
         encryptDataSource = null;
+        if (null == encryptDataSourceWithProps) {
+            return;
+        }
+        encryptDataSourceWithProps.close();
+        encryptDataSourceWithProps = null;
     }
 }
