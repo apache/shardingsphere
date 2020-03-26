@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.aware;
+package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
 
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 

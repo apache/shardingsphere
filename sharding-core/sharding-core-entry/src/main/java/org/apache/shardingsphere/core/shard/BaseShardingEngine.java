@@ -144,20 +144,18 @@ public abstract class BaseShardingEngine {
     
     private Collection<ExecutionUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
-        registerRewriteDecorator(routeContext);
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext());
+        registerRewriteDecorator();
+        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
         for (Entry<RouteUnit, SQLRewriteResult> entry : new SQLRouteRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult()).entrySet()) {
             result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
         }
         return result;
     }
     
-    private void registerRewriteDecorator(final RouteContext routeContext) {
+    private void registerRewriteDecorator() {
         for (BaseRule each : rules) {
             if (each instanceof ShardingRule) {
-                ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();
-                shardingSQLRewriteContextDecorator.setRouteContext(routeContext);
-                sqlRewriteEntry.registerDecorator(each, shardingSQLRewriteContextDecorator);
+                sqlRewriteEntry.registerDecorator(each, new ShardingSQLRewriteContextDecorator());
             } else if (each instanceof EncryptRule) {
                 sqlRewriteEntry.registerDecorator(each, new EncryptSQLRewriteContextDecorator());
             }
