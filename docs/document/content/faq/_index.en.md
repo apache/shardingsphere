@@ -177,6 +177,10 @@ Open cmd.exe (you need to add git to environment variables) and execute the foll
 git config --global core.longpaths true
 ```
 
+If we use windows 10, also need enable win32 log paths in registry editor or group strategy(need reboot):
+> Create the registry key `HKLM\SYSTEM\CurrentControlSet\Control\FileSystem LongPathsEnabled` (Type: REG_DWORD) in registry editor, and be set to 1.
+> Or click "setting" button in system menu, print "Group Policy" to open a new window "Edit Group Policy", and then click 'Computer Configuration' > 'Administrative Templates' > 'System' > 'Filesystem', and then turn on 'Enable Win32 long paths' option.
+
 Reference material:
 
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
@@ -229,3 +233,11 @@ Answer:
 
 1. Update to 4.0.1 above, which helps speed up the process of loading table metadata from `the default dataSource`.
 2. Configure `max.connections.size.per.query`(Default value is 1) higher referring to connection pool you adopt(Version >= 3.0.0.M3).
+
+#### 19. How to allow range query with using inline sharding strategy(BETWEEN AND, \>, \<, \>=, \<=)?
+
+Answer:
+
+1. Update to 4.0.1 above.
+2. Configure`allow.range.query.with.inline.sharding` to `true` (Default value is `false`).
+3. A tip here: then each range query will be broadcast to every sharding table.
