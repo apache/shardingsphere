@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;

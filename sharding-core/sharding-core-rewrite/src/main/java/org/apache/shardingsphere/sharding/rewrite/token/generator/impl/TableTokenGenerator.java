@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.Setter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.aware.ShardingRuleAware;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.TableToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.sql.parser.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -52,7 +52,7 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator, S
         Collection<TableToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
             if (shardingRule.findTableRule(each.getTableName().getIdentifier().getValue()).isPresent()) {
-                result.add(new TableToken(each.getStartIndex(), each.getStopIndex(), each.getTableName().getIdentifier()));
+                result.add(new TableToken(each.getStartIndex(), each.getStopIndex(), each.getTableName().getIdentifier(), (SQLStatementContext) sqlStatementContext, shardingRule));
             }
         }
         return result;

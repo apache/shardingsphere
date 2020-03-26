@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.shard.log.ShardingSQLLogger;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
-import org.apache.shardingsphere.sharding.rewrite.engine.ShardingSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sharding.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
@@ -130,14 +130,16 @@ public abstract class BaseShardingEngine {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         registerRewriteDecorator(routeContext);
         SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext());
-        for (Entry<RouteUnit, SQLRewriteResult> entry : new ShardingSQLRewriteEngine().rewrite(shardingRule, sqlRewriteContext, routeContext.getRouteResult()).entrySet()) {
+        for (Entry<RouteUnit, SQLRewriteResult> entry : new SQLRouteRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult()).entrySet()) {
             result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
         }
         return result;
     }
     
     private void registerRewriteDecorator(final RouteContext routeContext) {
-        sqlRewriteEntry.registerDecorator(shardingRule, new ShardingSQLRewriteContextDecorator(routeContext));
+        ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();
+        shardingSQLRewriteContextDecorator.setRouteContext(routeContext);
+        sqlRewriteEntry.registerDecorator(shardingRule, shardingSQLRewriteContextDecorator);
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             sqlRewriteEntry.registerDecorator(shardingRule.getEncryptRule(), new EncryptSQLRewriteContextDecorator());
         }

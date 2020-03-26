@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-
 /**
- * Route unit aware.
+ * Generated key assignment token for parameter marker.
  */
-public interface RouteUnitAware {
+public final class ParameterMarkerGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    /**
-     * To string.
-     * 
-     * @param routeUnit route unit
-     * @return literal
-     */
-    String toString(RouteUnit routeUnit);
+    public ParameterMarkerGeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
+        super(startIndex, columnName);
+    }
+    
+    @Override
+    protected String getRightValue() {
+        return "?";
+    }
 }

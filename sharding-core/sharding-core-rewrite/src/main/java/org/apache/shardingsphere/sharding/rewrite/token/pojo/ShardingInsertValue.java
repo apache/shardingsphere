@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.engine.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.sql.impl.DefaultSQLBuilder;
+import lombok.Getter;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
- * Default SQL rewrite engine.
+ * Insert value for sharding.
  */
-public final class DefaultSQLRewriteEngine implements SQLRewriteEngine {
+@Getter
+public final class ShardingInsertValue extends InsertValue {
     
-    @Override
-    public SQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new SQLRewriteResult(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters());
+    private final Collection<DataNode> dataNodes;
+    
+    public ShardingInsertValue(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
+        super(values);
+        this.dataNodes = dataNodes;
     }
 }

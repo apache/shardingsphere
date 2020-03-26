@@ -15,42 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Order by token.
+ * Generated key assignment token.
  */
-@Getter
-public final class OrderByToken extends SQLToken implements Attachable {
+public abstract class GeneratedKeyAssignmentToken extends SQLToken implements Attachable {
     
-    private final List<String> columnLabels = new LinkedList<>();
+    private final String columnName;
     
-    private final List<OrderDirection> orderDirections = new LinkedList<>();
-    
-    public OrderByToken(final int startIndex) {
+    public GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
         super(startIndex);
+        this.columnName = columnName;
     }
     
     @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append(" ORDER BY ");
-        for (int i = 0; i < columnLabels.size(); i++) {
-            if (0 == i) {
-                result.append(columnLabels.get(i)).append(" ").append(orderDirections.get(i).name());
-            } else {
-                result.append(",").append(columnLabels.get(i)).append(" ").append(orderDirections.get(i).name());
-            }
-        }
-        result.append(" ");
-        return result.toString();
+    public final String toString() {
+        return String.format(", %s = %s", columnName, getRightValue());
     }
+    
+    protected abstract String getRightValue();
 }

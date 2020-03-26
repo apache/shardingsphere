@@ -17,18 +17,23 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import java.util.Map;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
- * Logic and actual tables aware.
+ * Generated key insert column token.
  */
-public interface LogicAndActualTablesAware {
+public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
     
-    /**
-     * To string.
-     * 
-     * @param logicAndActualTables logic and actual tables
-     * @return literal
-     */
-    String toString(Map<String, String> logicAndActualTables);
+    private final String column;
+    
+    public GeneratedKeyInsertColumnToken(final int startIndex, final String column) {
+        super(startIndex);
+        this.column = column;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format(", %s", column);
+    }
 }

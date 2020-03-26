@@ -15,30 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Offset token.
+ * Aggregation distinct token.
  */
-public final class OffsetToken extends SQLToken implements Substitutable {
+public final class AggregationDistinctToken extends SQLToken implements Substitutable {
+    
+    private final String columnName;
+    
+    private final String derivedAlias;
     
     @Getter
     private final int stopIndex;
     
-    private final long revisedOffset;
-    
-    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
+    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
         super(startIndex);
+        this.columnName = columnName;
+        this.derivedAlias = derivedAlias;
         this.stopIndex = stopIndex;
-        this.revisedOffset = revisedOffset;
     }
     
     @Override
     public String toString() {
-        return String.valueOf(revisedOffset);
+        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
     }
 }

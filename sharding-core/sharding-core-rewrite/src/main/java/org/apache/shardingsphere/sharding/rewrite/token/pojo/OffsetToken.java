@@ -15,37 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.LogicAndActualTablesAware;
-import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
-import java.util.Map;
-
 /**
- * Table token.
+ * Offset token.
  */
-public final class TableToken extends SQLToken implements Substitutable, LogicAndActualTablesAware {
+public final class OffsetToken extends SQLToken implements Substitutable {
     
     @Getter
     private final int stopIndex;
     
-    private final IdentifierValue identifier;
+    private final long revisedOffset;
     
-    public TableToken(final int startIndex, final int stopIndex, final IdentifierValue identifier) {
+    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.identifier = identifier;
+        this.revisedOffset = revisedOffset;
     }
     
     @Override
-    public String toString(final Map<String, String> logicAndActualTables) {
-        String actualTableName = logicAndActualTables.get(identifier.getValue().toLowerCase());
-        actualTableName = null == actualTableName ? identifier.getValue().toLowerCase() : actualTableName;
-        return Joiner.on("").join(identifier.getQuoteCharacter().getStartDelimiter(), actualTableName, identifier.getQuoteCharacter().getEndDelimiter());
+    public String toString() {
+        return String.valueOf(revisedOffset);
     }
 }

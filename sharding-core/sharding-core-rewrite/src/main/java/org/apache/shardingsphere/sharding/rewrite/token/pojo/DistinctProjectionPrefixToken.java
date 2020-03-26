@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import lombok.Getter;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Row count token.
+ * Distinct projection prefix token.
  */
-public final class RowCountToken extends SQLToken implements Substitutable {
+public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
     
-    @Getter
-    private final int stopIndex;
-    
-    private final long revisedRowCount;
-    
-    public RowCountToken(final int startIndex, final int stopIndex, final long revisedRowCount) {
+    public DistinctProjectionPrefixToken(final int startIndex) {
         super(startIndex);
-        this.stopIndex = stopIndex;
-        this.revisedRowCount = revisedRowCount;
     }
     
     @Override
     public String toString() {
-        return String.valueOf(revisedRowCount);
+        return "DISTINCT ";
     }
 }

@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.underlying.rewrite.sql.token.pojo;
 
-import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
-import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
-
-import java.util.Collection;
-import java.util.List;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 /**
- * Insert value for sharding.
+ * Route unit aware.
  */
-@Getter
-public final class ShardingInsertValue extends InsertValue {
+public interface RouteUnitAware {
     
-    private final Collection<DataNode> dataNodes;
-    
-    public ShardingInsertValue(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
-        super(values);
-        this.dataNodes = dataNodes;
-    }
+    /**
+     * To string.
+     * 
+     * @param routeUnit route unit
+     * @return literal
+     */
+    String toString(RouteUnit routeUnit);
 }
