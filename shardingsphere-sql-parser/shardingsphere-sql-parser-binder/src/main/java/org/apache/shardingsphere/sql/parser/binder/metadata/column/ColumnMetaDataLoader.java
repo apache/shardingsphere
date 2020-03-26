@@ -23,10 +23,12 @@ import lombok.NoArgsConstructor;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Column meta data loader.
@@ -43,25 +45,58 @@ public final class ColumnMetaDataLoader {
      * 
      * @param connection connection
      * @param table table name
+     * @param databaseType database type
      * @return column meta data list
      * @throws SQLException SQL exception
      */
-    public static Collection<ColumnMetaData> load(final Connection connection, final String table) throws SQLException {
+    public static Collection<ColumnMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
         if (!isTableExist(connection, connection.getCatalog(), table)) {
             return Collections.emptyList();
         }
         Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
+        List<String> columnNames = new ArrayList<>();
+        List<String> columnTypes = new ArrayList<>();
+        List<Boolean> isPrimaryKeys = new ArrayList<>();
+        List<Boolean> isCaseSensitives = new ArrayList<>();
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
-                String columnType = resultSet.getString(TYPE_NAME);
-                boolean isPrimaryKey = primaryKeys.contains(columnName);
-                // TODO load auto generated from database meta data
-                result.add(new ColumnMetaData(columnName, columnType, isPrimaryKey, false));
+                columnTypes.add(resultSet.getString(TYPE_NAME));
+                isPrimaryKeys.add(primaryKeys.contains(columnName));
+                columnNames.add(columnName);
             }
         }
+        try (ResultSet resultSet = connection.createStatement().executeQuery(generateEmptyResultSQL(table, databaseType))) {
+            for (String each : columnNames) {
+                isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(each)));
+            }
+        }
+        for (int i = 0; i < columnNames.size(); i++) {
+            // TODO load auto generated from database meta data
+            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
+        }
         return result;
+    }
+    
+    private static String generateEmptyResultSQL(final String table, final String databaseType) {
+        // TODO consider add a getDialectDelimeter() interface in parse module
+        String delimiterLeft;
+        String delimiterRight;
+        if ("MySQL".equals(databaseType) || "MariaDB".equals(databaseType)) {
+            delimiterLeft = "`";
+            delimiterRight = "`";
+        } else if ("Oracle".equals(databaseType) || "PostgreSQL".equals(databaseType) || "H2".equals(databaseType) || "SQL92".equals(databaseType)) {
+            delimiterLeft = "\"";
+            delimiterRight = "\"";
+        } else if ("SQLServer".equals(databaseType)) {
+            delimiterLeft = "[";
+            delimiterRight = "]";
+        } else {
+            delimiterLeft = "";
+            delimiterRight = "";
+        }
+        return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1;";
     }
     
     private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {

@@ -20,11 +20,12 @@ package org.apache.shardingsphere.ui.servcie.impl;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterNode;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterNode;
-import org.apache.shardingsphere.ui.common.domain.RegistryCenterConfig;
+import org.apache.shardingsphere.ui.common.constant.OrchestrationType;
+import org.apache.shardingsphere.ui.common.domain.CenterConfig;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
-import org.apache.shardingsphere.ui.servcie.RegistryCenterConfigService;
+import org.apache.shardingsphere.ui.servcie.CenterConfigService;
 import org.apache.shardingsphere.ui.servcie.RegistryCenterService;
-import org.apache.shardingsphere.ui.util.RegistryCenterRepositoryFactory;
+import org.apache.shardingsphere.ui.util.CenterRepositoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,29 +38,20 @@ import java.util.Optional;
 public final class RegistryCenterServiceImpl implements RegistryCenterService {
     
     @Autowired
-    private RegistryCenterConfigService registryCenterConfigService;
+    private CenterConfigService centerConfigService;
     
     @Override
     public RegistryCenterRepository getActivatedRegistryCenter() {
-        Optional<RegistryCenterConfig> optional = registryCenterConfigService.loadActivated();
+        Optional<CenterConfig> optional = centerConfigService.loadActivated(OrchestrationType.REGISTRY_CENTER.getValue());
         if (optional.isPresent()) {
-            return RegistryCenterRepositoryFactory.createRegistryCenter(optional.get());
-        }
-        throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "No activated registry center!");
-    }
-    
-    @Override
-    public ConfigCenterNode getActivateConfigurationNode() {
-        Optional<RegistryCenterConfig> optional = registryCenterConfigService.loadActivated();
-        if (optional.isPresent()) {
-            return new ConfigCenterNode(optional.get().getOrchestrationName());
+            return CenterRepositoryFactory.createRegistryCenter(optional.get());
         }
         throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "No activated registry center!");
     }
     
     @Override
     public RegistryCenterNode getActivatedStateNode() {
-        Optional<RegistryCenterConfig> optional = registryCenterConfigService.loadActivated();
+        Optional<CenterConfig> optional = centerConfigService.loadActivated(OrchestrationType.REGISTRY_CENTER.getValue());
         if (optional.isPresent()) {
             return new RegistryCenterNode(optional.get().getOrchestrationName());
         }

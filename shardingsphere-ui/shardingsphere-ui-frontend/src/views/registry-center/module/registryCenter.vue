@@ -144,7 +144,7 @@ export default {
         },
         {
           label: this.$t('registryCenter').registDialog.centerType,
-          prop: 'registryCenterType'
+          prop: 'instanceType'
         },
         {
           label: this.$t('registryCenter').registDialog.address,
@@ -165,6 +165,7 @@ export default {
         namespaces: '',
         centerType: 'Zookeeper',
         orchestrationName: '',
+        orchestrationType: 'registry_center',
         digest: ''
       },
       rules: {
@@ -276,14 +277,15 @@ export default {
             name: this.form.name,
             namespace: this.form.namespaces,
             orchestrationName: this.form.orchestrationName,
-            registryCenterType: this.form.centerType,
+            orchestrationType: this.form.orchestrationType,
+            instanceType: this.form.centerType,
             serverLists: this.form.address
           }
           API.postRegCenter(params).then(res => {
             this.regustDialogVisible = false
             this.$notify({
               title: this.$t('common').notify.title,
-              message: this.$t('common').notify.conSucMessage,
+              message: this.$t('common').notify.addSucMessage,
               type: 'success'
             })
             this.getRegCenter()

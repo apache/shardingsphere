@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sharding.route.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
@@ -53,7 +52,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         SQLParserEngine sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine("MySQL");
         RouteContext routeContext = new DataNodeRouter(metaData, properties, sqlParserEngine).route(sql, parameters, false);
         ShardingRouteDecorator shardingRouteDecorator = new ShardingRouteDecorator();
-        ShardingRouteContext result = (ShardingRouteContext) shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
+        RouteContext result = shardingRouteDecorator.decorate(routeContext, metaData, shardingRule, properties);
         assertThat(result.getRouteResult().getRouteUnits().size(), is(1));
         return result;
     }
@@ -71,16 +70,16 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     private SchemaMetaData buildSchemaMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, false), 
-                new ColumnMetaData("user_id", "int", false, false), 
-                new ColumnMetaData("status", "int", false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true, false), 
-                new ColumnMetaData("order_id", "int", false, false),
-                new ColumnMetaData("user_id", "int", false, false), 
-                new ColumnMetaData("status", "varchar", false, false), 
-                new ColumnMetaData("c_date", "timestamp", false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, false, false),
+                new ColumnMetaData("user_id", "int", false, false, false),
+                new ColumnMetaData("status", "int", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true, false, false),
+                new ColumnMetaData("order_id", "int", false, false, false),
+                new ColumnMetaData("user_id", "int", false, false, false),
+                new ColumnMetaData("status", "varchar", false, false, false),
+                new ColumnMetaData("c_date", "timestamp", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false, false)), Collections.emptySet()));
         return new SchemaMetaData(tableMetaDataMap);
     }
 }

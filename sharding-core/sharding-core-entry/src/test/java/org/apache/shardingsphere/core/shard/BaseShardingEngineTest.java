@@ -20,14 +20,13 @@ package org.apache.shardingsphere.core.shard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.hint.HintManager;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.dialect.postgresql.ShowStatement;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
@@ -55,10 +54,10 @@ public abstract class BaseShardingEngineTest {
     }
     
     @SuppressWarnings("unchecked")
-    protected final ShardingRouteContext createSQLRouteContext() {
+    protected final RouteContext createSQLRouteContext() {
         RouteResult routeResult = new RouteResult();
         routeResult.getRouteUnits().add(new RouteUnit(new RouteMapper("ds", "ds"), Collections.emptyList()));
-        return new ShardingRouteContext(new CommonSQLStatementContext(new ShowStatement()), Collections.emptyList(), routeResult, new ShardingConditions(Collections.emptyList()));
+        return new RouteContext(new CommonSQLStatementContext(new ShowStatement()), Collections.emptyList(), routeResult);
     }
     
     protected final void assertExecutionContext(final ExecutionContext actual) {

@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
 public final class CuratorZookeeperCenterRepositoryTest {
     
     private static CuratorZookeeperCenterRepository centerRepository = new CuratorZookeeperCenterRepository();
-
+    
     private static String serverLists;
     
     @BeforeClass

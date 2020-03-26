@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.sharding.route.fixture;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sharding.route.engine.context.ShardingRouteContext;
-import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
-
 import lombok.Getter;
+import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 @Getter
 public final class RoutingHookFixture implements RoutingHook {
     
     private String sql;
     
-    private ShardingRouteContext routeContext;
+    private RouteContext routeContext;
     
     private SchemaMetaData schemaMetaData;
     
@@ -40,8 +39,8 @@ public final class RoutingHookFixture implements RoutingHook {
     }
     
     @Override
-    public void finishSuccess(final ShardingRouteContext shardingRouteContext, final SchemaMetaData schemaMetaData) {
-        this.routeContext = shardingRouteContext;
+    public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
+        this.routeContext = routeContext;
         this.schemaMetaData = schemaMetaData;
     }
     
