@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import lombok.Getter;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
+
+import java.util.Collection;
 
 /**
- * Row count token.
+ * Projections token.
  */
-public final class RowCountToken extends SQLToken implements Substitutable {
+public final class ProjectionsToken extends SQLToken implements Attachable {
     
-    @Getter
-    private final int stopIndex;
+    private final Collection<String> projections;
     
-    private final long revisedRowCount;
-    
-    public RowCountToken(final int startIndex, final int stopIndex, final long revisedRowCount) {
+    public ProjectionsToken(final int startIndex, final Collection<String> projections) {
         super(startIndex);
-        this.stopIndex = stopIndex;
-        this.revisedRowCount = revisedRowCount;
+        this.projections = projections;
     }
     
     @Override
     public String toString() {
-        return String.valueOf(revisedRowCount);
+        StringBuilder result = new StringBuilder();
+        for (String each : projections) {
+            result.append(", ");
+            result.append(each);
+        }
+        return result.toString();
     }
 }

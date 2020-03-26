@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.engine;
 
-import org.apache.shardingsphere.sharding.rewrite.sql.ShardingSQLBuilder;
+import org.apache.shardingsphere.underlying.rewrite.sql.impl.RouteSQLBuilder;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
@@ -43,7 +43,7 @@ public final class ShardingSQLRewriteEngine implements SQLRouteRewriteEngine {
     public Map<RouteUnit, SQLRewriteResult> rewrite(final SQLRewriteContext sqlRewriteContext, final RouteResult routeResult) {
         Map<RouteUnit, SQLRewriteResult> result = new LinkedHashMap<>(routeResult.getRouteUnits().size(), 1);
         for (RouteUnit each : routeResult.getRouteUnits()) {
-            result.put(each, new SQLRewriteResult(new ShardingSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeResult, each)));
+            result.put(each, new SQLRewriteResult(new RouteSQLBuilder(sqlRewriteContext, each).toSQL(), getParameters(sqlRewriteContext.getParameterBuilder(), routeResult, each)));
         }
         return result;
     }

@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.underlying.rewrite.sql.impl;
 
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 /**
- * Generated key assignment token.
+ * SQL builder with route.
  */
-public abstract class GeneratedKeyAssignmentToken extends SQLToken implements Attachable {
+public final class RouteSQLBuilder extends AbstractSQLBuilder {
     
-    private final String columnName;
+    private final RouteUnit routeUnit;
     
-    public GeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
-        super(startIndex);
-        this.columnName = columnName;
+    public RouteSQLBuilder(final SQLRewriteContext context, final RouteUnit routeUnit) {
+        super(context);
+        this.routeUnit = routeUnit;
     }
     
     @Override
-    public final String toString() {
-        return String.format(", %s = %s", columnName, getRightValue());
+    protected String getSQLTokenText(final SQLToken sqlToken) {
+        if (sqlToken instanceof RouteUnitAware) {
+            return ((RouteUnitAware) sqlToken).toString(routeUnit);
+        }
+        return sqlToken.toString();
     }
-    
-    protected abstract String getRightValue();
 }

@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
- * Route unit aware.
+ * Distinct projection prefix token.
  */
-public interface RouteUnitAware {
+public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
     
-    /**
-     * To string.
-     * 
-     * @param routeUnit route unit
-     * @return literal
-     */
-    String toString(RouteUnit routeUnit);
+    public DistinctProjectionPrefixToken(final int startIndex) {
+        super(startIndex);
+    }
+    
+    @Override
+    public String toString() {
+        return "DISTINCT ";
+    }
 }

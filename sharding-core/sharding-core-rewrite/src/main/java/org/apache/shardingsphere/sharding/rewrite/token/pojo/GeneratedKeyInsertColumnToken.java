@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
- * Distinct projection prefix token.
+ * Generated key insert column token.
  */
-public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
+public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
     
-    public DistinctProjectionPrefixToken(final int startIndex) {
+    private final String column;
+    
+    public GeneratedKeyInsertColumnToken(final int startIndex, final String column) {
         super(startIndex);
+        this.column = column;
     }
     
     @Override
     public String toString() {
-        return "DISTINCT ";
+        return String.format(", %s", column);
     }
 }

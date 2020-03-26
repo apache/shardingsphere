@@ -15,31 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.sql;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.sql.impl.AbstractSQLBuilder;
+import lombok.Getter;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * SQL builder for sharding.
+ * Aggregation distinct token.
  */
-public final class ShardingSQLBuilder extends AbstractSQLBuilder {
+public final class AggregationDistinctToken extends SQLToken implements Substitutable {
     
-    private final RouteUnit routeUnit;
+    private final String columnName;
     
-    public ShardingSQLBuilder(final SQLRewriteContext context, final RouteUnit routeUnit) {
-        super(context);
-        this.routeUnit = routeUnit;
+    private final String derivedAlias;
+    
+    @Getter
+    private final int stopIndex;
+    
+    public AggregationDistinctToken(final int startIndex, final int stopIndex, final String columnName, final String derivedAlias) {
+        super(startIndex);
+        this.columnName = columnName;
+        this.derivedAlias = derivedAlias;
+        this.stopIndex = stopIndex;
     }
     
     @Override
-    protected String getSQLTokenText(final SQLToken sqlToken) {
-        if (sqlToken instanceof RouteUnitAware) {
-            return ((RouteUnitAware) sqlToken).toString(routeUnit);
-        }
-        return sqlToken.toString();
+    public String toString() {
+        return null == derivedAlias ? columnName : columnName + " AS " + derivedAlias;
     }
 }

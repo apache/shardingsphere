@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.DistinctProjectionPrefixToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.DistinctProjectionPrefixToken;
 
 /**
  * Distinct projection prefix token generator.

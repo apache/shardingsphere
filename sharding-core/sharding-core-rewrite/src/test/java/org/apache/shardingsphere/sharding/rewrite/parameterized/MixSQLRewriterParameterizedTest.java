@@ -87,7 +87,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         shardingSQLRewriteContextDecorator.decorate(shardingRule, properties, sqlRewriteContext);
         new EncryptSQLRewriteContextDecorator().decorate(shardingRule.getEncryptRule(), properties, sqlRewriteContext);
         sqlRewriteContext.generateSQLTokens();
-        return new ShardingSQLRewriteEngine().rewrite(shardingRule, sqlRewriteContext, routeContext.getRouteResult()).values();
+        return new ShardingSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult()).values();
     }
     
     private YamlRootShardingConfiguration createRuleConfiguration() throws IOException {

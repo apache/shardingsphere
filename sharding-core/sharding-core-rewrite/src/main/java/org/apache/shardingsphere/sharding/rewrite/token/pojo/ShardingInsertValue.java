@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.generic.InsertValue;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
- * Offset token.
+ * Insert value for sharding.
  */
-public final class OffsetToken extends SQLToken implements Substitutable {
+@Getter
+public final class ShardingInsertValue extends InsertValue {
     
-    @Getter
-    private final int stopIndex;
+    private final Collection<DataNode> dataNodes;
     
-    private final long revisedOffset;
-    
-    public OffsetToken(final int startIndex, final int stopIndex, final long revisedOffset) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.revisedOffset = revisedOffset;
-    }
-    
-    @Override
-    public String toString() {
-        return String.valueOf(revisedOffset);
+    public ShardingInsertValue(final List<ExpressionSegment> values, final Collection<DataNode> dataNodes) {
+        super(values);
+        this.dataNodes = dataNodes;
     }
 }

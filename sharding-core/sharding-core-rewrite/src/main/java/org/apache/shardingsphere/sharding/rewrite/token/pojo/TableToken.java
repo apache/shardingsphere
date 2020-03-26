@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.RouteUnitAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
@@ -32,9 +33,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Index token.
+ * Table token.
  */
-public final class IndexToken extends SQLToken implements Substitutable, RouteUnitAware {
+public final class TableToken extends SQLToken implements Substitutable, RouteUnitAware {
     
     @Getter
     private final int stopIndex;
@@ -45,7 +46,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     private final ShardingRule shardingRule;
     
-    public IndexToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
+    public TableToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.identifier = identifier;
@@ -55,14 +56,9 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        StringBuilder result = new StringBuilder();
-        result.append(identifier.getQuoteCharacter().getStartDelimiter()).append(identifier.getValue());
-        Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
-        if (!logicAndActualTables.isEmpty()) {
-            result.append("_").append(logicAndActualTables.values().iterator().next());
-        }
-        result.append(identifier.getQuoteCharacter().getEndDelimiter());
-        return result.toString();
+        String actualTableName = getLogicAndActualTables(routeUnit).get(identifier.getValue().toLowerCase());
+        actualTableName = null == actualTableName ? identifier.getValue().toLowerCase() : actualTableName;
+        return Joiner.on("").join(identifier.getQuoteCharacter().getStartDelimiter(), actualTableName, identifier.getQuoteCharacter().getEndDelimiter());
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {

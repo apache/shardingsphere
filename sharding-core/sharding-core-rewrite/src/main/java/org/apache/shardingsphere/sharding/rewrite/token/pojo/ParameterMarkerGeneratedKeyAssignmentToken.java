@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 /**
- * Generated key assignment token for literal.
+ * Generated key assignment token for parameter marker.
  */
-public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
+public final class ParameterMarkerGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    private final Object value;
-    
-    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
+    public ParameterMarkerGeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
         super(startIndex, columnName);
-        this.value = value;
     }
     
     @Override
     protected String getRightValue() {
-        return value instanceof String ? String.format("'%s'", value) : value.toString();
+        return "?";
     }
 }
