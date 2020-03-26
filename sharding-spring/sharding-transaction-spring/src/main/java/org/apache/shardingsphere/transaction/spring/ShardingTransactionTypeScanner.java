@@ -27,6 +27,7 @@ public final class ShardingTransactionTypeScanner extends AbstractAdvisingBeanPo
     private static final long serialVersionUID = -5140780907955632470L;
     
     public ShardingTransactionTypeScanner() {
+        setBeforeExistingAdvisors(true);
         this.advisor = new ShardingTransactionTypeAdvisor();
     }
 }
