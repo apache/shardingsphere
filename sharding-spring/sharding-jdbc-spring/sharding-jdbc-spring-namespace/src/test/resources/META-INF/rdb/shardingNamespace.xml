@@ -17,19 +17,18 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
-  xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-  xmlns:bean="http://www.springframework.org/schema/util"
-  xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
-  xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave
                         http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding
                         http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://shardingsphere.apache.org/schema/shardingsphere/encrypt http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://shardingsphere.apache.org/schema/shardingsphere/encrypt http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd">
     <import resource="datasource/dataSource.xml" />
     <import resource="datasource/masterSlaveDataSource.xml" />
 
@@ -54,8 +53,8 @@
 
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
 
-    <sharding:key-generator id="defaultKeyGenerator" column="id" generator-ref="defaultIncrementKeyGenerator" />
-    <sharding:key-generator id="orderKeyGenerator" column="order_id" generator-ref="orderIncrementKeyGenerator" />
+    <sharding:key-generator id="defaultKeyGeneratorConfig" column="id" generator-ref="defaultIncrementKeyGenerator" />
+    <sharding:key-generator id="orderKeyGeneratorConfig" column="order_id" generator-ref="orderIncrementKeyGenerator" />
 
     <bean:properties id="props">
         <prop key="appToken">business</prop>
@@ -82,25 +81,25 @@
     </sharding:data-source>
 
     <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy">
-        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="defaultKeyGenerator">
+        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="defaultKeyGeneratorConfig">
             <sharding:master-slave-rules>
                 <sharding:master-slave-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1"/>
                 <sharding:master-slave-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1"/>
             </sharding:master-slave-rules>
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGeneratorConfig" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 
     <sharding:data-source id="masterSlaveShardingDataSourceByUserStrategy">
-        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="defaultKeyGenerator">
+        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="defaultKeyGeneratorConfig">
             <sharding:master-slave-rules>
                 <sharding:master-slave-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1" strategy-ref="randomLoadBalanceAlgorithm"/>
                 <sharding:master-slave-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1" strategy-ref="randomLoadBalanceAlgorithm"/>
             </sharding:master-slave-rules>
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGeneratorConfig" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -111,7 +110,7 @@
             default-data-source-name="dbtbl_0"
             default-database-strategy-ref="standardStrategy"
             default-table-strategy-ref="inlineStrategy"
-            default-key-generator-ref="defaultKeyGenerator">
+            default-key-generator-ref="defaultKeyGeneratorConfig">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>
@@ -121,7 +120,7 @@
     <sharding:data-source id="tableRuleWithAttributesDataSource">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGeneratorConfig" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
