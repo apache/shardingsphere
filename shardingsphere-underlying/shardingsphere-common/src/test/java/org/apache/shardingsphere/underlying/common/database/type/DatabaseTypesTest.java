@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.database.type;
 
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +30,7 @@ public final class DatabaseTypesTest {
         assertThat(DatabaseTypes.getActualDatabaseType("MySQL").getName(), is("MySQL"));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ShardingSphereException.class)
     public void assertGetActualDatabaseTypeWithNotExistedDatabaseType() {
         DatabaseTypes.getActualDatabaseType("Invalid");
     }
