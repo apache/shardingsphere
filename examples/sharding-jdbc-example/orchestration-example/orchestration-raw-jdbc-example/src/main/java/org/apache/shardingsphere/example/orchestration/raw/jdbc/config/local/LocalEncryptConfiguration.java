@@ -23,9 +23,9 @@ import org.apache.shardingsphere.encrypt.api.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationEncryptDataSourceFactory;
-import org.apache.shardingsphere.underlying.common.config.orchestration.CenterConfiguration;
-import org.apache.shardingsphere.underlying.common.config.orchestration.OrchestrationConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

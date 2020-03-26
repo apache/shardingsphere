@@ -8,7 +8,7 @@ The following figure may clearly express this component's role:
 
 Supplementary instruction about the figure:
 
-1. Support to migrate whole tables in sharding configuration only, can't support to migrate specified tables.
+1. Support to migrate tables in sharding rule configuration only, can't support to migrate specified tables.
 
 2. The process of migration splits into two steps, inventory data migration and incremental data synchronization.
 
@@ -26,10 +26,10 @@ Sharding-Proxy: 3.x ~ 5.x
 
 ## How to Run
 
-Refer to the [Quick Start](./src/resources/document/manual/quick-start.cn.md)
+Refer to the [Quick Start](./src/resources/document/manual/quick-start.en.md)
 
 ## For more documents
 
-[Overview](./src/resources/document/features/_index.cn.md)
+[Overview](./src/resources/document/features/_index.en.md)
 
-[Principle](./src/resources/document/features/principle.cn.md)
+[Principle](./src/resources/document/features/principle.en.md)
