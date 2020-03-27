@@ -22,7 +22,9 @@ mvn clean package docker:build
 
 ## 配置Sharding-Proxy
 
-创建/${your_work_dir}/conf/config.yaml文件，进行分片规则配置。配置方式请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。
+在/${your_work_dir}/conf/创建server.yaml和config-sharding.yaml文件，进行服务器和分片规则配置。
+配置规则，请参考[配置手册](/cn/manual/sharding-proxy/configuration/)。
+配置模板，请参考[配置模板](https://github.com/apache/incubator-shardingsphere/tree/master/sharding-proxy/sharding-proxy-bootstrap/src/main/resources/conf)
 
 ## 运行Docker
 
