@@ -37,7 +37,7 @@ sh bin/start.sh
 
 **注意**：
 如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
-解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
+解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。
 
 4. 查看日志`logs/stdout.log`，确保启动成功。
 
