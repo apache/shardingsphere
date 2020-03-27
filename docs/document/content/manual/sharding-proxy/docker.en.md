@@ -22,7 +22,7 @@ mvn clean package docker:build
 
 ## Configure Sharding-Proxy
 
-Create `server.yaml` and `sharding_db.yaml` to configure sharding rules in `/${your_work_dir}/conf/`. 
+Create `server.yaml` and `sharding_db.yaml` to configure sharding rules and server rule in `/${your_work_dir}/conf/`. 
 Please refer to [Configuration Manual](/en/manual/sharding-proxy/configuration/).
 Please refer to [Example](https://github.com/apache/incubator-shardingsphere/tree/master/sharding-proxy/sharding-proxy-bootstrap/src/main/resources/conf).
 

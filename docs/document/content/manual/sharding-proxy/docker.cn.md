@@ -29,16 +29,23 @@ mvn clean package docker:build
 ## 运行Docker
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env PORT=3308 -p13308:3308 apache/sharding-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -e PORT=3308 -p13308:3308 apache/sharding-proxy:latest
 ```
-
-可以自定义端口`3308`和`13308`。`3308`表示docker容器端口, `13308`表示宿主机端口。
+**说明**
+* 可以自定义端口`3308`和`13308`。`3308`表示docker容器端口, `13308`表示宿主机端口。
+* 必须挂载配置路径到/opt/sharding-proxy/conf。
 
 ```
-docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --env JVM_OPTS="-Djava.awt.headless=true" --env PORT=3308 -p13308:3308 apache/sharding-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/sharding-proxy:latest
 ```
+**说明**
+* 可以自定义JVM相关参数到环境变量`JVM_OPTS`中。
 
-可以自定义JVM相关参数到环境变量`JVM_OPTS`中。
+```
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -v /${your_work_dir}/ext-lib:/opt/sharding-proxy/ext-lib -p13308:3308 apache/sharding-proxy:latest
+```
+**说明**
+* 如需使用外部jar包，可将其所在目录挂载到/opt/sharding-proxy/ext-lib。
 
 ## 访问Sharding-Proxy
 
@@ -57,3 +64,13 @@ psql -U ${your_user_name} -h ${your_host} -p 13308
 问题2：启动时报无法连接到数据库错误？
 
 回答：请确保/${your_work_dir}/conf/sharding-config.yaml配置文件中指定的PostgreSQL数据库的IP可以被Docker容器内部访问到。
+
+问题3：如何使用后端数据库为MySQL的ShardingProxy？
+
+回答：将`mysql-connector.jar`所在目录挂载到/opt/sharding-proxy/ext-lib。
+
+问题4：如何使用自定义分片算法？
+
+回答：实现对应的分片算法接口，将编译出的分片算法jar所在目录挂载到/opt/sharding-proxy/ext-lib。
+
+
