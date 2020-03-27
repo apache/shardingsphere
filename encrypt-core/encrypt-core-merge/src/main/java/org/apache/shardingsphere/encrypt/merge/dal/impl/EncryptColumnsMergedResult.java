@@ -31,7 +31,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -82,11 +82,10 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     
     private Collection<EncryptColumnMetaData> getTableEncryptColumnMetaDatas() {
         Collection<EncryptColumnMetaData> result = new LinkedList<>();
-        for (Map.Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
-            if (!(entry.getValue() instanceof EncryptColumnMetaData)) {
-                continue;
+        for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
+            if (entry.getValue() instanceof EncryptColumnMetaData) {
+                result.add((EncryptColumnMetaData) entry.getValue());
             }
-            result.add((EncryptColumnMetaData) entry.getValue());
         }
         return result;
     }
@@ -102,13 +101,12 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     }
     
     private Optional<String> getLogicColumnOfCipher(final String cipherColumn) {
-        for (Map.Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
-            if (!(entry.getValue() instanceof EncryptColumnMetaData)) {
-                continue;
-            }
-            EncryptColumnMetaData encryptColumnMetaData = (EncryptColumnMetaData) entry.getValue();
-            if (encryptColumnMetaData.getCipherColumnName().equalsIgnoreCase(cipherColumn)) {
-                return Optional.of(entry.getKey());
+        for (Entry<String, ColumnMetaData> entry : schemaMetaData.get(tableName).getColumns().entrySet()) {
+            if (entry.getValue() instanceof EncryptColumnMetaData) {
+                EncryptColumnMetaData encryptColumnMetaData = (EncryptColumnMetaData) entry.getValue();
+                if (encryptColumnMetaData.getCipherColumnName().equalsIgnoreCase(cipherColumn)) {
+                    return Optional.of(entry.getKey());
+                }
             }
         }
         return Optional.empty();
