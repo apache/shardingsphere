@@ -63,7 +63,12 @@ public final class RewriteDecoratorRegistry {
      * @return rewrite decorator
      */
     public Optional<SQLRewriteContextDecorator> getDecorator(final BaseRule rule) {
-        return registry.containsKey(rule.getClass()) ? Optional.of(createRewriteDecorator(rule.getClass())) : Optional.empty();
+        Class<? extends BaseRule> ruleClass = rule.getClass();
+        // FIXME for orchestration rule, should decouple extend between orchestration rule and sharding rule 
+        if (!registry.containsKey(ruleClass)) {
+            ruleClass = (Class<? extends BaseRule>) ruleClass.getSuperclass();
+        }
+        return registry.containsKey(ruleClass) ? Optional.of(createRewriteDecorator(ruleClass)) : Optional.empty();
     }
     
     private SQLRewriteContextDecorator createRewriteDecorator(final Class<? extends BaseRule> ruleClass) {

@@ -63,7 +63,12 @@ public final class RouteDecoratorRegistry {
      * @return route decorator
      */
     public Optional<RouteDecorator> getDecorator(final BaseRule rule) {
-        return registry.containsKey(rule.getClass()) ? Optional.of(createRouteDecorator(rule.getClass())) : Optional.empty();
+        Class<? extends BaseRule> ruleClass = rule.getClass();
+        // FIXME for orchestration rule, should decouple extend between orchestration rule and sharding rule 
+        if (!registry.containsKey(ruleClass)) {
+            ruleClass = (Class<? extends BaseRule>) ruleClass.getSuperclass();
+        }
+        return registry.containsKey(ruleClass) ? Optional.of(createRouteDecorator(ruleClass)) : Optional.empty();
     }
     
     private RouteDecorator createRouteDecorator(final Class<? extends BaseRule> ruleClass) {
