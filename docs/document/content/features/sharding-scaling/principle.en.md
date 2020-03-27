@@ -7,9 +7,9 @@ weight = 3
 
 ## Principle
 
-Consider about these challenges of ShardingScaling, the solution is: Use two database clusters temporarily, and switch after the scaling is completed.
+Consider about these challenges of Sharding-Scaling, the solution is: Use two database clusters temporarily, and switch after the scaling is completed.
 
-![Scaling Principle Overview](../img/scaling-principle-overview.en.png)
+![Scaling Principle Overview](https://shardingsphere.apache.org/document/current/img/scaling/scaling-principle-overview.en.png)
 
 
 Advantages:
@@ -23,28 +23,28 @@ Disadvantages：
 1. Redundant servers during scaling.
 2. All data needs to be moved.
 
-ShardingScaling will analyze the sharding rules and extract information like datasource and data nodes.
-According the sharding rules, ShardingScaling create a scaling job with 4 main phases.
+Sharding-Scaling will analyze the sharding rules and extract information like datasource and data nodes.
+According the sharding rules, Sharding-Scaling create a scaling job with 4 main phases.
 
 1. Preparing Phase.
 2. Inventory Phase.
 3. Incremental Phase.
 4. Switching Phase.
 
-![Workflow](../img/workflow.en.png)
+![Workflow](https://shardingsphere.apache.org/document/current/img/scaling/workflow.en.png)
 
 ### Preparing Phase
 
-ShardingScaling will check the datasource connectivity and permissions, statistic the amount of inventory data, record position of log, shard tasks based on amount of inventory data and the parallelism set by the user.
+Sharding-Scaling will check the datasource connectivity and permissions, statistic the amount of inventory data, record position of log, shard tasks based on amount of inventory data and the parallelism set by the user.
 
 ### Inventory Phase
 
 Executing the Inventory data migration tasks sharded in preparing phase.
-ShardingScaling uses JDBC to query inventory data directly from data nodes and write to the new cluster using new rules.
+Sharding-Scaling uses JDBC to query inventory data directly from data nodes and write to the new cluster using new rules.
 
 ### Incremental Phase
 
-The data in data nodes is still changing during the inventory phase, so ShardingScaling need to synchronize these incremental data to new data nodes.
+The data in data nodes is still changing during the inventory phase, so Sharding-Scaling need to synchronize these incremental data to new data nodes.
 Different databases have different implementations, but generally implemented by change data capture function based on replication protocols or WAL logs.
 
 - MySQL：subscribe and parse binlog.

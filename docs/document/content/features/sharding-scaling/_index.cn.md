@@ -17,11 +17,11 @@ chapter = true
 
 ## 简介
 
-ShardingScaling是一个提供给用户的通用的ShardingSphere数据接入迁移，及弹性伸缩的解决方案。
+Sharding-Scaling是一个提供给用户的通用的ShardingSphere数据接入迁移，及弹性伸缩的解决方案。
 
 从**4.1.0**开始向用户提供。
 
-![结构总揽](../img/scaling-overview.cn.png)
+![结构总揽](https://shardingsphere.apache.org/document/current/img/scaling/scaling-overview.cn.png)
 
 ## 挑战
 
@@ -39,4 +39,4 @@ ShardingSphere在分片策略和算法上提供给用户极大的自由度，但
 
 当前处于alpha开发阶段。
 
-![路线图](../img/roadmap.cn.png) 
+![路线图](https://shardingsphere.apache.org/document/current/img/scaling/roadmap.cn.png) 

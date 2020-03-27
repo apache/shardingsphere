@@ -16,9 +16,9 @@ How to expand their data nodes for ShardingSphere cluster also became a problem.
 
 ## Introduction
 
-ShardingScaling is a common solution for migrating data to ShardingSphere or scaling data in ShardingSphere since **4.1.0**.
+Sharding-Scaling is a common solution for migrating data to ShardingSphere or scaling data in ShardingSphere since **4.1.0**.
 
-![Scaling Overview](../img/scaling-overview.en.png)
+![Scaling Overview](https://shardingsphere.apache.org/document/current/img/scaling/scaling-overview.en.png)
 
 ## Challenges
 
@@ -38,4 +38,4 @@ The main design goal of sharding scaling is providing a common ShardingSphere sc
 
 current is in alpha development.
 
-![Roadmap](../img/roadmap.en.png) 
+![Roadmap](https://shardingsphere.apache.org/document/current/img/scalinghttps://shardingsphere.apache.org/document/current/img/scaling/roadmap.en.png) 

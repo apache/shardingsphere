@@ -18,6 +18,10 @@ weight = 2
 | MySQL      | sharding-proxy | 支持     |
 | PostgreSQL | sharding-proxy | 支持     |
 
+**注意**：
+如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
+解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
+
 ### API接口
 
 弹性迁移组件提供了简单的HTTP API接口
@@ -190,11 +194,8 @@ curl -X POST \
 }
 ```
 
-### 应用配置项
-应用现有配置项如下，相应的配置可在`conf/server.yaml`中修改：
-| 名称           | 说明                                         | 默认值 |
-| -------------- | -------------------------------------------- | ------ |
-| port           | HTTP服务监听端口                             | 8888   |
-| blockQueueSize | 数据传输通道队列大小                         | 10000  |
-| pushTimeout    | 数据推送超时时间，单位ms                     | 1000   |
-| workerThread   | 工作线程池大小，允许同时运行的迁移任务线程数 | 30     |
+## 通过UI界面来操作
+
+Sharding-scaling与sharding-ui集成了用户界面，所以上述所有任务相关的操作都可以通过UI界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
+
+更多信息请参考sharding-ui项目。
