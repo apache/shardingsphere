@@ -29,13 +29,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptResultSetTest extends AbstractEncryptJDBCDatabaseAndTableTest {
-
+    
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
-
+    
     @Test
     public void assertResultSetIsBeforeFirst() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
              ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
             assertTrue(resultSet.isBeforeFirst());
             resultSet.next();
@@ -46,40 +45,36 @@ public final class EncryptResultSetTest extends AbstractEncryptJDBCDatabaseAndTa
             assertTrue(resultSet.isBeforeFirst());
         }
     }
-
+    
     @Test
     public void assertResultSetGetRow() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
              ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
             resultSet.next();
             assertThat(resultSet.getRow(), is(1));
         }
     }
-
+    
     @Test
     public void assertResultSetAfterLast() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
              ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
             resultSet.afterLast();
             assertTrue(resultSet.isAfterLast());
         }
     }
-
+    
     @Test
     public void assertResultSetBeforeFirst() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
              ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
             assertTrue(resultSet.isBeforeFirst());
         }
     }
-
+    
     @Test
     public void assertResultSetPrevious() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
              ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
             resultSet.next();
             assertThat(resultSet.getRow(), is(1));
@@ -87,22 +82,20 @@ public final class EncryptResultSetTest extends AbstractEncryptJDBCDatabaseAndTa
             assertThat(resultSet.getRow(), is(0));
         }
     }
-
+    
     @Test
     public void assertRelative() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
              ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
             resultSet.next();
             resultSet.relative(1);
             assertThat(resultSet.getRow(), is(2));
         }
     }
-
+    
     @Test
     public void assertAbsolute() throws SQLException {
-        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
              ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
             resultSet.absolute(2);
             assertThat(resultSet.getRow(), is(2));
