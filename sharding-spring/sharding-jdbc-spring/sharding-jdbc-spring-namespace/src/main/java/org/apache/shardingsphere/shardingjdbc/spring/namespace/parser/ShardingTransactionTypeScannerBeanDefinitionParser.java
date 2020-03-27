@@ -34,4 +34,9 @@ public final class ShardingTransactionTypeScannerBeanDefinitionParser extends Ab
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShardingTransactionTypeScanner.class);
         return factory.getBeanDefinition();
     }
+    
+    @Override
+    protected boolean shouldGenerateId() {
+        return true;
+    }
 }

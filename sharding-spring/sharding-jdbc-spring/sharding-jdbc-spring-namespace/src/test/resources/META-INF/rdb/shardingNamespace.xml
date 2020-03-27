@@ -197,4 +197,6 @@
             <prop key="foo">bar</prop>
         </sharding:props>
     </sharding:data-source>
+    
+    <sharding:tx-type-annotation-driven/>
 </beans>
