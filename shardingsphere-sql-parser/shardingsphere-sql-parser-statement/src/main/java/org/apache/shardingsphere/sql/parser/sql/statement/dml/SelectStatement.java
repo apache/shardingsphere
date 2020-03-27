@@ -40,9 +40,9 @@ import java.util.Optional;
 @Setter
 public final class SelectStatement extends DMLStatement {
     
-    private ProjectionsSegment projections;
-    
     private final Collection<TableSegment> tables = new LinkedList<>();
+    
+    private ProjectionsSegment projections;
     
     private final Collection<TableReferenceSegment> tableReferences = new LinkedList<>();
     
