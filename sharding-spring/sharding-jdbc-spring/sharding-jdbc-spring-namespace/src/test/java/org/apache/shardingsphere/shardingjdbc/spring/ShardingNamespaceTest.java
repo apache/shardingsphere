@@ -61,15 +61,15 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 @ContextConfiguration(locations = "classpath:META-INF/rdb/shardingNamespace.xml")
 public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
-
+    
     @Test
     public void assertKeyGenerator() {
-        assertThat(applicationContext.getBean("orderIncrementKeyGenerator"), instanceOf(ShardingKeyGenerator.class));
-        ShardingKeyGenerator orderIncrementKeyGenerator = (ShardingKeyGenerator) applicationContext.getBean("orderIncrementKeyGenerator");
-        ShardingKeyGenerator incrementKeyGenerator = new IncrementKeyGenerator();
-        assertEquals(orderIncrementKeyGenerator.generateKey(), incrementKeyGenerator.generateKey());
+        assertThat(applicationContext.getBean("incrementAlgorithm"), instanceOf(ShardingKeyGenerator.class));
+        ShardingKeyGenerator incrementKeyGenerator = (ShardingKeyGenerator) applicationContext.getBean("incrementAlgorithm");
+        ShardingKeyGenerator directIncrementKeyGenerator = new IncrementKeyGenerator();
+        assertEquals(incrementKeyGenerator.generateKey(), directIncrementKeyGenerator.generateKey());
     }
-
+    
     @Test
     public void assertStandardStrategy() {
         StandardShardingStrategyConfiguration standardStrategy = applicationContext.getBean("standardStrategy", StandardShardingStrategyConfiguration.class);

@@ -34,7 +34,7 @@ public final class KeyGeneratorBeanDefinitionParser extends AbstractBeanDefiniti
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGeneratorConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN_ATTRIBUTE));
-        factory.addConstructorArgReference(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_REF_TAG));
+        factory.addConstructorArgReference(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_ALGORITHM_REF_TAG));
         return factory.getBeanDefinition();
     }
 }

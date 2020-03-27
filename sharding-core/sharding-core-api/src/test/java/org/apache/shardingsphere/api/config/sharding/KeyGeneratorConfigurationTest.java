@@ -20,12 +20,12 @@ package org.apache.shardingsphere.api.config.sharding;
 import org.junit.Test;
 
 public final class KeyGeneratorConfigurationTest {
-
+    
     @Test
     public void assertConstructorWithoutKeyGenerator() {
         new KeyGeneratorConfiguration("id", null);
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutColumn() {
         new KeyGeneratorConfiguration("", null);

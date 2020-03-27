@@ -27,11 +27,11 @@ import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 */
 @Getter
 public final class KeyGeneratorConfiguration {
-
+    
     private final String column;
-
+    
     private final ShardingKeyGenerator keyGenerator;
-
+    
     public KeyGeneratorConfiguration(final String column, final ShardingKeyGenerator keyGenerator) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
         this.column = column;

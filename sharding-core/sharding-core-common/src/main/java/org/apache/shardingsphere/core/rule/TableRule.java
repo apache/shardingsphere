@@ -131,7 +131,7 @@ public final class TableRule {
     private boolean containsKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
         return null != tableRuleConfiguration.getKeyGeneratorConfig() && null != tableRuleConfiguration.getKeyGeneratorConfig().getKeyGenerator();
     }
-
+    
     private boolean isEmptyDataNodes(final List<String> dataNodes) {
         return null == dataNodes || dataNodes.isEmpty();
     }
@@ -216,7 +216,7 @@ public final class TableRule {
             throw new ShardingSphereConfigurationException("ActualDataNodes must be configured if want to shard tables for logicTable [%s]", logicTable);
         }
     }
-
+    
     /**
      * Get generate key column.
      *

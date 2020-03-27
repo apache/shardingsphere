@@ -28,25 +28,25 @@
     
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
     <bean id="preciseModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
-    <bean id="incrementKeyGenerator" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorFactoryBean">
-        <constructor-arg value="INCREMENT"/>
+    <bean id="incrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorAlgorithmFactoryBean">
+        <property name="type" value="INCREMENT" />
     </bean>
-    <bean id="decrementKeyGenerator" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorFactoryBean">
-        <constructor-arg value="DECREMENT"/>
+    <bean id="decrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorAlgorithmFactoryBean">
+        <property name="type" value="DECREMENT" />
     </bean>
-
+    
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
-
-    <sharding:key-generator id="defaultKeyGeneratorConfig" column="id" generator-ref="incrementKeyGenerator" />
-    <sharding:key-generator id="itemKeyGeneratorConfig" column="order_item_id" generator-ref="decrementKeyGenerator" />
-    <sharding:key-generator id="orderKeyGeneratorConfig" column="order_id" generator-ref="incrementKeyGenerator" />
+    
+    <sharding:key-generator id="defaultKeyGenerator" column="id" algorithm-ref="incrementAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="decrementAlgorithm" />
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0" default-key-generator-ref="defaultKeyGeneratorConfig">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0" default-key-generator-ref="defaultKeyGenerator">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="orderKeyGeneratorConfig" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="itemKeyGeneratorConfig" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>

@@ -37,25 +37,21 @@
     <bean id="rangeModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.RangeModuloTableShardingAlgorithm" />
     <bean id="defaultComplexKeysShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
     <bean id="defaultHintShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.DefaultHintShardingAlgorithm" />
-    <bean id="defaultIncrementKeyGenerator" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorFactoryBean">
-        <constructor-arg value="INCREMENT"/>
+    <bean id="incrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorAlgorithmFactoryBean">
+        <property name="type" value="INCREMENT" />
     </bean>
-    <bean id="orderIncrementKeyGenerator" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorFactoryBean">
-        <constructor-arg value="INCREMENT"/>
-    </bean>
-
+    
     <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" range-algorithm-ref="rangeModuloTableShardingAlgorithm" />
     <sharding:complex-strategy id="complexStrategy" sharding-columns="order_id,user_id" algorithm-ref="defaultComplexKeysShardingAlgorithm" />
     <sharding:inline-strategy id="inlineStrategy" sharding-column="order_id" algorithm-expression="t_order_${order_id % 4}" />
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
-
+    
+    <sharding:key-generator id="defaultKeyGenerator" column="id" algorithm-ref="incrementAlgorithm" />
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM" />
-
-    <sharding:key-generator id="defaultKeyGeneratorConfig" column="id" generator-ref="defaultIncrementKeyGenerator" />
-    <sharding:key-generator id="orderKeyGeneratorConfig" column="order_id" generator-ref="orderIncrementKeyGenerator" />
-
+    
     <bean:properties id="props">
         <prop key="appToken">business</prop>
     </bean:properties>
@@ -81,25 +77,25 @@
     </sharding:data-source>
 
     <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy">
-        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="defaultKeyGeneratorConfig">
+        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="defaultKeyGenerator">
             <sharding:master-slave-rules>
                 <sharding:master-slave-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1"/>
                 <sharding:master-slave-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1"/>
             </sharding:master-slave-rules>
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGeneratorConfig" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 
     <sharding:data-source id="masterSlaveShardingDataSourceByUserStrategy">
-        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="defaultKeyGeneratorConfig">
+        <sharding:sharding-rule data-source-names="dbtbl_0_master,dbtbl_0_slave_0,dbtbl_0_slave_1,dbtbl_1_master,dbtbl_1_slave_0,dbtbl_1_slave_1" default-key-generator-ref="defaultKeyGenerator">
             <sharding:master-slave-rules>
                 <sharding:master-slave-rule id="dbtbl_0" master-data-source-name="dbtbl_0_master" slave-data-source-names="dbtbl_0_slave_0,dbtbl_0_slave_1" strategy-ref="randomLoadBalanceAlgorithm"/>
                 <sharding:master-slave-rule id="dbtbl_1" master-data-source-name="dbtbl_1_master" slave-data-source-names="dbtbl_1_slave_0,dbtbl_1_slave_1" strategy-ref="randomLoadBalanceAlgorithm"/>
             </sharding:master-slave-rules>
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGeneratorConfig" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -110,7 +106,7 @@
             default-data-source-name="dbtbl_0"
             default-database-strategy-ref="standardStrategy"
             default-table-strategy-ref="inlineStrategy"
-            default-key-generator-ref="defaultKeyGeneratorConfig">
+            default-key-generator-ref="defaultKeyGenerator">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" />
             </sharding:table-rules>
@@ -120,7 +116,7 @@
     <sharding:data-source id="tableRuleWithAttributesDataSource">
         <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGeneratorConfig" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="standardStrategy" table-strategy-ref="inlineStrategy" key-generator-ref="orderKeyGenerator" />
             </sharding:table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
