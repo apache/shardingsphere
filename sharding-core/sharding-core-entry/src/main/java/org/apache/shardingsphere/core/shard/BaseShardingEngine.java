@@ -18,13 +18,6 @@
 package org.apache.shardingsphere.core.shard;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
-import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
@@ -39,10 +32,12 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorRegistry;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 import org.apache.shardingsphere.underlying.route.hook.SPIRoutingHook;
+import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -113,13 +108,7 @@ public abstract class BaseShardingEngine {
     }
     
     private void registerRouteDecorator() {
-        for (BaseRule each : rules) {
-            if (each instanceof ShardingRule) {
-                dataNodeRouter.registerDecorator(each, new ShardingRouteDecorator());
-            } else if (each instanceof MasterSlaveRule) {
-                dataNodeRouter.registerDecorator(each, new MasterSlaveRouteDecorator());
-            }
-        }
+        rules.forEach(each -> RouteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> dataNodeRouter.registerDecorator(each, decorator)));
     }
     
     protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
@@ -131,13 +120,7 @@ public abstract class BaseShardingEngine {
     }
     
     private void registerRewriteDecorator() {
-        for (BaseRule each : rules) {
-            if (each instanceof ShardingRule) {
-                sqlRewriteEntry.registerDecorator(each, new ShardingSQLRewriteContextDecorator());
-            } else if (each instanceof EncryptRule) {
-                sqlRewriteEntry.registerDecorator(each, new EncryptSQLRewriteContextDecorator());
-            }
-        }
+        rules.forEach(each -> RewriteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> sqlRewriteEntry.registerDecorator(each, decorator)));
     }
     
     private Collection<ExecutionUnit> rewrite(final SQLRewriteContext sqlRewriteContext) {
