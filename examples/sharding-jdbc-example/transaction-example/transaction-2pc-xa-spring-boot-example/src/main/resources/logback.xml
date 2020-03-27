@@ -16,23 +16,24 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>sharding-jdbc-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
-    </parent>
-    <artifactId>transaction-example</artifactId>
-    <name>Example::transaction::root</name>
+<configuration>
+    <property name="log.context.name" value="sharding-jdbc-spring-namespace-mybatis-example" />
+    <property name="log.charset" value="UTF-8" />
+    <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
+    <contextName>${log.context.name}</contextName>
     
-    <packaging>pom</packaging>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="${log.charset}">
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
     
-    <modules>
-        <module>transaction-2pc-xa-raw-jdbc-example</module>
-        <module>transaction-base-seata-raw-jdbc-example</module>
-        <module>transaction-2pc-xa-spring-boot-example</module>
-    </modules>
-</project>
+    <logger name="com.atomikos" level="debug"/>
+    <logger name="org.springframework" level="off"/>
+    <logger name="com.zaxxer.hikari" level="off"/>
+    
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
