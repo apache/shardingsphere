@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.fixture;
+package org.apache.shardingsphere.underlying.route.hook;
 
-import org.apache.shardingsphere.underlying.route.hook.RoutingHook;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
- * Routing hook fixture.
+ * Routing hook.
  */
-public final class RoutingHookFixture implements RoutingHook {
+public interface RoutingHook {
     
-    @Override
-    public void start(final String sql) {
-    }
+    /**
+     * Handle when routing started.
+     *
+     * @param sql SQL to be routing
+     */
+    void start(String sql);
     
-    @Override
-    public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
-    }
+    /**
+     * Handle when routing finished success.
+     *
+     * @param routeContext route context
+     * @param schemaMetaData schema meta data
+     */
+    void finishSuccess(RouteContext routeContext, SchemaMetaData schemaMetaData);
     
-    @Override
-    public void finishFailure(final Exception cause) {
-    }
+    /**
+     * Handle when routing finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

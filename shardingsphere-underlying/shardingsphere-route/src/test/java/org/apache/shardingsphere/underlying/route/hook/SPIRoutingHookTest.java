@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.hook;
+package org.apache.shardingsphere.underlying.route.hook;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sharding.route.fixture.RoutingHookFixture;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.route.hook.fixture.RoutingHookFixture;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

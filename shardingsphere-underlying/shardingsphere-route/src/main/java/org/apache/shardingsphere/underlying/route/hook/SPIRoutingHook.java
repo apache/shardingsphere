@@ -15,38 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.fixture;
+package org.apache.shardingsphere.underlying.route.hook;
 
-import lombok.Getter;
-import org.apache.shardingsphere.sharding.route.hook.RoutingHook;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
-@Getter
-public final class RoutingHookFixture implements RoutingHook {
+import java.util.Collection;
+
+/**
+ * Routing hook for SPI.
+ */
+public final class SPIRoutingHook implements RoutingHook {
     
-    private String sql;
+    private final Collection<RoutingHook> routingHooks = NewInstanceServiceLoader.newServiceInstances(RoutingHook.class);
     
-    private RouteContext routeContext;
-    
-    private SchemaMetaData schemaMetaData;
-    
-    private Exception cause;
+    static {
+        NewInstanceServiceLoader.register(RoutingHook.class);
+    }
     
     @Override
     public void start(final String sql) {
-        this.sql = sql;
+        for (RoutingHook each : routingHooks) {
+            each.start(sql);
+        }
     }
     
     @Override
     public void finishSuccess(final RouteContext routeContext, final SchemaMetaData schemaMetaData) {
-        this.routeContext = routeContext;
-        this.schemaMetaData = schemaMetaData;
+        for (RoutingHook each : routingHooks) {
+            each.finishSuccess(routeContext, schemaMetaData);
+        }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        this.cause = cause;
+        for (RoutingHook each : routingHooks) {
+            each.finishFailure(cause);
+        }
     }
-    
 }
