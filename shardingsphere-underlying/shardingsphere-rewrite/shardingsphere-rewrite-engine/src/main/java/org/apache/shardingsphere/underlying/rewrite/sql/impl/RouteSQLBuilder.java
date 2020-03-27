@@ -15,25 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.underlying.rewrite.sql.impl;
 
-import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 /**
- * Generated key insert column token.
+ * SQL builder with route.
  */
-public final class GeneratedKeyInsertColumnToken extends SQLToken implements Attachable {
+public final class RouteSQLBuilder extends AbstractSQLBuilder {
     
-    private final String column;
+    private final RouteUnit routeUnit;
     
-    public GeneratedKeyInsertColumnToken(final int startIndex, final String column) {
-        super(startIndex);
-        this.column = column;
+    public RouteSQLBuilder(final SQLRewriteContext context, final RouteUnit routeUnit) {
+        super(context);
+        this.routeUnit = routeUnit;
     }
     
     @Override
-    public String toString() {
-        return String.format(", %s", column);
+    protected String getSQLTokenText(final SQLToken sqlToken) {
+        if (sqlToken instanceof RouteUnitAware) {
+            return ((RouteUnitAware) sqlToken).toString(routeUnit);
+        }
+        return sqlToken.toString();
     }
 }

@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import java.util.Map;
-
 /**
- * Logic and actual tables aware.
+ * Generated key assignment token for literal.
  */
-public interface LogicAndActualTablesAware {
+public final class LiteralGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
     
-    /**
-     * To string.
-     * 
-     * @param logicAndActualTables logic and actual tables
-     * @return literal
-     */
-    String toString(Map<String, String> logicAndActualTables);
+    private final Object value;
+    
+    public LiteralGeneratedKeyAssignmentToken(final int startIndex, final String columnName, final Object value) {
+        super(startIndex, columnName);
+        this.value = value;
+    }
+    
+    @Override
+    protected String getRightValue() {
+        return value instanceof String ? String.format("'%s'", value) : value.toString();
+    }
 }

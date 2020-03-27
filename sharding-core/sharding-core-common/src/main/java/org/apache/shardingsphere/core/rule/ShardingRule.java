@@ -37,8 +37,10 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -468,6 +470,38 @@ public class ShardingRule implements BaseRule {
                 result.add(each);
             }
         }
+        return result;
+    }
+    
+    /**
+     * Get logic and actual binding tables.
+     * 
+     * @param dataSourceName data source name
+     * @param logicTable logic table name
+     * @param actualTable actual table name
+     * @param availableLogicBindingTables available logic binding table names
+     * @return logic and actual binding tables
+     */
+    public Map<String, String> getLogicAndActualTablesFromBindingTable(final String dataSourceName, 
+                                                                       final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
+        Map<String, String> result = new LinkedHashMap<>();
+        findBindingTableRule(logicTable).ifPresent(
+            bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
+        return result;
+    }
+    
+    /**
+     * To rules.
+     * 
+     * @return rules
+     */
+    public Collection<BaseRule> toRules() {
+        Collection<BaseRule> result = new LinkedList<>();
+        result.add(this);
+        if (!encryptRule.getEncryptTableNames().isEmpty()) {
+            result.add(encryptRule);
+        }
+        result.addAll(masterSlaveRules);
         return result;
     }
 }

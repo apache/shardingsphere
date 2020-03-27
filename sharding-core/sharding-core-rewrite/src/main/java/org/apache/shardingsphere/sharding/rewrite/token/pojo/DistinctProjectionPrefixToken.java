@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.aware;
+package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.Attachable;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.pojo.SQLToken;
 
 /**
- * Route context aware.
+ * Distinct projection prefix token.
  */
-public interface RouteContextAware {
+public final class DistinctProjectionPrefixToken extends SQLToken implements Attachable {
     
-    /**
-     * Set route context.
-     * 
-     * @param routeContext route context
-     */
-    void setRouteContext(RouteContext routeContext);
+    public DistinctProjectionPrefixToken(final int startIndex) {
+        super(startIndex);
+    }
+    
+    @Override
+    public String toString() {
+        return "DISTINCT ";
+    }
 }

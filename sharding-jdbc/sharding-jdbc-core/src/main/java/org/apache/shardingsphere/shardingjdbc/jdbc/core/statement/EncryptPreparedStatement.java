@@ -36,7 +36,7 @@ import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -168,8 +168,8 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
         sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaMetaData, runtimeContext.getProperties());
         sqlRewriteEntry.registerDecorator(runtimeContext.getRule(), new EncryptSQLRewriteContextDecorator());
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, getParameters(), sqlStatementContext);
-        SQLRewriteResult sqlRewriteResult = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext);
+        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, getParameters(), sqlStatementContext, null);
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
         showSQL(sqlRewriteResult.getSql());
         return new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters());
     }

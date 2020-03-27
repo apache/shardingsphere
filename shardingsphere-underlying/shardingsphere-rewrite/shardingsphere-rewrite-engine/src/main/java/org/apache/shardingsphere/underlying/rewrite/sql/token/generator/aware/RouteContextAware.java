@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo.impl;
+package org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware;
+
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
- * Generated key assignment token for parameter marker.
+ * Route context aware.
  */
-public final class ParameterMarkerGeneratedKeyAssignmentToken extends GeneratedKeyAssignmentToken {
+public interface RouteContextAware {
     
-    public ParameterMarkerGeneratedKeyAssignmentToken(final int startIndex, final String columnName) {
-        super(startIndex, columnName);
-    }
-    
-    @Override
-    protected String getRightValue() {
-        return "?";
-    }
+    /**
+     * Set route context.
+     * 
+     * @param routeContext route context
+     */
+    void setRouteContext(RouteContext routeContext);
 }

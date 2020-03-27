@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -181,8 +181,8 @@ public final class ShadowStatement extends AbstractStatementAdapter {
     private String rewriteSQL(final String sql) {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(connection.getRuntimeContext().getMetaData().getSchema(), connection.getRuntimeContext().getProperties());
         sqlRewriteEntry.registerDecorator(connection.getRuntimeContext().getRule(), new ShadowSQLRewriteContextDecorator());
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext);
-        String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
+        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, null);
+        String result = new SQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);
         return result;
     }
