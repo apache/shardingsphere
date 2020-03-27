@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.registry;
+package org.apache.shardingsphere.underlying.route.registry;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
