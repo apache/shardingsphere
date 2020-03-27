@@ -16,7 +16,7 @@ You can report a bug, submit a new function enhancement suggestion, or submit a 
  - Choose a label after issue created, for example: bug，enhancement，discussion.
  - Please pay attention for your issue, you may need provide more information during discussion.
 
-## Develop Flow
+## Developer Flow
 
 ### Fork shardingsphere repo
 
