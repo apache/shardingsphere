@@ -56,16 +56,16 @@ public abstract class BaseShardingEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DataNodeRouter dataNodeRouter;
+    private final DataNodeRouter router;
     
-    private final SQLRewriteEntry sqlRewriteEntry;
+    private final SQLRewriteEntry rewriter;
     
-    public BaseShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+    public BaseShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine parser) {
         this.rules = rules;
         this.properties = properties;
         this.metaData = metaData;
-        dataNodeRouter = new DataNodeRouter(metaData, properties, sqlParserEngine);
-        sqlRewriteEntry = new SQLRewriteEntry(metaData.getSchema(), properties);
+        router = new DataNodeRouter(metaData, properties, parser);
+        rewriter = new SQLRewriteEntry(metaData.getSchema(), properties);
     }
     
     /**
@@ -90,23 +90,23 @@ public abstract class BaseShardingEngine {
     
     private RouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
         registerRouteDecorator();
-        return route(dataNodeRouter, sql, clonedParameters);
+        return route(router, sql, clonedParameters);
     }
     
     private void registerRouteDecorator() {
-        rules.forEach(each -> RouteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> dataNodeRouter.registerDecorator(each, decorator)));
+        rules.forEach(each -> RouteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> router.registerDecorator(each, decorator)));
     }
     
     protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
     
     private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         registerRewriteDecorator();
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
+        SQLRewriteContext sqlRewriteContext = rewriter.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
         return routeContext.getRouteResult().getRouteUnits().isEmpty() ? rewrite(sqlRewriteContext) : rewrite(routeContext, sqlRewriteContext);
     }
     
     private void registerRewriteDecorator() {
-        rules.forEach(each -> RewriteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> sqlRewriteEntry.registerDecorator(each, decorator)));
+        rules.forEach(each -> RewriteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> rewriter.registerDecorator(each, decorator)));
     }
     
     private Collection<ExecutionUnit> rewrite(final SQLRewriteContext sqlRewriteContext) {
