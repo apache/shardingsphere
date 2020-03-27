@@ -79,7 +79,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     private MergedResult createMergedResult(final EncryptRuntimeContext encryptRuntimeContext, final ResultSet resultSet) throws SQLException {
         Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(1, 1);
         engines.put(encryptRule, new JDBCEncryptResultDecoratorEngine(resultSet.getMetaData()));
-        MergeEntry mergeEntry = new MergeEntry(encryptRuntimeContext.getDatabaseType(), null, encryptRuntimeContext.getProperties(), engines);
+        MergeEntry mergeEntry = new MergeEntry(encryptRuntimeContext.getDatabaseType(), encryptRuntimeContext.getMetaData().getSchema(), encryptRuntimeContext.getProperties(), engines);
         return mergeEntry.process(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     

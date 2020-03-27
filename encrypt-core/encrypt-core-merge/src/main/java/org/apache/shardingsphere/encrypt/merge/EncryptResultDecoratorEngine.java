@@ -43,7 +43,7 @@ public abstract class EncryptResultDecoratorEngine implements ResultDecoratorEng
             return new EncryptDQLResultDecorator(createEncryptorMetaData(encryptRule, sqlStatementContext), properties.<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            return new EncryptDALResultDecorator(encryptRule);
+            return new EncryptDALResultDecorator();
         }
         return new TransparentResultDecorator();
     }
