@@ -22,18 +22,32 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>sharding-jdbc-example</artifactId>
+        <artifactId>transaction-example</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>transaction-example</artifactId>
-    <name>Example::transaction::root</name>
     
-    <packaging>pom</packaging>
+    <artifactId>transaction-2pc-xa-spring-namespace-example</artifactId>
     
-    <modules>
-        <module>transaction-2pc-xa-raw-jdbc-example</module>
-        <module>transaction-base-seata-raw-jdbc-example</module>
-        <module>transaction-2pc-xa-spring-boot-example</module>
-        <module>transaction-2pc-xa-spring-namespace-example</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-transaction-xa-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-spring-namespace</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+    </dependencies>
 </project>
