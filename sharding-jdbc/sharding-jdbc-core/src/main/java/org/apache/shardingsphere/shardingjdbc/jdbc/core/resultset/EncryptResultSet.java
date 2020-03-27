@@ -90,62 +90,62 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         }
         return result;
     }
-
+    
     @Override
     public boolean previous() throws SQLException {
         return originalResultSet.previous();
     }
-
+    
     @Override
     public boolean isBeforeFirst() throws SQLException {
         return originalResultSet.isBeforeFirst();
     }
-
+    
     @Override
     public boolean isAfterLast() throws SQLException {
         return originalResultSet.isAfterLast();
     }
-
+    
     @Override
     public boolean isFirst() throws SQLException {
         return originalResultSet.isFirst();
     }
-
+    
     @Override
     public boolean isLast() throws SQLException {
         return originalResultSet.isLast();
     }
-
+    
     @Override
     public void beforeFirst() throws SQLException {
         originalResultSet.beforeFirst();
     }
-
+    
     @Override
     public void afterLast() throws SQLException {
         originalResultSet.afterLast();
     }
-
+    
     @Override
     public boolean first() throws SQLException {
         return originalResultSet.first();
     }
-
+    
     @Override
     public boolean last() throws SQLException {
         return originalResultSet.last();
     }
-
+    
     @Override
     public boolean absolute(final int row) throws SQLException {
         return originalResultSet.absolute(row);
     }
-
+    
     @Override
     public boolean relative(final int rows) throws SQLException {
         return originalResultSet.relative(rows);
     }
-
+    
     @Override
     public boolean next() throws SQLException {
         return mergedResult.next();
