@@ -17,9 +17,13 @@ The migration scene we support：
 | MySQL      | sharding-proxy | support                |
 | PostgreSQL | sharding-proxy | support                |
 
+**Attention**: 
+If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
+and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-scaling}\lib directory.
+
 ### API
 
-ShardingScaling provides a simple HTTP API
+Sharding-Scaling provides a simple HTTP API
 
 #### Start scaling job
 
@@ -186,12 +190,7 @@ Response：
 }
 ```
 
-### Configuration
-The existing configuration items are as follows, We can modify them in `conf/server.yaml`：
-| Name           | Description                                                  | Default value |
-| -------------- | ------------------------------------------------------------ | ------------- |
-| port           | Listening port of HTTP server                                | 8888          |
-| blockQueueSize | Queue size of data transmission channel                      | 10000         |
-| pushTimeout    | Data push timeout(ms)                                        | 1000          |
-| workerThread   | Worker thread pool size, the number of migration task threads allowed to run concurrently | 30            |
+### Operate through the UI interface
 
+We provide user interface in sharding-ui, so all the operations related can be implemented with a click of the UI interface.
+For more information, please refer to the sharding-ui module.

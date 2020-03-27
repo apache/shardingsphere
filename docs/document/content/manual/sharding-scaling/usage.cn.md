@@ -1,20 +1,48 @@
-## Start scaling job
++++
+pre = "<b>4.5.2. </b>"
+toc = true
+title = "使用手册"
+weight = 2
++++
 
-POST /shardingscaling/job/start
+## 使用手册
 
-### Body
+### 环境要求
 
-| Parameter                                         | Describe                                        |
-|---------------------------------------------------|-------------------------------------------------|
-| ruleConfiguration.sourceDatasource                | source sharding proxy data source configuration |
-| ruleConfiguration.sourceRule                      | source sharding proxy table rule configuration  |
-| ruleConfiguration.destinationDataSources.name     | destination sharding proxy name                 |
-| ruleConfiguration.destinationDataSources.url      | destination sharding proxy jdbc url             |
-| ruleConfiguration.destinationDataSources.username | destination sharding proxy username             |
-| ruleConfiguration.destinationDataSources.password | destination sharding proxy password             |
-| jobConfiguration.concurrency                      | sync task proposed concurrency                  |
+纯JAVA开发，JDK建议1.8以上版本。
 
-### Example
+支持迁移场景如下：
+
+| 源端       | 目标端         | 是否支持 |
+| ---------- | -------------- | -------- |
+| MySQL      | sharding-proxy | 支持     |
+| PostgreSQL | sharding-proxy | 支持     |
+
+**注意**：
+如果后端连接MySQL数据库，需要下载[MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz)，
+解压缩后，将mysql-connector-java-5.1.47.jar拷贝到${sharding-scaling}\lib目录。
+
+### API接口
+
+弹性迁移组件提供了简单的HTTP API接口
+
+#### 创建迁移任务
+
+接口描述：POST /shardingscaling/job/start
+
+请求体：
+
+| Parameter                                         | Describe                                                     |
+| ------------------------------------------------- | ------------------------------------------------------------ |
+| ruleConfiguration.sourceDatasource                | 源端sharding sphere数据源相关配置                             |
+| ruleConfiguration.sourceRule                      | 源端sharding sphere表规则相关配置                             |
+| ruleConfiguration.destinationDataSources.name     | 目标端sharding proxy名称                                     |
+| ruleConfiguration.destinationDataSources.url      | 目标端sharding proxy jdbc url                                |
+| ruleConfiguration.destinationDataSources.username | 目标端sharding proxy用户名                                   |
+| ruleConfiguration.destinationDataSources.password | 目标端sharding proxy密码                                     |
+| jobConfiguration.concurrency                      | 迁移并发度，举例：如果设置为3，则待迁移的表将会有三个线程同时对该表进行迁移，前提是该表有整数型主键 |
+
+示例：
 
 ```
 curl -X POST \
@@ -37,7 +65,7 @@ curl -X POST \
 }'
 ```
 
-### Response
+返回信息：
 
 ```
 {
@@ -48,19 +76,17 @@ curl -X POST \
 }
 ```
 
-## Get scaling progress
+#### 查询迁移任务进度
 
-GET /shardingscaling/job/progress/{jobId}
+接口描述：GET /shardingscaling/job/progress/{jobId}
 
-### Example
-
+示例：
 ```
 curl -X GET \
   http://localhost:8888/shardingscaling/job/progress/1
 ```
 
-### Response
-
+返回信息：
 ```
 {
    "success": true,
@@ -111,18 +137,19 @@ curl -X GET \
    }
 }
 ```
-## List scaling jobs
 
-GET /shardingscaling/job/list
+#### 查询所有迁移任务
 
-### Example
+接口描述：GET /shardingscaling/job/list
+
+示例：
 
 ```
 curl -X GET \
   http://localhost:8888/shardingscaling/job/list
 ```
 
-### Response
+返回信息：
 
 ```
 {
@@ -138,18 +165,17 @@ curl -X GET \
 }
 ```
 
-## Stop scaling job
+#### 停止迁移任务
 
-POST /shardingscaling/job/stop
+接口描述：POST /shardingscaling/job/stop
 
-### Body
+请求体：
 
 | Parameter | Describe |
-|-----------|----------|
+| --------- | -------- |
 | jobId     | job id   |
 
-### Example
-
+示例：
 ```
 curl -X POST \
   http://localhost:8888/shardingscaling/job/stop \
@@ -158,9 +184,7 @@ curl -X POST \
    "jobId":1
 }'
 ```
-
-### Response
-
+返回信息：
 ```
 {
    "success": true,
@@ -169,3 +193,9 @@ curl -X POST \
    "model": null
 }
 ```
+
+## 通过UI界面来操作
+
+Sharding-scaling与sharding-ui集成了用户界面，所以上述所有任务相关的操作都可以通过UI界面点点鼠标来实现，当然本质上还是调用了上述基本接口。
+
+更多信息请参考sharding-ui项目。

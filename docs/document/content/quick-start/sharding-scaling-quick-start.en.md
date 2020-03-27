@@ -1,8 +1,8 @@
 +++
-pre = "<b>4.5.1. </b>"
+pre = "<b>2.3. </b>"
 toc = true
-title = "Build&Quick Start"
-weight = 1
+title = "Sharding-Scaling"
+weight = 3
 +++
 
 ## Quick Start
@@ -34,11 +34,15 @@ workerThread: 30
 sh bin/start.sh
 ```
 
+**Attention**: 
+If the backend database is MySQL, download [MySQL Connector/J](https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz) 
+and decompress, then copy mysql-connector-java-5.1.47.jar to ${sharding-scaling}\lib directory.
+
 4. See the log file `logs/stdout.log`，ensure successful startup.
 
 ### Start scaling job
 
-ShardingScaling provides a corresponding HTTP interface to manage the migration jobs. We can invoke the appropriate interface to start the migration job.
+Sharding-Scaling provides a corresponding HTTP interface to manage the migration jobs. We can invoke the appropriate interface to start the migration job.
 
 Start scaling job:
 
@@ -78,7 +82,7 @@ The following information is returned, indicating that the job was successfully 
 }
 ```
 
-It should be noted that, after the ShardingScaling's job is successfully created, it will automatically run.
+It should be noted that, after the Sharding-Scaling's job is successfully created, it will automatically run.
 
 ### Get scaling progress
 
@@ -189,13 +193,8 @@ Response：
 }
 ```
 
-### Shutdown ShardingScaling
+### Shutdown Sharding-Scaling
 
 ```
 sh bin/stop.sh
 ```
-
-### Operate through the UI interface
-
-We provide user interface in sharding-ui, so all the operations related can be implemented with a click of the UI interface.
-For more information, please refer to the sharding-ui module.
