@@ -67,8 +67,8 @@ Answer: please make sure designated PostgreSQL  IP in `/${your_work_dir}/conf/sh
 
 Question 3：How to start ShardingProxy whose backend databases are MySQL.
 
-Answer：Volume the directory where `mysql-connector.jar` store to /opt/sharding-proxy/ext-lib.
+Answer：Volume the directory where `mysql-connector.jar` stores to /opt/sharding-proxy/ext-lib.
 
 Question 4：How to import user-defined sharding strategy？
 
-Answer: Volume the directory where `sharding-strategy.jar` store to /opt/sharding-proxy/ext-lib.
+Answer: Volume the directory where `sharding-strategy.jar` stores to /opt/sharding-proxy/ext-lib.
