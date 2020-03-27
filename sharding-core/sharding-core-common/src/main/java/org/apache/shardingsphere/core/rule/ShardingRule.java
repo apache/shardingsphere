@@ -177,7 +177,7 @@ public class ShardingRule implements BaseRule {
      * @return database sharding strategy
      */
     public ShardingStrategy getDatabaseShardingStrategy(final TableRule tableRule) {
-        return Optional.ofNullable(tableRule.getDatabaseShardingStrategy()).orElse(defaultDatabaseShardingStrategy);
+        return null == tableRule.getDatabaseShardingStrategy() ? defaultDatabaseShardingStrategy : tableRule.getDatabaseShardingStrategy();
     }
     
     /**
@@ -191,7 +191,7 @@ public class ShardingRule implements BaseRule {
      * @return table sharding strategy
      */
     public ShardingStrategy getTableShardingStrategy(final TableRule tableRule) {
-        return Optional.ofNullable(tableRule.getTableShardingStrategy()).orElse(defaultTableShardingStrategy);
+        return null == tableRule.getTableShardingStrategy() ? defaultTableShardingStrategy : tableRule.getTableShardingStrategy();
     }
     
     /**
