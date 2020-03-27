@@ -24,7 +24,7 @@
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
                     <parameter-marker-expression value="0" start-index="28" stop-index="28" />
-                    <literal-expression value="update" />
+                    <literal-expression value="update" start-index="28" stop-index="35" />
                 </assignment-value>
             </assignment>
         </set>
@@ -35,7 +35,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="47" stop-index="47" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="54" stop-index="54" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="53" stop-index="63" literal-start-index="60" literal-stop-index="70">
@@ -43,13 +43,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="63" stop-index="63" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="70" stop-index="70" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </update>
-    
+
     <update sql-case-id="update_with_alias" parameters="'update', 1, 1">
         <table name="t_order" alias="o" start-index="7" stop-index="13" />
         <set start-index="20" stop-index="35" literal-stop-index="42">
@@ -82,7 +82,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="74" stop-index="74" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="81" stop-index="81"/>
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -154,7 +154,7 @@
             </and-predicate>
         </where>
     </update>
-    
+
     <update sql-case-id="update_without_condition">
         <table name="t_order" alias="o" start-index="7" stop-index="13" />
         <set start-index="17" stop-index="41">
@@ -163,12 +163,12 @@
                     <owner name="o" start-index="21" stop-index="21" />
                 </column>
                 <assignment-value>
-                    <literal-expression value="finished" />
+                    <literal-expression value="finished" start-index="32" stop-index="41" />
                 </assignment-value>
             </assignment>
         </set>
     </update>
-    
+
     <update sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
         <table name="t_order" start-index="27" stop-index="33" />
         <set start-index="35" stop-index="48" literal-stop-index="55">
@@ -201,7 +201,7 @@
             </and-predicate>
         </where>
     </update>
-    
+
     <update sql-case-id="update_with_special_character" parameters="'update', 1, 1">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="7" stop-index="15" />
         <set start-index="17" stop-index="32" literal-stop-index="39">
@@ -234,7 +234,7 @@
             </and-predicate>
         </where>
     </update>
-    
+
     <update sql-case-id="update_with_special_comments" parameters="'update', 1, 1">
         <table name="t_order" start-index="33" stop-index="39" />
         <set start-index="41" stop-index="52" literal-stop-index="59">
@@ -267,14 +267,14 @@
             </and-predicate>
         </where>
     </update>
-    
+
     <update sql-case-id="update_without_parameters">
         <table name="t_order" start-index="7" stop-index="13" />
         <set start-index="15" stop-index="35">
             <assignment start-index="19" stop-index="35">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <literal-expression value="update" />
+                    <literal-expression value="update" start-index="28" stop-index="35" />
                 </assignment-value>
             </assignment>
         </set>
@@ -284,20 +284,20 @@
                     <column-left-value name="order_id" start-index="43" stop-index="50" />
                     <operator type="=" />
                     <compare-right-value>
-                        <literal-expression value="1000" />
+                        <literal-expression value="1000" start-index="54" stop-index="57" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="63" stop-index="74">
                     <column-left-value name="user_id" start-index="63" stop-index="69" />
                     <operator type="=" />
                     <compare-right-value>
-                        <literal-expression value="10" />
+                        <literal-expression value="10" start-index="73" stop-index="74" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </update>
-    
+
     <update sql-case-id="update_with_or" parameters="1000, 0, 10">
         <table name="t_order" start-index="7" stop-index="13" />
         <set start-index="15" stop-index="35">
