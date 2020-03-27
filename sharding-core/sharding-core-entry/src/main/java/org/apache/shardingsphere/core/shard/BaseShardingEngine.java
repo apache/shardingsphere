@@ -36,7 +36,6 @@ import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorReg
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
 
 import java.util.Collection;
@@ -61,15 +60,12 @@ public abstract class BaseShardingEngine {
     
     private final SQLRewriteEntry sqlRewriteEntry;
     
-    private final SPIRoutingHook routingHook;
-    
     public BaseShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         this.rules = rules;
         this.properties = properties;
         this.metaData = metaData;
         dataNodeRouter = new DataNodeRouter(metaData, properties, sqlParserEngine);
         sqlRewriteEntry = new SQLRewriteEntry(metaData.getSchema(), properties);
-        routingHook = new SPIRoutingHook();
     }
     
     /**
@@ -93,18 +89,8 @@ public abstract class BaseShardingEngine {
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
     private RouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
-        routingHook.start(sql);
-        try {
-            registerRouteDecorator();
-            RouteContext result = route(dataNodeRouter, sql, clonedParameters);
-            routingHook.finishSuccess(result, metaData.getSchema());
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            routingHook.finishFailure(ex);
-            throw ex;
-        }
+        registerRouteDecorator();
+        return route(dataNodeRouter, sql, clonedParameters);
     }
     
     private void registerRouteDecorator() {
