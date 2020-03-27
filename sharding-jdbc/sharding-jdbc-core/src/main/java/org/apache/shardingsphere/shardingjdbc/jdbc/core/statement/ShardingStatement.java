@@ -258,9 +258,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void shard(final String sql) {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        BasePrepareEngine shardingEngine = new SimpleQueryPrepareEngine(
+        BasePrepareEngine prepareEngine = new SimpleQueryPrepareEngine(
                 runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
-        executionContext = shardingEngine.prepare(sql, Collections.emptyList());
+        executionContext = prepareEngine.prepare(sql, Collections.emptyList());
     }
     
     private void clearPrevious() throws SQLException {
