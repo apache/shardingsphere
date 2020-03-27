@@ -63,7 +63,7 @@ Answer: before building clone, please make sure docker daemon thread is running.
 
 Question 2: there is error report of being unable to connect to the database.
 
-Answer: please make sure designated PostgreSQL  IP in `/${your_work_dir}/conf/sharding-config.yaml` configuration is accessible to Docker container.
+Answer: please make sure designated PostgreSQL  IP in `/${your_work_dir}/conf/config-xxx.yaml` configuration is accessible to Docker container.
 
 Question 3：How to start ShardingProxy whose backend databases are MySQL.
 

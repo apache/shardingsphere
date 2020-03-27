@@ -63,7 +63,7 @@ psql -U ${your_user_name} -h ${your_host} -p 13308
 
 问题2：启动时报无法连接到数据库错误？
 
-回答：请确保/${your_work_dir}/conf/sharding-config.yaml配置文件中指定的PostgreSQL数据库的IP可以被Docker容器内部访问到。
+回答：请确保/${your_work_dir}/conf/config-xxx.yaml配置文件中指定的PostgreSQL数据库的IP可以被Docker容器内部访问到。
 
 问题3：如何使用后端数据库为MySQL的ShardingProxy？
 
