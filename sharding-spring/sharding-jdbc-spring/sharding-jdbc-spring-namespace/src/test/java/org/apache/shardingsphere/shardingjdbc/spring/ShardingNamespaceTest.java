@@ -23,6 +23,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
+import org.apache.shardingsphere.transaction.spring.ShardingTransactionTypeScanner;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -258,6 +259,11 @@ public class ShardingNamespaceTest extends AbstractJUnit4SpringContextTests {
         assertThat(orderItemRule.getActualDataNodes().size(), is(2));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_0", "t_order_item")));
         assertTrue(orderItemRule.getActualDataNodes().contains(new DataNode("dbtbl_1", "t_order_item")));
+    }
+    
+    @Test
+    public void assertShardingTransactionTypeScanner() {
+        assertNotNull(applicationContext.getBean(ShardingTransactionTypeScanner.class));
     }
     
     @SuppressWarnings("unchecked")
