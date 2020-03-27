@@ -136,7 +136,10 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableReferences())).getValue());
+        CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
+        for (TableReferenceSegment each : tableReferences.getValue()) {
+            result.getTables().addAll(each.getTables());
+        }
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
