@@ -264,6 +264,7 @@ public final class PostgreSQLDMLVisitor extends PostgreSQLVisitor implements DML
         if (null != ctx.fromClause()) {
             CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.fromClause());
             for (TableReferenceSegment each : tableReferences.getValue()) {
+                result.getTables().addAll(each.getTables());
                 result.getTableReferences().add(each);
             }
         }

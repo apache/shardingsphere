@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.Lim
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,6 +41,8 @@ import java.util.Optional;
 public final class SelectStatement extends DMLStatement {
     
     private ProjectionsSegment projections;
+    
+    private final Collection<TableSegment> tables = new LinkedList<>();
     
     private final Collection<TableReferenceSegment> tableReferences = new LinkedList<>();
     
@@ -107,8 +110,10 @@ public final class SelectStatement extends DMLStatement {
      */
     public Collection<SimpleTableSegment> getSimpleTableSegments() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (TableReferenceSegment each: tableReferences) {
-            result.addAll(each.getTables());
+        for (TableSegment each : tables) {
+            if (each instanceof SimpleTableSegment) {
+                result.add((SimpleTableSegment) each);
+            }
         }
         return result;
     }
