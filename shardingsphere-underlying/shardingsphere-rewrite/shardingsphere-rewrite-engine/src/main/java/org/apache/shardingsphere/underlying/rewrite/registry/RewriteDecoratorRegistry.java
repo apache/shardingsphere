@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.rewrite.registry;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDec
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Rewrite decorator registry.
@@ -62,9 +62,11 @@ public final class RewriteDecoratorRegistry {
      * @param rule rule
      * @return rewrite decorator
      */
-    public SQLRewriteContextDecorator getDecorator(final BaseRule rule) {
-        Class<? extends BaseRule> ruleClass = rule.getClass();
-        Preconditions.checkState(registry.containsKey(ruleClass), "Can not find rewrite decorator with rule `%s`.", ruleClass);
+    public Optional<SQLRewriteContextDecorator> getDecorator(final BaseRule rule) {
+        return registry.containsKey(rule.getClass()) ? Optional.of(createRewriteDecorator(rule.getClass())) : Optional.empty();
+    }
+    
+    private SQLRewriteContextDecorator createRewriteDecorator(final Class<? extends BaseRule> ruleClass) {
         try {
             return registry.get(ruleClass).newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {

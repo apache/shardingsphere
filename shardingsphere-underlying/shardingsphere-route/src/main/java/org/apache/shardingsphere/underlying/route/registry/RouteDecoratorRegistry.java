@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.underlying.route.registry;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Route decorator registry.
@@ -62,9 +62,11 @@ public final class RouteDecoratorRegistry {
      * @param rule rule
      * @return route decorator
      */
-    public RouteDecorator getDecorator(final BaseRule rule) {
-        Class<? extends BaseRule> ruleClass = rule.getClass();
-        Preconditions.checkState(registry.containsKey(ruleClass), "Can not find route decorator with rule `%s`.", ruleClass);
+    public Optional<RouteDecorator> getDecorator(final BaseRule rule) {
+        return registry.containsKey(rule.getClass()) ? Optional.of(createRouteDecorator(rule.getClass())) : Optional.empty();
+    }
+    
+    private RouteDecorator createRouteDecorator(final Class<? extends BaseRule> ruleClass) {
         try {
             return registry.get(ruleClass).newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
