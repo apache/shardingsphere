@@ -22,53 +22,53 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Route decorator registry.
+ * Rewrite decorator registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RouteDecoratorRegistry {
+public final class RewriteDecoratorRegistry {
     
-    private static final RouteDecoratorRegistry INSTANCE = new RouteDecoratorRegistry();
+    private static final RewriteDecoratorRegistry INSTANCE = new RewriteDecoratorRegistry();
     
-    private final Map<Class<? extends BaseRule>, Class<? extends RouteDecorator>> registry = new HashMap<>();
+    private final Map<Class<? extends BaseRule>, Class<? extends SQLRewriteContextDecorator>> registry = new HashMap<>();
     
     /**
      * Get instance.
      * 
-     * @return instance of route decorator registry
+     * @return instance of rewrite decorator registry
      */
-    public static RouteDecoratorRegistry getInstance() {
+    public static RewriteDecoratorRegistry getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Register route decorator.
+     * Register rewrite decorator.
      * 
      * @param ruleClass rule class
-     * @param decoratorClass route decorator class
+     * @param decoratorClass rewrite decorator class
      */
-    public void register(final Class<? extends BaseRule> ruleClass, final Class<? extends RouteDecorator> decoratorClass) {
+    public void register(final Class<? extends BaseRule> ruleClass, final Class<? extends SQLRewriteContextDecorator> decoratorClass) {
         registry.put(ruleClass, decoratorClass);
     }
     
     /**
-     * Get route decorator.
+     * Get rewrite decorator.
      * 
      * @param rule rule
-     * @return route decorator
+     * @return rewrite decorator
      */
-    public RouteDecorator getDecorator(final BaseRule rule) {
+    public SQLRewriteContextDecorator getDecorator(final BaseRule rule) {
         Class<? extends BaseRule> ruleClass = rule.getClass();
-        Preconditions.checkState(registry.containsKey(ruleClass), "Can not find route decorator with rule `%s`.", ruleClass);
+        Preconditions.checkState(registry.containsKey(ruleClass), "Can not find rewrite decorator with rule `%s`.", ruleClass);
         try {
             return registry.get(ruleClass).newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new ShardingSphereException(String.format("Can not find public default constructor for route decorator `%s`", registry.get(ruleClass)), ex);
+            throw new ShardingSphereException(String.format("Can not find public default constructor for rewrite decorator `%s`", registry.get(ruleClass)), ex);
         }
     }
 }
