@@ -27,6 +27,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingSt
 import org.apache.shardingsphere.core.shard.fixture.PreciseShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;
+import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
@@ -135,7 +136,9 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertGetDatabaseShardingStrategyFromDefault() {
-        assertThat(createMaximumShardingRule().getDatabaseShardingStrategy(mock(TableRule.class)), instanceOf(InlineShardingStrategy.class));
+        ShardingStrategy actual = createMaximumShardingRule().getDatabaseShardingStrategy(mock(TableRule.class));
+        assertThat(actual, instanceOf(InlineShardingStrategy.class));
+        assertThat(actual.getShardingColumns().iterator().next(), is("ds_id"));
     }
     
     @Test
@@ -147,7 +150,9 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertGetTableShardingStrategyFromDefault() {
-        assertThat(createMaximumShardingRule().getTableShardingStrategy(mock(TableRule.class)), instanceOf(InlineShardingStrategy.class));
+        ShardingStrategy actual = createMaximumShardingRule().getTableShardingStrategy(mock(TableRule.class));
+        assertThat(actual, instanceOf(InlineShardingStrategy.class));
+        assertThat(actual.getShardingColumns().iterator().next(), is("table_id"));
     }
     
     @Test
@@ -398,8 +403,8 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getTableRuleConfigs().add(subTableRuleConfiguration);
         shardingRuleConfiguration.getBindingTableGroups().add(tableRuleConfiguration.getLogicTable() + "," + subTableRuleConfiguration.getLogicTable());
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
-        shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "ds_%{id % 2}"));
-        shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "table_%{id % 2}"));
+        shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("ds_id", "ds_%{ds_id % 2}"));
+        shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("table_id", "table_%{table_id % 2}"));
         shardingRuleConfiguration.setDefaultKeyGeneratorConfig(new KeyGeneratorConfiguration("INCREMENT", "id", new Properties()));
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());
     }

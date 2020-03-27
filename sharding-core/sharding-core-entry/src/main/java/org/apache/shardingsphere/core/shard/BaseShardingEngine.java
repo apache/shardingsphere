@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.core.shard;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.shard.log.ShardingSQLLogger;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
-import org.apache.shardingsphere.sharding.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
@@ -36,6 +33,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
@@ -44,6 +42,7 @@ import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.route.hook.SPIRoutingHook;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -89,9 +88,9 @@ public abstract class BaseShardingEngine {
         List<Object> clonedParameters = cloneParameters(parameters);
         RouteContext routeContext = executeRoute(sql, clonedParameters);
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext());
-        result.getExecutionUnits().addAll(HintManager.isDatabaseShardingOnly() ? convert(sql, clonedParameters, routeContext) : rewriteAndConvert(sql, clonedParameters, routeContext));
+        result.getExecutionUnits().addAll(executeRewrite(sql, clonedParameters, routeContext));
         if (properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
-            ShardingSQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), result.getSqlStatementContext(), result.getExecutionUnits());
+            SQLLogger.logSQL(sql, properties.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), result.getSqlStatementContext(), result.getExecutionUnits());
         }
         return result;
     }
@@ -125,31 +124,10 @@ public abstract class BaseShardingEngine {
     
     protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
     
-    private Collection<ExecutionUnit> convert(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        Collection<ExecutionUnit> result = new LinkedHashSet<>();
-        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
-            return Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sql, parameters)));
-        }
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-            result.add(new ExecutionUnit(each.getDataSourceMapper().getActualName(), new SQLUnit(sql, parameters)));
-        }
-        return result;
-    }
-    
-    private Collection<ExecutionUnit> rewriteAndConvert(final String sql, final List<Object> parameters, final RouteContext routeContext) {
+    private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         registerRewriteDecorator();
         SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
-        if (routeContext.getRouteResult().getRouteUnits().isEmpty()) {
-            SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
-            String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
-            return Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
-        }
-        Collection<ExecutionUnit> result = new LinkedHashSet<>();
-        for (Entry<RouteUnit, SQLRewriteResult> entry : new SQLRouteRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult()).entrySet()) {
-            result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
-        }
-        return result;
+        return routeContext.getRouteResult().getRouteUnits().isEmpty() ? rewrite(sqlRewriteContext) : rewrite(routeContext, sqlRewriteContext);
     }
     
     private void registerRewriteDecorator() {
@@ -160,5 +138,19 @@ public abstract class BaseShardingEngine {
                 sqlRewriteEntry.registerDecorator(each, new EncryptSQLRewriteContextDecorator());
             }
         }
+    }
+    
+    private Collection<ExecutionUnit> rewrite(final SQLRewriteContext sqlRewriteContext) {
+        SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
+        String dataSourceName = metaData.getDataSources().getAllInstanceDataSourceNames().iterator().next();
+        return Collections.singletonList(new ExecutionUnit(dataSourceName, new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
+    }
+    
+    private Collection<ExecutionUnit> rewrite(final RouteContext routeContext, final SQLRewriteContext sqlRewriteContext) {
+        Collection<ExecutionUnit> result = new LinkedHashSet<>();
+        for (Entry<RouteUnit, SQLRewriteResult> entry : new SQLRouteRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult()).entrySet()) {
+            result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
+        }
+        return result;
     }
 }
