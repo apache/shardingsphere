@@ -57,41 +57,35 @@ public class ExampleMain {
     }
     
     private static void initEnvironment(final JdbcTemplate jdbcTemplate) {
-        jdbcTemplate.execute("TRUNCATE TABLE t_order");
+        jdbcTemplate.execute("DROP TABLE IF EXISTS t_order");
         jdbcTemplate.execute(MYSQL_CREATE_TABLE);
     }
     
     private static void process(final JdbcTemplate jdbcTemplate) {
         TransactionTypeHolder.set(TransactionType.XA);
         System.out.println("############### start commit transaction ################");
-        jdbcTemplate.execute(new ConnectionCallback<Object>() {
-            @Override
-            public Object doInConnection(final Connection connection) throws SQLException, DataAccessException {
-                connection.setAutoCommit(false);
-                int result;
-                try {
-                    result = doInsert(connection);
-                    printData(jdbcTemplate, "----------------- query all before commit ------------------");
-                    connection.commit();
-                    printData(jdbcTemplate, "----------------- query all after  commit ------------------");
-                } catch (final SQLException ex) {
-                    connection.rollback();
-                    throw ex;
-                }
-                return result;
+        jdbcTemplate.execute((ConnectionCallback<Object>) connection -> {
+            connection.setAutoCommit(false);
+            int result;
+            try {
+                result = doInsert(connection);
+                printData(jdbcTemplate, "----------------- query all before commit ------------------");
+                connection.commit();
+                printData(jdbcTemplate, "----------------- query all after  commit ------------------");
+            } catch (final SQLException ex) {
+                connection.rollback();
+                throw ex;
             }
+            return result;
         });
         System.out.println("############### start rollback transaction ################");
         TransactionTypeHolder.set(TransactionType.XA);
-        jdbcTemplate.execute(new ConnectionCallback<Object>() {
-            @Override
-            public Object doInConnection(final Connection connection) throws SQLException, DataAccessException {
-                connection.setAutoCommit(false);
-                doInsert(connection);
-                connection.rollback();
-                printData(jdbcTemplate, "----------------- query all after rollback ------------------");
-                return null;
-            }
+        jdbcTemplate.execute((ConnectionCallback<Object>) connection -> {
+            connection.setAutoCommit(false);
+            doInsert(connection);
+            connection.rollback();
+            printData(jdbcTemplate, "----------------- query all after rollback ------------------");
+            return null;
         });
     }
     
