@@ -111,7 +111,7 @@ public final class LogicSchemas {
      * @return schema exists or not
      */
     public boolean schemaExists(final String schema) {
-        return logicSchemas.keySet().contains(schema);
+        return logicSchemas.containsKey(schema);
     }
     
     /**
