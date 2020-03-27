@@ -26,11 +26,13 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -38,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest {
+public final class PreparedQueryPrepareEngineTest extends BasePrepareEngineTest {
     
     @Mock
     private ShardingSphereMetaData metaData;
@@ -47,32 +49,38 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     private ShardingRule shardingRule;
     
     @Mock
-    private DataNodeRouter dataNodeRouter;
+    private DataNodeRouter router;
     
-    private SimpleQueryShardingEngine shardingEngine;
+    private PreparedQueryPrepareEngine prepareEngine;
     
-    public SimpleQueryShardingEngineTest() {
-        super("SELECT 1", Collections.emptyList());
+    public PreparedQueryPrepareEngineTest() {
+        super("SELECT ?", Collections.singletonList(1));
     }
     
     @Before
     public void setUp() {
         when(metaData.getSchema()).thenReturn(mock(SchemaMetaData.class));
         when(shardingRule.toRules()).thenReturn(Arrays.asList(shardingRule, mock(EncryptRule.class)));
-        shardingEngine = new SimpleQueryShardingEngine(shardingRule.toRules(), getProperties(), metaData, mock(SQLParserEngine.class));
+        prepareEngine = new PreparedQueryPrepareEngine(shardingRule.toRules(), getProperties(), metaData, mock(SQLParserEngine.class));
         setRoutingEngine();
     }
     
     @SneakyThrows
     private void setRoutingEngine() {
-        Field field = BaseShardingEngine.class.getDeclaredField("router");
+        Field field = BasePrepareEngine.class.getDeclaredField("router");
         field.setAccessible(true);
-        field.set(shardingEngine, dataNodeRouter);
+        field.set(prepareEngine, router);
     }
     
-    protected void assertShard() {
+    protected void assertPrepare() {
         RouteContext routeContext = createSQLRouteContext();
-        when(dataNodeRouter.route(getSql(), Collections.emptyList(), false)).thenReturn(routeContext);
-        assertExecutionContext(shardingEngine.shard(getSql(), getParameters()));
+        when(router.route(getSql(), getParameters(), true)).thenReturn(routeContext);
+        assertExecutionContext(prepareEngine.prepare(getSql(), getParameters()));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertWithRouteException() {
+        when(router.route(getSql(), getParameters(), true)).thenThrow(SQLException.class);
+        prepareEngine.prepare(getSql(), getParameters());
     }
 }

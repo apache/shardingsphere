@@ -51,7 +51,7 @@ import static org.junit.Assert.assertThat;
 
 @RequiredArgsConstructor
 @Getter
-public abstract class BaseShardingEngineTest {
+public abstract class BasePrepareEngineTest {
     
     private final String sql;
     
@@ -87,16 +87,16 @@ public abstract class BaseShardingEngineTest {
     }
     
     @Test
-    public void assertShardWithHintDatabaseShardingOnly() {
+    public void assertPrepareWithHintDatabaseShardingOnly() {
         HintManager.getInstance().setDatabaseShardingValue("1");
-        assertShard();
+        assertPrepare();
         HintManager.clear();
     }
     
     @Test
-    public void assertShardWithoutHint() {
-        assertShard();
+    public void assertPrepareWithoutHint() {
+        assertPrepare();
     }
     
-    protected abstract void assertShard();
+    protected abstract void assertPrepare();
 }

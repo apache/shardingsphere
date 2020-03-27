@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Sharding engine for prepared query.
+ * Prepare engine for prepared query.
  * 
  * <pre>
  *     Prepared query:  
@@ -38,9 +38,9 @@ import java.util.List;
  *       for PostgreSQL is Extended Query;
  * </pre>
  */
-public final class PreparedQueryShardingEngine extends BaseShardingEngine {
+public final class PreparedQueryPrepareEngine extends BasePrepareEngine {
     
-    public PreparedQueryShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+    public PreparedQueryPrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         super(rules, properties, metaData, sqlParserEngine);
     }
     

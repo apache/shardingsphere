@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Sharding engine for simple query.
+ * Prepare engine for simple query.
  * 
  * <pre>
  *     Simple query:  
@@ -38,9 +38,9 @@ import java.util.List;
  *       for PostgreSQL is Simple Query;
  * </pre>
  */
-public final class SimpleQueryShardingEngine extends BaseShardingEngine {
+public final class SimpleQueryPrepareEngine extends BasePrepareEngine {
     
-    public SimpleQueryShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+    public SimpleQueryPrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         super(rules, properties, metaData, sqlParserEngine);
     }
     
