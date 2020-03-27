@@ -36,7 +36,6 @@ import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorReg
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
 
 import java.util.Collection;
@@ -57,19 +56,16 @@ public abstract class BaseShardingEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final DataNodeRouter dataNodeRouter;
+    private final DataNodeRouter router;
     
-    private final SQLRewriteEntry sqlRewriteEntry;
+    private final SQLRewriteEntry rewriter;
     
-    private final SPIRoutingHook routingHook;
-    
-    public BaseShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+    public BaseShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine parser) {
         this.rules = rules;
         this.properties = properties;
         this.metaData = metaData;
-        dataNodeRouter = new DataNodeRouter(metaData, properties, sqlParserEngine);
-        sqlRewriteEntry = new SQLRewriteEntry(metaData.getSchema(), properties);
-        routingHook = new SPIRoutingHook();
+        router = new DataNodeRouter(metaData, properties, parser);
+        rewriter = new SQLRewriteEntry(metaData.getSchema(), properties);
     }
     
     /**
@@ -93,34 +89,24 @@ public abstract class BaseShardingEngine {
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
     private RouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
-        routingHook.start(sql);
-        try {
-            registerRouteDecorator();
-            RouteContext result = route(dataNodeRouter, sql, clonedParameters);
-            routingHook.finishSuccess(result, metaData.getSchema());
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            routingHook.finishFailure(ex);
-            throw ex;
-        }
+        registerRouteDecorator();
+        return route(router, sql, clonedParameters);
     }
     
     private void registerRouteDecorator() {
-        rules.forEach(each -> RouteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> dataNodeRouter.registerDecorator(each, decorator)));
+        rules.forEach(each -> RouteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> router.registerDecorator(each, decorator)));
     }
     
     protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
     
     private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
         registerRewriteDecorator();
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
+        SQLRewriteContext sqlRewriteContext = rewriter.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
         return routeContext.getRouteResult().getRouteUnits().isEmpty() ? rewrite(sqlRewriteContext) : rewrite(routeContext, sqlRewriteContext);
     }
     
     private void registerRewriteDecorator() {
-        rules.forEach(each -> RewriteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> sqlRewriteEntry.registerDecorator(each, decorator)));
+        rules.forEach(each -> RewriteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> rewriter.registerDecorator(each, decorator)));
     }
     
     private Collection<ExecutionUnit> rewrite(final SQLRewriteContext sqlRewriteContext) {

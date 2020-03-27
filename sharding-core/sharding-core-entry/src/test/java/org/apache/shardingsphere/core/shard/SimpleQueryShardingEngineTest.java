@@ -65,7 +65,7 @@ public final class SimpleQueryShardingEngineTest extends BaseShardingEngineTest 
     
     @SneakyThrows
     private void setRoutingEngine() {
-        Field field = BaseShardingEngine.class.getDeclaredField("dataNodeRouter");
+        Field field = BaseShardingEngine.class.getDeclaredField("router");
         field.setAccessible(true);
         field.set(shardingEngine, dataNodeRouter);
     }
