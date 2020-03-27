@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.log;
+package org.apache.shardingsphere.underlying.executor.log;
 
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
@@ -33,18 +33,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.inOrder;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingSQLLoggerTest {
+public final class SQLLoggerTest {
     
     private static final String SQL = "SELECT * FROM t_user";
-    
-    private Collection<String> dataSourceNames;
     
     private Collection<ExecutionUnit> executionUnits;
     
@@ -53,17 +50,18 @@ public final class ShardingSQLLoggerTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        this.dataSourceNames = Arrays.asList("db1", "db2", "db3");
-        this.executionUnits = mockExecutionUnits(dataSourceNames, SQL);
-        Field field = ShardingSQLLogger.class.getDeclaredField("log");
-        setFinalStatic(field, logger);
+        executionUnits = mockExecutionUnits(Arrays.asList("db1", "db2", "db3"), SQL);
+        setFinalStatic(SQLLogger.class.getDeclaredField("log"), logger);
+    }
+    
+    private Collection<ExecutionUnit> mockExecutionUnits(final Collection<String> dataSourceNames, final String sql) {
+        return dataSourceNames.stream().map(each -> new ExecutionUnit(each, new SQLUnit(sql, new ArrayList<>()))).collect(Collectors.toList());
     }
     
     @Test
-    public void assertLogSQLShard() {
-        ShardingSQLLogger.logSQL(SQL, false, null, executionUnits);
+    public void assertLogNormalSQLWithoutParameter() {
+        SQLLogger.logSQL(SQL, false, null, executionUnits);
         InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
         inOrder.verify(logger).info("Actual SQL: {} ::: {}", new Object[]{"db1", SQL});
@@ -72,12 +70,11 @@ public final class ShardingSQLLoggerTest {
     }
     
     @Test
-    public void assertLogSQLShardWithParameters() {
+    public void assertLogNormalSQLWithParameters() {
         List<Object> parameters = executionUnits.iterator().next().getSqlUnit().getParameters();
         parameters.add("parameter");
-        ShardingSQLLogger.logSQL(SQL, false, null, executionUnits);
+        SQLLogger.logSQL(SQL, false, null, executionUnits);
         InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
         inOrder.verify(logger).info("Actual SQL: {} ::: {} ::: {}", "db1", SQL, parameters);
@@ -86,37 +83,16 @@ public final class ShardingSQLLoggerTest {
     }
     
     @Test
-    public void assertLogSQLShardSimple() {
-        ShardingSQLLogger.logSQL(SQL, true, null, executionUnits);
+    public void assertLogSimpleSQL() {
+        SQLLogger.logSQL(SQL, true, null, executionUnits);
         InOrder inOrder = inOrder(logger);
-        inOrder.verify(logger).info("Rule Type: sharding", new Object[]{});
         inOrder.verify(logger).info("Logic SQL: {}", new Object[]{SQL});
         inOrder.verify(logger).info("SQLStatement: {}", new Object[]{null});
-        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}", new Object[]{buildDataSourceNamesSet(), executionUnits.size()});
+        inOrder.verify(logger).info("Actual SQL(simple): {} ::: {}", new Object[]{buildDataSourceNames(), executionUnits.size()});
     }
     
-    private Set<String> buildDataSourceNamesSet() {
-        Set<String> dataSourceNamesSet = new HashSet<>(executionUnits.size());
-        for (ExecutionUnit each : executionUnits) {
-            dataSourceNamesSet.add(each.getDataSourceName());
-        }
-        return dataSourceNamesSet;
-    }
-    
-    private Collection<ExecutionUnit> mockExecutionUnits(final Collection<String> dataSourceNames, final String sql) {
-        List<ExecutionUnit> result = new LinkedList<>();
-        for (String dsName : dataSourceNames) {
-            result.addAll(mockOneShard(dsName, 1, sql));
-        }
-        return result;
-    }
-    
-    private Collection<ExecutionUnit> mockOneShard(final String dataSourceName, final int size, final String sql) {
-        Collection<ExecutionUnit> result = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            result.add(new ExecutionUnit(dataSourceName, new SQLUnit(sql, new ArrayList<>())));
-        }
-        return result;
+    private Collection<String> buildDataSourceNames() {
+        return executionUnits.stream().map(ExecutionUnit::getDataSourceName).collect(Collectors.toCollection(() -> new HashSet<>(executionUnits.size())));
     }
     
     private static void setFinalStatic(final Field field, final Object newValue) throws NoSuchFieldException, IllegalAccessException {

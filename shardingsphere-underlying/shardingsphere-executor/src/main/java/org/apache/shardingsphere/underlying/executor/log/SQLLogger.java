@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard.log;
+package org.apache.shardingsphere.underlying.executor.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,14 +28,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * SQL logger for sharding.
+ * SQL logger.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "ShardingSphere-SQL")
-public final class ShardingSQLLogger {
+public final class SQLLogger {
     
     /**
-     * Print SQL log for sharding rule.
+     * Print SQL log.
      * 
      * @param logicSQL logic SQL
      * @param showSimple whether show SQL in simple style
@@ -43,7 +43,6 @@ public final class ShardingSQLLogger {
      * @param executionUnits execution units
      */
     public static void logSQL(final String logicSQL, final boolean showSimple, final SQLStatementContext sqlStatementContext, final Collection<ExecutionUnit> executionUnits) {
-        log("Rule Type: sharding");
         log("Logic SQL: {}", logicSQL);
         log("SQLStatement: {}", sqlStatementContext);
         if (showSimple) {
