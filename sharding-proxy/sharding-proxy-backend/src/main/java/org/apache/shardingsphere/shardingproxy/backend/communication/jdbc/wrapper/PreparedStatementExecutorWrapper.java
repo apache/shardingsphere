@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
+import org.apache.shardingsphere.underlying.pluggble.PreparedQueryPrepareEngine;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
@@ -83,9 +83,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private ExecutionContext doShardingRoute(final String sql) {
-        PreparedQueryShardingEngine shardingEngine = new PreparedQueryShardingEngine(
+        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(
                 logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
-        return shardingEngine.shard(sql, parameters);
+        return prepareEngine.prepare(sql, parameters);
     }
     
     @SuppressWarnings("unchecked")

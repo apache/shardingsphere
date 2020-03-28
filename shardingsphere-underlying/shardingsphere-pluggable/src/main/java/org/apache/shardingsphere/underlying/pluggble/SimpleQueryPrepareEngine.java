@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard;
+package org.apache.shardingsphere.underlying.pluggble;
 
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -24,33 +24,33 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Sharding engine for prepared query.
+ * Prepare engine for simple query.
  * 
  * <pre>
- *     Prepared query:  
- *       for JDBC is PreparedStatement; 
- *       for MyQL is COM_STMT; 
- *       for PostgreSQL is Extended Query;
+ *     Simple query:  
+ *       for JDBC is Statement; 
+ *       for MyQL is COM_QUERY; 
+ *       for PostgreSQL is Simple Query;
  * </pre>
  */
-public final class PreparedQueryShardingEngine extends BaseShardingEngine {
+public final class SimpleQueryPrepareEngine extends BasePrepareEngine {
     
-    public PreparedQueryShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+    public SimpleQueryPrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         super(rules, properties, metaData, sqlParserEngine);
     }
     
     @Override
     protected List<Object> cloneParameters(final List<Object> parameters) {
-        return new ArrayList<>(parameters);
+        return Collections.emptyList();
     }
     
     @Override
     protected RouteContext route(final DataNodeRouter dataNodeRouter, final String sql, final List<Object> parameters) {
-        return dataNodeRouter.route(sql, parameters, true);
+        return dataNodeRouter.route(sql, Collections.emptyList(), false);
     }
 }

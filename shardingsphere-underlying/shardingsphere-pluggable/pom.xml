@@ -20,24 +20,32 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-underlying</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction</artifactId>
+    <artifactId>shardingsphere-pluggable</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-    
-    <modules>
-        <module>sharding-transaction-core</module>
-        <module>sharding-transaction-2pc</module>
-        <module>sharding-transaction-base</module>
-    </modules>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-pluggable</artifactId>
-            <version>${project.parent.version}</version>
+            <artifactId>shardingsphere-sql-parser-binder</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-route</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-rewrite-engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-executor</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

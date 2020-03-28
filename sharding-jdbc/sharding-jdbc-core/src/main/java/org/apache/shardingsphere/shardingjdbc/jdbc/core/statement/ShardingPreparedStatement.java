@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
-import org.apache.shardingsphere.core.shard.BaseShardingEngine;
-import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
+import org.apache.shardingsphere.underlying.pluggble.BasePrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.PreparedQueryPrepareEngine;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
@@ -67,7 +67,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private final String sql;
     
-    private final BaseShardingEngine shardingEngine;
+    private final BasePrepareEngine prepareEngine;
     
     private final PreparedStatementExecutor preparedStatementExecutor;
     
@@ -104,7 +104,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         this.connection = connection;
         this.sql = sql;
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        shardingEngine = new PreparedQueryShardingEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
+        prepareEngine = new PreparedQueryPrepareEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
         preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
@@ -237,7 +237,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void shard() {
-        executionContext = shardingEngine.shard(sql, getParameters());
+        executionContext = prepareEngine.prepare(sql, getParameters());
         findGeneratedKey().ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
     }
     

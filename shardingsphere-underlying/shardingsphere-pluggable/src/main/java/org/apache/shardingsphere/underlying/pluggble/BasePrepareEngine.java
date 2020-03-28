@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.shard;
+package org.apache.shardingsphere.underlying.pluggble;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
@@ -45,10 +45,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 /**
- * Base sharding engine.
+ * Base prepare engine.
  */
 @RequiredArgsConstructor
-public abstract class BaseShardingEngine {
+public abstract class BasePrepareEngine {
     
     private final Collection<BaseRule> rules;
     
@@ -60,7 +60,7 @@ public abstract class BaseShardingEngine {
     
     private final SQLRewriteEntry rewriter;
     
-    public BaseShardingEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine parser) {
+    public BasePrepareEngine(final Collection<BaseRule> rules, final ConfigurationProperties properties, final ShardingSphereMetaData metaData, final SQLParserEngine parser) {
         this.rules = rules;
         this.properties = properties;
         this.metaData = metaData;
@@ -69,13 +69,13 @@ public abstract class BaseShardingEngine {
     }
     
     /**
-     * Shard.
+     * Prepare to execute.
      *
      * @param sql SQL
      * @param parameters SQL parameters
      * @return execution context
      */
-    public ExecutionContext shard(final String sql, final List<Object> parameters) {
+    public ExecutionContext prepare(final String sql, final List<Object> parameters) {
         List<Object> clonedParameters = cloneParameters(parameters);
         RouteContext routeContext = executeRoute(sql, clonedParameters);
         ExecutionContext result = new ExecutionContext(routeContext.getSqlStatementContext());

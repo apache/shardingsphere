@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import org.apache.shardingsphere.sharding.execute.sql.hook.SQLExecutionHook;
+import org.apache.shardingsphere.underlying.executor.hook.SQLExecutionHook;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;

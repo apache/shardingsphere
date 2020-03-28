@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.core.shard.BaseShardingEngine;
-import org.apache.shardingsphere.core.shard.SimpleQueryShardingEngine;
+import org.apache.shardingsphere.underlying.pluggble.BasePrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.SimpleQueryPrepareEngine;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
@@ -258,9 +258,9 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void shard(final String sql) {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        BaseShardingEngine shardingEngine = new SimpleQueryShardingEngine(
+        BasePrepareEngine prepareEngine = new SimpleQueryPrepareEngine(
                 runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
-        executionContext = shardingEngine.shard(sql, Collections.emptyList());
+        executionContext = prepareEngine.prepare(sql, Collections.emptyList());
     }
     
     private void clearPrevious() throws SQLException {
