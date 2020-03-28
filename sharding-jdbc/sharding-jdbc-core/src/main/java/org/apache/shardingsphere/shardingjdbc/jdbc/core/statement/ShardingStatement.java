@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.core.shard.BasePrepareEngine;
-import org.apache.shardingsphere.core.shard.SimpleQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.BasePrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.SimpleQueryPrepareEngine;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
