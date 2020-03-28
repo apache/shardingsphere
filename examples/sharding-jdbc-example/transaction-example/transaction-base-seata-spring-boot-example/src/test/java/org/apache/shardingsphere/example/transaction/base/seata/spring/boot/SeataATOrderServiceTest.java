@@ -32,6 +32,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+/**
+  Requirement before running this test:
+  1. create undo_log table in demo_ds_0 and demo_ds_1
+  2. startup seata-server-1.0.0 (https://github.com/seata/seata/releases)
+     make sure:
+     - registry.type = "file"
+     - config.ype = "file"
+     - service.vgroup_mapping.my_test_tx_group = "default"
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SeataATOrderServiceTest.class)
 @Import(TransactionConfiguration.class)
