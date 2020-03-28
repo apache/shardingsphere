@@ -42,17 +42,7 @@ shardingRule:
         column: order_id
         props:
           worker.id: 123
-    t_order_item:
-      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-      tableStrategy:
-        inline:
-          shardingColumn: order_id
-          algorithmExpression: t_order_item_${order_id % 2}  
-  bindingTables:
-    - t_order,t_order_item
-  broadcastTables:
-    - t_address
-  
+
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
