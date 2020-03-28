@@ -27,9 +27,14 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-/*
-    Please startup seata-server-1.0.0 before running this test.
-    Download seata-server from here https://github.com/seata/seata/releases
+/**
+ Requirement before running this test:
+ 1. create undo_log table in demo_ds_0 and demo_ds_1
+ 2. startup seata-server-1.0.0 (https://github.com/seata/seata/releases)
+     make sure:
+     - registry.type = "file"
+     - config.ype = "file"
+     - service.vgroup_mapping.my_test_tx_group = "default"
  */
 public class SeataATOrderServiceTest {
     

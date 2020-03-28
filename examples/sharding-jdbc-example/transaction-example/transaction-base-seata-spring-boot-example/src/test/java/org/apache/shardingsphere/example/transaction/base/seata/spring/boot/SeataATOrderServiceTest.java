@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.xa.spring.boot;
+package org.apache.shardingsphere.example.transaction.base.seata.spring.boot;
 
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
@@ -32,15 +32,24 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+/**
+  Requirement before running this test:
+  1. create undo_log table in demo_ds_0 and demo_ds_1
+  2. startup seata-server-1.0.0 (https://github.com/seata/seata/releases)
+     make sure:
+     - registry.type = "file"
+     - config.ype = "file"
+     - service.vgroup_mapping.my_test_tx_group = "default"
+ */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = XAOrderServiceTest.class)
+@SpringBootTest(classes = SeataATOrderServiceTest.class)
 @Import(TransactionConfiguration.class)
 @ComponentScan(basePackages = {"org.apache.shardingsphere"})
 @ActiveProfiles("sharding-databases-tables")
-public class XAOrderServiceTest {
+public class SeataATOrderServiceTest {
     
     @Autowired
-    private XAOrderService orderService;
+    private SeataATOrderService orderService;
     
     @Before
     public void setUp() {
@@ -54,7 +63,7 @@ public class XAOrderServiceTest {
     
     @Test
     public void assertInsertSuccess() {
-        assertThat(orderService.insert(10), is(TransactionType.XA));
+        assertThat(orderService.insert(10), is(TransactionType.BASE));
         assertThat(orderService.selectAll(), is(10));
     }
     

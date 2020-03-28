@@ -26,30 +26,39 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     
-    <artifactId>transaction-2pc-xa-spring-namespace-example</artifactId>
-    <name>Example::transaction::2pc-xa-spring-namespace</name>
+    <artifactId>transaction-base-seata-spring-boot-example</artifactId>
+    <name>Example::transaction::base-seata-spring-boot</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-transaction-xa-core</artifactId>
+            <artifactId>sharding-transaction-base-seata-at</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-spring-namespace</artifactId>
+            <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-rm-datasource</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-tm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-codec-all</artifactId>
         </dependency>
         
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
     </dependencies>
+    
 </project>
