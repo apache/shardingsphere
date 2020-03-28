@@ -19,7 +19,6 @@ chapter = true
 1. <a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a>
 1. <a href="http://www.cibnvst.com/" rel="nofollow">CIBN微视听</a>
 1. <a href="https://www.oppo.com/" rel="nofollow">OPPO</a>
-1. <a href="https://660pp.com/" rel="nofollow">PP停车</a>
 1. <a href="https://4pyun.com/" rel="nofollow">P云+ | 行业知名的互联网停车开放平台</a>
 1. <a href="https://www.tcl.com/" rel="nofollow">TCL</a>
 1. <a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a>
@@ -48,7 +47,6 @@ chapter = true
 1. <a href="http://www.dongfang789.com/" rel="nofollow">东方车联</a>
 1. <a href="https://www.douyu.com/" rel="nofollow">斗鱼TV</a>
 1. <a href="https://www.duia.com/" rel="nofollow">对啊网</a>
-1. <a href="http://www.ffzxnet.com/" rel="nofollow">非凡之星</a>
 1. <a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a>
 1. <a href="https://auto.ifeng.com/" rel="nofollow">凤凰汽车</a>
 1. <a href="http://www.gaojihealth.com/" rel="nofollow">高济医疗</a>
@@ -67,7 +65,6 @@ chapter = true
 1. <a href="http://www.ascf.com.cn/" rel="nofollow">航天长峰</a>
 1. <a href="http://www.100tal.com/" rel="nofollow">好未来</a>
 1. <a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a>
-1. <a href="https://www.yy.com/" rel="nofollow">欢聚时代YY</a>
 1. <a href="https://willclass.com/" rel="nofollow">会通教育</a>
 1. <a href="https://www.huobiinfo.com/" rel="nofollow">火币资讯</a>
 1. <a href="http://www.huochebang.com/" rel="nofollow">货车帮</a>
@@ -103,7 +100,6 @@ chapter = true
 1. <a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a>
 1. <a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a>
 1. <a href="https://www.autohome.com.cn/" rel="nofollow">汽车之家</a>
-1. <a href="https://www.quandashi.com/" rel="nofollow">权大师</a>
 1. <a href="http://www.certusnet.com.cn/" rel="nofollow">赛特斯CertusNet</a>
 1. <a href="http://www.3songshu.com/" rel="nofollow">三只松鼠</a>
 1. <a href="https://www.shebaotong.com/" rel="nofollow">上海社宝信息科技有限公司</a>
@@ -111,7 +107,6 @@ chapter = true
 1. <a href="https://500px.me/" rel="nofollow">视觉中国</a>
 1. <a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a>
 1. <a href="http://www.itaojin.cn/" rel="nofollow">四川淘金你我信息技术有限公司</a>
-1. <a href="https://www.912688.com/" rel="nofollow">搜好货</a>
 1. <a href="https://ss.sohu.com/" rel="nofollow">搜狐资讯</a>
 1. <a href="https://www.supersoco.com/" rel="nofollow">速珂智能</a>
 1. <a href="https://www.sui.com/" rel="nofollow">随手记</a>
