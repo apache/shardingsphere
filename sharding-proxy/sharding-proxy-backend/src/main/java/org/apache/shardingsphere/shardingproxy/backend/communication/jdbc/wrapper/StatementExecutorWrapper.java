@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.pluggble.SimpleQueryPrepareEngine;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.SimpleJudgementEngine;
@@ -38,13 +36,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.pluggble.SimpleQueryPrepareEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
-import org.apache.shardingsphere.underlying.route.DataNodeRouter;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -87,19 +83,9 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doMasterSlaveRoute(final String sql) {
-        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, false);
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getSchema(), sqlStatementContext, sql, Collections.emptyList());
-        sqlRewriteContext.generateSQLTokens();
-        String rewriteSQL = new SQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
-        ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        DataNodeRouter dataNodeRouter = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getSqlParserEngine());
-        dataNodeRouter.registerDecorator(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), new MasterSlaveRouteDecorator());
-        RouteContext routeContext = dataNodeRouter.route(rewriteSQL, Collections.emptyList(), false);
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-            result.getExecutionUnits().add(new ExecutionUnit(each.getDataSourceMapper().getActualName(), new SQLUnit(rewriteSQL, Collections.emptyList())));
-        }
-        return result;
+        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()),
+                SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
+        return prepareEngine.prepare(sql, Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")
