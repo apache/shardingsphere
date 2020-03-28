@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.transaction.xa.raw.jdbc;
+package org.apache.shardingsphere.example.transaction.base.seata.raw.jdbc;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,13 +27,17 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class XAOrderServiceTest {
+/*
+    Please startup seata-server-1.0.0 before running this test.
+    Download seata-server from here https://github.com/seata/seata/releases
+ */
+public class SeataATOrderServiceTest {
     
-    private XAOrderService orderService;
+    private SeataATOrderService orderService;
     
     @Before
     public void setUp() throws IOException, SQLException {
-        orderService = new XAOrderService("/META-INF/sharding-databases-tables.yaml");
+        orderService = new SeataATOrderService("/META-INF/sharding-databases-tables.yaml");
         orderService.init();
     }
     
