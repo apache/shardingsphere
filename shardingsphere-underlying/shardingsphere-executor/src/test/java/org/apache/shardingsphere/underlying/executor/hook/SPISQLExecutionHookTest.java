@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.execute.sql.hook;
+package org.apache.shardingsphere.underlying.executor.hook;
 
-import org.apache.shardingsphere.sharding.execute.sql.hook.fixture.SQLExecutionHookFixture;
+import org.apache.shardingsphere.underlying.executor.hook.fixture.SQLExecutionHookFixture;
 import org.junit.Before;
 import org.junit.Test;
 
