@@ -13,8 +13,6 @@ chapter = true
 
 ## 谁在使用ShardingSphere?
 
-<img src="https://shardingsphere.apache.org/community/image/users/user-wall.png" alt="user-wall" rel="nofollow" />
-
 采用公司列表按字母排序展示。
 
 1. <a href="https://bj.58.com/" rel="nofollow">58同城</a> 
@@ -150,4 +148,4 @@ chapter = true
 1. <a href="https://www.zmn.cn/" rel="nofollow">啄木鸟网络科技</a>
 1. <a href="https://www.fotoplace.cc/" rel="nofollow">足记</a>
 
-<img src="https://shardingsphere.apache.org/community/image/users/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
+<img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

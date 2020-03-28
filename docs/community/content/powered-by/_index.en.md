@@ -11,9 +11,7 @@ Welcome to register by company + homepage + use case(optional), your support is 
 
 Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues/234) with `company` + `homepage` + `use case(optional)`.
 
-## Who uses ShardingSphere?
- 
-<img src="https://shardingsphere.apache.org/community/image/users/user-wall.png" alt="user-wall" rel="nofollow" />
+## Who are using ShardingSphere?
 
 The list here will be shown in the alphabetical order.
 
@@ -150,4 +148,4 @@ The list here will be shown in the alphabetical order.
 1. <a href="https://www.zto.com/" rel="nofollow">ZTO Express</a>
 1. <a href="https://www.zyhealth.com/" rel="nofollow">ZYHealth</a>
 
-<img src="https://shardingsphere.apache.org/community/image/users/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
+<img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
