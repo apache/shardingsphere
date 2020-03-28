@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.PreparedJudgementEngine;
@@ -93,18 +92,9 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doEncryptRoute(final String sql) {
-        EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
-        SQLStatement sqlStatement = encryptSchema.getSqlParserEngine().parse(sql, true);
-        SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema();
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, parameters, sqlStatement);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(logicSchema.getMetaData().getSchema(), ShardingProxyContext.getInstance().getProperties());
-        sqlRewriteEntry.registerDecorator(encryptSchema.getEncryptRule(), new EncryptSQLRewriteContextDecorator());
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, sqlStatementContext, null);
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
-        ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        result.getExecutionUnits().add(
-            new ExecutionUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
-        return result;
+        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule()),
+                SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
+        return prepareEngine.prepare(sql, parameters);
     }
     
     private ExecutionContext doShadowRoute(final String sql) {
