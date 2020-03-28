@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.GeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.LiteralGeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ParameterMarkerGeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.GeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.LiteralGeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.InsertStatement;

@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sharding.rewrite.context;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.impl.ShardingTokenGenerateBuilder;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
@@ -30,10 +31,10 @@ import org.apache.shardingsphere.underlying.route.context.RouteContext;
 /**
  * SQL rewrite context decorator for sharding.
  */
-@RequiredArgsConstructor
-public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {
+@Setter
+public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule>, RouteContextAware {
     
-    private final RouteContext routeContext;
+    private RouteContext routeContext;
     
     @SuppressWarnings("unchecked")
     @Override

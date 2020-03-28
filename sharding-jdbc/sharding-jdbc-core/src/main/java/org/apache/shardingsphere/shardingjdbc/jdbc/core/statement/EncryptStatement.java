@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.engine.impl.DefaultSQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -95,8 +95,8 @@ public final class EncryptStatement extends AbstractUnsupportedOperationStatemen
         sqlStatementContext = SQLStatementContextFactory.newInstance(runtimeContext.getMetaData().getSchema(), sql, Collections.emptyList(), sqlStatement);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(runtimeContext.getMetaData().getSchema(), runtimeContext.getProperties());
         sqlRewriteEntry.registerDecorator(runtimeContext.getRule(), new EncryptSQLRewriteContextDecorator());
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext);
-        String result = new DefaultSQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
+        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, Collections.emptyList(), sqlStatementContext, null);
+        String result = new SQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
         showSQL(result);
         return result;
     }
