@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 public class SeataATOrderServiceTest {
     
     @Autowired
-    private SeataAtOrderService orderService;
+    private SeataATOrderService orderService;
     
     @Before
     public void setUp() {

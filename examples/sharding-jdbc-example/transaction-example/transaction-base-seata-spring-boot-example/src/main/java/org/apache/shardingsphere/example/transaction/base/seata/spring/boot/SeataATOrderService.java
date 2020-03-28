@@ -34,12 +34,12 @@ import java.sql.SQLException;
  *
  */
 @Service
-public class SeataAtOrderService {
+public class SeataATOrderService {
     
     private final JdbcTemplate jdbcTemplate;
     
     @Autowired
-    public SeataAtOrderService(final JdbcTemplate jdbcTemplate) {
+    public SeataATOrderService(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
     
