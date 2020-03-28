@@ -62,13 +62,13 @@ public class SeataATOrderServiceTest {
     }
     
     @Test
-    public void assertXATransaction() {
+    public void assertInsertSuccess() {
         assertThat(orderService.insert(10), is(TransactionType.BASE));
         assertThat(orderService.selectAll(), is(10));
     }
     
     @Test
-    public void assertXATransactionRollback() {
+    public void assertInsertFailed() {
         try {
             orderService.insertFailed(10);
         // CHECKSTYLE:OFF
