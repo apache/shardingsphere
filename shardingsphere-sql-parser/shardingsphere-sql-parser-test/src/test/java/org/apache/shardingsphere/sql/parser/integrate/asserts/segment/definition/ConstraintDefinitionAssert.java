@@ -26,7 +26,9 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.d
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -54,8 +56,7 @@ public final class ConstraintDefinitionAssert {
         } else {
             assertFalse(assertContext.getText("Actual referenced table should not exist."), actual.getReferencedTable().isPresent());
         }
-        // TODO assert start index and stop index
-//        assertThat(assertContext.getText("Constraint definition start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-//        assertThat(assertContext.getText("Constraint definition stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+        assertThat(assertContext.getText("Constraint definition start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertContext.getText("Constraint definition stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
     }
 }
