@@ -517,7 +517,7 @@
     
     <alter-table sql-case-id="alter_table_add_primary_key">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint>
+        <add-constraint start-index="24" stop-index="66">
             <primary-key-column name="user_id" start-index="59" stop-index="65" />
         </add-constraint>
     </alter-table>
@@ -529,7 +529,7 @@
                 <column name="status" />
             </column-definition>
         </add-column>
-        <add-constraint>
+        <add-constraint start-index="39" stop-index="115">
             <primary-key-column name="order_id" start-index="90" stop-index="97" />
             <primary-key-column name="user_id" start-index="100" stop-index="106" />
             <primary-key-column name="status" start-index="109" stop-index="114" />
@@ -538,7 +538,7 @@
     
     <alter-table sql-case-id="alter_table_add_unique_key">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint />
+        <add-constraint start-index="24" stop-index="63"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_foreign_key">
@@ -548,11 +548,11 @@
     
     <alter-table sql-case-id="alter_table_add_constraints">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint>
+        <add-constraint start-index="29" stop-index="50">
             <primary-key-column name="order_id" start-index="42" stop-index="49" />
         </add-constraint>
-        <add-constraint />
-        <add-constraint>
+        <add-constraint start-index="56" stop-index="72"/>
+        <add-constraint start-index="79" stop-index="166">
             <referenced-table name="t_order" start-index="113" stop-index="119" />
         </add-constraint>
     </alter-table>
@@ -628,7 +628,7 @@
     
     <alter-table sql-case-id="alter_table_add_check">
         <table name="t_order" start-index="12" stop-index="18" />
-        <add-constraint />
+        <add-constraint start-index="24" stop-index="67"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_columns_oracle">
@@ -729,7 +729,7 @@
     
     <alter-table sql-case-id="alter_table_add_foreign_key_with_cascade">
         <table name="t_order_item" start-index="12" stop-index="23" />
-        <add-constraint>
+        <add-constraint start-index="29" stop-index="139">
             <referenced-table name="t_order" start-index="86" stop-index="92" />
         </add-constraint>
     </alter-table>
