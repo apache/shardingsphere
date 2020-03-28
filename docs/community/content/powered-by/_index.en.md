@@ -11,9 +11,7 @@ Welcome to register by company + homepage + use case(optional), your support is 
 
 Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues/234) with `company` + `homepage` + `use case(optional)`.
 
-## Who uses ShardingSphere?
- 
-<img src="https://shardingsphere.apache.org/community/image/users/user-wall.png" alt="user-wall" rel="nofollow" />
+## Who are using ShardingSphere?
 
 The list here will be shown in the alphabetical order.
 
@@ -22,7 +20,6 @@ The list here will be shown in the alphabetical order.
 1. <a href="https://500px.me/" rel="nofollow">500px</a>
 1. <a href="https://www.51credit.com/" rel="nofollow">51credit</a>
 1. <a href="https://bj.58.com/" rel="nofollow">58</a>
-1. <a href="https://www.912688.com/" rel="nofollow">912688</a>
 1. <a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a>
 1. <a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a>
 1. <a href="https://auto.ifeng.com/" rel="nofollow">Auto Ifeng</a>
@@ -38,7 +35,6 @@ The list here will be shown in the alphabetical order.
 1. <a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a>
 1. <a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a>
 1. <a href="https://www.chaojilanling.cn/" rel="nofollow">ChaoJiLanLing</a>
-1. <a href="https://660pp.com/" rel="nofollow">ChinaRoad</a>
 1. <a href="https://www.chuchujie.com/" rel="nofollow">ChuChuJie</a>
 1. <a href="http://www.cibnvst.com/" rel="nofollow">CIBN</a>
 1. <a href="http://www.cloudansys.com/" rel="nofollow">Cloudansys</a>
@@ -59,7 +55,6 @@ The list here will be shown in the alphabetical order.
 1. <a href="http://www.eeka.cn/" rel="nofollow">Eeka Fashion</a>
 1. <a href="https://www.elelive.net/" rel="nofollow">Elelive</a>
 1. <a href="http://www.f6car.com/" rel="nofollow">F6 Car</a>
-1. <a href="http://www.ffzxnet.com/" rel="nofollow">FFZXNet</a>
 1. <a href="https://www.fotoplace.cc/" rel="nofollow">Fotoplace</a>
 1. <a href="http://www.gaojihealth.com/" rel="nofollow">GaoJiHealth</a>
 1. <a href="http://dnr.gxzf.gov.cn/" rel="nofollow">Guangxi Province Natural Resources Information Center</a>
@@ -110,7 +105,6 @@ The list here will be shown in the alphabetical order.
 1. <a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a>
 1. <a href="https://poizon.com/" rel="nofollow">Poizon</a>
 1. <a href="https://www.ppdai.com/" rel="nofollow">PPDai</a>
-1. <a href="https://www.quandashi.com/" rel="nofollow">QuanDaShi</a>
 1. <a href="https://www.rabbitpre.com/" rel="nofollow">Rabbitpre</a>
 1. <a href="https://www.raycloud.com/" rel="nofollow">RayCloud</a>
 1. <a href="https://ruff.io/" rel="nofollow">Ruff</a>
@@ -141,7 +135,6 @@ The list here will be shown in the alphabetical order.
 1. <a href="https://www.yiwugou.com/" rel="nofollow">YiWuGou</a>
 1. <a href="http://www.yl-scm.com/" rel="nofollow">YL-Scm</a>
 1. <a href="https://www.youx.mobi/" rel="nofollow">YouXuan</a>
-1. <a href="https://www.yy.com/" rel="nofollow">YY</a>
 1. <a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a>
 1. <a href="http://www.zcckj.com/" rel="nofollow">Zhong Ce Auto Space</a>
 1. <a href="http://jszcrj.com/" rel="nofollow">ZhongChen</a>
@@ -150,4 +143,4 @@ The list here will be shown in the alphabetical order.
 1. <a href="https://www.zto.com/" rel="nofollow">ZTO Express</a>
 1. <a href="https://www.zyhealth.com/" rel="nofollow">ZYHealth</a>
 
-<img src="https://shardingsphere.apache.org/community/image/users/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
+<img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
