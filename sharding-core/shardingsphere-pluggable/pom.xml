@@ -67,15 +67,5 @@
             <artifactId>sharding-core-execute</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-merge</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>encrypt-core-merge</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
