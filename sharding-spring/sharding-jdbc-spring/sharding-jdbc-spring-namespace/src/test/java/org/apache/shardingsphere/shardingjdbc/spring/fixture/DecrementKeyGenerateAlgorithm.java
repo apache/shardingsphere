@@ -19,12 +19,12 @@ package org.apache.shardingsphere.shardingjdbc.spring.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class DecrementKeyGenerator implements ShardingKeyGenerator {
+public final class DecrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     private final AtomicInteger sequence = new AtomicInteger(100);
     

@@ -15,6 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator
-org.apache.shardingsphere.core.strategy.keygen.UUIDShardingKeyGenerator
-org.apache.shardingsphere.shardingjdbc.fixture.IncrementShardingKeyGenerator
+org.apache.shardingsphere.shardingjdbc.spring.fixture.DecrementKeyGenerateAlgorithm
+org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerateAlgorithm

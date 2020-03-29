@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.yaml.swapper;
 
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.yaml.swapper.YamlSwapper;
 
 /**
@@ -31,15 +31,15 @@ public final class KeyGeneratorConfigurationYamlSwapper implements YamlSwapper<Y
     @Override
     public YamlKeyGeneratorConfiguration swap(final KeyGeneratorConfiguration data) {
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
-        result.setType(data.getKeyGenerator().getType());
+        result.setType(data.getKeyGenerateAlgorithm().getType());
         result.setColumn(data.getColumn());
-        result.setProps(data.getKeyGenerator().getProperties());
+        result.setProps(data.getKeyGenerateAlgorithm().getProperties());
         return result;
     }
     
     @Override
     public KeyGeneratorConfiguration swap(final YamlKeyGeneratorConfiguration yamlConfiguration) {
-        ShardingKeyGenerator keyGenerator = new ShardingKeyGeneratorServiceLoader().newService(yamlConfiguration.getType(), yamlConfiguration.getProps());
-        return new KeyGeneratorConfiguration(yamlConfiguration.getColumn(), keyGenerator);
+        KeyGenerateAlgorithm keyGenerateAlgorithm = new KeyGenerateAlgorithmServiceLoader().newService(yamlConfiguration.getType(), yamlConfiguration.getProps());
+        return new KeyGeneratorConfiguration(yamlConfiguration.getColumn(), keyGenerateAlgorithm);
     }
 }

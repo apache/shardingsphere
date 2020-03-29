@@ -34,9 +34,9 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.junit.Test;
@@ -60,8 +60,8 @@ public final class TableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
         tableRuleConfig.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        ShardingKeyGenerator keyGenerator = new ShardingKeyGeneratorServiceLoader().newService("INCREMENT", new Properties());
-        tableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("col_1", keyGenerator));
+        KeyGenerateAlgorithm keyGenerateAlgorithm = new KeyGenerateAlgorithmServiceLoader().newService("INCREMENT", new Properties());
+        tableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("col_1", keyGenerateAlgorithm));
         TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames(), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
         assertThat(actual.getActualDataNodes().size(), is(6));
@@ -75,7 +75,7 @@ public final class TableRuleTest {
         assertNotNull(actual.getTableShardingStrategy());
         assertTrue(actual.getGenerateKeyColumn().isPresent());
         assertThat(actual.getGenerateKeyColumn().get(), is("col_1"));
-        assertThat(actual.getShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
+        assertThat(actual.getKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
     }
     
     @Test

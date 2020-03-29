@@ -28,10 +28,10 @@
     
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.PreciseModuloDatabaseShardingAlgorithm" />
     <bean id="preciseModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.algorithm.PreciseModuloTableShardingAlgorithm" />
-    <bean id="incrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorAlgorithmFactoryBean">
+    <bean id="incrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
         <property name="type" value="INCREMENT" />
     </bean>
-    <bean id="decrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorAlgorithmFactoryBean">
+    <bean id="decrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
         <property name="type" value="DECREMENT" />
     </bean>
     

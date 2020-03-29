@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture;
+package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class IncrementKeyGenerator implements ShardingKeyGenerator {
+public final class DecrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+    
+    @Getter
+    private final String type = "DECREMENT";
+    
+    private final AtomicInteger sequence = new AtomicInteger(100);
     
     @Getter
     @Setter
     private Properties properties = new Properties();
     
-    private final AtomicInteger sequence = new AtomicInteger(100);
-    
-    @Override
-    public String getType() {
-        return "INCREMENT";
-    }
-    
     @Override
     public Comparable<?> generateKey() {
-        return sequence.incrementAndGet();
+        return sequence.decrementAndGet();
     }
 }

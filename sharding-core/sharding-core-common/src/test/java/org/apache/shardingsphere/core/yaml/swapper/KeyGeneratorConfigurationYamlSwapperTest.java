@@ -23,16 +23,16 @@ import static org.junit.Assert.assertThat;
 import java.util.Properties;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.junit.Test;
 
 public final class KeyGeneratorConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        ShardingKeyGenerator keyGenerator = new ShardingKeyGeneratorServiceLoader().newService("UUID", new Properties());
-        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("id", keyGenerator));
+        KeyGenerateAlgorithm keyGenerateAlgorithm = new KeyGenerateAlgorithmServiceLoader().newService("UUID", new Properties());
+        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
         assertThat(actual.getType(), is("UUID"));
         assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getProps(), is(new Properties()));
@@ -44,8 +44,8 @@ public final class KeyGeneratorConfigurationYamlSwapperTest {
         yamlConfiguration.setType("UUID");
         yamlConfiguration.setColumn("id");
         KeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration);
-        assertThat(actual.getKeyGenerator().getType(), is("UUID"));
+        assertThat(actual.getKeyGenerateAlgorithm().getType(), is("UUID"));
         assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getKeyGenerator().getProperties(), is(new Properties()));
+        assertThat(actual.getKeyGenerateAlgorithm().getProperties(), is(new Properties()));
     }
 }

@@ -35,7 +35,7 @@
     <bean id="rangeModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />
     <bean id="defaultComplexKeysShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
     <bean id="defaultHintShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
-    <bean id="incrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorAlgorithmFactoryBean">
+    <bean id="incrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
         <property name="type" value="INCREMENT" />
     </bean>
     

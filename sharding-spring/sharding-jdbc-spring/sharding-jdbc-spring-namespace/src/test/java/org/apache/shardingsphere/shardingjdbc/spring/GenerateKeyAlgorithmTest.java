@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.spring;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerator;
-import org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGeneratorAlgorithmFactoryBean;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.shardingjdbc.spring.fixture.IncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -34,22 +34,22 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 public final class GenerateKeyAlgorithmTest extends AbstractJUnit4SpringContextTests {
     
     @Test(expected = BeanCreationException.class)
-    public void assertTypelessKeyGeneratorAlgorithm() {
+    public void assertTypelessKeyGenerateAlgorithm() {
         GenericApplicationContext context = (GenericApplicationContext) applicationContext;
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(KeyGeneratorAlgorithmFactoryBean.class);
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(KeyGenerateAlgorithmFactoryBean.class);
         BeanDefinition beanDefinition = builder.getBeanDefinition();
         context.registerBeanDefinition("typelessAlgorithm", beanDefinition);
         context.getBean("typelessAlgorithm");
     }
     
     @Test
-    public void assertKeyGeneratorAlgorithm() {
+    public void assertKeyGenerateAlgorithm() {
         GenericApplicationContext context = (GenericApplicationContext) applicationContext;
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(KeyGeneratorAlgorithmFactoryBean.class).addPropertyValue("type", "INCREMENT");
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(KeyGenerateAlgorithmFactoryBean.class).addPropertyValue("type", "INCREMENT");
         BeanDefinition beanDefinition = builder.getBeanDefinition();
         context.registerBeanDefinition("incrementAlgorithm", beanDefinition);
-        ShardingKeyGenerator incrementKeyGenerator = (ShardingKeyGenerator) context.getBean("incrementAlgorithm");
-        ShardingKeyGenerator directIncrementKeyGenerator = new IncrementKeyGenerator();
-        assertEquals(incrementKeyGenerator.generateKey(), directIncrementKeyGenerator.generateKey());
+        KeyGenerateAlgorithm incrementKeyGenerateAlgorithm = (KeyGenerateAlgorithm) context.getBean("incrementAlgorithm");
+        KeyGenerateAlgorithm directIncrementKeyGenerateAlgorithm = new IncrementKeyGenerateAlgorithm();
+        assertEquals(incrementKeyGenerateAlgorithm.generateKey(), directIncrementKeyGenerateAlgorithm.generateKey());
     }
 }

@@ -22,30 +22,30 @@ import com.google.common.base.Strings;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Sharding key generator FactoryBean.
+ * key generate algorithm FactoryBean.
  */
 @Setter
 @Getter
-public class KeyGeneratorAlgorithmFactoryBean implements FactoryBean<ShardingKeyGenerator>, InitializingBean {
+public class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateAlgorithm>, InitializingBean {
     
     private String type;
     
     private Properties properties;
     
     @Override
-    public ShardingKeyGenerator getObject() throws Exception {
-        return new ShardingKeyGeneratorServiceLoader().newService(type, properties);
+    public KeyGenerateAlgorithm getObject() throws Exception {
+        return new KeyGenerateAlgorithmServiceLoader().newService(type, properties);
     }
     
     @Override
     public Class<?> getObjectType() {
-        return ShardingKeyGenerator.class;
+        return KeyGenerateAlgorithm.class;
     }
     
     @Override
@@ -55,6 +55,6 @@ public class KeyGeneratorAlgorithmFactoryBean implements FactoryBean<ShardingKey
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of keyGeneratorAlgorithm is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of keyGenerateAlgorithm is required.");
     }
 }
