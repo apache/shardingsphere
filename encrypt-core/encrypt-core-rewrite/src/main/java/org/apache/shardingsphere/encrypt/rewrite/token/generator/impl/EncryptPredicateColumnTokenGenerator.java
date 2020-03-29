@@ -86,6 +86,6 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     }
     
     private Optional<EncryptTable> findEncryptTable(final SQLStatementContext sqlStatementContext, final PredicateSegment segment) {
-        return sqlStatementContext.getTablesContext().findTableName(segment, schemaMetaData).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
+        return sqlStatementContext.getTablesContext().findTableName(segment.getColumn(), schemaMetaData).flatMap(tableName -> getEncryptRule().findEncryptTable(tableName));
     }
 }
