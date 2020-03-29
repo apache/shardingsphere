@@ -42,4 +42,9 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
         }
         sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
     }
+    
+    @Override
+    public int getOrder() {
+        return 20;
+    }
 }

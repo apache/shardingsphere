@@ -18,18 +18,23 @@
 package org.apache.shardingsphere.underlying.pluggble.merge;
 
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.order.OrderAware;
+import org.apache.shardingsphere.spi.order.OrderedRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEntry;
-import org.apache.shardingsphere.underlying.merge.registry.ResultProcessEngineRegistry;
+import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
+import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Merge engine.
@@ -54,7 +59,28 @@ public final class MergeEngine {
      * @throws SQLException SQL exception
      */
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        rules.forEach(each -> ResultProcessEngineRegistry.getInstance().getResultProcessEngine(each).ifPresent(processEngine -> merger.registerProcessEngine(each, processEngine)));
+        registerMergeDecorator();
         return merger.process(queryResults, sqlStatementContext);
+    }
+    
+    private void registerMergeDecorator() {
+        for (Class<? extends ResultProcessEngine> each : OrderedRegistry.getRegisteredClasses(ResultProcessEngine.class)) {
+            Class<?> ruleClass = getRuleClass(each);
+            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
+            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
+                    .forEach(rule -> merger.registerProcessEngine(rule, createProcessEngine(each)));
+        }
+    }
+    
+    private Class<?> getRuleClass(final Class<? extends OrderAware> decoratorClass) {
+        return (Class<?>) ((ParameterizedType) decoratorClass.getGenericInterfaces()[0]).getActualTypeArguments()[0];
+    }
+    
+    private ResultProcessEngine createProcessEngine(final Class<? extends ResultProcessEngine> processEngine) {
+        try {
+            return processEngine.newInstance();
+        } catch (final InstantiationException | IllegalAccessException ex) {
+            throw new ShardingSphereException(String.format("Can not find public default constructor for result process engine `%s`", processEngine), ex);
+        }
     }
 }

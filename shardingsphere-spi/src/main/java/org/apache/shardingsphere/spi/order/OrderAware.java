@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.merge.engine;
-
-import org.apache.shardingsphere.spi.order.OrderAware;
+package org.apache.shardingsphere.spi.order;
 
 /**
- * Result process engine.
+ * Order aware.
  */
-public interface ResultProcessEngine extends OrderAware {
+public interface OrderAware {
+    
+    /**
+     * Get order of load.
+     *
+     * @return load order
+     */
+    int getOrder();
 }
