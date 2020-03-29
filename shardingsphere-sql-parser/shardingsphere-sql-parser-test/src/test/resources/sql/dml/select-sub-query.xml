@@ -67,7 +67,7 @@
             </shorthand-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_equal_subquery">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -107,7 +107,7 @@
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_with_in_subquery">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -181,7 +181,7 @@
                             </select>
                         </between-subquery-expression>
                         <and-parameter-marker-expression value="0" start-index="103" stop-index="103" />
-                        <and-literal-expression value="12" />
+                        <and-literal-expression value="12" start-index="103" stop-index="104" />
                     </between-right-value>
                 </predicate>
             </and-predicate>
