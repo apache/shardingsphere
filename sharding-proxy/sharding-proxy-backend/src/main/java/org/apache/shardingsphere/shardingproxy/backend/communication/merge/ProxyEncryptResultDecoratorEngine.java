@@ -30,7 +30,7 @@ import java.util.List;
  * Proxy result decorator engine for encrypt.
  */
 @RequiredArgsConstructor
-public final class ProxyResultDecoratorEngine extends EncryptResultDecoratorEngine {
+public final class ProxyEncryptResultDecoratorEngine extends EncryptResultDecoratorEngine {
     
     private final List<QueryHeader> queryHeaders;
     

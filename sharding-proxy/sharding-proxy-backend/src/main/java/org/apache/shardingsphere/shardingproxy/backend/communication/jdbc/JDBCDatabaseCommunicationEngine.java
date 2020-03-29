@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.JDBCExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.backend.communication.merge.ProxyResultDecoratorEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.merge.ProxyEncryptResultDecoratorEngine;
 import org.apache.shardingsphere.shardingproxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
 import org.apache.shardingsphere.shardingproxy.backend.response.error.ErrorResponse;
@@ -138,7 +138,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         engines.put(logicSchema.getShardingRule(), new ShardingResultMergerEngine());
         EncryptRule encryptRule = getEncryptRule();
         if (!encryptRule.getEncryptTableNames().isEmpty()) {
-            engines.put(encryptRule, new ProxyResultDecoratorEngine(((QueryResponse) response).getQueryHeaders()));
+            engines.put(encryptRule, new ProxyEncryptResultDecoratorEngine(((QueryResponse) response).getQueryHeaders()));
         }
         MergeEntry mergeEntry = new MergeEntry(
                 LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getSchema(), ShardingProxyContext.getInstance().getProperties(), engines);
