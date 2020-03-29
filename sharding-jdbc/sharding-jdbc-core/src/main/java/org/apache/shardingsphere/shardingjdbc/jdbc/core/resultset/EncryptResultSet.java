@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
@@ -50,8 +49,6 @@ import java.util.TreeMap;
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
     
-    private final EncryptRule encryptRule;
-    
     private final SQLStatementContext sqlStatementContext;
     
     private final Statement encryptStatement;
@@ -64,7 +61,6 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext,
                             final SQLStatementContext sqlStatementContext, final Statement encryptStatement, final ResultSet resultSet) throws SQLException {
-        this.encryptRule = encryptRuntimeContext.getRule();
         this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
