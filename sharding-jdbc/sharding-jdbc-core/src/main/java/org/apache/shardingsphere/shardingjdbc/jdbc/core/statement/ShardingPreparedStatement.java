@@ -20,10 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.merge.EncryptResultDecoratorEngine;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
-import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
 import org.apache.shardingsphere.shardingjdbc.executor.PreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.executor.batch.BatchPreparedStatementExecutor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
@@ -36,14 +33,12 @@ import org.apache.shardingsphere.sql.parser.binder.segment.insert.keygen.Generat
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.merge.MergeEntry;
-import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.pluggble.BasePrepareEngine;
 import org.apache.shardingsphere.underlying.pluggble.PreparedQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.merge.MergeEngine;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,10 +46,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -150,15 +143,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private MergedResult createMergedResult(final List<QueryResult> queryResults) throws SQLException {
-        Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(2, 1);
-        engines.put(connection.getRuntimeContext().getRule(), new ShardingResultMergerEngine());
-        EncryptRule encryptRule = connection.getRuntimeContext().getRule().getEncryptRule();
-        if (!encryptRule.getEncryptTableNames().isEmpty()) {
-            engines.put(encryptRule, new EncryptResultDecoratorEngine());
-        }
-        MergeEntry mergeEntry = new MergeEntry(connection.getRuntimeContext().getDatabaseType(),
-                connection.getRuntimeContext().getMetaData().getSchema(), connection.getRuntimeContext().getProperties(), engines);
-        return mergeEntry.process(queryResults, executionContext.getSqlStatementContext());
+        ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
+        MergeEngine mergeEngine = new MergeEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getDatabaseType(), runtimeContext.getMetaData().getSchema());
+        return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     
     @Override

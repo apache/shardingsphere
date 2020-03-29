@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
+import org.apache.shardingsphere.encrypt.merge.EncryptResultDecoratorEngine;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
+import org.apache.shardingsphere.underlying.merge.registry.ResultProcessEngineRegistry;
 import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorRegistry;
 
 import javax.sql.DataSource;
@@ -39,6 +41,7 @@ public class EncryptDataSource extends AbstractDataSourceAdapter {
     
     static {
         RewriteDecoratorRegistry.getInstance().register(EncryptRule.class, EncryptSQLRewriteContextDecorator.class);
+        ResultProcessEngineRegistry.getInstance().register(EncryptRule.class, EncryptResultDecoratorEngine.class);
     }
     
     public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
