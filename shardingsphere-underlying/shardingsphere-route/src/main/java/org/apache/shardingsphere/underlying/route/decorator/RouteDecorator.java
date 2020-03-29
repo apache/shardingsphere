@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.route.decorator;
 
+import org.apache.shardingsphere.spi.order.OrderAware;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteContext;
  * 
  * @param <T> type of rule
  */
-public interface RouteDecorator<T extends BaseRule> {
+public interface RouteDecorator<T extends BaseRule> extends OrderAware {
     
     /**
      * Decorate route context.
@@ -39,18 +40,4 @@ public interface RouteDecorator<T extends BaseRule> {
      * @return decorated route context
      */
     RouteContext decorate(RouteContext routeContext, ShardingSphereMetaData metaData, T rule, ConfigurationProperties properties);
-    
-    /**
-     * Get rule class.
-     *
-     * @return rule class
-     */
-    Class<T> getRuleClass();
-    
-    /**
-     * Get order of load.
-     *
-     * @return load order
-     */
-    int getOrder();
 }

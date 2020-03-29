@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.context;
-
-import org.apache.shardingsphere.spi.order.OrderAware;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+package org.apache.shardingsphere.spi.order;
 
 /**
- * SQL rewrite context decorator.
- *
- * @param <T> type of rule
+ * Order aware.
  */
-public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderAware {
+public interface OrderAware {
     
     /**
-     * Decorate SQL rewrite context.
+     * Get order of load.
      *
-     * @param rule rule
-     * @param properties ShardingSphere properties
-     * @param sqlRewriteContext SQL rewrite context to be decorated
+     * @return load order
      */
-    void decorate(T rule, ConfigurationProperties properties, SQLRewriteContext sqlRewriteContext);
+    int getOrder();
 }

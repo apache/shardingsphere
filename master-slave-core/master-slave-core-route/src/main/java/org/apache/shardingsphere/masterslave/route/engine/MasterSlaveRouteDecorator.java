@@ -59,11 +59,6 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     }
     
     @Override
-    public Class<MasterSlaveRule> getRuleClass() {
-        return MasterSlaveRule.class;
-    }
-    
-    @Override
     public int getOrder() {
         return 10;
     }

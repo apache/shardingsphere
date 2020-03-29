@@ -15,25 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.rewrite.context;
+package org.apache.shardingsphere.spi.order;
 
-import org.apache.shardingsphere.spi.order.OrderAware;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * SQL rewrite context decorator.
- *
- * @param <T> type of rule
+ * Ordered registry.
  */
-public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderAware {
+public final class OrderedRegistry {
     
     /**
-     * Decorate SQL rewrite context.
-     *
-     * @param rule rule
-     * @param properties ShardingSphere properties
-     * @param sqlRewriteContext SQL rewrite context to be decorated
+     * Get registered classes.
+     * 
+     * @param orderAwareClass class of order aware
+     * @param <T> type of order aware class
+     * @return registered classes
      */
-    void decorate(T rule, ConfigurationProperties properties, SQLRewriteContext sqlRewriteContext);
+    @SuppressWarnings("unchecked")
+    public static <T extends OrderAware> Collection<Class<T>> getRegisteredClasses(final Class<T> orderAwareClass) {
+        Map<Integer, Class<T>> result = new TreeMap<>();
+        for (T each : NewInstanceServiceLoader.newServiceInstances(orderAwareClass)) {
+            result.put(each.getOrder(), (Class<T>) each.getClass());
+        }
+        return result.values();
+    }
 }
