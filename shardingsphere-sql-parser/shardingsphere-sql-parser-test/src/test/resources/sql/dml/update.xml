@@ -96,13 +96,13 @@
                 <column name="start_time" start-index="19" stop-index="28" />
                 <assignment-value>
                     <parameter-marker-expression value="0" start-index="32" stop-index="32" />
-                    <literal-expression value="2017-06-07" />
+                    <literal-expression value="2017-06-07" start-index="32" stop-index="43" />
                 </assignment-value>
             </assignment>
             <assignment start-index="35" stop-index="44" literal-start-index="46" literal-stop-index="55">
                 <column name="status" start-index="35" stop-index="40" literal-start-index="46" literal-stop-index="51" />
                 <assignment-value>
-                    <literal-expression value="0" />
+                    <literal-expression value="0" start-index="44" stop-index="44" literal-start-index="55" literal-stop-index="55" />
                 </assignment-value>
             </assignment>
             <assignment start-index="47" stop-index="116" literal-start-index="58" literal-stop-index="131">
@@ -115,21 +115,21 @@
                 <column name="rule" start-index="119" stop-index="122" literal-start-index="134" literal-stop-index="137" />
                 <assignment-value>
                     <parameter-marker-expression value="3" start-index="126" stop-index="133" />
-                    <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" />
+                    <literal-expression value="{&quot;rule2&quot;:&quot;null2&quot;}'::json" start-index="141" stop-index="166" />
                 </assignment-value>
             </assignment>
             <assignment start-index="136" stop-index="152" literal-start-index="169" literal-stop-index="185">
                 <column name="discount_type" start-index="136" stop-index="148" literal-start-index="169" literal-stop-index="181" />
                 <assignment-value>
                     <parameter-marker-expression value="4" start-index="152" stop-index="152" />
-                    <literal-expression value="3" />
+                    <literal-expression value="3" start-index="185" stop-index="185" />
                 </assignment-value>
             </assignment>
             <assignment start-index="155" stop-index="168" literal-start-index="188" literal-stop-index="201">
                 <column name="order_type" start-index="155" stop-index="164" literal-start-index="188" literal-stop-index="197" />
                 <assignment-value>
                     <parameter-marker-expression value="5" start-index="168" stop-index="168" />
-                    <literal-expression value="5" />
+                    <literal-expression value="5" start-index="201" stop-index="201" />
                 </assignment-value>
             </assignment>
         </set>
@@ -140,7 +140,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="6" start-index="186" stop-index="186" />
-                        <literal-expression value="7" />
+                        <literal-expression value="7" start-index="219" stop-index="219" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="192" stop-index="203" literal-start-index="225" literal-stop-index="238">
@@ -148,7 +148,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="7" start-index="203" stop-index="203" />
-                        <literal-expression value="200" />
+                        <literal-expression value="200" start-index="236" stop-index="238" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
