@@ -26,10 +26,10 @@ Sharding-Proxy: 3.x ~ 5.x
 
 ## How to Run
 
-Refer to the [Quick Start](./src/resources/document/manual/quick-start.en.md)
+Refer to the [Quick Start](https://shardingsphere.apache.org/document/current/en/quick-start/sharding-scaling-quick-start/)
 
 ## For more documents
 
-[Overview](./src/resources/document/features/_index.en.md)
+[Overview](https://shardingsphere.apache.org/document/current/en/features/sharding-scaling/)
 
-[Principle](./src/resources/document/features/principle.en.md)
+[Principle](https://shardingsphere.apache.org/document/current/en/features/sharding-scaling/principle/)

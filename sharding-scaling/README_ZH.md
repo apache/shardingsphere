@@ -23,11 +23,11 @@ Sharding-Proxy：3.x ~ 5.x
 
 ## 如何运行
 
-参考[快速入门](./src/resources/document/manual/quick-start.cn.md)
+参考[快速入门](https://shardingsphere.apache.org/document/current/cn/quick-start/sharding-scaling-quick-start/)
 
 ## 更多文档
 
-[概览](./src/resources/document/features/_index.cn.md)
+[概览](https://shardingsphere.apache.org/document/current/cn/features/sharding-scaling/)
 
-[实现原理](./src/resources/document/features/principle.cn.md)
+[实现原理](https://shardingsphere.apache.org/document/current/cn/features/sharding-scaling/principle/)
 

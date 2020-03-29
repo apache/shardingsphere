@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sharding.rewrite.aware.RouteContextAware;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValuesToken;
 import org.apache.shardingsphere.sql.parser.binder.segment.insert.values.InsertValueContext;

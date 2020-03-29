@@ -26,9 +26,12 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractStatementAdap
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
+import org.apache.shardingsphere.underlying.pluggble.prepare.SimpleQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -80,13 +83,14 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         }
         clearPrevious();
         MasterSlaveRuntimeContext runtimeContext = connection.getRuntimeContext();
-        dataNodeRouter.registerDecorator(runtimeContext.getRule(), new MasterSlaveRouteDecorator());
-        RouteContext routeContext = dataNodeRouter.route(sql, Collections.emptyList(), false);
-        Collection<RouteUnit> routeUnits = routeContext.getRouteResult().getRouteUnits();
-        Preconditions.checkState(1 == routeUnits.size(), "Cannot support executeQuery for DML or DDL");
-        Statement statement = connection.getConnection(routeUnits.iterator().next().getDataSourceMapper().getActualName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+        SimpleQueryPrepareEngine prepareEngine = new SimpleQueryPrepareEngine(
+                Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
+        ExecutionContext executionContext = prepareEngine.prepare(sql, Collections.emptyList());
+        ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
+        Preconditions.checkState(1 == executionContext.getExecutionUnits().size(), "Cannot support executeQuery for DML or DDL");
+        Statement statement = connection.getConnection(executionUnit.getDataSourceName()).createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         routedStatements.add(statement);
-        return statement.executeQuery(sql);
+        return statement.executeQuery(executionUnit.getSqlUnit().getSql());
     }
     
     @Override

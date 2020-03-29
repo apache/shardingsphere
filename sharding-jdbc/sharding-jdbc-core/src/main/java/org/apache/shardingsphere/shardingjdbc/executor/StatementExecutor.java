@@ -54,18 +54,18 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      */
     public void init(final ExecutionContext executionContext) throws SQLException {
         setSqlStatementContext(executionContext.getSqlStatementContext());
-        getInputGroups().addAll(obtainExecuteGroups(executionContext.getExecutionUnits()));
+        getInputGroups().addAll(getExecuteGroups(executionContext.getExecutionUnits()));
         cacheStatements();
     }
     
-    private Collection<InputGroup<StatementExecuteUnit>> obtainExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
+    private Collection<InputGroup<StatementExecuteUnit>> getExecuteGroups(final Collection<ExecutionUnit> executionUnits) throws SQLException {
         return getSqlExecutePrepareTemplate().getExecuteUnitGroups(executionUnits, new SQLExecutePrepareCallback() {
             
             @Override
             public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
                 return StatementExecutor.super.getConnection().getConnections(connectionMode, dataSourceName, connectionSize);
             }
-    
+            
             @SuppressWarnings("MagicConstant")
             @Override
             public StatementExecuteUnit createStatementExecuteUnit(final Connection connection, final ExecutionUnit executionUnit, final ConnectionMode connectionMode) throws SQLException {

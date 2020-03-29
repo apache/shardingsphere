@@ -47,20 +47,11 @@ public final class JDBCDriverURLRecognizerEngine {
      * @return JDBC driver URL recognizer
      */
     public static JDBCDriverURLRecognizer getJDBCDriverURLRecognizer(final String url) {
-        for (JDBCDriverURLRecognizer each : JDBC_DRIVER_URL_RECOGNIZERS) {
-            if (isMatchURL(url, each)) {
-                return each;
-            }
-        }
-        throw new ShardingSphereException("Cannot resolve JDBC url `%s`. Please implements `%s` and add to SPI.", url, JDBCDriverURLRecognizer.class.getName());
+        return JDBC_DRIVER_URL_RECOGNIZERS.stream().filter(each -> isMatchURL(url, each)).findAny()
+                .orElseThrow(() -> new ShardingSphereException("Cannot resolve JDBC url `%s`. Please implements `%s` and add to SPI.", url, JDBCDriverURLRecognizer.class.getName()));
     }
     
     private static boolean isMatchURL(final String url, final JDBCDriverURLRecognizer jdbcDriverURLRecognizer) {
-        for (String each : jdbcDriverURLRecognizer.getURLPrefixes()) {
-            if (url.startsWith(each)) {
-                return true;
-            }
-        }
-        return false;
+        return jdbcDriverURLRecognizer.getURLPrefixes().stream().anyMatch(url::startsWith);
     }
 }

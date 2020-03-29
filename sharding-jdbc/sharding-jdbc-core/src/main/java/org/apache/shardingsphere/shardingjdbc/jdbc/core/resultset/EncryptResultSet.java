@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.shardingjdbc.merge.JDBCEncryptResultDecoratorEngine;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
-import org.apache.shardingsphere.underlying.merge.MergeEntry;
-import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
+import org.apache.shardingsphere.underlying.pluggble.merge.MergeEngine;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -45,7 +41,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -53,8 +48,6 @@ import java.util.TreeMap;
  * Encrypt result set.
  */
 public final class EncryptResultSet extends AbstractUnsupportedOperationResultSet {
-    
-    private final EncryptRule encryptRule;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -68,7 +61,6 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     public EncryptResultSet(final EncryptRuntimeContext encryptRuntimeContext,
                             final SQLStatementContext sqlStatementContext, final Statement encryptStatement, final ResultSet resultSet) throws SQLException {
-        this.encryptRule = encryptRuntimeContext.getRule();
         this.sqlStatementContext = sqlStatementContext;
         this.encryptStatement = encryptStatement;
         originalResultSet = resultSet;
@@ -76,11 +68,10 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(originalResultSet.getMetaData());
     }
     
-    private MergedResult createMergedResult(final EncryptRuntimeContext encryptRuntimeContext, final ResultSet resultSet) throws SQLException {
-        Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(1, 1);
-        engines.put(encryptRule, new JDBCEncryptResultDecoratorEngine(resultSet.getMetaData()));
-        MergeEntry mergeEntry = new MergeEntry(encryptRuntimeContext.getDatabaseType(), null, encryptRuntimeContext.getProperties(), engines);
-        return mergeEntry.process(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
+    private MergedResult createMergedResult(final EncryptRuntimeContext runtimeContext, final ResultSet resultSet) throws SQLException {
+        MergeEngine mergeEngine = new MergeEngine(
+                Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getDatabaseType(), runtimeContext.getMetaData().getSchema());
+        return mergeEngine.merge(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     
     private Map<String, Integer> createColumnLabelAndIndexMap(final ResultSetMetaData resultSetMetaData) throws SQLException {
@@ -89,6 +80,61 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
         return result;
+    }
+    
+    @Override
+    public boolean previous() throws SQLException {
+        return originalResultSet.previous();
+    }
+    
+    @Override
+    public boolean isBeforeFirst() throws SQLException {
+        return originalResultSet.isBeforeFirst();
+    }
+    
+    @Override
+    public boolean isAfterLast() throws SQLException {
+        return originalResultSet.isAfterLast();
+    }
+    
+    @Override
+    public boolean isFirst() throws SQLException {
+        return originalResultSet.isFirst();
+    }
+    
+    @Override
+    public boolean isLast() throws SQLException {
+        return originalResultSet.isLast();
+    }
+    
+    @Override
+    public void beforeFirst() throws SQLException {
+        originalResultSet.beforeFirst();
+    }
+    
+    @Override
+    public void afterLast() throws SQLException {
+        originalResultSet.afterLast();
+    }
+    
+    @Override
+    public boolean first() throws SQLException {
+        return originalResultSet.first();
+    }
+    
+    @Override
+    public boolean last() throws SQLException {
+        return originalResultSet.last();
+    }
+    
+    @Override
+    public boolean absolute(final int row) throws SQLException {
+        return originalResultSet.absolute(row);
+    }
+    
+    @Override
+    public boolean relative(final int rows) throws SQLException {
+        return originalResultSet.relative(rows);
     }
     
     @Override
@@ -177,7 +223,12 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
         int columnIndex = columnLabelAndIndexMap.get(columnLabel);
         return (double) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, double.class), double.class);
     }
-    
+
+    @Override
+    public int getRow() throws SQLException {
+        return originalResultSet.getRow();
+    }
+
     @Override
     public String getString(final int columnIndex) throws SQLException {
         return (String) ResultSetUtil.convertValue(mergedResult.getValue(columnIndex, String.class), String.class);

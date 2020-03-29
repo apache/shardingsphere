@@ -24,6 +24,8 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
+import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,19 +60,25 @@ public final class SQLRewriteEntry {
      * @param sql SQL
      * @param parameters parameters
      * @param sqlStatementContext SQL statement context
+     * @param routeContext route context
      * @return SQL rewrite context
      */
-    public SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext sqlStatementContext) {
+    public SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext result = new SQLRewriteContext(schemaMetaData, sqlStatementContext, sql, parameters);
-        decorate(decorators, result);
+        decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private void decorate(final Map<BaseRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext) {
+    private void decorate(final Map<BaseRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         for (Entry<BaseRule, SQLRewriteContextDecorator> entry : decorators.entrySet()) {
-            entry.getValue().decorate(entry.getKey(), properties, sqlRewriteContext);
+            BaseRule rule = entry.getKey();
+            SQLRewriteContextDecorator decorator = entry.getValue();
+            if (decorator instanceof RouteContextAware) {
+                ((RouteContextAware) decorator).setRouteContext(routeContext);
+            }
+            decorator.decorate(rule, properties, sqlRewriteContext);
         }
     }
 }

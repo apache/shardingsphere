@@ -26,12 +26,12 @@ import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Sharding configuration loader.
@@ -64,10 +64,7 @@ public final class ShardingConfigurationLoader {
             });
         }
         Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getOrchestration(), "Can not find any sharding rule configuration file in path `%s`.", configPath.getPath());
-        Map<String, YamlProxyRuleConfiguration> ruleConfigurationMap = new HashMap<>(ruleConfigurations.size(), 1);
-        for (YamlProxyRuleConfiguration each : ruleConfigurations) {
-            ruleConfigurationMap.put(each.getSchemaName(), each);
-        }
+        Map<String, YamlProxyRuleConfiguration> ruleConfigurationMap = ruleConfigurations.stream().collect(Collectors.toMap(YamlProxyRuleConfiguration::getSchemaName, each -> each));
         return new ShardingConfiguration(serverConfig, ruleConfigurationMap);
     }
     
