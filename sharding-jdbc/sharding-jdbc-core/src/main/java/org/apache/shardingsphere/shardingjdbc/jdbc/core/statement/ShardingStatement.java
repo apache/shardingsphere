@@ -269,7 +269,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey();
         if (returnGeneratedKeys && generatedKey.isPresent()) {
-            return new GeneratedKeysResultSet(generatedKey.get().getGeneratedValues().iterator(), generatedKey.get().getColumnName(), this);
+            return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedKey.get().getGeneratedValues().iterator(), this);
         }
         if (1 == getRoutedStatements().size()) {
             return getRoutedStatements().iterator().next().getGeneratedKeys();
