@@ -348,6 +348,7 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
         if (null != ctx.simpleExpr()) {
             return createExpressionSegment(visit(ctx.simpleExpr()), ctx);
         }
+        visitRemainBitExpr(ctx);
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
     
@@ -371,6 +372,13 @@ public abstract class SQL92Visitor extends SQL92StatementBaseVisitor<ASTNode> {
             return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText());
         }
         return astNode;
+    }
+    
+    private void visitRemainBitExpr(final BitExprContext ctx) {
+        if (null != ctx.intervalExpression()) {
+            visit(ctx.intervalExpression().expr());
+        }
+        ctx.bitExpr().forEach(this::visit);
     }
     
     @Override
