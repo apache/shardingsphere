@@ -85,7 +85,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         ResultSet result;
         try {
             executionContext = prepare(sql);
-            result = getResultSet(statementExecutor.executeQuery());
+            result = new ShardingResultSet(statementExecutor.getResultSets(), createMergedResult(statementExecutor.executeQuery()), this, executionContext);
         } finally {
             currentResultSet = null;
         }
@@ -111,10 +111,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             currentResultSet = new ShardingResultSet(resultSets, createMergedResult(queryResults), this, executionContext);
         }
         return currentResultSet;
-    }
-    
-    private ShardingResultSet getResultSet(final List<QueryResult> queryResults) throws SQLException {
-        return new ShardingResultSet(statementExecutor.getResultSets(), createMergedResult(queryResults), this, executionContext);
     }
     
     private MergedResult createMergedResult(final List<QueryResult> queryResults) throws SQLException {
