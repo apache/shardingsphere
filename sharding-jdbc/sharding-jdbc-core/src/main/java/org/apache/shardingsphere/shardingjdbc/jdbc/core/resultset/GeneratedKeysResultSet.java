@@ -33,7 +33,7 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResultSet {
     
-    private final Iterator<Comparable<?>> generatedKeys;
+    private final Iterator<Comparable<?>> generatedValues;
     
     private final String generatedKeyColumn;
     
@@ -41,10 +41,10 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     
     private boolean closed;
     
-    private Comparable<?> currentGeneratedKey;
+    private Comparable<?> currentGeneratedValue;
     
     public GeneratedKeysResultSet() {
-        generatedKeys = Collections.<Comparable<?>>emptyList().iterator();
+        generatedValues = Collections.<Comparable<?>>emptyList().iterator();
         generatedKeyColumn = null;
         statement = null;
     }
@@ -56,11 +56,11 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     
     @Override
     public boolean next() {
-        if (closed || !generatedKeys.hasNext()) {
-            currentGeneratedKey = null;
+        if (closed || !generatedValues.hasNext()) {
+            currentGeneratedValue = null;
             return false;
         }
-        currentGeneratedKey = generatedKeys.next();
+        currentGeneratedValue = generatedValues.next();
         return true;
     }
     
@@ -84,7 +84,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public String getString(final int columnIndex) {
         checkStateForGetData();
-        return currentGeneratedKey.toString();
+        return currentGeneratedValue.toString();
     }
     
     @Override
@@ -196,7 +196,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public Object getObject(final int columnIndex) {
         checkStateForGetData();
-        return currentGeneratedKey;
+        return currentGeneratedValue;
     }
     
     @Override
@@ -228,12 +228,12 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
         return statement;
     }
     
-    private void checkState() {
-        Preconditions.checkState(!closed, "ResultSet has closed.");
-    }
-    
     private void checkStateForGetData() {
         checkState();
-        Preconditions.checkNotNull(currentGeneratedKey, "ResultSet should call next or has no more data.");
+        Preconditions.checkNotNull(currentGeneratedValue, "ResultSet should call next or has no more data.");
+    }
+    
+    private void checkState() {
+        Preconditions.checkState(!closed, "ResultSet has closed.");
     }
 }
