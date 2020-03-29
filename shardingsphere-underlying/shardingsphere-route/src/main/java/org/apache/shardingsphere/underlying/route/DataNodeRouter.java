@@ -48,7 +48,7 @@ public final class DataNodeRouter {
     
     private final SQLParserEngine parserEngine;
     
-    private final Map<BaseRule, RouteDecorator> routeDecorators = new LinkedHashMap<>();
+    private final Map<BaseRule, RouteDecorator> decorators = new LinkedHashMap<>();
     
     private SPIRoutingHook routingHook = new SPIRoutingHook();
     
@@ -59,7 +59,7 @@ public final class DataNodeRouter {
      * @param decorator route decorator
      */
     public void registerDecorator(final BaseRule rule, final RouteDecorator decorator) {
-        routeDecorators.put(rule, decorator);
+        decorators.put(rule, decorator);
     }
     
     /**
@@ -87,7 +87,7 @@ public final class DataNodeRouter {
     @SuppressWarnings("unchecked")
     private RouteContext executeRoute(final String sql, final List<Object> parameters, final boolean useCache) {
         RouteContext result = createRouteContext(sql, parameters, useCache);
-        for (Entry<BaseRule, RouteDecorator> entry : routeDecorators.entrySet()) {
+        for (Entry<BaseRule, RouteDecorator> entry : decorators.entrySet()) {
             result = entry.getValue().decorate(result, metaData, entry.getKey(), properties);
         }
         return result;
