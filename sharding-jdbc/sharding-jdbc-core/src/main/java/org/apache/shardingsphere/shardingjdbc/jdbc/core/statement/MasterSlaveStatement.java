@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionCon
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.underlying.pluggble.SimpleQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.SimpleQueryPrepareEngine;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;

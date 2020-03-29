@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultS
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.underlying.pluggble.PreparedQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.PreparedQueryPrepareEngine;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

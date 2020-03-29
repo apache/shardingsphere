@@ -36,8 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
-import org.apache.shardingsphere.underlying.pluggble.BasePrepareEngine;
-import org.apache.shardingsphere.underlying.pluggble.PreparedQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.BasePrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.PreparedQueryPrepareEngine;
 import org.apache.shardingsphere.underlying.pluggble.merge.MergeEngine;
 
 import java.sql.PreparedStatement;
