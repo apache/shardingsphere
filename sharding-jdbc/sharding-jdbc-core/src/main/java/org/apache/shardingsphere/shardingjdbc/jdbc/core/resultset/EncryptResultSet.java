@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import org.apache.shardingsphere.encrypt.merge.EncryptResultDecoratorEngine;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sharding.execute.sql.execute.result.StreamQueryResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
-import org.apache.shardingsphere.shardingjdbc.merge.JDBCEncryptResultDecoratorEngine;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.merge.MergeEntry;
@@ -78,7 +78,7 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     
     private MergedResult createMergedResult(final EncryptRuntimeContext encryptRuntimeContext, final ResultSet resultSet) throws SQLException {
         Map<BaseRule, ResultProcessEngine> engines = new HashMap<>(1, 1);
-        engines.put(encryptRule, new JDBCEncryptResultDecoratorEngine(resultSet.getMetaData()));
+        engines.put(encryptRule, new EncryptResultDecoratorEngine());
         MergeEntry mergeEntry = new MergeEntry(encryptRuntimeContext.getDatabaseType(), encryptRuntimeContext.getMetaData().getSchema(), encryptRuntimeContext.getProperties(), engines);
         return mergeEntry.process(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
