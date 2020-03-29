@@ -49,4 +49,9 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
         }
         return new TransparentResultDecorator();
     }
+    
+    @Override
+    public int getOrder() {
+        return 20;
+    }
 }
