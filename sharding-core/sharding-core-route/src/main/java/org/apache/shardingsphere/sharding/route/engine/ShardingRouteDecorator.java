@@ -151,4 +151,14 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
             shardingConditions.getConditions().add(shardingCondition);
         }
     }
+    
+    @Override
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }

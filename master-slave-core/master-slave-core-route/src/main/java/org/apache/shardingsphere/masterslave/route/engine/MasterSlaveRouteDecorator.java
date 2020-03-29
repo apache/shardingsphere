@@ -57,4 +57,14 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
         routeContext.getRouteResult().getRouteUnits().addAll(toBeAdded);
         return routeContext;
     }
+    
+    @Override
+    public Class<MasterSlaveRule> getRuleClass() {
+        return MasterSlaveRule.class;
+    }
+    
+    @Override
+    public int getOrder() {
+        return 10;
+    }
 }

@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
@@ -34,14 +33,12 @@ import org.apache.shardingsphere.encrypt.merge.EncryptResultDecoratorEngine;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
@@ -51,12 +48,13 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfig
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.bootstrap.ShardingProxy;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.merge.registry.ResultProcessEngineRegistry;
 import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorRegistry;
-import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -97,12 +95,11 @@ public final class Bootstrap {
     }
     
     private static void registerDecorator() {
-        RouteDecoratorRegistry.getInstance().register(ShardingRule.class, ShardingRouteDecorator.class);
-        RouteDecoratorRegistry.getInstance().register(MasterSlaveRule.class, MasterSlaveRouteDecorator.class);
         RewriteDecoratorRegistry.getInstance().register(ShardingRule.class, ShardingSQLRewriteContextDecorator.class);
         RewriteDecoratorRegistry.getInstance().register(EncryptRule.class, EncryptSQLRewriteContextDecorator.class);
         ResultProcessEngineRegistry.getInstance().register(ShardingRule.class, ShardingResultMergerEngine.class);
         ResultProcessEngineRegistry.getInstance().register(EncryptRule.class, EncryptResultDecoratorEngine.class);
+        NewInstanceServiceLoader.register(RouteDecorator.class);
     }
     
     private static int getPort(final String[] args) {

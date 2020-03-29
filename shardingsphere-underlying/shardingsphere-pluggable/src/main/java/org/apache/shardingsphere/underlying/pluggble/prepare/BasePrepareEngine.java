@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -36,13 +38,17 @@ import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorReg
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Base prepare engine.
@@ -94,7 +100,32 @@ public abstract class BasePrepareEngine {
     }
     
     private void registerRouteDecorator() {
-        rules.forEach(each -> RouteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> router.registerDecorator(each, decorator)));
+        for (Class<? extends RouteDecorator> each : getRouteDecoratorRegistry().values()) {
+            Class<?> ruleClass = getRuleClass(each);
+            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
+            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass)
+                    .collect(Collectors.toList()).forEach(rule -> router.registerDecorator(rule, createRouteDecorator(each)));
+        }
+    }
+    
+    private Map<Integer, Class<? extends RouteDecorator>> getRouteDecoratorRegistry() {
+        Map<Integer, Class<? extends RouteDecorator>> result = new TreeMap<>();
+        for (RouteDecorator each : NewInstanceServiceLoader.newServiceInstances(RouteDecorator.class)) {
+            result.put(each.getOrder(), each.getClass());
+        }
+        return result;
+    }
+    
+    private Class<?> getRuleClass(final Class<? extends RouteDecorator> decoratorClass) {
+        return (Class<?>) ((ParameterizedType) decoratorClass.getGenericInterfaces()[0]).getActualTypeArguments()[0];
+    }
+    
+    private RouteDecorator createRouteDecorator(final Class<? extends RouteDecorator> decorator) {
+        try {
+            return decorator.newInstance();
+        } catch (final InstantiationException | IllegalAccessException ex) {
+            throw new ShardingSphereException(String.format("Can not find public default constructor for route decorator `%s`", decorator), ex);
+        }
     }
     
     protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);

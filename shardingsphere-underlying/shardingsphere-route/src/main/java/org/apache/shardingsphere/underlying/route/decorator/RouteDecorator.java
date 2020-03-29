@@ -39,4 +39,18 @@ public interface RouteDecorator<T extends BaseRule> {
      * @return decorated route context
      */
     RouteContext decorate(RouteContext routeContext, ShardingSphereMetaData metaData, T rule, ConfigurationProperties properties);
+    
+    /**
+     * Get rule class.
+     *
+     * @return rule class
+     */
+    Class<T> getRuleClass();
+    
+    /**
+     * Get order of load.
+     *
+     * @return load order
+     */
+    int getOrder();
 }
