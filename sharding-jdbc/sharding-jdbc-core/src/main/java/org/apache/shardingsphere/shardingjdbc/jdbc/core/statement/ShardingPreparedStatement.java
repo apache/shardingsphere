@@ -114,7 +114,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         ResultSet result;
         try {
             clearPrevious();
-            executionContext = prepare();
+            prepare();
             initPreparedStatementExecutor();
             result = getResultSet(preparedStatementExecutor.executeQuery());
         } finally {
@@ -166,7 +166,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public int executeUpdate() throws SQLException {
         try {
             clearPrevious();
-            executionContext = prepare();
+            prepare();
             initPreparedStatementExecutor();
             return preparedStatementExecutor.executeUpdate();
         } finally {
@@ -178,7 +178,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     public boolean execute() throws SQLException {
         try {
             clearPrevious();
-            executionContext = prepare();
+            prepare();
             initPreparedStatementExecutor();
             return preparedStatementExecutor.execute();
         } finally {
@@ -228,7 +228,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public void addBatch() {
         try {
-            executionContext = prepare();
+            prepare();
             batchPreparedStatementExecutor.addBatchForRouteUnits(executionContext);
         } finally {
             currentResultSet = null;
@@ -236,10 +236,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         }
     }
     
-    private ExecutionContext prepare() {
-        ExecutionContext result = prepareEngine.prepare(sql, getParameters());
+    private void prepare() {
+        executionContext = prepareEngine.prepare(sql, getParameters());
         findGeneratedKey().ifPresent(generatedKey -> generatedValues.add(generatedKey.getGeneratedValues().getLast()));
-        return result;
     }
     
     @Override
