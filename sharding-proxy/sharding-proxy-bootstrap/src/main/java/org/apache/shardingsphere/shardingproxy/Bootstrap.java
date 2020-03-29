@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.encrypt.merge.EncryptResultDecoratorEngine;
 import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine;
 import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -52,6 +54,7 @@ import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.merge.registry.ResultProcessEngineRegistry;
 import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorRegistry;
 import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
 
@@ -98,6 +101,8 @@ public final class Bootstrap {
         RouteDecoratorRegistry.getInstance().register(MasterSlaveRule.class, MasterSlaveRouteDecorator.class);
         RewriteDecoratorRegistry.getInstance().register(ShardingRule.class, ShardingSQLRewriteContextDecorator.class);
         RewriteDecoratorRegistry.getInstance().register(EncryptRule.class, EncryptSQLRewriteContextDecorator.class);
+        ResultProcessEngineRegistry.getInstance().register(ShardingRule.class, ShardingResultMergerEngine.class);
+        ResultProcessEngineRegistry.getInstance().register(EncryptRule.class, EncryptResultDecoratorEngine.class);
     }
     
     private static int getPort(final String[] args) {

@@ -47,5 +47,10 @@
             <artifactId>shardingsphere-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-merge</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

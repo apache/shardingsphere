@@ -46,7 +46,7 @@ public final class EncryptPreparedStatementTest extends AbstractEncryptJDBCDatab
     
     private static final String SELECT_SQL = "SELECT * FROM t_query_encrypt WHERE pwd = ?";
  
-    private static final String SELECT_SQL_OR = "SELECT * FROM t_query_encrypt WHERE pwd = ? and (id = ? or id =?)";
+    private static final String SELECT_SQL_OR = "SELECT * FROM t_query_encrypt WHERE pwd = ? AND (id = ? OR id =?)";
     
     private static final String SELECT_ALL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";
     

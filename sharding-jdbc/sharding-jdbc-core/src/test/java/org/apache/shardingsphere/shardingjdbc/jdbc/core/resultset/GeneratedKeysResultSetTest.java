@@ -33,13 +33,13 @@ import static org.junit.Assert.assertTrue;
 
 public final class GeneratedKeysResultSetTest {
     
-    private static final Statement STATEMENT = Mockito.mock(Statement.class);
+    private final Statement statement = Mockito.mock(Statement.class);
     
     private GeneratedKeysResultSet actualResultSet;
     
     @Before
     public void init() {
-        actualResultSet = new GeneratedKeysResultSet(Arrays.<Comparable<?>>asList(1L, 2L).iterator(), "order_id", STATEMENT);
+        actualResultSet = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), statement);
     }
     
     @Test
@@ -181,6 +181,6 @@ public final class GeneratedKeysResultSetTest {
     
     @Test
     public void assertGetStatement() {
-        assertThat(actualResultSet.getStatement(), is(STATEMENT));
+        assertThat(actualResultSet.getStatement(), is(statement));
     }
 }
