@@ -184,7 +184,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancleEdit">{{ $t("configCenter.configDialog.btnCancelTxt") }}</el-button>
+        <el-button @click="cancelEdit">{{ $t("configCenter.configDialog.btnCancelTxt") }}</el-button>
         <el-button
           type="primary"
           @click="confirmEdit('editForm')"
@@ -389,7 +389,7 @@ export default {
         }
       })
     },
-    cancleEdit() {
+    cancelEdit() {
       this.editDialogVisible = false
     }
   }
