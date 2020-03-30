@@ -123,8 +123,6 @@ public final class CenterConfigServiceImpl implements CenterConfigService {
             toBeUpdatedConfig.setDigest(config.getDigest());
             centerConfigsRepository.save(configs);
         }
-        
-        
     }
     
     private CenterConfig findActivatedCenterConfiguration(final CenterConfigs centerConfigs) {
