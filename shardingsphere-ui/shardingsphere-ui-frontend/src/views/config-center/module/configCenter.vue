@@ -348,16 +348,7 @@ export default {
     onConfirm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const params = {
-            digest: this.form.digest,
-            name: this.form.name,
-            namespace: this.form.namespace,
-            orchestrationName: this.form.orchestrationName,
-            orchestrationType: this.form.orchestrationType,
-            instanceType: this.form.instanceType,
-            serverLists: this.form.serverLists
-          }
-          API.postConfigCenter(params).then(res => {
+          API.postConfigCenter(this.form).then(res => {
             this.regustDialogVisible = false
             this.$notify({
               title: this.$t('common').notify.title,
