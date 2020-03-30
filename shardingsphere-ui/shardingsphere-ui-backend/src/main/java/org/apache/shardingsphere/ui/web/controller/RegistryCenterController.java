@@ -19,6 +19,7 @@ package org.apache.shardingsphere.ui.web.controller;
 
 import org.apache.shardingsphere.ui.common.constant.OrchestrationType;
 import org.apache.shardingsphere.ui.common.domain.CenterConfig;
+import org.apache.shardingsphere.ui.common.dto.CenterConfigDTO;
 import org.apache.shardingsphere.ui.servcie.CenterConfigService;
 import org.apache.shardingsphere.ui.util.CenterRepositoryFactory;
 import org.apache.shardingsphere.ui.web.response.ResponseResult;
@@ -96,6 +97,18 @@ public final class RegistryCenterController {
     @RequestMapping(value = "/activated", method = RequestMethod.GET)
     public ResponseResult<CenterConfig> activated() {
         return ResponseResultUtil.build(centerConfigService.loadActivated(OrchestrationType.REGISTRY_CENTER.getValue()).orElse(null));
+    }
+    
+    /**
+     * Update registry center.
+     *
+     * @param config registry center config
+     * @return response result
+     */
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public ResponseResult update(@RequestBody final CenterConfigDTO config) {
+        centerConfigService.update(config);
+        return ResponseResultUtil.success();
     }
     
 }

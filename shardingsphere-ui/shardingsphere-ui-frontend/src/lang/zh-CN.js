@@ -94,6 +94,7 @@ export default {
     btnTxt: '添加',
     registDialog: {
       title: '添加注册中心',
+      editTitle: '编辑注册中心',
       name: '注册中心名称',
       centerType: '注册中心类型',
       address: '注册中心地址',
@@ -107,7 +108,8 @@ export default {
       operate: '操作',
       operateConnect: '连接',
       operateConnected: '已激活',
-      operateDel: '删除'
+      operateDel: '删除',
+      operateEdit: '编辑'
     },
     rules: {
       name: '请输入注册中心名称',

@@ -94,6 +94,7 @@ export default {
     btnTxt: 'ADD',
     registDialog: {
       title: 'Add a registry center',
+      editTitle: 'Edit registry center',
       name: 'Name',
       centerType: 'Instance Type',
       address: 'Address',
@@ -107,7 +108,8 @@ export default {
       operate: 'Operate',
       operateConnect: 'Connect',
       operateConnected: 'Connected',
-      operateDel: 'Del'
+      operateDel: 'Del',
+      operateEdit: 'Edit'
     },
     rules: {
       name: 'Please enter the name of the registration center',
