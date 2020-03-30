@@ -25,7 +25,7 @@
             <aggregation-projection type="SUM" inner-expression-start-index="10" alias="user_id_sum" start-index="7" stop-index="18" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_count">
         <tables>
             <simple-table name="t_order" start-index="37" stop-index="43" />
@@ -34,7 +34,7 @@
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_count_with_sub">
         <tables>
             <simple-table name="t_order" start-index="37" stop-index="43" />
@@ -54,7 +54,7 @@
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_count_with_sub_with_whitespace">
         <tables>
             <simple-table name="t_order" start-index="37" stop-index="43" />
@@ -74,7 +74,7 @@
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_max">
         <tables>
             <simple-table name="t_order" start-index="40" stop-index="46" />
@@ -83,7 +83,7 @@
             <aggregation-projection type="MAX" inner-expression-start-index="10" alias="max_user_id" start-index="7" stop-index="18" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_min">
         <tables>
             <simple-table name="t_order" start-index="40" stop-index="46" />
@@ -92,7 +92,7 @@
             <aggregation-projection type="MIN" inner-expression-start-index="10" alias="min_user_id" start-index="7" stop-index="18" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_avg">
         <tables>
             <simple-table name="t_order" start-index="40" stop-index="46" />
@@ -101,7 +101,7 @@
             <aggregation-projection type="AVG" inner-expression-start-index="10" alias="user_id_avg" start-index="7" stop-index="18" />
         </projections>
     </select>
-    
+
     <select sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
         <tables>
             <simple-table name="t_order" alias="o" start-index="36" stop-index="42" />
@@ -135,8 +135,8 @@
                     <in-right-value>
                         <parameter-marker-expression value="0" start-index="136" stop-index="136" />
                         <parameter-marker-expression value="1" start-index="139" stop-index="139" />
-                        <literal-expression value="1" />
-                        <literal-expression value="2" />
+                        <literal-expression value="1" start-index="136" stop-index="136" />
+                        <literal-expression value="2" start-index="139" stop-index="139" />
                     </in-right-value>
                 </predicate>
                 <predicate start-index="146" stop-index="171" literal-stop-index="172">
@@ -145,15 +145,15 @@
                     </column-left-value>
                     <between-right-value>
                         <between-parameter-marker-expression value="2" start-index="165" stop-index="165" />
-                        <between-literal-expression value="9" />
+                        <between-literal-expression value="9" start-index="165" stop-index="165" />
                         <and-parameter-marker-expression value="3" start-index="171" stop-index="171" />
-                        <and-literal-expression value="10" />
+                        <and-literal-expression value="10" start-index="171" stop-index="172" />
                     </between-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
         <tables>
             <simple-table name="t_order" alias="o" start-index="36" stop-index="42" />
@@ -171,8 +171,8 @@
                     <in-right-value>
                         <parameter-marker-expression value="0" start-index="139" stop-index="139" />
                         <parameter-marker-expression value="1" start-index="142" stop-index="142" />
-                        <literal-expression value="1" />
-                        <literal-expression value="2" />
+                        <literal-expression value="1" start-index="139" stop-index="139" />
+                        <literal-expression value="2" start-index="142" stop-index="142" />
                     </in-right-value>
                 </predicate>
                 <predicate start-index="149" stop-index="174" literal-stop-index="175">
@@ -181,15 +181,15 @@
                     </column-left-value>
                     <between-right-value>
                         <between-parameter-marker-expression value="2" start-index="168" stop-index="168" />
-                        <between-literal-expression value="9" />
+                        <between-literal-expression value="9" start-index="168" stop-index="168" />
                         <and-parameter-marker-expression value="3" start-index="174" stop-index="174" />
-                        <and-literal-expression value="10" />
+                        <and-literal-expression value="10" start-index="174" stop-index="175" />
                     </between-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_count_with_escape_character">
         <tables>
             <simple-table name="t_order" start-index="46" stop-index="52" />

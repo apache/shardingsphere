@@ -36,8 +36,8 @@
                     <in-right-value>
                         <parameter-marker-expression value="0" start-index="125" stop-index="125" />
                         <parameter-marker-expression value="1" start-index="128" stop-index="128" />
-                        <literal-expression value="1" />
-                        <literal-expression value="2" />
+                        <literal-expression value="1" start-index="125" stop-index="125" />
+                        <literal-expression value="2" start-index="128" stop-index="128" />
                     </in-right-value>
                 </predicate>
                 <predicate start-index="135" stop-index="160" literal-stop-index="161">
@@ -46,9 +46,9 @@
                     </column-left-value>
                     <between-right-value>
                         <between-parameter-marker-expression value="2" start-index="154" stop-index="154" />
-                        <between-literal-expression value="9" start-index="158" stop-index="158" />
+                        <between-literal-expression value="9" start-index="154" stop-index="154" />
                         <and-parameter-marker-expression value="3" start-index="160" stop-index="160" />
-                        <and-literal-expression value="10" />
+                        <and-literal-expression value="10" start-index="160" stop-index="161"/>
                     </between-right-value>
                 </predicate>
             </and-predicate>
@@ -68,7 +68,7 @@
             <row-count value="3" parameter-index="5" start-index="214" stop-index="214" literal-start-index="215" literal-stop-index="215" />
         </limit>
     </select>
-    
+
     <select sql-case-id="select_pagination_with_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <simple-table name="t_order" alias="o" start-index="22" stop-index="28" />
@@ -88,8 +88,8 @@
                     <in-right-value>
                         <parameter-marker-expression value="0" start-index="125" stop-index="125" />
                         <parameter-marker-expression value="1" start-index="128" stop-index="128" />
-                        <literal-expression value="1" />
-                        <literal-expression value="2" />
+                        <literal-expression value="1" start-index="125" stop-index="125" />
+                        <literal-expression value="2" start-index="128" stop-index="128" />
                     </in-right-value>
                 </predicate>
                 <predicate start-index="135" stop-index="160" literal-stop-index="161">
@@ -98,9 +98,9 @@
                     </column-left-value>
                     <between-right-value>
                         <between-parameter-marker-expression value="2" start-index="154" stop-index="154" />
-                        <between-literal-expression value="9" start-index="157" stop-index="157" />
+                        <between-literal-expression value="9" start-index="154" stop-index="154" />
                         <and-parameter-marker-expression value="3" start-index="160" stop-index="160" />
-                        <and-literal-expression value="10" />
+                        <and-literal-expression value="10" start-index="160" stop-index="161" />
                     </between-right-value>
                 </predicate>
             </and-predicate>
@@ -120,7 +120,7 @@
             <row-count value="3" parameter-index="5" start-index="214" stop-index="214" literal-start-index="215" literal-stop-index="215" />
         </limit>
     </select>
-    
+
     <select sql-case-id="select_pagination_with_top_and_group_by_and_order_by" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <simple-table name="t_order" alias="o" start-index="165" stop-index="171" />
@@ -171,7 +171,7 @@
         <offset value="6" parameter-index="5" />
         <row-count value="3" parameter-index="0" />
     </select>
-    
+
     <select sql-case-id="select_pagination_with_top_and_group_by_and_order_by_and_parentheses" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <simple-table name="t_order" alias="o" start-index="167" stop-index="173" />
@@ -222,7 +222,7 @@
         <offset value="6" parameter-index="5" />
         <row-count value="3" parameter-index="0" />
     </select>
-    
+
     <select sql-case-id="select_pagination_with_top_and_diff_group_by_and_order_by" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <simple-table name="t_order" alias="o" start-index="165" stop-index="171" />
@@ -273,7 +273,7 @@
         <offset value="6" parameter-index="5" />
         <row-count value="3" parameter-index="0" />
     </select>
-    
+
     <select sql-case-id="select_pagination_with_top_and_diff_group_by_and_order_by_and_parentheses" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <simple-table name="t_order" alias="o" start-index="167" stop-index="173" />
@@ -324,7 +324,7 @@
         <offset value="6" parameter-index="5" />
         <row-count value="3" parameter-index="0" />
     </select>
-    
+
     <select sql-case-id="select_pagination_with_row_number_and_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />
@@ -369,7 +369,7 @@
         <offset value="3" parameter-index="5" />
         <row-count value="5" parameter-index="4" />
     </select>
-    
+
     <select sql-case-id="select_pagination_with_row_number_and_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <simple-table name="t_order" alias="order0_" start-index="146" stop-index="152" />

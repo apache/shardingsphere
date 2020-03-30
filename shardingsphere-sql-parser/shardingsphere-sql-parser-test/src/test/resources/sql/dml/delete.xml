@@ -26,7 +26,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="37" stop-index="37" />
-                        <literal-expression value="1000" />
+                        <literal-expression value="1000" start-index="37" stop-index="40" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="43" stop-index="53" literal-start-index="46" literal-stop-index="59">
@@ -34,7 +34,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="53" stop-index="53" />
-                        <literal-expression value="1001" />
+                        <literal-expression value="1001" start-index="56" stop-index="59" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="59" stop-index="66" literal-start-index="65" literal-stop-index="77">
@@ -42,13 +42,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="66" stop-index="66" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="72" stop-index="77" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </delete>
-    
+
     <delete sql-case-id="delete_without_sharding_value" parameters="'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <where start-index="20" stop-index="33" literal-stop-index="38">
@@ -58,13 +58,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="33" stop-index="33" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="33" stop-index="38" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </delete>
-    
+
     <delete sql-case-id="delete_with_special_character_without_sharding_value">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         <where start-index="22" stop-index="42">
@@ -73,13 +73,13 @@
                     <column-left-value name="status" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="35" />
                     <operator type="=" />
                     <compare-right-value>
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="37" stop-index="42"/>
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </delete>
-    
+
     <delete sql-case-id="delete_with_special_comments_return_without_sharding_value">
         <table name="t_order" start-index="33" stop-index="39" />
         <where start-index="41" stop-index="54">
@@ -88,13 +88,13 @@
                     <column-left-value name="status" start-index="47" stop-index="52" />
                     <operator type="=" />
                     <compare-right-value>
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="54" stop-index="54" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </delete>
-    
+
     <delete sql-case-id="delete_with_special_comments_returning_without_sharding_value">
         <table name="t_order" start-index="34" stop-index="40" />
         <where start-index="43" stop-index="56">
@@ -103,13 +103,13 @@
                     <column-left-value name="status" start-index="49" stop-index="54" />
                     <operator type="=" />
                     <compare-right-value>
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="56" stop-index="56" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </delete>
-    
+
     <delete sql-case-id="delete_with_alias" parameters="'init'">
         <table name="o" start-index="7" stop-index="7" />
         <table name="t_order" alias="o" start-index="14" stop-index="20" />
@@ -120,7 +120,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="40" stop-index="40" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="40" stop-index="45" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>

@@ -31,7 +31,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="39" stop-index="39" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="39" stop-index="39" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -41,13 +41,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="55" stop-index="55" />
-                        <literal-expression value="2" />
+                        <literal-expression value="2" start-index="55" stop-index="55" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -62,7 +62,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="39" stop-index="39" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="39" stop-index="39" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -72,13 +72,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="54" stop-index="54" />
-                        <literal-expression value="2" />
+                        <literal-expression value="2" start-index="54" stop-index="54" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -93,7 +93,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="39" stop-index="39" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="39" stop-index="39" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -103,13 +103,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="53" stop-index="53" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="53" stop-index="58" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -124,7 +124,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="40" stop-index="40" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="40" stop-index="40" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
@@ -132,7 +132,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="71" stop-index="71" />
-                        <literal-expression value="3" />
+                        <literal-expression value="3" start-index="76" stop-index="76" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -142,7 +142,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="54" stop-index="54" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="54" stop-index="59" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
@@ -150,13 +150,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="71" stop-index="71" />
-                        <literal-expression value="3" />
+                        <literal-expression value="3" start-index="76" stop-index="76" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -171,7 +171,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="39" stop-index="39" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="39" stop-index="44" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="46" stop-index="57" literal-start-index="51" literal-stop-index="62">
@@ -179,7 +179,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="57" stop-index="57" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="62" stop-index="62" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="83" stop-index="93" literal-start-index="88" literal-stop-index="98">
@@ -187,7 +187,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="3" start-index="93" stop-index="93" />
-                        <literal-expression value="3" />
+                        <literal-expression value="3" start-index="98" stop-index="98" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -197,7 +197,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="39" stop-index="39" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="39" stop-index="44" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="46" stop-index="57" literal-start-index="51" literal-stop-index="62">
@@ -205,7 +205,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="57" stop-index="57" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="62" stop-index="62" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="99" stop-index="109" literal-start-index="104" literal-stop-index="114">
@@ -213,7 +213,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="4" start-index="109" stop-index="109" />
-                        <literal-expression value="4" />
+                        <literal-expression value="4" start-index="114" stop-index="114" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -223,7 +223,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="39" stop-index="39" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="39" stop-index="44" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="63" stop-index="74" literal-start-index="68" literal-stop-index="79">
@@ -231,7 +231,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="74" stop-index="74" />
-                        <literal-expression value="2" />
+                        <literal-expression value="2" start-index="79" stop-index="79" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="83" stop-index="93" literal-start-index="88" literal-stop-index="98">
@@ -239,7 +239,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="3" start-index="93" stop-index="93" />
-                        <literal-expression value="3" />
+                        <literal-expression value="3" start-index="98" stop-index="98" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -249,7 +249,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="39" stop-index="39" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="39" stop-index="44" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="63" stop-index="74" literal-start-index="68" literal-stop-index="79">
@@ -257,7 +257,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="74" stop-index="74" />
-                        <literal-expression value="2" />
+                        <literal-expression value="2" start-index="79" stop-index="79" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="99" stop-index="109" literal-start-index="104" literal-stop-index="114">
@@ -265,13 +265,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="4" start-index="109" stop-index="109" />
-                        <literal-expression value="4" />
+                        <literal-expression value="4" start-index="114" stop-index="114" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
         <tables>
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -291,7 +291,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="119" stop-index="119" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="119" stop-index="119" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="144" stop-index="156">
@@ -301,7 +301,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="156" stop-index="156" />
-                        <literal-expression value="3" />
+                        <literal-expression value="3" start-index="156" stop-index="156" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -313,7 +313,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="137" stop-index="137" />
-                        <literal-expression value="2" />
+                        <literal-expression value="2" start-index="137" stop-index="137" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="144" stop-index="156">
@@ -323,13 +323,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="156" stop-index="156" />
-                        <literal-expression value="3" />
+                        <literal-expression value="3" start-index="156" stop-index="156" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
         <tables>
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -350,7 +350,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="167" stop-index="167" />
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="167" stop-index="167" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="192" stop-index="204">
@@ -360,7 +360,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="204" stop-index="204" />
-                        <literal-expression value="3" />
+                        <literal-expression value="3" start-index="204" stop-index="204" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="210" stop-index="221" literal-stop-index="226">
@@ -370,7 +370,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="3" start-index="221" stop-index="221" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="221" stop-index="226" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -382,7 +382,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="1" start-index="185" stop-index="185" />
-                        <literal-expression value="2" />
+                        <literal-expression value="2" start-index="185" stop-index="185" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="192" stop-index="204">
@@ -392,7 +392,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="2" start-index="204" stop-index="204" />
-                        <literal-expression value="3" />
+                        <literal-expression value="3" start-index="204" stop-index="204" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="210" stop-index="221" literal-stop-index="226">
@@ -402,7 +402,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="3" start-index="221" stop-index="221" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="221" stop-index="226" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>

@@ -36,13 +36,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="98" stop-index="98" />
-                        <literal-expression value="1000" />
+                        <literal-expression value="1000" start-index="98" stop-index="101" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_inner_join_related_with_name" parameters="1000">
         <tables>
             <simple-table name="t_order" start-index="27" stop-index="33" />
@@ -62,13 +62,13 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="122" stop-index="122" />
-                        <literal-expression value="1000" />
+                        <literal-expression value="1000" start-index="122" stop-index="125" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_join_using" parameters="1000">
         <tables>
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -88,7 +88,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="81" stop-index="81" />
-                        <literal-expression value="1000" />
+                        <literal-expression value="1000" start-index="81" stop-index="84" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>

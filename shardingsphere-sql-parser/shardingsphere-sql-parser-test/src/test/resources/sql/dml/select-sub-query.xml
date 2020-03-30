@@ -67,7 +67,7 @@
             </shorthand-projection>
         </projections>
     </select>
-    
+
     <select sql-case-id="select_with_equal_subquery">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -92,10 +92,10 @@
                                 <where start-index="72" stop-index="85">
                                     <and-predicate>
                                         <predicate start-index="78" literal-stop-index="84">
-                                            <column-left-value name="id" start-index="78" stop-index="79"  />
+                                            <column-left-value name="id" start-index="78" stop-index="79" />
                                             <operator type="=" />
                                             <compare-right-value>
-                                                <literal-expression value="10" />
+                                                <literal-expression value="10" start-index="83" stop-index="84" />
                                             </compare-right-value>
                                         </predicate>
                                     </and-predicate>
@@ -107,7 +107,7 @@
             </and-predicate>
         </where>
     </select>
-    
+
     <select sql-case-id="select_with_in_subquery">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -133,8 +133,8 @@
                                         <predicate start-index="79" literal-stop-index="92">
                                             <column-left-value name="id" start-index="79" stop-index="80"  />
                                             <in-right-value>
-                                                <literal-expression value="10" />
-                                                <literal-expression value="11" />
+                                                <literal-expression value="10" start-index="86" stop-index="87" />
+                                                <literal-expression value="11" start-index="90" stop-index="91" />
                                             </in-right-value>
                                         </predicate>
                                     </and-predicate>
@@ -170,10 +170,10 @@
                                 <where start-index="78" stop-index="96">
                                     <and-predicate>
                                         <predicate start-index="84" stop-index="96" literal-stop-index="96">
-                                            <column-left-value name="order_id" start-index="84" stop-index="91"  />
+                                            <column-left-value name="order_id" start-index="84" stop-index="91" />
                                             <operator type="=" />
                                             <compare-right-value>
-                                                <literal-expression value="10" />
+                                                <literal-expression value="10" start-index="95" stop-index="96" />
                                             </compare-right-value>
                                         </predicate>
                                     </and-predicate>
@@ -181,7 +181,7 @@
                             </select>
                         </between-subquery-expression>
                         <and-parameter-marker-expression value="0" start-index="103" stop-index="103" />
-                        <and-literal-expression value="12" />
+                        <and-literal-expression value="12" start-index="103" stop-index="104" />
                     </between-right-value>
                 </predicate>
             </and-predicate>

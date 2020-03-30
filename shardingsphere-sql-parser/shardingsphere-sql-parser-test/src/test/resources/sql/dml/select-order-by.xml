@@ -31,7 +31,7 @@
             <index-item index="2" order-direction="DESC" start-index="45" stop-index="45" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_order_by_desc_and_index_asc">
         <tables>
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -60,7 +60,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" />
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="87" stop-index="92" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -72,7 +72,7 @@
             <index-item index="1" start-index="120" stop-index="120" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_order_by_with_ordered_column">
         <tables>
             <simple-table name="t_order" alias="o" start-index="40" stop-index="46" />
@@ -88,7 +88,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_order_by_with_date">
         <tables>
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -116,7 +116,7 @@
                     </column-left-value>
                     <operator type="=" />
                     <compare-right-value>
-                        <literal-expression value="init" />
+                        <literal-expression value="init" start-index="87" stop-index="92" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -133,7 +133,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <!-- //TODO add order-by-null-type -->
     <select sql-case-id="select_order_by_for_nulls_first">
         <tables>
@@ -150,7 +150,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <!-- //TODO add order-by-null-type -->
     <select sql-case-id="select_order_by_for_nulls_last">
         <tables>
@@ -167,7 +167,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_order_by_with_multiple_stars">
         <tables>
             <simple-table name="t_order" alias="o" start-index="29" stop-index="35" />
@@ -185,7 +185,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_order_by_with_alias_star_alias_name">
         <tables>
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -201,7 +201,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_order_by_with_star_table_alias">
         <tables>
             <simple-table name="t_order" alias="o" start-index="14" stop-index="20" />
@@ -213,12 +213,12 @@
             <column-item name="order_id" start-index="33" stop-index="40" />
         </order-by>
     </select>
-    
+
     <!--TODO need to add later-->
     <!--<select sql-case-id="select_order_by_with_parameter" parameters="order_id">-->
             <!--<simple-table name="t_order" alias="o" start-index="14" stop-index="20" />-->
     <!--</select>-->
-    
+
     <select sql-case-id="select_order_by_with_table_star_table_name">
         <tables>
             <simple-table name="t_order" start-index="22" stop-index="28" />
@@ -234,7 +234,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_order_by_with_star_no_table_alias">
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -246,7 +246,7 @@
             <column-item name="order_id" start-index="31" stop-index="38" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_order_by_with_table_star_without_table_name">
         <tables>
             <simple-table name="t_order" alias="o" start-index="21" stop-index="27" />
