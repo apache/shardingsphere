@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderB
 import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.sql.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
@@ -111,8 +113,12 @@ public final class ProjectionsContextEngineTest {
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().addAll(Collections.singletonList(new SimpleTableSegment(0, 0, new IdentifierValue("name"))));
         selectStatement.setProjections(projectionsSegment);
+        TableReferenceSegment tableReferenceSegment = new TableReferenceSegment();
+        TableFactorSegment tableFactorSegment = new TableFactorSegment();
+        tableFactorSegment.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("name")));
+        tableReferenceSegment.setTableFactor(tableFactorSegment);
+        selectStatement.getTableReferences().add(tableReferenceSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
@@ -128,8 +134,12 @@ public final class ProjectionsContextEngineTest {
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.getTables().addAll(Collections.singletonList(new SimpleTableSegment(0, 0, new IdentifierValue("name"))));
         selectStatement.setProjections(projectionsSegment);
+        TableReferenceSegment tableReferenceSegment = new TableReferenceSegment();
+        TableFactorSegment tableFactorSegment = new TableFactorSegment();
+        tableFactorSegment.setTable(new SimpleTableSegment(0, 0, new IdentifierValue("name")));
+        tableReferenceSegment.setTableFactor(tableFactorSegment);
+        selectStatement.getTableReferences().add(tableReferenceSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
         shorthandProjectionSegment.setOwner(owner);
@@ -145,10 +155,14 @@ public final class ProjectionsContextEngineTest {
     public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent() {
         SelectStatement selectStatement = new SelectStatement();
         SimpleTableSegment tableSegment = new SimpleTableSegment(0, 10, new IdentifierValue("name"));
-        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
-        selectStatement.getTables().addAll(Collections.singletonList(tableSegment));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
+        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
+        TableReferenceSegment tableReferenceSegment = new TableReferenceSegment();
+        TableFactorSegment tableFactorSegment = new TableFactorSegment();
+        tableFactorSegment.setTable(tableSegment);
+        tableReferenceSegment.setTableFactor(tableFactorSegment);
+        selectStatement.getTableReferences().add(tableReferenceSegment);
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         SimpleTableSegment table = new SimpleTableSegment(0, 10, new IdentifierValue("name"));
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));

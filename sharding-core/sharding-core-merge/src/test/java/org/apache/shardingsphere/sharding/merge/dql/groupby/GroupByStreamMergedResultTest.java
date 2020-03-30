@@ -31,6 +31,8 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.Pag
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -165,10 +167,14 @@ public final class GroupByStreamMergedResultTest {
         AggregationProjection derivedAggregationProjection2 = new AggregationProjection(AggregationType.SUM, "(num)", "AVG_DERIVED_SUM_0");
         aggregationProjection2.setIndex(6);
         aggregationProjection2.getDerivedAggregationProjections().add(derivedAggregationProjection2);
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(aggregationProjection1, aggregationProjection2));
-        SelectStatement selectStatement = new SelectStatement();
         SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
-        selectStatement.getTables().add(tableSegment);
+        TableReferenceSegment tableReferenceSegment = new TableReferenceSegment();
+        TableFactorSegment tableFactorSegment = new TableFactorSegment();
+        tableFactorSegment.setTable(tableSegment);
+        tableReferenceSegment.setTableFactor(tableFactorSegment);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.getTableReferences().add(tableReferenceSegment);
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Arrays.asList(aggregationProjection1, aggregationProjection2));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         return new SelectStatementContext(selectStatement,
