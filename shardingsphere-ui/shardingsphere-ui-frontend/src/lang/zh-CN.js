@@ -56,6 +56,7 @@ export default {
     notify: {
       title: '提示',
       addSucMessage: '添加成功',
+      editSucMessage: '修改成功',
       conSucMessage: '连接成功',
       conFailMessage: '连接失败',
       delSucMessage: '删除成功',
@@ -121,6 +122,7 @@ export default {
     btnTxt: '添加',
     configDialog: {
       title: '添加配置中心',
+      editTitle: '编辑配置中心',
       name: '配置中心名称',
       centerType: '配置中心类型',
       address: '配置中心地址',
@@ -134,7 +136,8 @@ export default {
       operate: '操作',
       operateConnect: '连接',
       operateConnected: '已激活',
-      operateDel: '删除'
+      operateDel: '删除',
+      operateEdit: '编辑'
     },
     rules: {
       name: '请输入配置中心名称',

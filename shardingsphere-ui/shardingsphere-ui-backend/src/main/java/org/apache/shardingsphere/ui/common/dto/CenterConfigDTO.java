@@ -15,13 +15,31 @@
  * limitations under the License.
  */
 
-import API from '@/utils/api'
+package org.apache.shardingsphere.ui.common.dto;
 
-export default {
-  getConfigCenter: (params = {}) => API.get(`/api/config-center`, params),
-  deleteConfigCenter: (params = {}) => API.delete(`/api/config-center`, params),
-  postConfigCenter: (params = {}) => API.post(`/api/config-center`, params),
-  getConfigCenterActivated: (params = {}) => API.get(`/api/config-center/activated`, params),
-  postConfigCenterConnect: (params = {}) => API.post(`/api/config-center/connect`, params),
-  updateConfigCenter: (config = {}) => API.post(`/api/config-center/update`, config)
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * CenterConfig DTO
+ */
+@Getter
+@Setter
+public final class CenterConfigDTO {
+    
+    private String name;
+    
+    private String instanceType;
+    
+    private String serverLists;
+    
+    private String namespace;
+    
+    private String orchestrationName;
+    
+    private String orchestrationType;
+    
+    private String digest;
+    
+    private String primaryName;
 }
