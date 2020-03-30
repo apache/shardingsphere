@@ -110,11 +110,10 @@ public class ShardingRule implements BaseRule {
     
     private KeyGenerateAlgorithm createDefaultKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
         KeyGenerateAlgorithmServiceLoader serviceLoader = new KeyGenerateAlgorithmServiceLoader();
-        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration)
-                ? keyGeneratorConfiguration.getKeyGenerateAlgorithm() : serviceLoader.newService();
+        return containsKeyGenerateAlgorithm(keyGeneratorConfiguration) ? keyGeneratorConfiguration.getKeyGenerateAlgorithm() : serviceLoader.newService();
     }
     
-    private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+    private boolean containsKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
         return null != keyGeneratorConfiguration && null != keyGeneratorConfiguration.getKeyGenerateAlgorithm();
     }
     

@@ -108,8 +108,7 @@ public final class TableRule {
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         final KeyGeneratorConfiguration keyGeneratorConfiguration = tableRuleConfig.getKeyGeneratorConfig();
         generateKeyColumn = null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn()) ? keyGeneratorConfiguration.getColumn() : defaultGenerateKeyColumn;
-        keyGenerateAlgorithm = containsKeyGeneratorConfiguration(tableRuleConfig)
-                ? tableRuleConfig.getKeyGeneratorConfig().getKeyGenerateAlgorithm() : null;
+        keyGenerateAlgorithm = containsKeyGenerateAlgorithm(tableRuleConfig) ? tableRuleConfig.getKeyGeneratorConfig().getKeyGenerateAlgorithm() : null;
         checkRule(dataNodes);
     }
     
@@ -128,7 +127,7 @@ public final class TableRule {
         datasourceToTablesMap.computeIfAbsent(datasourceName, k -> new LinkedHashSet<>()).add(tableName);
     }
     
-    private boolean containsKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
+    private boolean containsKeyGenerateAlgorithm(final TableRuleConfiguration tableRuleConfiguration) {
         return null != tableRuleConfiguration.getKeyGeneratorConfig() && null != tableRuleConfiguration.getKeyGeneratorConfig().getKeyGenerateAlgorithm();
     }
     
