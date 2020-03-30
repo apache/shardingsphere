@@ -110,5 +110,4 @@ public final class ConfigCenterController {
         centerConfigService.update(config);
         return ResponseResultUtil.success();
     }
-    
 }

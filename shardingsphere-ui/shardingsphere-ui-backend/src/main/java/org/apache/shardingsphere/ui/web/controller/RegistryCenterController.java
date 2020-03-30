@@ -110,5 +110,4 @@ public final class RegistryCenterController {
         centerConfigService.update(config);
         return ResponseResultUtil.success();
     }
-    
 }
