@@ -800,7 +800,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="0" start-index="115" stop-index="115" />
-                        <literal-expression value="1000" />
+                        <literal-expression value="1000" start-index="115" stop-index="118" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -877,7 +877,7 @@
                     <operator type="=" />
                     <compare-right-value>
                         <parameter-marker-expression value="4" start-index="144" stop-index="144" />
-                        <literal-expression value="1" tart-index="184" stop-index="184" />
+                        <literal-expression value="1" start-index="184" stop-index="184" />
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="150" stop-index="161" literal-start-index="190" literal-stop-index="201">
@@ -1328,7 +1328,7 @@
                     <column-left-value name="status" start-index="92" stop-index="97" />
                     <operator type="=" />
                     <compare-right-value>
-                        <literal-expression value="1" />
+                        <literal-expression value="1" start-index="99" stop-index="101" />
                     </compare-right-value>
                 </predicate>
             </and-predicate>

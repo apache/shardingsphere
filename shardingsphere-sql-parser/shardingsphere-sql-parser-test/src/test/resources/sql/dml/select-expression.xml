@@ -22,7 +22,7 @@
             <simple-table name="t_order" alias="o" start-index="38" stop-index="44" />
         </tables>
         <projections start-index="7" stop-index="31">
-            <!-- TODO check expression-projection's stop-index whether include alias --> 
+            <!-- TODO check expression-projection's stop-index whether include alias -->
             <expression-projection alias="exp" start-index="7" stop-index="24" />
         </projections>
         <order-by>
@@ -31,7 +31,7 @@
             </column-item>
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_with_date_function">
         <tables>
             <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
@@ -43,7 +43,7 @@
             <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100" />
         </order-by>
     </select>
-    
+
     <select sql-case-id="select_with_regexp" parameters="'init', 1, 2">
         <tables>
             <simple-table name="t_order_item" alias="t" start-index="14" stop-index="25" />
@@ -66,8 +66,8 @@
                     <in-right-value>
                         <parameter-marker-expression value="1" start-index="71" stop-index="71" />
                         <parameter-marker-expression value="2" start-index="74" stop-index="74" />
-                        <literal-expression value="1" />
-                        <literal-expression value="2" />
+                        <literal-expression value="1" start-index="76" stop-index="76" />
+                        <literal-expression value="2" start-index="79" stop-index="79" />
                     </in-right-value>
                 </predicate>
             </and-predicate>

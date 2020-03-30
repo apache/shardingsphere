@@ -227,8 +227,8 @@
                     <in-right-value>
                         <parameter-marker-expression value="0" start-index="125" stop-index="125" />
                         <parameter-marker-expression value="1" start-index="128" stop-index="128" />
-                        <literal-expression value="1000" />
-                        <literal-expression value="1100" />
+                        <literal-expression value="1000" start-index="125" stop-index="128" />
+                        <literal-expression value="1100" start-index="131" stop-index="134" />
                     </in-right-value>
                 </predicate>
             </and-predicate>
