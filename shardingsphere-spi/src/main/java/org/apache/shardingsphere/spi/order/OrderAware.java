@@ -19,8 +19,10 @@ package org.apache.shardingsphere.spi.order;
 
 /**
  * Order aware.
+ * 
+ * @param <T> type
  */
-public interface OrderAware {
+public interface OrderAware<T> {
     
     /**
      * Get order of load.
@@ -28,4 +30,11 @@ public interface OrderAware {
      * @return load order
      */
     int getOrder();
+    
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    T getType();
 }

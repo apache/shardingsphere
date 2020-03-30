@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.impl.TransparentResultDecorator;
@@ -53,5 +54,10 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
     @Override
     public int getOrder() {
         return 20;
+    }
+    
+    @Override
+    public Class<? extends BaseRule> getType() {
+        return EncryptRule.class;
     }
 }

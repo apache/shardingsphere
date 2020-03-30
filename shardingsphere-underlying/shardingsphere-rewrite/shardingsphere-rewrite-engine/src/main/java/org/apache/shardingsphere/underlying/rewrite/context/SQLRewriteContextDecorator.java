@@ -26,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
  *
  * @param <T> type of rule
  */
-public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderAware {
+public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderAware<Class<? extends BaseRule>> {
     
     /**
      * Decorate SQL rewrite context.

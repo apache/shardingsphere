@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.context;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTokenGenerateBuilder;
@@ -50,5 +51,10 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     @Override
     public int getOrder() {
         return 0;
+    }
+    
+    @Override
+    public Class<? extends BaseRule> getType() {
+        return ShardingRule.class;
     }
 }

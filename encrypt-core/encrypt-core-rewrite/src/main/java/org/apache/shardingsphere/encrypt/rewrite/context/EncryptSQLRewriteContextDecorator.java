@@ -22,6 +22,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuild
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
@@ -46,5 +47,10 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @Override
     public int getOrder() {
         return 20;
+    }
+    
+    @Override
+    public Class<? extends BaseRule> getType() {
+        return EncryptRule.class;
     }
 }

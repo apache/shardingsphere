@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.dml.DMLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
@@ -155,5 +156,10 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
     @Override
     public int getOrder() {
         return 0;
+    }
+    
+    @Override
+    public Class<? extends BaseRule> getType() {
+        return ShardingRule.class;
     }
 }
