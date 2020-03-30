@@ -38,6 +38,7 @@ import org.apache.shardingsphere.shardingproxy.frontend.engine.CommandExecuteEng
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Command execute engine for PostgreSQL.
@@ -61,7 +62,14 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public DatabasePacket getErrorPacket(final Exception cause) {
-        return new PostgreSQLErrorResponsePacket();
+        PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
+        errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
+        return errorResponsePacket;
+    }
+    
+    @Override
+    public Optional<DatabasePacket> getOtherPacket() {
+        return Optional.of(new PostgreSQLReadyForQueryPacket());
     }
     
     @Override
