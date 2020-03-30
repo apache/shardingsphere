@@ -335,9 +335,9 @@ public final class ShardingDQLResultMergerTest {
     }
     
     private SchemaMetaData createSchemaMetaData() {
-        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "dataType", false, false, false);
-        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "dataType", false, false, false);
-        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", "dataType", false, false, false);
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, "dataType", false, false, false);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, "dataType", false, false, false);
+        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", 0, "dataType", false, false, false);
         TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
         return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
     }

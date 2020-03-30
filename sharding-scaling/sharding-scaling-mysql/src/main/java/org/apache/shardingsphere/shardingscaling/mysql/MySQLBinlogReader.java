@@ -32,7 +32,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Pl
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.mysql.client.MySQLClient;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.AbstractRowsEvent;
@@ -40,6 +39,8 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.DeleteRowsEv
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
@@ -113,7 +114,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
             DataRecord record = createDataRecord(event, each.length);
             record.setType("INSERT");
             for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getColumnName(), each[i], true, tableMetaData.isPrimaryKey(i)));
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }
             pushRecord(channel, record);
         }
@@ -133,7 +134,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
             for (int j = 0; j < beforeValues.length; j++) {
                 Object oldValue = beforeValues[j];
                 Object newValue = afterValues[j];
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getColumnName(), newValue, !newValue.equals(oldValue), tableMetaData.isPrimaryKey(j)));
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(j).getName(), newValue, !newValue.equals(oldValue), tableMetaData.isPrimaryKey(j)));
             }
             pushRecord(channel, record);
         }
@@ -149,7 +150,7 @@ public final class MySQLBinlogReader extends AbstractSyncExecutor implements Log
             DataRecord record = createDataRecord(event, each.length);
             record.setType("DELETE");
             for (int i = 0; i < each.length; i++) {
-                record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getColumnName(), each[i], true, tableMetaData.isPrimaryKey(i)));
+                record.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), each[i], true, tableMetaData.isPrimaryKey(i)));
             }
             pushRecord(channel, record);
         }

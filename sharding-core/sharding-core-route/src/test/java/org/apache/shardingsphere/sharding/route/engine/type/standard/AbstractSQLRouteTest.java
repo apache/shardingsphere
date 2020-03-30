@@ -33,6 +33,7 @@ import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourc
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,16 +71,16 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     private SchemaMetaData buildSchemaMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true, false, false),
-                new ColumnMetaData("user_id", "int", false, false, false),
-                new ColumnMetaData("status", "int", false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true, false, false),
-                new ColumnMetaData("order_id", "int", false, false, false),
-                new ColumnMetaData("user_id", "int", false, false, false),
-                new ColumnMetaData("status", "varchar", false, false, false),
-                new ColumnMetaData("c_date", "timestamp", false, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false, false)), Collections.emptySet()));
-        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", "int", true, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_order", new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false),
+                new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
+                new ColumnMetaData("status", Types.INTEGER, "int", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", Types.INTEGER, "int", true, false, false),
+                new ColumnMetaData("order_id", Types.INTEGER, "int", false, false, false),
+                new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false),
+                new ColumnMetaData("status", Types.VARCHAR, "varchar", false, false, false),
+                new ColumnMetaData("c_date", Types.TIMESTAMP, "timestamp", false, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_other", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
+        tableMetaDataMap.put("t_category", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false)), Collections.emptySet()));
         return new SchemaMetaData(tableMetaDataMap);
     }
 }
