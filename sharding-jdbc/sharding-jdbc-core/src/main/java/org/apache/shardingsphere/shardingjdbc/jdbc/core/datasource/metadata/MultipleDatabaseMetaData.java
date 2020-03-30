@@ -17,22 +17,20 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * {@code ResultSet} returned database meta data.
+ * Multiple database meta data.
  */
-public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter implements DatabaseMetaData {
+public final class MultipleDatabaseMetaData extends AdaptedDatabaseMetaData {
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -42,25 +40,26 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     
     private String currentDataSourceName;
     
-    public ResultSetReturnedDatabaseMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
+    public MultipleDatabaseMetaData(final CachedDatabaseMetaData cachedDatabaseMetaData, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) {
+        super(cachedDatabaseMetaData);
         this.dataSourceMap = dataSourceMap;
         this.shardingRule = shardingRule;
     }
     
     @Override
-    public final Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return getCurrentConnection();
     }
     
     @Override
-    public final ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
+    public ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getSuperTypes(catalog, schemaPattern, typeNamePattern), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
+    public ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
         String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getSuperTables(catalog, schemaPattern, actualTableNamePattern), shardingRule);
@@ -68,28 +67,28 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
+    public ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getAttributes(catalog, schemaPattern, typeNamePattern, attributeNamePattern), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
+    public ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getProcedures(catalog, schemaPattern, procedureNamePattern), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getProcedureColumns(catalog, schemaPattern, procedureNamePattern, columnNamePattern), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
+    public ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
         String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getTables(catalog, schemaPattern, actualTableNamePattern, types), shardingRule);
@@ -97,35 +96,35 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getSchemas() throws SQLException {
+    public ResultSet getSchemas() throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getSchemas(), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getSchemas(final String catalog, final String schemaPattern) throws SQLException {
+    public ResultSet getSchemas(final String catalog, final String schemaPattern) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getSchemas(catalog, schemaPattern), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getCatalogs() throws SQLException {
+    public ResultSet getCatalogs() throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getCatalogs(), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getTableTypes() throws SQLException {
+    public ResultSet getTableTypes() throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getTableTypes(), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getColumns(catalog, schemaPattern, actualTableNamePattern, columnNamePattern), shardingRule);
@@ -133,7 +132,7 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
+    public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
         String actualTable = getActualTable(table);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getColumnPrivileges(catalog, schema, actualTable, columnNamePattern), shardingRule);
@@ -141,7 +140,7 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
+    public ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
         String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getTablePrivileges(catalog, schemaPattern, actualTableNamePattern), shardingRule);
@@ -149,7 +148,7 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
+    public ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
         String actualTable = getActualTable(table);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getBestRowIdentifier(catalog, schema, actualTable, scope, nullable), shardingRule);
@@ -157,7 +156,7 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
         String actualTable = getActualTable(table);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getVersionColumns(catalog, schema, actualTable), shardingRule);
@@ -165,7 +164,7 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
         String actualTable = getActualTable(table);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getPrimaryKeys(catalog, schema, actualTable), shardingRule);
@@ -173,7 +172,7 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
         String actualTable = getActualTable(table);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getImportedKeys(catalog, schema, actualTable), shardingRule);
@@ -181,7 +180,7 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
+    public ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
         String actualTable = getActualTable(table);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getExportedKeys(catalog, schema, actualTable), shardingRule);
@@ -189,22 +188,22 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getCrossReference(final String parentCatalog,
-        final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
+    public ResultSet getCrossReference(final String parentCatalog,
+                                       final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getCrossReference(parentCatalog, parentSchema, parentTable, foreignCatalog, foreignSchema, foreignTable), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getTypeInfo() throws SQLException {
+    public ResultSet getTypeInfo() throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getTypeInfo(), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
+    public ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
         String actualTable = getActualTable(table);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getIndexInfo(catalog, schema, actualTable, unique, approximate), shardingRule);
@@ -212,35 +211,35 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
     }
     
     @Override
-    public final ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) throws SQLException {
+    public ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getUDTs(catalog, schemaPattern, typeNamePattern, types), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getClientInfoProperties() throws SQLException {
+    public ResultSet getClientInfoProperties() throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getClientInfoProperties(), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getFunctions(final String catalog, final String schemaPattern, final String functionNamePattern) throws SQLException {
+    public ResultSet getFunctions(final String catalog, final String schemaPattern, final String functionNamePattern) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getFunctions(catalog, schemaPattern, functionNamePattern), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getFunctionColumns(final String catalog, final String schemaPattern, final String functionNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getFunctionColumns(final String catalog, final String schemaPattern, final String functionNamePattern, final String columnNamePattern) throws SQLException {
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getFunctionColumns(catalog, schemaPattern, functionNamePattern, columnNamePattern), shardingRule);
         }
     }
     
     @Override
-    public final ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
+    public ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
         String actualTableNamePattern = getActualTableNamePattern(tableNamePattern);
         try (Connection connection = getConnection()) {
             return new DatabaseMetaDataResultSet(connection.getMetaData().getPseudoColumns(catalog, schemaPattern, actualTableNamePattern, columnNamePattern), shardingRule);
@@ -279,4 +278,5 @@ public abstract class ResultSetReturnedDatabaseMetaData extends WrapperAdapter i
         }
         return result;
     }
+    
 }
