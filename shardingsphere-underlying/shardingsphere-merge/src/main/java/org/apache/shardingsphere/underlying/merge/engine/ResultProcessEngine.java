@@ -22,6 +22,8 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
  * Result process engine.
+ * 
+ * @param <T> type of rule
  */
-public interface ResultProcessEngine extends OrderAware<Class<? extends BaseRule>> {
+public interface ResultProcessEngine<T extends BaseRule> extends OrderAware<Class<T>> {
 }

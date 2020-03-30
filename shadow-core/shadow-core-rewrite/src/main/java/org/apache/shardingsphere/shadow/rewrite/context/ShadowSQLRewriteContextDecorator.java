@@ -21,7 +21,6 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.rewrite.parameter.ShadowParameterRewriterBuilder;
 import org.apache.shardingsphere.shadow.rewrite.token.ShadowTokenGenerateBuilder;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
@@ -48,7 +47,7 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
     }
     
     @Override
-    public Class<? extends BaseRule> getType() {
+    public Class<ShadowRule> getType() {
         return ShadowRule.class;
     }
 }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.masterslave.route.engine.impl.MasterSlaveDataSourceRouter;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteMapper;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
@@ -65,7 +64,7 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     }
     
     @Override
-    public Class<? extends BaseRule> getType() {
+    public Class<MasterSlaveRule> getType() {
         return MasterSlaveRule.class;
     }
 }
