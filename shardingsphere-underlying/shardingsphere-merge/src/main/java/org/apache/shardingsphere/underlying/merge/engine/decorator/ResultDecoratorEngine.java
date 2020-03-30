@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.merge.engine.decorator;
 
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -34,10 +35,11 @@ public interface ResultDecoratorEngine<T extends BaseRule> extends ResultProcess
      * Create new instance of result decorator.
      * 
      * @param databaseType database type
+     * @param schemaMetaData schema meta data
      * @param rule rule
      * @param properties ShardingSphere properties
      * @param sqlStatementContext SQL statement context
      * @return new instance of result decorator
      */
-    ResultDecorator newInstance(DatabaseType databaseType, T rule, ConfigurationProperties properties, SQLStatementContext sqlStatementContext);
+    ResultDecorator newInstance(DatabaseType databaseType, SchemaMetaData schemaMetaData, T rule, ConfigurationProperties properties, SQLStatementContext sqlStatementContext);
 }

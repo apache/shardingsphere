@@ -38,4 +38,4 @@ The main design goal of sharding scaling is providing a common ShardingSphere sc
 
 current is in alpha development.
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/scalinghttps://shardingsphere.apache.org/document/current/img/scaling/roadmap.en.png) 
+![Roadmap](https://shardingsphere.apache.org/document/current/img/scaling/roadmap.en.png) 

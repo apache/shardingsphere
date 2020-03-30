@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.rewrite.context;
 
+import org.apache.shardingsphere.spi.order.OrderAware;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
@@ -25,7 +26,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
  *
  * @param <T> type of rule
  */
-public interface SQLRewriteContextDecorator<T extends BaseRule> {
+public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderAware {
     
     /**
      * Decorate SQL rewrite context.

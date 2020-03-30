@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.pluggble;
+package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.order.OrderAware;
+import org.apache.shardingsphere.spi.order.OrderedRegistry;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
@@ -29,20 +32,22 @@ import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
-import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorRegistry;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Base prepare engine.
@@ -94,7 +99,20 @@ public abstract class BasePrepareEngine {
     }
     
     private void registerRouteDecorator() {
-        rules.forEach(each -> RouteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> router.registerDecorator(each, decorator)));
+        for (Class<? extends RouteDecorator> each : OrderedRegistry.getRegisteredClasses(RouteDecorator.class)) {
+            Class<?> ruleClass = getRuleClass(each);
+            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
+            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
+                    .forEach(rule -> router.registerDecorator(rule, createRouteDecorator(each)));
+        }
+    }
+    
+    private RouteDecorator createRouteDecorator(final Class<? extends RouteDecorator> decorator) {
+        try {
+            return decorator.newInstance();
+        } catch (final InstantiationException | IllegalAccessException ex) {
+            throw new ShardingSphereException(String.format("Can not find public default constructor for route decorator `%s`", decorator), ex);
+        }
     }
     
     protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
@@ -106,7 +124,20 @@ public abstract class BasePrepareEngine {
     }
     
     private void registerRewriteDecorator() {
-        rules.forEach(each -> RewriteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> rewriter.registerDecorator(each, decorator)));
+        for (Class<? extends SQLRewriteContextDecorator> each : OrderedRegistry.getRegisteredClasses(SQLRewriteContextDecorator.class)) {
+            Class<?> ruleClass = getRuleClass(each);
+            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
+            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
+                    .forEach(rule -> rewriter.registerDecorator(rule, createRewriteDecorator(each)));
+        }
+    }
+    
+    private SQLRewriteContextDecorator createRewriteDecorator(final Class<? extends SQLRewriteContextDecorator> decorator) {
+        try {
+            return decorator.newInstance();
+        } catch (final InstantiationException | IllegalAccessException ex) {
+            throw new ShardingSphereException(String.format("Can not find public default constructor for rewrite decorator `%s`", decorator), ex);
+        }
     }
     
     private Collection<ExecutionUnit> rewrite(final SQLRewriteContext sqlRewriteContext) {
@@ -121,5 +152,9 @@ public abstract class BasePrepareEngine {
             result.add(new ExecutionUnit(entry.getKey().getDataSourceMapper().getActualName(), new SQLUnit(entry.getValue().getSql(), entry.getValue().getParameters())));
         }
         return result;
+    }
+    
+    private Class<?> getRuleClass(final Class<? extends OrderAware> decoratorClass) {
+        return (Class<?>) ((ParameterizedType) decoratorClass.getGenericInterfaces()[0]).getActualTypeArguments()[0];
     }
 }

@@ -22,25 +22,27 @@ import org.apache.shardingsphere.encrypt.merge.dql.EncryptDQLResultDecorator;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptorMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecorator;
-import org.apache.shardingsphere.underlying.merge.engine.decorator.impl.TransparentResultDecorator;
 import org.apache.shardingsphere.underlying.merge.engine.decorator.ResultDecoratorEngine;
+import org.apache.shardingsphere.underlying.merge.engine.decorator.impl.TransparentResultDecorator;
 
 /**
  * Result decorator engine for encrypt.
  */
-public abstract class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
+public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine<EncryptRule> {
     
     @Override
-    public final ResultDecorator newInstance(final DatabaseType databaseType,
-                                             final EncryptRule encryptRule, final ConfigurationProperties properties, final SQLStatementContext sqlStatementContext) {
+    public ResultDecorator newInstance(final DatabaseType databaseType, final SchemaMetaData schemaMetaData, 
+                                       final EncryptRule encryptRule, final ConfigurationProperties properties, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return new EncryptDQLResultDecorator(createEncryptorMetaData(encryptRule, sqlStatementContext), properties.<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
+            return new EncryptDQLResultDecorator(
+                    new EncryptorMetaData(schemaMetaData, encryptRule, (SelectStatementContext) sqlStatementContext), properties.<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
         } 
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new EncryptDALResultDecorator();
@@ -48,5 +50,8 @@ public abstract class EncryptResultDecoratorEngine implements ResultDecoratorEng
         return new TransparentResultDecorator();
     }
     
-    protected abstract EncryptorMetaData createEncryptorMetaData(EncryptRule encryptRule, SQLStatementContext sqlStatementContext);
+    @Override
+    public int getOrder() {
+        return 20;
+    }
 }

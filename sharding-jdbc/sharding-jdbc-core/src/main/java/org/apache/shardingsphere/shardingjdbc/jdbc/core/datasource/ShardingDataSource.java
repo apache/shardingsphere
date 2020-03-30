@@ -19,19 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
-import org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator;
-import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorRegistry;
-import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
+import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -47,10 +43,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     private final ShardingRuntimeContext runtimeContext;
     
     static {
-        RouteDecoratorRegistry.getInstance().register(ShardingRule.class, ShardingRouteDecorator.class);
-        RouteDecoratorRegistry.getInstance().register(MasterSlaveRule.class, MasterSlaveRouteDecorator.class);
-        RewriteDecoratorRegistry.getInstance().register(ShardingRule.class, ShardingSQLRewriteContextDecorator.class);
-        RewriteDecoratorRegistry.getInstance().register(EncryptRule.class, EncryptSQLRewriteContextDecorator.class);
+        NewInstanceServiceLoader.register(RouteDecorator.class);
+        NewInstanceServiceLoader.register(SQLRewriteContextDecorator.class);
+        NewInstanceServiceLoader.register(ResultProcessEngine.class);
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {

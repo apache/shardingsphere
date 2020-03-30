@@ -19,11 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
-import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     private final MasterSlaveRuntimeContext runtimeContext;
     
     static {
-        RouteDecoratorRegistry.getInstance().register(MasterSlaveRule.class, MasterSlaveRouteDecorator.class);
+        NewInstanceServiceLoader.register(RouteDecorator.class);
     }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props) throws SQLException {

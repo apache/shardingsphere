@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultS
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
-import org.apache.shardingsphere.underlying.pluggble.SimpleQueryPrepareEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.SimpleQueryPrepareEngine;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

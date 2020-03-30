@@ -44,4 +44,9 @@ public final class ShardingResultMergerEngine implements ResultMergerEngine<Shar
         }
         return new TransparentResultMerger();
     }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }

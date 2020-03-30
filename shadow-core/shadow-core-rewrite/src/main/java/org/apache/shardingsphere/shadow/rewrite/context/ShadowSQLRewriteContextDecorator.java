@@ -40,4 +40,9 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
         }
         sqlRewriteContext.addSQLTokenGenerators(new ShadowTokenGenerateBuilder(shadowRule).getSQLTokenGenerators());
     }
+    
+    @Override
+    public int getOrder() {
+        return 30;
+    }
 }

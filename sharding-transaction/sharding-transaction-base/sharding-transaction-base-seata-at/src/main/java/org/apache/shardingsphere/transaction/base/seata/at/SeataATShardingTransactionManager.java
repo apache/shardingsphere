@@ -47,14 +47,33 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
     
-    private final FileConfiguration configuration = new FileConfiguration("seata.conf");
+    private final String applicationId;
+    
+    private final String transactionServiceGroup;
+    
+    private final boolean enableSeataAT;
+    
+    public SeataATShardingTransactionManager() {
+        FileConfiguration configuration = new FileConfiguration("seata.conf");
+        enableSeataAT = configuration.getBoolean("sharding.transaction.seata.at.enable", true);
+        applicationId = configuration.getConfig("client.application.id");
+        transactionServiceGroup = configuration.getConfig("client.transaction.service.group", "default");
+    }
     
     @Override
     public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
-        initSeataRPCClient();
-        for (ResourceDataSource each : resourceDataSources) {
-            dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource()));
+        if (enableSeataAT) {
+            initSeataRPCClient();
+            for (ResourceDataSource each : resourceDataSources) {
+                dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource()));
+            }
         }
+    }
+    
+    private void initSeataRPCClient() {
+        Preconditions.checkNotNull(applicationId, "please config application id within seata.conf file.");
+        TMClient.init(applicationId, transactionServiceGroup);
+        RMClient.init(applicationId, transactionServiceGroup);
     }
     
     @Override
@@ -64,17 +83,20 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     
     @Override
     public boolean isInTransaction() {
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         return null != RootContext.getXID();
     }
     
     @Override
     public Connection getConnection(final String dataSourceName) throws SQLException {
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         return dataSourceMap.get(dataSourceName).getConnection();
     }
     
     @Override
     @SneakyThrows
     public void begin() {
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         GlobalTransaction globalTransaction = GlobalTransactionContext.getCurrentOrCreate();
         globalTransaction.begin();
         SeataTransactionHolder.set(globalTransaction);
@@ -83,6 +105,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     @Override
     @SneakyThrows
     public void commit() {
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         try {
             SeataTransactionHolder.get().commit();
         } finally {
@@ -94,6 +117,7 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
     @Override
     @SneakyThrows
     public void rollback() {
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
         try {
             SeataTransactionHolder.get().rollback();
         } finally {
@@ -108,13 +132,5 @@ public final class SeataATShardingTransactionManager implements ShardingTransact
         SeataTransactionHolder.clear();
         TmRpcClient.getInstance().destroy();
         RmRpcClient.getInstance().destroy();
-    }
-    
-    private void initSeataRPCClient() {
-        String applicationId = configuration.getConfig("client.application.id");
-        Preconditions.checkNotNull(applicationId, "please config application id within seata.conf file");
-        String transactionServiceGroup = configuration.getConfig("client.transaction.service.group", "default");
-        TMClient.init(applicationId, transactionServiceGroup);
-        RMClient.init(applicationId, transactionServiceGroup);
     }
 }
