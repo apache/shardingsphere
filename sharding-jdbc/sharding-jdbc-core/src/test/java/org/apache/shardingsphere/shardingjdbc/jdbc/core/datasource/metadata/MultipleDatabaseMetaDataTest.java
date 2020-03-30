@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
-import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
+import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.junit.Before;
@@ -43,11 +44,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CachedDatabaseMetaDataTest {
+public final class MultipleDatabaseMetaDataTest {
     
     private static final String DATA_SOURCE_NAME = "ds";
     
@@ -65,6 +67,9 @@ public final class CachedDatabaseMetaDataTest {
     @Mock
     private ResultSet resultSet;
     
+    @Mock
+    private ShardingConnection shardingConnection;
+    
     private Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
     
     private MultipleDatabaseMetaData multipleDatabaseMetaData;
@@ -76,15 +81,13 @@ public final class CachedDatabaseMetaDataTest {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         CachedDatabaseMetaData cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
-        multipleDatabaseMetaData = new MultipleDatabaseMetaData(cachedDatabaseMetaData, dataSourceMap, mockShardingRule());
+        when(shardingConnection.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
+        when(shardingConnection.getConnection(anyString())).thenReturn(connection);
+        multipleDatabaseMetaData = new MultipleDatabaseMetaData<>(shardingConnection, mockShardingRule(), dataSourceMap.keySet(), cachedDatabaseMetaData);
     }
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        ShardingDataSourceNames shardingDataSourceNames = mock(ShardingDataSourceNames.class);
-        when(shardingDataSourceNames.getRandomDataSourceName()).thenReturn(DATA_SOURCE_NAME);
-        when(shardingDataSourceNames.getRawMasterDataSourceName(DATA_SOURCE_NAME)).thenReturn(DATA_SOURCE_NAME);
-        when(result.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
         when(result.findTableRule(TABLE_NAME)).thenReturn(Optional.of(new TableRule(DATA_SOURCE_NAME, TABLE_NAME)));
         when(result.getDataNode(TABLE_NAME)).thenReturn(new DataNode(DATA_SOURCE_NAME, TABLE_NAME));
         return result;

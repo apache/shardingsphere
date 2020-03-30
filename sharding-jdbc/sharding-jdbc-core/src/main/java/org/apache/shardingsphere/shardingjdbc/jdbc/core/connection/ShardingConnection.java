@@ -75,7 +75,7 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() {
-        return new MultipleDatabaseMetaData(runtimeContext.getCachedDatabaseMetaData(), getDataSourceMap(), runtimeContext.getRule());
+        return new MultipleDatabaseMetaData<>(this, runtimeContext.getRule(), getDataSourceMap().keySet(), runtimeContext.getCachedDatabaseMetaData());
     }
     
     @Override

@@ -51,7 +51,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() {
-        return new MultipleDatabaseMetaData(runtimeContext.getCachedDatabaseMetaData(), getDataSourceMap(), null);
+        return new MultipleDatabaseMetaData<>(this, runtimeContext.getRule(), getDataSourceMap().keySet(), runtimeContext.getCachedDatabaseMetaData());
     }
     
     @Override
