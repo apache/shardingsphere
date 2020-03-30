@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.underlying.merge.engine;
 
 import org.apache.shardingsphere.spi.order.OrderAware;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
  * Result process engine.
+ * 
+ * @param <T> type of rule
  */
-public interface ResultProcessEngine extends OrderAware {
+public interface ResultProcessEngine<T extends BaseRule> extends OrderAware<Class<T>> {
 }

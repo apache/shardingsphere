@@ -54,4 +54,9 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
     public int getOrder() {
         return 20;
     }
+    
+    @Override
+    public Class<EncryptRule> getType() {
+        return EncryptRule.class;
+    }
 }

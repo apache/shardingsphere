@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.pluggble.merge;
 
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.order.OrderAware;
 import org.apache.shardingsphere.spi.order.OrderedRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.underlying.merge.MergeEntry;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
-import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -65,15 +63,12 @@ public final class MergeEngine {
     
     private void registerMergeDecorator() {
         for (Class<? extends ResultProcessEngine> each : OrderedRegistry.getRegisteredClasses(ResultProcessEngine.class)) {
-            Class<?> ruleClass = getRuleClass(each);
+            ResultProcessEngine processEngine = createProcessEngine(each);
+            Class<?> ruleClass = (Class<?>) processEngine.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> merger.registerProcessEngine(rule, createProcessEngine(each)));
+                    .forEach(rule -> merger.registerProcessEngine(rule, processEngine));
         }
-    }
-    
-    private Class<?> getRuleClass(final Class<? extends OrderAware> decoratorClass) {
-        return (Class<?>) ((ParameterizedType) decoratorClass.getGenericInterfaces()[0]).getActualTypeArguments()[0];
     }
     
     private ResultProcessEngine createProcessEngine(final Class<? extends ResultProcessEngine> processEngine) {

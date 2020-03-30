@@ -156,4 +156,9 @@ public final class ShardingRouteDecorator implements RouteDecorator<ShardingRule
     public int getOrder() {
         return 0;
     }
+    
+    @Override
+    public Class<ShardingRule> getType() {
+        return ShardingRule.class;
+    }
 }

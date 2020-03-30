@@ -45,4 +45,9 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
     public int getOrder() {
         return 30;
     }
+    
+    @Override
+    public Class<ShadowRule> getType() {
+        return ShadowRule.class;
+    }
 }

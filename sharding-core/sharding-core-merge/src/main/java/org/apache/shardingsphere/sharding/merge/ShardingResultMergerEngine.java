@@ -26,8 +26,8 @@ import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatement
 import org.apache.shardingsphere.sql.parser.sql.statement.dal.DALStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMerger;
-import org.apache.shardingsphere.underlying.merge.engine.merger.impl.TransparentResultMerger;
 import org.apache.shardingsphere.underlying.merge.engine.merger.ResultMergerEngine;
+import org.apache.shardingsphere.underlying.merge.engine.merger.impl.TransparentResultMerger;
 
 /**
  * Result merger engine for sharding.
@@ -48,5 +48,10 @@ public final class ShardingResultMergerEngine implements ResultMergerEngine<Shar
     @Override
     public int getOrder() {
         return 0;
+    }
+    
+    @Override
+    public Class<ShardingRule> getType() {
+        return ShardingRule.class;
     }
 }
