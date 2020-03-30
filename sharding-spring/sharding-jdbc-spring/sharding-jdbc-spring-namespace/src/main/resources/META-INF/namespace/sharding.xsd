@@ -155,4 +155,5 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
+    <xsd:element name="tx-type-annotation-driven" />
 </xsd:schema>

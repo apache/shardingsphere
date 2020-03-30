@@ -22,6 +22,9 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,6 +37,11 @@ import java.util.Properties;
 public class EncryptDataSource extends AbstractDataSourceAdapter {
     
     private final EncryptRuntimeContext runtimeContext;
+    
+    static {
+        NewInstanceServiceLoader.register(SQLRewriteContextDecorator.class);
+        NewInstanceServiceLoader.register(ResultProcessEngine.class);
+    }
     
     public EncryptDataSource(final DataSource dataSource, final EncryptRule encryptRule, final Properties props) throws SQLException {
         super(dataSource);

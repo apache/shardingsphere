@@ -39,7 +39,7 @@ public final class GeneratedKeysResultSetMetaDataTest {
     
     @Before
     public void init() {
-        actualMetaData = new GeneratedKeysResultSet(Arrays.<Comparable<?>>asList(1L, 2L).iterator(), "order_id", Mockito.mock(Statement.class)).getMetaData();
+        actualMetaData = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), Mockito.mock(Statement.class)).getMetaData();
     }
     
     @Test

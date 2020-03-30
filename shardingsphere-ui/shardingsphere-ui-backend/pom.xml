@@ -53,7 +53,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>sharding-core-entry</artifactId>
+                    <artifactId>shardingsphere-pluggable</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

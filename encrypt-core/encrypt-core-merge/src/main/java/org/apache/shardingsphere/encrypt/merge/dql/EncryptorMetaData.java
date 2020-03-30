@@ -17,22 +17,55 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
 /**
  * Encryptor meta data.
  */
-public interface EncryptorMetaData {
+@RequiredArgsConstructor
+public final class EncryptorMetaData {
+    
+    private final SchemaMetaData schemaMetaData;
+    
+    private final EncryptRule encryptRule;
+    
+    private final SelectStatementContext selectStatementContext;
     
     /**
      * Find encryptor.
-     * 
+     *
      * @param columnIndex column index
      * @return encryptor
-     * @throws SQLException SQL exception
      */
-    Optional<Encryptor> findEncryptor(int columnIndex) throws SQLException;
+    public Optional<Encryptor> findEncryptor(final int columnIndex) {
+        Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(columnIndex - 1);
+        if (projection instanceof ColumnProjection) {
+            String columnName = ((ColumnProjection) projection).getName();
+            Optional<String> tableName = selectStatementContext.getTablesContext().findTableName((ColumnProjection) projection, schemaMetaData);
+            return tableName.isPresent() ? findEncryptor(tableName.get(), columnName) : findEncryptor(columnName);
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<Encryptor> findEncryptor(final String tableName, final String columnName) {
+        return encryptRule.findEncryptor(tableName, columnName);
+    }
+    
+    private Optional<Encryptor> findEncryptor(final String columnName) {
+        for (String each : selectStatementContext.getTablesContext().getTableNames()) {
+            Optional<Encryptor> result = encryptRule.findEncryptor(each, columnName);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.empty();
+    }
 }

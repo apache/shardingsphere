@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.shard.PreparedQueryShardingEngine;
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
-import org.apache.shardingsphere.masterslave.route.engine.MasterSlaveRouteDecorator;
 import org.apache.shardingsphere.shadow.rewrite.context.ShadowSQLRewriteContextDecorator;
 import org.apache.shardingsphere.shadow.rewrite.judgement.ShadowJudgementEngine;
 import org.apache.shardingsphere.shadow.rewrite.judgement.impl.PreparedJudgementEngine;
@@ -38,13 +35,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
+import org.apache.shardingsphere.underlying.pluggble.prepare.PreparedQueryPrepareEngine;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.route.DataNodeRouter;
-import org.apache.shardingsphere.underlying.route.context.RouteContext;
-import org.apache.shardingsphere.underlying.route.context.RouteUnit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -83,42 +78,23 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private ExecutionContext doShardingRoute(final String sql) {
-        PreparedQueryShardingEngine shardingEngine = new PreparedQueryShardingEngine(
+        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(
                 logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
-        return shardingEngine.shard(sql, parameters);
+        return prepareEngine.prepare(sql, parameters);
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doMasterSlaveRoute(final String sql) {
-        SQLStatement sqlStatement = logicSchema.getSqlParserEngine().parse(sql, true);
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(logicSchema.getMetaData().getSchema(), sqlStatementContext, sql, parameters);
-        sqlRewriteContext.generateSQLTokens();
-        String rewriteSQL = new SQLRewriteEngine().rewrite(sqlRewriteContext).getSql();
-        ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        DataNodeRouter dataNodeRouter = new DataNodeRouter(logicSchema.getMetaData(), SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getSqlParserEngine());
-        dataNodeRouter.registerDecorator(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(), new MasterSlaveRouteDecorator());
-        RouteContext routeContext = dataNodeRouter.route(rewriteSQL, parameters, true);
-        for (RouteUnit each : routeContext.getRouteResult().getRouteUnits()) {
-            result.getExecutionUnits().add(new ExecutionUnit(each.getDataSourceMapper().getActualName(), new SQLUnit(rewriteSQL, parameters)));
-        }
-        return result;
+        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()), 
+                SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
+        return prepareEngine.prepare(sql, parameters);
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionContext doEncryptRoute(final String sql) {
-        EncryptSchema encryptSchema = (EncryptSchema) logicSchema;
-        SQLStatement sqlStatement = encryptSchema.getSqlParserEngine().parse(sql, true);
-        SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema();
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, parameters, sqlStatement);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(logicSchema.getMetaData().getSchema(), ShardingProxyContext.getInstance().getProperties());
-        sqlRewriteEntry.registerDecorator(encryptSchema.getEncryptRule(), new EncryptSQLRewriteContextDecorator());
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, parameters, sqlStatementContext, null);
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
-        ExecutionContext result = new ExecutionContext(sqlStatementContext);
-        result.getExecutionUnits().add(
-            new ExecutionUnit(logicSchema.getDataSources().keySet().iterator().next(), new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters())));
-        return result;
+        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule()),
+                SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
+        return prepareEngine.prepare(sql, parameters);
     }
     
     private ExecutionContext doShadowRoute(final String sql) {

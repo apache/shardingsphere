@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dal.impl.DecoratedEncryptColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMergedResult;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -34,20 +32,17 @@ import org.apache.shardingsphere.underlying.merge.result.impl.transparent.Transp
 /**
  * DAL result decorator for encrypt.
  */
-@RequiredArgsConstructor
 public final class EncryptDALResultDecorator implements ResultDecorator {
-    
-    private final EncryptRule encryptRule;
     
     @Override
     public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
         return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement())
-                ? new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, encryptRule) : new TransparentMergedResult(queryResult);
+                ? new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, schemaMetaData) : new TransparentMergedResult(queryResult);
     }
     
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final SchemaMetaData schemaMetaData) {
-        return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement()) ? new DecoratedEncryptColumnsMergedResult(mergedResult, sqlStatementContext, encryptRule) : mergedResult;
+        return isNeedMergeEncryptColumns(sqlStatementContext.getSqlStatement()) ? new DecoratedEncryptColumnsMergedResult(mergedResult, sqlStatementContext, schemaMetaData) : mergedResult;
     }
     
     private boolean isNeedMergeEncryptColumns(final SQLStatement sqlStatement) {

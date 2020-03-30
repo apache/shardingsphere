@@ -99,7 +99,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>sharding-core-entry</artifactId>
+            <artifactId>shardingsphere-pluggable</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

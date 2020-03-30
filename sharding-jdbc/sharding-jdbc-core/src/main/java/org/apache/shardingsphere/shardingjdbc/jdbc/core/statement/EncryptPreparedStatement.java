@@ -17,38 +17,31 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractShardingPreparedStatementAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.EncryptConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.EncryptRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.EncryptResultSet;
-import org.apache.shardingsphere.sql.parser.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.executor.context.ExecutionContext;
 import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
-import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
-import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
+import org.apache.shardingsphere.underlying.pluggble.prepare.PreparedQueryPrepareEngine;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * Encrypt prepared statement.
  */
-@Slf4j
 public final class EncryptPreparedStatement extends AbstractShardingPreparedStatementAdapter {
     
     @Getter
@@ -163,23 +156,12 @@ public final class EncryptPreparedStatement extends AbstractShardingPreparedStat
     
     @SuppressWarnings("unchecked")
     private SQLUnit getSQLUnit(final String sql) {
-        SQLStatement sqlStatement = runtimeContext.getSqlParserEngine().parse(sql, true);
-        SchemaMetaData schemaMetaData = runtimeContext.getMetaData().getSchema();
-        sqlStatementContext = SQLStatementContextFactory.newInstance(schemaMetaData, sql, getParameters(), sqlStatement);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(schemaMetaData, runtimeContext.getProperties());
-        sqlRewriteEntry.registerDecorator(runtimeContext.getRule(), new EncryptSQLRewriteContextDecorator());
-        SQLRewriteContext sqlRewriteContext = sqlRewriteEntry.createSQLRewriteContext(sql, getParameters(), sqlStatementContext, null);
-        SQLRewriteResult sqlRewriteResult = new SQLRewriteEngine().rewrite(sqlRewriteContext);
-        showSQL(sqlRewriteResult.getSql());
-        return new SQLUnit(sqlRewriteResult.getSql(), sqlRewriteResult.getParameters());
-    }
-    
-    private void showSQL(final String sql) {
-        boolean showSQL = runtimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW);
-        if (showSQL) {
-            log.info("Rule Type: encrypt");
-            log.info("SQL: {}", sql);
-        }
+        PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(
+                Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getMetaData(), runtimeContext.getSqlParserEngine());
+        ExecutionContext executionContext = prepareEngine.prepare(sql, getParameters());
+        Preconditions.checkArgument(1 == executionContext.getExecutionUnits().size());
+        sqlStatementContext = executionContext.getSqlStatementContext();
+        return executionContext.getExecutionUnits().iterator().next().getSqlUnit();
     }
     
     @Override

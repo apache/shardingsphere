@@ -46,4 +46,9 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
         }
         sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, routeContext).getSQLTokenGenerators());
     }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
 }

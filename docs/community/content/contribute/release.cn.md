@@ -235,6 +235,8 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-j
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-jdbc-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-proxy-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-scaling-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-ui-distribution/target/*.tar.gz.asc ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
@@ -245,6 +247,7 @@ cp -f ~/shardingsphere/incubator-shardingsphere/sharding-distribution/sharding-u
 shasum -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip >> apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
+shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
 shasum -b -a 512 apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz >> apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 
 ```
@@ -263,6 +266,7 @@ svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.sha512
+shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.sha512
 shasum -c apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.sha512
 ```
 
@@ -297,6 +301,7 @@ Your decision? 5
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-src.zip
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz
+gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz
 gpg --verify apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz.asc apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz
 ```
 
@@ -324,8 +329,8 @@ diff -r apache-shardingsphere-incubating-${RELEASE.VERSION}-src tag-${RELEASE.VE
 
 #### 检查二进制包的文件内容
 
-解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`，`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz`
-和 `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
+解压缩`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-jdbc-bin.tar.gz`，`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-proxy-bin.tar.gz`，
+`apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-scaling-bin.tar.gz` 和 `apache-shardingsphere-incubating-${RELEASE.VERSION}-sharding-ui-bin.tar.gz`
 进行如下检查:
 
 - 文件夹包含单词`incubating`

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import org.apache.shardingsphere.underlying.merge.result.impl.transparent.TransparentMergedResult;
 
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,11 +51,21 @@ public final class MergeEntry {
     
     private final ConfigurationProperties properties;
     
-    private final Map<BaseRule, ResultProcessEngine> engines;
+    private final Map<BaseRule, ResultProcessEngine> engines = new LinkedHashMap<>();
+    
+    /**
+     * Register result process engine.
+     *
+     * @param rule rule
+     * @param processEngine result process engine
+     */
+    public void registerProcessEngine(final BaseRule rule, final ResultProcessEngine processEngine) {
+        engines.put(rule, processEngine);
+    }
     
     /**
      * Process query results.
-     * 
+     *
      * @param queryResults query results
      * @param sqlStatementContext SQL statement context
      * @return merged result
@@ -82,7 +93,7 @@ public final class MergeEntry {
         MergedResult result = null;
         for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schemaMetaData, entry.getKey(), properties, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, schemaMetaData) : resultDecorator.decorate(result, sqlStatementContext, schemaMetaData);
             }
         }
@@ -94,7 +105,7 @@ public final class MergeEntry {
         MergedResult result = null;
         for (Entry<BaseRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, entry.getKey(), properties, sqlStatementContext);
+                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, schemaMetaData, entry.getKey(), properties, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, schemaMetaData) : resultDecorator.decorate(result, sqlStatementContext, schemaMetaData);
             }
         }

@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.orderby.OrderB
 import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
@@ -60,7 +62,11 @@ public final class OrderByStreamMergedResultTest {
     public void setUp() {
         SelectStatement selectStatement = new SelectStatement();
         SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
-        selectStatement.getTables().add(tableSegment);
+        TableReferenceSegment tableReferenceSegment = new TableReferenceSegment();
+        TableFactorSegment tableFactorSegment = new TableFactorSegment();
+        tableFactorSegment.setTable(tableSegment);
+        tableReferenceSegment.setTableFactor(tableFactorSegment);
+        selectStatement.getTableReferences().add(tableReferenceSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         OrderByContext orderByContext = new OrderByContext(Arrays.asList(

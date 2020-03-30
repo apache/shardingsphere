@@ -17,7 +17,7 @@
   -->
 
 <configuration>
-    <property name="log.context.name" value="transaction-xa-raw-jdbc-example" />
+    <property name="log.context.name" value="transaction-2pc-xa-raw-jdbc-example" />
     <property name="log.charset" value="UTF-8" />
     <property name="log.pattern" value="[%-5level] %date --%thread-- [%logger] %msg %n" />
     <contextName>${log.context.name}</contextName>
@@ -27,6 +27,10 @@
             <pattern>${log.pattern}</pattern>
         </encoder>
     </appender>
+    
+    <logger name="com.atomikos" level="debug"/>
+    <logger name="com.zaxxer.hikari" level="off"/>
+    
     <root>
         <level value="INFO" />
         <appender-ref ref="STDOUT" />

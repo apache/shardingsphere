@@ -29,6 +29,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
+import org.apache.shardingsphere.underlying.route.hook.SPIRoutingHook;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,7 +48,9 @@ public final class DataNodeRouter {
     
     private final SQLParserEngine parserEngine;
     
-    private final Map<BaseRule, RouteDecorator> routeDecorators = new LinkedHashMap<>();
+    private final Map<BaseRule, RouteDecorator> decorators = new LinkedHashMap<>();
+    
+    private SPIRoutingHook routingHook = new SPIRoutingHook();
     
     /**
      * Register route decorator.
@@ -56,7 +59,7 @@ public final class DataNodeRouter {
      * @param decorator route decorator
      */
     public void registerDecorator(final BaseRule rule, final RouteDecorator decorator) {
-        routeDecorators.put(rule, decorator);
+        decorators.put(rule, decorator);
     }
     
     /**
@@ -67,10 +70,24 @@ public final class DataNodeRouter {
      * @param useCache whether cache SQL parse result
      * @return route context
      */
-    @SuppressWarnings("unchecked")
     public RouteContext route(final String sql, final List<Object> parameters, final boolean useCache) {
+        routingHook.start(sql);
+        try {
+            RouteContext result = executeRoute(sql, parameters, useCache);
+            routingHook.finishSuccess(result, metaData.getSchema());
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            routingHook.finishFailure(ex);
+            throw ex;
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private RouteContext executeRoute(final String sql, final List<Object> parameters, final boolean useCache) {
         RouteContext result = createRouteContext(sql, parameters, useCache);
-        for (Entry<BaseRule, RouteDecorator> entry : routeDecorators.entrySet()) {
+        for (Entry<BaseRule, RouteDecorator> entry : decorators.entrySet()) {
             result = entry.getValue().decorate(result, metaData, entry.getKey(), properties);
         }
         return result;
