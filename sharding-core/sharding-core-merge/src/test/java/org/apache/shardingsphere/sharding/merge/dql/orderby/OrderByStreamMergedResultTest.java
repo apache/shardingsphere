@@ -183,8 +183,8 @@ public final class OrderByStreamMergedResultTest {
     }
     
     private SchemaMetaData createSchemaMetaData() {
-        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "dataType", false, false, true);
-        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "dataType", false, false, false);
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, "dataType", false, false, true);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, "dataType", false, false, false);
         TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2), Collections.emptyList());
         return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
     }

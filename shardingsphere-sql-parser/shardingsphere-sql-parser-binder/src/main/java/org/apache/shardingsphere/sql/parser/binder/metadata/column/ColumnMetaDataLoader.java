@@ -38,6 +38,8 @@ public final class ColumnMetaDataLoader {
     
     private static final String COLUMN_NAME = "COLUMN_NAME";
     
+    private static final String DATA_TYPE = "DATA_TYPE";
+    
     private static final String TYPE_NAME = "TYPE_NAME";
     
     /**
@@ -56,13 +58,15 @@ public final class ColumnMetaDataLoader {
         Collection<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
         List<String> columnNames = new ArrayList<>();
-        List<String> columnTypes = new ArrayList<>();
+        List<Integer> columnTypes = new ArrayList<>();
+        List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
-                columnTypes.add(resultSet.getString(TYPE_NAME));
+                columnTypes.add(resultSet.getInt(DATA_TYPE));
+                columnTypeNames.add(resultSet.getString(TYPE_NAME));
                 isPrimaryKeys.add(primaryKeys.contains(columnName));
                 columnNames.add(columnName);
             }
@@ -74,7 +78,7 @@ public final class ColumnMetaDataLoader {
         }
         for (int i = 0; i < columnNames.size(); i++) {
             // TODO load auto generated from database meta data
-            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
+            result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), columnTypeNames.get(i), isPrimaryKeys.get(i), false, isCaseSensitives.get(i)));
         }
         return result;
     }

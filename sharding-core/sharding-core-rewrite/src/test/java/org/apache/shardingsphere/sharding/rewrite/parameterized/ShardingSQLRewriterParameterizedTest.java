@@ -47,6 +47,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -111,7 +112,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>();
-        result.put("account_id", new ColumnMetaData("account_id", "INT", true, true, false));
+        result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
         result.put("amount", mock(ColumnMetaData.class));
         result.put("status", mock(ColumnMetaData.class));
         return result;

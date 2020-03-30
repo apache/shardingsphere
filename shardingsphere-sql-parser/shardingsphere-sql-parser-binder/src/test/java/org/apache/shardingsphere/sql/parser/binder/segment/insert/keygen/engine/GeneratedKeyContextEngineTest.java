@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,7 @@ public final class GeneratedKeyContextEngineTest {
     
     @Before
     public void setUp() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", "INT", true, true, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, "INT", true, true, false)), Collections.emptyList());
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
         tableMetaDataMap.put("tbl", tableMetaData);
         schemaMetaData = new SchemaMetaData(tableMetaDataMap);
