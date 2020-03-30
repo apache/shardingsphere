@@ -26,7 +26,6 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Pl
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.postgresql.WalPosition;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.AbstractWalEvent;
@@ -34,6 +33,8 @@ import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.DeleteRowE
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.shardingscaling.postgresql.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+
 import java.util.List;
 
 /**
@@ -123,7 +124,7 @@ public final class WalEventConverter {
     
     private void putColumnsIntoDataRecord(final DataRecord dataRecord, final TableMetaData tableMetaData, final List<Object> values) {
         for (int i = 0; i < values.size(); i++) {
-            dataRecord.addColumn(new Column(tableMetaData.getColumnMetaData(i).getColumnName(), values.get(i), true, tableMetaData.isPrimaryKey(i)));
+            dataRecord.addColumn(new Column(tableMetaData.getColumnMetaData(i).getName(), values.get(i), true, tableMetaData.isPrimaryKey(i)));
         }
     }
 }

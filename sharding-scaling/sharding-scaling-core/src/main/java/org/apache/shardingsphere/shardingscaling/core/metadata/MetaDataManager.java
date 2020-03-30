@@ -17,25 +17,26 @@
 
 package org.apache.shardingsphere.shardingscaling.core.metadata;
 
-import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaDataLoader;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 
 import javax.sql.DataSource;
+
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Meta data manager.
  */
+@RequiredArgsConstructor
 public final class MetaDataManager {
     
-    private Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
+    private final DataSource dataSource;
     
-    private TableMetaDataLoader tableMetaDataLoader;
-    
-    public MetaDataManager(final DataSource dataSource) {
-        this.tableMetaDataLoader = new TableMetaDataLoader(dataSource);
-    }
+    private final Map<String, TableMetaData> tableMetaDataMap = new HashMap<>();
     
     /**
      * Get table meta data by table name.
@@ -45,7 +46,11 @@ public final class MetaDataManager {
      */
     public TableMetaData getTableMetaData(final String tableName) {
         if (!tableMetaDataMap.containsKey(tableName)) {
-            tableMetaDataMap.put(tableName, tableMetaDataLoader.load(tableName));
+            try {
+                tableMetaDataMap.put(tableName, TableMetaDataLoader.load(dataSource, tableName, ""));
+            } catch (SQLException e) {
+                throw new RuntimeException(String.format("Load metaData for table %s failed", tableName), e);
+            }
         }
         return tableMetaDataMap.get(tableName);
     }

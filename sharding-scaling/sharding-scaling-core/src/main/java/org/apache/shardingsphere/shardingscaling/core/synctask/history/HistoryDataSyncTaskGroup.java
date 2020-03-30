@@ -24,13 +24,13 @@ import org.apache.shardingsphere.shardingscaling.core.controller.SyncProgress;
 import org.apache.shardingsphere.shardingscaling.core.exception.SyncTaskExecuteException;
 import org.apache.shardingsphere.shardingscaling.core.execute.Event;
 import org.apache.shardingsphere.shardingscaling.core.execute.EventType;
-import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.shardingscaling.core.synctask.DefaultSyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTask;
 import org.apache.shardingsphere.shardingscaling.core.synctask.SyncTaskFactory;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
 import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -118,7 +118,7 @@ public final class HistoryDataSyncTaskGroup implements SyncTask {
         }
         TableMetaData tableMetaData = metaDataManager.getTableMetaData(rdbmsConfiguration.getTableName());
         int index = tableMetaData.findColumnIndex(primaryKeys.get(0));
-        if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(index).getColumnType())) {
+        if (isNotIntegerPrimary(tableMetaData.getColumnMetaData(index).getDataType())) {
             log.warn("Can't split range for table {}, reason: primary key is not integer number", rdbmsConfiguration.getTableName());
             return false;
         }
