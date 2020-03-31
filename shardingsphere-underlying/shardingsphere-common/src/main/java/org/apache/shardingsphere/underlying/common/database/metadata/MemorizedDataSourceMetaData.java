@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database.metadata;
+package org.apache.shardingsphere.underlying.common.database.metadata;
 
 /**
  * Memorized data source meta data.

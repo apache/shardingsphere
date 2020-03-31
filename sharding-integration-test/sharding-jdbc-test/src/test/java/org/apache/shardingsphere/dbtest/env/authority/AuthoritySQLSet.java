@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbtest.env.authority;
 
 import com.google.common.base.Splitter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 
 import javax.xml.bind.annotation.XmlAccessType;

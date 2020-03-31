@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.underlying.common.database.type;
 
-import org.apache.shardingsphere.spi.database.type.BranchDatabaseType;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 
 import java.util.HashMap;

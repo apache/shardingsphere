@@ -15,38 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database.metadata;
+package org.apache.shardingsphere.underlying.common.database.type;
 
 /**
- * Data source meta data.
+ * Database type aware SPI.
  */
-public interface DataSourceMetaData {
+public interface DatabaseTypeAwareSPI {
     
     /**
-     * Get host name.
+     * Get database type.
      * 
-     * @return host name
-     */
-    String getHostName();
-    
-    /**
-     * Get port.
+     * <p>
+     *     The value of database type must registered by SPI for {@code org.apache.shardingsphere.spi.database.DatabaseType}.
+     * </p>
      * 
-     * @return port
+     * @return database type
      */
-    int getPort();
-    
-    /**
-     * Get catalog.
-     *
-     * @return catalog
-     */
-    String getCatalog();
-    
-    /**
-     * Get schema.
-     * 
-     * @return schema
-     */
-    String getSchema();
+    String getDatabaseType();
 }

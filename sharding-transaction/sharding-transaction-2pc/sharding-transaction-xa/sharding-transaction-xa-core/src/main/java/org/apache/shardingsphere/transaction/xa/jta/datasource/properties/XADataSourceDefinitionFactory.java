@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.properties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import java.util.HashMap;
 import java.util.Map;
