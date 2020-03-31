@@ -21,12 +21,14 @@ import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -71,8 +73,18 @@ public final class LocalShardingTablesConfiguration implements ExampleConfigurat
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        Properties properties = new Properties();
-        properties.setProperty("worker.id", "123");
-        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", properties);
+        return new KeyGeneratorConfiguration("order_id", getSnowflakeKeyGenerateAlgorithm());
+    }
+    
+    private static KeyGenerateAlgorithm getSnowflakeKeyGenerateAlgorithm() {
+        KeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
+        result.setProperties(getProperties());
+        return result;
+    }
+    
+    private static Properties getProperties() {
+        Properties result = new Properties();
+        result.setProperty("worker.id", "123");
+        return result;
     }
 }
