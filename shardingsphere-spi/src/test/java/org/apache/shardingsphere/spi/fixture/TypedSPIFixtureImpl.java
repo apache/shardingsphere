@@ -17,7 +17,19 @@
 
 package org.apache.shardingsphere.spi.fixture;
 
-import org.apache.shardingsphere.spi.type.TypeBasedSPI;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface TypeBasedSPIFixture extends TypeBasedSPI {
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class TypedSPIFixtureImpl implements TypedSPIFixture {
+    
+    private Properties properties;
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

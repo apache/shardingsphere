@@ -15,33 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.type;
-
-import java.util.Properties;
+package org.apache.shardingsphere.spi.exception;
 
 /**
- * Type based SPI.
+ * Service loader instantiation exception.
  */
-public interface TypeBasedSPI {
+public final class ServiceLoaderInstantiationException extends RuntimeException {
     
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    String getType();
+    private static final long serialVersionUID = 6261274443437676201L;
     
-    /**
-     * Get properties.
-     * 
-     * @return properties
-     */
-    Properties getProperties();
-    
-    /**
-     * Set properties.
-     * 
-     * @param properties properties
-     */
-    void setProperties(Properties properties);
+    public ServiceLoaderInstantiationException(final Class<?> clazz, final Exception cause) {
+        super(String.format("Can not find public default constructor for SPI class `%s`", clazz.getName()), cause);
+    }
 }

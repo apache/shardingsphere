@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.spi.keygen;
 
-import org.apache.shardingsphere.spi.type.TypeBasedSPI;
+import org.apache.shardingsphere.spi.type.TypedSPI;
 
 /**
  * Key generate algorithm.
  */
-public interface KeyGenerateAlgorithm extends TypeBasedSPI {
+public interface KeyGenerateAlgorithm extends TypedSPI {
     
     /**
      * Generate key.

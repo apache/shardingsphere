@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.encrypt.strategy.spi.loader;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIServiceLoader;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 
 /**
  * Encryptor service loader.
  */
-public final class EncryptorServiceLoader extends TypeBasedSPIServiceLoader<Encryptor> {
+public final class EncryptorServiceLoader extends TypedSPIServiceLoader<Encryptor> {
     
     static {
         ShardingSphereServiceLoader.register(Encryptor.class);
@@ -34,4 +34,3 @@ public final class EncryptorServiceLoader extends TypeBasedSPIServiceLoader<Encr
         super(Encryptor.class);
     }
 }
-

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.spi.fixture.TypeBasedSPIFixture;
+import org.apache.shardingsphere.spi.fixture.TypedSPIFixture;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -37,8 +37,8 @@ public final class ShardingSphereServiceLoaderTest {
     
     @Test
     public void assertNewServiceInstanceWhenIsExist() {
-        ShardingSphereServiceLoader.register(TypeBasedSPIFixture.class);
-        Collection collection = ShardingSphereServiceLoader.newServiceInstances(TypeBasedSPIFixture.class);
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
+        Collection collection = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
         assertThat(collection.size(), is(1));
     }
 }

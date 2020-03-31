@@ -17,36 +17,38 @@
 
 package org.apache.shardingsphere.spi.type;
 
-import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
- * Type based SPI service loader.
+ * Typed SPI service loader.
  * 
- * @param <T> type of algorithm class
+ * @param <T> type of SPI class
  */
 @RequiredArgsConstructor
-public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
+public abstract class TypedSPIServiceLoader<T extends TypedSPI> {
     
     private final Class<T> classType;
     
     /**
-     * Create new instance for type based SPI.
+     * Create new instance for typed SPI.
      * 
-     * @param type SPI type
-     * @param props SPI properties
+     * @param type type of SPI
+     * @param props properties of SPI
      * @return SPI instance
      */
     public final T newService(final String type, final Properties props) {
-        Collection<T> typeBasedServices = loadTypeBasedServices(type);
-        if (typeBasedServices.isEmpty()) {
+        Collection<T> typedServices = loadTypedServices(type);
+        if (typedServices.isEmpty()) {
             throw new RuntimeException(String.format("Invalid `%s` SPI type `%s`.", classType.getName(), type));
         }
-        T result = typeBasedServices.iterator().next();
+        T result = typedServices.iterator().next();
         result.setProperties(props);
         return result;
     }
@@ -54,23 +56,23 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     /**
      * Create new service by default SPI type.
      *
-     * @return type based SPI instance
+     * @return typed SPI instance
      */
     public final T newService() {
-        T result = loadFirstTypeBasedService();
+        T result = loadFirstTypedService();
         result.setProperties(new Properties());
         return result;
     }
     
-    private Collection<T> loadTypeBasedServices(final String type) {
-        return Collections2.filter(ShardingSphereServiceLoader.newServiceInstances(classType), input -> type.equalsIgnoreCase(input.getType()));
+    private Collection<T> loadTypedServices(final String type) {
+        return ShardingSphereServiceLoader.newServiceInstances(classType).stream().filter(each -> type.equalsIgnoreCase(each.getType())).collect(Collectors.toList());
     }
     
-    private T loadFirstTypeBasedService() {
-        Collection<T> instances = ShardingSphereServiceLoader.newServiceInstances(classType);
-        if (instances.isEmpty()) {
-            throw new RuntimeException(String.format("Invalid `%s` SPI, no implementation class load from SPI.", classType.getName()));
+    private T loadFirstTypedService() {
+        Optional<T> result = ShardingSphereServiceLoader.newServiceInstances(classType).stream().findFirst();
+        if (result.isPresent()) {
+            return result.get();
         }
-        return instances.iterator().next();
+        throw new ServiceProviderNotFoundException(classType);
     }
 }

@@ -15,31 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.config;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.Getter;
-
-import java.util.Properties;
+package org.apache.shardingsphere.spi.exception;
 
 /**
- * Type based SPI configuration.
+ * Service provider not found exception.
  */
-@Getter
-public abstract class TypeBasedSPIConfiguration {
+public final class ServiceProviderNotFoundException extends RuntimeException {
     
-    private final String type;
+    private static final long serialVersionUID = -3730257541332863236L;
     
-    private final Properties properties;
-    
-    public TypeBasedSPIConfiguration(final String type) {
-        this(type, null);
+    public ServiceProviderNotFoundException(final Class<?> clazz) {
+        super(String.format("No implementation class load from SPI `%s`.", clazz.getName()));
     }
     
-    public TypeBasedSPIConfiguration(final String type, final Properties properties) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
-        this.type = type;
-        this.properties = null == properties ? new Properties() : properties;
+    public ServiceProviderNotFoundException(final Class<?> clazz, final String type) {
+        super(String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
     }
 }

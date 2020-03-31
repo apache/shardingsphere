@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.exception.ServiceLoaderException;
+import org.apache.shardingsphere.spi.exception.ServiceLoaderInstantiationException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -75,7 +75,7 @@ public final class ShardingSphereServiceLoader {
         try {
             return clazz.newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new ServiceLoaderException(clazz, ex);
+            throw new ServiceLoaderInstantiationException(clazz, ex);
         }
     }
 }

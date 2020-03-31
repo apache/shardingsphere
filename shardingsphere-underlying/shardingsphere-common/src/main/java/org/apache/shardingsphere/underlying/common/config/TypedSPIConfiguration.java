@@ -15,26 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.order;
+package org.apache.shardingsphere.underlying.common.config;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import lombok.Getter;
+
+import java.util.Properties;
 
 /**
- * Order based SPI.
- * 
- * @param <T> type
+ * Type based SPI configuration.
  */
-public interface OrderBasedSPI<T> {
+@Getter
+public abstract class TypedSPIConfiguration {
     
-    /**
-     * Get order of load.
-     *
-     * @return load order
-     */
-    int getOrder();
+    private final String type;
     
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    T getType();
+    private final Properties properties;
+    
+    public TypedSPIConfiguration(final String type) {
+        this(type, null);
+    }
+    
+    public TypedSPIConfiguration(final String type, final Properties properties) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        this.type = type;
+        this.properties = null == properties ? new Properties() : properties;
+    }
 }

@@ -15,41 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.center.config;
+package org.apache.shardingsphere.spi.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.config.TypedSPIConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIServiceLoader;
 
-import java.util.Properties;
-
-/**
- * Orchestration instance configuration.
- */
-@Getter
-@Setter
-public final class CenterConfiguration extends TypedSPIConfiguration {
+public final class TypedSPIFixtureServiceLoader extends TypedSPIServiceLoader<TypedSPIFixture> {
     
-    /**
-     * Type of center, such as config_center, registry_center.
-     */
-    private String orchestrationType;
-    
-    /**
-     * Server list of center.
-     */
-    private String serverLists;
-    
-    /**
-     * Namespace of center.
-     */
-    private String namespace;
-    
-    public CenterConfiguration(final String type) {
-        super(type);
+    static {
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
     }
     
-    public CenterConfiguration(final String type, final Properties properties) {
-        super(type, properties);
+    public TypedSPIFixtureServiceLoader() {
+        super(TypedSPIFixture.class);
     }
 }

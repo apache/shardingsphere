@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.spi.order;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.TypeBasedSPIServiceLoader;
-
-public final class TypeBasedSPIFixtureServiceLoader extends TypeBasedSPIServiceLoader<TypeBasedSPIFixture> {
+/**
+ * Ordered SPI.
+ * 
+ * @param <T> type
+ */
+public interface OrderedSPI<T> {
     
-    static {
-        ShardingSphereServiceLoader.register(TypeBasedSPIFixture.class);
-    }
+    /**
+     * Get order of load.
+     *
+     * @return load order
+     */
+    int getOrder();
     
-    public TypeBasedSPIFixtureServiceLoader() {
-        super(TypeBasedSPIFixture.class);
-    }
+    /**
+     * Get type.
+     * 
+     * @return type
+     */
+    T getType();
 }
