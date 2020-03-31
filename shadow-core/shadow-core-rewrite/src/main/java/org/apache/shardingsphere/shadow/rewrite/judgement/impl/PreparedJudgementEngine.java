@@ -88,10 +88,4 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
         }
         return false;
     }
-    
-    private boolean isShadowField(final Object value) {
-        return (value instanceof Boolean && (Boolean) value)
-                || (value instanceof Integer && 1 == (Integer) value)
-                || (value instanceof String && Boolean.parseBoolean((String) value));
-    }
 }
