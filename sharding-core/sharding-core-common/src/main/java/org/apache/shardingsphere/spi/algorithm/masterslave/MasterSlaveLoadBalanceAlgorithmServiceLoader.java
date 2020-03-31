@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.spi.algorithm.masterslave;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm
 public final class MasterSlaveLoadBalanceAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
     
     static {
-        NewInstanceServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
+        ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
     }
     
     public MasterSlaveLoadBalanceAlgorithmServiceLoader() {

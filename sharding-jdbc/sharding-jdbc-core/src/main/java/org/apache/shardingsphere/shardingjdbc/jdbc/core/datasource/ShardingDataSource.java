@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
@@ -43,9 +43,9 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     private final ShardingRuntimeContext runtimeContext;
     
     static {
-        NewInstanceServiceLoader.register(RouteDecorator.class);
-        NewInstanceServiceLoader.register(SQLRewriteContextDecorator.class);
-        NewInstanceServiceLoader.register(ResultProcessEngine.class);
+        ShardingSphereServiceLoader.register(RouteDecorator.class);
+        ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
+        ShardingSphereServiceLoader.register(ResultProcessEngine.class);
     }
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.spi.algorithm.keygen;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.spi.type.TypeBasedSPIServiceLoader;
 
 /**
  * Key generate algorithm service loader.
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 public final class KeyGenerateAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<KeyGenerateAlgorithm> {
     
     static {
-        NewInstanceServiceLoader.register(KeyGenerateAlgorithm.class);
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
     public KeyGenerateAlgorithmServiceLoader() {

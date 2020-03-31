@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.spi.order;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Ordered registry.
+ * Ordered SPI registry.
  */
-public final class OrderedRegistry {
+public final class OrderedSPIRegistry {
     
     /**
-     * Get registered classes.
+     * Get registered services.
      * 
-     * @param orderAwareClass class of order aware
-     * @param <T> type of order aware class
-     * @return registered classes
+     * @param orderBasedClass class of order based
+     * @param <T> type of order based class
+     * @return registered services
      */
-    @SuppressWarnings("unchecked")
-    public static <T extends OrderAware> Collection<Class<T>> getRegisteredClasses(final Class<T> orderAwareClass) {
-        Map<Integer, Class<T>> result = new TreeMap<>();
-        for (T each : NewInstanceServiceLoader.newServiceInstances(orderAwareClass)) {
-            result.put(each.getOrder(), (Class<T>) each.getClass());
+    public static <T extends OrderBasedSPI> Collection<T> getRegisteredServices(final Class<T> orderBasedClass) {
+        Map<Integer, T> result = new TreeMap<>();
+        for (T each : ShardingSphereServiceLoader.newServiceInstances(orderBasedClass)) {
+            result.put(each.getOrder(), each);
         }
         return result.values();
     }
 }
+

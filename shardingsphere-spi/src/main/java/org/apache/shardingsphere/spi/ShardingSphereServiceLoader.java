@@ -19,20 +19,21 @@ package org.apache.shardingsphere.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.spi.exception.ServiceLoaderException;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 
 /**
- * SPI service loader for new instance for every call.
+ * ShardingSphere service loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NewInstanceServiceLoader {
+public final class ShardingSphereServiceLoader {
     
     private static final Map<Class, Collection<Class<?>>> SERVICE_MAP = new HashMap<>();
     
@@ -65,16 +66,16 @@ public final class NewInstanceServiceLoader {
      * @param <T> type of service
      * @return service instances
      */
-    @SneakyThrows
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> newServiceInstances(final Class<T> service) {
-        Collection<T> result = new LinkedList<>();
-        if (null == SERVICE_MAP.get(service)) {
-            return result;
+        return SERVICE_MAP.containsKey(service) ? SERVICE_MAP.get(service).stream().map(each -> (T) newServiceInstance(each)).collect(Collectors.toList()) : Collections.emptyList();
+    }
+    
+    private static Object newServiceInstance(final Class<?> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (final InstantiationException | IllegalAccessException ex) {
+            throw new ServiceLoaderException(clazz, ex);
         }
-        for (Class<?> each : SERVICE_MAP.get(service)) {
-            result.add((T) each.newInstance());
-        }
-        return result;
     }
 }

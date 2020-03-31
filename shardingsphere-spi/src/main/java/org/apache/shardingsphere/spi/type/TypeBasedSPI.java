@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.type;
 
 import java.util.Properties;
 
 /**
- * Base algorithm SPI.
+ * Type based SPI.
  */
 public interface TypeBasedSPI {
     
     /**
-     * Get algorithm type.
+     * Get type.
      * 
      * @return type
      */
@@ -34,14 +34,14 @@ public interface TypeBasedSPI {
     /**
      * Get properties.
      * 
-     * @return properties of algorithm
+     * @return properties
      */
     Properties getProperties();
     
     /**
      * Set properties.
      * 
-     * @param properties properties of algorithm
+     * @param properties properties
      */
     void setProperties(Properties properties);
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spi.fixture;
 
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.spi.type.TypeBasedSPI;
 
 public interface TypeBasedSPIFixture extends TypeBasedSPI {
 }

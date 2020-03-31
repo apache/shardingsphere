@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.masterslave;
-
-import org.apache.shardingsphere.spi.type.TypeBasedSPI;
-
-import java.util.List;
+package org.apache.shardingsphere.spi.exception;
 
 /**
- * Master-slave database load-balance algorithm.
+ * Service loader exception.
  */
-public interface MasterSlaveLoadBalanceAlgorithm extends TypeBasedSPI {
+public final class ServiceLoaderException extends RuntimeException {
     
-    /**
-     * Get data source.
-     * 
-     * @param name master-slave logic data source name
-     * @param masterDataSourceName name of master data sources
-     * @param slaveDataSourceNames names of slave data sources
-     * @return name of selected data source
-     */
-    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
+    private static final long serialVersionUID = 6261274443437676201L;
+    
+    public ServiceLoaderException(final Class<?> clazz, final Exception cause) {
+        super(String.format("Can not find public default constructor for SPI class `%s`", clazz), cause);
+    }
 }

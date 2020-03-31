@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.type;
 
 import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -62,11 +63,11 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     }
     
     private Collection<T> loadTypeBasedServices(final String type) {
-        return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(classType), input -> type.equalsIgnoreCase(input.getType()));
+        return Collections2.filter(ShardingSphereServiceLoader.newServiceInstances(classType), input -> type.equalsIgnoreCase(input.getType()));
     }
     
     private T loadFirstTypeBasedService() {
-        Collection<T> instances = NewInstanceServiceLoader.newServiceInstances(classType);
+        Collection<T> instances = ShardingSphereServiceLoader.newServiceInstances(classType);
         if (instances.isEmpty()) {
             throw new RuntimeException(String.format("Invalid `%s` SPI, no implementation class load from SPI.", classType.getName()));
         }

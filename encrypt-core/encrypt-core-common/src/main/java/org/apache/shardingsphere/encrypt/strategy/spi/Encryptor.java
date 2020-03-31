@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.strategy.spi;
 
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.spi.type.TypeBasedSPI;
 
 /**
  * Encryptor.

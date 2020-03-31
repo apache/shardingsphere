@@ -19,13 +19,14 @@ package org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+
+import java.util.Properties;
 
 /**
  * key generate algorithm FactoryBean.
@@ -39,7 +40,7 @@ public class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateA
     private Properties properties;
     
     @Override
-    public KeyGenerateAlgorithm getObject() throws Exception {
+    public KeyGenerateAlgorithm getObject() {
         return new KeyGenerateAlgorithmServiceLoader().newService(type, properties);
     }
     
@@ -54,7 +55,7 @@ public class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateA
     }
     
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "The type of keyGenerateAlgorithm is required.");
     }
 }
