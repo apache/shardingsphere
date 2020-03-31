@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The type Sql statement meta data refresh factory.
+ * The type SQLStatementMetaDataRefresh factory.
  */
 public final class SQLStatementMetaDataRefreshFactory {
     
