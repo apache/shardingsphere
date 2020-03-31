@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.spi.type;
 
-import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Type based SPI service loader.
@@ -63,7 +63,7 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     }
     
     private Collection<T> loadTypeBasedServices(final String type) {
-        return Collections2.filter(ShardingSphereServiceLoader.newServiceInstances(classType), input -> type.equalsIgnoreCase(input.getType()));
+        return ShardingSphereServiceLoader.newServiceInstances(classType).stream().filter(each -> type.equalsIgnoreCase(each.getType())).collect(Collectors.toList());
     }
     
     private T loadFirstTypeBasedService() {
