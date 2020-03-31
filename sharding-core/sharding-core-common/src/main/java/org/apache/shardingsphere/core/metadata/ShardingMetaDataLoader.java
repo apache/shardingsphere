@@ -162,7 +162,7 @@ public final class ShardingMetaDataLoader {
     }
     
     private SchemaMetaData loadDefaultSchemaMetaData(final DatabaseType databaseType, final SchemaMetaData schemaMetaData) throws SQLException {
-        if (1 == shardingRule.getShardingDataSourceNames().getDataSourceNames().size()) {
+        if (1 == shardingRule.getShardingDataSourceNames().getDataSourceNames().size() && null != schemaMetaData) {
             return schemaMetaData;
         }
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
