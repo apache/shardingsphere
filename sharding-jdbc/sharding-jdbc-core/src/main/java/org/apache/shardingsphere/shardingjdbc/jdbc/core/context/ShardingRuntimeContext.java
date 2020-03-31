@@ -45,8 +45,11 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
     
     private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
     
+    private final Map<String, DataSource> dataSourceMap;
+    
     public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(dataSourceMap, shardingRule, props, databaseType);
+        this.dataSourceMap = dataSourceMap;
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
