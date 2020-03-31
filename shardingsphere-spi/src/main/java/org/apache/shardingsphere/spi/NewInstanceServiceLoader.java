@@ -20,6 +20,7 @@ package org.apache.shardingsphere.spi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.spi.loader.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public final class NewInstanceServiceLoader {
             return result;
         }
         for (Class<?> each : SERVICE_MAP.get(service)) {
-            result.add((T) each.newInstance());
+            result.add((T) ShardingSphereServiceLoader.newInstance(each));
         }
         return result;
     }

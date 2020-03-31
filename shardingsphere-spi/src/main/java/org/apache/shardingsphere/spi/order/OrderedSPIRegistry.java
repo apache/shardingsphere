@@ -31,14 +31,14 @@ public final class OrderedSPIRegistry {
     /**
      * Get registered classes.
      * 
-     * @param orderAwareClass class of order aware
+     * @param orderBasedClass class of order based
      * @param <T> type of order aware class
      * @return registered classes
      */
     @SuppressWarnings("unchecked")
-    public static <T extends OrderBasedSPI> Collection<Class<T>> getRegisteredClasses(final Class<T> orderAwareClass) {
+    public static <T extends OrderBasedSPI> Collection<Class<T>> getRegisteredClasses(final Class<T> orderBasedClass) {
         Map<Integer, Class<T>> result = new TreeMap<>();
-        for (T each : NewInstanceServiceLoader.newServiceInstances(orderAwareClass)) {
+        for (T each : NewInstanceServiceLoader.newServiceInstances(orderBasedClass)) {
             result.put(each.getOrder(), (Class<T>) each.getClass());
         }
         return result.values();
