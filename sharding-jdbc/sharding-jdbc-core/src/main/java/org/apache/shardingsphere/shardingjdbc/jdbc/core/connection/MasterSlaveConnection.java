@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.MasterSlaveRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.MultipleDatabaseMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.MasterSlaveDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlavePreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlaveStatement;
 
@@ -51,7 +51,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() {
-        return new MultipleDatabaseMetaData<>(this, runtimeContext.getRule(), getDataSourceMap().keySet(), runtimeContext.getCachedDatabaseMetaData());
+        return new MasterSlaveDatabaseMetaData(this);
     }
     
     @Override
