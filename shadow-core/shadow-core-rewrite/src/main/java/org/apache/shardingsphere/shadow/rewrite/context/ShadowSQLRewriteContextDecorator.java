@@ -24,6 +24,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
  * SQL rewrite context decorator for shadow.
@@ -32,7 +33,7 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
     
     @SuppressWarnings("unchecked")
     @Override
-    public void decorate(final ShadowRule shadowRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext) {
+    public void decorate(final ShadowRule shadowRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         for (ParameterRewriter each : new ShadowParameterRewriterBuilder(shadowRule).getParameterRewriters(sqlRewriteContext.getSchemaMetaData())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());

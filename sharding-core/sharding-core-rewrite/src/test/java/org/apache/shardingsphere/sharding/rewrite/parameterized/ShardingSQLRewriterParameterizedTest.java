@@ -83,8 +83,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(
                 mock(SchemaMetaData.class), routeContext.getSqlStatementContext(), getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ShardingSQLRewriteContextDecorator shardingSQLRewriteContextDecorator = new ShardingSQLRewriteContextDecorator();
-        shardingSQLRewriteContextDecorator.setRouteContext(routeContext);
-        shardingSQLRewriteContextDecorator.decorate(shardingRule, properties, sqlRewriteContext);
+        shardingSQLRewriteContextDecorator.decorate(shardingRule, properties, sqlRewriteContext, routeContext);
         sqlRewriteContext.generateSQLTokens();
         return new SQLRouteRewriteEngine().rewrite(sqlRewriteContext, routeContext.getRouteResult()).values();
     }

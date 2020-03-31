@@ -30,8 +30,8 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
-import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
+import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.underlying.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
@@ -65,7 +65,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         YamlRootEncryptRuleConfiguration ruleConfiguration = createRuleConfiguration();
         EncryptRule encryptRule = new EncryptRule(new EncryptRuleConfigurationYamlSwapper().swap(ruleConfiguration.getEncryptRule()));
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext();
-        new EncryptSQLRewriteContextDecorator().decorate(encryptRule, new ConfigurationProperties(ruleConfiguration.getProps()), sqlRewriteContext);
+        new EncryptSQLRewriteContextDecorator().decorate(encryptRule, new ConfigurationProperties(ruleConfiguration.getProps()), sqlRewriteContext, null);
         sqlRewriteContext.generateSQLTokens();
         return Collections.singletonList(new SQLRewriteEngine().rewrite(sqlRewriteContext));
     }

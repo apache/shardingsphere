@@ -20,6 +20,7 @@ package org.apache.shardingsphere.underlying.rewrite.context;
 import org.apache.shardingsphere.spi.order.OrderBasedSPI;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
  * SQL rewrite context decorator.
@@ -34,6 +35,7 @@ public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderBas
      * @param rule rule
      * @param properties ShardingSphere properties
      * @param sqlRewriteContext SQL rewrite context to be decorated
+     * @param routeContext route context
      */
-    void decorate(T rule, ConfigurationProperties properties, SQLRewriteContext sqlRewriteContext);
+    void decorate(T rule, ConfigurationProperties properties, SQLRewriteContext sqlRewriteContext, RouteContext routeContext);
 }
