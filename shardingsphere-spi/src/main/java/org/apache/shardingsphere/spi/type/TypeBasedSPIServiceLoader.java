@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @param <T> type of algorithm class
  */
 @RequiredArgsConstructor
-public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
+public abstract class TypeBasedSPIServiceLoader<T extends TypedSPI> {
     
     private final Class<T> classType;
     

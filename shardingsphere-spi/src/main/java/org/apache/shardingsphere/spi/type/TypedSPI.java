@@ -20,9 +20,9 @@ package org.apache.shardingsphere.spi.type;
 import java.util.Properties;
 
 /**
- * Type based SPI.
+ * Typed SPI.
  */
-public interface TypeBasedSPI {
+public interface TypedSPI {
     
     /**
      * Get type.

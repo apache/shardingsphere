@@ -31,34 +31,34 @@ public final class TypedSPIRegistry {
     /**
      * Get registered service.
      * 
-     * @param typedClass typed class
+     * @param typedSPIClass typed SPI class
      * @param type type
      * @param props properties
      * @param <T> type
      * @return registered service
      */
-    public static <T extends TypeBasedSPI> T getRegisteredService(final Class<T> typedClass, final String type, final Properties props) {
-        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedClass).stream().filter(each -> type.equalsIgnoreCase(each.getType())).findFirst();
+    public static <T extends TypedSPI> T getRegisteredService(final Class<T> typedSPIClass, final String type, final Properties props) {
+        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().filter(each -> type.equalsIgnoreCase(each.getType())).findFirst();
         if (serviceInstance.isPresent()) {
             T result = serviceInstance.get();
             result.setProperties(props);
             return result;
         }
-        throw new ServiceProviderNotFoundException(typedClass, type);
+        throw new ServiceProviderNotFoundException(typedSPIClass, type);
     }
     
     /**
      * Get registered service.
      *
-     * @param typedClass typed class
+     * @param typedSPIClass typed SPI class
      * @param <T> type
      * @return registered service
      */
-    public static <T extends TypeBasedSPI> T getRegisteredService(final Class<T> typedClass) {
-        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedClass).stream().findFirst();
+    public static <T extends TypedSPI> T getRegisteredService(final Class<T> typedSPIClass) {
+        Optional<T> serviceInstance = ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().findFirst();
         if (serviceInstance.isPresent()) {
             return serviceInstance.get();
         }
-        throw new ServiceProviderNotFoundException(typedClass);
+        throw new ServiceProviderNotFoundException(typedSPIClass);
     }
 }
