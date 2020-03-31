@@ -39,14 +39,14 @@ import java.util.Optional;
  */
 public final class MetaDataRefreshStrategyFactory {
     
-    private static final Map<Class<?>, MetaDataRefreshStrategy<? extends SQLStatement>> REFRESH_MAP = new HashMap<>();
+    private static final Map<Class<?>, MetaDataRefreshStrategy<? extends SQLStatement>> REGISTRY = new HashMap<>();
     
     static {
-        REFRESH_MAP.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefreshStrategy());
-        REFRESH_MAP.put(AlterTableStatementContext.class, new AlterTableStatementMetaDataRefreshStrategy());
-        REFRESH_MAP.put(DropTableStatementContext.class, new DropTableStatementMetaDataRefreshStrategy());
-        REFRESH_MAP.put(CreateIndexStatementContext.class, new CreateIndexStatementMetaDataRefreshStrategy());
-        REFRESH_MAP.put(DropIndexStatementContext.class, new DropIndexStatementMetaDataRefreshStrategy());
+        REGISTRY.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefreshStrategy());
+        REGISTRY.put(AlterTableStatementContext.class, new AlterTableStatementMetaDataRefreshStrategy());
+        REGISTRY.put(DropTableStatementContext.class, new DropTableStatementMetaDataRefreshStrategy());
+        REGISTRY.put(CreateIndexStatementContext.class, new CreateIndexStatementMetaDataRefreshStrategy());
+        REGISTRY.put(DropIndexStatementContext.class, new DropIndexStatementMetaDataRefreshStrategy());
     }
     
     /**
@@ -56,6 +56,6 @@ public final class MetaDataRefreshStrategyFactory {
      * @return meta data refresh strategy
      */
     public static Optional<MetaDataRefreshStrategy<? extends SQLStatement>> newInstance(final SQLStatementContext sqlStatementContext) {
-        return Optional.ofNullable(REFRESH_MAP.get(sqlStatementContext.getClass()));
+        return Optional.ofNullable(REGISTRY.get(sqlStatementContext.getClass()));
     }
 }
