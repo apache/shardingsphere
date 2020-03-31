@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.connection;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.ShardingDatabaseMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -73,8 +74,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    public DatabaseMetaData getMetaData() throws SQLException {
-        return getCachedConnections().isEmpty() ? runtimeContext.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
+    public DatabaseMetaData getMetaData() {
+        return new ShardingDatabaseMetaData(this);
     }
     
     @Override
