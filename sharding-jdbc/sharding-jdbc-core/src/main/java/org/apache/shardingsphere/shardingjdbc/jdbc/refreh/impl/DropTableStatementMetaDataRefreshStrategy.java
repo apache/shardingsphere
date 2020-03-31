@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 /**
  * Drop table statement meta data refresh strategy.
@@ -29,8 +28,6 @@ public final class DropTableStatementMetaDataRefreshStrategy implements MetaData
     
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final DropTableStatementContext sqlStatementContext) {
-        for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getTables()) {
-            shardingRuntimeContext.getMetaData().getSchema().remove(each.getTableName().getIdentifier().getValue());
-        }
+        sqlStatementContext.getSqlStatement().getTables().forEach(each -> shardingRuntimeContext.getMetaData().getSchema().remove(each.getTableName().getIdentifier().getValue()));
     }
 }
