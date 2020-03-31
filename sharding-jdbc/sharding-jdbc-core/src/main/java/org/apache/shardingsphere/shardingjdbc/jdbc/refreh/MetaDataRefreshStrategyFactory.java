@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 public final class MetaDataRefreshStrategyFactory {
     
-    private static final Map<Class<?>, MetaDataRefreshStrategy<?>> REGISTRY = new HashMap<>();
+    private static final Map<Class, MetaDataRefreshStrategy> REGISTRY = new HashMap<>();
     
     static {
         REGISTRY.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefreshStrategy());
