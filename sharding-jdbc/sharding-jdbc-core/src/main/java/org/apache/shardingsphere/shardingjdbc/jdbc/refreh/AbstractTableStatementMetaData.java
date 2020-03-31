@@ -28,17 +28,17 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import java.sql.SQLException;
 
 /**
- * The type Abstract table statement meta data.
+ * Abstract table meta data load.
  */
 public abstract class AbstractTableStatementMetaData {
     
     /**
      * Load TableMetaData.
      *
-     * @param tableName              the table name
-     * @param shardingRuntimeContext the sharding runtime context
-     * @return the table meta data
-     * @throws SQLException the sql exception
+     * @param tableName table name
+     * @param shardingRuntimeContext sharding runtime context
+     * @return table meta data
+     * @throws SQLException sql exception
      */
     protected TableMetaData loadTableMeta(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
         ShardingRule shardingRule = shardingRuntimeContext.getRule();

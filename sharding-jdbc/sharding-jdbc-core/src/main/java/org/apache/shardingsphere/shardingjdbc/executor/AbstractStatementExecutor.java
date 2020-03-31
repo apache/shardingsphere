@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefresh;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -148,9 +148,9 @@ public abstract class AbstractStatementExecutor {
         if (null == sqlStatementContext) {
             return;
         }
-        final Optional<SQLStatementMetaDataRefresh<? extends SQLStatement>> sqlStatementMetaDataRefresh = SQLStatementMetaDataRefreshFactory.newInstance(sqlStatementContext);
-        if (sqlStatementMetaDataRefresh.isPresent()) {
-            sqlStatementMetaDataRefresh.get().refreshMetaData(runtimeContext, sqlStatementContext);
+        final Optional<SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> sqlStatementMetaDataRefreshStrategy = SQLStatementMetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        if (sqlStatementMetaDataRefreshStrategy.isPresent()) {
+            sqlStatementMetaDataRefreshStrategy.get().refreshMetaData(runtimeContext, sqlStatementContext);
         }
     }
 }

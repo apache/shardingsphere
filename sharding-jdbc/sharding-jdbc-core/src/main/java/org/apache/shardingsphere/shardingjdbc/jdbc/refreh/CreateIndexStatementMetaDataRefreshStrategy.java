@@ -23,9 +23,9 @@ import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 
 /**
- * The type Create index statement meta data refresh.
+ * Create index statement meta data refresh strategy.
  */
-public final class CreateIndexStatementMetaDataRefresh implements SQLStatementMetaDataRefresh<CreateIndexStatement> {
+public final class CreateIndexStatementMetaDataRefreshStrategy implements SQLStatementMetaDataRefreshStrategy<CreateIndexStatement> {
    
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateIndexStatement> sqlStatementContext) {

@@ -19,23 +19,18 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
 
 /**
- * The interface SQL statement meta data refresh.
- *
- * @param <T> the type parameter
+ * Drop table statement meta data refresh strategy.
  */
-public interface SQLStatementMetaDataRefresh<T extends SQLStatement> {
+public final class DropTableStatementMetaDataRefreshStrategy implements SQLStatementMetaDataRefreshStrategy<DropTableStatement> {
     
-    /**
-     * Refresh meta data.
-     *
-     * @param shardingRuntimeContext the sharding runtime context
-     * @param sqlStatementContext       the sql statement context
-     * @throws SQLException the sql exception
-     */
-    void refreshMetaData(ShardingRuntimeContext shardingRuntimeContext, SQLStatementContext<T> sqlStatementContext) throws SQLException;
+    @Override
+    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<DropTableStatement> sqlStatementContext) {
+        for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getTables()) {
+            shardingRuntimeContext.getMetaData().getSchema().remove(each.getTableName().getIdentifier().getValue());
+        }
+    }
 }

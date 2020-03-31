@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStateme
 import java.sql.SQLException;
 
 /**
- * The type Create table statement meta data refresh.
+ * Create table statement meta data refresh strategy.
  */
-public final class CreateTableStatementMetaDataRefresh extends AbstractTableStatementMetaData implements SQLStatementMetaDataRefresh<CreateTableStatement> {
+public final class CreateTableStatementMetaDataRefreshStrategy extends AbstractTableStatementMetaData implements SQLStatementMetaDataRefreshStrategy<CreateTableStatement> {
     
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateTableStatement> sqlStatementContext) throws SQLException {

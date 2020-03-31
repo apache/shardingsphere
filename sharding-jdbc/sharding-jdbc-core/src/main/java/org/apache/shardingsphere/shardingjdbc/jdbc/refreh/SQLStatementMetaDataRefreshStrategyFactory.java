@@ -30,27 +30,27 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The type SQLStatementMetaDataRefresh factory.
+ * Factory of SQLStatementMetaDataRefreshStrategy.
  */
-public final class SQLStatementMetaDataRefreshFactory {
+public final class SQLStatementMetaDataRefreshStrategyFactory {
     
-    private static final Map<Class<?>, SQLStatementMetaDataRefresh<? extends SQLStatement>> REFRESH_MAP = new HashMap<>();
+    private static final Map<Class<?>, SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> REFRESH_MAP = new HashMap<>();
     
     static {
-        REFRESH_MAP.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefresh());
-        REFRESH_MAP.put(AlterTableStatementContext.class, new AlterTableStatementMetaDataRefresh());
-        REFRESH_MAP.put(DropTableStatementContext.class, new DropTableStatementMetaDataRefresh());
-        REFRESH_MAP.put(CreateIndexStatementContext.class, new CreateIndexStatementMetaDataRefresh());
-        REFRESH_MAP.put(DropIndexStatementContext.class, new DropIndexStatementMetaDataRefresh());
+        REFRESH_MAP.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefreshStrategy());
+        REFRESH_MAP.put(AlterTableStatementContext.class, new AlterTableStatementMetaDataRefreshStrategy());
+        REFRESH_MAP.put(DropTableStatementContext.class, new DropTableStatementMetaDataRefreshStrategy());
+        REFRESH_MAP.put(CreateIndexStatementContext.class, new CreateIndexStatementMetaDataRefreshStrategy());
+        REFRESH_MAP.put(DropIndexStatementContext.class, new DropIndexStatementMetaDataRefreshStrategy());
     }
     
     /**
-     * New instance SQLStatementMetaDataRefresh.
+     * New instance of SQLStatementMetaDataRefreshStrategy.
      *
-     * @param sqlStatementContext the sql statement context
-     * @return the sql statement meta data refresh
+     * @param sqlStatementContext sql statement context
+     * @return sql statement meta data refresh strategy
      */
-    public static Optional<SQLStatementMetaDataRefresh<? extends SQLStatement>> newInstance(final SQLStatementContext sqlStatementContext) {
+    public static Optional<SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> newInstance(final SQLStatementContext sqlStatementContext) {
         return Optional.ofNullable(REFRESH_MAP.get(sqlStatementContext.getClass()));
     }
 }

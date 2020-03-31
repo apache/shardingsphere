@@ -29,9 +29,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The type Drop index statement meta data refresh.
+ * Drop index statement meta data refresh strategy.
  */
-public final class DropIndexStatementMetaDataRefresh implements SQLStatementMetaDataRefresh<DropIndexStatement> {
+public final class DropIndexStatementMetaDataRefreshStrategy implements SQLStatementMetaDataRefreshStrategy<DropIndexStatement> {
    
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<DropIndexStatement> sqlStatementContext) {
