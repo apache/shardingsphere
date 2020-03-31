@@ -1,0 +1,19 @@
+package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
+
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
+
+import java.sql.SQLException;
+
+/**
+ * The type Create table statement meta data refresh.
+ */
+public final class CreateTableStatementMetaDataRefresh extends AbstractTableStatementMetaData implements SQLStatementMetaDataRefresh<CreateTableStatement> {
+    
+    @Override
+    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateTableStatement> sqlStatementContext) throws SQLException {
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        shardingRuntimeContext.getMetaData().getSchema().put(tableName, loadTableMeta(tableName, shardingRuntimeContext));
+    }
+}
