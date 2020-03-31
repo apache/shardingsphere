@@ -34,4 +34,3 @@ public final class EncryptorServiceLoader extends TypeBasedSPIServiceLoader<Encr
         super(Encryptor.class);
     }
 }
-
