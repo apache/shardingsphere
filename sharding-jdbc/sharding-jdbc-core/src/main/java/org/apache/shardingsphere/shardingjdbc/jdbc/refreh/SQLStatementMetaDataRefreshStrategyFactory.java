@@ -45,7 +45,7 @@ public final class SQLStatementMetaDataRefreshStrategyFactory {
     }
     
     /**
-     * New instance of SQLStatementMetaDataRefreshStrategy.
+     * New instance of SQL statement meta data refresh strategy.
      *
      * @param sqlStatementContext SQL statement context
      * @return SQL statement meta data refresh strategy
