@@ -364,16 +364,16 @@
                     <column-left-value name="order_id" start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
-                        <literal-expression value="2" />
+                        <parameter-marker-expression value="1" start-index="56" stop-index="56"/>
+                        <literal-expression value="2" start-index="56" stop-index="56"/>
                     </compare-right-value>
                 </predicate>
                 <predicate start-index="62" stop-index="72" literal-start-index="62" literal-stop-index="72">
                     <column-left-value name="user_id" start-index="62" stop-index="68" literal-start-index="62" literal-stop-index="68" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" start-index="72" stop-index="72" />
-                        <literal-expression value="3" />
+                        <parameter-marker-expression value="2" start-index="72" stop-index="72"/>
+                        <literal-expression value="3" start-index="72" stop-index="72"/>
                     </compare-right-value>
                 </predicate>
             </and-predicate>
@@ -386,8 +386,8 @@
             <assignment start-index="19" stop-index="28" literal-stop-index="28">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
-                    <literal-expression value="1" />
+                    <parameter-marker-expression value="0" start-index="28" stop-index="28"/>
+                    <literal-expression value="1" start-index="28" stop-index="28"/>
                 </assignment-value>
             </assignment>
         </set>
@@ -404,8 +404,8 @@
                     <column-left-value name="user_id" start-index="64" stop-index="70" literal-start-index="64" literal-stop-index="70" />
                     <operator type="=" />
                     <compare-right-value>
-                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
-                        <literal-expression value="3" />
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74"/>
+                        <literal-expression value="3" start-index="74" stop-index="74"/>
                     </compare-right-value>
                 </predicate>
             </and-predicate>
