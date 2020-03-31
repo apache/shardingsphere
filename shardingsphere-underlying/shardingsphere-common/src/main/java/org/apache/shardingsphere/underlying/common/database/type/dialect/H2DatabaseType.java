@@ -19,8 +19,8 @@ package org.apache.shardingsphere.underlying.common.database.type.dialect;
 
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.database.metadata.dialect.H2DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.type.BranchDatabaseType;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.BranchDatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;

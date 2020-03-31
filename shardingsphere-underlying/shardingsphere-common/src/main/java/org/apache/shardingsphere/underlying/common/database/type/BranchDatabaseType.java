@@ -15,37 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.database.type;
-
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-
-import java.util.Collection;
+package org.apache.shardingsphere.underlying.common.database.type;
 
 /**
- * Database type.
+ * Branch database type.
  */
-public interface DatabaseType {
+public interface BranchDatabaseType extends DatabaseType {
     
     /**
-     * Get database name.
+     * Get trunk database type.
      * 
-     * @return database name
+     * @return trunk database type
      */
-    String getName();
-    
-    /**
-     * Get alias of JDBC URL prefixes.
-     * 
-     * @return Alias of JDBC URL prefixes
-     */
-    Collection<String> getJdbcUrlPrefixAlias();
-    
-    /**
-     * Get data source meta data.
-     * 
-     * @param url URL of data source
-     * @param username username of data source
-     * @return data source meta data
-     */
-    DataSourceMetaData getDataSourceMetaData(String url, String username);
+    DatabaseType getTrunkDatabaseType();
 }

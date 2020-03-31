@@ -25,7 +25,7 @@ import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.underlying.executor.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.underlying.executor.hook.SQLExecutionHook;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorDataMap;
 import org.junit.After;
 import org.junit.Before;

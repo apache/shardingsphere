@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.JD
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPositionManager;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.reader.LogReader;
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.writer.Writer;
-import org.apache.shardingsphere.spi.database.type.DatabaseTypeAwareSPI;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypeAwareSPI;
 
 /**
  * Scaling entry.
