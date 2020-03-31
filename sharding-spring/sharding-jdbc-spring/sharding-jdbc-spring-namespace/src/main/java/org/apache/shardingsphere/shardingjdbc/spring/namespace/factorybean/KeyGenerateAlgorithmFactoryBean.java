@@ -29,15 +29,15 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.Properties;
 
 /**
- * key generate algorithm FactoryBean.
+ * Key generate algorithm FactoryBean.
  */
 @Setter
 @Getter
-public class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateAlgorithm>, InitializingBean {
+public final class KeyGenerateAlgorithmFactoryBean implements FactoryBean<KeyGenerateAlgorithm>, InitializingBean {
     
     private String type;
     
-    private Properties properties;
+    private Properties properties = new Properties();
     
     @Override
     public KeyGenerateAlgorithm getObject() {
