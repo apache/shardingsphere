@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
+package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;

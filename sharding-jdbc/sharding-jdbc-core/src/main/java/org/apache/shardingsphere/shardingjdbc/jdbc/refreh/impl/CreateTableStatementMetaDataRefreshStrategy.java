@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
+package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.AbstractTableStatementMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
 
 /**
- * Alter table statement meta data refresh strategy.
+ * Create table statement meta data refresh strategy.
  */
-public final class AlterTableStatementMetaDataRefreshStrategy extends AbstractTableStatementMetaData implements SQLStatementMetaDataRefreshStrategy<AlterTableStatement> {
+public final class CreateTableStatementMetaDataRefreshStrategy extends AbstractTableStatementMetaData implements SQLStatementMetaDataRefreshStrategy<CreateTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<AlterTableStatement> sqlStatementContext) throws SQLException {
+    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateTableStatement> sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         shardingRuntimeContext.getMetaData().getSchema().put(tableName, loadTableMetaData(tableName, shardingRuntimeContext));
     }

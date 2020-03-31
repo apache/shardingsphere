@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
+package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.AbstractTableStatementMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.statement.ddl.AlterTableStatement;
+
+import java.sql.SQLException;
 
 /**
- * Drop table statement meta data refresh strategy.
+ * Alter table statement meta data refresh strategy.
  */
-public final class DropTableStatementMetaDataRefreshStrategy implements SQLStatementMetaDataRefreshStrategy<DropTableStatement> {
+public final class AlterTableStatementMetaDataRefreshStrategy extends AbstractTableStatementMetaData implements SQLStatementMetaDataRefreshStrategy<AlterTableStatement> {
     
     @Override
-    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<DropTableStatement> sqlStatementContext) {
-        for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getTables()) {
-            shardingRuntimeContext.getMetaData().getSchema().remove(each.getTableName().getIdentifier().getValue());
-        }
+    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<AlterTableStatement> sqlStatementContext) throws SQLException {
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        shardingRuntimeContext.getMetaData().getSchema().put(tableName, loadTableMetaData(tableName, shardingRuntimeContext));
     }
 }

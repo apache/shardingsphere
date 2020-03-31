@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
 
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.AlterTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.CreateIndexStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.CreateTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.DropIndexStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.DropTableStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
