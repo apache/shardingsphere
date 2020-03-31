@@ -28,7 +28,6 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeC
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
@@ -149,7 +148,7 @@ public abstract class AbstractStatementExecutor {
         if (null == sqlStatementContext) {
             return;
         }
-        Optional<MetaDataRefreshStrategy<? extends SQLStatement>> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
             refreshStrategy.get().refreshMetaData(runtimeContext, sqlStatementContext);
         }

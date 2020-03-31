@@ -25,7 +25,7 @@ import java.sql.SQLException;
 /**
  * Meta data refresh strategy.
  * 
- * @param <T> type of SQL statement context
+ * @param <T> type of SQL statement ontext
  */
 public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
     
