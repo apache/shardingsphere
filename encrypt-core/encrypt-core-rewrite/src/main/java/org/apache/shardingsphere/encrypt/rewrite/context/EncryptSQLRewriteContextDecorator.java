@@ -25,6 +25,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
  * SQL rewrite context decorator for encrypt.
@@ -33,7 +34,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     
     @SuppressWarnings("unchecked")
     @Override
-    public void decorate(final EncryptRule encryptRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext) {
+    public void decorate(final EncryptRule encryptRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         boolean isQueryWithCipherColumn = properties.<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn).getParameterRewriters(sqlRewriteContext.getSchemaMetaData())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {

@@ -20,18 +20,18 @@ package org.apache.shardingsphere.orchestration.core.registrycenter;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIServiceLoader;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 /**
  * Registry center loader from SPI.
  */
 @Slf4j
-public final class RegistryCenterRepositoryServiceLoader extends TypeBasedSPIServiceLoader<RegistryCenterRepository> {
+public final class RegistryCenterRepositoryServiceLoader extends TypedSPIServiceLoader<RegistryCenterRepository> {
     
     static {
-        NewInstanceServiceLoader.register(RegistryCenterRepository.class);
+        ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
     }
     
     public RegistryCenterRepositoryServiceLoader() {

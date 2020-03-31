@@ -28,4 +28,15 @@ public interface ShadowJudgementEngine {
      * @return SQL is shadow or not
      */
     boolean isShadowSQL();
+    
+    /**
+     * Judge whether field is shadow.
+     * @param value the field
+     * @return field is shadow or not
+     */
+    default boolean isShadowField(final Object value) {
+        return (value instanceof Boolean && (Boolean) value)
+                || (value instanceof Integer && 1 == (Integer) value)
+                || (value instanceof String && Boolean.parseBoolean((String) value));
+    }
 }

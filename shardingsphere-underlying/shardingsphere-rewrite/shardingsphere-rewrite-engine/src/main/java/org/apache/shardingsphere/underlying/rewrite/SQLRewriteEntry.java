@@ -24,13 +24,11 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * SQL rewrite entry.
@@ -72,13 +70,6 @@ public final class SQLRewriteEntry {
     
     @SuppressWarnings("unchecked")
     private void decorate(final Map<BaseRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-        for (Entry<BaseRule, SQLRewriteContextDecorator> entry : decorators.entrySet()) {
-            BaseRule rule = entry.getKey();
-            SQLRewriteContextDecorator decorator = entry.getValue();
-            if (decorator instanceof RouteContextAware) {
-                ((RouteContextAware) decorator).setRouteContext(routeContext);
-            }
-            decorator.decorate(rule, properties, sqlRewriteContext);
-        }
+        decorators.forEach((key, value) -> value.decorate(key, properties, sqlRewriteContext, routeContext));
     }
 }

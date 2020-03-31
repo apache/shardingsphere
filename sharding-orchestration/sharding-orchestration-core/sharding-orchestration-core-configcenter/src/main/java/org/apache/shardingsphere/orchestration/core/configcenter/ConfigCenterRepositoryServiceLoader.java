@@ -18,26 +18,24 @@
 package org.apache.shardingsphere.orchestration.core.configcenter;
 
 import com.google.common.base.Preconditions;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIServiceLoader;
 
 /**
  * Config center repository loader from SPI.
  */
-@Slf4j
-public final class ConfigCenterRepositoryServiceLoader extends TypeBasedSPIServiceLoader<ConfigCenterRepository> {
-
+public final class ConfigCenterRepositoryServiceLoader extends TypedSPIServiceLoader<ConfigCenterRepository> {
+    
     static {
-        NewInstanceServiceLoader.register(ConfigCenterRepository.class);
+        ShardingSphereServiceLoader.register(ConfigCenterRepository.class);
     }
-
+    
     public ConfigCenterRepositoryServiceLoader() {
         super(ConfigCenterRepository.class);
     }
-
+    
     /**
      * Load config center repository from SPI.
      *

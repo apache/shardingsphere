@@ -85,7 +85,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     @SuppressWarnings("unchecked")
     @SneakyThrows
     private void reInitMetaData() {
-        Map<String, DataSource> dataSourceMap = (Map<String, DataSource>) getFieldValue(shardingDataSource.getRuntimeContext().getCachedDatabaseMetaData(), "dataSourceMap");
+        Map<String, DataSource> dataSourceMap = shardingDataSource.getDataSourceMap();
         ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(
                 shardingDataSource.getRuntimeContext(), dataSourceMap, shardingDataSource.getRuntimeContext().getDatabaseType());
         setFieldValue(shardingDataSource.getRuntimeContext(), "metaData", newMetaData);

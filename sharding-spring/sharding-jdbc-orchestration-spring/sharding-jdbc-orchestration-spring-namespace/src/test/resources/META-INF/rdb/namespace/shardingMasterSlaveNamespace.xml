@@ -35,6 +35,9 @@
     <bean id="rangeModuloTableShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.RangeModuloTableShardingAlgorithm" />
     <bean id="defaultComplexKeysShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultComplexKeysShardingAlgorithm" />
     <bean id="defaultHintShardingAlgorithm" class="org.apache.shardingsphere.shardingjdbc.orchestration.spring.algorithm.DefaultHintShardingAlgorithm" />
+    <bean id="incrementAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="INCREMENT" />
+    </bean>
     
     <sharding:standard-strategy id="standardStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="rangeStandardStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" range-algorithm-ref="rangeModuloTableShardingAlgorithm" />
@@ -42,7 +45,7 @@
     <sharding:hint-strategy id="hintStrategy" algorithm-ref="defaultHintShardingAlgorithm" />
     <sharding:none-strategy id="noneStrategy" />
     
-    <sharding:key-generator id="keyGenerator" type="INCREMENT" column="order_id" />
+    <sharding:key-generator id="keyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
     <master-slave:load-balance-algorithm id="randomLoadBalanceAlgorithm" type="RANDOM"/>
 
     <sharding:data-source id="masterSlaveShardingDataSourceByDefaultStrategy">

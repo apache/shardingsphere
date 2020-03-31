@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.spi.masterslave;
 
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.spi.type.TypedSPI;
 
 import java.util.List;
 
 /**
  * Master-slave database load-balance algorithm.
  */
-public interface MasterSlaveLoadBalanceAlgorithm extends TypeBasedSPI {
+public interface MasterSlaveLoadBalanceAlgorithm extends TypedSPI {
     
     /**
      * Get data source.

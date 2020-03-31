@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.api.config.masterslave;
 
 import lombok.Getter;
-import org.apache.shardingsphere.underlying.common.config.TypeBasedSPIConfiguration;
+import org.apache.shardingsphere.underlying.common.config.TypedSPIConfiguration;
 
 import java.util.Properties;
 
@@ -26,7 +26,7 @@ import java.util.Properties;
  * Master-slave load balance strategy configuration.
  */
 @Getter
-public final class LoadBalanceStrategyConfiguration extends TypeBasedSPIConfiguration {
+public final class LoadBalanceStrategyConfiguration extends TypedSPIConfiguration {
     
     public LoadBalanceStrategyConfiguration(final String type) {
         super(type);

@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.spi.algorithm.masterslave;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 /**
  * Master-slave database load-balance algorithm service loader.
  */
-public final class MasterSlaveLoadBalanceAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
+public final class MasterSlaveLoadBalanceAlgorithmServiceLoader extends TypedSPIServiceLoader<MasterSlaveLoadBalanceAlgorithm> {
     
     static {
-        NewInstanceServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
+        ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
     }
     
     public MasterSlaveLoadBalanceAlgorithmServiceLoader() {

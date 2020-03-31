@@ -27,7 +27,6 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -38,16 +37,16 @@ import java.util.Properties;
 @Getter
 public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeContext<MasterSlaveRule> {
     
-    private final DatabaseMetaData cachedDatabaseMetaData;
+    private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
     public MasterSlaveRuntimeContext(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(dataSourceMap, masterSlaveRule, props, databaseType);
         cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
     }
     
-    private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData(), dataSourceMap, null);
+            return new CachedDatabaseMetaData(connection.getMetaData());
         }
     }
     

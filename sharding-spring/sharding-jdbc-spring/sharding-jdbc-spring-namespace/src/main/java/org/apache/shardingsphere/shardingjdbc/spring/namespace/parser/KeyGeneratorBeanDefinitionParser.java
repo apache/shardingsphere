@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.shardingjdbc.spring.namespace.parser;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.shardingjdbc.spring.namespace.constants.ShardingDataSourceBeanDefinitionParserTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
-
-import java.util.Properties;
 
 /**
  * Key generator bean parser for spring namespace.
@@ -36,18 +33,8 @@ public final class KeyGeneratorBeanDefinitionParser extends AbstractBeanDefiniti
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(KeyGeneratorConfiguration.class);
-        factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_TYPE_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_COLUMN_ATTRIBUTE));
-        parseProperties(element, factory);
+        factory.addConstructorArgReference(element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_ALGORITHM_REF_TAG));
         return factory.getBeanDefinition();
-    }
-    
-    private void parseProperties(final Element element, final BeanDefinitionBuilder factory) {
-        String properties = element.getAttribute(ShardingDataSourceBeanDefinitionParserTag.GENERATE_KEY_PROPERTY_REF_ATTRIBUTE);
-        if (!Strings.isNullOrEmpty(properties)) {
-            factory.addConstructorArgReference(properties);
-        } else {
-            factory.addConstructorArgValue(new Properties());
-        }
     }
 }
