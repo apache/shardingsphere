@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.core.common.CenterType;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenter;
 import org.apache.shardingsphere.orchestration.core.configcenter.ConfigCenterRepositoryServiceLoader;
@@ -31,11 +33,10 @@ import org.apache.shardingsphere.orchestration.core.facade.listener.ShardingOrch
 import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationProperties;
 import org.apache.shardingsphere.orchestration.core.facade.properties.OrchestrationPropertyKey;
 import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenter;
-import org.apache.shardingsphere.orchestration.core.registrycenter.RegistryCenterRepositoryServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -48,37 +49,40 @@ import java.util.Properties;
  */
 @Slf4j
 public final class ShardingOrchestrationFacade implements AutoCloseable {
-
+    
+    static {
+        ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
+    }
+    
     private final RegistryCenterRepository registryCenterRepository;
-
-    private final ConfigCenterRepository configCenterRepository;
     
     private final boolean isOverwrite;
-
+    
     @Getter
     private final ConfigCenter configCenter;
-
+    
     private final RegistryCenter registryCenter;
-
+    
     private final ShardingOrchestrationListenerManager listenerManager;
     
     public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
         Optional<String> registryCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.REGISTRY_CENTER.getValue());
         Preconditions.checkArgument(registryCenterName.isPresent(), "Can not find instance configuration with registry center orchestration type.");
         CenterConfiguration registryCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(registryCenterName.get());
-        registryCenterRepository = new RegistryCenterRepositoryServiceLoader().load(registryCenterConfiguration);
+        Preconditions.checkNotNull(registryCenterConfiguration, "Registry center configuration cannot be null.");
+        registryCenterRepository = TypedSPIRegistry.getRegisteredService(RegistryCenterRepository.class, registryCenterConfiguration.getType(), registryCenterConfiguration.getProperties());
+        registryCenterRepository.init(registryCenterConfiguration);
         registryCenter = new RegistryCenter(registryCenterName.get(), registryCenterRepository);
         Optional<String> configCenterName = getInstanceNameByOrchestrationType(orchestrationConfig.getInstanceConfigurationMap(), CenterType.CONFIG_CENTER.getValue());
         Preconditions.checkArgument(configCenterName.isPresent(), "Can not find instance configuration with config center orchestration type.");
         CenterConfiguration configCenterConfiguration = orchestrationConfig.getInstanceConfigurationMap().get(configCenterName.get());
-        configCenterRepository = new ConfigCenterRepositoryServiceLoader().load(configCenterConfiguration);
+        ConfigCenterRepository configCenterRepository = new ConfigCenterRepositoryServiceLoader().load(configCenterConfiguration);
         isOverwrite = new OrchestrationProperties(configCenterConfiguration.getProperties()).getValue(OrchestrationPropertyKey.OVERWRITE);
         configCenter = new ConfigCenter(configCenterName.get(), configCenterRepository);
         listenerManager = shardingSchemaNames.isEmpty()
-                ? new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,
-                                                            configCenterName.get(), configCenterRepository, configCenter.getAllShardingSchemaNames())
-                : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository,
-                                                            configCenterName.get(), configCenterRepository, shardingSchemaNames);
+                ? new ShardingOrchestrationListenerManager(
+                        registryCenterName.get(), registryCenterRepository, configCenterName.get(), configCenterRepository, configCenter.getAllShardingSchemaNames())
+                : new ShardingOrchestrationListenerManager(registryCenterName.get(), registryCenterRepository, configCenterName.get(), configCenterRepository, shardingSchemaNames);
     }
     
     /**
