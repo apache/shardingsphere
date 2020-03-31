@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.underlying.pluggble.merge;
 
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.loader.SPILoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEntry;
@@ -63,19 +63,11 @@ public final class MergeEngine {
     
     private void registerMergeDecorator() {
         for (Class<? extends ResultProcessEngine> each : OrderedSPIRegistry.getRegisteredClasses(ResultProcessEngine.class)) {
-            ResultProcessEngine processEngine = createProcessEngine(each);
+            ResultProcessEngine processEngine = SPILoader.newInstance(each);
             Class<?> ruleClass = (Class<?>) processEngine.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
                     .forEach(rule -> merger.registerProcessEngine(rule, processEngine));
-        }
-    }
-    
-    private ResultProcessEngine createProcessEngine(final Class<? extends ResultProcessEngine> processEngine) {
-        try {
-            return processEngine.newInstance();
-        } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new ShardingSphereException(String.format("Can not find public default constructor for result process engine `%s`", processEngine), ex);
         }
     }
 }
