@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.E
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected simple table.
+ * Expected JoinTable.
  */
 @Getter
 @Setter

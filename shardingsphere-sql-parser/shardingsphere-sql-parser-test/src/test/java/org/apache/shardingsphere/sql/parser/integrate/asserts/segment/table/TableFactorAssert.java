@@ -30,17 +30,17 @@ import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTabl
 import java.util.List;
 
 /**
- * Table assert.
+ * TableFactor assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableFactorAssert {
     
     /**
-     * Assert actual joinTable segments is correct with expected joinTables.
+     * Assert actual TableFactor segments is correct with expected TableFactor.
      *
      * @param assertContext assert context
-     * @param actual        actual joinTables
-     * @param expected      expected joinTables
+     * @param actual        actual TableFactor
+     * @param expected      expected TableFactor
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableFactorSegment actual, final ExpectedTableFactor expected) {
         TableAssert.assertIs(assertContext, (SimpleTableSegment) actual.getTable(), expected.getTable());

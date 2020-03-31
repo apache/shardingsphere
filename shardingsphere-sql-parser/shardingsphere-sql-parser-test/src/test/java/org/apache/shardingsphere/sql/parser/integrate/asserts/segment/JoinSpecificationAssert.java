@@ -24,17 +24,17 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.E
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.JoinSpecificationSegment;
 
 /**
- * Table assert.
+ * JoinSpecification assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JoinSpecificationAssert {
     
     /**
-     * Assert actual joinTable segments is correct with expected joinTables.
+     * Assert actual JoinSpecification segments is correct with expected JoinSpecification.
      *
      * @param assertContext assert context
-     * @param actual actual joinTables
-     * @param expected expected joinTables
+     * @param actual actual JoinSpecification
+     * @param expected expected JoinSpecification
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final JoinSpecificationSegment actual, final ExpectedJoinSpecification expected) {
     }

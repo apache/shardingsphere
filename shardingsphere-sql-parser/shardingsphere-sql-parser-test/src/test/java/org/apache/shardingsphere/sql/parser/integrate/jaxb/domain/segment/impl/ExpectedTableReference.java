@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 
 /**
- * Expected simple table.
+ * Expected TableReference.
  */
 @Getter
 @Setter

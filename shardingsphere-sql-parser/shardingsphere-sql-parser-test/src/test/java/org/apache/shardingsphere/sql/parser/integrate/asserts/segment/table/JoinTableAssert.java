@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Table assert.
+ * JoinTable assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JoinTableAssert {

@@ -33,17 +33,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Table assert.
+ * TableReferences assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableReferencesAssert {
     
     /**
-     * Assert actual joinTable segments is correct with expected joinTables.
+     * Assert actual TableReferences segments is correct with expected TableReferences.
      *
      * @param assertContext assert context
-     * @param actual        actual joinTables
-     * @param expected      expected joinTables
+     * @param actual        actual TableReferences
+     * @param expected      expected TableReferences
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final List<TableReferenceSegment> actual, final List<ExpectedTableReference> expected) {
         assertThat(assertContext.getText("TableReferences assert error"), actual.size(), is(expected.size()));
