@@ -102,41 +102,6 @@ public final class ShardingMetaDataLoader {
         checkUniformed(logicTableName, actualTableMetaDataMap);
         return actualTableMetaDataMap.values().iterator().next();
     }
-
-    private Map<String, TableMetaData> findTableMetaData(final String logicTableName, final SchemaMetaData schemaMetaData, final TableRule tableRule) {
-        return tableRule.getDataNodeGroups().get(logicTableName).stream().collect(Collectors.toMap(e -> e.getTableName(), e -> schemaMetaData.get(e.getTableName())));
-    }
-
-    private Map<String, TableMetaData> parallelLoadTableMetaData(final String logicTableName, final DatabaseType databaseType, final TableRule tableRule) {
-        Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
-        Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
-        Map<String, Future<TableMetaData>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
-        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CORES * 2, dataNodeGroups.size()));
-        for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
-            for (DataNode each : entry.getValue()) {
-                Future<TableMetaData> futures = executorService.submit(() -> load(each, databaseType));
-                tableFutureMap.put(each.getTableName(), futures);
-            }
-        }
-        tableFutureMap.forEach((key, value) -> {
-            try {
-                TableMetaData tableMetaData = value.get(FUTURE_GET_TIME_OUT_SEC, TimeUnit.SECONDS);
-                actualTableMetaDataMap.put(key, tableMetaData);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                throw new IllegalStateException(String.format("Error while fetching tableMetaData with key= %s and Value=%s", key, value), e);
-            }
-        });
-        executorService.shutdownNow();
-        return actualTableMetaDataMap;
-    }
-
-    private TableMetaData load(final DataNode dataNode, final DatabaseType databaseType) {
-        try {
-            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
-        } catch (SQLException e) {
-            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
-        }
-    }
     
     /**
      * Load schema Meta data.
@@ -150,6 +115,41 @@ public final class ShardingMetaDataLoader {
         SchemaMetaData result = loadShardingSchemaMetaData(databaseType, schemaMetaData);
         result.merge(loadDefaultSchemaMetaData(databaseType, schemaMetaData));
         return result;
+    }
+    
+    private TableMetaData loadDataNode(final DataNode dataNode, final DatabaseType databaseType) {
+        try {
+            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
+        } catch (SQLException e) {
+            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
+        }
+    }
+
+    private Map<String, TableMetaData> findTableMetaData(final String logicTableName, final SchemaMetaData schemaMetaData, final TableRule tableRule) {
+        return tableRule.getDataNodeGroups().get(logicTableName).stream().collect(Collectors.toMap(e -> e.getTableName(), e -> schemaMetaData.get(e.getTableName())));
+    }
+
+    private Map<String, TableMetaData> parallelLoadTableMetaData(final String logicTableName, final DatabaseType databaseType, final TableRule tableRule) {
+        Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
+        Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
+        Map<String, Future<TableMetaData>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
+        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CORES * 2, dataNodeGroups.size()));
+        for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
+            for (DataNode each : entry.getValue()) {
+                Future<TableMetaData> futures = executorService.submit(() -> loadDataNode(each, databaseType));
+                tableFutureMap.put(each.getTableName(), futures);
+            }
+        }
+        tableFutureMap.forEach((key, value) -> {
+            try {
+                TableMetaData tableMetaData = value.get(FUTURE_GET_TIME_OUT_SEC, TimeUnit.SECONDS);
+                actualTableMetaDataMap.put(key, tableMetaData);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                throw new IllegalStateException(String.format("Error while fetching tableMetaData with key= %s and Value=%s", key, value), e);
+            }
+        });
+        executorService.shutdownNow();
+        return actualTableMetaDataMap;
     }
     
     private SchemaMetaData loadShardingSchemaMetaData(final DatabaseType databaseType, final SchemaMetaData schemaMetaData) throws SQLException {
