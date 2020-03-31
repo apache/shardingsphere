@@ -42,12 +42,11 @@ public final class TableReferencesAssert {
      * Assert actual TableReferences segments is correct with expected TableReferences.
      *
      * @param assertContext assert context
-     * @param actual        actual TableReferences
-     * @param expected      expected TableReferences
+     * @param actual actual TableReferences
+     * @param expected expected TableReferences
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final List<TableReferenceSegment> actual, final List<ExpectedTableReference> expected) {
         assertThat(assertContext.getText("TableReferences assert error"), actual.size(), is(expected.size()));
-        
         for (int i = 0; i < actual.size(); i++) {
             TableFactorAssert.assertIs(assertContext, actual.get(i).getTableFactor(), expected.get(i).getTableFactor());
             JoinTableAssert.assertIs(assertContext, (List<JoinedTableSegment>) actual.get(i).getJoinedTables(), (List<ExpectedJoinTable>) expected.get(i).getJoinTables());

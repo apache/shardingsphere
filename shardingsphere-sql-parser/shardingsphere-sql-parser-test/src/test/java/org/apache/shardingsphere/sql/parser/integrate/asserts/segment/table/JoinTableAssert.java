@@ -39,8 +39,8 @@ public final class JoinTableAssert {
      * Assert actual joinTable segments is correct with expected joinTables.
      *
      * @param assertContext assert context
-     * @param actual        actual joinTables
-     * @param expected      expected joinTables
+     * @param actual actual joinTables
+     * @param expected expected joinTables
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final JoinedTableSegment actual, final ExpectedJoinTable expected) {
         TableFactorAssert.assertIs(assertContext, actual.getTableFactor(), expected.getTableFactor());

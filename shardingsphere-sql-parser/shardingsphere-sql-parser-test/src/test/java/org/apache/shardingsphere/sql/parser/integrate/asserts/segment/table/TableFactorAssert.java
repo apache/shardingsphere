@@ -37,10 +37,9 @@ public final class TableFactorAssert {
     
     /**
      * Assert actual TableFactor segments is correct with expected TableFactor.
-     *
      * @param assertContext assert context
-     * @param actual        actual TableFactor
-     * @param expected      expected TableFactor
+     * @param actual actual TableFactor
+     * @param expected expected TableFactor
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableFactorSegment actual, final ExpectedTableFactor expected) {
         TableAssert.assertIs(assertContext, (SimpleTableSegment) actual.getTable(), expected.getTable());
