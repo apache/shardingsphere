@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStateme
 /**
  * Create index statement meta data refresh strategy.
  */
-public final class CreateIndexStatementMetaDataRefreshStrategy implements SQLStatementMetaDataRefreshStrategy<CreateIndexStatement> {
+public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<CreateIndexStatement> {
    
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateIndexStatement> sqlStatementContext) {

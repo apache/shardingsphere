@@ -24,11 +24,11 @@ import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import java.sql.SQLException;
 
 /**
- * Interface SQL statement meta data refresh strategy.
+ * Meta data refresh strategy.
  *
  * @param <T> type of SQL statement
  */
-public interface SQLStatementMetaDataRefreshStrategy<T extends SQLStatement> {
+public interface MetaDataRefreshStrategy<T extends SQLStatement> {
     
     /**
      * Refresh meta data.

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.AbstractTableStatementMetaData;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 
@@ -28,7 +28,7 @@ import java.sql.SQLException;
 /**
  * Create table statement meta data refresh strategy.
  */
-public final class CreateTableStatementMetaDataRefreshStrategy extends AbstractTableStatementMetaData implements SQLStatementMetaDataRefreshStrategy<CreateTableStatement> {
+public final class CreateTableStatementMetaDataRefreshStrategy extends AbstractTableStatementMetaData implements MetaDataRefreshStrategy<CreateTableStatement> {
     
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateTableStatement> sqlStatementContext) throws SQLException {

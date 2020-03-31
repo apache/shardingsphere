@@ -35,11 +35,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * SQL statement meta data refresh strategy factory.
+ * Meta data refresh strategy factory.
  */
-public final class SQLStatementMetaDataRefreshStrategyFactory {
+public final class MetaDataRefreshStrategyFactory {
     
-    private static final Map<Class<?>, SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> REFRESH_MAP = new HashMap<>();
+    private static final Map<Class<?>, MetaDataRefreshStrategy<? extends SQLStatement>> REFRESH_MAP = new HashMap<>();
     
     static {
         REFRESH_MAP.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefreshStrategy());
@@ -50,12 +50,12 @@ public final class SQLStatementMetaDataRefreshStrategyFactory {
     }
     
     /**
-     * New instance of SQL statement meta data refresh strategy.
+     * Create new instance of meta data refresh strategy.
      *
      * @param sqlStatementContext SQL statement context
-     * @return SQL statement meta data refresh strategy
+     * @return meta data refresh strategy
      */
-    public static Optional<SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> newInstance(final SQLStatementContext sqlStatementContext) {
+    public static Optional<MetaDataRefreshStrategy<? extends SQLStatement>> newInstance(final SQLStatementContext sqlStatementContext) {
         return Optional.ofNullable(REFRESH_MAP.get(sqlStatementContext.getClass()));
     }
 }
