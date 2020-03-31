@@ -19,15 +19,22 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Sharding database meta data.
  */
-public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<ShardingRule, ShardingConnection> {
+public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<ShardingConnection> {
+    
+    private ShardingRule shardingRule;
     
     public ShardingDatabaseMetaData(final ShardingConnection connection) {
-        super(connection, connection.getRuntimeContext().getRule(), connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData());
+        super(connection, connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData());
+        shardingRule = connection.getRuntimeContext().getRule();
     }
     
     @Override
@@ -35,7 +42,7 @@ public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<Sha
         if (null == tableNamePattern) {
             return null;
         }
-        return getRule().findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
+        return shardingRule.findTableRule(tableNamePattern).isPresent() ? "%" + tableNamePattern + "%" : tableNamePattern;
     }
     
     @Override
@@ -44,10 +51,15 @@ public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<Sha
             return null;
         }
         String result = table;
-        if (getRule().findTableRule(table).isPresent()) {
-            DataNode dataNode = getRule().getDataNode(table);
+        if (shardingRule.findTableRule(table).isPresent()) {
+            DataNode dataNode = shardingRule.getDataNode(table);
             result = dataNode.getTableName();
         }
         return result;
+    }
+    
+    @Override
+    protected ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
+        return new DatabaseMetaDataResultSet<>(resultSet, shardingRule);
     }
 }
