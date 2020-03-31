@@ -31,16 +31,15 @@ public final class OrderedSPIRegistry {
     /**
      * Get registered services.
      * 
-     * @param orderBasedClass class of order based
-     * @param <T> type of order based class
+     * @param orderedSPIClass class of ordered SPI
+     * @param <T> type of ordered SPI class
      * @return registered services
      */
-    public static <T extends OrderedSPI> Collection<T> getRegisteredServices(final Class<T> orderBasedClass) {
+    public static <T extends OrderedSPI> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
         Map<Integer, T> result = new TreeMap<>();
-        for (T each : ShardingSphereServiceLoader.newServiceInstances(orderBasedClass)) {
+        for (T each : ShardingSphereServiceLoader.newServiceInstances(orderedSPIClass)) {
             result.put(each.getOrder(), each);
         }
         return result.values();
     }
 }
-
