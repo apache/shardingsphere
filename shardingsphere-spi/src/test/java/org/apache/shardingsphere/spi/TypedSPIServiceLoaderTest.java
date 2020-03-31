@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.spi.fixture.TypeBasedSPIFixture;
-import org.apache.shardingsphere.spi.fixture.TypeBasedSPIFixtureImpl;
-import org.apache.shardingsphere.spi.fixture.TypeBasedSPIFixtureServiceLoader;
+import org.apache.shardingsphere.spi.fixture.TypedSPIFixture;
+import org.apache.shardingsphere.spi.fixture.TypedSPIFixtureImpl;
+import org.apache.shardingsphere.spi.fixture.TypedSPIFixtureServiceLoader;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -29,23 +29,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class TypeBasedSPIServiceLoaderTest {
+public final class TypedSPIServiceLoaderTest {
     
-    private TypeBasedSPIFixtureServiceLoader serviceLoader = new TypeBasedSPIFixtureServiceLoader();
+    private TypedSPIFixtureServiceLoader serviceLoader = new TypedSPIFixtureServiceLoader();
     
     @Test
     public void assertNewServiceSuccess() {
         Properties properties = new Properties();
         properties.setProperty("key", "value");
-        TypeBasedSPIFixture actual = serviceLoader.newService("FIXTURE", properties);
-        assertThat(actual, instanceOf(TypeBasedSPIFixtureImpl.class));
+        TypedSPIFixture actual = serviceLoader.newService("FIXTURE", properties);
+        assertThat(actual, instanceOf(TypedSPIFixtureImpl.class));
         assertThat(actual.getProperties().getProperty("key"), is("value"));
     }
     
     @Test
     public void assertNewServiceByDefault() {
-        TypeBasedSPIFixture actual = serviceLoader.newService();
-        assertThat(actual, instanceOf(TypeBasedSPIFixtureImpl.class));
+        TypedSPIFixture actual = serviceLoader.newService();
+        assertThat(actual, instanceOf(TypedSPIFixtureImpl.class));
         assertTrue(actual.getProperties().isEmpty());
     }
     

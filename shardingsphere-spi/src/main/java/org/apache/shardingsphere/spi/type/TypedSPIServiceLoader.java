@@ -27,28 +27,28 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Type based SPI service loader.
+ * Typed SPI service loader.
  * 
- * @param <T> type of algorithm class
+ * @param <T> type of SPI class
  */
 @RequiredArgsConstructor
-public abstract class TypeBasedSPIServiceLoader<T extends TypedSPI> {
+public abstract class TypedSPIServiceLoader<T extends TypedSPI> {
     
     private final Class<T> classType;
     
     /**
-     * Create new instance for type based SPI.
+     * Create new instance for typed SPI.
      * 
      * @param type type of SPI
      * @param props properties of SPI
      * @return SPI instance
      */
     public final T newService(final String type, final Properties props) {
-        Collection<T> typeBasedServices = loadTypeBasedServices(type);
-        if (typeBasedServices.isEmpty()) {
+        Collection<T> typedServices = loadTypedServices(type);
+        if (typedServices.isEmpty()) {
             throw new RuntimeException(String.format("Invalid `%s` SPI type `%s`.", classType.getName(), type));
         }
-        T result = typeBasedServices.iterator().next();
+        T result = typedServices.iterator().next();
         result.setProperties(props);
         return result;
     }
@@ -56,19 +56,19 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypedSPI> {
     /**
      * Create new service by default SPI type.
      *
-     * @return type based SPI instance
+     * @return typed SPI instance
      */
     public final T newService() {
-        T result = loadFirstTypeBasedService();
+        T result = loadFirstTypedService();
         result.setProperties(new Properties());
         return result;
     }
     
-    private Collection<T> loadTypeBasedServices(final String type) {
+    private Collection<T> loadTypedServices(final String type) {
         return ShardingSphereServiceLoader.newServiceInstances(classType).stream().filter(each -> type.equalsIgnoreCase(each.getType())).collect(Collectors.toList());
     }
     
-    private T loadFirstTypeBasedService() {
+    private T loadFirstTypedService() {
         Optional<T> result = ShardingSphereServiceLoader.newServiceInstances(classType).stream().findFirst();
         if (result.isPresent()) {
             return result.get();

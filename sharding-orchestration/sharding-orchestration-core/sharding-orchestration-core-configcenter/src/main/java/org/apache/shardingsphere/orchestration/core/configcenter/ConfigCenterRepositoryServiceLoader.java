@@ -21,12 +21,12 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.orchestration.center.ConfigCenterRepository;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIServiceLoader;
 
 /**
  * Config center repository loader from SPI.
  */
-public final class ConfigCenterRepositoryServiceLoader extends TypeBasedSPIServiceLoader<ConfigCenterRepository> {
+public final class ConfigCenterRepositoryServiceLoader extends TypedSPIServiceLoader<ConfigCenterRepository> {
     
     static {
         ShardingSphereServiceLoader.register(ConfigCenterRepository.class);

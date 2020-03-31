@@ -27,17 +27,17 @@ import java.util.Properties;
  * Type based SPI configuration.
  */
 @Getter
-public abstract class TypeBasedSPIConfiguration {
+public abstract class TypedSPIConfiguration {
     
     private final String type;
     
     private final Properties properties;
     
-    public TypeBasedSPIConfiguration(final String type) {
+    public TypedSPIConfiguration(final String type) {
         this(type, null);
     }
     
-    public TypeBasedSPIConfiguration(final String type, final Properties properties) {
+    public TypedSPIConfiguration(final String type, final Properties properties) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
         this.type = type;
         this.properties = null == properties ? new Properties() : properties;

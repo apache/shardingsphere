@@ -24,7 +24,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class TypeBasedSPIFixtureImpl implements TypeBasedSPIFixture {
+public final class TypedSPIFixtureImpl implements TypedSPIFixture {
     
     private Properties properties;
     

@@ -17,7 +17,16 @@
 
 package org.apache.shardingsphere.spi.fixture;
 
-import org.apache.shardingsphere.spi.type.TypedSPI;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIServiceLoader;
 
-public interface TypeBasedSPIFixture extends TypedSPI {
+public final class TypedSPIFixtureServiceLoader extends TypedSPIServiceLoader<TypedSPIFixture> {
+    
+    static {
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
+    }
+    
+    public TypedSPIFixtureServiceLoader() {
+        super(TypedSPIFixture.class);
+    }
 }

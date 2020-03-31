@@ -19,12 +19,12 @@ package org.apache.shardingsphere.spi.algorithm.keygen;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.spi.type.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIServiceLoader;
 
 /**
  * Key generate algorithm service loader.
  */
-public final class KeyGenerateAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<KeyGenerateAlgorithm> {
+public final class KeyGenerateAlgorithmServiceLoader extends TypedSPIServiceLoader<KeyGenerateAlgorithm> {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
