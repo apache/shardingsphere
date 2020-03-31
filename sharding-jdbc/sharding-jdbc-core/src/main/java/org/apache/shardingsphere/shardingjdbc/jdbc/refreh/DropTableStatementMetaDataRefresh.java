@@ -16,5 +16,4 @@ public final class DropTableStatementMetaDataRefresh implements SQLStatementMeta
             shardingRuntimeContext.getMetaData().getSchema().remove(each.getTableName().getIdentifier().getValue());
         }
     }
-    
 }

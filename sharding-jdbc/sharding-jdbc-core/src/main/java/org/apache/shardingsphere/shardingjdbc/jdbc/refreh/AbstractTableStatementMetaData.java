@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public abstract class AbstractTableStatementMetaData {
     
     /**
-     * Load table meta table meta data.
+     * Load TableMetaData.
      *
      * @param tableName              the table name
      * @param shardingRuntimeContext the sharding runtime context
