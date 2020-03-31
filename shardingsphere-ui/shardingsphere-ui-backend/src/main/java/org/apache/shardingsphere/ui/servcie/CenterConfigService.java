@@ -20,6 +20,7 @@ package org.apache.shardingsphere.ui.servcie;
 
 import org.apache.shardingsphere.ui.common.domain.CenterConfig;
 import org.apache.shardingsphere.ui.common.domain.CenterConfigs;
+import org.apache.shardingsphere.ui.common.dto.CenterConfigDTO;
 
 import java.util.Optional;
 
@@ -82,4 +83,11 @@ public interface CenterConfigService {
      * @return all center configs.
      */
     CenterConfigs loadAll(String orchestrationType);
+    
+    /**
+     * update config center
+     *
+     * @param config center config
+     */
+    void update(CenterConfigDTO config);
 }
