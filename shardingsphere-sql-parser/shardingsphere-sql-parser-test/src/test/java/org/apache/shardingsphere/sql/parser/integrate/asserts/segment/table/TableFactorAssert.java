@@ -37,6 +37,7 @@ public final class TableFactorAssert {
     
     /**
      * Assert actual TableFactor segments is correct with expected TableFactor.
+     *
      * @param assertContext assert context
      * @param actual actual TableFactor
      * @param expected expected TableFactor
