@@ -17,21 +17,22 @@
 
 package org.apache.shardingsphere.core.yaml.swapper;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Properties;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
-import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.junit.Test;
+
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class KeyGeneratorConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        KeyGenerateAlgorithm keyGenerateAlgorithm = new KeyGenerateAlgorithmServiceLoader().newService("UUID", new Properties());
+        KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, "UUID", new Properties());
         YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
         assertThat(actual.getType(), is("UUID"));
         assertThat(actual.getColumn(), is("id"));
