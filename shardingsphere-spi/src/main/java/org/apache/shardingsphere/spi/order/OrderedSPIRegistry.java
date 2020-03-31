@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spi.order;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.Map;
@@ -37,7 +37,7 @@ public final class OrderedSPIRegistry {
      */
     public static <T extends OrderBasedSPI> Collection<T> getRegisteredServices(final Class<T> orderBasedClass) {
         Map<Integer, T> result = new TreeMap<>();
-        for (T each : NewInstanceServiceLoader.newServiceInstances(orderBasedClass)) {
+        for (T each : ShardingSphereServiceLoader.newServiceInstances(orderBasedClass)) {
             result.put(each.getOrder(), each);
         }
         return result.values();

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.core.registrycenter;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.orchestration.center.RegistryCenterRepository;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration
 public final class RegistryCenterRepositoryServiceLoader extends TypeBasedSPIServiceLoader<RegistryCenterRepository> {
     
     static {
-        NewInstanceServiceLoader.register(RegistryCenterRepository.class);
+        ShardingSphereServiceLoader.register(RegistryCenterRepository.class);
     }
     
     public RegistryCenterRepositoryServiceLoader() {

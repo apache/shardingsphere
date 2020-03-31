@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingscaling.core.spi;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -29,8 +29,8 @@ public final class ScalingEntryLoader {
     private static final Map<String, ScalingEntry> SCALING_ENTRY_MAP = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
     static {
-        NewInstanceServiceLoader.register(ScalingEntry.class);
-        for (ScalingEntry each : NewInstanceServiceLoader.newServiceInstances(ScalingEntry.class)) {
+        ShardingSphereServiceLoader.register(ScalingEntry.class);
+        for (ScalingEntry each : ShardingSphereServiceLoader.newServiceInstances(ScalingEntry.class)) {
             SCALING_ENTRY_MAP.put(each.getDatabaseType(), each);
         }
     }

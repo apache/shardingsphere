@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.hook;
 
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 
@@ -27,10 +27,10 @@ import java.util.Collection;
  */
 public final class SPIParsingHook implements ParsingHook {
     
-    private final Collection<ParsingHook> parsingHooks = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
+    private final Collection<ParsingHook> parsingHooks = ShardingSphereServiceLoader.newServiceInstances(ParsingHook.class);
     
     static {
-        NewInstanceServiceLoader.register(ParsingHook.class);
+        ShardingSphereServiceLoader.register(ParsingHook.class);
     }
     
     @Override

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.route.time.spi;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.route.time.exception.NoDatabaseSQLEntrySupportException;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 
@@ -30,10 +30,10 @@ import java.util.Collection;
 public final class SPIDataBaseSQLEntry implements DatabaseSQLEntry {
     
     static {
-        NewInstanceServiceLoader.register(DatabaseSQLEntry.class);
+        ShardingSphereServiceLoader.register(DatabaseSQLEntry.class);
     }
     
-    private final Collection<DatabaseSQLEntry> sqlEntries = NewInstanceServiceLoader.newServiceInstances(DatabaseSQLEntry.class);
+    private final Collection<DatabaseSQLEntry> sqlEntries = ShardingSphereServiceLoader.newServiceInstances(DatabaseSQLEntry.class);
     
     private final String driverClassName;
     
