@@ -20,18 +20,17 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.AbstractTableStatementMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 
 import java.sql.SQLException;
 
 /**
  * Create table statement meta data refresh strategy.
  */
-public final class CreateTableStatementMetaDataRefreshStrategy extends AbstractTableStatementMetaData implements MetaDataRefreshStrategy<CreateTableStatement> {
+public final class CreateTableStatementMetaDataRefreshStrategy extends AbstractTableStatementMetaData implements MetaDataRefreshStrategy<CreateTableStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateTableStatement> sqlStatementContext) throws SQLException {
+    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final CreateTableStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         shardingRuntimeContext.getMetaData().getSchema().put(tableName, loadTableMetaData(tableName, shardingRuntimeContext));
     }

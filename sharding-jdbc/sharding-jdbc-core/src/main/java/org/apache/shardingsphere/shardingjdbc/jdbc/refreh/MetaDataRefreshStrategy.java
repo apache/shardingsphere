@@ -19,16 +19,15 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.sql.SQLException;
 
 /**
  * Meta data refresh strategy.
- *
- * @param <T> type of SQL statement
+ * 
+ * @param <T> type of SQL statement context
  */
-public interface MetaDataRefreshStrategy<T extends SQLStatement> {
+public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
     
     /**
      * Refresh meta data.
@@ -37,5 +36,5 @@ public interface MetaDataRefreshStrategy<T extends SQLStatement> {
      * @param sqlStatementContext SQL statement context
      * @throws SQLException SQL exception
      */
-    void refreshMetaData(ShardingRuntimeContext shardingRuntimeContext, SQLStatementContext<T> sqlStatementContext) throws SQLException;
+    void refreshMetaData(ShardingRuntimeContext shardingRuntimeContext, T sqlStatementContext) throws SQLException;
 }
