@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Ordered registry.
+ * Ordered SPI registry.
  */
 public final class OrderedSPIRegistry {
     
@@ -43,3 +43,4 @@ public final class OrderedSPIRegistry {
         return result.values();
     }
 }
+
