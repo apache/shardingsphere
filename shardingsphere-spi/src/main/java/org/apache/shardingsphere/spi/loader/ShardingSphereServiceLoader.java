@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.spi.loader;
 
+import org.apache.shardingsphere.spi.exception.ServiceLoaderException;
+
 /**
  * Service loader of ShardingSphere.
  */
@@ -33,7 +35,7 @@ public final class ShardingSphereServiceLoader {
         try {
             return clazz.newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new SPIClassInstantiationException(clazz, ex);
+            throw new ServiceLoaderException(clazz, ex);
         }
     }
 }

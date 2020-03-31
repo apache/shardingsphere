@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.loader;
+package org.apache.shardingsphere.spi.exception;
 
 /**
- * SPI class instantiation exception.
+ * Service loader exception.
  */
-public final class SPIClassInstantiationException extends RuntimeException {
+public final class ServiceLoaderException extends RuntimeException {
     
     private static final long serialVersionUID = 6261274443437676201L;
     
-    public SPIClassInstantiationException(final Class<?> clazz, final Exception cause) {
+    public ServiceLoaderException(final Class<?> clazz, final Exception cause) {
         super(String.format("Can not find public default constructor for SPI class `%s`", clazz), cause);
     }
 }
