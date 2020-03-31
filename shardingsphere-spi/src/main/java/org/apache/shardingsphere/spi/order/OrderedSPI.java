@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.spi.order;
 
 /**
- * Order based SPI.
+ * Ordered SPI.
  * 
  * @param <T> type
  */
-public interface OrderBasedSPI<T> {
+public interface OrderedSPI<T> {
     
     /**
      * Get order of load.

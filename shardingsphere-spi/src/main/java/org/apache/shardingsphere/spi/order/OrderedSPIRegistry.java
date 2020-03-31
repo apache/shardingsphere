@@ -35,7 +35,7 @@ public final class OrderedSPIRegistry {
      * @param <T> type of order based class
      * @return registered services
      */
-    public static <T extends OrderBasedSPI> Collection<T> getRegisteredServices(final Class<T> orderBasedClass) {
+    public static <T extends OrderedSPI> Collection<T> getRegisteredServices(final Class<T> orderBasedClass) {
         Map<Integer, T> result = new TreeMap<>();
         for (T each : ShardingSphereServiceLoader.newServiceInstances(orderBasedClass)) {
             result.put(each.getOrder(), each);
