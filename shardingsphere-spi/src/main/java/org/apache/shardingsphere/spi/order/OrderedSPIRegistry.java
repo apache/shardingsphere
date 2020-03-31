@@ -26,7 +26,7 @@ import java.util.TreeMap;
 /**
  * Ordered registry.
  */
-public final class OrderedRegistry {
+public final class OrderedSPIRegistry {
     
     /**
      * Get registered classes.
@@ -36,7 +36,7 @@ public final class OrderedRegistry {
      * @return registered classes
      */
     @SuppressWarnings("unchecked")
-    public static <T extends OrderAware> Collection<Class<T>> getRegisteredClasses(final Class<T> orderAwareClass) {
+    public static <T extends OrderBasedSPI> Collection<Class<T>> getRegisteredClasses(final Class<T> orderAwareClass) {
         Map<Integer, Class<T>> result = new TreeMap<>();
         for (T each : NewInstanceServiceLoader.newServiceInstances(orderAwareClass)) {
             result.put(each.getOrder(), (Class<T>) each.getClass());

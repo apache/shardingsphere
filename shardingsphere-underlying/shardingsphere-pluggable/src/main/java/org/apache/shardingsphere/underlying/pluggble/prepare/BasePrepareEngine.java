@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.spi.order.OrderedRegistry;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
@@ -97,7 +97,7 @@ public abstract class BasePrepareEngine {
     }
     
     private void registerRouteDecorator() {
-        for (Class<? extends RouteDecorator> each : OrderedRegistry.getRegisteredClasses(RouteDecorator.class)) {
+        for (Class<? extends RouteDecorator> each : OrderedSPIRegistry.getRegisteredClasses(RouteDecorator.class)) {
             RouteDecorator routeDecorator = createRouteDecorator(each);
             Class<?> ruleClass = (Class<?>) routeDecorator.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
@@ -123,7 +123,7 @@ public abstract class BasePrepareEngine {
     }
     
     private void registerRewriteDecorator() {
-        for (Class<? extends SQLRewriteContextDecorator> each : OrderedRegistry.getRegisteredClasses(SQLRewriteContextDecorator.class)) {
+        for (Class<? extends SQLRewriteContextDecorator> each : OrderedSPIRegistry.getRegisteredClasses(SQLRewriteContextDecorator.class)) {
             SQLRewriteContextDecorator rewriteContextDecorator = createRewriteDecorator(each);
             Class<?> ruleClass = (Class<?>) rewriteContextDecorator.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
