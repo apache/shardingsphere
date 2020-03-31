@@ -20,8 +20,9 @@ package org.apache.shardingsphere.core.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.List;
@@ -31,6 +32,10 @@ import java.util.List;
  */
 @Getter
 public class MasterSlaveRule implements BaseRule {
+    
+    static {
+        ShardingSphereServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
+    }
     
     private final String name;
     
@@ -46,7 +51,7 @@ public class MasterSlaveRule implements BaseRule {
         this.name = name;
         this.masterDataSourceName = masterDataSourceName;
         this.slaveDataSourceNames = slaveDataSourceNames;
-        this.loadBalanceAlgorithm = null == loadBalanceAlgorithm ? new MasterSlaveLoadBalanceAlgorithmServiceLoader().newService() : loadBalanceAlgorithm;
+        this.loadBalanceAlgorithm = null == loadBalanceAlgorithm ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class) : loadBalanceAlgorithm;
         ruleConfiguration = new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, 
                 new LoadBalanceStrategyConfiguration(this.loadBalanceAlgorithm.getType(), this.loadBalanceAlgorithm.getProperties()));
     }
@@ -60,9 +65,8 @@ public class MasterSlaveRule implements BaseRule {
     }
     
     private MasterSlaveLoadBalanceAlgorithm createMasterSlaveLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
-        MasterSlaveLoadBalanceAlgorithmServiceLoader serviceLoader = new MasterSlaveLoadBalanceAlgorithmServiceLoader();
-        return null == loadBalanceStrategyConfiguration
-                ? serviceLoader.newService() : serviceLoader.newService(loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
+        return null == loadBalanceStrategyConfiguration ? TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class)
+                : TypedSPIRegistry.getRegisteredService(MasterSlaveLoadBalanceAlgorithm.class, loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
     }
     
     /**

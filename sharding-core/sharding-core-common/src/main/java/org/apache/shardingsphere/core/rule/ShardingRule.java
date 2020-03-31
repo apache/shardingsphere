@@ -30,8 +30,9 @@ import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
@@ -50,6 +51,10 @@ import java.util.stream.Collectors;
  */
 @Getter
 public class ShardingRule implements BaseRule {
+    
+    static {
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
+    }
     
     private final ShardingRuleConfiguration ruleConfiguration;
     
@@ -109,8 +114,7 @@ public class ShardingRule implements BaseRule {
     }
     
     private KeyGenerateAlgorithm createDefaultKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        KeyGenerateAlgorithmServiceLoader serviceLoader = new KeyGenerateAlgorithmServiceLoader();
-        return containsKeyGenerateAlgorithm(keyGeneratorConfiguration) ? keyGeneratorConfiguration.getKeyGenerateAlgorithm() : serviceLoader.newService();
+        return containsKeyGenerateAlgorithm(keyGeneratorConfiguration) ? keyGeneratorConfiguration.getKeyGenerateAlgorithm() : TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class);
     }
     
     private boolean containsKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {

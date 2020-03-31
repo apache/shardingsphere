@@ -27,7 +27,8 @@ import org.apache.shardingsphere.encrypt.api.EncryptorRuleConfiguration;
 import org.apache.shardingsphere.encrypt.strategy.EncryptTable;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
 import org.apache.shardingsphere.encrypt.strategy.spi.QueryAssistedEncryptor;
-import org.apache.shardingsphere.encrypt.strategy.spi.loader.EncryptorServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import java.util.Collection;
@@ -44,6 +45,10 @@ import java.util.stream.Collectors;
  * Encrypt rule.
  */
 public final class EncryptRule implements BaseRule {
+    
+    static {
+        ShardingSphereServiceLoader.register(Encryptor.class);
+    }
     
     private final Map<String, Encryptor> encryptors = new LinkedHashMap<>();
     
@@ -83,14 +88,11 @@ public final class EncryptRule implements BaseRule {
     }
     
     private void initEncryptors(final Map<String, EncryptorRuleConfiguration> encryptors) {
-        EncryptorServiceLoader serviceLoader = new EncryptorServiceLoader();
-        for (Entry<String, EncryptorRuleConfiguration> entry : encryptors.entrySet()) {
-            this.encryptors.put(entry.getKey(), createEncryptor(serviceLoader, entry.getValue()));
-        }
+        encryptors.forEach((key, value) -> this.encryptors.put(key, createEncryptor(value)));
     }
     
-    private Encryptor createEncryptor(final EncryptorServiceLoader serviceLoader, final EncryptorRuleConfiguration encryptorRuleConfig) {
-        Encryptor result = serviceLoader.newService(encryptorRuleConfig.getType(), encryptorRuleConfig.getProperties());
+    private Encryptor createEncryptor(final EncryptorRuleConfiguration encryptorRuleConfig) {
+        Encryptor result = TypedSPIRegistry.getRegisteredService(Encryptor.class, encryptorRuleConfig.getType(), encryptorRuleConfig.getProperties());
         result.init();
         return result;
     }
