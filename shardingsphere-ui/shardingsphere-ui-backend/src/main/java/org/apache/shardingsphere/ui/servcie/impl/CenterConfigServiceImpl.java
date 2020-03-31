@@ -54,7 +54,7 @@ public final class CenterConfigServiceImpl implements CenterConfigService {
         CenterConfigs configs = loadAll();
         CenterConfig existedConfig = find(config.getName(), config.getOrchestrationType(), configs);
         if (null != existedConfig) {
-            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "Center already existed!");
+            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, String.format("Center %s already existed!", config.getName()));
         }
         configs.getCenterConfigs().add(config);
         centerConfigsRepository.save(configs);
@@ -109,7 +109,7 @@ public final class CenterConfigServiceImpl implements CenterConfigService {
         if (!config.getPrimaryName().equals(config.getName())) {
             CenterConfig existedConfig = find(config.getName(), config.getOrchestrationType(), configs);
             if (null != existedConfig) {
-                throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "Center already existed!");
+                throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, String.format("Center %s already existed!", config.getName()));
             }
         }
         CenterConfig toBeUpdatedConfig = find(config.getPrimaryName(), config.getOrchestrationType(), configs);
