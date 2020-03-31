@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.rewrite.fixture.ShardingKeyGeneratorFixture
+org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.DecrementKeyGenerateAlgorithm
+org.apache.shardingsphere.shardingjdbc.orchestration.spring.fixture.IncrementKeyGenerateAlgorithm

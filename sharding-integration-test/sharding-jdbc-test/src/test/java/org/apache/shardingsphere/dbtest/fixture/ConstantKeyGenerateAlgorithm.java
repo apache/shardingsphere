@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.fixture;
+package org.apache.shardingsphere.dbtest.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator {
+public final class ConstantKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Getter
-    private final String type = "INCREMENT";
-    
-    private final AtomicInteger count = new AtomicInteger();
+    private final String type = "CONSTANT";
     
     @Getter
     @Setter
@@ -37,6 +34,6 @@ public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator
     
     @Override
     public Comparable<?> generateKey() {
-        return count.incrementAndGet();
+        return 1;
     }
 }

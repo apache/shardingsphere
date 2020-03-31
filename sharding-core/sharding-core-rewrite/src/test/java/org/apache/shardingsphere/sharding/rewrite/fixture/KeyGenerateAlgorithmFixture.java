@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.keygen;
+package org.apache.shardingsphere.sharding.rewrite.fixture;
 
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
-/**
- * Key generator.
- */
-public interface ShardingKeyGenerator extends TypeBasedSPI {
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class KeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    /**
-     * Generate key.
-     * 
-     * @return generated key
-     */
-    Comparable<?> generateKey();
+    private Properties properties = new Properties();
+    
+    @Override
+    public Comparable<?> generateKey() {
+        return 1;
+    }
+    
+    @Override
+    public String getType() {
+        return "TEST";
+    }
 }

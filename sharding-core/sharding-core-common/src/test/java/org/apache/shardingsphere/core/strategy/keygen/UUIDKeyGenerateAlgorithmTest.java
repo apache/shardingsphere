@@ -17,32 +17,31 @@
 
 package org.apache.shardingsphere.core.strategy.keygen;
 
-import org.junit.Test;
-
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class UUIDShardingKeyGeneratorTest {
+import java.util.Properties;
+import org.junit.Test;
+
+public final class UUIDKeyGenerateAlgorithmTest {
     
-    private UUIDShardingKeyGenerator uuidKeyGenerator = new UUIDShardingKeyGenerator();
+    private UUIDKeyGenerateAlgorithm uuidKeyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
     
     @Test
     public void assertGenerateKey() {
-        assertThat(((String) uuidKeyGenerator.generateKey()).length(), is(32));
+        assertThat(((String) uuidKeyGenerateAlgorithm.generateKey()).length(), is(32));
     }
     
     @Test
     public void assertGetProperties() {
-        assertThat(uuidKeyGenerator.getProperties().entrySet().size(), is(0));
+        assertThat(uuidKeyGenerateAlgorithm.getProperties().entrySet().size(), is(0));
     }
     
     @Test
     public void assertSetProperties() {
         Properties properties = new Properties();
         properties.setProperty("key1", "value1");
-        uuidKeyGenerator.setProperties(properties);
-        assertThat(uuidKeyGenerator.getProperties().get("key1"), is("value1"));
+        uuidKeyGenerateAlgorithm.setProperties(properties);
+        assertThat(uuidKeyGenerateAlgorithm.getProperties().get("key1"), is("value1"));
     }
 }

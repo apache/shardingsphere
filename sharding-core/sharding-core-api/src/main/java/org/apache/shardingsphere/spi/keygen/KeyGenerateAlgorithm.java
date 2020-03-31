@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.keygen;
+package org.apache.shardingsphere.spi.keygen;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
-
-import java.util.Properties;
-import java.util.UUID;
+import org.apache.shardingsphere.spi.TypeBasedSPI;
 
 /**
- * UUID key generator.
+ * Key generate algorithm.
  */
-@Getter
-@Setter
-public final class UUIDShardingKeyGenerator implements ShardingKeyGenerator {
+public interface KeyGenerateAlgorithm extends TypeBasedSPI {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "UUID";
-    }
-    
-    @Override
-    public synchronized Comparable<?> generateKey() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
+    /**
+     * Generate key.
+     * 
+     * @return generated key
+     */
+    Comparable<?> generateKey();
 }

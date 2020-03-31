@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
+package org.apache.shardingsphere.spi.algorithm.keygen;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator {
+/**
+ * Key generate algorithm service loader.
+ */
+public final class KeyGenerateAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<KeyGenerateAlgorithm> {
     
-    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
+    static {
+        NewInstanceServiceLoader.register(KeyGenerateAlgorithm.class);
+    }
     
-    @Getter
-    private final String type = "INCREMENT";
-    
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return SEQUENCE.incrementAndGet();
+    public KeyGenerateAlgorithmServiceLoader() {
+        super(KeyGenerateAlgorithm.class);
     }
 }
