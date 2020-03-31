@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.center;
 
 import org.apache.shardingsphere.orchestration.center.listener.DataChangedEventListener;
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.spi.type.TypedSPI;
 import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
 
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * An interface for center to get/persist data.
  */
-public interface CenterRepository extends TypeBasedSPI {
+public interface CenterRepository extends TypedSPI {
     
     /**
      * Initialize config center.

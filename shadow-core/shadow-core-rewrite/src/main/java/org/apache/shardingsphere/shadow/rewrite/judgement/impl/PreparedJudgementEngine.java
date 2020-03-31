@@ -55,7 +55,7 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
             for (ColumnSegment each : columnSegments) {
                 if (each.getIdentifier().getValue().equals(shadowRule.getColumn())) {
                     Object value = parameters.get(count);
-                    return value instanceof Boolean && (Boolean) value;
+                    return isShadowField(value);
                 }
                 count++;
             }
@@ -83,7 +83,7 @@ public final class PreparedJudgementEngine implements ShadowJudgementEngine {
                 PredicateCompareRightValue rightValue = (PredicateCompareRightValue) each.getRightValue();
                 int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) rightValue.getExpression()).getParameterMarkerIndex();
                 final Object value = parameters.get(parameterMarkerIndex);
-                return value instanceof Boolean && (Boolean) value;
+                return isShadowField(value);
             }
         }
         return false;

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.underlying.common.hook.SPIRootInvokeHook;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Command executor task.
@@ -74,6 +75,8 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             log.error("Exception occur: ", ex);
             context.writeAndFlush(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(ex));
+            Optional<DatabasePacket> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket();
+            databasePacket.ifPresent(context::writeAndFlush);
         } finally {
             if (isNeedFlush) {
                 context.flush();

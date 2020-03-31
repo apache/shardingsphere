@@ -45,6 +45,8 @@ public final class PostgreSQLErrPacketFactory {
             errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_POSITION, Integer.toString(serverErrorMessage.getPosition()));
             return errorResponsePacket;
         }
-        return new PostgreSQLErrorResponsePacket();
+        PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
+        errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
+        return errorResponsePacket;
     }
 }

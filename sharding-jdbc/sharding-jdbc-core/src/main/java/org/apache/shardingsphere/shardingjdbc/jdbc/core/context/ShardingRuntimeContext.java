@@ -31,7 +31,6 @@ import org.apache.shardingsphere.underlying.common.metadata.decorator.SchemaMeta
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -42,7 +41,7 @@ import java.util.Properties;
 @Getter
 public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeContext<ShardingRule> {
     
-    private final DatabaseMetaData cachedDatabaseMetaData;
+    private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
     private final ShardingTransactionManagerEngine shardingTransactionManagerEngine;
     
@@ -51,14 +50,14 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
     public ShardingRuntimeContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(dataSourceMap, shardingRule, props, databaseType);
         this.dataSourceMap = dataSourceMap;
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap, shardingRule);
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
         shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
     }
     
-    private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule rule) throws SQLException {
+    private CachedDatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return new CachedDatabaseMetaData(connection.getMetaData(), dataSourceMap, rule);
+            return new CachedDatabaseMetaData(connection.getMetaData());
         }
     }
     
@@ -66,7 +65,7 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
     protected SchemaMetaData loadSchemaMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
         int maxConnectionsSizePerQuery = getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        SchemaMetaData result = new ShardingMetaDataLoader(dataSourceMap, getRule(), maxConnectionsSizePerQuery, isCheckingMetaData).load(getDatabaseType());
+        SchemaMetaData result = new ShardingMetaDataLoader(dataSourceMap, getRule(), maxConnectionsSizePerQuery, isCheckingMetaData).load(getDatabaseType(), null);
         result = SchemaMetaDataDecorator.decorate(result, getRule(), new ShardingTableMetaDataDecorator());
         if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = SchemaMetaDataDecorator.decorate(result, getRule().getEncryptRule(), new EncryptTableMetaDataDecorator());

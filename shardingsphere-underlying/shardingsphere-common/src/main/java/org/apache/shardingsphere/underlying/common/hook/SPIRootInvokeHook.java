@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.hook;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 
@@ -26,10 +26,10 @@ import java.util.Collection;
  */
 public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    private final Collection<RootInvokeHook> rootInvokeHooks = NewInstanceServiceLoader.newServiceInstances(RootInvokeHook.class);
+    private final Collection<RootInvokeHook> rootInvokeHooks = ShardingSphereServiceLoader.newServiceInstances(RootInvokeHook.class);
     
     static {
-        NewInstanceServiceLoader.register(RootInvokeHook.class);
+        ShardingSphereServiceLoader.register(RootInvokeHook.class);
     }
     
     @Override

@@ -347,4 +347,68 @@
             </and-predicate>
         </where>
     </update>
+
+    <update sql-case-id="update_with_set_calculation" parameters="1, 2, 3">
+        <table name="t_order" start-index="7" stop-index="13" />
+        <set start-index="15" stop-index="37" literal-stop-index="37">
+            <assignment start-index="19" stop-index="37" literal-stop-index="37">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <common-expression text="status-?" literal-text="status-1" start-index="28" stop-index="37" literal-start-index="28" literal-stop-index="37"/>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="39" stop-index="72" literal-start-index="39" literal-stop-index="72">
+            <and-predicate>
+                <predicate start-index="45" stop-index="56" literal-start-index="45" literal-stop-index="56">
+                    <column-left-value name="order_id" start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                        <literal-expression value="2" start-index="56" stop-index="56" />
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="62" stop-index="72" literal-start-index="62" literal-stop-index="72">
+                    <column-left-value name="user_id" start-index="62" stop-index="68" literal-start-index="62" literal-stop-index="68" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="72" stop-index="72" />
+                        <literal-expression value="3" start-index="72" stop-index="72" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </update>
+
+    <update sql-case-id="update_with_where_calculation" parameters="1, 2, 3">
+        <table name="t_order" start-index="7" stop-index="13" />
+        <set start-index="15" stop-index="28" literal-stop-index="28">
+            <assignment start-index="19" stop-index="28" literal-stop-index="28">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
+                    <literal-expression value="1" start-index="28" stop-index="28" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="30" stop-index="74" literal-start-index="30" literal-stop-index="74">
+            <and-predicate>
+                <predicate start-index="36" stop-index="58" literal-start-index="36" literal-stop-index="58">
+                    <column-left-value name="order_id" start-index="36" stop-index="43" literal-start-index="36" literal-stop-index="43" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <common-expression text="order_id-?" literal-text="order_id-2" start-index="47" stop-index="58" literal-start-index="47" literal-stop-index="58"/>
+                    </compare-right-value>
+                </predicate>
+                <predicate start-index="64" stop-index="74" literal-start-index="64" literal-stop-index="74">
+                    <column-left-value name="user_id" start-index="64" stop-index="70" literal-start-index="64" literal-stop-index="70" />
+                    <operator type="=" />
+                    <compare-right-value>
+                        <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                        <literal-expression value="3" start-index="74" stop-index="74" />
+                    </compare-right-value>
+                </predicate>
+            </and-predicate>
+        </where>
+    </update>
 </sql-parser-test-cases>

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.route.hook;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
@@ -28,10 +28,10 @@ import java.util.Collection;
  */
 public final class SPIRoutingHook implements RoutingHook {
     
-    private final Collection<RoutingHook> routingHooks = NewInstanceServiceLoader.newServiceInstances(RoutingHook.class);
+    private final Collection<RoutingHook> routingHooks = ShardingSphereServiceLoader.newServiceInstances(RoutingHook.class);
     
     static {
-        NewInstanceServiceLoader.register(RoutingHook.class);
+        ShardingSphereServiceLoader.register(RoutingHook.class);
     }
     
     @Override

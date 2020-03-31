@@ -42,7 +42,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfig
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.frontend.bootstrap.ShardingProxy;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.underlying.common.config.DataSourceConfiguration;
 import org.apache.shardingsphere.underlying.common.config.RuleConfiguration;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
@@ -89,9 +89,9 @@ public final class Bootstrap {
     }
     
     private static void registerDecorator() {
-        NewInstanceServiceLoader.register(RouteDecorator.class);
-        NewInstanceServiceLoader.register(SQLRewriteContextDecorator.class);
-        NewInstanceServiceLoader.register(ResultProcessEngine.class);
+        ShardingSphereServiceLoader.register(RouteDecorator.class);
+        ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
+        ShardingSphereServiceLoader.register(ResultProcessEngine.class);
     }
     
     private static int getPort(final String[] args) {
