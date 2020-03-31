@@ -34,8 +34,8 @@ public interface SQLStatementMetaDataRefreshStrategy<T extends SQLStatement> {
      * Refresh meta data.
      *
      * @param shardingRuntimeContext sharding runtime context
-     * @param sqlStatementContext sql statement context
-     * @throws SQLException sql exception
+     * @param sqlStatementContext SQL statement context
+     * @throws SQLException SQL exception
      */
     void refreshMetaData(ShardingRuntimeContext shardingRuntimeContext, SQLStatementContext<T> sqlStatementContext) throws SQLException;
 }

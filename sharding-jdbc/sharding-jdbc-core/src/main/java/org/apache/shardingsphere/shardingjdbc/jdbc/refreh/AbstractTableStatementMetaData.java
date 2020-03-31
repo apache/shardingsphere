@@ -28,19 +28,19 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import java.sql.SQLException;
 
 /**
- * Abstract table meta data load.
+ * Abstract table statement meta data.
  */
 public abstract class AbstractTableStatementMetaData {
     
     /**
-     * Load TableMetaData.
+     * Load table meta data.
      *
      * @param tableName table name
      * @param shardingRuntimeContext sharding runtime context
      * @return table meta data
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
-    protected TableMetaData loadTableMeta(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
+    protected TableMetaData loadTableMetaData(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
         ShardingRule shardingRule = shardingRuntimeContext.getRule();
         int maxConnectionsSizePerQuery = shardingRuntimeContext.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = shardingRuntimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);

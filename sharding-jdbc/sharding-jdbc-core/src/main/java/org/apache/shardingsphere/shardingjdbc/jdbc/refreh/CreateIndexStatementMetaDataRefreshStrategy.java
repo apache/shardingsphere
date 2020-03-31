@@ -29,7 +29,7 @@ public final class CreateIndexStatementMetaDataRefreshStrategy implements SQLSta
    
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateIndexStatement> sqlStatementContext) {
-        final CreateIndexStatement createIndexStatement = sqlStatementContext.getSqlStatement();
+        CreateIndexStatement createIndexStatement = sqlStatementContext.getSqlStatement();
         if (null == createIndexStatement.getIndex()) {
             return;
         }

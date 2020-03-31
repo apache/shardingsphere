@@ -148,7 +148,7 @@ public abstract class AbstractStatementExecutor {
         if (null == sqlStatementContext) {
             return;
         }
-        final Optional<SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> sqlStatementMetaDataRefreshStrategy = SQLStatementMetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        Optional<SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> sqlStatementMetaDataRefreshStrategy = SQLStatementMetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (sqlStatementMetaDataRefreshStrategy.isPresent()) {
             sqlStatementMetaDataRefreshStrategy.get().refreshMetaData(runtimeContext, sqlStatementContext);
         }

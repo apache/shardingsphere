@@ -35,7 +35,7 @@ public final class DropIndexStatementMetaDataRefreshStrategy implements SQLState
    
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<DropIndexStatement> sqlStatementContext) {
-        final DropIndexStatement dropIndexStatement = sqlStatementContext.getSqlStatement();
+        DropIndexStatement dropIndexStatement = sqlStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
         TableMetaData tableMetaData = shardingRuntimeContext.getMetaData().getSchema().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue());
         if (null != dropIndexStatement.getTable()) {

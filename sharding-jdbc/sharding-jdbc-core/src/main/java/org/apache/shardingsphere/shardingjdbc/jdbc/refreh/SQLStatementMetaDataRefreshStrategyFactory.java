@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Factory of SQLStatementMetaDataRefreshStrategy.
+ * SQL statement meta data refresh strategy factory.
  */
 public final class SQLStatementMetaDataRefreshStrategyFactory {
     
@@ -47,8 +47,8 @@ public final class SQLStatementMetaDataRefreshStrategyFactory {
     /**
      * New instance of SQLStatementMetaDataRefreshStrategy.
      *
-     * @param sqlStatementContext sql statement context
-     * @return sql statement meta data refresh strategy
+     * @param sqlStatementContext SQL statement context
+     * @return SQL statement meta data refresh strategy
      */
     public static Optional<SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> newInstance(final SQLStatementContext sqlStatementContext) {
         return Optional.ofNullable(REFRESH_MAP.get(sqlStatementContext.getClass()));

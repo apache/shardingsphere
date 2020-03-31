@@ -31,6 +31,6 @@ public final class AlterTableStatementMetaDataRefreshStrategy extends AbstractTa
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<AlterTableStatement> sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        shardingRuntimeContext.getMetaData().getSchema().put(tableName, loadTableMeta(tableName, shardingRuntimeContext));
+        shardingRuntimeContext.getMetaData().getSchema().put(tableName, loadTableMetaData(tableName, shardingRuntimeContext));
     }
 }
