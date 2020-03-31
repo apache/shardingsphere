@@ -33,16 +33,15 @@ import java.util.stream.Collectors;
  * Drop index statement meta data refresh strategy.
  */
 public final class DropIndexStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropIndexStatementContext> {
-   
+    
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final DropIndexStatementContext sqlStatementContext) {
         DropIndexStatement dropIndexStatement = sqlStatementContext.getSqlStatement();
         Collection<String> indexNames = getIndexNames(dropIndexStatement);
-        TableMetaData tableMetaData = shardingRuntimeContext.getMetaData().getSchema().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue());
+        String tableName = dropIndexStatement.getTable().getTableName().getIdentifier().getValue();
+        TableMetaData tableMetaData = shardingRuntimeContext.getMetaData().getSchema().get(tableName);
         if (null != dropIndexStatement.getTable()) {
-            for (String each : indexNames) {
-                tableMetaData.getIndexes().remove(each);
-            }
+            indexNames.forEach(each -> tableMetaData.getIndexes().remove(each));
         }
         for (String each : indexNames) {
             if (findLogicTableName(shardingRuntimeContext.getMetaData().getSchema(), each).isPresent()) {
