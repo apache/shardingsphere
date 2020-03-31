@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.spi.loader.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -97,12 +96,11 @@ public abstract class BasePrepareEngine {
     }
     
     private void registerRouteDecorator() {
-        for (Class<? extends RouteDecorator> each : OrderedSPIRegistry.getRegisteredClasses(RouteDecorator.class)) {
-            RouteDecorator routeDecorator = ShardingSphereServiceLoader.newInstance(each);
-            Class<?> ruleClass = (Class<?>) routeDecorator.getType();
+        for (RouteDecorator each : OrderedSPIRegistry.getRegisteredServices(RouteDecorator.class)) {
+            Class<?> ruleClass = (Class<?>) each.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> router.registerDecorator(rule, routeDecorator));
+                    .forEach(rule -> router.registerDecorator(rule, each));
         }
     }
     
@@ -115,12 +113,11 @@ public abstract class BasePrepareEngine {
     }
     
     private void registerRewriteDecorator() {
-        for (Class<? extends SQLRewriteContextDecorator> each : OrderedSPIRegistry.getRegisteredClasses(SQLRewriteContextDecorator.class)) {
-            SQLRewriteContextDecorator rewriteContextDecorator = ShardingSphereServiceLoader.newInstance(each);
-            Class<?> ruleClass = (Class<?>) rewriteContextDecorator.getType();
+        for (SQLRewriteContextDecorator each : OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class)) {
+            Class<?> ruleClass = (Class<?>) each.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> rewriter.registerDecorator(rule, rewriteContextDecorator));
+                    .forEach(rule -> rewriter.registerDecorator(rule, each));
         }
     }
     

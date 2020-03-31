@@ -29,17 +29,16 @@ import java.util.TreeMap;
 public final class OrderedSPIRegistry {
     
     /**
-     * Get registered classes.
+     * Get registered services.
      * 
      * @param orderBasedClass class of order based
-     * @param <T> type of order aware class
-     * @return registered classes
+     * @param <T> type of order based class
+     * @return registered services
      */
-    @SuppressWarnings("unchecked")
-    public static <T extends OrderBasedSPI> Collection<Class<T>> getRegisteredClasses(final Class<T> orderBasedClass) {
-        Map<Integer, Class<T>> result = new TreeMap<>();
+    public static <T extends OrderBasedSPI> Collection<T> getRegisteredServices(final Class<T> orderBasedClass) {
+        Map<Integer, T> result = new TreeMap<>();
         for (T each : NewInstanceServiceLoader.newServiceInstances(orderBasedClass)) {
-            result.put(each.getOrder(), (Class<T>) each.getClass());
+            result.put(each.getOrder(), each);
         }
         return result.values();
     }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.underlying.pluggble.merge;
 
 import org.apache.shardingsphere.spi.database.type.DatabaseType;
-import org.apache.shardingsphere.spi.loader.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
@@ -62,12 +61,11 @@ public final class MergeEngine {
     }
     
     private void registerMergeDecorator() {
-        for (Class<? extends ResultProcessEngine> each : OrderedSPIRegistry.getRegisteredClasses(ResultProcessEngine.class)) {
-            ResultProcessEngine processEngine = ShardingSphereServiceLoader.newInstance(each);
-            Class<?> ruleClass = (Class<?>) processEngine.getType();
+        for (ResultProcessEngine each : OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class)) {
+            Class<?> ruleClass = (Class<?>) each.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> merger.registerProcessEngine(rule, processEngine));
+                    .forEach(rule -> merger.registerProcessEngine(rule, each));
         }
     }
 }
