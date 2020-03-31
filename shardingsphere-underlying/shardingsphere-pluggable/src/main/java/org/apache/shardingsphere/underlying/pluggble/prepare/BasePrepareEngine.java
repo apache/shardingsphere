@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.spi.loader.SPILoader;
+import org.apache.shardingsphere.spi.loader.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -98,7 +98,7 @@ public abstract class BasePrepareEngine {
     
     private void registerRouteDecorator() {
         for (Class<? extends RouteDecorator> each : OrderedSPIRegistry.getRegisteredClasses(RouteDecorator.class)) {
-            RouteDecorator routeDecorator = SPILoader.newInstance(each);
+            RouteDecorator routeDecorator = ShardingSphereServiceLoader.newInstance(each);
             Class<?> ruleClass = (Class<?>) routeDecorator.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
@@ -116,7 +116,7 @@ public abstract class BasePrepareEngine {
     
     private void registerRewriteDecorator() {
         for (Class<? extends SQLRewriteContextDecorator> each : OrderedSPIRegistry.getRegisteredClasses(SQLRewriteContextDecorator.class)) {
-            SQLRewriteContextDecorator rewriteContextDecorator = SPILoader.newInstance(each);
+            SQLRewriteContextDecorator rewriteContextDecorator = ShardingSphereServiceLoader.newInstance(each);
             Class<?> ruleClass = (Class<?>) rewriteContextDecorator.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())

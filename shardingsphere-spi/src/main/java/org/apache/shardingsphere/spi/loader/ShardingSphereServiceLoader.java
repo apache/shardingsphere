@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.spi.loader;
 
 /**
- * SPI loader.
+ * Service loader of ShardingSphere.
  */
-public final class SPILoader {
+public final class ShardingSphereServiceLoader {
     
     /**
      * Create new instance of SPI class.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spi.loader;
 
 /**
- * SPI instantiation exception.
+ * SPI class instantiation exception.
  */
 public final class SPIClassInstantiationException extends RuntimeException {
     
