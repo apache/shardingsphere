@@ -17,6 +17,18 @@
 
 package org.apache.shardingsphere.core.rule;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -25,27 +37,16 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.shard.fixture.PreciseShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;
-import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementShardingKeyGenerator;
+import org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.core.strategy.keygen.fixture.IncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.core.strategy.route.ShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
+import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ShardingRuleTest {
     
@@ -63,7 +64,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getBroadcastTables(), is(Collections.singletonList("BROADCAST_TABLE")));
         assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
-        assertThat(actual.getDefaultShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
+        assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(IncrementKeyGenerateAlgorithm.class));
     }
     
     @Test
@@ -74,7 +75,7 @@ public final class ShardingRuleTest {
         assertTrue(actual.getBroadcastTables().isEmpty());
         assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(NoneShardingStrategy.class));
         assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(NoneShardingStrategy.class));
-        assertThat(actual.getDefaultShardingKeyGenerator(), instanceOf(SnowflakeShardingKeyGenerator.class));
+        assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
     }
     
     @Test
@@ -397,7 +398,8 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.setDefaultDataSourceName("ds_0");
         TableRuleConfiguration tableRuleConfiguration = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        tableRuleConfiguration.setKeyGeneratorConfig(new KeyGeneratorConfiguration("INCREMENT", "id", new Properties()));
+        KeyGenerateAlgorithm keyGenerateAlgorithm = new KeyGenerateAlgorithmServiceLoader().newService("INCREMENT", new Properties());
+        tableRuleConfiguration.setKeyGeneratorConfig(new KeyGeneratorConfiguration("id", keyGenerateAlgorithm));
         TableRuleConfiguration subTableRuleConfiguration = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
         shardingRuleConfiguration.getTableRuleConfigs().add(tableRuleConfiguration);
         shardingRuleConfiguration.getTableRuleConfigs().add(subTableRuleConfiguration);
@@ -405,7 +407,8 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
         shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("ds_id", "ds_%{ds_id % 2}"));
         shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("table_id", "table_%{table_id % 2}"));
-        shardingRuleConfiguration.setDefaultKeyGeneratorConfig(new KeyGeneratorConfiguration("INCREMENT", "id", new Properties()));
+        KeyGenerateAlgorithm defaultKeyGenerateAlgorithm = new KeyGenerateAlgorithmServiceLoader().newService("INCREMENT", new Properties());
+        shardingRuleConfiguration.setDefaultKeyGeneratorConfig(new KeyGeneratorConfiguration("id", defaultKeyGenerateAlgorithm));
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());
     }
     

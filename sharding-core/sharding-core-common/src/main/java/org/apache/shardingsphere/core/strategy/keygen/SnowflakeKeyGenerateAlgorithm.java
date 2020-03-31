@@ -21,13 +21,13 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
 import java.util.Calendar;
 import java.util.Properties;
 
 /**
- * Snowflake distributed primary key generator.
+ * Snowflake distributed primary key generate algorithm.
  * 
  * <p>
  * Use snowflake algorithm. Length is 64 bit.
@@ -41,14 +41,14 @@ import java.util.Properties;
  * </pre>
  * 
  * <p>
- * Call @{@code SnowflakeShardingKeyGenerator.setWorkerId} to set worker id, default value is 0.
+ * Call @{@code SnowflakeKeyGenerateAlgorithm.setWorkerId} to set worker id, default value is 0.
  * </p>
  * 
  * <p>
- * Call @{@code SnowflakeShardingKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
+ * Call @{@code SnowflakeKeyGenerateAlgorithm.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
  * </p>
  */
-public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator {
+public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     public static final long EPOCH;
     

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.core.strategy.route.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.strategy.route.none.NoneShardingStrategy;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGeneratorServiceLoader;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.algorithm.keygen.KeyGenerateAlgorithmServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
@@ -65,7 +65,7 @@ public class ShardingRule implements BaseRule {
     
     private final ShardingStrategy defaultTableShardingStrategy;
     
-    private final ShardingKeyGenerator defaultShardingKeyGenerator;
+    private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
@@ -81,7 +81,7 @@ public class ShardingRule implements BaseRule {
         bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
-        defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
+        defaultKeyGenerateAlgorithm = createDefaultKeyGenerateAlgorithm(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
         encryptRule = createEncryptRule(shardingRuleConfig.getEncryptRuleConfig());
     }
@@ -108,14 +108,13 @@ public class ShardingRule implements BaseRule {
         return Optional.ofNullable(shardingStrategyConfiguration).map(ShardingStrategyFactory::newInstance).orElse(new NoneShardingStrategy());
     }
     
-    private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        ShardingKeyGeneratorServiceLoader serviceLoader = new ShardingKeyGeneratorServiceLoader();
-        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration)
-                ? serviceLoader.newService(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProperties()) : serviceLoader.newService();
+    private KeyGenerateAlgorithm createDefaultKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+        KeyGenerateAlgorithmServiceLoader serviceLoader = new KeyGenerateAlgorithmServiceLoader();
+        return containsKeyGenerateAlgorithm(keyGeneratorConfiguration) ? keyGeneratorConfiguration.getKeyGenerateAlgorithm() : serviceLoader.newService();
     }
     
-    private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        return null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getType());
+    private boolean containsKeyGenerateAlgorithm(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+        return null != keyGeneratorConfiguration && null != keyGeneratorConfiguration.getKeyGenerateAlgorithm();
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
@@ -320,7 +319,7 @@ public class ShardingRule implements BaseRule {
         if (!tableRule.isPresent()) {
             throw new ShardingSphereConfigurationException("Cannot find strategy for generate keys.");
         }
-        return Optional.ofNullable(tableRule.get().getShardingKeyGenerator()).orElse(defaultShardingKeyGenerator).generateKey();
+        return Optional.ofNullable(tableRule.get().getKeyGenerateAlgorithm()).orElse(defaultKeyGenerateAlgorithm).generateKey();
     }
     
     /**

@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.strategy.keygen.fixture;
+package org.apache.shardingsphere.spi.keygen;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.type.TypeBasedSPI;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator {
+/**
+ * Key generate algorithm.
+ */
+public interface KeyGenerateAlgorithm extends TypeBasedSPI {
     
-    @Getter
-    private final String type = "INCREMENT";
-    
-    private final AtomicInteger count = new AtomicInteger();
-    
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return count.incrementAndGet();
-    }
+    /**
+     * Generate key.
+     * 
+     * @return generated key
+     */
+    Comparable<?> generateKey();
 }

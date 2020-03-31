@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.fixture;
+package org.apache.shardingsphere.spi.algorithm.keygen;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class ShardingKeyGeneratorFixture implements ShardingKeyGenerator {
+/**
+ * Key generate algorithm service loader.
+ */
+public final class KeyGenerateAlgorithmServiceLoader extends TypeBasedSPIServiceLoader<KeyGenerateAlgorithm> {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return 1;
+    static {
+        NewInstanceServiceLoader.register(KeyGenerateAlgorithm.class);
     }
     
-    @Override
-    public String getType() {
-        return "TEST";
+    public KeyGenerateAlgorithmServiceLoader() {
+        super(KeyGenerateAlgorithm.class);
     }
 }
