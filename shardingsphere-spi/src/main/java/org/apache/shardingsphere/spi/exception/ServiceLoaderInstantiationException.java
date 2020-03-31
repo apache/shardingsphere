@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.spi.exception;
 
 /**
- * Service loader exception.
+ * Service loader instantiation exception.
  */
-public final class ServiceLoaderException extends RuntimeException {
+public final class ServiceLoaderInstantiationException extends RuntimeException {
     
     private static final long serialVersionUID = 6261274443437676201L;
     
-    public ServiceLoaderException(final Class<?> clazz, final Exception cause) {
-        super(String.format("Can not find public default constructor for SPI class `%s`", clazz), cause);
+    public ServiceLoaderInstantiationException(final Class<?> clazz, final Exception cause) {
+        super(String.format("Can not find public default constructor for SPI class `%s`", clazz.getName()), cause);
     }
 }

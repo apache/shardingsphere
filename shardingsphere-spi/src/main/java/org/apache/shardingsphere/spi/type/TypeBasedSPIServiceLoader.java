@@ -19,8 +19,10 @@ package org.apache.shardingsphere.spi.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -37,8 +39,8 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     /**
      * Create new instance for type based SPI.
      * 
-     * @param type SPI type
-     * @param props SPI properties
+     * @param type type of SPI
+     * @param props properties of SPI
      * @return SPI instance
      */
     public final T newService(final String type, final Properties props) {
@@ -67,10 +69,10 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     }
     
     private T loadFirstTypeBasedService() {
-        Collection<T> instances = ShardingSphereServiceLoader.newServiceInstances(classType);
-        if (instances.isEmpty()) {
-            throw new RuntimeException(String.format("Invalid `%s` SPI, no implementation class load from SPI.", classType.getName()));
+        Optional<T> result = ShardingSphereServiceLoader.newServiceInstances(classType).stream().findFirst();
+        if (result.isPresent()) {
+            return result.get();
         }
-        return instances.iterator().next();
+        throw new ServiceProviderNotFoundException(classType);
     }
 }
