@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.type;
 
 import com.google.common.collect.Collections2;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
 import java.util.Properties;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spi.masterslave;
 
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.spi.type.TypeBasedSPI;
 
 import java.util.List;
 

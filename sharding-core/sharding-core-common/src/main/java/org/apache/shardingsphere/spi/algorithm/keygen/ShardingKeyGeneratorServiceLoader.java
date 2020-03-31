@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.spi.algorithm.keygen;
 
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.TypeBasedSPIServiceLoader;
+import org.apache.shardingsphere.spi.type.TypeBasedSPIServiceLoader;
 import org.apache.shardingsphere.spi.keygen.ShardingKeyGenerator;
 
 /**
