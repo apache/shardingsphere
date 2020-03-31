@@ -97,6 +97,17 @@ public final class ShardingMetaDataLoader {
                     : TableMetaDataLoader.load(dataSourceMap.get(shardingRule.getShardingDataSourceNames()
                      .getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName(), databaseType.getName());
         }
+        Map<String, TableMetaData> actualTableMetaDataMap = 1 == shardingRule.getShardingDataSourceNames().getDataSourceNames().size()
+                ? findTableMetaData(logicTableName, schemaMetaData, tableRule) : parallelLoadTableMetaData(logicTableName, databaseType, tableRule);
+        checkUniformed(logicTableName, actualTableMetaDataMap);
+        return actualTableMetaDataMap.values().iterator().next();
+    }
+
+    private Map<String, TableMetaData> findTableMetaData(final String logicTableName, final SchemaMetaData schemaMetaData, final TableRule tableRule) {
+        return tableRule.getDataNodeGroups().get(logicTableName).stream().collect(Collectors.toMap(e -> e.getTableName(), e -> schemaMetaData.get(e.getTableName())));
+    }
+
+    private Map<String, TableMetaData> parallelLoadTableMetaData(final String logicTableName, final DatabaseType databaseType, final TableRule tableRule) {
         Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
         Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
         Map<String, Future<TableMetaData>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
@@ -116,8 +127,7 @@ public final class ShardingMetaDataLoader {
             }
         });
         executorService.shutdownNow();
-        checkUniformed(logicTableName, actualTableMetaDataMap);
-        return actualTableMetaDataMap.values().iterator().next();
+        return actualTableMetaDataMap;
     }
 
     private TableMetaData load(final DataNode dataNode, final DatabaseType databaseType) {
@@ -138,7 +148,7 @@ public final class ShardingMetaDataLoader {
      */
     public SchemaMetaData load(final DatabaseType databaseType, final SchemaMetaData schemaMetaData) throws SQLException {
         SchemaMetaData result = loadShardingSchemaMetaData(databaseType, schemaMetaData);
-        result.merge(loadDefaultSchemaMetaData(databaseType));
+        result.merge(loadDefaultSchemaMetaData(databaseType, schemaMetaData));
         return result;
     }
     
@@ -151,7 +161,10 @@ public final class ShardingMetaDataLoader {
         return new SchemaMetaData(tableMetaDataMap);
     }
     
-    private SchemaMetaData loadDefaultSchemaMetaData(final DatabaseType databaseType) throws SQLException {
+    private SchemaMetaData loadDefaultSchemaMetaData(final DatabaseType databaseType, final SchemaMetaData schemaMetaData) throws SQLException {
+        if (1 == shardingRule.getShardingDataSourceNames().getDataSourceNames().size()) {
+            return schemaMetaData;
+        }
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         return actualDefaultDataSourceName.isPresent()
                 ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery, databaseType.getName()) : new SchemaMetaData(Collections.emptyMap());
