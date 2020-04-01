@@ -29,6 +29,7 @@ import org.apache.shardingsphere.spi.keygen.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -44,6 +45,11 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TableRuleTest {
+    
+    @BeforeClass
+    public static void beforeClass() {
+        ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
+    }
     
     @Test
     public void assertCreateMinTableRule() {
