@@ -104,7 +104,8 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
         if (null == yamlMasterSlaveRuleConfiguration) {
             return new OrchestrationMasterSlaveDataSource(new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         } else {
-            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new OrchestrationMasterSlaveRule(MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration)), props);
+            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap,
+                    new OrchestrationMasterSlaveRule(MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration)), props);
             return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, new OrchestrationConfiguration(YamlCenterRepositoryConfigurationSwapperUtil.marshal(yamlInstanceConfigurationMap)));
         }
     }
