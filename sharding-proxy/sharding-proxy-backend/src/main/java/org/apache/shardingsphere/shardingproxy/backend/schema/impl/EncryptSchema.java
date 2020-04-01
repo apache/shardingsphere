@@ -27,7 +27,7 @@ import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.decorator.SchemaMetaDataDecorator;
@@ -39,7 +39,7 @@ import java.util.Map;
  * Encrypt schema.
  */
 @Getter
-public final class EncryptSchema extends LogicSchema {
+public final class EncryptSchema extends MetaDataInitializedLogicSchema {
     
     private final ShardingRule shardingRule;
     

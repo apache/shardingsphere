@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.schema.impl;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
@@ -31,7 +31,7 @@ import java.util.Map;
  * Transparent schema.
  */
 @Getter
-public final class TransparentSchema extends LogicSchema {
+public final class TransparentSchema extends MetaDataInitializedLogicSchema {
     
     private final ShardingRule shardingRule;
     

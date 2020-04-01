@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.orchestration.core.common.event.ShadowRuleChangedEvent;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
@@ -37,7 +37,7 @@ import java.util.Map;
  * Shadow schema.
  */
 @Getter
-public final class ShadowSchema extends LogicSchema {
+public final class ShadowSchema extends MetaDataInitializedLogicSchema {
     
     private final ShardingRule shardingRule;
     

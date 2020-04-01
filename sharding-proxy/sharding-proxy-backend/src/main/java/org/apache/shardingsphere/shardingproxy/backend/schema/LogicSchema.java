@@ -24,20 +24,14 @@ import org.apache.shardingsphere.orchestration.core.common.event.DataSourceChang
 import org.apache.shardingsphere.orchestration.core.common.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
-import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseTypes;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,28 +48,13 @@ public abstract class LogicSchema {
     
     private JDBCBackendDataSource backendDataSource;
 
-    private final ShardingSphereMetaData physicalMetaData;
-    
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) throws SQLException {
         this.name = name;
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
-        physicalMetaData = createPhysicalMetaData();
-    }
-    
-    private ShardingSphereMetaData createPhysicalMetaData() throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        SchemaMetaData schemaMetaData = createSchemaMetaData();
-        return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
     }
 
-    private SchemaMetaData createSchemaMetaData() throws SQLException {
-        DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery, LogicSchemas.getInstance().getDatabaseType().getName());
-    }
-    
     protected final Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap() {
         return backendDataSource.getDataSourceParameters().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> new DatabaseAccessConfiguration(entry.getValue().getUrl(), null, null)));
