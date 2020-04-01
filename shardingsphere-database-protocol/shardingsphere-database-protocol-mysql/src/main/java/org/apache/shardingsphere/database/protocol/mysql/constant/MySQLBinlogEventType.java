@@ -20,6 +20,9 @@ package org.apache.shardingsphere.database.protocol.mysql.constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * MySQL binlog event type.
  *
@@ -101,7 +104,15 @@ public enum MySQLBinlogEventType {
     
     PREVIOUS_GTIDS_EVENT(0x23);
     
+    private static final Map<Integer, MySQLBinlogEventType> VALUE_AND_EVENT_TYPE_MAP = new HashMap<>(MySQLBinlogEventType.values().length, 1);
+    
     private final int value;
+    
+    static {
+        for (MySQLBinlogEventType each : MySQLBinlogEventType.values()) {
+            VALUE_AND_EVENT_TYPE_MAP.put(each.value, each);
+        }
+    }
     
     /**
      * Value of {@code MySQLBinlogEventType}.
@@ -110,10 +121,8 @@ public enum MySQLBinlogEventType {
      * @return MySQL binlog event type
      */
     public static MySQLBinlogEventType valueOf(final int value) {
-        for (MySQLBinlogEventType each : MySQLBinlogEventType.values()) {
-            if (each.getValue() == value) {
-                return each;
-            }
+        if (VALUE_AND_EVENT_TYPE_MAP.containsKey(value)) {
+            return VALUE_AND_EVENT_TYPE_MAP.get(value);
         }
         throw new IllegalArgumentException(String.format("Cannot find value '%s' in binlog event type", value));
     }
