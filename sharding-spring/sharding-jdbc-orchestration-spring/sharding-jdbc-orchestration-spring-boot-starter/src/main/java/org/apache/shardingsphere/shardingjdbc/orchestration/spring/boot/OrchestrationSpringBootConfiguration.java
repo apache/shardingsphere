@@ -21,15 +21,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.swapper.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
+import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.config.YamlCenterRepositoryConfiguration;
 import org.apache.shardingsphere.orchestration.center.yaml.swapper.CenterRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.orchestration.core.facade.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
@@ -49,8 +51,6 @@ import org.apache.shardingsphere.spring.boot.datasource.DataSourcePropertiesSett
 import org.apache.shardingsphere.spring.boot.util.DataSourceUtil;
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
-import org.apache.shardingsphere.orchestration.center.config.CenterConfiguration;
-import org.apache.shardingsphere.orchestration.center.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.underlying.common.database.DefaultSchema;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -144,7 +144,7 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     @Conditional(LocalMasterSlaveRuleCondition.class)
     public DataSource masterSlaveDataSourceByLocal(final OrchestrationConfiguration orchestrationConfiguration) throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRule);
-        return new OrchestrationMasterSlaveDataSource(new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRule(masterSlaveRuleConfig), root.getProps()), orchestrationConfiguration);
+        return new OrchestrationMasterSlaveDataSource(new MasterSlaveDataSource(dataSourceMap, new OrchestrationMasterSlaveRule(masterSlaveRuleConfig), root.getProps()), orchestrationConfiguration);
     }
     
     /**
