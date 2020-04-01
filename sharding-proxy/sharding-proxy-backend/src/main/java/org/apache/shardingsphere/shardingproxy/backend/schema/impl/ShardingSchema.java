@@ -111,7 +111,7 @@ public final class ShardingSchema extends LogicSchema {
         return new ShardingSphereMetaData(dataSourceMetas, decorateSchemaMetaData(schemaMetaData));
     }
     
-    private SchemaMetaData decorateSchemaMetaData(final SchemaMetaData schemaMetaData) throws SQLException {
+    private SchemaMetaData decorateSchemaMetaData(final SchemaMetaData schemaMetaData) {
         SchemaMetaData result = SchemaMetaDataDecorator.decorate(schemaMetaData, shardingRule, new ShardingTableMetaDataDecorator());
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = SchemaMetaDataDecorator.decorate(result, shardingRule, new ShardingTableMetaDataDecorator());
