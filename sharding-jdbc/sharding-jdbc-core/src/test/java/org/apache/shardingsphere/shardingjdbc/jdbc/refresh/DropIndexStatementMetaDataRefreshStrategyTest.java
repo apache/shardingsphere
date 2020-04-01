@@ -45,3 +45,4 @@ public class DropIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaD
         assertThat(getRuntimeContext().getMetaData().getSchema().get("t_order").getIndexes().containsKey("index"), is(false));
     }
 }
+

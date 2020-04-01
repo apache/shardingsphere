@@ -68,3 +68,4 @@ public class MetaDataRefreshStrategyFactoryTest {
         assertThat(MetaDataRefreshStrategyFactory.newInstance(truncateStatementContext).isPresent(), is(false));
     }
 }
+

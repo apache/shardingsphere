@@ -45,3 +45,4 @@ public class CreateIndexStatementMetaDataRefreshStrategyTest extends AbstractMet
         assertThat(getRuntimeContext().getMetaData().getSchema().get("t_order").getIndexes().containsKey("t_order_index"), is(true));
     }
 }
+

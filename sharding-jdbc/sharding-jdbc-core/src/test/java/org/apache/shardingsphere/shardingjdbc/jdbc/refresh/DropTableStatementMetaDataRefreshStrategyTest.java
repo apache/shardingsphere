@@ -43,3 +43,4 @@ public class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaD
         assertThat(getRuntimeContext().getMetaData().getSchema().containsTable("t_order"), is(false));
     }
 }
+

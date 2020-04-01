@@ -52,3 +52,4 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
                 Collections.singletonList(new IndexMetaData("index"))))));
     }
 }
+
