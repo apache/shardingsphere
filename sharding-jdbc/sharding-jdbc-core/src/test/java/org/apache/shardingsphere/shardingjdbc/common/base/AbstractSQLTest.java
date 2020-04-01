@@ -40,7 +40,7 @@ import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
-    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt");
+    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt", "test_ds_master", "test_ds_slave");
     
     private static Set<DatabaseType> databaseTypes = Sets.newHashSet(DatabaseTypes.getActualDatabaseType("H2"));
     
