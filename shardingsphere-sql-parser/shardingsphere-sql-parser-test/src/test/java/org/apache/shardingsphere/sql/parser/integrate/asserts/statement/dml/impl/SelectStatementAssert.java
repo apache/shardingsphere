@@ -64,7 +64,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getSimpleTableSegments(), new LinkedList<>(expected.getTables().getSimpleTables()));
+        TableAssert.assertIs(assertContext, actual.getTables(), new LinkedList<>(expected.getTables().getSimpleTables()));
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {

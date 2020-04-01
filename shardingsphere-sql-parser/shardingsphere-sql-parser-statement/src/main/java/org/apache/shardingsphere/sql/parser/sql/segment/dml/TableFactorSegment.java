@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
 
 import java.util.Collection;
@@ -39,4 +40,38 @@ public final class TableFactorSegment implements SQLSegment {
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     private Collection<TableReferenceSegment> tableReferences = new LinkedList<>();
+    
+    /**
+     * get tables.
+     * @return tables.
+     */
+    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+        Collection<SimpleTableSegment> tables = new LinkedList<>();
+        if (null != table && table instanceof SimpleTableSegment) {
+            tables.add((SimpleTableSegment) table);
+        }
+        if (null != tableReferences && !tableReferences.isEmpty()) {
+            for (TableReferenceSegment each: tableReferences) {
+                tables.addAll(each.getSimpleTableSegments());
+            }
+        }
+        return tables;
+    }
+    
+    /**
+     * get tables.
+     * @return tables.
+     */
+    public Collection<SimpleTableSegment> getTables() {
+        Collection<SimpleTableSegment> tables = new LinkedList<>();
+        if (null != table && table instanceof SimpleTableSegment) {
+            tables.add((SimpleTableSegment) table);
+        }
+        if (null != tableReferences && !tableReferences.isEmpty()) {
+            for (TableReferenceSegment each: tableReferences) {
+                tables.addAll(each.getTables());
+            }
+        }
+        return tables;
+    }
 }
