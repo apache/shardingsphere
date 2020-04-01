@@ -18,22 +18,23 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
+
+import java.sql.SQLException;
 
 /**
- * Create index statement meta data refresh strategy.
+ * Meta data refresh strategy.
+ * 
+ * @param <T> type of SQL statement context
  */
-public final class CreateIndexStatementMetaDataRefreshStrategy implements SQLStatementMetaDataRefreshStrategy<CreateIndexStatement> {
-   
-    @Override
-    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<CreateIndexStatement> sqlStatementContext) {
-        CreateIndexStatement createIndexStatement = sqlStatementContext.getSqlStatement();
-        if (null == createIndexStatement.getIndex()) {
-            return;
-        }
-        String indexName = createIndexStatement.getIndex().getIdentifier().getValue();
-        shardingRuntimeContext.getMetaData().getSchema().get(createIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().put(indexName, new IndexMetaData(indexName));
-    }
+public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
+    
+    /**
+     * Refresh meta data.
+     *
+     * @param shardingRuntimeContext sharding runtime context
+     * @param sqlStatementContext SQL statement context
+     * @throws SQLException SQL exception
+     */
+    void refreshMetaData(ShardingRuntimeContext shardingRuntimeContext, T sqlStatementContext) throws SQLException;
 }

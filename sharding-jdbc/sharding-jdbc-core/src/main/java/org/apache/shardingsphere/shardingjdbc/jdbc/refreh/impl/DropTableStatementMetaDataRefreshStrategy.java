@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
+package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
 
 /**
  * Drop table statement meta data refresh strategy.
  */
-public final class DropTableStatementMetaDataRefreshStrategy implements SQLStatementMetaDataRefreshStrategy<DropTableStatement> {
+public final class DropTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<DropTableStatementContext> {
     
     @Override
-    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final SQLStatementContext<DropTableStatement> sqlStatementContext) {
-        for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getTables()) {
-            shardingRuntimeContext.getMetaData().getSchema().remove(each.getTableName().getIdentifier().getValue());
-        }
+    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final DropTableStatementContext sqlStatementContext) {
+        sqlStatementContext.getSqlStatement().getTables().forEach(each -> shardingRuntimeContext.getMetaData().getSchema().remove(each.getTableName().getIdentifier().getValue()));
     }
 }

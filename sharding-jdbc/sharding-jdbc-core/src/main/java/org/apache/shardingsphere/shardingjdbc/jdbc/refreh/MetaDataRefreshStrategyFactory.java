@@ -17,40 +17,44 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
 
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.AlterTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.CreateIndexStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.CreateTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.DropIndexStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.DropTableStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * SQL statement meta data refresh strategy factory.
+ * Meta data refresh strategy factory.
  */
-public final class SQLStatementMetaDataRefreshStrategyFactory {
+public final class MetaDataRefreshStrategyFactory {
     
-    private static final Map<Class<?>, SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> REFRESH_MAP = new HashMap<>();
+    private static final Map<Class, MetaDataRefreshStrategy> REGISTRY = new HashMap<>();
     
     static {
-        REFRESH_MAP.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefreshStrategy());
-        REFRESH_MAP.put(AlterTableStatementContext.class, new AlterTableStatementMetaDataRefreshStrategy());
-        REFRESH_MAP.put(DropTableStatementContext.class, new DropTableStatementMetaDataRefreshStrategy());
-        REFRESH_MAP.put(CreateIndexStatementContext.class, new CreateIndexStatementMetaDataRefreshStrategy());
-        REFRESH_MAP.put(DropIndexStatementContext.class, new DropIndexStatementMetaDataRefreshStrategy());
+        REGISTRY.put(CreateTableStatementContext.class, new CreateTableStatementMetaDataRefreshStrategy());
+        REGISTRY.put(AlterTableStatementContext.class, new AlterTableStatementMetaDataRefreshStrategy());
+        REGISTRY.put(DropTableStatementContext.class, new DropTableStatementMetaDataRefreshStrategy());
+        REGISTRY.put(CreateIndexStatementContext.class, new CreateIndexStatementMetaDataRefreshStrategy());
+        REGISTRY.put(DropIndexStatementContext.class, new DropIndexStatementMetaDataRefreshStrategy());
     }
     
     /**
-     * New instance of SQL statement meta data refresh strategy.
+     * Create new instance of meta data refresh strategy.
      *
      * @param sqlStatementContext SQL statement context
-     * @return SQL statement meta data refresh strategy
+     * @return meta data refresh strategy
      */
-    public static Optional<SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> newInstance(final SQLStatementContext sqlStatementContext) {
-        return Optional.ofNullable(REFRESH_MAP.get(sqlStatementContext.getClass()));
+    public static Optional<MetaDataRefreshStrategy> newInstance(final SQLStatementContext sqlStatementContext) {
+        return Optional.ofNullable(REGISTRY.get(sqlStatementContext.getClass()));
     }
 }

@@ -25,10 +25,9 @@ import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.SQLStatementMetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
@@ -144,13 +143,14 @@ public abstract class AbstractStatementExecutor {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private void refreshMetaDataIfNeeded(final ShardingRuntimeContext runtimeContext, final SQLStatementContext sqlStatementContext) throws SQLException {
         if (null == sqlStatementContext) {
             return;
         }
-        Optional<SQLStatementMetaDataRefreshStrategy<? extends SQLStatement>> sqlStatementMetaDataRefreshStrategy = SQLStatementMetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
-        if (sqlStatementMetaDataRefreshStrategy.isPresent()) {
-            sqlStatementMetaDataRefreshStrategy.get().refreshMetaData(runtimeContext, sqlStatementContext);
+        Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
+        if (refreshStrategy.isPresent()) {
+            refreshStrategy.get().refreshMetaData(runtimeContext, sqlStatementContext);
         }
     }
 }

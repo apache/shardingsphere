@@ -15,32 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
+package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
 import org.apache.shardingsphere.core.metadata.ShardingMetaDataLoader;
 import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 
 import java.sql.SQLException;
 
 /**
- * Abstract table statement meta data.
+ * Alter table statement meta data refresh strategy.
  */
-public abstract class AbstractTableStatementMetaData {
+public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDataRefreshStrategy<AlterTableStatementContext> {
     
-    /**
-     * Load table meta data.
-     *
-     * @param tableName table name
-     * @param shardingRuntimeContext sharding runtime context
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    protected TableMetaData loadTableMetaData(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
+    @Override
+    public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final AlterTableStatementContext sqlStatementContext) throws SQLException {
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        shardingRuntimeContext.getMetaData().getSchema().put(tableName, loadTableMetaData(tableName, shardingRuntimeContext));
+    }
+    
+    private TableMetaData loadTableMetaData(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
         ShardingRule shardingRule = shardingRuntimeContext.getRule();
         int maxConnectionsSizePerQuery = shardingRuntimeContext.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isCheckingMetaData = shardingRuntimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
