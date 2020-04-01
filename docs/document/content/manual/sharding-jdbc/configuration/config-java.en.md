@@ -23,7 +23,7 @@ The implementation of DataSource in the following configuration is [DataSourceUt
      }
      
      private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-         KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("SNOWFLAKE", "order_id");
+         KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("order_id", new SnowflakeKeyGenerateAlgorithm());
          return result;
      }
      
@@ -99,7 +99,7 @@ The implementation of DataSource in the following configuration is [DataSourceUt
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("SNOWFLAKE", "order_id");
+        KeyGeneratorConfiguration result = new KeyGeneratorConfiguration("order_id", new SnowflakeKeyGenerateAlgorithm());
         return result;
     }
     
@@ -178,7 +178,7 @@ The implementation of DataSource in the following configuration is [DataSourceUt
         }
         
         private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-            return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
+            return new KeyGeneratorConfiguration("order_id", new SnowflakeKeyGenerateAlgorithm());
         }
 ```
 
@@ -230,7 +230,7 @@ The implementation of DataSource in the following configuration is [DataSourceUt
 | defaultDataSourceName (?)                 | String                                     | Tables not configured with sharding rules will locate according to default data sources |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default database sharding strategy                           |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default table sharding strategy                              |
-| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID. Default key generator is `org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm` |
 | masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write split rules, default indicates not using read-write split |
 
 #### TableRuleConfiguration
@@ -290,12 +290,12 @@ The implementation class of `ShardingStrategyConfiguration`, used to configure n
 | *Name* | *DataType* | *Description*                                                |
 | ------ | ---------- | ------------------------------------------------------------ |
 | column | String     | Column name of key generator                                 |
-| type   | String     | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
-| props  | Properties | The Property configuration of key generators                 |
+| type   | String     | Type of key generate algorithm, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
+| props  | Properties | The Property configuration of key generate algorithms                 |
 
 #### Properties
 
-Property configuration that can include these properties of these key generators.
+Property configuration that can include these properties of these key generate algorithms.
 
 ##### SNOWFLAKE
 

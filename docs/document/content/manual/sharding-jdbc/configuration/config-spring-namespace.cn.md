@@ -67,8 +67,12 @@ weight = 4
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="SNOWFLAKE" />
+    </bean>
+
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds0,ds1">
@@ -302,8 +306,12 @@ weight = 4
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="SNOWFLAKE" />
+    </bean>
+
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1">
@@ -391,8 +399,12 @@ weight = 4
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
     <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="SNOWFLAKE" />
+    </bean>
+
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>
@@ -470,7 +482,7 @@ weight = 4
 | default-data-source-name (?)      | 属性  | 未配置分片规则的表将通过默认数据源定位                                                                       |
 | default-database-strategy-ref (?) | 属性  | 默认数据库分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分库                                    |
 | default-table-strategy-ref (?)    | 属性  | 默认表分片策略，对应\<sharding:xxx-strategy>中的策略Id，缺省表示不分表                                       |
-| default-key-generator-ref (?)     | 属性  | 默认自增列值生成器引用，缺省使用`org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| default-key-generator-ref (?)     | 属性  | 默认自增列值生成器引用，缺省使用`org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm` |
 | encrypt-rule (?)                  | 标签  | 脱敏规则                                                                                                  |
 
 #### \<sharding:table-rules />
@@ -551,17 +563,23 @@ weight = 4
 | ----- | ------ | -------------- |
 | id    | 属性    | Spring Bean Id |
 
+#### \<bean id="" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean" />
+
+| *名称*             | *类型*                       | *说明*                                                                           |
+| ----------------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| type              | 属性                          | 自增列值生成算法类型，可自定义或选择内置类型：SNOWFLAKE/UUID                            |
+| properties        | 属性                          | 自增列值生成算法的属性配置引用                                                       |
+
 #### \<sharding:key-generator />
 
 | *名称*             | *类型*                       | *说明*                                                                           |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------- |
 | column            | 属性                          | 自增列名称                                                                       |
-| type              | 属性                          | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID             |
-| props-ref         | 属性                          | 自增列值生成器的属性配置引用 |
+| algorithm-ref     | 属性                          | 自增列值生成算法引用。引用KeyGenerateAlgorithmFactoryBean类型的bean                  |
 
 #### Properties
 
-属性配置项，可以为以下自增列值生成器的属性。
+属性配置项，可以为以下自增列值生成算法的属性。
 
 ##### SNOWFLAKE
 
