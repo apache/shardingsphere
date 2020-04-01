@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -28,7 +28,8 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends AbstractSQLTest {
@@ -37,17 +38,18 @@ public abstract class AbstractMasterSlaveJDBCDatabaseAndTableTest extends Abstra
     
     private static final String CONFIG_MASTER_SLAVE = "config-master-slave.yaml";
     
+    private static final List<String> MASTER_SLAVE_DB_NAMES = Arrays.asList("test_ds_master", "test_ds_slave");
+    
     @BeforeClass
     public static void initMasterSlaveDataSources() throws SQLException, IOException {
         if (null != masterSlaveDataSource) {
             return;
         }
-        DataSource masterDataSource = new TestDataSource("test_ds_master");
-        DataSource slaveDataSource = new TestDataSource("test_ds_slave");
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
-        dataSourceMap.put("test_ds_master", masterDataSource);
-        dataSourceMap.put("test_ds_slave", slaveDataSource);
-        masterSlaveDataSource = (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(dataSourceMap, getFile(CONFIG_MASTER_SLAVE));
+        masterSlaveDataSource = (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_MASTER_SLAVE));
+    }
+    
+    private static Map<String, DataSource> getDataSources() {
+        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), MASTER_SLAVE_DB_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
