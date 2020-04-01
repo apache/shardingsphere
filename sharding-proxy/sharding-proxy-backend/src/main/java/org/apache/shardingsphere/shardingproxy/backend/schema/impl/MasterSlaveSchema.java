@@ -28,7 +28,7 @@ import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRule
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 
@@ -39,7 +39,7 @@ import java.util.Map;
  * Master-slave schema.
  */
 @Getter
-public final class MasterSlaveSchema extends LogicSchema {
+public final class MasterSlaveSchema extends MetaDataInitializedLogicSchema {
     
     private MasterSlaveRule masterSlaveRule;
     
