@@ -29,7 +29,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import javax.sql.DataSource;

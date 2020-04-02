@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

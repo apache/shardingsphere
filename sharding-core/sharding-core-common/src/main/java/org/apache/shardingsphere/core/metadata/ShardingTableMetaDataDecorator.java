@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.TableMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import java.util.Collection;

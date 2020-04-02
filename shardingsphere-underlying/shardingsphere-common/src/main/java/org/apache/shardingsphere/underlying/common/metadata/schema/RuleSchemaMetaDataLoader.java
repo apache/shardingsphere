@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.schema.loader;
+package org.apache.shardingsphere.underlying.common.metadata.schema;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -24,7 +24,8 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.TableMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
