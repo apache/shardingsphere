@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refresh;
+package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.DropIndexStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,12 +36,12 @@ public class DropIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaD
     @Test
     public void refreshMetaData() {
         MetaDataRefreshStrategy<DropIndexStatementContext> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
-        final DropIndexStatement dropIndexStatement = new DropIndexStatement();
+        DropIndexStatement dropIndexStatement = new DropIndexStatement();
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         DropIndexStatementContext dropIndexStatementContext = new DropIndexStatementContext(dropIndexStatement);
-        metaDataRefreshStrategy.refreshMetaData(getRuntimeContext(), dropIndexStatementContext);
-        assertThat(getRuntimeContext().getMetaData().getSchema().get("t_order").getIndexes().containsKey("index"), is(false));
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), dropIndexStatementContext, tableName -> null);
+        assertThat(getMetaData().getSchema().get("t_order").getIndexes().containsKey("index"), is(false));
     }
 }
 

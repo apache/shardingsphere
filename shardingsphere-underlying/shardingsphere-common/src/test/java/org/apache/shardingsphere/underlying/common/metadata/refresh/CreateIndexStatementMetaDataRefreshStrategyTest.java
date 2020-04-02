@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refresh;
+package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.CreateIndexStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.CreateIndexStatementMetaDataRefreshStrategy;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,12 +36,12 @@ public class CreateIndexStatementMetaDataRefreshStrategyTest extends AbstractMet
     @Test
     public void refreshMetaData() {
         MetaDataRefreshStrategy<CreateIndexStatementContext> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
-        final CreateIndexStatement createIndexStatement = new CreateIndexStatement();
+        CreateIndexStatement createIndexStatement = new CreateIndexStatement();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         CreateIndexStatementContext createIndexStatementContext = new CreateIndexStatementContext(createIndexStatement);
-        metaDataRefreshStrategy.refreshMetaData(getRuntimeContext(), createIndexStatementContext);
-        assertThat(getRuntimeContext().getMetaData().getSchema().get("t_order").getIndexes().containsKey("t_order_index"), is(true));
+        metaDataRefreshStrategy.refreshMetaData(getMetaData(), createIndexStatementContext, tableName -> null);
+        assertThat(getMetaData().getSchema().get("t_order").getIndexes().containsKey("t_order_index"), is(true));
     }
 }
 

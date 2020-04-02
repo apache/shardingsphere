@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refresh;
+package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
-import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.junit.Before;
 
 import java.util.Collections;
-import java.util.Properties;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @Getter
 public abstract class AbstractMetaDataRefreshStrategyTest {
     
-    private ShardingRuntimeContext runtimeContext;
+    private ShardingSphereMetaData metaData;
     
     @Before
     public void setUp() {
-        runtimeContext = mock(ShardingRuntimeContext.class);
-        when(runtimeContext.getMetaData()).thenReturn(buildMetaData());
-        when(runtimeContext.getProperties()).thenReturn(new ConfigurationProperties(new Properties()));
+        metaData = buildMetaData();
     }
     
     private ShardingSphereMetaData buildMetaData() {

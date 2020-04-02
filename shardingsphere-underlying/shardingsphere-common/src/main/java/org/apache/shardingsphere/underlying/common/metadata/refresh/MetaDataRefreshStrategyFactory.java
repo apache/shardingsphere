@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.jdbc.refreh;
+package org.apache.shardingsphere.underlying.common.metadata.refresh;
 
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.AlterTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.CreateIndexStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.CreateTableStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.DropIndexStatementMetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl.DropTableStatementMetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.DropTableStatementContext;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.AlterTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.CreateIndexStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.CreateTableStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.DropIndexStatementMetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.impl.DropTableStatementMetaDataRefreshStrategy;
 
 import java.util.HashMap;
 import java.util.Map;

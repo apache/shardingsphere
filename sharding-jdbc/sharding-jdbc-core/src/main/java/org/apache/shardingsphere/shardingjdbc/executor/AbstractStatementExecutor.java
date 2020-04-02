@@ -19,17 +19,22 @@ package org.apache.shardingsphere.shardingjdbc.executor;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.metadata.ShardingMetaDataLoader;
+import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.sharding.execute.sql.StatementExecuteUnit;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteCallback;
 import org.apache.shardingsphere.sharding.execute.sql.execute.SQLExecuteTemplate;
 import org.apache.shardingsphere.sharding.execute.sql.prepare.SQLExecutePrepareTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
-import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategyFactory;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategy;
+import org.apache.shardingsphere.underlying.common.metadata.refresh.MetaDataRefreshStrategyFactory;
 import org.apache.shardingsphere.underlying.executor.engine.ExecutorEngine;
 import org.apache.shardingsphere.underlying.executor.engine.InputGroup;
 
@@ -150,7 +155,19 @@ public abstract class AbstractStatementExecutor {
         }
         Optional<MetaDataRefreshStrategy> refreshStrategy = MetaDataRefreshStrategyFactory.newInstance(sqlStatementContext);
         if (refreshStrategy.isPresent()) {
-            refreshStrategy.get().refreshMetaData(runtimeContext, sqlStatementContext);
+            refreshStrategy.get().refreshMetaData(runtimeContext.getMetaData(), sqlStatementContext, this::loadTableMeta);
         }
+    }
+    
+    private TableMetaData loadTableMeta(final String tableName) throws SQLException {
+        ShardingRule shardingRule = connection.getRuntimeContext().getRule();
+        int maxConnectionsSizePerQuery = connection.getRuntimeContext().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        boolean isCheckingMetaData = connection.getRuntimeContext().getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
+        TableMetaData result = new ShardingMetaDataLoader(connection.getDataSourceMap(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName, databaseType);
+        result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
+        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
+            result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
+        }
+        return result;
     }
 }
