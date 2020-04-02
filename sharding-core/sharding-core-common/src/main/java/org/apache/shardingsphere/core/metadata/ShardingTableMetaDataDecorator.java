@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.core.metadata;
 
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -72,5 +72,15 @@ public final class ShardingTableMetaDataDecorator implements TableMetaDataDecora
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
         return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 1;
+    }
+    
+    @Override
+    public Class<ShardingRule> getType() {
+        return ShardingRule.class;
     }
 }

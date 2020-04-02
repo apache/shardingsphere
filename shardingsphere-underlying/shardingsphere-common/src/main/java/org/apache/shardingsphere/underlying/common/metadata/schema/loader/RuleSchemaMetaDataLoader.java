@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.TableMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
@@ -44,6 +45,7 @@ public final class RuleSchemaMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(RuleTableMetaDataLoader.class);
+        ShardingSphereServiceLoader.register(TableMetaDataDecorator.class);
     }
     
     private final Collection<BaseRule> rules;
@@ -64,7 +66,7 @@ public final class RuleSchemaMetaDataLoader {
             result.putAll(entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties));
         }
         // TODO load remain tables
-        return new SchemaMetaData(result);
+        return decorate(new SchemaMetaData(result));
     }
     
     /**
@@ -98,7 +100,7 @@ public final class RuleSchemaMetaDataLoader {
         for (Entry<BaseRule, RuleTableMetaDataLoader> entry : getLoaders().entrySet()) {
             Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, tableName, entry.getKey(), properties);
             if (result.isPresent()) {
-                return result;
+                return Optional.of(decorate(tableName, result.get()));
             }
         }
         return Optional.empty();
@@ -124,6 +126,38 @@ public final class RuleSchemaMetaDataLoader {
     private Map<BaseRule, RuleTableMetaDataLoader> getLoaders() {
         Map<BaseRule, RuleTableMetaDataLoader> result = new LinkedHashMap<>();
         for (RuleTableMetaDataLoader each : OrderedSPIRegistry.getRegisteredServices(RuleTableMetaDataLoader.class)) {
+            Class<?> ruleClass = (Class<?>) each.getType();
+            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
+            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
+                    .forEach(rule -> result.put(rule, each));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private SchemaMetaData decorate(final SchemaMetaData schemaMetaData) {
+        Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
+        Map<BaseRule, TableMetaDataDecorator> decorators = getDecorators();
+        for (String each : schemaMetaData.getAllTableNames()) {
+            for (Entry<BaseRule, TableMetaDataDecorator> entry : decorators.entrySet()) {
+                result.put(each, entry.getValue().decorate(schemaMetaData.get(each), each, entry.getKey()));
+            }
+        }
+        return new SchemaMetaData(result);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
+        TableMetaData result = tableMetaData;
+        for (Entry<BaseRule, TableMetaDataDecorator> entry : getDecorators().entrySet()) {
+            result = entry.getValue().decorate(tableMetaData, tableName, entry.getKey());
+        }
+        return result;
+    }
+    
+    private Map<BaseRule, TableMetaDataDecorator> getDecorators() {
+        Map<BaseRule, TableMetaDataDecorator> result = new LinkedHashMap<>();
+        for (TableMetaDataDecorator each : OrderedSPIRegistry.getRegisteredServices(TableMetaDataDecorator.class)) {
             Class<?> ruleClass = (Class<?>) each.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())

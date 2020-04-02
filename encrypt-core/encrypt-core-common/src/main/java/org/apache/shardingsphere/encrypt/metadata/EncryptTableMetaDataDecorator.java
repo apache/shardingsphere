@@ -57,4 +57,14 @@ public final class EncryptTableMetaDataDecorator implements TableMetaDataDecorat
                 logicColumnName, originalColumnMetaData.getDataType(), originalColumnMetaData.getDataTypeName(), originalColumnMetaData.isPrimaryKey(), originalColumnMetaData.getName(),
                 plainColumnName, assistedQueryColumnName);
     }
+    
+    @Override
+    public int getOrder() {
+        return 5;
+    }
+    
+    @Override
+    public Class<EncryptRule> getType() {
+        return EncryptRule.class;
+    }
 }
