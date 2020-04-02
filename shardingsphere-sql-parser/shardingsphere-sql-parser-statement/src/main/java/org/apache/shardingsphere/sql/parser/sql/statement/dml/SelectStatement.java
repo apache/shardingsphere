@@ -105,7 +105,7 @@ public final class SelectStatement extends DMLStatement {
      * 
      * @return simple table segments
      */
-    public Collection<SimpleTableSegment> getTables() {
+    public Collection<SimpleTableSegment> getSimpleTableSegments() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (TableReferenceSegment each: tableReferences) {
             result.addAll(each.getTables());
