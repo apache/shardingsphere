@@ -52,23 +52,6 @@ public final class TableFactorSegment implements SQLSegment {
         }
         if (null != tableReferences && !tableReferences.isEmpty()) {
             for (TableReferenceSegment each: tableReferences) {
-                tables.addAll(each.getSimpleTableSegments());
-            }
-        }
-        return tables;
-    }
-    
-    /**
-     * get tables.
-     * @return tables.
-     */
-    public Collection<SimpleTableSegment> getTables() {
-        Collection<SimpleTableSegment> tables = new LinkedList<>();
-        if (null != table && table instanceof SimpleTableSegment) {
-            tables.add((SimpleTableSegment) table);
-        }
-        if (null != tableReferences && !tableReferences.isEmpty()) {
-            for (TableReferenceSegment each: tableReferences) {
                 tables.addAll(each.getTables());
             }
         }
