@@ -48,5 +48,3 @@ public class CreateTableStatementMetaDataRefreshStrategyTest extends AbstractMet
         assertThat(getMetaData().getSchema().containsTable("t_order_0"), is(true));
     }
 }
-
-

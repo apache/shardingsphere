@@ -32,7 +32,7 @@ public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
     /**
      * Refresh meta data.
      *
-     * @param metaData sharding sphere meta data
+     * @param metaData ShardingSphere meta data
      * @param sqlStatementContext SQL statement context
      * @param callback  callback
      * @throws SQLException SQL exception
