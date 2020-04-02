@@ -34,7 +34,7 @@ public interface MetaDataRefreshStrategy<T extends SQLStatementContext> {
      *
      * @param metaData ShardingSphere meta data
      * @param sqlStatementContext SQL statement context
-     * @param callback  callback
+     * @param callback callback
      * @throws SQLException SQL exception
      */
     void refreshMetaData(ShardingSphereMetaData metaData, T sqlStatementContext, TableMetaDataLoaderCallback callback) throws SQLException;
