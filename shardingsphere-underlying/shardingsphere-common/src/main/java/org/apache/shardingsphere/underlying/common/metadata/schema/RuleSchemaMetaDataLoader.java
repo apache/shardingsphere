@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
@@ -46,7 +46,7 @@ public final class RuleSchemaMetaDataLoader {
     
     static {
         ShardingSphereServiceLoader.register(RuleTableMetaDataLoader.class);
-        ShardingSphereServiceLoader.register(TableMetaDataDecorator.class);
+        ShardingSphereServiceLoader.register(RuleTableMetaDataDecorator.class);
     }
     
     private final Collection<BaseRule> rules;
@@ -138,9 +138,9 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     private SchemaMetaData decorate(final SchemaMetaData schemaMetaData) {
         Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
-        Map<BaseRule, TableMetaDataDecorator> decorators = getDecorators();
+        Map<BaseRule, RuleTableMetaDataDecorator> decorators = getDecorators();
         for (String each : schemaMetaData.getAllTableNames()) {
-            for (Entry<BaseRule, TableMetaDataDecorator> entry : decorators.entrySet()) {
+            for (Entry<BaseRule, RuleTableMetaDataDecorator> entry : decorators.entrySet()) {
                 result.put(each, entry.getValue().decorate(schemaMetaData.get(each), each, entry.getKey()));
             }
         }
@@ -150,15 +150,15 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
         TableMetaData result = tableMetaData;
-        for (Entry<BaseRule, TableMetaDataDecorator> entry : getDecorators().entrySet()) {
+        for (Entry<BaseRule, RuleTableMetaDataDecorator> entry : getDecorators().entrySet()) {
             result = entry.getValue().decorate(tableMetaData, tableName, entry.getKey());
         }
         return result;
     }
     
-    private Map<BaseRule, TableMetaDataDecorator> getDecorators() {
-        Map<BaseRule, TableMetaDataDecorator> result = new LinkedHashMap<>();
-        for (TableMetaDataDecorator each : OrderedSPIRegistry.getRegisteredServices(TableMetaDataDecorator.class)) {
+    private Map<BaseRule, RuleTableMetaDataDecorator> getDecorators() {
+        Map<BaseRule, RuleTableMetaDataDecorator> result = new LinkedHashMap<>();
+        for (RuleTableMetaDataDecorator each : OrderedSPIRegistry.getRegisteredServices(RuleTableMetaDataDecorator.class)) {
             Class<?> ruleClass = (Class<?>) each.getType();
             // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
             rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
