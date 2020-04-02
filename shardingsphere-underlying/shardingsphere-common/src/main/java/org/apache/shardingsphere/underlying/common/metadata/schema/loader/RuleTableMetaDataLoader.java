@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule meta data loader.
+ * Rule table meta data loader.
  * 
  * @param <T> type of base rule
  */
-public interface RuleMetaDataLoader<T extends BaseRule> {
+public interface RuleTableMetaDataLoader<T extends BaseRule> {
     
     /**
      * Load meta data.

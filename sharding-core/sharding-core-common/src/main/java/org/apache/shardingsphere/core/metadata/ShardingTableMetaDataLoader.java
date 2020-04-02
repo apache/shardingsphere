@@ -29,7 +29,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleTableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import javax.sql.DataSource;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for sharding.
  */
-public final class ShardingTableMetaDataLoader implements RuleMetaDataLoader<ShardingRule> {
+public final class ShardingTableMetaDataLoader implements RuleTableMetaDataLoader<ShardingRule> {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     

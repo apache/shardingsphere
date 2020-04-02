@@ -36,7 +36,7 @@ import java.util.Optional;
  */
 public final class RuleSchemaMetaDataLoader {
     
-    private final Map<BaseRule, RuleMetaDataLoader> loaders = new LinkedHashMap<>();
+    private final Map<BaseRule, RuleTableMetaDataLoader> loaders = new LinkedHashMap<>();
     
     /**
      * Register loader.
@@ -44,7 +44,7 @@ public final class RuleSchemaMetaDataLoader {
      * @param rule rule
      * @param loader loader
      */
-    public void registerLoader(final BaseRule rule, final RuleMetaDataLoader loader) {
+    public void registerLoader(final BaseRule rule, final RuleTableMetaDataLoader loader) {
         loaders.put(rule, loader);
     }
     
@@ -60,7 +60,7 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>(); 
-        for (Entry<BaseRule, RuleMetaDataLoader> entry : loaders.entrySet()) {
+        for (Entry<BaseRule, RuleTableMetaDataLoader> entry : loaders.entrySet()) {
             result.putAll(entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties));
         }
         // TODO load remain tables
@@ -95,7 +95,7 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     public Optional<TableMetaData> load(final DatabaseType databaseType, 
                                         final Map<String, DataSource> dataSourceMap, final String tableName, final ConfigurationProperties properties) throws SQLException {
-        for (Entry<BaseRule, RuleMetaDataLoader> entry : loaders.entrySet()) {
+        for (Entry<BaseRule, RuleTableMetaDataLoader> entry : loaders.entrySet()) {
             Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, tableName, entry.getKey(), properties);
             if (result.isPresent()) {
                 return result;

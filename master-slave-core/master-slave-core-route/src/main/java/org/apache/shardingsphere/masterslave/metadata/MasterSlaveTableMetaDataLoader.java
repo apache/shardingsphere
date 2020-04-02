@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataL
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleTableMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * Table meta data loader for master slave.
  */
-public final class MasterSlaveTableMetaDataLoader implements RuleMetaDataLoader<MasterSlaveRule> {
+public final class MasterSlaveTableMetaDataLoader implements RuleTableMetaDataLoader<MasterSlaveRule> {
     
     @Override
     public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
