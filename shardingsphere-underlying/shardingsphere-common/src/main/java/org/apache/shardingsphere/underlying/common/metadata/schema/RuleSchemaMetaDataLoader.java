@@ -141,7 +141,7 @@ public final class RuleSchemaMetaDataLoader {
         Map<BaseRule, RuleTableMetaDataDecorator> decorators = getDecorators();
         for (String each : schemaMetaData.getAllTableNames()) {
             for (Entry<BaseRule, RuleTableMetaDataDecorator> entry : decorators.entrySet()) {
-                result.put(each, entry.getValue().decorate(schemaMetaData.get(each), each, entry.getKey()));
+                result.put(each, entry.getValue().decorate(each, schemaMetaData.get(each), entry.getKey()));
             }
         }
         return new SchemaMetaData(result);
@@ -151,7 +151,7 @@ public final class RuleSchemaMetaDataLoader {
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
         TableMetaData result = tableMetaData;
         for (Entry<BaseRule, RuleTableMetaDataDecorator> entry : getDecorators().entrySet()) {
-            result = entry.getValue().decorate(tableMetaData, tableName, entry.getKey());
+            result = entry.getValue().decorate(tableName, tableMetaData, entry.getKey());
         }
         return result;
     }

@@ -198,9 +198,9 @@ public final class ShardingSchema extends LogicSchema {
                 LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
         if (tableMetaData.isPresent()) {
             TableMetaData result = tableMetaData.get();
-            result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
+            result = new ShardingTableMetaDataDecorator().decorate(tableName, result, shardingRule);
             if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-                result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
+                result = new EncryptTableMetaDataDecorator().decorate(tableName, result, shardingRule.getEncryptRule());
             }
             return Optional.of(result);
         }
