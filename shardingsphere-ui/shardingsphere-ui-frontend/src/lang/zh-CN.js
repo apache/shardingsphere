@@ -182,5 +182,48 @@ export default {
       authentication: '认证信息',
       props: '属性配置'
     }
+  },
+  dataScaling: {
+    btnTxt: '添加',
+    tableList: {
+      jobId: '任务Id',
+      jobName: '任务名称',
+      status: '状态',
+      operate: '操作',
+      operateStop: '停止',
+      operateSee: 'see'
+    },
+    registDialog: {
+      title: '添加一个任务',
+      source: '源',
+      target: '目标',
+      jobCount: '任务数量',
+      jobCountPlaceholder: '请输入任务数量',
+      username: 'Username',
+      usernamePlaceholder: '请输入用户名',
+      password: 'Password',
+      passwordPlaceholder: '请输入密码',
+      url: '地址',
+      urlPlaceholder: '请输入 url',
+      btnConfirmTxt: '确认',
+      btnCancelTxt: '取消'
+    },
+    rules: {
+      source: '请选择注册中心的来源',
+      target: '请选择目标',
+      serviceUrl: '服务地址必填'
+    },
+    notify: {
+      title: '提示',
+      conSucMessage: '添加成功',
+      conFailMessage: '添加失败',
+      delSucMessage: '删除成功',
+      delFailMessage: '删除失败'
+    },
+    serviceDialog: {
+      serviceName: '请输入服务名称',
+      serviceType: '请输入服务类型',
+      serviceUrl: '请输入服务地址'
+    }
   }
 }
