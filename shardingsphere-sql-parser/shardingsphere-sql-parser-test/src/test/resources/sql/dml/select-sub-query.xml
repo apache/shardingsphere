@@ -18,9 +18,6 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_sub_query_with_project">
-        <tables>
-            <simple-table name="t_order" start-index="40" stop-index="46" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="40" stop-index="46" />
@@ -79,9 +76,6 @@
     </select>
     
     <select sql-case-id="select_with_equal_subquery">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -98,9 +92,6 @@
                     <compare-right-value>
                         <subquery-expression start-index="38" stop-index="85" literal-start-index="38" literal-stop-index="85">
                             <select>
-                                <tables>
-                                    <simple-table name="t_order_item" start-index="59" stop-index="70" />
-                                </tables>
                                 <table-reference>
                                     <table-factor>
                                         <table name="t_order_item" start-index="59" stop-index="70" />
@@ -129,9 +120,6 @@
     </select>
     
     <select sql-case-id="select_with_in_subquery">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -147,9 +135,6 @@
                     <in-right-value>
                         <subquery-expression start-index="39" stop-index="93" literal-start-index="39" literal-stop-index="93">
                             <select>
-                                <tables>
-                                    <simple-table name="t_order_item" start-index="60" stop-index="71" />
-                                </tables>
                                 <table-reference>
                                     <table-factor>
                                         <table name="t_order_item" start-index="60" stop-index="71" />
@@ -178,9 +163,6 @@
     </select>
 
     <select sql-case-id="select_with_between_subquery" parameters="12">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -196,9 +178,6 @@
                     <between-right-value>
                         <between-subquery-expression start-index="44" stop-index="97" literal-start-index="44" literal-stop-index="97" >
                             <select>
-                                <tables>
-                                    <simple-table name="t_order_item" start-index="65" stop-index="76" />
-                                </tables>
                                 <table-reference>
                                     <table-factor>
                                         <table name="t_order_item" start-index="65" stop-index="76" />

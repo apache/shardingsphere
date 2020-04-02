@@ -24,9 +24,6 @@
     </select>
     
     <select sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
-        <tables>
-            <simple-table name="t_order" alias="t_order" start-index="22" stop-index="28" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="t_order" start-index="22" stop-index="28" />
@@ -60,9 +57,6 @@
     </select>
     
     <select sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
-        <tables>
-            <simple-table name="t_order" alias="t_order" start-index="52" stop-index="58" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="t_order" start-index="52" stop-index="58" />
@@ -102,9 +96,6 @@
     </select>
     
     <select sql-case-id="select_not_equal_with_single_table" parameters="1">
-        <tables>
-            <simple-table name="t_order_item" start-index="14" stop-index="25" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-index="14" stop-index="25" />
@@ -131,9 +122,6 @@
     </select>
     
     <select sql-case-id="select_exclamation_equal_with_single_table" parameters="1">
-        <tables>
-            <simple-table name="t_order_item" start-index="14" stop-index="25" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-index="14" stop-index="25" />
@@ -160,9 +148,6 @@
     </select>
     
     <select sql-case-id="select_not_in_with_single_table" parameters="100000, 100001">
-        <tables>
-            <simple-table name="t_order_item" start-index="14" stop-index="25" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-index="14" stop-index="25" />
@@ -188,9 +173,6 @@
     </select>
     
     <select sql-case-id="select_not_between_with_single_table" parameters="100000, 100001">
-        <tables>
-            <simple-table name="t_order_item" start-index="14" stop-index="25" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-index="14" stop-index="25" />
@@ -216,9 +198,6 @@
     </select>
     
     <select sql-case-id="select_equal_with_single_table" parameters="1, 1">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -250,9 +229,6 @@
     </select>
     
     <select sql-case-id="select_equal_with_same_sharding_column" parameters="1, 2">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -284,9 +260,6 @@
     </select>
     
     <select sql-case-id="select_between_with_single_table" parameters="1, 10, 2, 5">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -324,9 +297,6 @@
     </select>
     
     <select sql-case-id="select_comparison_symbol_with_single_table" parameters="1, 10, 2, 5">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -378,9 +348,6 @@
     </select>
     
     <select sql-case-id="select_in_with_single_table" parameters="1, 2, 3, 9, 10">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -420,9 +387,6 @@
     </select>
     
     <select sql-case-id="select_in_with_same_sharding_column" parameters="1000, 1001, 1001, 1002">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -459,9 +423,6 @@
     </select>
     
     <select sql-case-id="select_count_like_concat" parameters="'init', 1, 2, 9, 10">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="37" stop-index="43" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="37" stop-index="43" />
@@ -505,9 +466,6 @@
     </select>
     
     <select sql-case-id="select_count_tilde_concat" parameters="'init', 1, 2, 9, 10">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="37" stop-index="43" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="37" stop-index="43" />
@@ -551,10 +509,6 @@
     </select>
     
     <select sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -604,10 +558,6 @@
     </select>
     
     <select sql-case-id="select_full_route_with_binding_tables">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -631,11 +581,6 @@
     </select>
     
     <select sql-case-id="select_sharding_route_with_broadcast_table" parameters="1, 2, 9, 10, 'init'">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-            <simple-table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -700,11 +645,6 @@
     </select>
     
     <select sql-case-id="select_keyword_table_name_with_back_quotes" parameters="1, 2, 9, 10, 'init'">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-            <simple-table name="select" alias="c" start-delimiter="`" end-delimiter="`" start-index="104" stop-index="111" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -769,11 +709,6 @@
     </select>
     
     <select sql-case-id="select_keyword_table_name_with_double_quotes" parameters="1, 2, 9, 10, 'init'">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-            <simple-table name="select" alias="c" start-delimiter="&quot;" end-delimiter="&quot;" start-index="104" stop-index="111" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -838,11 +773,6 @@
     </select>
     
     <select sql-case-id="select_keyword_table_name_with_square_brackets" parameters="1, 2, 9, 10, 'init'">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-            <simple-table name="select" alias="c" start-delimiter="[" end-delimiter="]" start-index="104" stop-index="111" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -907,9 +837,6 @@
     </select>
     
     <select sql-case-id="select_alias_as_keyword" parameters="1">
-        <tables>
-            <simple-table name="t_order_item" alias="length" start-index="36" stop-index="47" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" alias="length" start-index="36" stop-index="47" />
@@ -937,10 +864,6 @@
     </select>
     
     <select sql-case-id="select_with_force_index_join" parameters="1000">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="56" stop-index="67" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -973,9 +896,6 @@
     </select>
 
     <select sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -1020,9 +940,6 @@
     </select>
 
     <select sql-case-id="select_in_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1, 2">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -1068,9 +985,6 @@
     </select>
     
     <select sql-case-id="select_between_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', '{&quot;rule3&quot;:&quot;null3&quot;}', 100, 200, 1">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -1108,9 +1022,6 @@
     </select>
     
     <select sql-case-id="select_with_double_quotes" parameters="1">
-        <tables>
-            <simple-table name="t_order_item" start-delimiter="&quot;" end-delimiter="&quot;" start-index="14" stop-index="27" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-delimiter="&quot;" end-delimiter="&quot;" start-index="14" stop-index="27" />
@@ -1137,9 +1048,6 @@
     </select>
 
     <select sql-case-id="select_distinct_with_single_column_without_order_by" >
-        <tables>
-            <simple-table name="t_order_item" start-index="29" stop-index="40" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-index="29" stop-index="40" />
@@ -1151,9 +1059,6 @@
     </select>
 
     <select sql-case-id="select_distinct_with_multi_column_without_order_by" >
-        <tables>
-            <simple-table name="t_order" start-index="47" stop-index="53" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="47" stop-index="53" />
@@ -1167,9 +1072,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_single_column" >
-        <tables>
-            <simple-table name="t_order_item" start-index="29" stop-index="40" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-index="29" stop-index="40" />
@@ -1184,9 +1086,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_owner_column" >
-        <tables>
-            <simple-table name="t_order" start-index="38" stop-index="44" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="38" stop-index="44" />
@@ -1203,9 +1102,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_multi_column" >
-        <tables>
-            <simple-table name="t_order" start-index="47" stop-index="53" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="47" stop-index="53" />
@@ -1222,9 +1118,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_star" >
-        <tables>
-            <simple-table name="t_order" start-index="23" stop-index="29" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table  name="t_order" start-index="23" stop-index="29" />
@@ -1250,10 +1143,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_owner_star">
-        <tables>
-            <simple-table name="t_order" start-index="54" stop-index="60" />
-            <simple-table name="t_order_item" start-index="63" stop-index="74" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="54" stop-index="60" />
@@ -1292,9 +1181,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_sum" >
-        <tables>
-            <simple-table name="t_order" start-index="37" stop-index="43" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table  name="t_order" start-index="37" stop-index="43" />
@@ -1317,9 +1203,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_count">
-        <tables>
-            <simple-table name="t_order" start-index="39" stop-index="45" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="39" stop-index="45" />
@@ -1342,9 +1225,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_avg">
-        <tables>
-            <simple-table name="t_order" start-index="35" stop-index="41" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="35" stop-index="41" />
@@ -1367,9 +1247,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_count_sum" >
-        <tables>
-            <simple-table name="t_order" start-index="61" stop-index="67" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="61" stop-index="67" />
@@ -1393,9 +1270,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_single_count_group_by" >
-        <tables>
-            <simple-table name="t_order" start-index="49" stop-index="55" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="49" stop-index="55" />
@@ -1425,9 +1299,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_count_group_by" >
-        <tables>
-            <simple-table name="t_order" start-index="49" stop-index="55" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="49" stop-index="55" />
@@ -1446,9 +1317,6 @@
     </select>
     
     <select sql-case-id="select_distinct_function">
-        <tables>
-            <simple-table name="t_order_item" start-index="30" stop-index="41" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-index="30" stop-index="41" />
@@ -1463,9 +1331,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_count_calculation" >
-        <tables>
-            <simple-table name="t_order" start-index="49" stop-index="55" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="49" stop-index="55" />
@@ -1488,9 +1353,6 @@
     </select>
     
     <select sql-case-id="select_distinct_with_aggregation_functions" >
-        <tables>
-            <simple-table name="t_order" start-index="77" stop-index="83" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table  name="t_order" start-index="77" stop-index="83" />
@@ -1515,11 +1377,6 @@
     </select>
     
     <select sql-case-id="select_with_schema" >
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="24">
-                <owner name="db1" start-index="14" stop-index="16" />
-            </simple-table>
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="24">
@@ -1533,9 +1390,6 @@
     </select>
     
     <select sql-case-id="select_escape_with_single_quota" >
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -1558,9 +1412,6 @@
     </select>
     
     <select sql-case-id="select_escape_with_double_quota" >
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -1581,9 +1432,6 @@
     </select>
     
     <select sql-case-id="select_with_block_comment" >
-        <tables>
-            <simple-table name="t_order" start-index="83" stop-index="89" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="83" stop-index="89" />
@@ -1607,9 +1455,6 @@
     </select>
     
     <select sql-case-id="select_with_single_comment" >
-        <tables>
-            <simple-table name="t_order" start-index="78" stop-index="84" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="78" stop-index="84" />
@@ -1633,9 +1478,6 @@
     </select>
     
     <select sql-case-id="select_alias_as_single_quote_string">
-        <tables>
-            <simple-table name="t_order" start-index="31" stop-index="37" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="31" stop-index="37" />
@@ -1647,9 +1489,6 @@
     </select>
     
     <select sql-case-id="select_alias_as_string_double_quote">
-        <tables>
-            <simple-table name="t_order" start-index="31" stop-index="37" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="31" stop-index="37" />
@@ -1661,9 +1500,6 @@
     </select>
     
     <select sql-case-id="select_special_function_nested" parameters="12, 1000">
-        <tables>
-            <simple-table name="t_order" start-index="48" stop-index="54" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="48" stop-index="54" />
@@ -1695,9 +1531,6 @@
     </select>
     
     <select sql-case-id="select_with_interval_function" parameters="12, 1000">
-        <tables>
-            <simple-table name="t_order" start-index="45" stop-index="51" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="45" stop-index="51" />
@@ -1729,9 +1562,6 @@
     </select>
     
     <select sql-case-id="select_with_left_function">
-        <tables>
-            <simple-table name="t_order_item" start-index="44" stop-index="55" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order_item" start-index="44" stop-index="55" />
@@ -1754,9 +1584,6 @@
     </select>
     
     <select sql-case-id="select_for_update" parameters="10">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -1786,9 +1613,6 @@
     </select>
     
     <select sql-case-id="select_with_mod_function">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -1803,9 +1627,6 @@
     </select>
     
     <select sql-case-id="select_with_date_format_function">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />
@@ -1823,9 +1644,6 @@
     </select>
     
     <select sql-case-id="select_with_spatial_function">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="14" stop-index="20" />

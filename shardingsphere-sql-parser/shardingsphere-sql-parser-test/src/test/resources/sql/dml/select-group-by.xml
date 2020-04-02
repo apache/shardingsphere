@@ -18,9 +18,6 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_group_by_with_sum">
-        <tables>
-            <simple-table name="t_order" start-index="49" stop-index="55" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="49" stop-index="55" />
@@ -39,9 +36,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_count">
-        <tables>
-            <simple-table name="t_order" start-index="53" stop-index="59" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table  name="t_order" start-index="53" stop-index="59" />
@@ -60,9 +54,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_max">
-        <tables>
-            <simple-table name="t_order" start-index="51" stop-index="57" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="51" stop-index="57" />
@@ -81,9 +72,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_min">
-        <tables>
-            <simple-table name="t_order" start-index="51" stop-index="57" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="51" stop-index="57" />
@@ -102,9 +90,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_avg">
-        <tables>
-            <simple-table name="t_order" start-index="49" stop-index="55" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="49" stop-index="55" />
@@ -123,9 +108,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_order_by_desc">
-        <tables>
-            <simple-table name="t_order" start-index="49" stop-index="55" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="49" stop-index="55" />
@@ -144,10 +126,6 @@
     </select>
     
     <select sql-case-id="select_group_by_without_grouped_column" parameters="1, 2, 9, 10">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="36" stop-index="42" />
-            <simple-table name="t_order_item" alias="i" start-index="51" stop-index="62" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="36" stop-index="42" />
@@ -195,9 +173,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_limit" parameters="5">
-        <tables>
-            <simple-table name="t_order" start-index="20" stop-index="26" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="20" stop-index="26" />
@@ -218,9 +193,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_order_by_and_limit" parameters="5">
-        <tables>
-            <simple-table name="t_order" start-index="49" stop-index="55" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table  name="t_order" start-index="49" stop-index="55" />
@@ -242,9 +214,6 @@
     </select>
     
     <select sql-case-id="select_with_item_alias_match_order_by_and_group_by_items">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="26" stop-index="32" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="26" stop-index="32" />
@@ -268,9 +237,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_date_function" parameters="1000, 1100">
-        <tables>
-            <simple-table name="t_order_item" start-delimiter="`" end-delimiter="`" start-index="91" stop-index="104" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table  name="t_order_item" start-delimiter="`" end-delimiter="`" start-index="91" stop-index="104" />
@@ -299,9 +265,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_keyword_alias">
-        <tables>
-            <simple-table name="t_order" start-index="58" stop-index="64" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="58" stop-index="64" />
@@ -317,9 +280,6 @@
     </select>
     
     <select sql-case-id="select_group_by_with_count_without_column_name">
-        <tables>
-            <simple-table name="t_order" start-index="53" stop-index="59" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="53" stop-index="59" />

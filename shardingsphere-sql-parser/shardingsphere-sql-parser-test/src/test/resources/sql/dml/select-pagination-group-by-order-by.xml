@@ -18,10 +18,6 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_pagination_with_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="22" stop-index="28" />
-            <simple-table name="t_order_item" alias="i" start-index="37" stop-index="48" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="22" stop-index="28" />
@@ -80,10 +76,6 @@
     </select>
     
     <select sql-case-id="select_pagination_with_diff_group_by_and_order_by" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="22" stop-index="28" />
-            <simple-table name="t_order_item" alias="i" start-index="37" stop-index="48" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="22" stop-index="28" />

@@ -18,10 +18,6 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_inner_join_related_with_alias" parameters="1000">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="37" stop-index="48" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
@@ -54,10 +50,6 @@
     </select>
     
     <select sql-case-id="select_inner_join_related_with_name" parameters="1000">
-        <tables>
-            <simple-table name="t_order" start-index="27" stop-index="33" />
-            <simple-table name="t_order_item" start-index="40" stop-index="51" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" start-index="27" stop-index="33" />
@@ -90,10 +82,6 @@
     </select>
     
     <select sql-case-id="select_join_using" parameters="1000">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        </tables>
         <table-reference>
             <table-factor>
                 <table name="t_order" alias="o" start-index="16" stop-index="22" />
