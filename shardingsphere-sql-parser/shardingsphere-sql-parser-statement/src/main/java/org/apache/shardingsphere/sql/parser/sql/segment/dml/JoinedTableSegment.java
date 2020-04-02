@@ -44,7 +44,7 @@ public final class JoinedTableSegment implements SQLSegment {
     public Collection<SimpleTableSegment> getTables() {
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         if (null != tableFactor) {
-            tables.addAll(tableFactor.getSimpleTableSegments());
+            tables.addAll(tableFactor.getTables());
         }
         if (null != joinSpecification) {
             tables.addAll(joinSpecification.getTables());
