@@ -44,7 +44,7 @@ public final class JoinSpecificationSegment implements SQLSegment {
      * get tables.
      * @return tables.
      */
-    public Collection<SimpleTableSegment> getTables() {
+    public Collection<SimpleTableSegment> getSimpleTableSegments() {
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         if (null != predicateSegment) {
             if (null != predicateSegment.getColumn() && (predicateSegment.getColumn().getOwner().isPresent())) {
