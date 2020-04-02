@@ -35,20 +35,20 @@ import java.util.Map;
  */
 @Getter
 public abstract class MetaDataInitializedLogicSchema extends LogicSchema {
-
+    
     private final ShardingSphereMetaData physicalMetaData;
-
+    
     public MetaDataInitializedLogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) throws SQLException {
         super(name, dataSources);
         physicalMetaData = createPhysicalMetaData();
     }
-
+    
     private ShardingSphereMetaData createPhysicalMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
         SchemaMetaData schemaMetaData = createSchemaMetaData();
         return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
     }
-
+    
     private SchemaMetaData createSchemaMetaData() throws SQLException {
         DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);

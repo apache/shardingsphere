@@ -25,12 +25,17 @@ import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
+import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.decorator.SchemaMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.loader.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -52,9 +57,11 @@ public final class EncryptSchema extends MetaDataInitializedLogicSchema {
     }
     
     @Override
-    public ShardingSphereMetaData getMetaData() {
-        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(),
-                SchemaMetaDataDecorator.decorate(getPhysicalMetaData().getSchema(), encryptRule, new EncryptTableMetaDataDecorator()));
+    public ShardingSphereMetaData getMetaData() throws SQLException {
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
+        loader.registerLoader(encryptRule, new EncryptTableMetaDataLoader());
+        SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
+        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), SchemaMetaDataDecorator.decorate(schemaMetaData, encryptRule, new EncryptTableMetaDataDecorator()));
     }
     
     /**

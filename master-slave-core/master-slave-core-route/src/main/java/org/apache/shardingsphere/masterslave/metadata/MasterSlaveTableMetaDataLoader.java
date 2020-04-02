@@ -15,33 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.loader;
+package org.apache.shardingsphere.masterslave.metadata;
 
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.metadata.loader.RuleMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Table meta data loader.
- * 
- * @param <T> type of base rule
+ * Table meta data loader for master slave.
  */
-public interface TableMetadataLoader<T extends BaseRule> {
+public final class MasterSlaveTableMetaDataLoader implements RuleMetaDataLoader<MasterSlaveRule> {
     
-    /**
-     * Load meta data.
-     * 
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @param rule rule
-     * @param properties configuration properties
-     * @return table name and meta data map
-     * @throws SQLException SQL exception
-     */
-    Map<String, TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T rule, ConfigurationProperties properties) throws SQLException;
+    @Override
+    public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                           final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) throws SQLException {
+        DataSource dataSource = dataSourceMap.values().iterator().next();
+        int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName()).getTables();
+    }
 }

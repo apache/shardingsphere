@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
+import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.decorator.SchemaMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.loader.RuleSchemaMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -40,7 +40,9 @@ public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<
     
     @Override
     protected SchemaMetaData loadSchemaMetaData(final DataSource dataSource) throws SQLException {
-        int maxConnectionCount = getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataDecorator.decorate(SchemaMetaDataLoader.load(dataSource, maxConnectionCount, getDatabaseType().getName()), getRule(), new EncryptTableMetaDataDecorator());
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
+        loader.registerLoader(getRule(), new EncryptTableMetaDataLoader());
+        SchemaMetaData schemaMetaData = loader.load(getDatabaseType(), dataSource, getProperties());
+        return SchemaMetaDataDecorator.decorate(schemaMetaData, getRule(), new EncryptTableMetaDataDecorator());
     }
 }
