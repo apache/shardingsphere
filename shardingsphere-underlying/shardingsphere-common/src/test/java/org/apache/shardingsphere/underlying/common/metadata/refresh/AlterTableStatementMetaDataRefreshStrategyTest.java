@@ -48,3 +48,4 @@ public class AlterTableStatementMetaDataRefreshStrategyTest extends AbstractMeta
         assertThat(getMetaData().getSchema().get("t_order").getIndexes().containsKey("index_alter"), is(true));
     }
 }
+
