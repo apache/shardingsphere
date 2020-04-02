@@ -45,8 +45,14 @@ public abstract class AbstractUnsupportedOperationPreparedStatement extends Abst
         throw new SQLFeatureNotSupportedException("getMetaData");
     }
     
+    /**
+     * Get parameter meta data.
+     *
+     * @return parameter metadata
+     * @throws SQLException SQL exception
+     */
     @Override
-    public final ParameterMetaData getParameterMetaData() throws SQLException {
+    public ParameterMetaData getParameterMetaData() throws SQLException {
         throw new SQLFeatureNotSupportedException("ParameterMetaData");
     }
     
