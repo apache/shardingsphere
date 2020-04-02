@@ -20,6 +20,7 @@ package org.apache.shardingsphere.masterslave.metadata;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.underlying.common.metadata.loader.RuleMetaDataL
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Table meta data loader for master slave.
@@ -40,5 +42,11 @@ public final class MasterSlaveTableMetaDataLoader implements RuleMetaDataLoader<
         DataSource dataSource = dataSourceMap.values().iterator().next();
         int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName()).getTables();
+    }
+    
+    @Override
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                                       final String tableName, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) throws SQLException {
+        return Optional.of(TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()));
     }
 }

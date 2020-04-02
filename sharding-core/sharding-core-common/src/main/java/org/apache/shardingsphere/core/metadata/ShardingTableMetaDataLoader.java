@@ -19,40 +19,40 @@ package org.apache.shardingsphere.core.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
+import org.apache.shardingsphere.underlying.common.metadata.loader.RuleMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 /**
- * Sharding meta data loader.
+ * Table meta data loader for sharding.
  */
-@RequiredArgsConstructor
-@Slf4j(topic = "ShardingSphere-metadata")
-public final class ShardingMetaDataLoader {
+public final class ShardingTableMetaDataLoader implements RuleMetaDataLoader<ShardingRule> {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
@@ -60,86 +60,46 @@ public final class ShardingMetaDataLoader {
     
     private static final int FUTURE_GET_TIME_OUT_SEC = 5;
     
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private final ShardingRule shardingRule;
-    
-    private final int maxConnectionsSizePerQuery;
-    
-    private final boolean isCheckingMetaData;
-    
-    /**
-     * Load table meta data.
-     *
-     * @param logicTableName logic table name
-     * @param databaseType database type
-     * @return table meta data
-     * @throws SQLException SQL exception
-     */
-    public TableMetaData load(final String logicTableName, final DatabaseType databaseType) throws SQLException {
-        TableRule tableRule = shardingRule.getTableRule(logicTableName);
-        if (!isCheckingMetaData) {
-            DataNode dataNode = tableRule.getActualDataNodes().iterator().next();
-            return TableMetaDataLoader.load(dataSourceMap.get(shardingRule.getShardingDataSourceNames()
-                    .getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName(), databaseType.getName());
+    @Override
+    public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                              final ShardingRule shardingRule, final ConfigurationProperties properties) throws SQLException {
+        Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        for (TableRule each : shardingRule.getTableRules()) {
+            load(databaseType, dataSourceMap, each.getLogicTable(), shardingRule, properties).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
+            
         }
-        Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, tableRule);
-        checkUniformed(logicTableName, actualTableMetaDataMap);
-        return actualTableMetaDataMap.values().iterator().next();
-    }
-    
-    /**
-     * Load schema Meta data.
-     *
-     * @param databaseType database type
-     * @return schema Meta data
-     * @throws SQLException SQL exception
-     */
-    public SchemaMetaData load(final DatabaseType databaseType) throws SQLException {
-        SchemaMetaData result = loadShardingSchemaMetaData(databaseType);
-        result.merge(loadDefaultSchemaMetaData(databaseType));
+        result.putAll(loadDefaultSchemaMetaData(databaseType, dataSourceMap, shardingRule, properties).getTables());
         return result;
     }
     
-    /**
-     * Load sharding schema Meta data.
-     *
-     * @param databaseType database type
-     * @return schema Meta data
-     * @throws SQLException SQL exception
-     */
-    public SchemaMetaData loadShardingSchemaMetaData(final DatabaseType databaseType) throws SQLException {
-        log.info("Loading {} logic tables' meta data.", shardingRule.getTableRules().size());
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
-        for (TableRule each : shardingRule.getTableRules()) {
-            tableMetaDataMap.put(each.getLogicTable(), load(each.getLogicTable(), databaseType));
+    @Override
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                              final String tableName, final ShardingRule shardingRule, final ConfigurationProperties properties) throws SQLException {
+        if (!shardingRule.findTableRule(tableName).isPresent()) {
+            return Optional.empty();
         }
-        return new SchemaMetaData(tableMetaDataMap);
-    }
-    
-    private SchemaMetaData loadDefaultSchemaMetaData(final DatabaseType databaseType) throws SQLException {
-        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
-        return actualDefaultDataSourceName.isPresent()
-                ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery, databaseType.getName())
-                : new SchemaMetaData(Collections.emptyMap());
-    }
-    
-    private TableMetaData loadTableByDataNode(final DataNode dataNode, final DatabaseType databaseType) {
-        try {
-            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
-        } catch (SQLException e) {
-            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
+        boolean isCheckingMetaData = properties.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
+        int maxConnectionsSizePerQuery = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        TableRule tableRule = shardingRule.getTableRule(tableName);
+        if (!isCheckingMetaData) {
+            DataNode dataNode = tableRule.getActualDataNodes().iterator().next();
+            return Optional.of(TableMetaDataLoader.load(dataSourceMap.get(shardingRule.getShardingDataSourceNames()
+                    .getRawMasterDataSourceName(dataNode.getDataSourceName())), dataNode.getTableName(), databaseType.getName()));
         }
+        Map<String, TableMetaData> actualTableMetaDataMap = parallelLoadTables(databaseType, dataSourceMap, tableRule, maxConnectionsSizePerQuery);
+        checkUniformed(tableRule.getLogicTable(), actualTableMetaDataMap, shardingRule);
+        return Optional.of(actualTableMetaDataMap.values().iterator().next());
     }
     
-    private Map<String, TableMetaData> parallelLoadTables(final DatabaseType databaseType, final TableRule tableRule) {
+    private Map<String, TableMetaData> parallelLoadTables(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                                          final TableRule tableRule, final int maxConnectionsSizePerQuery) {
         Map<String, List<DataNode>> dataNodeGroups = tableRule.getDataNodeGroups();
         Map<String, TableMetaData> actualTableMetaDataMap = new HashMap<>(dataNodeGroups.size(), 1);
         Map<String, Future<TableMetaData>> tableFutureMap = new HashMap<>(dataNodeGroups.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataNodeGroups.size() * maxConnectionsSizePerQuery));
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
             for (DataNode each : entry.getValue()) {
-                Future<TableMetaData> futures = executorService.submit(() -> loadTableByDataNode(each, databaseType));
+                Future<TableMetaData> futures = executorService.submit(() -> loadTableByDataNode(each, databaseType, dataSourceMap));
                 tableFutureMap.put(each.getTableName(), futures);
             }
         }
@@ -155,7 +115,24 @@ public final class ShardingMetaDataLoader {
         return actualTableMetaDataMap;
     }
     
-    private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap) {
+    private SchemaMetaData loadDefaultSchemaMetaData(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
+                                                     final ShardingRule shardingRule, final ConfigurationProperties properties) throws SQLException {
+        int maxConnectionsSizePerQuery = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
+        return actualDefaultDataSourceName.isPresent()
+                ? SchemaMetaDataLoader.load(dataSourceMap.get(actualDefaultDataSourceName.get()), maxConnectionsSizePerQuery, databaseType.getName())
+                : new SchemaMetaData(Collections.emptyMap());
+    }
+    
+    private TableMetaData loadTableByDataNode(final DataNode dataNode, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        try {
+            return TableMetaDataLoader.load(dataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType.getName());
+        } catch (SQLException e) {
+            throw new IllegalStateException(String.format("SQLException for DataNode=%s and databaseType=%s", dataNode, databaseType.getName()), e);
+        }
+    }
+    
+    private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap, final ShardingRule shardingRule) {
         ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
         TableMetaData sample = decorator.decorate(actualTableMetaDataMap.values().iterator().next(), logicTableName, shardingRule);
         Collection<TableMetaDataViolation> violations = actualTableMetaDataMap.entrySet().stream()
@@ -167,7 +144,7 @@ public final class ShardingMetaDataLoader {
     private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> violations, final String logicTableName) {
         if (!violations.isEmpty()) {
             StringBuilder errorMessage = new StringBuilder(
-                "Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows:").append(LINE_SEPARATOR);
+                    "Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows:").append(LINE_SEPARATOR);
             for (TableMetaDataViolation each : violations) {
                 errorMessage.append("actual table: ").append(each.getActualTableName()).append(", meta data: ").append(each.getTableMetaData()).append(LINE_SEPARATOR);
             }

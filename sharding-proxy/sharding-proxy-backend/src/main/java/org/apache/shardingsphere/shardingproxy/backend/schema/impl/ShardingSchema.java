@@ -21,9 +21,8 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.metadata.ShardingMetaDataLoader;
 import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
-import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataLoader0;
+import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
@@ -116,7 +115,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private void registerLoader(final RuleSchemaMetaDataLoader loader) {
-        loader.registerLoader(shardingRule, new ShardingTableMetaDataLoader0());
+        loader.registerLoader(shardingRule, new ShardingTableMetaDataLoader());
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             loader.registerLoader(shardingRule.getEncryptRule(), new EncryptTableMetaDataLoader());
         }
@@ -129,18 +128,6 @@ public final class ShardingSchema extends LogicSchema {
         SchemaMetaData result = SchemaMetaDataDecorator.decorate(schemaMetaData, shardingRule, new ShardingTableMetaDataDecorator());
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = SchemaMetaDataDecorator.decorate(result, shardingRule, new ShardingTableMetaDataDecorator());
-        }
-        return result;
-    }
-    
-    private TableMetaData loadTableMeta(final String tableName) throws SQLException {
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        TableMetaData result = new ShardingMetaDataLoader(getBackendDataSource().getDataSources(),
-                shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName, LogicSchemas.getInstance().getDatabaseType());
-        result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
-        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
         }
         return result;
     }
@@ -193,12 +180,12 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaData(final CreateTableStatement createTableStatement) throws SQLException {
         String tableName = createTableStatement.getTable().getTableName().getIdentifier().getValue();
-        getMetaData().getSchema().put(tableName, loadTableMeta(tableName));
+        loadTableMeta(tableName).ifPresent(tableMetaData -> getMetaData().getSchema().put(tableName, tableMetaData));
     }
     
     private void refreshTableMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
         String tableName = alterTableStatement.getTable().getTableName().getIdentifier().getValue();
-        getMetaData().getSchema().put(tableName, loadTableMeta(tableName));
+        loadTableMeta(tableName).ifPresent(tableMetaData -> getMetaData().getSchema().put(tableName, tableMetaData));
     }
     
     private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
@@ -226,6 +213,22 @@ public final class ShardingSchema extends LogicSchema {
                 getMetaData().getSchema().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().remove(each);
             }
         }
+    }
+    
+    private Optional<TableMetaData> loadTableMeta(final String tableName) throws SQLException {
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
+        registerLoader(loader);
+        Optional<TableMetaData> tableMetaData = loader.load(
+                LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
+        if (tableMetaData.isPresent()) {
+            TableMetaData result = tableMetaData.get();
+            result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
+            if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
+                result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
+            }
+            return Optional.of(result);
+        }
+        return Optional.empty();
     }
     
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {

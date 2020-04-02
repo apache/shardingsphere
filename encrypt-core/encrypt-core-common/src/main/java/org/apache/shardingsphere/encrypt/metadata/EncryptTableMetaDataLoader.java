@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Table meta data loader for encrypt.
@@ -45,5 +46,12 @@ public final class EncryptTableMetaDataLoader implements RuleMetaDataLoader<Encr
             result.put(each, TableMetaDataLoader.load(dataSource, each, databaseType.getName()));
         }
         return result;
+    }
+    
+    @Override
+    public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                              final String tableName, final EncryptRule encryptRule, final ConfigurationProperties properties) throws SQLException {
+        return encryptRule.findEncryptTable(tableName).isPresent()
+                ? Optional.of(TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName())) : Optional.empty();
     }
 }

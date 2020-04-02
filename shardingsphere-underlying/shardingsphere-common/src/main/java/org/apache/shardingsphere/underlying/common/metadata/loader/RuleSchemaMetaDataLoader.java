@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Rule schema meta data loader.
@@ -75,10 +76,48 @@ public final class RuleSchemaMetaDataLoader {
      * @return schema meta data
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
     public SchemaMetaData load(final DatabaseType databaseType, final DataSource dataSource, final ConfigurationProperties properties) throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
         return load(databaseType, dataSourceMap, properties);
+    }
+    
+    /**
+     * Load schema meta data.
+     *
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     * @param tableName table name
+     * @param properties configuration properties
+     * @return schema meta data
+     * @throws SQLException SQL exception
+     */
+    @SuppressWarnings("unchecked")
+    public Optional<TableMetaData> load(final DatabaseType databaseType, 
+                                        final Map<String, DataSource> dataSourceMap, final String tableName, final ConfigurationProperties properties) throws SQLException {
+        for (Entry<BaseRule, RuleMetaDataLoader> entry : loaders.entrySet()) {
+            Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, tableName, entry.getKey(), properties);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Load schema meta data.
+     *
+     * @param databaseType database type
+     * @param dataSource data source
+     * @param tableName table name
+     * @param properties configuration properties
+     * @return schema meta data
+     * @throws SQLException SQL exception
+     */
+    public Optional<TableMetaData> load(final DatabaseType databaseType,
+                                        final DataSource dataSource, final String tableName, final ConfigurationProperties properties) throws SQLException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("ds", dataSource);
+        return load(databaseType, dataSourceMap, tableName, properties);
     }
 }

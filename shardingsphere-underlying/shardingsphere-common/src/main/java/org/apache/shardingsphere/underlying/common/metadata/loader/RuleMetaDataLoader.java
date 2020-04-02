@@ -25,6 +25,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Rule meta data loader.
@@ -45,4 +46,17 @@ public interface RuleMetaDataLoader<T extends BaseRule> {
      */
     // TODO add exclude tables
     Map<String, TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T rule, ConfigurationProperties properties) throws SQLException;
+    
+    /**
+     * Load meta data.
+     *
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     * @param tableName table name
+     * @param rule rule
+     * @param properties configuration properties
+     * @return meta data
+     * @throws SQLException SQL exception
+     */
+    Optional<TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, String tableName, T rule, ConfigurationProperties properties) throws SQLException;
 }

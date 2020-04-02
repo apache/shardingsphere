@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
-import org.apache.shardingsphere.core.metadata.ShardingMetaDataLoader;
-import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
+import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataLoader;
+import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
+import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
+import org.apache.shardingsphere.masterslave.metadata.MasterSlaveTableMetaDataLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.metadata.loader.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Create table statement meta data refresh strategy.
@@ -37,19 +39,22 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final CreateTableStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        shardingRuntimeContext.getMetaData().getSchema().put(tableName, loadTableMetaData(tableName, shardingRuntimeContext));
+        loadTableMetaData(tableName, shardingRuntimeContext).ifPresent(tableMetaData -> shardingRuntimeContext.getMetaData().getSchema().put(tableName, tableMetaData));
     }
     
-    private TableMetaData loadTableMetaData(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
-        ShardingRule shardingRule = shardingRuntimeContext.getRule();
-        int maxConnectionsSizePerQuery = shardingRuntimeContext.getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean isCheckingMetaData = shardingRuntimeContext.getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        TableMetaData result = new ShardingMetaDataLoader(shardingRuntimeContext.getDataSourceMap(), shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData)
-                .load(tableName, shardingRuntimeContext.getDatabaseType());
-        result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
+    private Optional<TableMetaData> loadTableMetaData(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
+        registerLoader(shardingRuntimeContext.getRule(), loader);
+        return loader.load(shardingRuntimeContext.getDatabaseType(), shardingRuntimeContext.getDataSourceMap(), tableName, shardingRuntimeContext.getProperties());
+    }
+    
+    private void registerLoader(final ShardingRule shardingRule, final RuleSchemaMetaDataLoader loader) {
+        loader.registerLoader(shardingRule, new ShardingTableMetaDataLoader());
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
+            loader.registerLoader(shardingRule.getEncryptRule(), new EncryptTableMetaDataLoader());
         }
-        return result;
+        for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
+            loader.registerLoader(each, new MasterSlaveTableMetaDataLoader());
+        }
     }
 }

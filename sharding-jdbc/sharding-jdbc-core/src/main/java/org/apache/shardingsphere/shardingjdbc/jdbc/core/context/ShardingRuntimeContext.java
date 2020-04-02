@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
-import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataLoader0;
+import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
@@ -77,7 +77,7 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
     }
     
     private void registerLoader(final RuleSchemaMetaDataLoader loader) {
-        loader.registerLoader(getRule(), new ShardingTableMetaDataLoader0());
+        loader.registerLoader(getRule(), new ShardingTableMetaDataLoader());
         if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
             loader.registerLoader(getRule().getEncryptRule(), new EncryptTableMetaDataLoader());
         }
