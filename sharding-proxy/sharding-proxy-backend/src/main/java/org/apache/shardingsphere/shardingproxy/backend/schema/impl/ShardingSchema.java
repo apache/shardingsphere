@@ -22,12 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
-import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataLoader;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
-import org.apache.shardingsphere.masterslave.metadata.MasterSlaveTableMetaDataLoader;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
@@ -107,21 +104,10 @@ public final class ShardingSchema extends LogicSchema {
     
     private ShardingSphereMetaData createAndMergeShardingMetaData(final SchemaMetaData physical) throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
-        registerLoader(loader);
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
         SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
         schemaMetaData.merge(physical);
         return new ShardingSphereMetaData(dataSourceMetas, decorateSchemaMetaData(schemaMetaData));
-    }
-    
-    private void registerLoader(final RuleSchemaMetaDataLoader loader) {
-        loader.registerLoader(shardingRule, new ShardingTableMetaDataLoader());
-        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            loader.registerLoader(shardingRule.getEncryptRule(), new EncryptTableMetaDataLoader());
-        }
-        for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            loader.registerLoader(each, new MasterSlaveTableMetaDataLoader());
-        }
     }
     
     private SchemaMetaData decorateSchemaMetaData(final SchemaMetaData schemaMetaData) {
@@ -216,8 +202,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private Optional<TableMetaData> loadTableMeta(final String tableName) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
-        registerLoader(loader);
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
         Optional<TableMetaData> tableMetaData = loader.load(
                 LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
         if (tableMetaData.isPresent()) {

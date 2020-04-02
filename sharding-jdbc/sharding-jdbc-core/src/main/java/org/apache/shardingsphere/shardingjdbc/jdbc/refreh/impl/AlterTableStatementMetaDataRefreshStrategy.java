@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.refreh.impl;
 
-import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataLoader;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
-import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
-import org.apache.shardingsphere.masterslave.metadata.MasterSlaveTableMetaDataLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.context.ShardingRuntimeContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.refreh.MetaDataRefreshStrategy;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
@@ -43,18 +38,7 @@ public final class AlterTableStatementMetaDataRefreshStrategy implements MetaDat
     }
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
-        registerLoader(shardingRuntimeContext.getRule(), loader);
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRuntimeContext.getRule().toRules());
         return loader.load(shardingRuntimeContext.getDatabaseType(), shardingRuntimeContext.getDataSourceMap(), tableName, shardingRuntimeContext.getProperties());
-    }
-    
-    private void registerLoader(final ShardingRule shardingRule, final RuleSchemaMetaDataLoader loader) {
-        loader.registerLoader(shardingRule, new ShardingTableMetaDataLoader());
-        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            loader.registerLoader(shardingRule.getEncryptRule(), new EncryptTableMetaDataLoader());
-        }
-        for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            loader.registerLoader(each, new MasterSlaveTableMetaDataLoader());
-        }
     }
 }

@@ -54,4 +54,14 @@ public final class EncryptTableMetaDataLoader implements RuleTableMetaDataLoader
         return encryptRule.findEncryptTable(tableName).isPresent()
                 ? Optional.of(TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName())) : Optional.empty();
     }
+    
+    @Override
+    public int getOrder() {
+        return 5;
+    }
+    
+    @Override
+    public Class<EncryptRule> getType() {
+        return EncryptRule.class;
+    }
 }

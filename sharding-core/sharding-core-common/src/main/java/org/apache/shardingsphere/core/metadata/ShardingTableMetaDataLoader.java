@@ -66,7 +66,6 @@ public final class ShardingTableMetaDataLoader implements RuleTableMetaDataLoade
         Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
         for (TableRule each : shardingRule.getTableRules()) {
             load(databaseType, dataSourceMap, each.getLogicTable(), shardingRule, properties).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
-            
         }
         result.putAll(loadDefaultSchemaMetaData(databaseType, dataSourceMap, shardingRule, properties).getTables());
         return result;
@@ -150,6 +149,16 @@ public final class ShardingTableMetaDataLoader implements RuleTableMetaDataLoade
             }
             throw new ShardingSphereException(errorMessage.toString(), logicTableName);
         }
+    }
+    
+    @Override
+    public int getOrder() {
+        return 1;
+    }
+    
+    @Override
+    public Class<ShardingRule> getType() {
+        return ShardingRule.class;
     }
     
     @RequiredArgsConstructor

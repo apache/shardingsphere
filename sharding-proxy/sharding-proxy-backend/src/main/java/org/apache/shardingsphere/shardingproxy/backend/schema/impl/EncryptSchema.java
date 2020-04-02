@@ -25,7 +25,6 @@ import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.Sch
 import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -58,8 +58,7 @@ public final class EncryptSchema extends MetaDataInitializedLogicSchema {
     
     @Override
     public ShardingSphereMetaData getMetaData() throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
-        loader.registerLoader(encryptRule, new EncryptTableMetaDataLoader());
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Collections.singletonList(encryptRule));
         SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
         return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), SchemaMetaDataDecorator.decorate(schemaMetaData, encryptRule, new EncryptTableMetaDataDecorator()));
     }

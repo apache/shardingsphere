@@ -19,12 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
-import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataLoader;
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
-import org.apache.shardingsphere.masterslave.metadata.MasterSlaveTableMetaDataLoader;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
@@ -66,24 +62,12 @@ public final class ShardingRuntimeContext extends MultipleDataSourcesRuntimeCont
     
     @Override
     protected SchemaMetaData loadSchemaMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
-        registerLoader(loader);
-        SchemaMetaData result = loader.load(getDatabaseType(), dataSourceMap, getProperties());
+        SchemaMetaData result = new RuleSchemaMetaDataLoader(getRule().toRules()).load(getDatabaseType(), dataSourceMap, getProperties());
         result = SchemaMetaDataDecorator.decorate(result, getRule(), new ShardingTableMetaDataDecorator());
         if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = SchemaMetaDataDecorator.decorate(result, getRule().getEncryptRule(), new EncryptTableMetaDataDecorator());
         }
         return result;
-    }
-    
-    private void registerLoader(final RuleSchemaMetaDataLoader loader) {
-        loader.registerLoader(getRule(), new ShardingTableMetaDataLoader());
-        if (!getRule().getEncryptRule().getEncryptTableNames().isEmpty()) {
-            loader.registerLoader(getRule().getEncryptRule(), new EncryptTableMetaDataLoader());
-        }
-        for (MasterSlaveRule each : getRule().getMasterSlaveRules()) {
-            loader.registerLoader(each, new MasterSlaveTableMetaDataLoader());
-        }
     }
     
     @Override

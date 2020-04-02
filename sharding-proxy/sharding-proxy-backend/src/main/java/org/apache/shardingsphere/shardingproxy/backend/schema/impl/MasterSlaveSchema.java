@@ -24,7 +24,6 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
 import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaDa
 import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -64,8 +64,7 @@ public final class MasterSlaveSchema extends MetaDataInitializedLogicSchema {
     
     @Override
     public ShardingSphereMetaData getMetaData() throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
-        loader.registerLoader(masterSlaveRule, new EncryptTableMetaDataLoader());
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Collections.singletonList(masterSlaveRule));
         SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
         return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), schemaMetaData);
     }

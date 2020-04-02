@@ -49,4 +49,14 @@ public final class MasterSlaveTableMetaDataLoader implements RuleTableMetaDataLo
                                        final String tableName, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) throws SQLException {
         return Optional.of(TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()));
     }
+    
+    @Override
+    public int getOrder() {
+        return 10;
+    }
+    
+    @Override
+    public Class<MasterSlaveRule> getType() {
+        return MasterSlaveRule.class;
+    }
 }

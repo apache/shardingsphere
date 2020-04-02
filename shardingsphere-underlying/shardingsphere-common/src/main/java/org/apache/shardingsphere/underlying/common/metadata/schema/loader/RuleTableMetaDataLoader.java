@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.underlying.common.metadata.schema.loader;
 
+import org.apache.shardingsphere.spi.order.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
@@ -32,7 +33,7 @@ import java.util.Optional;
  * 
  * @param <T> type of base rule
  */
-public interface RuleTableMetaDataLoader<T extends BaseRule> {
+public interface RuleTableMetaDataLoader<T extends BaseRule> extends OrderedSPI<Class<T>> {
     
     /**
      * Load meta data.

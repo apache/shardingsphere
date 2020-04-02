@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataLoader;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleSc
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -40,9 +40,7 @@ public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<
     
     @Override
     protected SchemaMetaData loadSchemaMetaData(final DataSource dataSource) throws SQLException {
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader();
-        loader.registerLoader(getRule(), new EncryptTableMetaDataLoader());
-        SchemaMetaData schemaMetaData = loader.load(getDatabaseType(), dataSource, getProperties());
+        SchemaMetaData schemaMetaData = new RuleSchemaMetaDataLoader(Collections.singletonList(getRule())).load(getDatabaseType(), dataSource, getProperties());
         return SchemaMetaDataDecorator.decorate(schemaMetaData, getRule(), new EncryptTableMetaDataDecorator());
     }
 }
