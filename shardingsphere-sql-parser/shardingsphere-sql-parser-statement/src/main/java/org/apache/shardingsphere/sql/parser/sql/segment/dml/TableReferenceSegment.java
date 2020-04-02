@@ -41,7 +41,7 @@ public final class TableReferenceSegment implements SQLSegment {
      *  get all tables.
      * @return Collection.
      */
-    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+    public Collection<SimpleTableSegment> getTables() {
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         if (null != tableFactor) {
             tables.addAll(tableFactor.getSimpleTableSegments());
