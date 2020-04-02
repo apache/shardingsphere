@@ -61,7 +61,7 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     private final List<Object> parameters;
     
     @Override
-    public ExecutionContext route(final String sql) {
+    public ExecutionContext route(final String sql) throws SQLException {
         if (logicSchema instanceof ShardingSchema) {
             return doShardingRoute(sql);
         }
@@ -77,27 +77,27 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
         return doTransparentRoute(sql);
     }
     
-    private ExecutionContext doShardingRoute(final String sql) {
+    private ExecutionContext doShardingRoute(final String sql) throws SQLException {
         PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(
                 logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
         return prepareEngine.prepare(sql, parameters);
     }
     
     @SuppressWarnings("unchecked")
-    private ExecutionContext doMasterSlaveRoute(final String sql) {
+    private ExecutionContext doMasterSlaveRoute(final String sql) throws SQLException {
         PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(Collections.singletonList(((MasterSlaveSchema) logicSchema).getMasterSlaveRule()), 
                 SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
         return prepareEngine.prepare(sql, parameters);
     }
     
     @SuppressWarnings("unchecked")
-    private ExecutionContext doEncryptRoute(final String sql) {
+    private ExecutionContext doEncryptRoute(final String sql) throws SQLException {
         PreparedQueryPrepareEngine prepareEngine = new PreparedQueryPrepareEngine(Collections.singletonList(((EncryptSchema) logicSchema).getEncryptRule()),
                 SHARDING_PROXY_CONTEXT.getProperties(), logicSchema.getMetaData(), logicSchema.getSqlParserEngine());
         return prepareEngine.prepare(sql, parameters);
     }
     
-    private ExecutionContext doShadowRoute(final String sql) {
+    private ExecutionContext doShadowRoute(final String sql) throws SQLException {
         ShadowSchema shadowSchema = (ShadowSchema) logicSchema;
         SQLStatement sqlStatement = shadowSchema.getSqlParserEngine().parse(sql, true);
         SchemaMetaData schemaMetaData = logicSchema.getMetaData().getSchema();

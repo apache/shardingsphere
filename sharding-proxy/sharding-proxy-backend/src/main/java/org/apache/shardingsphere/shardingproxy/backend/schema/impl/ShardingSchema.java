@@ -21,7 +21,6 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.metadata.ShardingMetaDataLoader;
 import org.apache.shardingsphere.core.metadata.ShardingTableMetaDataDecorator;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -56,7 +55,8 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.decorator.SchemaMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.SchemaMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleSchemaMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -75,23 +75,22 @@ public final class ShardingSchema extends LogicSchema {
     private ShardingRule shardingRule;
     
     private final ShardingSphereMetaData physicalMetaData;
-
+    
     private final ShardingSphereMetaData metaData;
-
+    
     public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources,
                           final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) throws SQLException {
         super(name, dataSources);
         shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
         physicalMetaData = createPhysicalMetaData(maxConnectionsSizePerQuery);
-        metaData = createAndMergeShardingMetaData(physicalMetaData.getSchema(), maxConnectionsSizePerQuery, isCheckingMetaData);
+        metaData = createAndMergeShardingMetaData(physicalMetaData.getSchema());
     }
     
     private ShardingRule createShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
     }
-
+    
     private ShardingSphereMetaData createPhysicalMetaData(final int maxConnectionsSizePerQuery) throws SQLException {
         Optional<String> actualDefaultDataSourceName = shardingRule.findActualDefaultDataSourceName();
         DatabaseType databaseType = LogicSchemas.getInstance().getDatabaseType();
@@ -103,30 +102,18 @@ public final class ShardingSchema extends LogicSchema {
         return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
     }
     
-    private ShardingSphereMetaData createAndMergeShardingMetaData(final SchemaMetaData physical, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) throws SQLException {
+    private ShardingSphereMetaData createAndMergeShardingMetaData(final SchemaMetaData physical) throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        SchemaMetaData schemaMetaData = new ShardingMetaDataLoader(getBackendDataSource().getDataSources(),
-                shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).loadShardingSchemaMetaData(LogicSchemas.getInstance().getDatabaseType());
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
+        SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
         schemaMetaData.merge(physical);
         return new ShardingSphereMetaData(dataSourceMetas, decorateSchemaMetaData(schemaMetaData));
     }
     
-    private SchemaMetaData decorateSchemaMetaData(final SchemaMetaData schemaMetaData) throws SQLException {
+    private SchemaMetaData decorateSchemaMetaData(final SchemaMetaData schemaMetaData) {
         SchemaMetaData result = SchemaMetaDataDecorator.decorate(schemaMetaData, shardingRule, new ShardingTableMetaDataDecorator());
         if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
             result = SchemaMetaDataDecorator.decorate(result, shardingRule, new ShardingTableMetaDataDecorator());
-        }
-        return result;
-    }
-    
-    private TableMetaData loadTableMeta(final String tableName) throws SQLException {
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean isCheckingMetaData = ShardingProxyContext.getInstance().getProperties().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        TableMetaData result = new ShardingMetaDataLoader(getBackendDataSource().getDataSources(),
-                shardingRule, maxConnectionsSizePerQuery, isCheckingMetaData).load(tableName, LogicSchemas.getInstance().getDatabaseType());
-        result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
-        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
         }
         return result;
     }
@@ -179,12 +166,12 @@ public final class ShardingSchema extends LogicSchema {
     
     private void refreshTableMetaData(final CreateTableStatement createTableStatement) throws SQLException {
         String tableName = createTableStatement.getTable().getTableName().getIdentifier().getValue();
-        getMetaData().getSchema().put(tableName, loadTableMeta(tableName));
+        loadTableMeta(tableName).ifPresent(tableMetaData -> getMetaData().getSchema().put(tableName, tableMetaData));
     }
     
     private void refreshTableMetaData(final AlterTableStatement alterTableStatement) throws SQLException {
         String tableName = alterTableStatement.getTable().getTableName().getIdentifier().getValue();
-        getMetaData().getSchema().put(tableName, loadTableMeta(tableName));
+        loadTableMeta(tableName).ifPresent(tableMetaData -> getMetaData().getSchema().put(tableName, tableMetaData));
     }
     
     private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
@@ -212,6 +199,21 @@ public final class ShardingSchema extends LogicSchema {
                 getMetaData().getSchema().get(dropIndexStatement.getTable().getTableName().getIdentifier().getValue()).getIndexes().remove(each);
             }
         }
+    }
+    
+    private Optional<TableMetaData> loadTableMeta(final String tableName) throws SQLException {
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
+        Optional<TableMetaData> tableMetaData = loader.load(
+                LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
+        if (tableMetaData.isPresent()) {
+            TableMetaData result = tableMetaData.get();
+            result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
+            if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
+                result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
+            }
+            return Optional.of(result);
+        }
+        return Optional.empty();
     }
     
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {

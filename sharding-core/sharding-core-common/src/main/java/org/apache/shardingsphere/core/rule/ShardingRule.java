@@ -36,8 +36,10 @@ import org.apache.shardingsphere.spi.type.TypedSPIRegistry;
 import org.apache.shardingsphere.underlying.common.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +52,7 @@ import java.util.stream.Collectors;
  * Databases and tables sharding rule.
  */
 @Getter
-public class ShardingRule implements BaseRule {
+public class ShardingRule implements TablesAggregationRule {
     
     static {
         ShardingSphereServiceLoader.register(KeyGenerateAlgorithm.class);
@@ -440,6 +442,15 @@ public class ShardingRule implements BaseRule {
             result.add(encryptRule);
         }
         result.addAll(masterSlaveRules);
+        return result;
+    }
+    
+    @Override
+    public final Collection<String> getAllActualTables() {
+        Collection<String> result = new HashSet<>();
+        for (TableRule each : tableRules) {
+            result.addAll(each.getActualDataNodes().stream().map(DataNode::getTableName).collect(Collectors.toSet()));
+        }
         return result;
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.TableMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.LinkedList;

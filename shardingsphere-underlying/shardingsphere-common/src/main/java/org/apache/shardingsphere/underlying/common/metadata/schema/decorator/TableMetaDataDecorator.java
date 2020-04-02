@@ -15,39 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.text;
+package org.apache.shardingsphere.underlying.common.metadata.schema.decorator;
 
-import org.apache.shardingsphere.shardingproxy.backend.response.BackendResponse;
-import org.apache.shardingsphere.shardingproxy.backend.response.query.QueryData;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
- * Text protocol backend handler.
+ * Table meta data decorator.
  */
-public interface TextProtocolBackendHandler {
+public interface TableMetaDataDecorator<T extends BaseRule> {
     
     /**
-     * Execute command.
+     * Decorate table meta data.
      *
-     * @return backend response
-     * @throws SQLException SQL exception
+     * @param tableMetaData table meta data
+     * @param tableName table name
+     * @param rule rule
+     * @return decorated table meta data
      */
-    BackendResponse execute() throws SQLException;
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query data.
-     *
-     * @return query data
-     * @throws SQLException SQL exception
-     */
-    QueryData getQueryData() throws SQLException;
+    TableMetaData decorate(TableMetaData tableMetaData, String tableName, T rule);
 }

@@ -55,7 +55,7 @@ public final class EncryptStatementTest extends AbstractEncryptJDBCDatabaseAndTa
     
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
 
-    private static final String SHOW_COLUMNS_SQL = "SHOW columns from t_encrypt";
+    private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
     
     @Test
     public void assertSqlShow() throws SQLException {

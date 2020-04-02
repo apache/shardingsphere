@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.decorator;
+package org.apache.shardingsphere.underlying.common.metadata.schema.decorator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

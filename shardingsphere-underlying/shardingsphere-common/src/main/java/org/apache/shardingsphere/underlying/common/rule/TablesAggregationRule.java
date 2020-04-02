@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.decorator;
+package org.apache.shardingsphere.underlying.common.rule;
 
-import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import java.util.Collection;
 
 /**
- * Table meta data decorator.
+ * Tables aggregation rule.
  */
-public interface TableMetaDataDecorator<T extends BaseRule> {
+public interface TablesAggregationRule extends BaseRule {
     
     /**
-     * Decorate table meta data.
-     *
-     * @param tableMetaData table meta data
-     * @param tableName table name
-     * @param rule rule
-     * @return decorated table meta data
+     * Get all actual tables.
+     * 
+     * @return all actual tables
      */
-    TableMetaData decorate(TableMetaData tableMetaData, String tableName, T rule);
+    Collection<String> getAllActualTables();
 }
