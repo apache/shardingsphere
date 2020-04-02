@@ -55,7 +55,6 @@ public final class SelectStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
         assertProjection(assertContext, actual, expected);
-//        assertTable(assertContext, actual, expected);
         assertWhereClause(assertContext, actual, expected);
         assertGroupByClause(assertContext, actual, expected);
         assertOrderByClause(assertContext, actual, expected);
