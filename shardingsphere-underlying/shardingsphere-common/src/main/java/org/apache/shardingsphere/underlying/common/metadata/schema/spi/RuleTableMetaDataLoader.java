@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.schema.loader;
+package org.apache.shardingsphere.underlying.common.metadata.schema.spi;
 
 import org.apache.shardingsphere.spi.order.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;

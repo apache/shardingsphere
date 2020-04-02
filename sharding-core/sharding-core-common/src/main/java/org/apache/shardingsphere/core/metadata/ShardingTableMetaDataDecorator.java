@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.core.metadata;
 
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,10 +34,10 @@ import java.util.Optional;
 /**
  * Table meta data decorator for sharding.
  */
-public final class ShardingTableMetaDataDecorator implements TableMetaDataDecorator<ShardingRule> {
+public final class ShardingTableMetaDataDecorator implements RuleTableMetaDataDecorator<ShardingRule> {
     
     @Override
-    public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
+    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
         return shardingRule.findTableRule(tableName).map(
             tableRule -> new TableMetaData(getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
     }
@@ -72,5 +72,15 @@ public final class ShardingTableMetaDataDecorator implements TableMetaDataDecora
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
         return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+    }
+    
+    @Override
+    public int getOrder() {
+        return 1;
+    }
+    
+    @Override
+    public Class<ShardingRule> getType() {
+        return ShardingRule.class;
     }
 }

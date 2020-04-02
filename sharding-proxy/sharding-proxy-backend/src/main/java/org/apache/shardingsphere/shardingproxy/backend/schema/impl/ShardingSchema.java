@@ -55,8 +55,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.SchemaMetaDataDecorator;
-import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -107,15 +106,7 @@ public final class ShardingSchema extends LogicSchema {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
         SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
         schemaMetaData.merge(physical);
-        return new ShardingSphereMetaData(dataSourceMetas, decorateSchemaMetaData(schemaMetaData));
-    }
-    
-    private SchemaMetaData decorateSchemaMetaData(final SchemaMetaData schemaMetaData) {
-        SchemaMetaData result = SchemaMetaDataDecorator.decorate(schemaMetaData, shardingRule, new ShardingTableMetaDataDecorator());
-        if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-            result = SchemaMetaDataDecorator.decorate(result, shardingRule, new ShardingTableMetaDataDecorator());
-        }
-        return result;
+        return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
     }
     
     /**
@@ -207,9 +198,9 @@ public final class ShardingSchema extends LogicSchema {
                 LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
         if (tableMetaData.isPresent()) {
             TableMetaData result = tableMetaData.get();
-            result = new ShardingTableMetaDataDecorator().decorate(result, tableName, shardingRule);
+            result = new ShardingTableMetaDataDecorator().decorate(tableName, result, shardingRule);
             if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-                result = new EncryptTableMetaDataDecorator().decorate(result, tableName, shardingRule.getEncryptRule());
+                result = new EncryptTableMetaDataDecorator().decorate(tableName, result, shardingRule.getEncryptRule());
             }
             return Optional.of(result);
         }

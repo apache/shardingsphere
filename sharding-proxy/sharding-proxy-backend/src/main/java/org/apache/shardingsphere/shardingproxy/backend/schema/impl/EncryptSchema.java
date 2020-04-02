@@ -24,7 +24,6 @@ import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.encrypt.api.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.metadata.EncryptTableMetaDataDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.orchestration.core.common.event.EncryptRuleChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
@@ -33,8 +32,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.decorator.SchemaMetaDataDecorator;
-import org.apache.shardingsphere.underlying.common.metadata.schema.loader.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -60,7 +58,7 @@ public final class EncryptSchema extends MetaDataInitializedLogicSchema {
     public ShardingSphereMetaData getMetaData() throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Collections.singletonList(encryptRule));
         SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
-        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), SchemaMetaDataDecorator.decorate(schemaMetaData, encryptRule, new EncryptTableMetaDataDecorator()));
+        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), schemaMetaData);
     }
     
     /**
