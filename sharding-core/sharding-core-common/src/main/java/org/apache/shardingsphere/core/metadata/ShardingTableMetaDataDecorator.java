@@ -37,7 +37,7 @@ import java.util.Optional;
 public final class ShardingTableMetaDataDecorator implements RuleTableMetaDataDecorator<ShardingRule> {
     
     @Override
-    public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final ShardingRule shardingRule) {
+    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
         return shardingRule.findTableRule(tableName).map(
             tableRule -> new TableMetaData(getColumnMetaDataList(tableMetaData, tableRule), getIndexMetaDataList(tableMetaData, tableRule))).orElse(tableMetaData);
     }

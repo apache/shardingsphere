@@ -29,10 +29,10 @@ public interface RuleTableMetaDataDecorator<T extends BaseRule> extends OrderedS
     /**
      * Decorate table meta data.
      *
-     * @param tableMetaData table meta data
      * @param tableName table name
+     * @param tableMetaData table meta data
      * @param rule rule
      * @return decorated table meta data
      */
-    TableMetaData decorate(TableMetaData tableMetaData, String tableName, T rule);
+    TableMetaData decorate(String tableName, TableMetaData tableMetaData, T rule);
 }

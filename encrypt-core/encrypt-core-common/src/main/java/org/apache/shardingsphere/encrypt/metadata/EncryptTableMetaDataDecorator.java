@@ -31,7 +31,7 @@ import java.util.LinkedList;
 public final class EncryptTableMetaDataDecorator implements RuleTableMetaDataDecorator<EncryptRule> {
     
     @Override
-    public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final EncryptRule encryptRule) {
+    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
         return new TableMetaData(getEncryptColumnMetaDataList(tableName, tableMetaData.getColumns().values(), encryptRule), tableMetaData.getIndexes().values());
     }
     
