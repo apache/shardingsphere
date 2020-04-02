@@ -43,7 +43,9 @@ public final class TableFactorAssert {
      * @param expected expected TableFactor
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableFactorSegment actual, final ExpectedTableFactor expected) {
-        TableAssert.assertIs(assertContext, (SimpleTableSegment) actual.getTable(), expected.getTable());
+        if (null != actual.getTable() && actual.getTable() instanceof SimpleTableSegment) {
+            TableAssert.assertIs(assertContext, (SimpleTableSegment) actual.getTable(), expected.getTable());
+        }
         TableReferencesAssert.assertIs(assertContext, (List<TableReferenceSegment>) actual.getTableReferences(), (List<ExpectedTableReference>) expected.getExpectedTableReferences());
     }
 }

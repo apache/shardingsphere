@@ -36,6 +36,11 @@
         <tables>
             <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="51" stop-index="64" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="44">
             <expression-projection alias="creation_date" start-index="7" stop-index="27" />
         </projections>
@@ -48,6 +53,11 @@
         <tables>
             <simple-table name="t_order_item" alias="t" start-index="14" stop-index="25" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" alias="t" start-index="14" stop-index="25" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>

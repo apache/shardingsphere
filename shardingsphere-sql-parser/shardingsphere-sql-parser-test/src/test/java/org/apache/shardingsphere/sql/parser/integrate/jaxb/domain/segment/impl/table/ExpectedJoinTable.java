@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlElement
+    @XmlElement(name = "table-factor")
     private ExpectedTableFactor tableFactor;
     
     @XmlElement

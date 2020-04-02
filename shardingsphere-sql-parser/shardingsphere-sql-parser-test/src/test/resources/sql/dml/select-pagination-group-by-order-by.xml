@@ -22,6 +22,16 @@
             <simple-table name="t_order" alias="o" start-index="22" stop-index="28" />
             <simple-table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="22" stop-index="28" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="15">
             <column-projection name="user_id" start-index="7" stop-index="15">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -74,6 +84,16 @@
             <simple-table name="t_order" alias="o" start-index="22" stop-index="28" />
             <simple-table name="t_order_item" alias="i" start-index="37" stop-index="48" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="22" stop-index="28" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="37" stop-index="48" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="15">
             <column-projection name="user_id" start-index="7" stop-index="15">
                 <owner name="i" start-index="7" stop-index="7" />

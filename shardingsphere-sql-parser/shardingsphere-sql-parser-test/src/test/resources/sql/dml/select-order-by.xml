@@ -21,6 +21,11 @@
         <tables>
             <simple-table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -37,6 +42,16 @@
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
             <simple-table name="t_order_item" alias="i" start-index="27" stop-index="38" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+        </table-reference>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -77,6 +92,11 @@
         <tables>
             <simple-table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
@@ -94,6 +114,16 @@
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
             <simple-table name="t_order_item" alias="i" start-index="27" stop-index="38" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+        </table-reference>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" alias="i" start-index="27" stop-index="38" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -139,6 +169,11 @@
         <tables>
             <simple-table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table  name="t_order" alias="o" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
@@ -156,6 +191,11 @@
         <tables>
             <simple-table name="t_order" alias="o" start-index="40" stop-index="46" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
                 <owner name="o" start-index="7" stop-index="7" />
@@ -172,6 +212,11 @@
         <tables>
             <simple-table name="t_order" alias="o" start-index="29" stop-index="35" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="29" stop-index="35" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="22">
             <shorthand-projection start-index="7" stop-index="7" />
             <shorthand-projection start-index="20" stop-index="22">
@@ -190,6 +235,11 @@
         <tables>
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table  name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="o" start-index="7" stop-index="7" />
@@ -206,6 +256,11 @@
         <tables>
             <simple-table name="t_order" alias="o" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -223,6 +278,11 @@
         <tables>
             <simple-table name="t_order" start-index="22" stop-index="28" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="22" stop-index="28" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="15">
             <shorthand-projection start-index="7" stop-index="15">
                 <owner name="t_order" start-index="7" stop-index="13" />
@@ -239,6 +299,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -252,6 +317,16 @@
             <simple-table name="t_order" alias="o" start-index="21" stop-index="27" />
             <simple-table name="t_order_item" alias="i" start-index="36" stop-index="47" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="21" stop-index="27" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="36" stop-index="47" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="14">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />

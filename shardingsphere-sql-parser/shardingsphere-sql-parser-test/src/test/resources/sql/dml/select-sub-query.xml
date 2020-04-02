@@ -21,6 +21,11 @@
         <tables>
             <simple-table name="t_order" start-index="40" stop-index="46" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="33">
             <column-projection name="order_id" start-index="7" stop-index="14" />
             <subquery-projection start-index="17" stop-index="26" alias="num">
@@ -61,6 +66,11 @@
                 </select>
             </subquery-table>
         </tables>
+        <table-reference>
+            <table-factor>
+                <subquery></subquery>
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9" >
                 <owner name="t" start-index="7" stop-index="7" />
@@ -72,6 +82,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -86,6 +101,11 @@
                                 <tables>
                                     <simple-table name="t_order_item" start-index="59" stop-index="70" />
                                 </tables>
+                                <table-reference>
+                                    <table-factor>
+                                        <table name="t_order_item" start-index="59" stop-index="70" />
+                                    </table-factor>
+                                </table-reference>
                                 <projections start-index="46" stop-index="52">
                                     <column-projection name="user_id" start-index="46" stop-index="52" />
                                 </projections>
@@ -112,6 +132,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -125,6 +150,11 @@
                                 <tables>
                                     <simple-table name="t_order_item" start-index="60" stop-index="71" />
                                 </tables>
+                                <table-reference>
+                                    <table-factor>
+                                        <table name="t_order_item" start-index="60" stop-index="71" />
+                                    </table-factor>
+                                </table-reference>
                                 <projections start-index="47" stop-index="53">
                                     <column-projection name="user_id" start-index="47" stop-index="53" />
                                 </projections>
@@ -151,6 +181,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -164,6 +199,11 @@
                                 <tables>
                                     <simple-table name="t_order_item" start-index="65" stop-index="76" />
                                 </tables>
+                                <table-reference>
+                                    <table-factor>
+                                        <table name="t_order_item" start-index="65" stop-index="76" />
+                                    </table-factor>
+                                </table-reference>
                                 <projections start-index="52" stop-index="58">
                                     <column-projection name="user_id" start-index="52" stop-index="58" />
                                 </projections>

@@ -48,7 +48,7 @@ public final class JoinTableAssert {
     }
     
     public static void assertIs(final SQLCaseAssertContext assertContext, final List<JoinedTableSegment> actual, final List<ExpectedJoinTable> expected) {
-        assertThat(assertContext.getText("JoinTable size assert error"), actual.size(), is(expected.size()));
+        assertThat(assertContext.getText("JoinTable size assert error"), actual.size(), is(null == expected ? 0 : expected.size()));
         for (int i = 0; i < actual.size(); i++) {
             TableFactorAssert.assertIs(assertContext, actual.get(i).getTableFactor(), expected.get(i).getTableFactor());
             JoinSpecificationAssert.assertIs(assertContext, actual.get(i).getJoinSpecification(), expected.get(i).getJoinSpecification());

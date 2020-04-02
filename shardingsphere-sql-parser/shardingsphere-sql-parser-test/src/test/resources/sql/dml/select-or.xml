@@ -21,6 +21,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -52,6 +57,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -83,6 +93,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -114,6 +129,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -161,6 +181,11 @@
         <tables>
             <simple-table name="t_order" start-index="14" stop-index="20" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
@@ -277,6 +302,16 @@
             <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
             <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -336,6 +371,21 @@
             <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
             <simple-table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
         </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                </table-factor>
+            </join-table>
+            <join-table>
+                <table-factor>
+                    <table name="t_broadcast_table" alias="c" start-index="104" stop-index="120" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />

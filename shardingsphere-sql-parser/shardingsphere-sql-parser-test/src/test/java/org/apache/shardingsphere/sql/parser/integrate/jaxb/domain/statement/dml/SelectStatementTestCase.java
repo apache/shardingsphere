@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.dml
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.ExpectedTableReference;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.limit.ExpectedLimitClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.predicate.ExpectedWhereClause;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.statement.SQLP
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 /**
  * Select statement test case.
@@ -38,6 +40,9 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute(name = "lock-clause")
     private boolean lockClause;
+    
+    @XmlElement(name = "table-reference")
+    private List<ExpectedTableReference> tableReferences;
     
     @XmlElement(name = "tables")
     private final ExpectedTables tables = new ExpectedTables();
