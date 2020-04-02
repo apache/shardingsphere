@@ -18,10 +18,16 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -65,10 +71,17 @@
     </select>
 
     <select sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                </table-factor>
+            </join-table>
+        </table-reference>
+
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -111,10 +124,16 @@
     </select>
 
     <select sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <simple-table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
-            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -158,10 +177,16 @@
     </select>
 
     <select sql-case-id="select_pagination_with_limit_and_offset_keyword" parameters="1, 2, 9, 10, 3, 5">
-        <tables>
-            <simple-table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
-            <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-delimiter="`" end-delimiter="`" start-index="16" stop-index="24" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="46" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -261,10 +286,16 @@
     </select>
 
     <select sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -309,10 +340,16 @@
     </select>
 
     <select sql-case-id="select_pagination_with_offset_and_limit_all" parameters="1, 2, 9, 10, 5">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="16" stop-index="22" />
-            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="42" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="16" stop-index="22" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="31" stop-index="42" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -574,9 +611,11 @@
     </select>
 
     <select sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
-        <tables>
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="14" stop-index="20" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
