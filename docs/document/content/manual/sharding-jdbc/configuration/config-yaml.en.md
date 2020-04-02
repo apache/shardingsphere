@@ -324,8 +324,8 @@ shardingRule:
            none: #Do not sharding
       tableStrategy: #Tables sharding strategy, Same as databases sharding strategy
       keyGenerator:   
-        column: #Column name of key generator
-        type: #Type of key generator, use default key generator if absent, and there are three types to choose, that is, SNOWFLAKE/UUID/LEAF_SEGMENT
+        column: #Column name of key generator uses column name of default key generate algorithm if absent.
+        type: #Type of key generate algorithm uses default key generate algorithm if absent, otherwise user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID can be chose
         props: #Properties, Notice: when use SNOWFLAKE, `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`         
 
   bindingTables: #Binding table rule configurations
@@ -341,9 +341,9 @@ shardingRule:
   defaultDatabaseStrategy: #Default strategy for sharding databases, same as databases sharding strategy
   defaultTableStrategy: #Default strategy for sharding tables, same as tables sharding strategy
   defaultKeyGenerator:
-    type: #Type of default key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator`
+    type: #Type of default key generate algorithm, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generate algorithm is `org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm`
     column: #Column name of default key generator
-    props: #Properties of default key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` 
+    props: #Properties of default key generate algorithm, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` 
   
   masterSlaveRules: #Read-write splitting rule configuration, more details can reference Read-write splitting part
     <data_source_name>: #Data sources configuration, need consist with data source map, multiple `data_source_name` available

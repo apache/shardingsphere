@@ -67,8 +67,12 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="SNOWFLAKE" />
+    </bean>
+
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds0,ds1">
@@ -302,8 +306,12 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="SNOWFLAKE" />
+    </bean>
+
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1">
@@ -391,8 +399,12 @@ example: [shardingsphere-example](https://github.com/apache/incubator-shardingsp
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item_${order_id % 2}" />
     <sharding:inline-strategy id="orderEncryptTableStrategy" sharding-column="order_id" algorithm-expression="t_order_encrypt_${order_id % 2}" />
 
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="SNOWFLAKE" />
+    </bean>
+
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
     <bean:properties id="dataProtectorProps">
         <prop key="appToken">business</prop>
@@ -479,7 +491,7 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | default-data-source-name (?)      | Attribute | Tables without sharding rules will be located through default data source |
 | default-database-strategy-ref (?) | Attribute | Default database sharding strategy, which corresponds to id of \<sharding:xxx-strategy>; default means the database is not split |
 | default-table-strategy-ref (?)    | Attribute | Default table sharding strategy,which corresponds to id of \<sharding:xxx-strategy>;  default means the database is not split |
-| default-key-generator (?)         | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID/LEAF_SEGMENT. Default key generator is `org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| default-key-generator (?)         | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE/UUID/LEAF_SEGMENT. Default key generate algorithm is `org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm` |
 | encrypt-rule (?)                  | Tag       | Encrypt rule                                                 |
 
 #### \<sharding:table-rules />
@@ -560,17 +572,23 @@ Namespace: http://shardingsphere.apache.org/schema/shardingsphere/sharding/shard
 | ------ | --------- | -------------- |
 | id     | Attribute | Spring Bean Id |
 
+#### \<bean id="xxxx" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean" />
+
+| *Name*     | *Type*    | *Explanation*                                                   |
+| -----------| --------- | --------------------------------------------------------------- |
+| type       | Attribute | Auto-increment key generate algorithm `Type`; self-defined generate algorithm or internal Type generate algorithm (SNOWFLAKE/UUID) can both be selected |
+| properties | Attribute | The Property configuration reference of key generate algorithms |
+
 #### \<sharding:key-generator />
 
-| *Name*    | *Type*    | *Explanation*                                                                                                                   |
-| --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| column    | Attribute | Auto-increment column name                                                                                                      |
-| type      | Attribute | Auto-increment key generator `Type`; self-defined generator or internal Type generator (SNOWFLAKE/UUID/LEAF_SEGMENT/LEAF_SNOWFLAKE) can both be selected |
-| props-ref | Attribute | The Property configuration reference of key generators                                |
+| *Name*        | *Type*    | *Explanation*                                                |
+| --------------| --------- | ------------------------------------------------------------ |
+| column        | Attribute | Auto-increment column name                                   |
+| algorithm-ref | Attribute | The reference of key generate algorithm; reference a bean of class KeyGenerateAlgorithmFactoryBean |
 
 #### PropertiesConstant
 
-Property configuration that can include these properties of these key generators.
+Property configuration that can include these properties of these key generate algorithms.
 
 ##### SNOWFLAKE
   

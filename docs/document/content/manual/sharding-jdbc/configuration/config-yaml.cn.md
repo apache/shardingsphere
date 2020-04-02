@@ -411,8 +411,8 @@ shardingRule:
         none: #不分片
       tableStrategy: #分表策略，同分库策略
       keyGenerator: 
-        column: #自增列名称，缺省表示不使用自增主键生成器
-        type: #自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT
+        column: #自增列名称，缺省表示使用默认自增主键生成器的自增列名称
+        type: #自增列值生成算法类型，缺省表示使用默认自增列值生成算法。可使用用户自定义的列值生成算法或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT
         props: #属性配置, 注意：使用SNOWFLAKE算法，需要配置worker.id与max.tolerate.time.difference.milliseconds属性。若使用此算法生成值作分片值，建议配置max.vibration.offset属性
           <property-name>: 属性名称
       
@@ -428,10 +428,11 @@ shardingRule:
   defaultDataSourceName: #未配置分片规则的表将通过默认数据源定位  
   defaultDatabaseStrategy: #默认数据库分片策略，同分库策略
   defaultTableStrategy: #默认表分片策略，同分库策略
-  defaultKeyGenerator: #默认的主键生成算法 如果没有设置,默认为SNOWFLAKE算法
-    type: #默认自增列值生成器类型，缺省将使用org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID/LEAF_SEGMENT
+  defaultKeyGenerator: #默认的主键生成器 如果没有设置,默认为SNOWFLAKE算法
+    type: #默认自增列值生成算法类型，缺省将使用org.apache.shardingsphere.core.strategy.keygen.SnowflakeKeyGenerateAlgorithm。可使用用户自定义的列值生成算法或选择内置类型：SNOWFLAKE/UUID
+    column: #默认主键生成器的自增列名称
     props:
-      <property-name>: #自增列值生成器属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
+      <property-name>: #自增列值生成算法属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
 
   masterSlaveRules: #读写分离规则，详见读写分离部分
     <data_source_name>: #数据源名称，需要与真实数据源匹配，可配置多个data_source_name
