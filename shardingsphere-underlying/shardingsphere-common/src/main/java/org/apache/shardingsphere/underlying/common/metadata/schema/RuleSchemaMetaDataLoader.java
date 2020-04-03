@@ -27,6 +27,7 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeSet;
 
 /**
  * Rule schema meta data loader.
@@ -61,8 +63,14 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties) throws SQLException {
         Map<String, TableMetaData> result = new HashMap<>();
+        Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (Entry<BaseRule, RuleTableMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleTableMetaDataLoader.class).entrySet()) {
-            result.putAll(entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties));
+            Map<String, TableMetaData> tableMetaDataMap = entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties, excludedTableNames);
+            excludedTableNames.addAll(tableMetaDataMap.keySet());
+            if (entry.getKey() instanceof TablesAggregationRule) {
+                excludedTableNames.addAll(((TablesAggregationRule) entry.getKey()).getAllActualTables());
+            }
+            result.putAll(tableMetaDataMap);
         }
         // TODO load remain tables
         return decorate(new SchemaMetaData(result));

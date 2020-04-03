@@ -25,6 +25,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,11 +43,12 @@ public interface RuleTableMetaDataLoader<T extends BaseRule> extends OrderedSPI<
      * @param dataSourceMap data source map
      * @param rule rule
      * @param properties configuration properties
+     * @param excludedTableNames excluded table names
      * @return table name and meta data map
      * @throws SQLException SQL exception
      */
-    // TODO add exclude tables
-    Map<String, TableMetaData> load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T rule, ConfigurationProperties properties) throws SQLException;
+    Map<String, TableMetaData> load(
+            DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T rule, ConfigurationProperties properties, Collection<String> excludedTableNames) throws SQLException;
     
     /**
      * Load meta data.

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTable
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,10 +39,10 @@ public final class MasterSlaveTableMetaDataLoader implements RuleTableMetaDataLo
     
     @Override
     public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                           final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) throws SQLException {
+                                           final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName()).getTables();
+        return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName(), excludedTableNames).getTables();
     }
     
     @Override

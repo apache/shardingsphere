@@ -38,12 +38,14 @@ public final class EncryptTableMetaDataLoader implements RuleTableMetaDataLoader
     
     @Override
     public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                           final EncryptRule encryptRule, final ConfigurationProperties properties) throws SQLException {
+                                           final EncryptRule encryptRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         Collection<String> encryptTableNames = encryptRule.getEncryptTableNames();
         Map<String, TableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
         for (String each : encryptTableNames) {
-            result.put(each, TableMetaDataLoader.load(dataSource, each, databaseType.getName()));
+            if (!excludedTableNames.contains(each)) {
+                result.put(each, TableMetaDataLoader.load(dataSource, each, databaseType.getName()));
+            }
         }
         return result;
     }
