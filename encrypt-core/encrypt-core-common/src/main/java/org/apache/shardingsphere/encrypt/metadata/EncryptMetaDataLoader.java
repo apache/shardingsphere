@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -32,20 +33,22 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Table meta data loader for encrypt.
+ * Meta data loader for encrypt.
  */
-public final class EncryptTableMetaDataLoader implements RuleTableMetaDataLoader<EncryptRule> {
+public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                           final EncryptRule encryptRule, final ConfigurationProperties properties) throws SQLException {
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                               final EncryptRule encryptRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         Collection<String> encryptTableNames = encryptRule.getEncryptTableNames();
         Map<String, TableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
         for (String each : encryptTableNames) {
-            result.put(each, TableMetaDataLoader.load(dataSource, each, databaseType.getName()));
+            if (!excludedTableNames.contains(each)) {
+                result.put(each, TableMetaDataLoader.load(dataSource, each, databaseType.getName()));
+            }
         }
-        return result;
+        return new SchemaMetaData(result);
     }
     
     @Override
@@ -61,7 +64,7 @@ public final class EncryptTableMetaDataLoader implements RuleTableMetaDataLoader
     }
     
     @Override
-    public Class<EncryptRule> getType() {
+    public Class<EncryptRule> getTypeClass() {
         return EncryptRule.class;
     }
 }

@@ -64,7 +64,7 @@ public final class MasterSlaveRouteDecorator implements RouteDecorator<MasterSla
     }
     
     @Override
-    public Class<MasterSlaveRule> getType() {
+    public Class<MasterSlaveRule> getTypeClass() {
         return MasterSlaveRule.class;
     }
 }

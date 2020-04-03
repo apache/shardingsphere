@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Base prepare engine.
@@ -91,34 +90,16 @@ public abstract class BasePrepareEngine {
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
     private RouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
-        registerRouteDecorator();
+        OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class).forEach(router::registerDecorator);
         return route(router, sql, clonedParameters);
-    }
-    
-    private void registerRouteDecorator() {
-        for (RouteDecorator each : OrderedSPIRegistry.getRegisteredServices(RouteDecorator.class)) {
-            Class<?> ruleClass = (Class<?>) each.getType();
-            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
-            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> router.registerDecorator(rule, each));
-        }
     }
     
     protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
     
     private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        registerRewriteDecorator();
+        OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class).forEach(rewriter::registerDecorator);
         SQLRewriteContext sqlRewriteContext = rewriter.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
         return routeContext.getRouteResult().getRouteUnits().isEmpty() ? rewrite(sqlRewriteContext) : rewrite(routeContext, sqlRewriteContext);
-    }
-    
-    private void registerRewriteDecorator() {
-        for (SQLRewriteContextDecorator each : OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class)) {
-            Class<?> ruleClass = (Class<?>) each.getType();
-            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
-            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> rewriter.registerDecorator(rule, each));
-        }
     }
     
     private Collection<ExecutionUnit> rewrite(final SQLRewriteContext sqlRewriteContext) {

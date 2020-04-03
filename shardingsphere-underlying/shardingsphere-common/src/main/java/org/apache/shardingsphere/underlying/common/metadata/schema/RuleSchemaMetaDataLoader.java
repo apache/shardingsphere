@@ -24,19 +24,19 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
+import org.apache.shardingsphere.underlying.common.rule.TablesAggregationRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.TreeSet;
 
 /**
  * Rule schema meta data loader.
@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
 public final class RuleSchemaMetaDataLoader {
     
     static {
-        ShardingSphereServiceLoader.register(RuleTableMetaDataLoader.class);
-        ShardingSphereServiceLoader.register(RuleTableMetaDataDecorator.class);
+        ShardingSphereServiceLoader.register(RuleMetaDataLoader.class);
+        ShardingSphereServiceLoader.register(RuleMetaDataDecorator.class);
     }
     
     private final Collection<BaseRule> rules;
@@ -62,12 +62,18 @@ public final class RuleSchemaMetaDataLoader {
      */
     @SuppressWarnings("unchecked")
     public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties) throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>();
-        for (Entry<BaseRule, RuleTableMetaDataLoader> entry : getLoaders().entrySet()) {
-            result.putAll(entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties));
+        SchemaMetaData result = new SchemaMetaData(new HashMap<>());
+        Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
+            SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties, excludedTableNames);
+            excludedTableNames.addAll(schemaMetaData.getAllTableNames());
+            if (entry.getKey() instanceof TablesAggregationRule) {
+                excludedTableNames.addAll(((TablesAggregationRule) entry.getKey()).getAllActualTables());
+            }
+            result.merge(schemaMetaData);
         }
         // TODO load remain tables
-        return decorate(new SchemaMetaData(result));
+        return decorate(result);
     }
     
     /**
@@ -98,7 +104,7 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     public Optional<TableMetaData> load(final DatabaseType databaseType, 
                                         final Map<String, DataSource> dataSourceMap, final String tableName, final ConfigurationProperties properties) throws SQLException {
-        for (Entry<BaseRule, RuleTableMetaDataLoader> entry : getLoaders().entrySet()) {
+        for (Entry<BaseRule, RuleMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataLoader.class).entrySet()) {
             Optional<TableMetaData> result = entry.getValue().load(databaseType, dataSourceMap, tableName, entry.getKey(), properties);
             if (result.isPresent()) {
                 return Optional.of(decorate(tableName, result.get()));
@@ -124,23 +130,12 @@ public final class RuleSchemaMetaDataLoader {
         return load(databaseType, dataSourceMap, tableName, properties);
     }
     
-    private Map<BaseRule, RuleTableMetaDataLoader> getLoaders() {
-        Map<BaseRule, RuleTableMetaDataLoader> result = new LinkedHashMap<>();
-        for (RuleTableMetaDataLoader each : OrderedSPIRegistry.getRegisteredServices(RuleTableMetaDataLoader.class)) {
-            Class<?> ruleClass = (Class<?>) each.getType();
-            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
-            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> result.put(rule, each));
-        }
-        return result;
-    }
-    
     @SuppressWarnings("unchecked")
     private SchemaMetaData decorate(final SchemaMetaData schemaMetaData) {
         Map<String, TableMetaData> result = new HashMap<>(schemaMetaData.getAllTableNames().size(), 1);
-        Map<BaseRule, RuleTableMetaDataDecorator> decorators = getDecorators();
+        Map<BaseRule, RuleMetaDataDecorator> decorators = OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class);
         for (String each : schemaMetaData.getAllTableNames()) {
-            for (Entry<BaseRule, RuleTableMetaDataDecorator> entry : decorators.entrySet()) {
+            for (Entry<BaseRule, RuleMetaDataDecorator> entry : decorators.entrySet()) {
                 result.put(each, entry.getValue().decorate(each, schemaMetaData.get(each), entry.getKey()));
             }
         }
@@ -150,19 +145,8 @@ public final class RuleSchemaMetaDataLoader {
     @SuppressWarnings("unchecked")
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
         TableMetaData result = tableMetaData;
-        for (Entry<BaseRule, RuleTableMetaDataDecorator> entry : getDecorators().entrySet()) {
+        for (Entry<BaseRule, RuleMetaDataDecorator> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleMetaDataDecorator.class).entrySet()) {
             result = entry.getValue().decorate(tableName, tableMetaData, entry.getKey());
-        }
-        return result;
-    }
-    
-    private Map<BaseRule, RuleTableMetaDataDecorator> getDecorators() {
-        Map<BaseRule, RuleTableMetaDataDecorator> result = new LinkedHashMap<>();
-        for (RuleTableMetaDataDecorator each : OrderedSPIRegistry.getRegisteredServices(RuleTableMetaDataDecorator.class)) {
-            Class<?> ruleClass = (Class<?>) each.getType();
-            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
-            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> result.put(rule, each));
         }
         return result;
     }

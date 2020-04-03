@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.underlying.pluggble.merge;
 
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEntry;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Merge engine.
@@ -56,16 +55,7 @@ public final class MergeEngine {
      * @throws SQLException SQL exception
      */
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        registerMergeDecorator();
+        OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class).forEach(merger::registerProcessEngine);
         return merger.process(queryResults, sqlStatementContext);
-    }
-    
-    private void registerMergeDecorator() {
-        for (ResultProcessEngine each : OrderedSPIRegistry.getRegisteredServices(ResultProcessEngine.class)) {
-            Class<?> ruleClass = (Class<?>) each.getType();
-            // FIXME rule.getClass().getSuperclass() == ruleClass for orchestration, should decouple extend between orchestration rule and sharding rule
-            rules.stream().filter(rule -> rule.getClass() == ruleClass || rule.getClass().getSuperclass() == ruleClass).collect(Collectors.toList())
-                    .forEach(rule -> merger.registerProcessEngine(rule, each));
-        }
     }
 }

@@ -18,30 +18,32 @@
 package org.apache.shardingsphere.masterslave.metadata;
 
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Table meta data loader for master slave.
+ * Meta data loader for master slave.
  */
-public final class MasterSlaveTableMetaDataLoader implements RuleTableMetaDataLoader<MasterSlaveRule> {
+public final class MasterSlaveMetaDataLoader implements RuleMetaDataLoader<MasterSlaveRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                           final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) throws SQLException {
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                               final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName()).getTables();
+        return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName(), excludedTableNames);
     }
     
     @Override
@@ -56,7 +58,7 @@ public final class MasterSlaveTableMetaDataLoader implements RuleTableMetaDataLo
     }
     
     @Override
-    public Class<MasterSlaveRule> getType() {
+    public Class<MasterSlaveRule> getTypeClass() {
         return MasterSlaveRule.class;
     }
 }

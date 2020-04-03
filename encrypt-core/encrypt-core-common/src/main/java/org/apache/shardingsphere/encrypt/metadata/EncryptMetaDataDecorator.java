@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ import java.util.LinkedList;
 /**
  * Table meta data decorator for encrypt.
  */
-public final class EncryptTableMetaDataDecorator implements RuleTableMetaDataDecorator<EncryptRule> {
+public final class EncryptMetaDataDecorator implements RuleMetaDataDecorator<EncryptRule> {
     
     @Override
     public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
@@ -64,7 +64,7 @@ public final class EncryptTableMetaDataDecorator implements RuleTableMetaDataDec
     }
     
     @Override
-    public Class<EncryptRule> getType() {
+    public Class<EncryptRule> getTypeClass() {
         return EncryptRule.class;
     }
 }
