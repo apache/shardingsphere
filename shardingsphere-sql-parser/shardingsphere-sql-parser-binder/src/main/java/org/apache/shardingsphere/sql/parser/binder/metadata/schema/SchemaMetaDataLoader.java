@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -88,7 +89,7 @@ public final class SchemaMetaDataLoader {
     
     private static List<String> loadAllTableNames(final Connection connection) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE})) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), JdbcUtil.getSchema(connection), null, new String[]{TABLE_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table)) {
