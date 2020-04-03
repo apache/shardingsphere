@@ -33,7 +33,7 @@ public final class ShardingDatabaseMetaData extends MultipleDatabaseMetaData<Sha
     private ShardingRule shardingRule;
     
     public ShardingDatabaseMetaData(final ShardingConnection connection) {
-        super(connection, connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData());
+        super(connection, connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData(), connection.getRuntimeContext().getMetaData());
         shardingRule = connection.getRuntimeContext().getRule();
     }
     

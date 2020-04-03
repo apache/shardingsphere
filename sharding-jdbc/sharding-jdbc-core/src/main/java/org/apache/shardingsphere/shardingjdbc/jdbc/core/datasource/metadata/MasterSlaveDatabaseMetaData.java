@@ -32,7 +32,7 @@ public final class MasterSlaveDatabaseMetaData extends MultipleDatabaseMetaData<
     private final MasterSlaveRule masterSlaveRule;
     
     public MasterSlaveDatabaseMetaData(final MasterSlaveConnection connection) {
-        super(connection, connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData());
+        super(connection, connection.getDataSourceMap().keySet(), connection.getRuntimeContext().getCachedDatabaseMetaData(), connection.getRuntimeContext().getMetaData());
         masterSlaveRule = connection.getRuntimeContext().getRule();
     }
     
