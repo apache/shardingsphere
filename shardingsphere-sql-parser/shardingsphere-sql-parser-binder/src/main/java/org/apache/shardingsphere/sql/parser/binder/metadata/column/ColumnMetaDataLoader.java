@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.util.JdbcUtil;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -62,7 +63,7 @@ public final class ColumnMetaDataLoader {
         List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, table, "%")) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), JdbcUtil.getSchema(connection), table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 columnTypes.add(resultSet.getInt(DATA_TYPE));
@@ -104,14 +105,14 @@ public final class ColumnMetaDataLoader {
     }
     
     private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, table, null)) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, JdbcUtil.getSchema(connection), table, null)) {
             return resultSet.next();
         }
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, table)) {
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), JdbcUtil.getSchema(connection), table)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString(COLUMN_NAME));
             }
