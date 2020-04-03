@@ -50,7 +50,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     }
     
     @Override
-    public Class<EncryptRule> getType() {
+    public Class<EncryptRule> getTypeClass() {
         return EncryptRule.class;
     }
 }

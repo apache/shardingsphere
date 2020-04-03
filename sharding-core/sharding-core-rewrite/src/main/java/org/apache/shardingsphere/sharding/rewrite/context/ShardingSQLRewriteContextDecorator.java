@@ -50,7 +50,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     }
     
     @Override
-    public Class<ShardingRule> getType() {
+    public Class<ShardingRule> getTypeClass() {
         return ShardingRule.class;
     }
 }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteContext;
  *
  * @param <T> type of rule
  */
-public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderedSPI<Class<T>> {
+public interface SQLRewriteContextDecorator<T extends BaseRule> extends OrderedSPI<T> {
     
     /**
      * Decorate SQL rewrite context.

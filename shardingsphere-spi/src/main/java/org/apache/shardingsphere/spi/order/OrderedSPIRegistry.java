@@ -20,6 +20,7 @@ package org.apache.shardingsphere.spi.order;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -30,16 +31,31 @@ public final class OrderedSPIRegistry {
     
     /**
      * Get registered services.
-     * 
+     *
      * @param orderedSPIClass class of ordered SPI
-     * @param <T> type of ordered SPI class
+     * @param types types
+     * @param <K> type of key
+     * @param <V> type of ordered SPI class
      * @return registered services
      */
-    public static <T extends OrderedSPI> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
+    public static <K, V extends OrderedSPI> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass) {
+        Map<K, V> result = new LinkedHashMap<>();
+        for (V each : getRegisteredServices(orderedSPIClass)) {
+            types.stream().filter(type -> isSameTypeClass(each, type.getClass())).forEach(type -> result.put(type, each));
+        }
+        return result;
+    }
+    
+    private static <T extends OrderedSPI> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
         Map<Integer, T> result = new TreeMap<>();
         for (T each : ShardingSphereServiceLoader.newServiceInstances(orderedSPIClass)) {
             result.put(each.getOrder(), each);
         }
         return result.values();
+    }
+    
+    private static boolean isSameTypeClass(final OrderedSPI orderedSPI, final Class typeClass) {
+        // FIXME orderedSPI.getType() == ((Class) type).getSuperclass(), should decouple extend between orchestration rule and sharding rule
+        return orderedSPI.getTypeClass() == typeClass || orderedSPI.getTypeClass() == typeClass.getSuperclass();
     }
 }

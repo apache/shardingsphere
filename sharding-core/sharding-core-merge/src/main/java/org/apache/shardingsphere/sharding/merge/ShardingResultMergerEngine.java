@@ -51,7 +51,7 @@ public final class ShardingResultMergerEngine implements ResultMergerEngine<Shar
     }
     
     @Override
-    public Class<ShardingRule> getType() {
+    public Class<ShardingRule> getTypeClass() {
         return ShardingRule.class;
     }
 }
