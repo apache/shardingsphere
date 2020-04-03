@@ -157,7 +157,7 @@ public final class ShardingTableMetaDataLoader implements RuleTableMetaDataLoade
     }
     
     @Override
-    public Class<ShardingRule> getType() {
+    public Class<ShardingRule> getTypeClass() {
         return ShardingRule.class;
     }
     

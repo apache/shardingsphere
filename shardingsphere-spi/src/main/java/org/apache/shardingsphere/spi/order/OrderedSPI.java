@@ -32,9 +32,9 @@ public interface OrderedSPI<T> {
     int getOrder();
     
     /**
-     * Get type.
+     * Get type class.
      * 
-     * @return type
+     * @return type class
      */
-    Class<T> getType();
+    Class<T> getTypeClass();
 }

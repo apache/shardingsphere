@@ -56,7 +56,7 @@ public final class MasterSlaveTableMetaDataLoader implements RuleTableMetaDataLo
     }
     
     @Override
-    public Class<MasterSlaveRule> getType() {
+    public Class<MasterSlaveRule> getTypeClass() {
         return MasterSlaveRule.class;
     }
 }

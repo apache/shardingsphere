@@ -61,7 +61,7 @@ public final class EncryptTableMetaDataLoader implements RuleTableMetaDataLoader
     }
     
     @Override
-    public Class<EncryptRule> getType() {
+    public Class<EncryptRule> getTypeClass() {
         return EncryptRule.class;
     }
 }

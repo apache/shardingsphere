@@ -41,7 +41,7 @@ public final class OrderedSPIRegistry {
     public static <K, V extends OrderedSPI> Map<K, V> getRegisteredServices(final Collection<K> types, final Class<V> orderedSPIClass) {
         Map<K, V> result = new LinkedHashMap<>();
         for (V each : getRegisteredServices(orderedSPIClass)) {
-            types.stream().filter(type -> isSameType(each, type.getClass())).forEach(type -> result.put(type, each));
+            types.stream().filter(type -> isSameTypeClass(each, type.getClass())).forEach(type -> result.put(type, each));
         }
         return result;
     }
@@ -54,8 +54,8 @@ public final class OrderedSPIRegistry {
         return result.values();
     }
     
-    private static boolean isSameType(final OrderedSPI orderedSPI, final Class type) {
+    private static boolean isSameTypeClass(final OrderedSPI orderedSPI, final Class typeClass) {
         // FIXME orderedSPI.getType() == ((Class) type).getSuperclass(), should decouple extend between orchestration rule and sharding rule
-        return orderedSPI.getType() == type || orderedSPI.getType() == type.getSuperclass();
+        return orderedSPI.getTypeClass() == typeClass || orderedSPI.getTypeClass() == typeClass.getSuperclass();
     }
 }

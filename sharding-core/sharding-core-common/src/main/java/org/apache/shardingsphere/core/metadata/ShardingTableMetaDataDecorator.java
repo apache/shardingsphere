@@ -80,7 +80,7 @@ public final class ShardingTableMetaDataDecorator implements RuleTableMetaDataDe
     }
     
     @Override
-    public Class<ShardingRule> getType() {
+    public Class<ShardingRule> getTypeClass() {
         return ShardingRule.class;
     }
 }

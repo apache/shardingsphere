@@ -56,7 +56,7 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
     }
     
     @Override
-    public Class<EncryptRule> getType() {
+    public Class<EncryptRule> getTypeClass() {
         return EncryptRule.class;
     }
 }
