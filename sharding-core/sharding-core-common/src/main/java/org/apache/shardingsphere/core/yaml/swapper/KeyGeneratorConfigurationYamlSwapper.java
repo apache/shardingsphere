@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.yaml.swapper;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -44,7 +45,8 @@ public final class KeyGeneratorConfigurationYamlSwapper implements YamlSwapper<Y
     
     @Override
     public KeyGeneratorConfiguration swap(final YamlKeyGeneratorConfiguration yamlConfiguration) {
-        KeyGenerateAlgorithm keyGenerateAlgorithm = TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, yamlConfiguration.getType(), yamlConfiguration.getProps());
+        KeyGenerateAlgorithm keyGenerateAlgorithm = !Strings.isNullOrEmpty(yamlConfiguration.getType())
+                ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class, yamlConfiguration.getType(), yamlConfiguration.getProps()) : null;
         return new KeyGeneratorConfiguration(yamlConfiguration.getColumn(), keyGenerateAlgorithm);
     }
 }
