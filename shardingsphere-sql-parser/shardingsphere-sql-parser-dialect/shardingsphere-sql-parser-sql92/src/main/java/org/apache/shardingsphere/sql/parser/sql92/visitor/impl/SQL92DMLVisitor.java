@@ -138,7 +138,7 @@ public final class SQL92DMLVisitor extends SQL92Visitor implements DMLVisitor {
         UpdateStatement result = new UpdateStatement();
         CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
         for (TableReferenceSegment each : tableReferences.getValue()) {
-            result.getTables().addAll(each.getTables());
+            result.getTables().addAll(each.getSimpleTableSegments());
         }
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {

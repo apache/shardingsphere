@@ -208,7 +208,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         UpdateStatement result = new UpdateStatement();
         CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
         for (TableReferenceSegment each : tableReferences.getValue()) {
-            result.getTables().addAll(each.getTables());
+            result.getTables().addAll(each.getSimpleTableSegments());
         }
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
@@ -289,7 +289,7 @@ public final class MySQLDMLVisitor extends MySQLVisitor implements DMLVisitor {
         result.combine((CollectionValue<SimpleTableSegment>) visit(ctx.multipleTableNames()));
         CollectionValue<TableReferenceSegment> tableReferences = (CollectionValue<TableReferenceSegment>) visit(ctx.tableReferences());
         for (TableReferenceSegment each : tableReferences.getValue()) {
-            result.getValue().addAll(each.getTables());
+            result.getValue().addAll(each.getSimpleTableSegments());
         }
         return result;
     }

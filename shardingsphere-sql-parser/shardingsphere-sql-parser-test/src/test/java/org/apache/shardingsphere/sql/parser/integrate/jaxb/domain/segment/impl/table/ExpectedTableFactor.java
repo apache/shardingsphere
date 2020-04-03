@@ -21,10 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.AbstractExpectedDelimiterSQLSegment;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.ExpectedTableReference;
+import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.sql.parser.integrate.jaxb.domain.segment.impl.expr.simple.ExpectedSubquery;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Expected TableFactor.
@@ -38,6 +40,9 @@ public final class ExpectedTableFactor extends AbstractExpectedDelimiterSQLSegme
     
     @XmlElement
     private ExpectedSubquery subquery;
+    
+    @XmlElement
+    private List<ExpectedColumn> columns;
     
     @XmlElement(name = "table-reference")
     private Collection<ExpectedTableReference> expectedTableReferences;
