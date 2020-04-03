@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.shardingscaling.core.execute.executor.record;
 
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.position.LogPosition;
+
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,13 +32,16 @@ import java.util.List;
  */
 @Setter
 @Getter
+@EqualsAndHashCode(of = {"tableName", "primaryKeyValue"}, callSuper = false)
 public final class DataRecord extends Record {
-
+    
+    private final List<Column> columns;
+    
+    private final List<Object> primaryKeyValue = new LinkedList<>();
+    
     private String type;
     
     private String tableName;
-    
-    private final List<Column> columns;
     
     public DataRecord(final LogPosition logPosition, final int columnCount) {
         super(logPosition);
@@ -49,6 +55,9 @@ public final class DataRecord extends Record {
      */
     public void addColumn(final Column data) {
         columns.add(data);
+        if (data.isPrimaryKey()) {
+            primaryKeyValue.add(data.getValue());
+        }
     }
     
     /**

@@ -71,7 +71,7 @@ public final class MySQLClient {
     
     private Promise<Object> responseCallback;
     
-    private ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue(1000);
+    private ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue(10000);
     
     private ServerInfo serverInfo;
     
