@@ -43,9 +43,9 @@ SQL解析的接口用于规定用于解析SQL的ANTLR语法文件。
 
 分布式主键的接口主要用于规定如何生成全局性的自增、类型获取、属性设置等。
 
-主要接口为`ShardingKeyGenerator`，其内置实现类有`UUIDShardingKeyGenerator`和`SnowflakeShardingKeyGenerator`。
+主要接口为`KeyGenerateAlgorithm`，其内置实现类有`UUIDKeyGenerateAlgorithm`和`SnowflakeKeyGenerateAlgorithm`。
 
-有分布式主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generator/)。
+有分布式主键的介绍，请参考[分布式主键](/cn/features/sharding/other-features/key-generate-algorithm/)。
 
 ### 分布式事务
 
