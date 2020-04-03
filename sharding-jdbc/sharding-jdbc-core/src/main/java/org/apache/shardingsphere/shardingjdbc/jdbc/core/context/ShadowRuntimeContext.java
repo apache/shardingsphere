@@ -22,13 +22,15 @@ import org.apache.shardingsphere.core.rule.ShadowRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.EncryptDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -65,8 +67,10 @@ public final class ShadowRuntimeContext extends SingleDataSourceRuntimeContext<S
     }
     
     @Override
-    protected SchemaMetaData loadSchemaMetaData(final DataSource dataSource) throws SQLException {
-        return SchemaMetaDataLoader.load(dataSource, getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), getDatabaseType().getName());
+    protected RuleSchemaMetaData loadRuleSchemaMetaData(final DataSource dataSource) throws SQLException {
+        // TODO use spi to load meta data
+        SchemaMetaData schemaMetaData = SchemaMetaDataLoader.load(dataSource, getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), getDatabaseType().getName());
+        return new RuleSchemaMetaData(schemaMetaData, Collections.emptyMap());
     }
     
     public enum ShadowType {

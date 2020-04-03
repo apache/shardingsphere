@@ -36,11 +36,11 @@ public class DropTableStatementMetaDataRefreshStrategyTest extends AbstractMetaD
     @Test
     public void refreshMetaData() {
         MetaDataRefreshStrategy<DropTableStatementContext> metaDataRefreshStrategy = new DropTableStatementMetaDataRefreshStrategy();
-        final DropTableStatement dropTableStatement = new DropTableStatement();
+        DropTableStatement dropTableStatement = new DropTableStatement();
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         DropTableStatementContext dropTableStatementContext = new DropTableStatementContext(dropTableStatement);
         metaDataRefreshStrategy.refreshMetaData(getRuntimeContext(), dropTableStatementContext);
-        assertThat(getRuntimeContext().getMetaData().getSchema().containsTable("t_order"), is(false));
+        assertThat(getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData().containsTable("t_order"), is(false));
     }
 }
 

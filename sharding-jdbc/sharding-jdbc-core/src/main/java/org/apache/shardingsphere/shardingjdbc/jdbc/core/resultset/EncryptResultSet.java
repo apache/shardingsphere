@@ -69,8 +69,8 @@ public final class EncryptResultSet extends AbstractUnsupportedOperationResultSe
     }
     
     private MergedResult createMergedResult(final EncryptRuntimeContext runtimeContext, final ResultSet resultSet) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(
-                Collections.singletonList(runtimeContext.getRule()), runtimeContext.getProperties(), runtimeContext.getDatabaseType(), runtimeContext.getMetaData().getSchema());
+        MergeEngine mergeEngine = new MergeEngine(Collections.singletonList(runtimeContext.getRule()), 
+                runtimeContext.getProperties(), runtimeContext.getDatabaseType(), runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData());
         return mergeEngine.merge(Collections.singletonList(new StreamQueryResult(resultSet)), sqlStatementContext);
     }
     

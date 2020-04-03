@@ -128,8 +128,8 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
-        MergeEngine mergeEngine = new MergeEngine(
-                logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getSchema());
+        MergeEngine mergeEngine = new MergeEngine(logicSchema.getShardingRule().toRules(), 
+                ShardingProxyContext.getInstance().getProperties(), LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getSchema().getConfiguredSchemaMetaData());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

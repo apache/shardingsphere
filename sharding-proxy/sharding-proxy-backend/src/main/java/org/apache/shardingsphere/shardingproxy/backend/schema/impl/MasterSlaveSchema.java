@@ -32,8 +32,8 @@ import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
@@ -65,8 +65,8 @@ public final class MasterSlaveSchema extends MetaDataInitializedLogicSchema {
     @Override
     public ShardingSphereMetaData getMetaData() throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Collections.singletonList(masterSlaveRule));
-        SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
-        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), schemaMetaData);
+        RuleSchemaMetaData ruleSchemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
+        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), ruleSchemaMetaData);
     }
     
     /**

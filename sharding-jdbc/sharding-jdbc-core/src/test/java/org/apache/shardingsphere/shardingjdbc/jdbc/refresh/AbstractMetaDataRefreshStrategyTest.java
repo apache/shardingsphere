@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDat
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.junit.Before;
 
 import java.util.Collections;
@@ -47,9 +48,9 @@ public abstract class AbstractMetaDataRefreshStrategyTest {
     }
     
     private ShardingSphereMetaData buildMetaData() {
-        return new ShardingSphereMetaData(null, new SchemaMetaData(ImmutableMap.of("t_order",
-                        new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)),
-                Collections.singletonList(new IndexMetaData("index"))))));
+        return new ShardingSphereMetaData(null, 
+                new RuleSchemaMetaData(new SchemaMetaData(ImmutableMap.of("t_order", new TableMetaData(Collections.singletonList(new ColumnMetaData("order_id", 1, "String", false, false, false)),
+                Collections.singletonList(new IndexMetaData("index"))))), Collections.emptyMap()));
     }
 }
 

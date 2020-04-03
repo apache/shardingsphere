@@ -66,7 +66,7 @@ public abstract class BasePrepareEngine {
         this.properties = properties;
         this.metaData = metaData;
         router = new DataNodeRouter(metaData, properties, parser);
-        rewriter = new SQLRewriteEntry(metaData.getSchema(), properties);
+        rewriter = new SQLRewriteEntry(metaData.getSchema().getConfiguredSchemaMetaData(), properties);
     }
     
     /**

@@ -37,12 +37,12 @@ public class CreateIndexStatementMetaDataRefreshStrategyTest extends AbstractMet
     @Test
     public void refreshMetaData() {
         MetaDataRefreshStrategy<CreateIndexStatementContext> metaDataRefreshStrategy = new CreateIndexStatementMetaDataRefreshStrategy();
-        final CreateIndexStatement createIndexStatement = new CreateIndexStatement();
+        CreateIndexStatement createIndexStatement = new CreateIndexStatement();
         createIndexStatement.setIndex(new IndexSegment(1, 2, new IdentifierValue("t_order_index")));
         createIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         CreateIndexStatementContext createIndexStatementContext = new CreateIndexStatementContext(createIndexStatement);
         metaDataRefreshStrategy.refreshMetaData(getRuntimeContext(), createIndexStatementContext);
-        assertThat(getRuntimeContext().getMetaData().getSchema().get("t_order").getIndexes().containsKey("t_order_index"), is(true));
+        assertThat(getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("t_order_index"), is(true));
     }
 }
 

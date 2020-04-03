@@ -20,14 +20,15 @@ package org.apache.shardingsphere.shardingproxy.backend.schema;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,13 +46,13 @@ public abstract class MetaDataInitializedLogicSchema extends LogicSchema {
     
     private ShardingSphereMetaData createPhysicalMetaData() throws SQLException {
         DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        SchemaMetaData schemaMetaData = createSchemaMetaData();
-        return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
+        RuleSchemaMetaData ruleSchemaMetaData = createRuleSchemaMetaData();
+        return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }
     
-    private SchemaMetaData createSchemaMetaData() throws SQLException {
+    private RuleSchemaMetaData createRuleSchemaMetaData() throws SQLException {
         DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
         int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery, LogicSchemas.getInstance().getDatabaseType().getName());
+        return new RuleSchemaMetaData(SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery, LogicSchemas.getInstance().getDatabaseType().getName()), new HashMap<>());
     }
 }
