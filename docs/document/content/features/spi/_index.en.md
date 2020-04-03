@@ -39,9 +39,9 @@ Please refer to [Data Masking](/en/features/orchestration/encrypt/) for the intr
 
 The distributed primary key interface is to regulate how to generate overall auto-increment, type access and property configurations.
 
-Its main interface is `ShardingKeyGenerator` and built-in implementation types are `UUIDShardingKeyGenerator` and `SnowflakeShardingKeyGenerator`.
+Its main interface is `KeyGenerateAlgorithm` and built-in implementation types are `UUIDKeyGenerateAlgorithm` and `SnowflakeKeyGenerateAlgorithm`.
 
-Please refer to [Distributed Primary Key](/en/features/sharding/other-features/key-generator/) for the introduction.
+Please refer to [Distributed Primary Key](/en/features/sharding/other-features/key-generate-algorithm/) for the introduction.
 
 ### Distributed Transaction
 
