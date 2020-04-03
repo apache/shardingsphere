@@ -34,8 +34,9 @@ public interface JDBCExecutorWrapper {
      * 
      * @param sql SQL to be routed
      * @return execution context
+     * @throws SQLException SQL exception
      */
-    ExecutionContext route(String sql);
+    ExecutionContext route(String sql) throws SQLException;
     
     /**
      * Create statement.

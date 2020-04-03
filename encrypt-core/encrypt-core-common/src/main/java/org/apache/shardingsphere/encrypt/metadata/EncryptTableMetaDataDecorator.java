@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.decorator.TableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataDecorator;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,10 +28,10 @@ import java.util.LinkedList;
 /**
  * Table meta data decorator for encrypt.
  */
-public final class EncryptTableMetaDataDecorator implements TableMetaDataDecorator<EncryptRule> {
+public final class EncryptTableMetaDataDecorator implements RuleTableMetaDataDecorator<EncryptRule> {
     
     @Override
-    public TableMetaData decorate(final TableMetaData tableMetaData, final String tableName, final EncryptRule encryptRule) {
+    public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
         return new TableMetaData(getEncryptColumnMetaDataList(tableName, tableMetaData.getColumns().values(), encryptRule), tableMetaData.getIndexes().values());
     }
     
@@ -56,5 +56,15 @@ public final class EncryptTableMetaDataDecorator implements TableMetaDataDecorat
         return new EncryptColumnMetaData(
                 logicColumnName, originalColumnMetaData.getDataType(), originalColumnMetaData.getDataTypeName(), originalColumnMetaData.isPrimaryKey(), originalColumnMetaData.getName(),
                 plainColumnName, assistedQueryColumnName);
+    }
+    
+    @Override
+    public int getOrder() {
+        return 5;
+    }
+    
+    @Override
+    public Class<EncryptRule> getType() {
+        return EncryptRule.class;
     }
 }

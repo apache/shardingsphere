@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,7 +51,7 @@ public final class ShardingCTLExplainBackendHandler implements TextProtocolBacke
     private Iterator<ExecutionUnit> executionUnits;
     
     @Override
-    public BackendResponse execute() {
+    public BackendResponse execute() throws SQLException {
         Optional<ShardingCTLExplainStatement> explainStatement = new ShardingCTLExplainParser(sql).doParse();
         if (!explainStatement.isPresent()) {
             return new ErrorResponse(new InvalidShardingCTLFormatException(sql));

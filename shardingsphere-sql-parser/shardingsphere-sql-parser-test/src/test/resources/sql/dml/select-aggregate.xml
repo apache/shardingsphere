@@ -18,27 +18,33 @@
 
 <sql-parser-test-cases>
     <select sql-case-id="select_sum">
-        <tables>
-            <simple-table name="t_order" start-index="40" stop-index="46" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="33">
             <aggregation-projection type="SUM" inner-expression-start-index="10" alias="user_id_sum" start-index="7" stop-index="18" />
         </projections>
     </select>
 
     <select sql-case-id="select_count">
-        <tables>
-            <simple-table name="t_order" start-index="37" stop-index="43" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="37" stop-index="43" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
     </select>
 
     <select sql-case-id="select_count_with_sub">
-        <tables>
-            <simple-table name="t_order" start-index="37" stop-index="43" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="37" stop-index="43" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
@@ -56,9 +62,11 @@
     </select>
 
     <select sql-case-id="select_count_with_sub_with_whitespace">
-        <tables>
-            <simple-table name="t_order" start-index="37" stop-index="43" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="37" stop-index="43" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="30">
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression-start-index="12" start-index="7" stop-index="14" />
         </projections>
@@ -76,37 +84,49 @@
     </select>
 
     <select sql-case-id="select_max">
-        <tables>
-            <simple-table name="t_order" start-index="40" stop-index="46" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="33">
             <aggregation-projection type="MAX" inner-expression-start-index="10" alias="max_user_id" start-index="7" stop-index="18" />
         </projections>
     </select>
 
     <select sql-case-id="select_min">
-        <tables>
-            <simple-table name="t_order" start-index="40" stop-index="46" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="33">
             <aggregation-projection type="MIN" inner-expression-start-index="10" alias="min_user_id" start-index="7" stop-index="18" />
         </projections>
     </select>
 
     <select sql-case-id="select_avg">
-        <tables>
-            <simple-table name="t_order" start-index="40" stop-index="46" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="40" stop-index="46" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="33">
             <aggregation-projection type="AVG" inner-expression-start-index="10" alias="user_id_avg" start-index="7" stop-index="18" />
         </projections>
     </select>
 
     <select sql-case-id="select_count_with_binding_tables_without_join" parameters="1, 2, 9, 10">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="36" stop-index="42" />
-            <simple-table name="t_order_item" alias="i" start-index="47" stop-index="58" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="36" stop-index="42" />
+            </table-factor>
+        </table-reference>
+        <table-reference>
+            <table-factor>
+                <table name="t_order_item" alias="i" start-index="47" stop-index="58" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="29">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
@@ -155,10 +175,16 @@
     </select>
 
     <select sql-case-id="select_count_with_binding_tables_with_join" parameters="1, 2, 9, 10">
-        <tables>
-            <simple-table name="t_order" alias="o" start-index="36" stop-index="42" />
-            <simple-table name="t_order_item" alias="i" start-index="51" stop-index="62" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" alias="o" start-index="36" stop-index="42" />
+            </table-factor>
+            <join-table>
+                <table-factor>
+                    <table name="t_order_item" alias="i" start-index="51" stop-index="62" />
+                </table-factor>
+            </join-table>
+        </table-reference>
         <projections start-index="7" stop-index="29">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="items_count" start-index="7" stop-index="14" />
         </projections>
@@ -191,9 +217,11 @@
     </select>
 
     <select sql-case-id="select_count_with_escape_character">
-        <tables>
-            <simple-table name="t_order" start-index="46" stop-index="52" />
-        </tables>
+        <table-reference>
+            <table-factor>
+                <table name="t_order" start-index="46" stop-index="52" />
+            </table-factor>
+        </table-reference>
         <projections start-index="7" stop-index="39">
             <aggregation-projection type="COUNT" inner-expression-start-index="12" alias="orders_count" start-index="7" stop-index="23" />
         </projections>

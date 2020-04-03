@@ -22,6 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.predicate.PredicateSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,4 +39,23 @@ public final class JoinSpecificationSegment implements SQLSegment {
     private PredicateSegment predicateSegment;
     
     private Collection<ColumnSegment> usingColumns = new LinkedList<>();
+    
+    /**
+     * get tables.
+     * @return tables.
+     */
+    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+        Collection<SimpleTableSegment> tables = new LinkedList<>();
+        if (null != predicateSegment) {
+            if (null != predicateSegment.getColumn() && (predicateSegment.getColumn().getOwner().isPresent())) {
+                OwnerSegment ownerSegment = predicateSegment.getColumn().getOwner().get();
+                tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+            }
+            if (null != predicateSegment.getRightValue() && (predicateSegment.getRightValue() instanceof ColumnSegment) && ((ColumnSegment) predicateSegment.getRightValue()).getOwner().isPresent()) {
+                OwnerSegment ownerSegment = ((ColumnSegment) predicateSegment.getRightValue()).getOwner().get();
+                tables.add(new SimpleTableSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier()));
+            }
+        }
+        return tables;
+    }
 }

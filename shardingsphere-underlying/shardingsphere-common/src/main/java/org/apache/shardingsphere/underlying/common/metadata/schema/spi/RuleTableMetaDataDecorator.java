@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata.decorator;
+package org.apache.shardingsphere.underlying.common.metadata.schema.spi;
 
+import org.apache.shardingsphere.spi.order.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
- * Table meta data decorator.
+ * Rule table meta data decorator.
  */
-public interface TableMetaDataDecorator<T extends BaseRule> {
+public interface RuleTableMetaDataDecorator<T extends BaseRule> extends OrderedSPI<Class<T>> {
     
     /**
      * Decorate table meta data.
      *
-     * @param tableMetaData table meta data
      * @param tableName table name
+     * @param tableMetaData table meta data
      * @param rule rule
      * @return decorated table meta data
      */
-    TableMetaData decorate(TableMetaData tableMetaData, String tableName, T rule);
+    TableMetaData decorate(String tableName, TableMetaData tableMetaData, T rule);
 }

@@ -106,9 +106,6 @@ public final class TableMetaData {
      * @return true if the column is primary key, otherwise false
      */
     public boolean isPrimaryKey(final int columnIndex) {
-        if (columnIndex >= columnNames.size()) {
-            return false;
-        }
-        return columns.get(columnNames.get(columnIndex)).isPrimaryKey();
+        return columnIndex < columnNames.size() && columns.get(columnNames.get(columnIndex)).isPrimaryKey();
     }
 }

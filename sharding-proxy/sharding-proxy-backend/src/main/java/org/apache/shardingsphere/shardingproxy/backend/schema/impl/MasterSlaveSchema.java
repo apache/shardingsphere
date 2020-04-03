@@ -28,11 +28,16 @@ import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRule
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
+import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
 import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -41,9 +46,9 @@ import java.util.Map;
 @Getter
 public final class MasterSlaveSchema extends MetaDataInitializedLogicSchema {
     
-    private MasterSlaveRule masterSlaveRule;
-    
     private final ShardingRule shardingRule;
+    
+    private MasterSlaveRule masterSlaveRule;
     
     public MasterSlaveSchema(final String name,
                              final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) throws SQLException {
@@ -58,8 +63,10 @@ public final class MasterSlaveSchema extends MetaDataInitializedLogicSchema {
     }
     
     @Override
-    public ShardingSphereMetaData getMetaData() {
-        return getPhysicalMetaData();
+    public ShardingSphereMetaData getMetaData() throws SQLException {
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Collections.singletonList(masterSlaveRule));
+        SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
+        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), schemaMetaData);
     }
     
     /**

@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.segment.generic.table.TableSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 @Getter
 @Setter
@@ -39,12 +41,14 @@ public final class JoinedTableSegment implements SQLSegment {
      * get table.
      * @return tableSegment.
      */
-    public TableSegment getTable() {
-        if (null != tableFactor.getTable()) {
-            if (tableFactor.getTable() instanceof SimpleTableSegment) {
-                return tableFactor.getTable();
-            }
+    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+        Collection<SimpleTableSegment> tables = new LinkedList<>();
+        if (null != tableFactor) {
+            tables.addAll(tableFactor.getSimpleTableSegments());
         }
-        return null;
+        if (null != joinSpecification) {
+            tables.addAll(joinSpecification.getSimpleTableSegments());
+        }
+        return tables;
     }
 }
