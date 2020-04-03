@@ -61,15 +61,15 @@ public final class ShardingTableMetaDataLoader implements RuleTableMetaDataLoade
     private static final int FUTURE_GET_TIME_OUT_SEC = 5;
     
     @Override
-    public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                               final ShardingRule shardingRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>(shardingRule.getTableRules().size(), 1);
+        SchemaMetaData result = new SchemaMetaData(new HashMap<>(shardingRule.getTableRules().size(), 1));
         for (TableRule each : shardingRule.getTableRules()) {
             if (!excludedTableNames.contains(each.getLogicTable())) {
                 load(databaseType, dataSourceMap, each.getLogicTable(), shardingRule, properties).ifPresent(tableMetaData -> result.put(each.getLogicTable(), tableMetaData));
             }
         }
-        result.putAll(loadDefaultSchemaMetaData(databaseType, dataSourceMap, shardingRule, properties).getTables());
+        result.merge(loadDefaultSchemaMetaData(databaseType, dataSourceMap, shardingRule, properties));
         return result;
     }
     

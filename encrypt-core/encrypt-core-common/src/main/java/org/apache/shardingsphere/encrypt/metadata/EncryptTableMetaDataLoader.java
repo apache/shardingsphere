@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -37,8 +38,8 @@ import java.util.Optional;
 public final class EncryptTableMetaDataLoader implements RuleTableMetaDataLoader<EncryptRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                           final EncryptRule encryptRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                               final EncryptRule encryptRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         Collection<String> encryptTableNames = encryptRule.getEncryptTableNames();
         Map<String, TableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
@@ -47,7 +48,7 @@ public final class EncryptTableMetaDataLoader implements RuleTableMetaDataLoader
                 result.put(each, TableMetaDataLoader.load(dataSource, each, databaseType.getName()));
             }
         }
-        return result;
+        return new SchemaMetaData(result);
     }
     
     @Override

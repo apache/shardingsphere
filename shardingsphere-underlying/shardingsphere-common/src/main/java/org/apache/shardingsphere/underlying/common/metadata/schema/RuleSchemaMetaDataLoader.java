@@ -62,18 +62,18 @@ public final class RuleSchemaMetaDataLoader {
      */
     @SuppressWarnings("unchecked")
     public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final ConfigurationProperties properties) throws SQLException {
-        Map<String, TableMetaData> result = new HashMap<>();
+        SchemaMetaData result = new SchemaMetaData(new HashMap<>());
         Collection<String> excludedTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (Entry<BaseRule, RuleTableMetaDataLoader> entry : OrderedSPIRegistry.getRegisteredServices(rules, RuleTableMetaDataLoader.class).entrySet()) {
-            Map<String, TableMetaData> tableMetaDataMap = entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties, excludedTableNames);
-            excludedTableNames.addAll(tableMetaDataMap.keySet());
+            SchemaMetaData schemaMetaData = entry.getValue().load(databaseType, dataSourceMap, entry.getKey(), properties, excludedTableNames);
+            excludedTableNames.addAll(schemaMetaData.getAllTableNames());
             if (entry.getKey() instanceof TablesAggregationRule) {
                 excludedTableNames.addAll(((TablesAggregationRule) entry.getKey()).getAllActualTables());
             }
-            result.putAll(tableMetaDataMap);
+            result.merge(schemaMetaData);
         }
         // TODO load remain tables
-        return decorate(new SchemaMetaData(result));
+        return decorate(result);
     }
     
     /**

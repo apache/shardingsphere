@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.masterslave.metadata;
 
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
@@ -38,11 +39,11 @@ import java.util.Optional;
 public final class MasterSlaveTableMetaDataLoader implements RuleTableMetaDataLoader<MasterSlaveRule> {
     
     @Override
-    public Map<String, TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, 
-                                           final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
+    public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
+                               final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
         int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName(), excludedTableNames).getTables();
+        return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName(), excludedTableNames);
     }
     
     @Override

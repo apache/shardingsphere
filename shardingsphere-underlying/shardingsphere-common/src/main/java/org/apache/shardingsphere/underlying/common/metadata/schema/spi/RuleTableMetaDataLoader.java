@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.common.metadata.schema.spi;
 
 import org.apache.shardingsphere.spi.order.OrderedSPI;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
@@ -47,7 +48,7 @@ public interface RuleTableMetaDataLoader<T extends BaseRule> extends OrderedSPI<
      * @return table name and meta data map
      * @throws SQLException SQL exception
      */
-    Map<String, TableMetaData> load(
+    SchemaMetaData load(
             DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T rule, ConfigurationProperties properties, Collection<String> excludedTableNames) throws SQLException;
     
     /**
