@@ -80,7 +80,7 @@ public final class SchemaMetaDataLoader {
         try (Connection con = connection) {
             Map<String, TableMetaData> result = new LinkedHashMap<>();
             for (String each : tables) {
-                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each, databaseType), IndexMetaDataLoader.load(con, each)));
+                result.put(each, new TableMetaData(ColumnMetaDataLoader.load(con, each, databaseType), IndexMetaDataLoader.load(con, each, databaseType)));
             }
             return result;
         }

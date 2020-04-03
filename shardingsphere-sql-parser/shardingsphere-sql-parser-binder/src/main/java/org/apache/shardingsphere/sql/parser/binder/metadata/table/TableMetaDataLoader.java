@@ -43,7 +43,7 @@ public final class TableMetaDataLoader {
      */
     public static TableMetaData load(final DataSource dataSource, final String table, final String databaseType) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return new TableMetaData(ColumnMetaDataLoader.load(connection, table, databaseType), IndexMetaDataLoader.load(connection, table));
+            return new TableMetaData(ColumnMetaDataLoader.load(connection, table, databaseType), IndexMetaDataLoader.load(connection, table, databaseType));
         }
     }
 }

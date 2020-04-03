@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.binder.metadata.column;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.binder.metadata.util.CatalogSchemaPair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -52,7 +53,8 @@ public final class ColumnMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Collection<ColumnMetaData> load(final Connection connection, final String table, final String databaseType) throws SQLException {
-        if (!isTableExist(connection, connection.getCatalog(), table)) {
+        CatalogSchemaPair catalogSchemaPair = CatalogSchemaPair.of(connection, databaseType);
+        if (!isTableExist(connection, catalogSchemaPair.getCatalog(), catalogSchemaPair.getSchema(), table)) {
             return Collections.emptyList();
         }
         Collection<ColumnMetaData> result = new LinkedList<>();
@@ -62,7 +64,7 @@ public final class ColumnMetaDataLoader {
         List<String> columnTypeNames = new ArrayList<>();
         List<Boolean> isPrimaryKeys = new ArrayList<>();
         List<Boolean> isCaseSensitives = new ArrayList<>();
-        try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), null, table, "%")) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(catalogSchemaPair.getCatalog(), catalogSchemaPair.getSchema(), table, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString(COLUMN_NAME);
                 columnTypes.add(resultSet.getInt(DATA_TYPE));
@@ -103,8 +105,8 @@ public final class ColumnMetaDataLoader {
         return "SELECT * FROM " + delimiterLeft + table + delimiterRight + " WHERE 1 != 1;";
     }
     
-    private static boolean isTableExist(final Connection connection, final String catalog, final String table) throws SQLException {
-        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, null, table, null)) {
+    private static boolean isTableExist(final Connection connection, final String catalog, final String schema, final String table) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(catalog, schema, table, null)) {
             return resultSet.next();
         }
     }
