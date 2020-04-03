@@ -22,9 +22,9 @@ import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 /**
- * Rule table meta data decorator.
+ * Rule meta data decorator.
  */
-public interface RuleTableMetaDataDecorator<T extends BaseRule> extends OrderedSPI<T> {
+public interface RuleMetaDataDecorator<T extends BaseRule> extends OrderedSPI<T> {
     
     /**
      * Decorate table meta data.

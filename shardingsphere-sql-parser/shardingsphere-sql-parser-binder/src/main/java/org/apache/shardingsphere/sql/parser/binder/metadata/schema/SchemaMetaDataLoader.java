@@ -62,9 +62,24 @@ public final class SchemaMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount, final String databaseType) throws SQLException {
+        return load(dataSource, maxConnectionCount, databaseType, Collections.emptyList());
+    }
+    
+    /**
+     * Load schema meta data.
+     *
+     * @param dataSource data source
+     * @param maxConnectionCount count of max connections permitted to use for this query
+     * @param databaseType database type
+     * @param excludedTableNames excluded table names
+     * @return schema meta data
+     * @throws SQLException SQL exception
+     */
+    public static SchemaMetaData load(final DataSource dataSource, final int maxConnectionCount, final String databaseType, final Collection<String> excludedTableNames) throws SQLException {
         List<String> tableNames;
         try (Connection connection = dataSource.getConnection()) {
             tableNames = loadAllTableNames(connection);
+            tableNames.removeAll(excludedTableNames);
         }
         log.info("Loading {} tables' meta data.", tableNames.size());
         if (0 == tableNames.size()) {
