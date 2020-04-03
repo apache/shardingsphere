@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -32,8 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -84,14 +84,14 @@ public final class MetaDataManagerTest {
     @Before
     public void setUp() throws Exception {
         when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.getCatalog()).thenReturn("");
-        when(connection.getSchema()).thenReturn("");
+        when(connection.getCatalog()).thenReturn("sharding");
+        when(connection.getSchema()).thenReturn("scaling");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(connection.createStatement()).thenReturn(statement);
-        when(databaseMetaData.getColumns("", null, TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
-        when(databaseMetaData.getPrimaryKeys("", null, TEST_TABLE)).thenReturn(primaryKeyResultSet);
-        when(databaseMetaData.getTables("", null, TEST_TABLE, null)).thenReturn(tableResultSet);
-        when(databaseMetaData.getIndexInfo("", "", TEST_TABLE, false, false)).thenReturn(indexMetaDataResultSet);
+        when(databaseMetaData.getColumns("sharding", "scaling", TEST_TABLE, "%")).thenReturn(columnMetaDataResultSet);
+        when(databaseMetaData.getPrimaryKeys("sharding", "scaling", TEST_TABLE)).thenReturn(primaryKeyResultSet);
+        when(databaseMetaData.getTables("sharding", "scaling", TEST_TABLE, null)).thenReturn(tableResultSet);
+        when(databaseMetaData.getIndexInfo("sharding", "scaling", TEST_TABLE, false, false)).thenReturn(indexMetaDataResultSet);
         when(tableResultSet.next()).thenReturn(true);
         when(primaryKeyResultSet.next()).thenReturn(true, false);
         when(primaryKeyResultSet.getString(COLUMN_NAME)).thenReturn("id");

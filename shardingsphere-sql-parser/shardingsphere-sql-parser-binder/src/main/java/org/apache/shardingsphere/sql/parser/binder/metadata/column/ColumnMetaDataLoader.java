@@ -58,7 +58,7 @@ public final class ColumnMetaDataLoader {
             return Collections.emptyList();
         }
         Collection<ColumnMetaData> result = new LinkedList<>();
-        Collection<String> primaryKeys = loadPrimaryKeys(connection, table);
+        Collection<String> primaryKeys = loadPrimaryKeys(connection, table, catalogSchemaPair);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
         List<String> columnTypeNames = new ArrayList<>();
@@ -111,9 +111,9 @@ public final class ColumnMetaDataLoader {
         }
     }
     
-    private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
+    private static Collection<String> loadPrimaryKeys(final Connection connection, final String table, final CatalogSchemaPair catalogSchemaPair) throws SQLException {
         Collection<String> result = new HashSet<>();
-        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(connection.getCatalog(), null, table)) {
+        try (ResultSet resultSet = connection.getMetaData().getPrimaryKeys(catalogSchemaPair.getCatalog(), catalogSchemaPair.getSchema(), table)) {
             while (resultSet.next()) {
                 result.add(resultSet.getString(COLUMN_NAME));
             }
