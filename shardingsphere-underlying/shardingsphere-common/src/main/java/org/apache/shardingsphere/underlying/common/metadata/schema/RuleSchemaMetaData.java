@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.underlying.common.metadata;
+package org.apache.shardingsphere.underlying.common.metadata.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
+
+import java.util.Map;
 
 /**
- * ShardingSphere meta data.
+ * Rule schema meta data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereMetaData {
+public final class RuleSchemaMetaData {
     
-    private final DataSourceMetas dataSources;
+    private final SchemaMetaData configuredSchemaMetaData;
     
-    private final RuleSchemaMetaData schema;
+    private final Map<String, SchemaMetaData> unconfiguredSchemaMetaDataMap;
 }

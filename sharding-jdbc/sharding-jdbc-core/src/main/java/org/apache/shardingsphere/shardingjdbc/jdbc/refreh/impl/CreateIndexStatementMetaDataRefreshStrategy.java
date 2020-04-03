@@ -36,6 +36,6 @@ public final class CreateIndexStatementMetaDataRefreshStrategy implements MetaDa
         }
         String indexName = createIndexStatement.getIndex().getIdentifier().getValue();
         String tableName = createIndexStatement.getTable().getTableName().getIdentifier().getValue();
-        shardingRuntimeContext.getMetaData().getSchema().get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+        shardingRuntimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData().get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
     }
 }

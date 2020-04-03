@@ -37,12 +37,12 @@ public class DropIndexStatementMetaDataRefreshStrategyTest extends AbstractMetaD
     @Test
     public void refreshMetaData() {
         MetaDataRefreshStrategy<DropIndexStatementContext> metaDataRefreshStrategy = new DropIndexStatementMetaDataRefreshStrategy();
-        final DropIndexStatement dropIndexStatement = new DropIndexStatement();
+        DropIndexStatement dropIndexStatement = new DropIndexStatement();
         dropIndexStatement.getIndexes().add(new IndexSegment(1, 2, new IdentifierValue("index")));
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order"))));
         DropIndexStatementContext dropIndexStatementContext = new DropIndexStatementContext(dropIndexStatement);
         metaDataRefreshStrategy.refreshMetaData(getRuntimeContext(), dropIndexStatementContext);
-        assertThat(getRuntimeContext().getMetaData().getSchema().get("t_order").getIndexes().containsKey("index"), is(false));
+        assertThat(getRuntimeContext().getMetaData().getSchema().getConfiguredSchemaMetaData().get("t_order").getIndexes().containsKey("index"), is(false));
     }
 }
 

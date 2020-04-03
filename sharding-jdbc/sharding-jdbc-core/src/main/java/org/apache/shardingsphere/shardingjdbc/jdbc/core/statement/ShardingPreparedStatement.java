@@ -186,7 +186,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         ShardingRuntimeContext runtimeContext = connection.getRuntimeContext();
-        MergeEngine mergeEngine = new MergeEngine(runtimeContext.getRule().toRules(), runtimeContext.getProperties(), runtimeContext.getDatabaseType(), runtimeContext.getMetaData().getSchema());
+        MergeEngine mergeEngine = new MergeEngine(runtimeContext.getRule().toRules(), 
+                runtimeContext.getProperties(), runtimeContext.getDatabaseType(), runtimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     

@@ -19,11 +19,11 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.underlying.common.config.DatabaseAccessConfiguration;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
@@ -53,8 +53,8 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
     private ShardingSphereMetaData createMetaData(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSource));
-        SchemaMetaData schemaMetaData = loadSchemaMetaData(dataSource);
-        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
+        RuleSchemaMetaData ruleSchemaMetaData = loadRuleSchemaMetaData(dataSource);
+        ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
         log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
         return result;
     }
@@ -68,5 +68,5 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
         return result;
     }
     
-    protected abstract SchemaMetaData loadSchemaMetaData(DataSource dataSource) throws SQLException;
+    protected abstract RuleSchemaMetaData loadRuleSchemaMetaData(DataSource dataSource) throws SQLException;
 }

@@ -34,7 +34,7 @@ public final class CreateTableStatementMetaDataRefreshStrategy implements MetaDa
     @Override
     public void refreshMetaData(final ShardingRuntimeContext shardingRuntimeContext, final CreateTableStatementContext sqlStatementContext) throws SQLException {
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        loadTableMetaData(tableName, shardingRuntimeContext).ifPresent(tableMetaData -> shardingRuntimeContext.getMetaData().getSchema().put(tableName, tableMetaData));
+        loadTableMetaData(tableName, shardingRuntimeContext).ifPresent(tableMetaData -> shardingRuntimeContext.getMetaData().getSchema().getConfiguredSchemaMetaData().put(tableName, tableMetaData));
     }
     
     private Optional<TableMetaData> loadTableMetaData(final String tableName, final ShardingRuntimeContext shardingRuntimeContext) throws SQLException {
