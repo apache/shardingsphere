@@ -29,7 +29,7 @@ import org.apache.shardingsphere.underlying.common.config.properties.Configurati
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.exception.ShardingSphereException;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import javax.sql.DataSource;
@@ -50,9 +50,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data loader for sharding.
+ * Meta data loader for sharding.
  */
-public final class ShardingTableMetaDataLoader implements RuleTableMetaDataLoader<ShardingRule> {
+public final class ShardingMetaDataLoader implements RuleMetaDataLoader<ShardingRule> {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
@@ -134,7 +134,7 @@ public final class ShardingTableMetaDataLoader implements RuleTableMetaDataLoade
     }
     
     private void checkUniformed(final String logicTableName, final Map<String, TableMetaData> actualTableMetaDataMap, final ShardingRule shardingRule) {
-        ShardingTableMetaDataDecorator decorator = new ShardingTableMetaDataDecorator();
+        ShardingMetaDataDecorator decorator = new ShardingMetaDataDecorator();
         TableMetaData sample = decorator.decorate(logicTableName, actualTableMetaDataMap.values().iterator().next(), shardingRule);
         Collection<TableMetaDataViolation> violations = actualTableMetaDataMap.entrySet().stream()
                 .filter(entry -> !sample.equals(decorator.decorate(logicTableName, entry.getValue(), shardingRule)))

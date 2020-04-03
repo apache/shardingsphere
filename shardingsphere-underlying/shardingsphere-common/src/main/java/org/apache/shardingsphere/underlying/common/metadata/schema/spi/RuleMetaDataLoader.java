@@ -31,14 +31,14 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Rule table meta data loader.
+ * Rule meta data loader.
  * 
  * @param <T> type of base rule
  */
-public interface RuleTableMetaDataLoader<T extends BaseRule> extends OrderedSPI<T> {
+public interface RuleMetaDataLoader<T extends BaseRule> extends OrderedSPI<T> {
     
     /**
-     * Load meta data.
+     * Load schema meta data.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
@@ -48,11 +48,10 @@ public interface RuleTableMetaDataLoader<T extends BaseRule> extends OrderedSPI<
      * @return table name and meta data map
      * @throws SQLException SQL exception
      */
-    SchemaMetaData load(
-            DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T rule, ConfigurationProperties properties, Collection<String> excludedTableNames) throws SQLException;
+    SchemaMetaData load(DatabaseType databaseType, Map<String, DataSource> dataSourceMap, T rule, ConfigurationProperties properties, Collection<String> excludedTableNames) throws SQLException;
     
     /**
-     * Load meta data.
+     * Load table meta data.
      *
      * @param databaseType database type
      * @param dataSourceMap data source map

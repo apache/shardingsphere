@@ -15,50 +15,56 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.masterslave.metadata;
+package org.apache.shardingsphere.encrypt.metadata;
 
-import org.apache.shardingsphere.core.rule.MasterSlaveRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Table meta data loader for master slave.
+ * Meta data loader for encrypt.
  */
-public final class MasterSlaveTableMetaDataLoader implements RuleTableMetaDataLoader<MasterSlaveRule> {
+public final class EncryptMetaDataLoader implements RuleMetaDataLoader<EncryptRule> {
     
     @Override
     public SchemaMetaData load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                               final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
+                               final EncryptRule encryptRule, final ConfigurationProperties properties, final Collection<String> excludedTableNames) throws SQLException {
         DataSource dataSource = dataSourceMap.values().iterator().next();
-        int maxConnectionCount = properties.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataLoader.load(dataSource, maxConnectionCount, databaseType.getName(), excludedTableNames);
+        Collection<String> encryptTableNames = encryptRule.getEncryptTableNames();
+        Map<String, TableMetaData> result = new HashMap<>(encryptTableNames.size(), 1);
+        for (String each : encryptTableNames) {
+            if (!excludedTableNames.contains(each)) {
+                result.put(each, TableMetaDataLoader.load(dataSource, each, databaseType.getName()));
+            }
+        }
+        return new SchemaMetaData(result);
     }
     
     @Override
     public Optional<TableMetaData> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
-                                       final String tableName, final MasterSlaveRule masterSlaveRule, final ConfigurationProperties properties) throws SQLException {
-        return Optional.of(TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName()));
+                              final String tableName, final EncryptRule encryptRule, final ConfigurationProperties properties) throws SQLException {
+        return encryptRule.findEncryptTable(tableName).isPresent()
+                ? Optional.of(TableMetaDataLoader.load(dataSourceMap.values().iterator().next(), tableName, databaseType.getName())) : Optional.empty();
     }
     
     @Override
     public int getOrder() {
-        return 10;
+        return 5;
     }
     
     @Override
-    public Class<MasterSlaveRule> getTypeClass() {
-        return MasterSlaveRule.class;
+    public Class<EncryptRule> getTypeClass() {
+        return EncryptRule.class;
     }
 }

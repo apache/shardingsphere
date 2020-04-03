@@ -22,7 +22,7 @@ import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.index.IndexMetaData;
 import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleTableMetaDataDecorator;
+import org.apache.shardingsphere.underlying.common.metadata.schema.spi.RuleMetaDataDecorator;
 import org.apache.shardingsphere.underlying.common.rule.DataNode;
 
 import java.util.Collection;
@@ -34,7 +34,7 @@ import java.util.Optional;
 /**
  * Table meta data decorator for sharding.
  */
-public final class ShardingTableMetaDataDecorator implements RuleTableMetaDataDecorator<ShardingRule> {
+public final class ShardingMetaDataDecorator implements RuleMetaDataDecorator<ShardingRule> {
     
     @Override
     public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final ShardingRule shardingRule) {
