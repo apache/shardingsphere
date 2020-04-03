@@ -44,12 +44,12 @@ public final class ExpressionAssert {
     
     /**
      * Assert parameter marker expression.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual parameter marker expression segment
      * @param expected expected parameter marker expression
      */
-    public static void assertParameterMarkerExpression(final SQLCaseAssertContext assertContext, 
+    public static void assertParameterMarkerExpression(final SQLCaseAssertContext assertContext,
                                                         final ParameterMarkerExpressionSegment actual, final ExpectedParameterMarkerExpression expected) {
         assertNotNull(assertContext.getText("Expected parameter marker expression should exist."), expected);
         assertThat(assertContext.getText("Parameter marker index assertion error: "), actual.getParameterMarkerIndex(), is(expected.getValue()));
@@ -63,12 +63,11 @@ public final class ExpressionAssert {
      * @param actual actual literal expression segment
      * @param expected expected literal expression
      */
-    public static void assertLiteralExpression(final SQLCaseAssertContext assertContext, 
+    public static void assertLiteralExpression(final SQLCaseAssertContext assertContext,
                                                 final LiteralExpressionSegment actual, final ExpectedLiteralExpression expected) {
         assertNotNull(assertContext.getText("Expected literal expression should exist."));
         assertThat(assertContext.getText("Literal assertion error: "), actual.getLiterals().toString(), is(expected.getValue()));
-        // TODO assert start index and stop index
-//        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     /**
@@ -78,7 +77,7 @@ public final class ExpressionAssert {
      * @param actual actual common expression segment
      * @param expected expected common expression
      */
-    public static void assertCommonExpression(final SQLCaseAssertContext assertContext, 
+    public static void assertCommonExpression(final SQLCaseAssertContext assertContext,
                                                final ComplexExpressionSegment actual, final ExpectedCommonExpression expected) {
         assertNotNull(assertContext.getText("Expected common expression should exist."));
         String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();

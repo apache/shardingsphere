@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSource
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShadowDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.h2.tools.RunScript;
 import org.junit.Before;
@@ -85,7 +85,7 @@ public abstract class AbstractSpringJUnitTest extends AbstractJUnit4SpringContex
     @SuppressWarnings("unchecked")
     @SneakyThrows
     private void reInitMetaData() {
-        Map<String, DataSource> dataSourceMap = (Map<String, DataSource>) getFieldValue(shardingDataSource.getRuntimeContext().getCachedDatabaseMetaData(), "dataSourceMap");
+        Map<String, DataSource> dataSourceMap = shardingDataSource.getDataSourceMap();
         ShardingSphereMetaData newMetaData = (ShardingSphereMetaData) getCreateMetaDataMethod().invoke(
                 shardingDataSource.getRuntimeContext(), dataSourceMap, shardingDataSource.getRuntimeContext().getDatabaseType());
         setFieldValue(shardingDataSource.getRuntimeContext(), "metaData", newMetaData);

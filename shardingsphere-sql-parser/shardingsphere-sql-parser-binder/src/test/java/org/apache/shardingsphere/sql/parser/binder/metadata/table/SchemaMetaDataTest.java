@@ -74,19 +74,19 @@ public final class SchemaMetaDataTest {
     
     @Test
     public void assertContainsColumn() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false, false, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
         assertTrue(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).containsColumn("tbl", "col"));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenContainsKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false, false, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
         assertThat(new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData)).getAllColumnNames("tbl"), is(Collections.singletonList("col")));
     }
     
     @Test
     public void assertGetAllColumnNamesWhenNotContainsKey() {
-        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", "dataType", false, false, false)), Collections.emptyList());
+        TableMetaData tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("col", 0, "dataType", false, false, false)), Collections.emptyList());
         assertThat(new SchemaMetaData(ImmutableMap.of("tbl1", tableMetaData)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spring.boot.datasource;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +31,8 @@ public final class DataSourcePropertiesSetterHolder {
     private static final Map<String, DataSourcePropertiesSetter> DATA_SOURCE_PROPERTIES_SETTER_MAP = new HashMap<>();
     
     static {
-        NewInstanceServiceLoader.register(DataSourcePropertiesSetter.class);
-        for (DataSourcePropertiesSetter each : NewInstanceServiceLoader.newServiceInstances(DataSourcePropertiesSetter.class)) {
+        ShardingSphereServiceLoader.register(DataSourcePropertiesSetter.class);
+        for (DataSourcePropertiesSetter each : ShardingSphereServiceLoader.newServiceInstances(DataSourcePropertiesSetter.class)) {
             DATA_SOURCE_PROPERTIES_SETTER_MAP.put(each.getType(), each);
         }
     }

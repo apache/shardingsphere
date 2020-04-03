@@ -47,14 +47,14 @@ public abstract class LogicSchema {
     private final SQLParserEngine sqlParserEngine;
     
     private JDBCBackendDataSource backendDataSource;
-    
+
     public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
         sqlParserEngine = SQLParserEngineFactory.getSQLParserEngine(DatabaseTypes.getTrunkDatabaseTypeName(LogicSchemas.getInstance().getDatabaseType()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
         ShardingOrchestrationEventBus.getInstance().register(this);
     }
-    
+
     protected final Map<String, DatabaseAccessConfiguration> getDatabaseAccessConfigurationMap() {
         return backendDataSource.getDataSourceParameters().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> new DatabaseAccessConfiguration(entry.getValue().getUrl(), null, null)));
@@ -64,8 +64,9 @@ public abstract class LogicSchema {
      * Get sharding meta data.
      * 
      * @return sharding meta data.
+     * @throws SQLException SQL exception
      */
-    public abstract ShardingSphereMetaData getMetaData();
+    public abstract ShardingSphereMetaData getMetaData() throws SQLException;
     
     /**
      * Get Sharding rule.

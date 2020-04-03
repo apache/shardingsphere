@@ -46,8 +46,13 @@
         <prop key="worker.id">123</prop>
     </bean:properties>
     
-    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" props-ref="properties" />
-    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" props-ref="properties" />
+    <bean id="snowflakeAlgorithm" class="org.apache.shardingsphere.shardingjdbc.spring.namespace.factorybean.KeyGenerateAlgorithmFactoryBean">
+        <property name="type" value="SNOWFLAKE" />
+        <property name="properties" ref="properties"/>
+    </bean>
+    
+    <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
+    <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="demo_ds">

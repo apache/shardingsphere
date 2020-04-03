@@ -20,11 +20,12 @@ package org.apache.shardingsphere.encrypt.rewrite.context;
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.underlying.route.context.RouteContext;
 
 /**
  * SQL rewrite context decorator for encrypt.
@@ -33,7 +34,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     
     @SuppressWarnings("unchecked")
     @Override
-    public void decorate(final EncryptRule encryptRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext) {
+    public void decorate(final EncryptRule encryptRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         boolean isQueryWithCipherColumn = properties.<Boolean>getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN);
         for (ParameterRewriter each : new EncryptParameterRewriterBuilder(encryptRule, isQueryWithCipherColumn).getParameterRewriters(sqlRewriteContext.getSchemaMetaData())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
@@ -41,5 +42,15 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
             }
         }
         sqlRewriteContext.addSQLTokenGenerators(new EncryptTokenGenerateBuilder(encryptRule, isQueryWithCipherColumn).getSQLTokenGenerators());
+    }
+    
+    @Override
+    public int getOrder() {
+        return 20;
+    }
+    
+    @Override
+    public Class<EncryptRule> getTypeClass() {
+        return EncryptRule.class;
     }
 }

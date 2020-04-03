@@ -28,55 +28,45 @@ import org.apache.shardingsphere.orchestration.core.common.event.MasterSlaveRule
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.registrycenter.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.core.registrycenter.schema.OrchestrationShardingSchema;
-import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.backend.schema.LogicSchemas;
+import org.apache.shardingsphere.shardingproxy.backend.schema.MetaDataInitializedLogicSchema;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.context.ShardingProxyContext;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
-import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaDataLoader;
-import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
  * Master-slave schema.
  */
 @Getter
-public final class MasterSlaveSchema extends LogicSchema {
-    
-    private MasterSlaveRule masterSlaveRule;
+public final class MasterSlaveSchema extends MetaDataInitializedLogicSchema {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingSphereMetaData metaData;
+    private MasterSlaveRule masterSlaveRule;
     
-    public MasterSlaveSchema(final String name, 
+    public MasterSlaveSchema(final String name,
                              final Map<String, YamlDataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) throws SQLException {
         super(name, dataSources);
         masterSlaveRule = createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
         // TODO we should remove it after none-sharding parsingEngine completed.
         shardingRule = new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet());
-        metaData = createMetaData();
     }
     
     private MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRuleConfig) : new MasterSlaveRule(masterSlaveRuleConfig);
     }
     
-    private ShardingSphereMetaData createMetaData() throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        SchemaMetaData schemaMetaData = loadSchemaMetaData();
-        return new ShardingSphereMetaData(dataSourceMetas, schemaMetaData);
-    }
-    
-    private SchemaMetaData loadSchemaMetaData() throws SQLException {
-        DataSource dataSource = getBackendDataSource().getDataSources().values().iterator().next();
-        int maxConnectionsSizePerQuery = ShardingProxyContext.getInstance().getProperties().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return SchemaMetaDataLoader.load(dataSource, maxConnectionsSizePerQuery, LogicSchemas.getInstance().getDatabaseType().getName());
+    @Override
+    public ShardingSphereMetaData getMetaData() throws SQLException {
+        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(Collections.singletonList(masterSlaveRule));
+        SchemaMetaData schemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
+        return new ShardingSphereMetaData(getPhysicalMetaData().getDataSources(), schemaMetaData);
     }
     
     /**

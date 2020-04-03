@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.underlying.pluggble.merge;
 
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.binder.metadata.schema.SchemaMetaData;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 import org.apache.shardingsphere.underlying.executor.QueryResult;
 import org.apache.shardingsphere.underlying.merge.MergeEntry;
-import org.apache.shardingsphere.underlying.merge.registry.ResultProcessEngineRegistry;
+import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.underlying.merge.result.MergedResult;
 
 import java.sql.SQLException;
@@ -54,7 +55,7 @@ public final class MergeEngine {
      * @throws SQLException SQL exception
      */
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext) throws SQLException {
-        rules.forEach(each -> ResultProcessEngineRegistry.getInstance().getResultProcessEngine(each).ifPresent(processEngine -> merger.registerProcessEngine(each, processEngine)));
+        OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class).forEach(merger::registerProcessEngine);
         return merger.process(queryResults, sqlStatementContext);
     }
 }

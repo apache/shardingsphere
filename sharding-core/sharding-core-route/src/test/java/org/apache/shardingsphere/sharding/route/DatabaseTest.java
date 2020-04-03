@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.route.engine.ShardingRouteDecorator;
 import org.apache.shardingsphere.sharding.route.fixture.HintShardingAlgorithmFixture;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.SQLParserEngineFactory;
 import org.apache.shardingsphere.sql.parser.binder.metadata.column.ColumnMetaData;
@@ -42,6 +42,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,8 +89,8 @@ public final class DatabaseTest {
     private ShardingSphereMetaData getMetaDataForAllRoutingSQL() {
         DataSourceMetas dataSourceMetas = mock(DataSourceMetas.class);
         when(dataSourceMetas.getDataSourceMetaData("ds_0")).thenReturn(mock(DataSourceMetaData.class));
-        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true, false, false);
-        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false, false, false);
+        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", Types.INTEGER, "int", true, false, false);
+        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false);
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.get("tesT")).thenReturn(new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList(new IndexMetaData("id"), new IndexMetaData("user_id"))));
         when(schemaMetaData.containsTable("tesT")).thenReturn(true);
@@ -114,8 +116,8 @@ public final class DatabaseTest {
     }
     
     private ShardingSphereMetaData getMetaDataForPagination() {
-        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", "int", true, false, false);
-        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", "int", false, false, false);
+        ColumnMetaData idColumnMetaData = new ColumnMetaData("id", Types.INTEGER, "int", true, false, false);
+        ColumnMetaData nameColumnMetaData = new ColumnMetaData("user_id", Types.INTEGER, "int", false, false, false);
         SchemaMetaData schemaMetaData = mock(SchemaMetaData.class);
         when(schemaMetaData.get("tbl_pagination")).thenReturn(
                 new TableMetaData(Arrays.asList(idColumnMetaData, nameColumnMetaData), Arrays.asList(new IndexMetaData("id"), new IndexMetaData("user_id"))));

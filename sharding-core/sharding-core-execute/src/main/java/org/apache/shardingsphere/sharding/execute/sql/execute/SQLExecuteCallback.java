@@ -25,8 +25,8 @@ import org.apache.shardingsphere.underlying.executor.constant.ConnectionMode;
 import org.apache.shardingsphere.underlying.executor.engine.GroupedCallback;
 import org.apache.shardingsphere.underlying.executor.hook.SQLExecutionHook;
 import org.apache.shardingsphere.underlying.executor.context.ExecutionUnit;
-import org.apache.shardingsphere.spi.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;

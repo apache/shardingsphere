@@ -19,38 +19,15 @@ package org.apache.shardingsphere.api.config.sharding;
 
 import org.junit.Test;
 
-import java.util.Properties;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 public final class KeyGeneratorConfigurationTest {
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertConstructorWithoutType() {
-        new KeyGeneratorConfiguration("", "id", new Properties());
+    @Test
+    public void assertConstructorWithoutKeyGenerator() {
+        new KeyGeneratorConfiguration("id", null);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutColumn() {
-        new KeyGeneratorConfiguration("TEST", "", new Properties());
-    }
-    
-    @Test
-    public void assertConstructorWithoutProperties() {
-        KeyGeneratorConfiguration actual = new KeyGeneratorConfiguration("TEST", "id", null);
-        assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getProperties(), is(new Properties()));
-    }
-    
-    @Test
-    public void assertConstructorWithFullArguments() {
-        Properties props = new Properties();
-        props.setProperty("key", "value");
-        KeyGeneratorConfiguration actual = new KeyGeneratorConfiguration("TEST", "id", props);
-        assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getProperties(), is(props));
+        new KeyGeneratorConfiguration("", null);
     }
 }

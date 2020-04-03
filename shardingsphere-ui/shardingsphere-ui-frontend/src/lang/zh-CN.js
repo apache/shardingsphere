@@ -56,6 +56,7 @@ export default {
     notify: {
       title: '提示',
       addSucMessage: '添加成功',
+      editSucMessage: '修改成功',
       conSucMessage: '连接成功',
       conFailMessage: '连接失败',
       delSucMessage: '删除成功',
@@ -93,6 +94,7 @@ export default {
     btnTxt: '添加',
     registDialog: {
       title: '添加注册中心',
+      editTitle: '编辑注册中心',
       name: '注册中心名称',
       centerType: '注册中心类型',
       address: '注册中心地址',
@@ -106,7 +108,8 @@ export default {
       operate: '操作',
       operateConnect: '连接',
       operateConnected: '已激活',
-      operateDel: '删除'
+      operateDel: '删除',
+      operateEdit: '编辑'
     },
     rules: {
       name: '请输入注册中心名称',
@@ -121,6 +124,7 @@ export default {
     btnTxt: '添加',
     configDialog: {
       title: '添加配置中心',
+      editTitle: '编辑配置中心',
       name: '配置中心名称',
       centerType: '配置中心类型',
       address: '配置中心地址',
@@ -134,7 +138,8 @@ export default {
       operate: '操作',
       operateConnect: '连接',
       operateConnected: '已激活',
-      operateDel: '删除'
+      operateDel: '删除',
+      operateEdit: '编辑'
     },
     rules: {
       name: '请输入配置中心名称',
@@ -176,6 +181,49 @@ export default {
       schema: '数据源',
       authentication: '认证信息',
       props: '属性配置'
+    }
+  },
+  dataScaling: {
+    btnTxt: '添加',
+    tableList: {
+      jobId: '任务Id',
+      jobName: '任务名称',
+      status: '状态',
+      operate: '操作',
+      operateStop: '停止',
+      operateSee: 'see'
+    },
+    registDialog: {
+      title: '添加一个任务',
+      source: '源',
+      target: '目标',
+      jobCount: '任务数量',
+      jobCountPlaceholder: '请输入任务数量',
+      username: 'Username',
+      usernamePlaceholder: '请输入用户名',
+      password: 'Password',
+      passwordPlaceholder: '请输入密码',
+      url: '地址',
+      urlPlaceholder: '请输入 url',
+      btnConfirmTxt: '确认',
+      btnCancelTxt: '取消'
+    },
+    rules: {
+      source: '请选择注册中心的来源',
+      target: '请选择目标',
+      serviceUrl: '服务地址必填'
+    },
+    notify: {
+      title: '提示',
+      conSucMessage: '添加成功',
+      conFailMessage: '添加失败',
+      delSucMessage: '删除成功',
+      delFailMessage: '删除失败'
+    },
+    serviceDialog: {
+      serviceName: '请输入服务名称',
+      serviceType: '请输入服务类型',
+      serviceUrl: '请输入服务地址'
     }
   }
 }

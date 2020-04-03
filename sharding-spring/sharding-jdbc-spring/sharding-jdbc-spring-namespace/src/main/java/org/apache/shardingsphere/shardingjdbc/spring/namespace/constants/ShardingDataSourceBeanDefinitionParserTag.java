@@ -76,9 +76,7 @@ public final class ShardingDataSourceBeanDefinitionParserTag {
     
     public static final String GENERATE_KEY_COLUMN_ATTRIBUTE = "column";
     
-    public static final String GENERATE_KEY_TYPE_ATTRIBUTE = "type";
-    
-    public static final String GENERATE_KEY_PROPERTY_REF_ATTRIBUTE = "props-ref";
+    public static final String GENERATE_KEY_ALGORITHM_REF_TAG = "algorithm-ref";
     
     public static final String LOGIC_INDEX = "logic-index";
 }

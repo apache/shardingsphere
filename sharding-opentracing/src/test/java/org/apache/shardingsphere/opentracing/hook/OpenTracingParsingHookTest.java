@@ -20,7 +20,7 @@ package org.apache.shardingsphere.opentracing.hook;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.hook.ParsingHook;
 import org.apache.shardingsphere.sql.parser.hook.SPIParsingHook;
 import org.apache.shardingsphere.sql.parser.sql.statement.SQLStatement;
@@ -40,7 +40,7 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     
     @BeforeClass
     public static void registerSPI() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
+        ShardingSphereServiceLoader.register(ParsingHook.class);
     }
     
     @Test

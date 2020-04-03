@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.center.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.underlying.common.config.TypeBasedSPIConfiguration;
+import org.apache.shardingsphere.underlying.common.config.TypedSPIConfiguration;
 
 import java.util.Properties;
 
@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class CenterConfiguration extends TypeBasedSPIConfiguration {
+public final class CenterConfiguration extends TypedSPIConfiguration {
     
     /**
      * Type of center, such as config_center, registry_center.

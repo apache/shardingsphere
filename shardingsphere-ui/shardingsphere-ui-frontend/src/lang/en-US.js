@@ -56,6 +56,7 @@ export default {
     notify: {
       title: 'Prompt',
       addSucMessage: 'Add Succeeded',
+      editSucMessage: 'Edit Succeeded',
       conSucMessage: 'Connection Succeeded',
       conFailMessage: 'Connection Failed',
       delSucMessage: 'Delete Succeeded',
@@ -93,6 +94,7 @@ export default {
     btnTxt: 'ADD',
     registDialog: {
       title: 'Add a registry center',
+      editTitle: 'Edit registry center',
       name: 'Name',
       centerType: 'Instance Type',
       address: 'Address',
@@ -106,7 +108,8 @@ export default {
       operate: 'Operate',
       operateConnect: 'Connect',
       operateConnected: 'Connected',
-      operateDel: 'Del'
+      operateDel: 'Del',
+      operateEdit: 'Edit'
     },
     rules: {
       name: 'Please enter the name of the registration center',
@@ -121,6 +124,7 @@ export default {
     btnTxt: 'ADD',
     configDialog: {
       title: 'Add a config center',
+      editTitle: 'Edit config center',
       name: 'Name',
       centerType: 'Instance Type',
       address: 'Address',
@@ -134,7 +138,8 @@ export default {
       operate: 'Operate',
       operateConnect: 'Connect',
       operateConnected: 'Connected',
-      operateDel: 'Del'
+      operateDel: 'Del',
+      operateEdit: 'Edit'
     },
     rules: {
       name: 'Please enter the name of the config center',

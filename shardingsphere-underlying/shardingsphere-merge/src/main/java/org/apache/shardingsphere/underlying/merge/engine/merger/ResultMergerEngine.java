@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.underlying.merge.engine.merger;
 
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
@@ -26,9 +26,9 @@ import org.apache.shardingsphere.underlying.merge.engine.ResultProcessEngine;
 /**
  * Result merger engine.
  *
- * @param <T> type of base rule
+ * @param <T> type of rule
  */
-public interface ResultMergerEngine<T extends BaseRule> extends ResultProcessEngine {
+public interface ResultMergerEngine<T extends BaseRule> extends ResultProcessEngine<T> {
     
     /**
      * Create new instance of result merger engine.

@@ -65,8 +65,7 @@ public class OrchestrationEncryptDataSource extends AbstractOrchestrationDataSou
     
     public OrchestrationEncryptDataSource(final EncryptDataSource dataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(DefaultSchema.LOGIC_NAME)));
-        this.dataSource = new EncryptDataSource(
-                dataSource.getDataSource(), new EncryptRule(dataSource.getRuntimeContext().getRule().getRuleConfiguration()), dataSource.getRuntimeContext().getProperties().getProps());
+        this.dataSource = dataSource;
         initShardingOrchestrationFacade(
             Collections.singletonMap(DefaultSchema.LOGIC_NAME, DataSourceConverter.getDataSourceConfigurationMap(Collections.singletonMap(ENCRYPT_DATASOURCE, dataSource.getDataSource()))),
             getRuleConfigurationMap(), dataSource.getRuntimeContext().getProperties().getProps());

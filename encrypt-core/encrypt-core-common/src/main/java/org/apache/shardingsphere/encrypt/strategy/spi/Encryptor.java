@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.strategy.spi;
 
-import org.apache.shardingsphere.spi.TypeBasedSPI;
+import org.apache.shardingsphere.spi.type.TypedSPI;
 
 /**
  * Encryptor.
  */
-public interface Encryptor extends TypeBasedSPI {
+public interface Encryptor extends TypedSPI {
     
     /**
      * Initialize.

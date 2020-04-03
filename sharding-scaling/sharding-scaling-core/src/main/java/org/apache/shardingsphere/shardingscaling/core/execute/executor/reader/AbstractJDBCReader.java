@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Fi
 import org.apache.shardingsphere.shardingscaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.shardingscaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.shardingscaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.shardingscaling.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.sql.parser.binder.metadata.table.TableMetaData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

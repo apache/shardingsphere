@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.underlying.pluggble.prepare;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.order.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.SQLParserEngine;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationPropertyKey;
@@ -29,14 +30,14 @@ import org.apache.shardingsphere.underlying.executor.context.SQLUnit;
 import org.apache.shardingsphere.underlying.executor.log.SQLLogger;
 import org.apache.shardingsphere.underlying.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContext;
+import org.apache.shardingsphere.underlying.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteEngine;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRewriteResult;
 import org.apache.shardingsphere.underlying.rewrite.engine.SQLRouteRewriteEngine;
-import org.apache.shardingsphere.underlying.rewrite.registry.RewriteDecoratorRegistry;
 import org.apache.shardingsphere.underlying.route.DataNodeRouter;
 import org.apache.shardingsphere.underlying.route.context.RouteContext;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.apache.shardingsphere.underlying.route.registry.RouteDecoratorRegistry;
+import org.apache.shardingsphere.underlying.route.decorator.RouteDecorator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -89,24 +90,16 @@ public abstract class BasePrepareEngine {
     protected abstract List<Object> cloneParameters(List<Object> parameters);
     
     private RouteContext executeRoute(final String sql, final List<Object> clonedParameters) {
-        registerRouteDecorator();
+        OrderedSPIRegistry.getRegisteredServices(rules, RouteDecorator.class).forEach(router::registerDecorator);
         return route(router, sql, clonedParameters);
-    }
-    
-    private void registerRouteDecorator() {
-        rules.forEach(each -> RouteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> router.registerDecorator(each, decorator)));
     }
     
     protected abstract RouteContext route(DataNodeRouter dataNodeRouter, String sql, List<Object> parameters);
     
     private Collection<ExecutionUnit> executeRewrite(final String sql, final List<Object> parameters, final RouteContext routeContext) {
-        registerRewriteDecorator();
+        OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class).forEach(rewriter::registerDecorator);
         SQLRewriteContext sqlRewriteContext = rewriter.createSQLRewriteContext(sql, parameters, routeContext.getSqlStatementContext(), routeContext);
         return routeContext.getRouteResult().getRouteUnits().isEmpty() ? rewrite(sqlRewriteContext) : rewrite(routeContext, sqlRewriteContext);
-    }
-    
-    private void registerRewriteDecorator() {
-        rules.forEach(each -> RewriteDecoratorRegistry.getInstance().getDecorator(each).ifPresent(decorator -> rewriter.registerDecorator(each, decorator)));
     }
     
     private Collection<ExecutionUnit> rewrite(final SQLRewriteContext sqlRewriteContext) {

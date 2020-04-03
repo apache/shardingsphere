@@ -23,6 +23,9 @@ import org.junit.Test;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public final class MasterSlavePreparedStatementTest extends AbstractMasterSlaveJDBCDatabaseAndTableTest {
     
     @Test(expected = SQLException.class)
@@ -36,6 +39,13 @@ public final class MasterSlavePreparedStatementTest extends AbstractMasterSlaveJ
     public void assertQueryWithEmptyString() throws SQLException {
         try (PreparedStatement preparedStatement = getMasterSlaveDataSource().getConnection().prepareStatement("")) {
             preparedStatement.executeQuery();
+        }
+    }
+    
+    @Test
+    public void assertGetParameterMetaData() throws SQLException {
+        try (PreparedStatement preparedStatement = getMasterSlaveDataSource().getConnection().prepareStatement("SELECT * FROM t_global where id = ?")) {
+            assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(1));
         }
     }
 }

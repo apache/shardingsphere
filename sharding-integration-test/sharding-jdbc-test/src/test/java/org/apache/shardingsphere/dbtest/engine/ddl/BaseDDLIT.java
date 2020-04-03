@@ -27,7 +27,7 @@ import org.apache.shardingsphere.dbtest.engine.SingleIT;
 import org.apache.shardingsphere.dbtest.env.DatabaseTypeEnvironment;
 import org.apache.shardingsphere.dbtest.env.EnvironmentPath;
 import org.apache.shardingsphere.dbtest.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.spi.database.type.DatabaseType;
+import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.SQLCaseType;
 import org.junit.After;
 import org.junit.AfterClass;

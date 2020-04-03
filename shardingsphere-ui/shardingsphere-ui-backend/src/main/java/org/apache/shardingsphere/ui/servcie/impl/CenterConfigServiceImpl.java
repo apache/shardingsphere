@@ -19,6 +19,7 @@ package org.apache.shardingsphere.ui.servcie.impl;
 
 import org.apache.shardingsphere.ui.common.domain.CenterConfig;
 import org.apache.shardingsphere.ui.common.domain.CenterConfigs;
+import org.apache.shardingsphere.ui.common.dto.CenterConfigDTO;
 import org.apache.shardingsphere.ui.common.exception.ShardingSphereUIException;
 import org.apache.shardingsphere.ui.repository.CenterConfigsRepository;
 import org.apache.shardingsphere.ui.servcie.CenterConfigService;
@@ -53,7 +54,7 @@ public final class CenterConfigServiceImpl implements CenterConfigService {
         CenterConfigs configs = loadAll();
         CenterConfig existedConfig = find(config.getName(), config.getOrchestrationType(), configs);
         if (null != existedConfig) {
-            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, "Center already existed!");
+            throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, String.format("Center %s already existed!", config.getName()));
         }
         configs.getCenterConfigs().add(config);
         centerConfigsRepository.save(configs);
@@ -100,6 +101,28 @@ public final class CenterConfigServiceImpl implements CenterConfigService {
                 .forEach(each->centerConfigs.add(each));
         result.setCenterConfigs(centerConfigs);
         return result;
+    }
+    
+    @Override
+    public void update(CenterConfigDTO config) {
+        CenterConfigs configs = loadAll();
+        if (!config.getPrimaryName().equals(config.getName())) {
+            CenterConfig existedConfig = find(config.getName(), config.getOrchestrationType(), configs);
+            if (null != existedConfig) {
+                throw new ShardingSphereUIException(ShardingSphereUIException.SERVER_ERROR, String.format("Center %s already existed!", config.getName()));
+            }
+        }
+        CenterConfig toBeUpdatedConfig = find(config.getPrimaryName(), config.getOrchestrationType(), configs);
+        if (null != toBeUpdatedConfig) {
+            toBeUpdatedConfig.setName(config.getName());
+            toBeUpdatedConfig.setNamespace(config.getNamespace());
+            toBeUpdatedConfig.setOrchestrationType(config.getOrchestrationType());
+            toBeUpdatedConfig.setInstanceType(config.getInstanceType());
+            toBeUpdatedConfig.setServerLists(config.getServerLists());
+            toBeUpdatedConfig.setOrchestrationName(config.getOrchestrationName());
+            toBeUpdatedConfig.setDigest(config.getDigest());
+            centerConfigsRepository.save(configs);
+        }
     }
     
     private CenterConfig findActivatedCenterConfiguration(final CenterConfigs centerConfigs) {

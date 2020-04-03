@@ -113,7 +113,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             mergeUpdateCount(sqlStatementContext);
             return response;
         }
-        this.mergedResult = createMergedResult(sqlStatementContext, ((QueryResponse) response).getQueryResults());
+        mergedResult = mergeQuery(sqlStatementContext, ((QueryResponse) response).getQueryResults());
         return response;
     }
     
@@ -127,7 +127,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema && logicSchema.getShardingRule().isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames());
     }
     
-    private MergedResult createMergedResult(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(
                 logicSchema.getShardingRule().toRules(), ShardingProxyContext.getInstance().getProperties(), LogicSchemas.getInstance().getDatabaseType(), logicSchema.getMetaData().getSchema());
         return mergeEngine.merge(queryResults, sqlStatementContext);

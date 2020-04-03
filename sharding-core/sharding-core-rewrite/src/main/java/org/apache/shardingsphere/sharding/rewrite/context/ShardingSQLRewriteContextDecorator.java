@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.rewrite.context;
 
 import lombok.Setter;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.underlying.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.underlying.common.config.properties.ConfigurationProperties;
@@ -32,18 +31,26 @@ import org.apache.shardingsphere.underlying.route.context.RouteContext;
  * SQL rewrite context decorator for sharding.
  */
 @Setter
-public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule>, RouteContextAware {
-    
-    private RouteContext routeContext;
+public final class ShardingSQLRewriteContextDecorator implements SQLRewriteContextDecorator<ShardingRule> {
     
     @SuppressWarnings("unchecked")
     @Override
-    public void decorate(final ShardingRule shardingRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext) {
+    public void decorate(final ShardingRule shardingRule, final ConfigurationProperties properties, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         for (ParameterRewriter each : new ShardingParameterRewriterBuilder(shardingRule, routeContext).getParameterRewriters(sqlRewriteContext.getSchemaMetaData())) {
             if (!sqlRewriteContext.getParameters().isEmpty() && each.isNeedRewrite(sqlRewriteContext.getSqlStatementContext())) {
                 each.rewrite(sqlRewriteContext.getParameterBuilder(), sqlRewriteContext.getSqlStatementContext(), sqlRewriteContext.getParameters());
             }
         }
         sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, routeContext).getSQLTokenGenerators());
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Class<ShardingRule> getTypeClass() {
+        return ShardingRule.class;
     }
 }

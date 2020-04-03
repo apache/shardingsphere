@@ -20,7 +20,7 @@
     <s-container v-if="localStorage.getItem('Access-Token')">
       <el-breadcrumb separator="/" class="bread-wrap">
         <el-breadcrumb-item :to="{ path: '/' }">{{ $t('common.home') }}</el-breadcrumb-item>
-        <el-breadcrumb-item v-for="each in menus">
+        <el-breadcrumb-item v-for="each in menus" :key="each.title">
           {{ each }}
         </el-breadcrumb-item>
       </el-breadcrumb>

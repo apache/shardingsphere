@@ -37,6 +37,8 @@ import org.apache.shardingsphere.sql.parser.binder.segment.select.pagination.Pag
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.sql.parser.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableFactorSegment;
+import org.apache.shardingsphere.sql.parser.sql.segment.dml.TableReferenceSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -333,9 +335,9 @@ public final class ShardingDQLResultMergerTest {
     }
     
     private SchemaMetaData createSchemaMetaData() {
-        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", "dataType", false, false, false);
-        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", "dataType", false, false, false);
-        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", "dataType", false, false, false);
+        ColumnMetaData columnMetaData1 = new ColumnMetaData("col1", 0, "dataType", false, false, false);
+        ColumnMetaData columnMetaData2 = new ColumnMetaData("col2", 0, "dataType", false, false, false);
+        ColumnMetaData columnMetaData3 = new ColumnMetaData("col3", 0, "dataType", false, false, false);
         TableMetaData tableMetaData = new TableMetaData(Arrays.asList(columnMetaData1, columnMetaData2, columnMetaData3), Collections.emptyList());
         return new SchemaMetaData(ImmutableMap.of("tbl", tableMetaData));
     }
@@ -343,7 +345,11 @@ public final class ShardingDQLResultMergerTest {
     private SelectStatement createSelectStatement() {
         SelectStatement result = new SelectStatement();
         SimpleTableSegment tableSegment = new SimpleTableSegment(10, 13, new IdentifierValue("tbl"));
-        result.getTables().add(tableSegment);
+        TableReferenceSegment tableReferenceSegment = new TableReferenceSegment();
+        TableFactorSegment tableFactorSegment = new TableFactorSegment();
+        tableFactorSegment.setTable(tableSegment);
+        tableReferenceSegment.setTableFactor(tableFactorSegment);
+        result.getTableReferences().add(tableReferenceSegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         result.setProjections(projectionsSegment);
         return result;
