@@ -28,7 +28,7 @@ import org.apache.shardingsphere.underlying.route.context.RouteContext;
  * 
  * @param <T> type of rule
  */
-public interface RouteDecorator<T extends BaseRule> extends OrderedSPI<Class<T>> {
+public interface RouteDecorator<T extends BaseRule> extends OrderedSPI<T> {
     
     /**
      * Decorate route context.

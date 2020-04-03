@@ -33,7 +33,7 @@ import java.util.Optional;
  * 
  * @param <T> type of base rule
  */
-public interface RuleTableMetaDataLoader<T extends BaseRule> extends OrderedSPI<Class<T>> {
+public interface RuleTableMetaDataLoader<T extends BaseRule> extends OrderedSPI<T> {
     
     /**
      * Load meta data.

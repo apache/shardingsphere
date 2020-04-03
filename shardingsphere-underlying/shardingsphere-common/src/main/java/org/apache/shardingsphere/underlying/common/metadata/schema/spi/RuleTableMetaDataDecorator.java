@@ -24,7 +24,7 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 /**
  * Rule table meta data decorator.
  */
-public interface RuleTableMetaDataDecorator<T extends BaseRule> extends OrderedSPI<Class<T>> {
+public interface RuleTableMetaDataDecorator<T extends BaseRule> extends OrderedSPI<T> {
     
     /**
      * Decorate table meta data.

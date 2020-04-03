@@ -36,5 +36,5 @@ public interface OrderedSPI<T> {
      * 
      * @return type
      */
-    T getType();
+    Class<T> getType();
 }

@@ -25,5 +25,5 @@ import org.apache.shardingsphere.underlying.common.rule.BaseRule;
  * 
  * @param <T> type of rule
  */
-public interface ResultProcessEngine<T extends BaseRule> extends OrderedSPI<Class<T>> {
+public interface ResultProcessEngine<T extends BaseRule> extends OrderedSPI<T> {
 }
