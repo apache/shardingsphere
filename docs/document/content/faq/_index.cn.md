@@ -244,3 +244,24 @@ ShardingSphere中很多功能实现类的加载方式是通过[SPI](https://shar
 1. 需要使用4.1.0以上版本。
 2. 将配置项`allow.range.query.with.inline.sharding`设置为true即可（默认为false）。
 3. 需要注意的是，此时所有的范围查询将会使用广播的方式查询每一个分表。
+
+#### 20. 为什么配置了某个数据连接池的spring-boot-starter（比如druid）和sharding-jdbc-spring-boot-starter时，系统启动会报错？
+
+回答：
+
+1. 因为数据连接池的starter（比如druid）可能会先加载并且其创建一个默认数据源，这将会使得sharding-jdbc创建数据源时发生冲突。
+2. 解决办法为，去掉数据连接池的starter即可，sharing-jdbc自己会创建数据连接池。
+
+#### 21. 在使用sharing-proxy的时候，如何动态在sharding-ui上添加新的logic schema？
+
+回答：
+
+1. 4.1.0之前的版本不支持动态添加或删除logic schema的功能，例如一个proxy启动的时候有2个logic schema，就会一直持有这2个schema，只能感知这两个schema内部的表和rule的变更事件。
+2. 4.1.0版本支持在sharding-ui或直接在zookeeper上增加新的logic schema，删除logic schema的功能计划在5.0.0版本支持。
+
+#### 22. 在使用sharing-proxy时，怎么使用合适的工具连接到proxy？
+
+回答：
+
+1. sharding-proxy可以看做是一个mysql server，所以首选支持mysql命令连接和操作。
+2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。建议选择特定版本的工具或者打开特定参数，例如使用Navicat 11.1.13版本(不建议12.x)，使用IDEA/DataGrip时打开`introspect using JDBC metadata`选项。

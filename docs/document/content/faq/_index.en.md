@@ -241,3 +241,24 @@ Answer:
 1. Update to 4.0.1 above.
 2. Configure`allow.range.query.with.inline.sharding` to `true` (Default value is `false`).
 3. A tip here: then each range query will be broadcast to every sharding table.
+
+#### 20. Why there may be an error when configure both sharding-jdbc-spring-boot-starter and a spring-boot-starter of certain datasource pool(such as druid)?
+ 
+Answer:
+ 
+1. Because the spring-boot-starter of certain datasource pool (such as druid) will configured before sharding-jdbc-spring-boot-starter and create a default datasource, then conflict occur when sharding-jdbc create datasources.
+2. A simple way to solve this issue is removing the the spring-boot-starter of certain datasource pool, sharding-jdbc create datasources with suitable pools. 
+ 
+#### 21. How to add a new logic schema dynamically when use sharing-proxy?
+ 
+Answer:
+ 
+1. Before version 4.1.0, sharing-proxy can't support adding a new logic schema dynamically, for example, when a proxy starting with two logic schemas, it always hold the two schemas and will be notified about the table/rule changed events in the two schemas.
+2. Since version 4.1.0, sharing-proxy support adding a new logic schema dynamically via sharding-ui or zookeeper, and it's a plan to support removing a exist logic schema dynamically in runtime.
+ 
+#### 22. How to use a suitable database tools connecting sharding-proxy? 
+ 
+Answer:
+ 
+1. Sharding-proxy could be considered as a mysql sever, so we recommend using mysql command line tool to connect to and operate it.
+2. If users would like use a third-party database tool, there may be some errors cause of the certain implementation/options. For example, we recommend Navicat with version 11.1.13(not 12.x), and turn on "introspect using jdbc metadata"(or it will get all real tables info from informations_schema) in idea or datagrip.  
