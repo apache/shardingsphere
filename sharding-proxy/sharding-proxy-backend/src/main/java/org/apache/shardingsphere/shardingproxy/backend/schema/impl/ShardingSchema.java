@@ -21,10 +21,8 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.metadata.ShardingMetaDataDecorator;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.metadata.EncryptMetaDataDecorator;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
@@ -162,17 +160,7 @@ public final class ShardingSchema extends LogicSchema {
     
     private Optional<TableMetaData> loadTableMeta(final String tableName) throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
-        Optional<TableMetaData> tableMetaData = loader.load(
-                LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
-        if (tableMetaData.isPresent()) {
-            TableMetaData result = tableMetaData.get();
-            result = new ShardingMetaDataDecorator().decorate(tableName, result, shardingRule);
-            if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-                result = new EncryptMetaDataDecorator().decorate(tableName, result, shardingRule.getEncryptRule());
-            }
-            return Optional.of(result);
-        }
-        return Optional.empty();
+        return loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
     }
     
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
