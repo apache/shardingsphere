@@ -21,12 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
+import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -51,7 +51,7 @@ public final class MasterSlaveRuntimeContext extends MultipleDataSourcesRuntimeC
     }
     
     @Override
-    protected RuleSchemaMetaData loadRuleSchemaMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        return new RuleSchemaMetaDataLoader(Collections.singletonList(getRule())).load(getDatabaseType(), dataSourceMap, getProperties());
+    protected Collection<BaseRule> getRules() {
+        return Collections.singletonList(getRule());
     }
 }

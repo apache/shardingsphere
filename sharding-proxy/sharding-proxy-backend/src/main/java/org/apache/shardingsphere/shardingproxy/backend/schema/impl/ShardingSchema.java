@@ -21,10 +21,8 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.log.ConfigurationLogger;
-import org.apache.shardingsphere.core.metadata.ShardingMetaDataDecorator;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.encrypt.metadata.EncryptMetaDataDecorator;
 import org.apache.shardingsphere.orchestration.core.common.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.core.common.rule.OrchestrationShardingRule;
@@ -50,9 +48,6 @@ import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateIndexStateme
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
 import java.sql.SQLException;
@@ -69,24 +64,14 @@ public final class ShardingSchema extends LogicSchema {
     
     private ShardingRule shardingRule;
     
-    private final ShardingSphereMetaData metaData;
-    
     public ShardingSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources,
                           final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) throws SQLException {
-        super(name, dataSources);
+        super(name, dataSources, createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry).toRules());
         shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
-        metaData = createShardingSphereMetaData();
     }
     
-    private ShardingRule createShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
+    private static ShardingRule createShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
         return isUsingRegistry ? new OrchestrationShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
-    }
-    
-    private ShardingSphereMetaData createShardingSphereMetaData() throws SQLException {
-        DataSourceMetas dataSourceMetas = new DataSourceMetas(LogicSchemas.getInstance().getDatabaseType(), getDatabaseAccessConfigurationMap());
-        RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
-        RuleSchemaMetaData ruleSchemaMetaData = loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), ShardingProxyContext.getInstance().getProperties());
-        return new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
     }
     
     /**
@@ -175,17 +160,7 @@ public final class ShardingSchema extends LogicSchema {
     
     private Optional<TableMetaData> loadTableMeta(final String tableName) throws SQLException {
         RuleSchemaMetaDataLoader loader = new RuleSchemaMetaDataLoader(shardingRule.toRules());
-        Optional<TableMetaData> tableMetaData = loader.load(
-                LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
-        if (tableMetaData.isPresent()) {
-            TableMetaData result = tableMetaData.get();
-            result = new ShardingMetaDataDecorator().decorate(tableName, result, shardingRule);
-            if (!shardingRule.getEncryptRule().getEncryptTableNames().isEmpty()) {
-                result = new EncryptMetaDataDecorator().decorate(tableName, result, shardingRule.getEncryptRule());
-            }
-            return Optional.of(result);
-        }
-        return Optional.empty();
+        return loader.load(LogicSchemas.getInstance().getDatabaseType(), getBackendDataSource().getDataSources(), tableName, ShardingProxyContext.getInstance().getProperties());
     }
     
     private Collection<String> getIndexNames(final DropIndexStatement dropIndexStatement) {
