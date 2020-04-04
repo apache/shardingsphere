@@ -261,24 +261,6 @@ public class ShardingRule implements TablesAggregationRule {
     }
     
     /**
-     * Judge logic tables is all belong to default data source.
-     *
-     * @param logicTableNames logic table names
-     * @return logic tables is all belong to default data source
-     */
-    public boolean isAllInDefaultDataSource(final Collection<String> logicTableNames) {
-        if (!hasDefaultDataSourceName()) {
-            return false;
-        }
-        for (String each : logicTableNames) {
-            if (findTableRule(each).isPresent() || isBroadcastTable(each)) {
-                return false;
-            }
-        }
-        return !logicTableNames.isEmpty();
-    }
-    
-    /**
      * Judge if there is at least one table rule for logic tables.
      *
      * @param logicTableNames logic table names

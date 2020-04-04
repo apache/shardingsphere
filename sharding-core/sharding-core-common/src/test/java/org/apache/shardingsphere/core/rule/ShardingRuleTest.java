@@ -224,26 +224,6 @@ public final class ShardingRuleTest {
     }
     
     @Test
-    public void assertIsAllInDefaultDataSource() {
-        assertTrue(createMaximumShardingRule().isAllInDefaultDataSource(Collections.singletonList("table_0")));
-    }
-    
-    @Test
-    public void assertIsNotAllInDefaultDataSourceWithoutDefaultDataSource() {
-        assertFalse(createMinimumShardingRule().isAllInDefaultDataSource(Collections.singletonList("table_0")));
-    }
-    
-    @Test
-    public void assertIsNotAllInDefaultDataSourceWithShardingTable() {
-        assertFalse(createMaximumShardingRule().isAllInDefaultDataSource(Arrays.asList("table_0", "logic_table")));
-    }
-    
-    @Test
-    public void assertIsNotAllInDefaultDataSourceWithBroadcastTable() {
-        assertFalse(createMaximumShardingRule().isAllInDefaultDataSource(Arrays.asList("table_0", "broadcast_table")));
-    }
-    
-    @Test
     public void assertIsShardingColumnForDefaultDatabaseShardingStrategy() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
