@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.PlaceholderE
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.shardingscaling.mysql.binlog.event.WriteRowsEvent;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +84,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 payload.skipReserved(payload.getByteBuf().readableBytes());
         }
         if (in.isReadable()) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException(String.format("Do not parse binlog event fully, eventHeader: %s, remaining packet %s", binlogEventHeader.toString(), readRemainPacket(payload)));
         }
     }
     
@@ -93,15 +94,20 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     private void checkError(final MySQLPacketPayload payload) {
         int statusCode = payload.readInt1();
-        if (0 == statusCode) {
-            return;
-        }
         if (255 == statusCode) {
             int errorNo = payload.readInt2();
             payload.skipReserved(1);
             String sqlState = payload.readStringFix(5);
             throw new RuntimeException(String.format("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, payload.readStringEOF()));
+        } else if (0 != statusCode) {
+            if (log.isDebugEnabled()) {
+                log.debug("Illegal binlog status code {}, remaining packet \n{}", statusCode, readRemainPacket(payload));
+            }
         }
+    }
+    
+    private String readRemainPacket(final MySQLPacketPayload payload) {
+        return ByteBufUtil.hexDump(payload.readStringFixByBytes(payload.getByteBuf().readableBytes()));
     }
     
     private void removeChecksum(final int eventType, final ByteBuf in) {
