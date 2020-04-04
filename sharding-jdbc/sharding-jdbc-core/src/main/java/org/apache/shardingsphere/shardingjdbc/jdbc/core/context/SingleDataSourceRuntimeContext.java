@@ -24,12 +24,14 @@ import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
 import org.apache.shardingsphere.underlying.common.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.underlying.common.metadata.datasource.DataSourceMetas;
 import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
+import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 import org.apache.shardingsphere.underlying.common.rule.BaseRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -53,7 +55,7 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
     private ShardingSphereMetaData createMetaData(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         long start = System.currentTimeMillis();
         DataSourceMetas dataSourceMetas = new DataSourceMetas(databaseType, getDatabaseAccessConfigurationMap(dataSource));
-        RuleSchemaMetaData ruleSchemaMetaData = loadRuleSchemaMetaData(dataSource);
+        RuleSchemaMetaData ruleSchemaMetaData = new RuleSchemaMetaDataLoader(Collections.singletonList(getRule())).load(getDatabaseType(), dataSource, getProperties());
         ShardingSphereMetaData result = new ShardingSphereMetaData(dataSourceMetas, ruleSchemaMetaData);
         log.info("Meta data load finished, cost {} milliseconds.", System.currentTimeMillis() - start);
         return result;
@@ -68,5 +70,4 @@ public abstract class SingleDataSourceRuntimeContext<T extends BaseRule> extends
         return result;
     }
     
-    protected abstract RuleSchemaMetaData loadRuleSchemaMetaData(DataSource dataSource) throws SQLException;
 }

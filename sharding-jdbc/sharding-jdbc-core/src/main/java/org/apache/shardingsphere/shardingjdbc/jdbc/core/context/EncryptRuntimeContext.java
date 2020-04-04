@@ -19,12 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.context;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.underlying.common.database.type.DatabaseType;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaData;
-import org.apache.shardingsphere.underlying.common.metadata.schema.RuleSchemaMetaDataLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -34,10 +31,5 @@ public final class EncryptRuntimeContext extends SingleDataSourceRuntimeContext<
     
     public EncryptRuntimeContext(final DataSource dataSource, final EncryptRule encryptRule, final Properties props, final DatabaseType databaseType) throws SQLException {
         super(dataSource, encryptRule, props, databaseType);
-    }
-    
-    @Override
-    protected RuleSchemaMetaData loadRuleSchemaMetaData(final DataSource dataSource) throws SQLException {
-        return new RuleSchemaMetaDataLoader(Collections.singletonList(getRule())).load(getDatabaseType(), dataSource, getProperties());
     }
 }
