@@ -39,8 +39,8 @@ public final class BatchDMLIT extends BatchIT {
     private final IntegrateTestCase integrateTestCase;
     
     public BatchDMLIT(final String sqlCaseId, final IntegrateTestCase integrateTestCase,
-                      final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
-        super(sqlCaseId, integrateTestCase, shardingRuleType, databaseTypeEnvironment);
+                      final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment) throws IOException, JAXBException, SQLException {
+        super(sqlCaseId, integrateTestCase, ruleType, databaseTypeEnvironment);
         this.integrateTestCase = integrateTestCase;
     }
     

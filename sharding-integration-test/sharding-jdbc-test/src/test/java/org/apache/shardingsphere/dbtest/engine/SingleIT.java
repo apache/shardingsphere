@@ -44,12 +44,12 @@ public abstract class SingleIT extends BaseIT {
     private final String expectedDataFile;
     
     public SingleIT(final String sqlCaseId, final String path, final IntegrateTestCaseAssertion assertion, 
-                    final String shardingRuleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
-        super(shardingRuleType, databaseTypeEnvironment);
+                    final String ruleType, final DatabaseTypeEnvironment databaseTypeEnvironment, final SQLCaseType caseType) throws IOException, JAXBException, SQLException, ParseException {
+        super(ruleType, databaseTypeEnvironment);
         this.assertion = assertion;
         this.caseType = caseType;
         sql = getSQL(sqlCaseId);
-        expectedDataFile = getExpectedDataFile(path, shardingRuleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
+        expectedDataFile = getExpectedDataFile(path, ruleType, databaseTypeEnvironment.getDatabaseType(), assertion.getExpectedDataFile());
     }
 
     private String getSQL(final String sqlCaseId) throws ParseException {
