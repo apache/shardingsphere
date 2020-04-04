@@ -43,7 +43,7 @@
     <sharding:key-generator id="orderKeyGenerator" column="order_id" algorithm-ref="incrementAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-data-source-name="dbtbl_0" default-key-generator-ref="defaultKeyGenerator">
+        <sharding:sharding-rule data-source-names="dbtbl_0,dbtbl_1" default-key-generator-ref="defaultKeyGenerator">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="dbtbl_${0..1}.t_order_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="orderKeyGenerator" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="dbtbl_${0..1}.t_order_item_${0..3}" database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="itemKeyGenerator" />

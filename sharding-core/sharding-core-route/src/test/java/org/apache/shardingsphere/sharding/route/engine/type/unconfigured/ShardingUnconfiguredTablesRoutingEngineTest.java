@@ -56,7 +56,6 @@ public final class ShardingUnconfiguredTablesRoutingEngineTest {
     @Test
     public void assertRoute() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.setDefaultDataSourceName("ds_0");
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         RouteResult routeResult = shardingDefaultDatabaseRoutingEngine.route(shardingRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeResult.getRouteUnits());

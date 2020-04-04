@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.underlying.common.rule.DataNode;
-import org.apache.shardingsphere.core.rule.ShardingDataSourceNames;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.underlying.common.rule.DataNode;
 import org.apache.shardingsphere.underlying.route.context.RouteResult;
 import org.apache.shardingsphere.underlying.route.context.RouteUnit;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -50,14 +48,6 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     @Mock
     private ShardingRule shardingRule;
     
-    @Mock
-    private ShardingDataSourceNames shardingDataSourceNames;
-    
-    @Before
-    public void setUp() {
-        when(shardingRule.getShardingDataSourceNames()).thenReturn(shardingDataSourceNames);
-    }
-    
     private List<TableRule> mockTableRules(final List<List<String>> shards) {
         List<TableRule> result = new LinkedList<>();
         for (List<String> each : shards) {
@@ -77,24 +67,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     }
     
     @Test
-    public void assertRouteWithDefaultDataSource() {
-        List<List<String>> shards = new LinkedList<>();
-        shards.add(Arrays.asList("ds1", "ds2", "ds3"));
-        shards.add(Arrays.asList("ds3", "ds4", "ds5"));
-        shards.add(Arrays.asList("ds9", "ds10", "ds11"));
-        List<TableRule> tableRules = mockTableRules(shards);
-        when(shardingRule.getTableRules()).thenReturn(tableRules);
-        when(shardingDataSourceNames.getDefaultDataSourceName()).thenReturn("default");
-        RouteResult actual = shardingDataSourceGroupBroadcastRoutingEngine.route(shardingRule);
-        assertThat(actual.getRouteUnits().size(), is(3));
-        Iterator<RouteUnit> iterator = actual.getRouteUnits().iterator();
-        assertThat(iterator.next().getDataSourceMapper().getActualName(), is("ds3"));
-        assertThat(Arrays.asList("ds9", "ds10", "ds11"), hasItems(iterator.next().getDataSourceMapper().getActualName()));
-        assertThat(iterator.next().getDataSourceMapper().getActualName(), is("default"));
-    }
-    
-    @Test
-    public void assertRouteWithoutDefaultDataSource() {
+    public void assertRoute() {
         List<List<String>> shards = new LinkedList<>();
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));

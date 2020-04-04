@@ -48,25 +48,25 @@ public final class SchemaEnvironmentManager {
     /**
      * Get data source names.
      * 
-     * @param shardingRuleType sharding rule type
+     * @param ruleType rule type
      * @return data source names
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public static Collection<String> getDataSourceNames(final String shardingRuleType) throws IOException, JAXBException {
-        return unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType)).getDatabases();
+    public static Collection<String> getDataSourceNames(final String ruleType) throws IOException, JAXBException {
+        return unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType)).getDatabases();
     } 
     
     /**
      * Create database.
      *
-     * @param shardingRuleType sharding rule type
+     * @param ruleType rule type
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      * @throws SQLException SQL exception
      */
-    public static void createDatabase(final String shardingRuleType) throws IOException, JAXBException, SQLException {
-        SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+    public static void createDatabase(final String ruleType) throws IOException, JAXBException, SQLException {
+        SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             DataSource dataSource = DataSourceUtil.createDataSource(each, null);
             try (
@@ -80,12 +80,12 @@ public final class SchemaEnvironmentManager {
     /**
      * Drop database.
      *
-     * @param shardingRuleType sharding rule type
+     * @param ruleType rule type
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public static void dropDatabase(final String shardingRuleType) throws IOException, JAXBException {
-        SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+    public static void dropDatabase(final String ruleType) throws IOException, JAXBException {
+        SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
             DataSource dataSource = DataSourceUtil.createDataSource(each, null);
             try (
@@ -131,14 +131,14 @@ public final class SchemaEnvironmentManager {
     /**
      * Create table.
      *
-     * @param shardingRuleType sharding rule type
+     * @param ruleType rule type
      * @throws JAXBException JAXB exception
      * @throws IOException IO exception
      * @throws SQLException SQL exception
      */
-    public static void createTable(final String shardingRuleType) throws JAXBException, IOException, SQLException {
+    public static void createTable(final String ruleType) throws JAXBException, IOException, SQLException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
             createTable(databaseEnvironmentSchema, each);
         }
     }
@@ -156,13 +156,13 @@ public final class SchemaEnvironmentManager {
     /**
      * Drop table.
      *
-     * @param shardingRuleType sharding rule type
+     * @param ruleType rule type
      * @throws JAXBException JAXB exception
      * @throws IOException IO exception
      */
-    public static void dropTable(final String shardingRuleType) throws JAXBException, IOException {
+    public static void dropTable(final String ruleType) throws JAXBException, IOException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
-            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(shardingRuleType));
+            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
             dropTable(databaseEnvironmentSchema, each);
         }
     }

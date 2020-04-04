@@ -80,7 +80,7 @@
     <sharding:key-generator id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
     
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1" default-data-source-name="demo_ds_0">
+        <sharding:sharding-rule data-source-names="demo_ds_0, demo_ds_1">
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generator-ref="orderKeyGenerator" />
                 <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generator-ref="itemKeyGenerator" />

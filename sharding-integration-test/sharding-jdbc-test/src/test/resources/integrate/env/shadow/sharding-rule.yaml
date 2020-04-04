@@ -34,6 +34,5 @@ shadowRule:
         keyGenerator:
           type: Constant
           column: item_id
-    defaultDataSourceName: db
     defaultTableStrategy:
       none:

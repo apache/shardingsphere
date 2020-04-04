@@ -55,7 +55,6 @@
     <sharding:data-source id="shardingRuleWithAttributesDataSource">
         <sharding:sharding-rule
             data-source-names="dbtbl_0,dbtbl_1"
-            default-data-source-name="dbtbl_0"
             default-database-strategy-ref="standardStrategy"
             default-table-strategy-ref="inlineStrategy"
             default-key-generator-ref="keyGenerator">

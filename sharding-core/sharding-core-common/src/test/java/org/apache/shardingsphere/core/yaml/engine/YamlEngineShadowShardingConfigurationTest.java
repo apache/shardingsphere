@@ -67,7 +67,6 @@ public final class YamlEngineShadowShardingConfigurationTest {
         assertTOrderItem(actual);
         assertBindingTable(actual);
         assertBroadcastTable(actual);
-        assertShardingRuleDefault(actual);
         assertMasterSlaveRules(actual);
         assertProps(actual);
         assertShadowDataSourceMapping(actual);
@@ -122,12 +121,6 @@ public final class YamlEngineShadowShardingConfigurationTest {
     private void assertBroadcastTable(final YamlRootShadowConfiguration actual) {
         assertThat(actual.getShadowRule().getShardingRule().getBroadcastTables().size(), is(1));
         assertThat(actual.getShadowRule().getShardingRule().getBroadcastTables().iterator().next(), is("t_config"));
-    }
-    
-    private void assertShardingRuleDefault(final YamlRootShadowConfiguration actual) {
-        assertThat(actual.getShadowRule().getShardingRule().getDefaultDataSourceName(), is("default_ds"));
-        assertThat(actual.getShadowRule().getShardingRule().getDefaultDatabaseStrategy().getInline().getShardingColumn(), is("order_id"));
-        assertThat(actual.getShadowRule().getShardingRule().getDefaultDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${order_id % 2}"));
     }
     
     private void assertMasterSlaveRules(final YamlRootShadowConfiguration actual) {

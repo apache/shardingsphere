@@ -44,7 +44,6 @@
                 <xsd:element name="encrypt-rule" type="encrypt:encrypt-rule" minOccurs="0" />
             </xsd:all>
             <xsd:attribute name="data-source-names" type="xsd:string" use="required" />
-            <xsd:attribute name="default-data-source-name" type="xsd:string" />
             <xsd:attribute name="default-database-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-table-strategy-ref" type="xsd:string" />
             <xsd:attribute name="default-key-generator-ref" type="xsd:string" />
