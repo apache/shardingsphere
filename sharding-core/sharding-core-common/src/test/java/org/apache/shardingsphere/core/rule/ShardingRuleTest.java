@@ -117,13 +117,6 @@ public final class ShardingRuleTest {
         assertThat(actual.getLogicTable(), is("broadcast_table"));
     }
     
-    @Test
-    public void assertGetTableRuleWithDefaultDataSource() {
-        ShardingRule shardingRule = createMaximumShardingRule();
-        shardingRule.getBroadcastTables().clear();
-        assertThat(shardingRule.getTableRule("Default_Table").getLogicTable(), is("default_table"));
-    }
-    
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGetTableRuleFailure() {
         createMinimumShardingRule().getTableRule("New_Table");
